@@ -43,6 +43,9 @@ use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
 
+#[path = "recovery_denial.rs"]
+mod recovery_denial;
+
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
 pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
@@ -82,24 +85,58 @@ impl<D: ProcessDriver> Supervisor<D> {
         let mut report = TickReport::default();
         for (agent_id, record) in snapshot.agents {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
-                // Durable control state is safety-critical and must always be
-                // hydrated even when exact process adoption/revalidation
-                // reports a per-Agent fault. Otherwise an adoption error could
-                // hide a recovery-required signed intent or restart/release
-                // fence and incorrectly make the daemon appear ready.
-                supervisor.restore_release_state(&agent_id, slot, &record)?;
-                let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
-                supervisor.recover_restart_budget(&agent_id, slot, now)?;
-                supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
-                Ok(process_fault)
+                let mut faults = supervisor.validate_durable_recovery(&agent_id, &record);
+                if let Err(error) = supervisor.restore_release_state(&agent_id, slot, &record) {
+                    faults.push(error);
+                }
+                if let Some(error) = faults.first() {
+                    // Deny semantic replay before acquisition, while leaving
+                    // both independent lease-bound adoption attempts enabled.
+                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                }
+                // Even failed semantic preparation cannot skip independent
+                // lease-bound acquisition of main and Matrix ownership.
+                if let Err(error) = supervisor.recover_slot(&agent_id, slot, &record, now) {
+                    faults.push(error);
+                }
+                // A failed signal on an admitted, exact owned incarnation is
+                // a control retry, not corrupt durable recovery evidence.
+                // recover_slot marks all admission/hydration failures itself.
+                for restore in [
+                    Self::recover_restart_budget,
+                    Self::recover_release_transaction,
+                ] {
+                    if slot.recovery_blocker.is_some() {
+                        break;
+                    }
+                    if let Err(error) = restore(supervisor, &agent_id, slot, now) {
+                        if !Self::recovery_control_fault_is_retryable(slot, &error) {
+                            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                        }
+                        faults.push(error);
+                    }
+                }
+                // A retryable release Drain must not hide independent signed
+                // authority recovery. Its exact staged control remains owned.
+                if slot.recovery_blocker.is_none()
+                    && let Err(error) = supervisor.recover_signed_intent(&agent_id, slot, &record)
+                {
+                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                    faults.push(error);
+                }
+                if slot.recovery_blocker.is_some()
+                    && let Some(error) = faults.first()
+                {
+                    supervisor.deny_failed_recovery(&agent_id, slot, error, now);
+                }
+                Ok(faults)
             });
             match result {
-                Ok(Some(error)) => supervisor.record_fault(&agent_id, &error, &mut report),
-                Ok(None) => {}
-                // Corrupt/unreadable durable restart, release or signed-intent
-                // state is not an ordinary process fault. Starting without
-                // those fences could widen mutation authority, so fail closed.
+                Ok(faults) => {
+                    for error in faults {
+                        supervisor.record_fault(&agent_id, &error, &mut report);
+                    }
+                }
                 Err(error) => return Err(error),
             }
         }
@@ -270,6 +307,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_drain(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let slot = self
             .slots
@@ -300,6 +338,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_start(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let slot = self
             .slots
@@ -346,6 +385,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_restart(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let available = crate::restart_budget::restart_available(
             record.layout.owner_run_root(),
@@ -398,6 +438,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         target: &AgentRelease,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         // Resolve again before consuming the caller's control revision so a
         // revoked/withdrawn predecessor remains a clean pre-dispatch rejection.
         let target = self.refresh_release_for_transition(agent_id, target)?;
@@ -445,6 +486,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_rollback(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let slot = self
             .slots
             .get(agent_id)
@@ -466,6 +508,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         command: AgentCommand,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_slot(agent_id, slot, command, now)
         })
@@ -477,18 +520,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
 
     pub fn drain(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.drain_slot(agent_id, slot, now)
         })
     }
 
     pub fn stop(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_recovery_unblocked(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.stop_slot(agent_id, slot, now)
         })
@@ -501,6 +547,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn restart(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.restart_slot(agent_id, slot, now)
         })
@@ -512,6 +559,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.upgrade_slot(
                 agent_id, slot, target, now, /*explicit_rollback*/ false,
@@ -521,6 +569,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             let target = slot
                 .previous_release
@@ -831,11 +880,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        Ok(slot.signed_recovery_required())
+        Ok(slot.has_recovery_denial())
     }
 
     pub fn any_production_recovery_required(&self) -> bool {
-        self.slots.values().any(AgentSlot::signed_recovery_required)
+        self.slots.values().any(AgentSlot::has_recovery_denial)
     }
 
     pub fn release_selection_snapshot(

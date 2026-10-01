@@ -237,6 +237,11 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         // Enforce the same fence at the actual spawn entry, including direct
         // in-process callers that do not pass through the daemon RPC preflight.
+        if let Some(reason) = &slot.recovery_blocker {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} requires durable recovery before spawn: {reason}"
+            )));
+        }
         if slot.signed_recovery_required() {
             return Err(SupervisorError::SignedIntentRecoveryRequired(
                 agent_id.clone(),
@@ -463,11 +468,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Acquire the main owner first. Then attempt semantic hydration, but do
         // not propagate its failure before the independent Matrix acquisition.
         let main = self.recover_main_slot(agent_id, slot, record, now);
-        let hydration = self
-            .record(agent_id)
-            .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh));
+        if let Err(error) = &main
+            && !Self::recovery_control_fault_is_retryable(slot, error)
+        {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+        }
+        let hydration = if slot.recovery_blocker.is_some() {
+            Ok(())
+        } else {
+            self.record(agent_id)
+                .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh))
+        };
+        if let Err(error) = &hydration {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+        }
         let companion = self.recover_matrix_companion(agent_id, slot, record, now);
         if let Err(error) = &companion {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
             slot.event(
                 record.lifecycle.generation,
                 SupervisorEventKind::DriverFault(bounded_message(error.to_string())),

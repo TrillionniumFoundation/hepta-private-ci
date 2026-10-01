@@ -112,9 +112,10 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
     let preflight = match &prepared {
         PreparedMutation::Start(_) => supervisor.preflight_start(&agent_id),
         PreparedMutation::Drain => supervisor.preflight_drain(&agent_id),
-        PreparedMutation::Stop | PreparedMutation::Kill => {
-            supervisor.preflight_stop_or_kill(&agent_id)
-        }
+        PreparedMutation::Stop => supervisor
+            .ensure_recovery_unblocked(&agent_id)
+            .and_then(|()| supervisor.preflight_stop_or_kill(&agent_id)),
+        PreparedMutation::Kill => supervisor.preflight_stop_or_kill(&agent_id),
         PreparedMutation::Restart => supervisor.preflight_restart(&agent_id),
         PreparedMutation::Upgrade(target) => supervisor.preflight_upgrade(&agent_id, target),
         PreparedMutation::Rollback => supervisor.preflight_rollback(&agent_id),

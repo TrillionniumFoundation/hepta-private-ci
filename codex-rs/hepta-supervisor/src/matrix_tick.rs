@@ -221,6 +221,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
 
+        if slot.has_recovery_denial() {
+            return Ok(());
+        }
         if slot.matrix.runtime.is_none() {
             if let Some(action) = slot.deferred_agent_action {
                 let applies_to_runtime = slot

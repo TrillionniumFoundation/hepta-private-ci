@@ -466,6 +466,20 @@ pub(crate) fn cancel_if_budget_absent(
     cancel(run_root, agent_id)
 }
 
+pub(crate) fn validate_recovery(
+    run_root: &Path,
+    agent_id: &AgentId,
+) -> Result<(), RestartLineageError> {
+    if let Some(lineage) = read(run_root)?
+        && lineage.agent_id != *agent_id
+    {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage belongs to another Agent".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 fn read(run_root: &Path) -> Result<Option<DurableRestartLineage>, RestartLineageError> {
     let path = run_root.join(RESTART_LINEAGE_FILE);
     let mut options = OpenOptions::new();

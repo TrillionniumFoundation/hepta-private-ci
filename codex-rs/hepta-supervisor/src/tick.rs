@@ -67,10 +67,17 @@ impl<D: ProcessDriver> Supervisor<D> {
             match outcome {
                 RuntimeTickOutcome::Keep => slot.runtime = Some(runtime),
                 RuntimeTickOutcome::Exited { restart_fault } => {
-                    let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                    if !slot.has_recovery_denial() {
+                        let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                    }
                     post_exit_fault = restart_fault;
                 }
             }
+        }
+        if slot.has_recovery_denial() {
+            // Contain and observe exact exits without semantic replay over
+            // corrupt recovery evidence or unresolved signed authority.
+            return self.tick_matrix_companion(agent_id, slot, now);
         }
         // Quarantine suspends admission, not exit observation or emergency
         // cleanup. Preserve the pending durable attempt for explicit recovery.
@@ -498,7 +505,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Only an exact observed exit plus same-owner lease cleanup advances
         // predecessor -> replacement-pending. A signal acknowledgement alone
         // can never cross this boundary.
-        if slot.restart_pending
+        if !slot.has_recovery_denial()
+            && slot.restart_pending
             && crate::restart_budget::pending_restart(
                 record.layout.owner_run_root(),
                 self.config.restart_max_attempts,

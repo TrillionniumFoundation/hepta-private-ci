@@ -182,6 +182,8 @@ pub(crate) struct AgentSlot<P> {
     /// Durable witness for the one externally-authorized release mutation
     /// currently being processed, if any.
     pub signed_intent: Option<SignedSupervisorIntent>,
+    /// Reconstructed durable-recovery denial; never an independent authority.
+    pub recovery_blocker: Option<String>,
 }
 
 impl<P> AgentSlot<P> {
@@ -206,6 +208,7 @@ impl<P> AgentSlot<P> {
             logs: BoundedQueue::new(config.log_capacity),
             release_transaction: None,
             signed_intent: None,
+            recovery_blocker: None,
         }
     }
 
@@ -215,6 +218,10 @@ impl<P> AgentSlot<P> {
         self.signed_intent.as_ref().is_some_and(|intent| {
             intent.status == crate::signed_intent::SignedIntentStatus::RecoveryRequired
         })
+    }
+
+    pub fn has_recovery_denial(&self) -> bool {
+        self.recovery_blocker.is_some() || self.signed_recovery_required()
     }
 
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {

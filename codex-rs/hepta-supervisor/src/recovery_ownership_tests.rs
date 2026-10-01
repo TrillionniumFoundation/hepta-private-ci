@@ -492,3 +492,6 @@ fn rejected_process_ownership_is_not_reported_ready() -> Result<()> {
     assert_eq!(f.driver.main.lock().expect("main state").signals, 0);
     Ok(())
 }
+
+#[path = "constructor_recovery_tests.rs"]
+mod constructor_tests;
