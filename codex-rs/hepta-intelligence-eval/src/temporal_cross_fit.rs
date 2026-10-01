@@ -6,6 +6,7 @@
 //! source-level evaluator: supplied provenance still requires authentication and
 //! no result selects, activates, promotes or releases an artifact.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use super::*;
@@ -108,14 +109,37 @@ impl CrossFoldPlanV1 {
                 }
             }
         }
+        let mut training_identities = BTreeMap::new();
         for (_, _, training, _) in &inputs {
-            if training
-                .iter()
-                .any(|sample| final_holdout_decisions.contains(&sample.decision_id))
-            {
-                return Err(ProductEvaluationError::Binding(
-                    "cross-fit final-holdout decision in training",
-                ));
+            for sample in training {
+                if final_holdout_decisions.contains(&sample.decision_id) {
+                    return Err(ProductEvaluationError::Binding(
+                        "cross-fit final-holdout decision in training",
+                    ));
+                }
+                // Outcome corrections may change labels, evidence and observed
+                // times across training cuts. They cannot change the original
+                // decision's episode or selected action.
+                let identity = (&sample.episode_lineage, &sample.action_id);
+                if training_identities
+                    .insert(&sample.decision_id, identity)
+                    .is_some_and(|previous| previous != identity)
+                {
+                    return Err(ProductEvaluationError::Binding(
+                        "cross-fit decision identity drift",
+                    ));
+                }
+            }
+        }
+        for (_, _, _, targets) in &inputs {
+            for target in targets {
+                if let Some((episode, action)) = training_identities.get(&target.decision_id)
+                    && (*episode != &target.episode_lineage || !target.actions.contains(action))
+                {
+                    return Err(ProductEvaluationError::Binding(
+                        "cross-fit decision identity drift",
+                    ));
+                }
             }
         }
 
@@ -402,6 +426,62 @@ mod tests {
         partition.predictions_digest = receipt.predictions_digest;
         plan.execute_temporal_cross_fit_v1(roles, inputs)
             .expect("ordinary cross-fit and consistent shared training");
+    }
+
+    #[test]
+    fn shared_training_decisions_cannot_change_episode_or_selected_action() {
+        for changed_field in ["episode", "action"] {
+            let (mut plan, roles, mut inputs) = fixture();
+            let shared_training = inputs[0].2[0].clone();
+            let input = &mut inputs[1];
+            input.2[0] = shared_training;
+            input.1.minimum_per_action = 1;
+            if changed_field == "episode" {
+                input.2[0].episode_lineage = id("substituted-episode");
+            } else {
+                input.2[0].action_id = id("substituted-selected-action");
+            }
+            let receipt = fit_temporal_fold(&input.1, &input.2, &input.3)
+                .unwrap_or_else(|error| panic!("the conflicting fold must fit locally: {error:?}"));
+            let partition = plan.folds.iter_mut()
+                .find(|partition| partition.fold_id == input.0)
+                .unwrap_or_else(|| panic!("conflicting fold partition must exist"));
+            partition.training_principals = unique(input.2.iter().map(|row| &row.principal_lineage));
+            partition.training_episodes = unique(input.2.iter().map(|row| &row.episode_lineage));
+            partition.training_windows = unique(input.2.iter().map(|row| &row.window_id));
+            partition.model_digest = receipt.model_digest;
+            partition.predictions_digest = receipt.predictions_digest;
+            assert!(matches!(
+                plan.execute_temporal_cross_fit_v1(roles, inputs),
+                Err(ProductEvaluationError::Binding("cross-fit decision identity drift"))
+            ));
+        }
+    }
+
+    #[test]
+    fn later_outcome_corrections_preserve_the_training_decision_identity() {
+        let (mut plan, roles, mut inputs) = fixture();
+        let shared_training = inputs[0].2[0].clone();
+        let input = &mut inputs[1];
+        input.1.training_watermark = 30;
+        input.1.evaluation_start = 40;
+        input.3[0].decision_at = 40;
+        input.2[0] = shared_training;
+        input.2[0].outcome = FixedQ32::ONE;
+        input.2[0].observed_at = 25;
+        input.2[0].evidence_digest = digest("superseding-outcome-evidence");
+        let receipt = fit_temporal_fold(&input.1, &input.2, &input.3)
+            .unwrap_or_else(|error| panic!("the later corrected training cut must fit: {error:?}"));
+        let partition = plan.folds.iter_mut()
+            .find(|partition| partition.fold_id == input.0)
+            .unwrap_or_else(|| panic!("corrected fold partition must exist"));
+        partition.training_principals = unique(input.2.iter().map(|row| &row.principal_lineage));
+        partition.training_episodes = unique(input.2.iter().map(|row| &row.episode_lineage));
+        partition.training_windows = unique(input.2.iter().map(|row| &row.window_id));
+        partition.model_digest = receipt.model_digest;
+        partition.predictions_digest = receipt.predictions_digest;
+        plan.execute_temporal_cross_fit_v1(roles, inputs)
+            .unwrap_or_else(|error| panic!("label/evidence revisions must preserve a decision: {error:?}"));
     }
 
     #[test]

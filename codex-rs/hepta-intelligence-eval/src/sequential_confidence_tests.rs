@@ -278,5 +278,43 @@ fn unseen_histories_and_separate_terminal_rewards_enter_the_safe_envelope() {
         ))
     );
     p.estimate_cluster_intervals_v1(&confidence(), FixedQ32::from_raw(261_i64 << 32), &rows())
-        .expect("separate terminal envelope");
+    .expect("separate terminal envelope");
+}
+
+#[test]
+fn radius_division_retains_outward_rounding_and_full_plan_bounds() {
+    assert_eq!(
+        confidence_radius(/*range*/ 2, /*log_upper*/ 1, /*sum_squares*/ 5, /*count*/ 3),
+        Ok(10),
+    );
+    // H=128, W=50, 512 trajectories in two equally sized clusters and alpha
+    // one ppm: the numerator exceeds u128, while the exact radius fits i64.
+    assert_eq!(
+        confidence_radius(
+            /*range*/ 2 * 1_651_280_u128 * (1_u128 << 32),
+            /*log_upper*/ 22,
+            /*sum_squares*/ 2 * 256 * 256,
+            /*count*/ 512,
+        ),
+        Ok(33_265_336_616_924_781),
+    );
+}
+
+#[test]
+fn full_width_declared_envelopes_return_representable_cluster_intervals() {
+    let mut confidence = confidence();
+    confidence.family_alpha_ppm = 1;
+    let result = plan()
+        .estimate_cluster_intervals_v1(
+            &confidence,
+            FixedQ32::from_raw(400_000_000_i64 << 32),
+            &rows(),
+        )
+        .unwrap_or_else(|error| panic!("the exact cluster interval must fit signed Q32: {error:?}"));
+    let radius = 8_058_072_917_233_848_277_i64;
+    let expected = OpeInterval {
+        lower: FixedQ32::from_raw((1_i64 << 31) - radius),
+        upper: FixedQ32::from_raw((1_i64 << 31) + radius),
+    };
+    assert_eq!((result.1, result.2), (expected, expected));
 }

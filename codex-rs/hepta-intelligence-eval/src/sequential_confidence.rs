@@ -162,17 +162,31 @@ fn confidence_radius(
     sum_squares: u128,
     count: u128,
 ) -> Result<i128, SequentialError> {
-    let numerator = range
-        .checked_mul(range)
-        .and_then(|value| value.checked_mul(log_upper))
-        .and_then(|value| value.checked_mul(sum_squares))
-        .ok_or(SequentialError::Arithmetic)?;
     let denominator = count
         .checked_mul(count)
         .and_then(|value| value.checked_mul(2))
         .filter(|value| *value > 0)
         .ok_or(SequentialError::Arithmetic)?;
-    let squared = numerator.div_ceil(denominator);
+    // Retain the exact quotient/remainder after every factor instead of
+    // constructing a numerator that can exceed u128 although its quotient
+    // (and the final Q32 radius) is representable. Under the trajectory cap,
+    // remainder < 2*4096^2 and every factor is <= 2*u64::MAX, so the remainder
+    // product is bounded independently of the full numerator's width.
+    let mut quotient = 1 / denominator;
+    let mut remainder = 1 % denominator;
+    for factor in [range, range, log_upper, sum_squares] {
+        let remainder_product = remainder
+            .checked_mul(factor)
+            .ok_or(SequentialError::Arithmetic)?;
+        quotient = quotient
+            .checked_mul(factor)
+            .and_then(|value| value.checked_add(remainder_product / denominator))
+            .ok_or(SequentialError::Arithmetic)?;
+        remainder = remainder_product % denominator;
+    }
+    let squared = quotient
+        .checked_add(u128::from(remainder != 0))
+        .ok_or(SequentialError::Arithmetic)?;
     let floor = squared.isqrt();
     let outward = floor
         .checked_add(u128::from(floor * floor < squared))
