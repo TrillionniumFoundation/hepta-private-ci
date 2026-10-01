@@ -36,6 +36,20 @@ NATIVE_FINAL_USE_TEST = (
     "native_app_server::tests::"
     "real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
 )
+EXACT_TEST_CASES = {
+    "product-read-replay": (
+        "codex-hepta-agentd::cognitive_product_e2e",
+        "real_agentd_local_memory_review_is_read_only_and_replayable",
+    ),
+    "product-write-smoke": (
+        "codex-hepta-agentd::cognitive_product_e2e",
+        "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+    ),
+    "native-final-use-e2e": (
+        "codex-hepta-infer-worker-host",
+        NATIVE_FINAL_USE_TEST,
+    ),
+}
 BENCHMARK_SCHEMAS = {
     "benchmark": "hepta.cognitive.read.benchmark.v1",
     "prepared-benchmark": "hepta.cognitive.read.prepared-benchmark.v1",
@@ -162,18 +176,20 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "--test",
         "cognitive_product_e2e",
         "--no-tests=fail",
+        "--status-level",
+        "pass",
     ]
     result["product-read-replay"] = [
         *product,
         "-E",
-        "test(=real_agentd_local_memory_review_is_read_only_and_replayable)",
+        f"test(={EXACT_TEST_CASES['product-read-replay'][1]})",
     ]
     result["product-write-smoke"] = [
         *product,
         "--features",
         "qualification-cognitive-write",
         "-E",
-        "test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends)",
+        f"test(={EXACT_TEST_CASES['product-write-smoke'][1]})",
     ]
     # A positive package count cannot prove that the physical worker case ran.
     # The exact lib selector is mandatory and has its own command/log receipt.
@@ -321,16 +337,42 @@ def validate_nextest_version(log: str) -> list[str]:
 def nextest_log_problems(
     label: str, log: str, expected_count: int | None = None
 ) -> list[str]:
-    """Require a successful nextest summary, optionally for an exact case set."""
-    summaries = re.findall(
-        r"(?m)^\s*Summary\s+\[[^]\r\n]+\]\s+(\d+) tests? run:\s+(\d+) passed\b[^\r\n]*$",
-        re.sub(r"\x1b\[[0-9;]*m", "", log),
+    """Require one complete successful pinned-nextest summary."""
+    body = re.sub(r"\x1b\[[0-9;]*m", "", log)
+    summaries = [
+        line.strip()
+        for line in body.splitlines()
+        if re.match(r"^\s*Summary\b", line)
+    ]
+    if len(summaries) != 1:
+        return [f"{label}: require exactly one nextest execution summary"]
+    if re.search(r"(?m)^\s*(?:Cancelling|Killing)\s+due to\b", body):
+        return [f"{label}: nextest execution was cancelled"]
+    # The pinned runner always ends the summary with skipped, including zero.
+    # Consume the entire line: failure counts, partial-run N/M counts, and
+    # cancellation or an injected later summary must not hide behind N passed.
+    summary = re.fullmatch(
+        r"Summary\s+\[\s*\d+(?:\.\d+)?s\]\s+(\d+) tests? run:\s+"
+        r"(\d+) passed(?: \(([^()]*)\))?, (\d+) skipped",
+        summaries[0],
     )
-    if not summaries:
+    if summary is None:
         return [f"{label}: no successful nextest execution summary"]
-    executed, passed = (int(value) for value in summaries[-1])
+    executed, passed = (int(summary.group(index)) for index in (1, 2))
     if executed <= 0 or passed != executed:
         return [f"{label}: no successful nextest execution summary"]
+    if summary.group(3) is not None:
+        # Slow, flaky and leaky counts are overlapping subsets of passed.
+        # Their canonical order and per-subset bounds follow nextest 0.9.103.
+        previous = -1
+        for annotation in summary.group(3).split(", "):
+            subset = re.fullmatch(r"([1-9]\d*) (slow|flaky|leaky)", annotation)
+            if subset is None:
+                return [f"{label}: invalid nextest passed annotations"]
+            order = ("slow", "flaky", "leaky").index(subset.group(2))
+            if order <= previous or int(subset.group(1)) > passed:
+                return [f"{label}: invalid nextest passed annotations"]
+            previous = order
     if expected_count is not None and executed != expected_count:
         return [f"{label}: expected exactly {expected_count} executed cases"]
     return []
@@ -364,18 +406,19 @@ def validate_evidence(
                 log.read_text(errors="replace"),
             )
             problems.extend(nextest_log_problems(label, body))
-            if label == "native-final-use-e2e":
+            if label in EXACT_TEST_CASES:
                 # Ignore summaries or test-name strings printed by other tests.
                 # Require the actual nextest PASS row for the one exact case.
-                passed_case = re.search(
+                binary_name, case = EXACT_TEST_CASES[label]
+                binary = re.escape(binary_name).replace(r"\-", "[-_]")
+                passed_cases = re.findall(
                     rf"(?m)^\s*PASS\s+\[[^]\r\n]+\]\s+"
-                    rf"codex[-_]hepta[-_]infer[-_]worker[-_]host\s+"
-                    rf"{re.escape(NATIVE_FINAL_USE_TEST)}\s*$",
+                    rf"{binary}\s+{re.escape(case)}\s*$",
                     body,
                 )
-                if nextest_log_problems(label, body, 1) or passed_case is None:
+                if nextest_log_problems(label, body, 1) or len(passed_cases) != 1:
                     problems.append(
-                        "native-final-use-e2e: exact physical worker case not proved"
+                        f"{label}: exact binary/case execution not proved"
                     )
         if label in BENCHMARK_SCHEMAS:
             path = evidence / f"{label}.json"
@@ -406,7 +449,36 @@ def git(root: Path, *args: str) -> str:
         cwd=root,
         env=env,
         text=True,
-    ).strip()
+    ).rstrip("\n")
+
+
+def candidate_source_problems(root: Path) -> list[str]:
+    """Exclude uncommitted build inputs while allowing regular evidence files."""
+    root = root.resolve()
+    problems = []
+    if git(root, "status", "--porcelain", "--untracked-files=no"):
+        problems.append("candidate tracked worktree changed during qualification")
+    evidence_root = root.resolve() / ".hepta-evidence"
+    for relative in git(
+        root, "ls-files", "--others", "--exclude-standard", "-z"
+    ).split("\0"):
+        if not relative:
+            continue
+        path = root / relative
+        # Git does not traverse untracked directory symlinks. Check the file
+        # and each parent anyway so an evidence alias is never allowlisted.
+        links = path.is_symlink()
+        for parent in path.parents:
+            if parent == root:
+                break
+            links = links or parent.is_symlink()
+        if (
+            not relative.startswith(".hepta-evidence/")
+            or links
+            or not path.resolve().is_relative_to(evidence_root)
+        ):
+            problems.append(f"candidate has untracked source input: {relative}")
+    return problems
 
 
 def validate_candidate_claims(
@@ -465,8 +537,7 @@ def emit(
         evidence,
         commands(candidate, evidence),
     )
-    if git(root, "status", "--porcelain", "--untracked-files=no"):
-        problems.append("candidate tracked worktree changed during qualification")
+    problems.extend(candidate_source_problems(root))
     parents = git(
         root,
         "show",
@@ -582,10 +653,11 @@ def run(
         ("merge-candidate", "merge-candidate"),
     }:
         raise ValueError("kind/profile mismatch")
-    if git(root, "rev-parse", "HEAD") != candidate or git(
-        root, "status", "--porcelain", "--untracked-files=no"
-    ):
-        raise ValueError("candidate mismatch or dirty tracked source")
+    if git(root, "rev-parse", "HEAD") != candidate:
+        raise ValueError("candidate identity mismatch")
+    source_problems = candidate_source_problems(root)
+    if source_problems:
+        raise ValueError("; ".join(source_problems))
     evidence = (root / relative_evidence).resolve()
     if not evidence.is_relative_to(root / ".hepta-evidence") or evidence.exists():
         raise ValueError("require a new evidence directory below .hepta-evidence")

@@ -1,16 +1,22 @@
 import json
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from cognitive_read_evidence import (
     BENCHMARK_SCHEMAS,
-    NATIVE_FINAL_USE_TEST,
+    EXACT_TEST_CASES,
     NEXTEST_VERSION,
     TEST_GATES,
+    candidate_source_problems,
     commands,
-    validate_evidence,
+    emit,
+    git,
+    nextest_log_problems,
     validate_candidate_claims,
+    validate_evidence,
 )
 
 
@@ -32,10 +38,10 @@ class EvidenceGateTests(unittest.TestCase):
                     "commit-date: 2025-08-25\n"
                     "host: x86_64-unknown-linux-gnu\n"
                 )
-            elif label == "native-final-use-e2e":
+            elif label in EXACT_TEST_CASES:
+                binary, case = EXACT_TEST_CASES[label]
                 (self.evidence / f"{label}.log").write_text(
-                    "PASS [0.1s] codex_hepta_infer_worker_host "
-                    f"{NATIVE_FINAL_USE_TEST}\n"
+                    f"PASS [0.1s] {binary} {case}\n"
                     "Summary [0.1s] 1 test run: 1 passed, 99 skipped\n"
                 )
             (self.evidence / f"{label}.exit-code").write_text("0\n")
@@ -142,6 +148,33 @@ class EvidenceGateTests(unittest.TestCase):
         path.symlink_to(self.evidence / "owner-tests.log")
         self.assertTrue(validate_evidence(self.evidence, self.required))
 
+    def test_duplicate_native_pass_cannot_claim_one_physical_worker_execution(self):
+        path = self.evidence / "native-final-use-e2e.log"
+        body = path.read_text()
+        path.write_text(body.splitlines()[0] + "\n" + body)
+        self.assertTrue(validate_evidence(self.evidence, self.required))
+
+    def test_product_gates_require_exact_binary_case_and_single_execution(self):
+        for label in ("product-read-replay", "product-write-smoke"):
+            argv = self.required[label]
+            self.assertEqual(argv[argv.index("--status-level") + 1], "pass")
+            path = self.evidence / f"{label}.log"
+            original = path.read_text()
+            binary, case = EXACT_TEST_CASES[label]
+            for body in (
+                original.replace(binary, "unrelated-binary"),
+                original.replace(case, "unrelated_case"),
+                original.splitlines()[0] + "\n" + original,
+                original.replace("1 test run: 1 passed", "2 tests run: 2 passed"),
+                original.splitlines()[1] + "\n",
+            ):
+                path.write_text(body)
+                with self.subTest(label=label, body=body):
+                    self.assertTrue(validate_evidence(self.evidence, {label: argv}))
+            path.write_text(original.replace(binary, binary.replace("-", "_")))
+            self.assertEqual(validate_evidence(self.evidence, {label: argv}), [])
+            path.write_text(original)
+
 
 class CandidateIdentityTests(unittest.TestCase):
     def test_source_cannot_be_relabelled_as_a_merge(self):
@@ -158,6 +191,119 @@ class CandidateIdentityTests(unittest.TestCase):
         for mapping in ({}, {"activation": True}, {"activation": False, "nested": {"activation": True}}):
             with self.subTest(mapping=mapping):
                 self.assertTrue(validate_candidate_claims("a" * 40, "source-head", [], mapping, "a" * 40, None))
+
+
+class NextestSummaryIntegrityTests(unittest.TestCase):
+    SUCCESS = "Summary [   4.213s] 226 tests run: 226 passed, 1 skipped\n"
+
+    def test_real_summary_and_passed_subsets_are_accepted(self):
+        for summary in (
+            self.SUCCESS,
+            self.SUCCESS.replace("226 passed", "226 passed (4 slow, 2 flaky, 1 leaky)"),
+            "Summary [0.001s] 1 test run: 1 passed (1 slow, 1 flaky, 1 leaky), 0 skipped\n",
+        ):
+            with self.subTest(summary=summary):
+                self.assertEqual(nextest_log_problems("gate", summary), [])
+
+    def test_every_terminal_summary_is_counted(self):
+        for later in (
+            self.SUCCESS,
+            "Summary [4.214s] 226 tests run: 226 failed\n",
+            "Summary [4.214s] cancelled\n",
+            "Summary malformed\n",
+        ):
+            with self.subTest(later=later):
+                self.assertTrue(nextest_log_problems("gate", self.SUCCESS + later))
+
+    def test_failure_timeout_and_partial_run_cannot_follow_a_pass_count(self):
+        for summary in (
+            self.SUCCESS.replace("1 skipped", "1 failed, 1 skipped"),
+            self.SUCCESS.replace("1 skipped", "1 exec failed, 1 skipped"),
+            self.SUCCESS.replace("1 skipped", "1 timed out, 1 skipped"),
+            self.SUCCESS.replace("226 tests", "226/227 tests"),
+            self.SUCCESS.replace("226 passed", "225 passed"),
+            self.SUCCESS.replace(", 1 skipped", ""),
+            self.SUCCESS.replace("1 skipped", "1 skipped, cancelled"),
+        ):
+            with self.subTest(summary=summary):
+                self.assertTrue(nextest_log_problems("gate", summary))
+
+    def test_invalid_passed_subsets_are_rejected(self):
+        for annotation in (
+            "227 slow", "0 slow", "1 failed", "1 flaky, 1 slow", "1 slow, 1 slow", "",
+        ):
+            summary = self.SUCCESS.replace("226 passed", f"226 passed ({annotation})")
+            with self.subTest(annotation=annotation):
+                self.assertTrue(nextest_log_problems("gate", summary))
+
+    def test_cancellation_notice_cannot_be_hidden_by_a_success_summary(self):
+        for status in ("Cancelling", "Killing"):
+            body = f"{status} due to signal\n" + self.SUCCESS
+            with self.subTest(status=status):
+                self.assertTrue(nextest_log_problems("gate", body))
+
+
+class CandidateSourceIntegrityTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        mapping = self.root / "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+        mapping.parent.mkdir(parents=True)
+        mapping.write_text('{"activation": false}')
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "."], check=True)
+        subprocess.run(
+            ["git", "-C", str(self.root), "-c", "user.name=Audit",
+             "-c", "user.email=audit@example.invalid", "commit", "-qm", "fixture"],
+            check=True,
+        )
+
+    def test_untracked_migration_is_not_an_exact_candidate_input(self):
+        path = self.root / "codex-rs/hepta-memory/migrations/9999_untracked.sql"
+        path.parent.mkdir(parents=True)
+        path.write_text("CREATE TABLE untracked_build_input(x INT);")
+        self.assertEqual(git(self.root, "status", "--porcelain", "--untracked-files=no"), "")
+        self.assertEqual(
+            candidate_source_problems(self.root),
+            ["candidate has untracked source input: codex-rs/hepta-memory/migrations/9999_untracked.sql"],
+        )
+        evidence = self.root / ".hepta-evidence/fixture"
+        evidence.mkdir(parents=True)
+        output = evidence / "receipt.json"
+        with patch("cognitive_read_evidence.commands", return_value={}), patch(
+            "cognitive_read_evidence.validate_candidate_claims", return_value=[]
+        ):
+            self.assertFalse(emit(self.root, evidence, git(self.root, "rev-parse", "HEAD"),
+                                  "source-head", output))
+        self.assertFalse(json.loads(output.read_text())["passed"])
+
+    def test_regular_evidence_output_is_allowed(self):
+        path = self.root / ".hepta-evidence/fixture/command.json"
+        path.parent.mkdir(parents=True)
+        path.write_text("[]")
+        self.assertEqual(candidate_source_problems(self.root), [])
+
+    def test_evidence_aliases_and_prefix_lookalikes_are_rejected(self):
+        path = self.root / ".hepta-evidence-other/input.rs"
+        path.parent.mkdir()
+        path.write_text("fn untracked() {}")
+        self.assertTrue(candidate_source_problems(self.root))
+        path.unlink()
+        path.parent.rmdir()
+        evidence = self.root / ".hepta-evidence"
+        evidence.mkdir()
+        (evidence / "alias").symlink_to(self.root / "docs", target_is_directory=True)
+        self.assertTrue(candidate_source_problems(self.root))
+
+    def test_leading_whitespace_cannot_alias_evidence(self):
+        path = self.root / " .hepta-evidence/input.rs"
+        path.parent.mkdir()
+        path.write_text("fn untracked() {}")
+        self.assertEqual(
+            candidate_source_problems(self.root),
+            ["candidate has untracked source input:  .hepta-evidence/input.rs"],
+        )
 
 
 if __name__ == "__main__":

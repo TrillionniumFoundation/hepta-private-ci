@@ -18,11 +18,11 @@ def example_log(label: str) -> str:
 
 
 class CognitiveDeliveryGateTests(unittest.TestCase):
-    def test_four_gates_cover_thirteen_distinct_cases(self) -> None:
-        self.assertEqual(len(DELIVERY_GATES), 4)
+    def test_six_gates_cover_twenty_distinct_cases(self) -> None:
+        self.assertEqual(len(DELIVERY_GATES), 6)
         cases = [case for spec in DELIVERY_GATES.values() for case in spec[3]]
-        self.assertEqual(len(cases), 13)
-        self.assertEqual(len(set(cases)), 13)
+        self.assertEqual(len(cases), 20)
+        self.assertEqual(len(set(cases)), 20)
 
     def test_commands_are_exact_locked_and_read_only(self) -> None:
         for label, command in delivery_commands().items():

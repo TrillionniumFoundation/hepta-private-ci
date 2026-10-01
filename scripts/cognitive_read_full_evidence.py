@@ -20,6 +20,7 @@ REVISION_SHADOW_TESTS = (
     "revisioned_shadow_tests::revision_bound_shadow_validation_detects_revision_or_receipt_tamper",
 )
 OWNER_CURRENTNESS_TESTS = (
+    "cognitive_store::recovery::tests::cold_read_only::cold_recovery_audits_schema_authenticated_lane_c_witness",
     "lane_c_snapshot_tests::scope_provisional_and_time_filters_do_not_leak_unadmitted_facts",
     "lane_c_snapshot_tests::retained_cut_detects_old_valid_backup_after_ordinary_reopen",
 )
@@ -53,7 +54,15 @@ CONSUMER_PACKAGES = {
     "consumer-ndu-tests": "codex-hepta-ndu",
     "consumer-federation-extension-tests": "codex-hepta-memory-extension",
 }
+EXACT_TOKENIZER_TESTS = (
+    "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+    "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+    "prompt_pipeline::tests::serialized_framing_is_counted_by_the_exact_backend",
+    "prompt_pipeline::tests::compatibility_entries_require_an_exact_tokenizer_capability",
+    "prompt_delivery::tests::registry_compatibility_bridge_without_backend_is_unavailable",
+)
 EXACT_CASES = {
+    "prompt-exact-tokenizer-tests": EXACT_TOKENIZER_TESTS,
     "revision-shadow-tests": REVISION_SHADOW_TESTS,
     "owner-currentness-e2e": OWNER_CURRENTNESS_TESTS,
     "compact-product-e2e": COMPACT_PRODUCT_TESTS,
@@ -62,6 +71,7 @@ EXACT_CASES = {
     "consumer-intelligence-product-e2e": INTELLIGENCE_PRODUCT_TESTS,
 }
 EXACT_BINARIES = {
+    "prompt-exact-tokenizer-tests": "codex-hepta-intelligence",
     "revision-shadow-tests": "codex-hepta-cognitive-read",
     "owner-currentness-e2e": "codex-hepta-memory",
     "compact-product-e2e": "codex-hepta-memory",
@@ -148,6 +158,11 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "-E",
         exact_filter(CONTEXT_INGRESS_TESTS),
     ]
+    result["prompt-exact-tokenizer-tests"] = [
+        "just", "test", "--locked", "-p", "codex-hepta-intelligence",
+        "--lib", "--no-tests=fail", "--status-level", "pass", "-E",
+        exact_filter(EXACT_TOKENIZER_TESTS),
+    ]
     for label, package in CONSUMER_PACKAGES.items():
         result[label] = [
             "just",
@@ -181,6 +196,7 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "codex-hepta-learning-ledger",
         "codex-hepta-compact-engine",
         "codex-hepta-context-compiler",
+        "codex-hepta-intelligence",
     )
     result["rust-format"] = [
         "cargo",
@@ -195,6 +211,7 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "codex-hepta-learning-ledger",
         "codex-hepta-compact-engine",
         "codex-hepta-context-compiler",
+        "codex-hepta-intelligence",
     )
     for label in ("all-target-check", "strict-clippy"):
         argv = result[label]

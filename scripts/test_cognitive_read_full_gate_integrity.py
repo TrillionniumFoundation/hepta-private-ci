@@ -20,7 +20,7 @@ class FullGateIntegrityTests(unittest.TestCase):
         self.binary = full.EXACT_BINARIES[self.label]
         self.log = (
             "\n".join(f"PASS [0.1s] {self.binary} {case}" for case in self.cases)
-            + f"\nSummary [0.3s] {len(self.cases)} tests run: {len(self.cases)} passed\n"
+            + f"\nSummary [0.3s] {len(self.cases)} tests run: {len(self.cases)} passed, 0 skipped\n"
         )
         self.record(self.log)
 
@@ -46,7 +46,7 @@ class FullGateIntegrityTests(unittest.TestCase):
         log = self.evidence / f"{label}.log"
         log.write_text(
             "\n".join(rows)
-            + f"\nSummary [0.4s] {len(cases)} tests run: {len(cases)} passed\n"
+            + f"\nSummary [0.4s] {len(cases)} tests run: {len(cases)} passed, 0 skipped\n"
         )
         self.assertEqual(full.validate_evidence(self.evidence, {label: argv}), [])
         rows = [
@@ -56,7 +56,7 @@ class FullGateIntegrityTests(unittest.TestCase):
         ]
         log.write_text(
             "\n".join(rows)
-            + f"\nSummary [0.3s] {len(rows)} tests run: {len(rows)} passed\n"
+            + f"\nSummary [0.3s] {len(rows)} tests run: {len(rows)} passed, 0 skipped\n"
         )
         self.assertTrue(full.validate_evidence(self.evidence, {label: argv}))
         self.assertFalse(full.gate_status(self.evidence, label))
@@ -82,10 +82,15 @@ class FullGateIntegrityTests(unittest.TestCase):
                 "3 tests run: 3 passed", "3 tests run: 2 passed, 1 failed"
             ),
             self.log + "Summary [0.4s] 0 tests run: 0 passed\n",
+            self.log.replace("0 skipped", "1 failed, 0 skipped"),
+            self.log + "Summary [0.4s] 3 tests run: 3 failed\n",
+            self.log + "Summary [0.4s] cancelled\n",
+            "Cancelling due to signal\n" + self.log,
         ):
             with self.subTest(log=log):
                 self.record(log)
                 self.assertTrue(self.problems())
+                self.assertFalse(full.gate_status(self.evidence, self.label))
 
     def test_zero_exit_without_a_command_or_log_cannot_report_success(self) -> None:
         for suffix in ("command.json", "log"):

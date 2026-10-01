@@ -10,6 +10,11 @@ from cognitive_read_evidence import nextest_log_problems
 
 GUIDE = "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md"
 SOURCE_PATHS = (
+    "docs/modules/cognitive.read/PREPARATION_HANDOFF.md",
+    "codex-rs/hepta-agentd/src/cognitive_owner_preparation_delivery_tests.rs",
+    "codex-rs/hepta-infer-core/src/cognitive_preparation_tests.rs",
+    "codex-rs/hepta-agent-protocol/src/cognitive_preparation_tests.rs",
+    "codex-rs/hepta-agent-protocol/src/cognitive_preparation.rs",
     "codex-rs/hepta-infer-core/src/cognitive_delivery.rs",
     "codex-rs/hepta-infer-core/src/cognitive_delivery_tests.rs",
     "codex-rs/hepta-infer-core/src/lib.rs",
@@ -64,6 +69,7 @@ DELIVERY_GATES = {
                 "preparation_read_is_indexed_bound_and_non_mutating",
                 "witness_lag_and_revocation_never_become_delivery_preparation",
                 "preparation_identity_advances_with_the_durable_owner_after_reopen",
+                "owner_preparation_receipt_requires_exact_namespace_witness_and_activity",
             )
         ),
     ),
@@ -82,6 +88,27 @@ DELIVERY_GATES = {
         "codex-hepta-agentd::cognitive_delivery_join",
         (
             "tests::real_learning_and_native_owners_join_exact_preparation_and_acceptance",
+            "tests::owner_preparation_tests::ordinary_preparation_receipt_joins_exact_native_dispatch_after_reopen",
+        ),
+    ),
+    "preparation-protocol-tests": (
+        "codex-hepta-agent-protocol",
+        ("--lib",),
+        "codex-hepta-agent-protocol",
+        ("cognitive_preparation::tests::preparation_response_preserves_snapshot_bytes_and_separates_receipt",),
+    ),
+    "native-preparation-handoff-tests": (
+        "codex-hepta-infer-core",
+        ("--lib",),
+        "codex-hepta-infer-core",
+        tuple(
+            "cognitive_delivery::tests::preparation_tests::" + name
+            for name in (
+                "persisted_preparation_reopens_without_upgrading_unknown_delivery",
+                "invalid_preparation_cannot_enter_the_native_journal",
+                "historical_omission_preserves_canonical_event_and_journal_bytes",
+                "receipt_substitution_changes_the_native_delivery_binding",
+            )
         ),
     ),
 }
