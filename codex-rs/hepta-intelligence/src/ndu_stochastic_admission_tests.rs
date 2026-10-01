@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "qualification assertions and fixture setup must fail the test immediately"
+)]
+
 use std::fs::File;
 use std::path::PathBuf;
 
