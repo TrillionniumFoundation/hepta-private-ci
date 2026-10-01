@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d5ca702448e14f1538313f5fb15a14a6e41a6d0c",
-    "tree": "431f6748e4cb73dae06879c132b66179613d9a67"
+    "commit": "1dbdaa910388d140d442ce5ff43fc14871c91bc2",
+    "tree": "5ffc2e5f5a3909dbbc2d26afaae2f8bf72e68abf"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "native_full_sql_protected_daemon_real_nondev_kv2_original_receipt_ack_and_authbus_settlement_qualified_under_enrolled_uids_agentd_pending",
+  "productCallerState": "optional_exact_kv_v2_agentd_source_composed_installed_activation_pending",
+  "productionWriterState": "native_full_sql_protected_daemon_and_ordinary_agentd_nondev_exact_kv2_original_ack_authbus_settlement_qualified_installed_activation_pending",
   "operations": [
     {
       "operation": "consume_kv_v2",
@@ -324,8 +324,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Connect the actual Agentd capability/taskflow entry to the qualified enrolled SecretsRuntimeClient and validate installed lifecycle using the original Agent identities and durable history. CLI qualification is not the Agentd product caller.",
-    "Qualify provider-native dynamic lease issue/renew/revoke and the remaining capability matrix individually; these endpoints remain closed.",
+    "Install the qualified Root-enrolled Agentd original-operation capability with the original Fleet identities/history, and validate the actual installed Agentd PIDs. Two isolated ordinary Agentd processes are qualified; installed activation is separate.",
+    "Qualify enabled provider-native dynamic lease issue/renew/revoke endpoints before enabling them. Other partial/gap matrix rows remain closed and block full OpenBao replacement claims; disabled optional capabilities do not gate the exact KV product.",
     "Install the qualified protected services with Root-frozen exact provider/role configuration and socket ACLs, then validate the complete installed Fleet caller."
   ],
   "externalEvidenceGates": [
@@ -362,7 +362,7 @@
     "rootPreparationMs": 4000,
     "explicitExpiryTicketMs": 2000
   },
-  "roleServiceState": "concrete_issuer_operator_consumer_and_single_protected_runtime_services_qualified_agentd_caller_pending",
+  "roleServiceState": "concrete_issuer_operator_consumer_and_single_protected_runtime_with_optional_ordinary_agentd_client_qualified",
   "protectedRuntimeQualification": {
     "actualChecks": 11,
     "authorityUid": 982,
@@ -381,5 +381,176 @@
     "roleHardMaximumMs": 5000,
     "rootPreparationMs": 4000,
     "originalGrantAndPolicyExpiryUnchanged": true
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/process_configuration.rs",
+      "nativeSymbol": "with_secrets_runtime_client_file",
+      "state": "explicit_root_enrollment_for_single_protected_runtime"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "nativeSymbol": "AgentdSecretsHost::open",
+      "state": "linux_optional_original_agent_identity_and_physical_owner_lifecycle"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/secrets_host.rs",
+      "nativeSymbol": "consume_original",
+      "state": "generation_readiness_original_budget_checked_physical_worker_to_enrolled_sdk"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "SecretsConsumeOriginal",
+      "state": "ordinary_private_agentd_control_routes_exact_original_operation"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/process_configuration.rs",
+      "object": "d275bff058433ba7a0977976ea7d2c0c290d78f1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "a391a70bbbb48b71b1684c4f7524bf044ccf0b72"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/secrets_host.rs",
+      "object": "f957d6fe413e6b3808c95347e1ceebe3d4d66e31"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "8a7a32146211d5566bb88b2a78d2448e67b8171c"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter",
+      "object": "f2c2ad94bc9e010025ac17f4a428b4c5dad1b167"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_frontier.rs",
+      "object": "e906012b4e3eada47f7827dbc5659453b9cb4156"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_grants.rs",
+      "object": "25af7bfbb5fa23683e5bb109140cc525eefe4d72"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_role.rs",
+      "object": "fe38f027d197554a5344f12c1c5dc9d561b70103"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_role_owner.rs",
+      "object": "1898f882ade0b733afaa96908e144d708fc0803a"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs",
+      "object": "bc580618be1ba880bdbc395f586d2176db517a13"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs",
+      "object": "43c0181ff42792230a7b3406a0c93a9d7f8c11bf"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_port_tests.rs",
+      "object": "1f988cedea98ccd196950c7615b9200a5a9a020c"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_receipt_client.rs",
+      "object": "62c8cc396730e4bef4e511be30916338329faf6d"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+      "object": "c9c47e38935db695a380ec0bef3b328bec43f5eb"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs",
+      "object": "cb2be5bd6d82a21b9ec4e1195a1629902f2ae244"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_server.rs",
+      "object": "369443c28fcba457d82e4d80b5ada17be509bcb1"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_settlement.rs",
+      "object": "72d8c6e9fce07c16fdfe841771c9abfffa2b2ee4"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "object": "442284b8af6232ea28dc12de185dfeb03854833f"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "object": "68c837247da949d5e41f974271a33af24327f3c6"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "object": "bfb0aaafbe5f7f67ca97d9e91966caa6954a93e4"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+      "object": "42f2cea60087f234165a1bc3a3b31d20609ae326"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/operator_approval.rs",
+      "object": "135c49ff0915b761cea36bbcb658589f93b9b0c1"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/operator_role.rs",
+      "object": "4e580619cac39d2a054a5713728c40ff21feb401"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/prepared_consumer_saga_tests.rs",
+      "object": "4dccc942aa08badfe5e1454ed444dfcc6dfef56d"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/role_client.rs",
+      "object": "d9490a5866fb1c0068d02deddc6a413fe6209fd6"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_client.rs",
+      "object": "f6b8467b546d1c337e19a0e6da53da98ce4043b2"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_clock.rs",
+      "object": "4e573b1914a14456034ff3c60e45702840bd1485"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_clock_tests.rs",
+      "object": "95baf40242202b08035e8a0cb7512531db186580"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+      "object": "34ca807afd6a1d147d6a12df204a4b9384fc802d"
+    },
+    {
+      "path": "docs/modules/secrets.heptabao/TECHNICAL.md",
+      "object": "331145cdd4a4c16fb7ba3802a5e1eb29a165aed3"
+    },
+    {
+      "path": "external/HeptaBao",
+      "object": "6a053b487ff726d39eaa1c921d02dc3bf95fb44f"
+    }
+  ],
+  "agentdQualification": {
+    "actualChecks": 9,
+    "agentUids": [
+      986,
+      969
+    ],
+    "agentGid": 975,
+    "agentSupplementaryGroups": [
+      975
+    ],
+    "originalAgentIds": [
+      "3ad2bb64-09ba-4811-b892-466c5fd952df",
+      "10b204bc-ec72-48a2-a2c2-cf5d2f5ed730"
+    ],
+    "sourceCommit": "9147053369b97247a6ea9d8c2e132f1a8d77c783",
+    "scope": "Ordinary Agentd main/Root enrollment; first control connection disconnect, same-ID Status/Recover, non-dev exact KVv2 version1, independent consumer FULL signed ACK and AuthBus settled quota, zero-budget/stale-generation rejection, original 1ms Unknown, all physical owner joins. Isolated Root canonical ext4 SSD; installed Fleet remains unchanged.",
+    "originalControlIoTimeoutMs": 2000,
+    "newIsolatedRootPolicyMs": 120000,
+    "roleRpcMs": 4000,
+    "newOriginalOperationMaximumMs": 30000,
+    "installedCaller": false,
+    "dynamicCapabilitiesEnabled": false
   }
 }
