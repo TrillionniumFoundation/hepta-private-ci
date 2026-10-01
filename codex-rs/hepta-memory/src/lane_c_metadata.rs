@@ -74,6 +74,27 @@ pub(crate) async fn validate_scope_metadata(
             ));
         }
     }
+    // Head/citation rows have no independent scope. After global key/filter
+    // caps, reject orphan references instead of losing them in scoped joins.
+    for query in [
+        "SELECT EXISTS (SELECT 1 FROM memory_heads h
+         LEFT JOIN memory_revisions r ON r.memory_id = h.memory_id AND r.revision = h.revision
+         WHERE r.memory_id IS NULL)",
+        "SELECT EXISTS (SELECT 1 FROM memory_citations c
+         LEFT JOIN memory_revisions r ON r.memory_id = c.memory_id AND r.revision = c.memory_revision
+         WHERE r.memory_id IS NULL)",
+    ] {
+        let invalid: i64 = sqlx::query_scalar(query)
+            .fetch_one(&mut *connection)
+            .await
+            .map_err(unavailable)?;
+        if invalid != 0 {
+            return Err(CognitiveStoreError::Corrupt(
+                "Lane C metadata boundary rejected oversized, malformed or unauthorized metadata"
+                    .to_string(),
+            ));
+        }
+    }
     // Validate every join key first; separate queries return early before
     // ownership/head joins can materialize an oversized identifier.
     for query in [

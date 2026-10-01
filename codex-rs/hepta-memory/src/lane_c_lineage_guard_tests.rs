@@ -7,6 +7,7 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::MemoryDraft;
 use crate::MemoryVerification;
+use crate::StableMemoryId;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::memory_revision;
@@ -289,4 +290,117 @@ async fn pages_and_lineage_reject_missing_dangling_regressed_or_foreign_scope_he
             );
         }
     }
+}
+
+enum OrphanReference {
+    Head,
+    Citation,
+}
+
+async fn assert_post_open_orphan_reference_rejected(attack: OrphanReference) {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(/*suffix*/ 122);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "orphan-guard", "evidence"))
+        .await
+        .unwrap();
+    store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "healthy-orphan-guard".to_string(),
+                revision: memory_revision(scope.clone(), "healthy fact", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    let healthy_lineage = store
+        .lane_c_lineage(&access, &scope, /*now_unix_seconds*/ 300)
+        .await
+        .unwrap();
+    let healthy_snapshot = store
+        .lane_c_snapshot(&access, &scope, /*now_unix_seconds*/ 300)
+        .await
+        .unwrap();
+    let healthy_page = store
+        .lane_c_snapshot_page(
+            &access, &scope, /*now_unix_seconds*/ 300, /*maximum_heads*/ 1,
+            /*after*/ None,
+        )
+        .await
+        .unwrap();
+    assert_eq!(healthy_lineage.owner_cut(), &healthy_snapshot);
+    assert_eq!(healthy_page.records(), healthy_lineage.current_heads());
+    assert_eq!(healthy_lineage.current_heads().len(), 1);
+
+    // A normative, bounded owner ID has no revision. The attack changes only
+    // its physical reference after open admission, not the legitimate memory.
+    let orphan = StableMemoryId::for_key(&owner, &scope, "orphan-metadata");
+    let mut connection = store.pool.acquire().await.unwrap();
+    sqlx::query("PRAGMA foreign_keys = OFF")
+        .execute(&mut *connection)
+        .await
+        .unwrap();
+    match attack {
+        OrphanReference::Head => {
+            sqlx::query("INSERT INTO memory_heads (memory_id, revision) VALUES (?, 1)")
+                .bind(orphan.as_str())
+                .execute(&mut *connection)
+                .await
+                .unwrap();
+        }
+        OrphanReference::Citation => {
+            sqlx::query("INSERT INTO memory_citations (memory_id, memory_revision, ordinal, source_id, source_revision) VALUES (?, 1, 0, ?, 1)")
+                .bind(orphan.as_str()).bind(citation.source_id.as_str())
+                .execute(&mut *connection).await.unwrap();
+        }
+    }
+    sqlx::query("PRAGMA foreign_keys = ON")
+        .execute(&mut *connection)
+        .await
+        .unwrap();
+    let foreign_keys: i64 = sqlx::query_scalar("PRAGMA foreign_keys")
+        .fetch_one(&mut *connection)
+        .await
+        .unwrap();
+    let violations: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM pragma_foreign_key_check")
+        .fetch_one(&mut *connection)
+        .await
+        .unwrap();
+    assert_eq!((foreign_keys, violations), (1, 1));
+    drop(connection);
+
+    let results = [
+        store
+            .lane_c_lineage(&access, &scope, /*now_unix_seconds*/ 300)
+            .await
+            .map(|_| ()),
+        store
+            .lane_c_snapshot(&access, &scope, /*now_unix_seconds*/ 300)
+            .await
+            .map(|_| ()),
+        store
+            .lane_c_snapshot_page(
+                &access, &scope, /*now_unix_seconds*/ 300, /*maximum_heads*/ 1,
+                /*after*/ None,
+            )
+            .await
+            .map(|_| ()),
+    ];
+    assert_eq!(results.map(|result| matches!(
+        result, Err(CognitiveStoreError::Corrupt(reason)) if reason.contains("metadata boundary")
+    )), [true; 3]);
+}
+
+#[tokio::test]
+async fn post_open_orphan_head_references_are_rejected_by_all_lane_c_readers() {
+    assert_post_open_orphan_reference_rejected(OrphanReference::Head).await;
+}
+
+#[tokio::test]
+async fn post_open_orphan_citation_references_are_rejected_by_all_lane_c_readers() {
+    assert_post_open_orphan_reference_rejected(OrphanReference::Citation).await;
 }
