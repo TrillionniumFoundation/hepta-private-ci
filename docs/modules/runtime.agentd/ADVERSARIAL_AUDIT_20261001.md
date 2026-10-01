@@ -169,9 +169,9 @@ SDK formatter fixture 已对齐主线 changed-file 默认、`--base` 与显式 `
 
 `RUNTIME_EXTENSIONS.md` 同步纠正了“TaskFlow 已使用 ABI-bound API”、不存在的 `attach_runtime_module_with_interface` 和“内建 executable observation 已安装”的描述。当前 executable image observation/catalog adapter 没有已安装替代；Architecture workflow 的旧 `runtime_executable` filter 无法执行测试，`minimum-tests=1` 必须继续拒绝0项执行。发布 artifact SHA、PID 健康检查和其它 ABI 测试均不能代替已运行镜像的产品证明。这是明确的产品/资格缺口，未改为通过。
 
-最新已发布源码对象为 `e5111d405131b1b6fbbf3bd43f5c49ec5d9e57e9`，tree `eb8914eaf712f6fe640dc52ae86e7408fbc87375`；各修复按真实 parent 分成独立提交。最终集中验证使用其干净隔离检出，并按官方迁移器把4份变化的 host observation 重新绑定该对象；原有54份来源归档及执行资格保持不变。
+此前集中脚本验证的源码对象为 `e5111d405131b1b6fbbf3bd43f5c49ec5d9e57e9`，tree `eb8914eaf712f6fe640dc52ae86e7408fbc87375`；各修复按真实 parent 分成独立提交。该次集中验证使用其干净隔离检出，并按官方迁移器把4份变化的 host observation 重新绑定该对象；原有54份来源归档及执行资格保持不变。后续 `d6e818887c` 记录报告结果；下列历史检查不能自动覆盖其后新增的 BUILD 和 Rust 测试变更。
 
-| round3 最后集中验证 | 实际结果与边界 |
+| round3 此前集中验证 | 实际结果与边界 |
 |---|---|
 | 全部 `scripts/test_hepta_*.py` | 789/789 passed、123.842s、退出0；包含新增对抗用例，先前768项失败完整保留。临时fixture使用 `TMPDIR=/dev/shm`，无sandbox开关变更 |
 | 独立 QA calling-boundary suites | 13/13 passed、9.488s、退出0；8个独特方法的跨文件alias/UFCS及真实receiver改名均被拒绝；通用claim/free-function仍按上文限定 |
@@ -180,7 +180,15 @@ SDK formatter fixture 已对齐主线 changed-file 默认、`--base` 与显式 `
 | Cargo structural preflight | 193 local manifests、0 errors；无代码执行 |
 | 源码、文档与Lane验证 | 本地导航检查点 `eafb468acfa41078db43438e0efdead0fe47dd81` / tree `5f3fe38b364c04e3e75d1e1ca4fcf0a6a10d10fc`：40maps/40技术文档通过qualification profile，历史来源重新核对；Lane B 11modules/62operations/87bindings通过、Lane E strict 0findings；所有product/authority/acceptance资格仍false。最终发布对象再次单独核验 |
 
-上述 full Python、QA、wrapper与SDK检查不替代原生回归、process/drain/restart或目标部署验收。后续提交仅包含本段报告和正式源码观察绑定，不能把 `fd7104d` 的原生结果转给它们。
+上述 full Python、QA、wrapper与SDK检查不替代原生回归、process/drain/restart或目标部署验收。后续又追加 Fleet 编译数据接线和 Plasticity 测试的最后使用处 move；它们必须单独记录验证并绑定实际发布源码对象，不能把 `fd7104d` 的原生结果或此前789/13/12/44项成功转为新候选的完整资格。
+
+同一 `fd7104d` 候选的 [blocking CI run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36876517154) 随后还给出以下实际反馈；这些是构建输入与 strict lint 问题，不应归为资源或 billing 失败，也不是整个 Agentd 产品已经验收的证据。
+
+| 后续远端反馈 | 已落盘修复与实际验证边界 |
+|---|---|
+| [Linux release](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36876517154/job/110418364343)、[macOS release](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36876517154/job/110418364258) 及 [macOS test](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36876517154/job/110418364395) 在 Fleet 编译时找不到 `docs/modules/MODULES.json` | `module_catalog.rs` 的真实 `include_str!` 输入未登记为 Bazel `compile_data`。现为 Fleet 精确加入 `//docs/modules:MODULES.json`，新文档 package 只导出该文件且仅向 Fleet package 可见。独立复审核对了 library 接线、unit-test 对原 crate 编译数据的继承及本仓库锁定的 Rust rules；未扩大输入集合或绕过 sandbox。三个既有 CI build-input 回归通过；修复后的 release/test CI 尚待重跑 |
+| 上述 macOS test 共565个 targets：38项执行且38 passed、1项 failed to build、526 skipped | 这是局部实际执行与构建失败，不能写为全套通过；未执行的526项不计为行为证据 |
+| [macOS Clippy](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36876517154/job/110418364360) 拒绝 Plasticity 测试中的三处 `redundant_clone` | `lib_tests.rs` 与 `topology_registry.rs` 仅将最后使用处改为 move，保留原 tamper/replay 断言和生产行为。本地实际 `just test --locked --offline --cargo-profile dev-small -p codex-hepta-plasticity --lib` 为49/49 passed、0 skipped、退出0；Plasticity scoped `just fix` 退出0、2.56s，随后 `just clippy --locked --offline --profile dev-small -p codex-hepta-plasticity --all-targets --no-deps -- -D warnings` 退出0、2.92s。该局部原生/lint 证据不替代 macOS CI 重跑或其它 owner 套件 |
 
 本轮独立复审继续发现 Unix 文件预检与普通 read-open 之间的 FIFO 替换窗口。它发生在可信 same-UID/root 的并发发布范围，属于打开操作的可用性缺口，不是非 owner 权限绕过。Prompt、authority/checkpoint、AuthBus/Evidence trust 与 frontier、effect/bootstrap/browser 的实际打开路径统一使用 `O_NOFOLLOW | O_NONBLOCK`，目录 handle 另加 `O_DIRECTORY`；所有原有 same-descriptor、regular、权限/link、namespace 和 EOF/currentness 检查继续保留。完整扫尾还发现并修复了 Objective 私有目录 open/fsync 和 Browser 宿主配置读取的同类开口；配置保留 relative/初始 leaf alias/hardlink/只读输入，不新增 UID/mode 授权规则。Objective 目录 IO 提取为私有组件；Browser binary 的测试移入 owner 子目录以避免被 Cargo 误发现为额外 binary，并显式启用其测试目标、加入 deep qualification 和15项接线检查。独立复审发现的未声明 `pretty_assertions` 导入已改用标准 `assert_eq!`。这些 flag 仅避免特殊文件的打开等待和最终分量 symlink 跟随，不承诺强制取消任意 kernel/network-filesystem I/O。新增确定性竞态回归的执行结果须单独记录。
 
@@ -202,6 +210,8 @@ SDK formatter fixture 已对齐主线 changed-file 默认、`--base` 与显式 `
 
 新增 Rust API 是 embedding capability，不是新增 RPC 允许 drain 期间 admission。`AgentdQualifiedEvaluationV1` 与 v2 use-signing payload 是明确的 typed API 迁移；旧 bundle/role/gate 输入不能自行制造产品资格。回执目前是进程内封存结构，不能序列化恢复，因此本轮不宣称 evaluation 跨进程恢复完成。
 
+最后两份源码修复按真实 parent 发布为 `1ee9297594f3c6fe23bf2b35f22fbc03460e363f`（Fleet Bazel 输入）和 `f573f6962c1f20c6c728fcf570e6f7e09f3fd215`（Plasticity 最后使用处 move，tree `1192f88bdd5c40c2a91c9679df89a563f021eab3`）。官方迁移器对 learning.plasticity、runtime.fleet、runtime.supervisor 三份映射重新绑定，并同步 Plasticity 状态；未提升产品或执行资格。实际映射提交 `cab6868cab1240e6ada5c8e9e2b15376c5afe303` / tree `a4dd1e5a1a33330b3f13bb8b76035aa2432fa77d` 的干净检出再次通过40份映射与40份技术文档 qualification-profile 导航检查、Lane B 11modules/62operations/87bindings source conformance 和 Lane E strict 0findings；derived/indexes 检查无变化。正式 `just fmt --base 997e7beef8151160065df36b024bc8da5c989e93` 已退出0。该对象后的最终报告不改变源码；最终交付对象另行核对，以上所有导航、局部原生及 lint 结果仍不构成完整目标平台和产品执行验收。
+
 ## 9. 尚未闭环的产品与部署工作
 
 | 未完成边界 | 必须补齐的真实组成与证据 |
@@ -209,6 +219,7 @@ SDK formatter fixture 已对齐主线 changed-file 默认、`--base` 与显式 `
 | Canonical physical execution | 同一冻结身份到实际 turn/start、interrupt 和可信 terminal owner 的完整 caller；取消/failure/restart 闭环 |
 | Durable Decision / Outcome handoff | 独立 dispatch/execution ledger 的精确交接与跨重启恢复；缺记录不得猜完成或 redispatch |
 | Run recovery daemon 产品入口 | 有认证 durable execution owner 的 wire/client/caller；现 coordinator recovery 只能复建 Indeterminate |
+| Loaded runtime executable image proof | 已安装的 executable image observation/catalog adapter，及与真实运行镜像绑定的回归和执行证据；当前旧 `runtime_executable` filter 执行0项，`minimum-tests=1` 仍拒绝。发布 artifact SHA、PID 健康检查或其它 ABI 测试不能替代该证明 |
 | 默认 Neuron / plasticity 与高阶 profiles | 明确授权的完整 owner 组成和实际调用证据；已有类型/flag 不等于自动激活 |
 | 目标平台、完整 drain 进程与部署验收 | authenticated socket/generation、饱和、真实进程 drain/restart、资源预算测量，以及独立 acceptance/promotion/release |
 
@@ -216,7 +227,7 @@ Fleet 全目录防护与正常 drain 历史观察的源代码 P1 已有实现及
 
 ## 10. 迭代停止标准
 
-本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换、实际 SQLite 冷连接写锁、压缩 fixture 冲突、zstd空frame encoded资源预算和编译接线错误。round3 又完成真实owner标签伪装、链接越界、Rust注释/局部声明伪证、动态注册fixture、独特方法alias和Windows长目标列表的独立复审与回归。在这些已明确范围内，最后复审未发现新的具体阻塞意见；这不是整个crate或Rust语义调用图的完备证明。第9节产品缺口及第8节P2词法覆盖限制仍保持开放，原生和最终源码结果分别记账。
+本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换、实际 SQLite 冷连接写锁、压缩 fixture 冲突、zstd空frame encoded资源预算和编译接线错误。round3 又完成真实owner标签伪装、链接越界、Rust注释/局部声明伪证、动态注册fixture、独特方法alias和Windows长目标列表的独立复审与回归。最新独立复审继续核对 Fleet BUILD、新文档 exports 及 Plasticity 两个测试文件这四份变更，未发现新的具体阻塞意见；这不是整个crate或Rust语义调用图的完备证明。第9节产品与已运行镜像证明缺口、第8节P2词法覆盖限制仍保持开放；完整原生/目标平台 CI 与最终发布源码绑定的待完成部分按各自对象分别记账。
 
 停止代表在已审边界与既定可信 operator/root 模型内，当前轮没有新的可独立修补发现。它不代表所有未来风险为零，也不能把第 9 节缺失的产品或部署证据改成已完成。
 
