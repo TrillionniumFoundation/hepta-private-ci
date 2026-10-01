@@ -27,7 +27,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/registry.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/registry_tests.rs::registration_is_immutable_and_idempotent",
+        "codex-rs/hepta-learning-artifacts/src/registry_tests.rs::event_identity_reuse_with_drift_fails"
+      ],
       "sourcePathExists": true,
       "designOperation": "artifact_registry_append",
       "mappingClass": "owner_native",
@@ -40,7 +43,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs::operator_sensor_core_projection_has_one_physical_owner",
+        "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs::operator_sensor_core_projection_tracks_revocation_without_second_write"
+      ],
       "sourcePathExists": true,
       "designOperation": "sensor_core_registry_read",
       "mappingClass": "owner_native",
@@ -53,7 +59,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs::payload_rejects_wrong_bytes_without_reusing_its_created_target",
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs::contained_write_rejects_escape_and_validates_before_create"
+      ],
       "sourcePathExists": true,
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
@@ -66,7 +75,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "product_read_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::loads_exact_pinned_manifest_and_payload",
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::revoked_ancestor_blocks_loading"
+      ],
       "sourcePathExists": true,
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
@@ -79,7 +91,13 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "product_read_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup",
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::cached_consumer_rejects_longer_fork_and_backwards_frontier",
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::panicking_consumer_permanently_closes_the_cache",
+        "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs::current_artifact_and_independent_evidence_compose_to_deny_all_admission",
+        "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs::withdrawal_frontier_change_invalidates_previously_admitted_artifact"
+      ],
       "sourcePathExists": true,
       "designOperation": "revalidate_pinned_candidate",
       "mappingClass": "owner_native",
@@ -92,7 +110,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs::art_01_manifest_v2_normalizes_complete_lineage",
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent"
+      ],
       "sourcePathExists": true,
       "designOperation": "validate_manifest_v2",
       "mappingClass": "owner_native",
@@ -105,7 +126,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs::art_02_persistent_withdrawal_blocks_future_admission_and_replays"
+      ],
       "sourcePathExists": true,
       "designOperation": "withdrawal_append",
       "mappingClass": "owner_native",
@@ -118,7 +141,11 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_v3.rs::art_05_admission_is_domain_registry_and_scope_bound",
+        "codex-rs/hepta-learning-artifacts/src/admission_v3.rs::art_05_withdrawal_race_invalidates_admission",
+        "codex-rs/hepta-learning-artifacts/src/admission_v3_adversarial_tests.rs::recomputed_public_receipt_cannot_admit_a_withdrawn_dataset"
+      ],
       "sourcePathExists": true,
       "designOperation": "admit_manifest_at_withdrawal_head_v3",
       "mappingClass": "owner_native",
@@ -131,7 +158,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/publication.rs::art_07_publication_requires_ordered_durable_phases_before_ack"
+      ],
       "sourcePathExists": true,
       "designOperation": "publication_begin",
       "mappingClass": "owner_native",
@@ -144,7 +173,11 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_checkpoint_recovery_requires_exact_snapshot",
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_process_kill_reopen_matrix",
+        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::startup_recovery_rejects_missing_prior_checkpoint_and_alias_paths"
+      ],
       "sourcePathExists": true,
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
@@ -157,7 +190,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::authenticated_current_head_is_discovered_and_signature_drift_rejects",
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::current_head_rotation_preserves_history_and_requires_current_key_epoch"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
@@ -170,7 +206,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
@@ -183,7 +221,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_exclusively_fences_writer_lease"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
@@ -196,7 +236,11 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs::art_06_lifecycle_journal_enforces_head_state_and_role",
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs::art_06_lifecycle_snapshot_replay_survives_actor_expiry",
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal_adversarial_tests.rs::producer_substitution_cannot_authorize_self_evaluation"
+      ],
       "sourcePathExists": true,
       "designOperation": "lifecycle_journal_append",
       "mappingClass": "owner_native",
@@ -209,7 +253,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt"
+      ],
       "sourcePathExists": true,
       "designOperation": "durable_withdrawal_snapshot",
       "mappingClass": "owner_native",
@@ -222,7 +268,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry"
+      ],
       "sourcePathExists": true,
       "designOperation": "durable_lifecycle_snapshot",
       "mappingClass": "owner_native",
@@ -235,7 +283,11 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs::records_bounded_external_transitions",
+        "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs::snapshot_replay_is_exact_and_duplicate_receipts_fail",
+        "codex-rs/hepta-learning-artifacts/src/iteration_adversarial_tests.rs::candidate_transition_preserves_valid_state_atomically"
+      ],
       "sourcePathExists": true,
       "designOperation": "iteration_transition",
       "mappingClass": "owner_native",
@@ -248,7 +300,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
@@ -261,7 +315,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head",
+        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::signed_wrong_head_cannot_publish_a_current_head_side_effect"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
@@ -274,7 +331,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_process_kill_reopen_matrix"
+      ],
       "sourcePathExists": true,
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
@@ -287,7 +346,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head"
+      ],
       "sourcePathExists": true,
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
@@ -300,7 +361,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::independent_current_head_anchor_rejects_restored_old_backup"
+      ],
       "sourcePathExists": true,
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
@@ -356,6 +419,9 @@
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
   "repositoryControlledGaps": [
+    "Persist complete V2/V3 admission sidecars and source/descendant closure for final-use withdrawal, expiry and multiple-predecessor validation.",
+    "Compose fenced crash-recoverable revoke/quarantine registry-state publication and withdrawal-to-existing-artifact CURRENT updates through the same owner writer.",
+    "Authenticate CURRENT before each long-lived Agentd plasticity admission and bind resolver evidence to that same frozen generation/view.",
     "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
   ],
   "hostIntegrationRequirements": [
@@ -404,6 +470,13 @@
       "callerPath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
       "mustContain": "VerifiedCurrentRegistryViewV1",
       "productPath": "CurrentCognitiveRegistry -> VerifiedCurrentRegistryViewV1 -> RevalidatingCandidate::with_current"
+    },
+    {
+      "operation": "authenticated_current_revalidation",
+      "mode": "opaque_verified_current_view_only",
+      "callerPath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "mustContain": "candidate.with_current",
+      "productPath": "admit_ndu_stochastic_candidate_v1 -> RevalidatingCandidate::with_current"
     }
   ],
   "productionWriterBindings": [
@@ -435,6 +508,10 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
       "nativeSymbol": "PinnedCognitiveRanker"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "nativeSymbol": "admit_ndu_stochastic_candidate_v1"
     }
   ],
   "sourceObjects": [
@@ -506,5 +583,36 @@
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
       "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
     }
+  ],
+  "compatibilitySnapshotConsumers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedSourcePaths": [
+    "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+    "codex-rs/hepta-agentd/src/plasticity_host.rs",
+    "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+    "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+    "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs"
   ]
 }

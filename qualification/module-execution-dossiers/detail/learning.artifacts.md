@@ -127,8 +127,12 @@ parallel sandboxes.
 For new path-based host integration, use the `*_beneath` writers. They validate
 before final-path creation and reject absolute paths, `..`, non-normal
 components and symlink ancestors below a canonical trusted root. The host still
-owns protection against concurrent hostile ancestor replacement, parent
-directory sync, writer fencing and indeterminate I/O reconciliation.
+owns protection against concurrent hostile ancestor replacement and external
+indeterminate-I/O reconciliation. The composed `LearningArtifactOwnerHost`
+provides the local writer fence, file synchronization and Unix parent-directory
+synchronization. Other targets require directory-durability qualification. Lower-level storage adapters
+still require an equivalent host boundary. Zero-length orphan
+cleanup refuses an active reader or writer lock.
 
 ## 6. Concrete verification cases
 
@@ -188,9 +192,10 @@ receipt.
 ## 7. Integration, rollback and capability ceiling
 
 `RevalidatingCandidate::with_current` guards cached consumption with a
-monotonic current registry prefix and exact lineage eligibility. Any failed
-refresh closes the consumer. A valid old snapshot cannot be substituted to
-resurrect a revoked candidate.
+monotonic current registry prefix and exact lineage eligibility. A rejected view
+closes the consumer. Failure to acquire an authenticated view requires the
+caller to discard its consumer; Agentd does so before requesting CURRENT. A
+valid old snapshot cannot be substituted to resurrect a revoked candidate.
 
 The persistent scoped withdrawal registry closes future admission of withdrawn
 datasets. Snapshot-local `prepare_dataset_revocation` remains the batch that
@@ -228,9 +233,13 @@ instead of a caller-constructible file/receipt pair.
 - **Operating references:** `STORAGE.md`, `READ_BOUNDARY.md`,
   `PINNED_LOAD.md`, `DATASET_REVOCATION.md`, `NATIVE_MAPPING.md`.
 
-The repository-controlled source gap is now primarily exact-candidate
-qualification, not missing core data structures. Current CI must still prove the
-exact head and actual-base synthetic merge.
+Core data structures and new-registration publication are implemented. Remaining
+repository-controlled integration work includes durable full V2 sidecars,
+withdrawal-to-existing-artifact revoke/quarantine publication through the same
+writer, and authenticated CURRENT refresh for long-lived plasticity consumers.
+The compatibility registry alone cannot enforce multi-source V2 withdrawal,
+multiple-parent lineage or V2 expiry at use time. Current CI must also prove the
+exact head and actual-base synthetic merge; it cannot replace those missing paths.
 
 ## 9. Native closure and remaining evidence
 

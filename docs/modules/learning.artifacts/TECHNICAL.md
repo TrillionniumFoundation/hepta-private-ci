@@ -192,7 +192,13 @@ Preparation validates the current scoped withdrawal registry and binds the exact
 
 The transaction exposes a digest-bound snapshot and replay constructor. Crash tests recover after prepared, payload-durable and registry-durable boundaries and prove that a partial publication cannot be relabelled acknowledged. The host that composes this contract must persist the returned transaction snapshot in its fenced transaction store before treating a phase as durable; a host that does not persist/replay the contract is outside this source qualification boundary.
 
-Create-only file writers hold an exclusive advisory file lock through the empty-file check, write and `sync_all`. Readers hold shared locks for bounded reads. The crate does not own the global writer lease, product process, newest-head service or parent-directory fsync. Those are host-owned boundaries and must serialize publication, current-head discovery and final route changes.
+Create-only file writers hold an exclusive advisory file lock through the empty-file check, write and `sync_all`. Readers hold shared locks for bounded reads. Zero-length orphan cleanup takes a nonblocking exclusive lock and rechecks the opened file before removal; an active reader or writer returns `Busy`.
+
+`LearningArtifactOwnerHost` owns the local OS writer fence, signed writer-lease verification, authenticated CURRENT discovery and publication checkpoints. `LearningArtifactOwnerService` composes that host as the one registered product writer. The host synchronizes files and, on Unix, their parent directories before advancing a checkpoint, including exact retries. Other platforms still require target-host directory-durability composition and qualification. The deployment host also owns trusted ancestor protection, independent restart anchors, key provisioning, external newest-head distribution, publication/use serialization, the product process and final route changes.
+
+Each publication phase validates a cloned transaction before creating its durable effect. A bad signed head or changed withdrawal frontier therefore cannot publish a rejected CURRENT. Recovery accepts only canonical checkpoint paths and encodings, complete ordered phases and consistent operation, admission, original lease and receipt identities. A renewed valid lease can finish the exact original transaction without rewriting its historical lease binding. Startup scans are bounded to 4,096 operations and five checkpoints per operation.
+
+Lifecycle history fixes each artifact's producer from its first accepted record. Retries must retain the complete actor evidence and producer; new events cannot be in the future or precede that artifact's previous event. Historical recovery continues to validate credentials at occurrence time. Iteration transitions validate the resulting candidate before committing state, and evidence must stay within the envelope expiry and candidate timestamp order. Verified selection recording binds the exact manifest producer and retains the selector's known expiry and revocation limits.
 
 Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
 
@@ -266,7 +272,20 @@ Current operating and state-format references:
 
 Target-host alerting should distinguish rejected input, capacity exhaustion, busy lock, stale/scope-mismatched evidence, corrupt durable bytes and indeterminate I/O. Concrete thresholds require the selected deployment profile.
 
+The product writer opens `LearningArtifactOwnerService` with explicit trust, a signed writer lease, storage binding and scoped withdrawal registry. After any CURRENT publication, restart must supply an independently retained signed head floor; a self-consistent restored backup is insufficient. An unfinished operation fences unrelated publication until the exact operation is reconciled. A terminal retry must retain the original admission, payload and signed head. Renew trust or the lease by constructing a new host; do not mutate them inside a running generation.
+
 ## 12. Verification and qualification
+
+Run the affected package through the repository runner from `codex-rs`:
+
+```sh
+just test -p codex-hepta-learning-artifacts
+cargo check --locked -p codex-hepta-learning-artifacts --all-targets
+just fix -p codex-hepta-learning-artifacts
+just fmt
+```
+
+For ordinary development, run `python3 scripts/hepta-docs.py verify --profile development` from the repository root. An implementation-map test reference names a real source test, not a test pass or production receipt. Rebind only the changed module after committing source changes with `python3 scripts/hepta-implementation-maps.py migrate --module learning.artifacts`; qualification validates those exact Git identities separately.
 
 Focused native coverage includes:
 
@@ -281,13 +300,15 @@ Focused native coverage includes:
 - exact pinned load/current-view revalidation and dataset revocation propagation;
 - bounded iteration and iteration-ledger transition/replay tests.
 
+Dedicated adversarial regressions also cover producer substitution, actor-role replay drift, future/backdated lifecycle evidence, invalid iteration rollback state, expired iteration evidence, recomputed withdrawal admission, selector expiry, rejected-head side effects, missing checkpoint phases, renewed leases, current-head forks, active orphan locks and consumer panic. They live beside the implementation in `*_adversarial_tests.rs`, `pinned_tests.rs` and `storage_hygiene.rs`.
+
 The Lane E workflow executes locked all-target compilation, owner tests, cross-crate causal closure, the Rust↔Python wire-fault test, strict Clippy, rustfmt and an ordered-parent synthetic merge. The synthetic merge uses the pull-request base on PR events and `github.event.before` on normal pushes; initial pushes with a zero predecessor do not pretend to have a valid merge base.
 
 A green workflow is execution evidence for its exact commit only. It is not product activation, operator acceptance, selection, promotion or release. The repository cannot self-produce external filesystem trust, newest-head distribution, signing-key authentication or production route evidence.
 
 ## 13. Implementation sequence and work packages
 
-The `State:` values inside the execution envelopes below are canonical planning metadata imported from the global work-package plan; they are not a live substitute for the source status in sections 2.1 and 12. A package may still display `planned` here while its source candidate exists and awaits exact-commit qualification or external activation evidence.
+The `State:` values inside the execution envelopes below are canonical planning metadata imported from the global work-package plan; they are not a live substitute for the source status in sections 2 and 12. A package may still display `planned` here while its source candidate exists and awaits exact-commit qualification or external activation evidence.
 
 Applicable work packages:
 
@@ -308,6 +329,14 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 ## 15. Definition of module completion
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+
+### Remaining product integration work
+
+The implemented owner service publishes new registrations. It does not yet expose a fenced, crash-recoverable revoke/quarantine publication saga for existing records. Installing a newer withdrawal frontier rejects future V3 admission/publication; it does not itself append artifact revocations or publish a new CURRENT. `prepare_dataset_revocation` remains snapshot-local preparation, not that missing product saga.
+
+V1 CURRENT and pinned reads cannot recover complete V2 source datasets, multiple predecessors or manifest expiry from the compatibility index. The full V3 admission must be retained and joined at use time; existing checkpoints bind its digest but do not persist that full sidecar. Completing withdrawal for already published V2 artifacts requires durable sidecars, a source/descendant index and the same owner's registry-state publication saga. Do not infer this closure from successful V1 lineage tests.
+
+Agentd's cognitive ranker and the NDU stochastic admission path consume opaque authenticated CURRENT views. Plasticity bootstrap/runtime/evidence resolvers and shared-terminal compatibility consumers still receive ordinary snapshots. The long-lived plasticity path needs an independently authenticated CURRENT check before each admission, bound to the same frozen generation and evidence view; a changed head must require refresh or rebootstrap. Its current proposal path returns DENY_ALL and does not grant installation authority. These are repository-controlled integration gaps, separate from production key provisioning, target-host power-loss tests and external acceptance.
 
 For `learning.artifacts`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
