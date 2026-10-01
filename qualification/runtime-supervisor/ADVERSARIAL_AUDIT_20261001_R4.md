@@ -136,3 +136,16 @@ workflow 已退役；后者安装与原生资格验证一致的 pinned `just@1.5
 更新的 archive README blob 和当前观察绑定另行核对；旧源码执行仍绑定本报告上方
 的 `5489fb8`，新 CI 结果须按各自实际 head/base 判读。完整 `just fmt` 再次成功，
 46 个无关 formatter-only 路径已还原；遵循 AGENTS，没有重跑本地测试。
+
+后续 blocking CI 还发现本模块两份有意保留的机器生成资产超过 512,000 字节限额：
+Robrix canonical cross-parser corpus 与本轮原始归档。按既有政策给这两条精确路径
+添加用途、大小和 SHA-256 注释的 allowlist，保留 generator/parity 与归档证据原字节；
+全局限额、扫描范围和其它路径检查不变。`FileTests` 改为 `EvidenceFileTests` 以通过
+拼写检查，全部方法和断言保持。该命名变化不回写旧具名执行 inventory。
+
+Fleet release 修复和 test-only authority helper 还使 `runtime.fleet` 与
+`kernel.authority` 的旧 path-only 观察发生真实源码漂移。仅这两份相关 map
+迁至 exact-blob/current-observation 模式，保留各自原 `sourceBase`、ownership roots、
+全部操作语义和 false claims；Authority 的 16 条历史 witness 全保留，只有实际
+变化的 helper blob 更新。没有重绑其它模块的非祖先来源，也没有借本轮 Fleet
+测试建立 Kernel/Fleet 产品执行或生产资格。补修源码观察为 `da13c201fccfae2b16856b10ee71310138c329a9`。

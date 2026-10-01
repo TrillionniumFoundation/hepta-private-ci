@@ -38,7 +38,8 @@
       "operation": "admit_host",
       "nativeSymbol": "pub fn admit_host(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "allocate",
@@ -61,7 +62,8 @@
       "operation": "allocate",
       "nativeSymbol": "pub fn issue(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "renew_or_revoke",
@@ -84,7 +86,8 @@
       "operation": "renew_or_revoke",
       "nativeSymbol": "pub fn renew_or_revoke(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     }
   ],
   "repositoryControlledGaps": [
@@ -120,5 +123,25 @@
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-fleet"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+  "observedAtHead": {
+    "commit": "da13c201fccfae2b16856b10ee71310138c329a9",
+    "tree": "a555be1b6c8ef478302e0f09cd2ebc4d90fe4b51",
+    "interpretation": "Reviewed R4 Supervisor integration dependency observation. Original module sourceBase remains immutable integration provenance. Fleet release publication/sealing and its exact regression fixtures were reviewed and locally executed as recorded at Supervisor source 5489fb84cee5a51e4baa30ecfc665302e68742e7; authority_port.rs contains only the reviewed test-helper error propagation and its production prefix is unchanged. This observation binds current module/caller/evidence bytes, not new execution, capacity, target-host qualification or independent acceptance for this module. Existing operations, ownership roots and all false authority, execution, acceptance, activation and release claims are preserved."
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "codex-rs/hepta-fleet/src/lease_ledger.rs",
+    "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-fleet/src/release_copy_tests.rs",
+    "codex-rs/hepta-fleet/src/release_publish_tests.rs",
+    "docs/modules/runtime.fleet/TECHNICAL.md"
   ]
 }

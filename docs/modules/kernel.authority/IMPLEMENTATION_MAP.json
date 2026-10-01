@@ -34,7 +34,8 @@
       "sourcePathExists": true,
       "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
     },
     {
       "operation": "store",
@@ -48,7 +49,8 @@
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
     },
     {
       "operation": "authority_lease_registry",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bf09734f8900c1e95dfc550bf8766b0667a875c9"
     },
     {
       "operation": "final_use_approval_verifier",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
     },
     {
       "operation": "final_use_revocation_feed_verifier",
@@ -90,7 +94,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
     },
     {
       "operation": "authority_external_trust",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "trusted_time_and_external_anti_rollback_frontier",
       "mappingClass": "owner_native_interface",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "043ffd75a20c42935959a98d37f40e3d7229c407"
     },
     {
       "operation": "final_use_revocation_convergence",
@@ -119,7 +125,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
     },
     {
       "operation": "verified_use_witness_v1",
@@ -134,7 +141,8 @@
       "sourcePathExists": true,
       "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
       "mappingClass": "owner_native_evidence",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     },
     {
       "operation": "verified_use_token_witness_v1",
@@ -148,7 +156,8 @@
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     }
   ],
   "repositoryControlledGaps": [
@@ -270,7 +279,7 @@
     },
     {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "object": "55e117dafe84709451a638bb8f6bafa41c38bd5a"
+      "object": "503c9d5aac3fe95e08ace156d3c08b67166320c4"
     },
     {
       "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
@@ -280,5 +289,33 @@
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
       "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
     }
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+  "observedAtHead": {
+    "commit": "da13c201fccfae2b16856b10ee71310138c329a9",
+    "tree": "a555be1b6c8ef478302e0f09cd2ebc4d90fe4b51",
+    "interpretation": "Reviewed R4 Supervisor integration dependency observation. Original module sourceBase remains immutable integration provenance. Fleet release publication/sealing and its exact regression fixtures were reviewed and locally executed as recorded at Supervisor source 5489fb84cee5a51e4baa30ecfc665302e68742e7; authority_port.rs contains only the reviewed test-helper error propagation and its production prefix is unchanged. This observation binds current module/caller/evidence bytes, not new execution, capacity, target-host qualification or independent acceptance for this module. Existing operations, ownership roots and all false authority, execution, acceptance, activation and release claims are preserved."
+  },
+  "observedSourcePaths": [
+    "apps/hepta-browser/src/runtime-host.js",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+    "codex-rs/hepta-agentd/src/browser_servo.rs",
+    "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "codex-rs/hepta-contracts/src/authority_trust.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs",
+    "codex-rs/hepta-contracts/src/final_use_tests.rs",
+    "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+    "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "codex-rs/hepta-fleet/src/revocation_control.rs",
+    "docs/modules/kernel.authority/TECHNICAL.md"
   ]
 }
