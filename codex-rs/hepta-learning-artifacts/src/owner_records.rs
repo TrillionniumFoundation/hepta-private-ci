@@ -101,14 +101,16 @@ pub(super) fn all_checkpoints(
         checkpoints.push(checkpoint);
     }
     // Registry recovery and CURRENT reads also consume this inventory. They
-    // must not bypass the complete per-operation recovery validation.
+    // must not bypass complete per-operation checkpoint validation. Registry
+    // associations are checked against the one requested/CURRENT snapshot;
+    // reading every historical snapshot here would replay history quadratically.
     let mut operations = BTreeSet::new();
     for checkpoint in &checkpoints {
         operations.insert(&checkpoint.operation_id);
     }
     for operation in operations {
         owner
-            .recover_publication(operation)?
+            .recover_checkpoint_chain(operation)?
             .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
     }
     Ok(checkpoints)

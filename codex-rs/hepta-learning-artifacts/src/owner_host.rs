@@ -66,6 +66,9 @@ mod records;
 #[path = "owner_admissions.rs"]
 mod admissions;
 
+#[path = "owner_registry_replay.rs"]
+mod registry_replay;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSignerV1 {
     pub signer_id: StableId,
@@ -606,6 +609,13 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
         self.require_current_transaction(transaction, now)?;
+        registry_replay::validate_intent_record(
+            registry
+                .records()
+                .last()
+                .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?,
+            transaction.intent(),
+        )?;
         let encoded = encode_snapshot(registry, binding)?;
         let expected = RegistrySnapshotReceipt {
             binding,
@@ -791,7 +801,16 @@ impl LearningArtifactOwnerHost {
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ));
-        Ok(read_registry_snapshot(File::open(path)?, receipt)?)
+        let registry = read_registry_snapshot(File::open(path)?, receipt)?;
+        for checkpoint in records::all_checkpoints(self)? {
+            if checkpoint
+                .registry_receipt
+                .is_some_and(|value| value.head_digest == head_digest)
+            {
+                self.validate_checkpoint_registry(&checkpoint, &registry)?;
+            }
+        }
+        Ok(registry)
     }
 
     /// Recover the artifact registry that exactly backs the authenticated
@@ -857,6 +876,7 @@ impl LearningArtifactOwnerHost {
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
+        self.validate_current_registry_inventory(&registry)?;
         Ok(VerifiedCurrentRegistryViewV1::new(
             receipt,
             registry,
@@ -870,7 +890,9 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<ArtifactRegistry, ArtifactOwnerHostError> {
         let Some(current) = self.discover_current_head(now)? else {
-            return Ok(ArtifactRegistry::new());
+            let registry = ArtifactRegistry::new();
+            self.validate_current_registry_inventory(&registry)?;
+            return Ok(registry);
         };
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
@@ -878,6 +900,7 @@ impl LearningArtifactOwnerHost {
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
+        self.validate_current_registry_inventory(&registry)?;
         Ok(registry)
     }
 
@@ -891,6 +914,21 @@ impl LearningArtifactOwnerHost {
     }
 
     pub fn recover_publication(
+        &self,
+        operation_id: &StableId,
+    ) -> Result<Option<ArtifactOwnerRecoveryV1>, ArtifactOwnerHostError> {
+        let recovery = self.recover_checkpoint_chain(operation_id)?;
+        if let Some(recovery) = &recovery
+            && let Some(receipt) = recovery.checkpoint.registry_receipt
+        {
+            let registry =
+                read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            self.validate_checkpoint_registry(&recovery.checkpoint, &registry)?;
+        }
+        Ok(recovery)
+    }
+
+    fn recover_checkpoint_chain(
         &self,
         operation_id: &StableId,
     ) -> Result<Option<ArtifactOwnerRecoveryV1>, ArtifactOwnerHostError> {
