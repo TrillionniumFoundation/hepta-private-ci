@@ -72,10 +72,14 @@ checks database and existing sidecar identities before SQLite access and verifie
 the compiled owner schema and migration-ledger schema before relying on CHECK constraints
 or integrity queries. Before pending migrations execute, bounded migration rows
 must identify a continuous compiled history prefix whose complete schema matches
-a separate in-memory reference built from the compiled migrations. This
+a separate in-memory reference built from the compiled migrations. After this
+schema admission and before `MIGRATOR` executes, any existing `cognitive_meta` row
+receives bounded type and owner validation against `layout.agent_id()`. New
+databases and legacy empty metadata can still initialize. A wrong owner is
+rejected without advancing the migration prefix. This
 preserves clean historical upgrades while rejecting altered triggers, CHECKs,
-autoindexes and FTS shadow definitions. Prefix admission, compiled migrations,
-full-schema verification and owner metadata initialization share one
+autoindexes and FTS shadow definitions. Prefix admission, existing-owner validation,
+compiled migrations, full-schema verification and owner metadata initialization share one
 `BEGIN IMMEDIATE` transaction. The completed schema is verified again
 before integrity scans. It recomputes source and memory digests in bounded batches and
 checks exact historical Memory FTS membership/content plus FTS5 integrity.

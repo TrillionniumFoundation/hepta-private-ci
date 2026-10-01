@@ -339,7 +339,7 @@ impl CognitiveStore {
             // Admit the exact compiled historical schema before pending
             // migrations can execute SQL against any existing owner object.
             // The lock keeps this check and migrations in one serialized cut.
-            schema::admit_before_migration(&mut transaction).await?;
+            schema::admit_before_migration(&mut transaction, layout.agent_id()).await?;
             MIGRATOR
                 .run(&mut *transaction)
                 .await

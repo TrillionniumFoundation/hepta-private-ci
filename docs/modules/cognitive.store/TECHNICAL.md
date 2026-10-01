@@ -197,10 +197,15 @@ Before forward migration, [cognitive_store_schema_admission.rs](../../../codex-r
 admits only a bounded, continuous prefix of the compiled migration history.
 It checks migration-row types, sizes, versions, descriptions, success and checksums,
 then compares every SQLite schema object with the corresponding compiled in-memory
-reference. Clean historical prefixes can upgrade; altered CHECK expressions,
+reference. After schema admission and before `MIGRATOR` executes, an existing
+`cognitive_meta` row receives bounded type and owner validation against
+`layout.agent_id()`. New databases and legacy empty metadata can still initialize.
+A wrong owner is rejected without advancing the migration prefix.
+Clean historical prefixes can upgrade; altered CHECK expressions,
 triggers, autoindexes or FTS shadow definitions are rejected before pending
 migrations execute. One `BEGIN IMMEDIATE` transaction serializes prefix admission,
-compiled migrations, full-schema verification and owner metadata initialization.
+existing-owner validation, compiled migrations, full-schema verification and owner
+metadata initialization.
 The completed schema is verified again before integrity
 PRAGMAs evaluate CHECK expressions. The logical recovery anchor binds registered
 owner tables; FTS shadow definitions are authenticated, while their physical

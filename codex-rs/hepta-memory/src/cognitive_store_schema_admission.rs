@@ -1,5 +1,6 @@
 //! Version-aware admission of owner schema before compiled migrations execute.
 
+use codex_hepta_contracts::AgentId;
 use sqlx::Row;
 use sqlx::SqliteConnection;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -11,6 +12,7 @@ use super::super::classify_migrate_error;
 use super::super::unavailable;
 use super::MAX_SCHEMA_BYTES;
 use super::verify_existing_migrations_schema;
+use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
 
 const MAX_SCHEMA_OBJECTS: i64 = 1024;
 const MAX_MIGRATIONS: usize = 64;
@@ -19,6 +21,7 @@ static REFERENCES: OnceCell<Vec<Vec<SchemaObject>>> = OnceCell::const_new();
 
 pub(in super::super) async fn admit_before_migration(
     connection: &mut SqliteConnection,
+    owner: &AgentId,
 ) -> Result<(), CognitiveStoreError> {
     let has_ledger = verify_existing_migrations_schema(connection).await?;
     let prefix = if has_ledger {
@@ -30,12 +33,46 @@ pub(in super::super) async fn admit_before_migration(
     let actual = schema_metadata(connection).await?;
     let expected = &references[prefix];
     if has_ledger {
-        compare_schema(&actual, expected)
+        compare_schema(&actual, expected)?;
     } else {
         // An interrupted initialization may retain an empty compiled SQLx
         // ledger; a genuinely new database has no schema objects at all.
-        compare_schema(&actual, &[])
+        compare_schema(&actual, &[])?;
     }
+    // Authenticate existing ownership before pending migrations can revoke or
+    // replace old projections. Schema 0 has no metadata table, and an empty
+    // admitted table may be an interrupted initialization awaiting owner bind.
+    if actual.iter().any(|object| object.0 == "cognitive_meta") {
+        // Keep identity and storage checks inside SQLite: no unbounded owner
+        // string is materialized, even if an attacker bypassed row CHECKs.
+        // Two rows are enough to reject a forged multi-row singleton table.
+        let (count, invalid_meta, wrong_owner): (i64, bool, bool) = sqlx::query_as(
+            "SELECT COUNT(*), COALESCE(MAX(
+                 singleton != 1 OR typeof(singleton) != 'integer'
+                 OR typeof(schema_version) != 'integer' OR schema_version != ?
+                 OR typeof(owner_agent_id) != 'text'
+                 OR length(CAST(owner_agent_id AS BLOB)) != 36
+             ), 0), COALESCE(MAX(owner_agent_id != ?), 0)
+             FROM (SELECT singleton, schema_version, owner_agent_id
+                   FROM cognitive_meta LIMIT 2)",
+        )
+        .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
+        .bind(owner.as_str())
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+        if count > 1 || invalid_meta {
+            return Err(CognitiveStoreError::Corrupt(
+                "cognitive owner metadata is invalid before migration".to_string(),
+            ));
+        }
+        if wrong_owner {
+            return Err(CognitiveStoreError::AccessDenied(
+                "cognitive database belongs to a different agent".to_string(),
+            ));
+        }
+    }
+    Ok(())
 }
 
 pub(super) async fn verify_full_schema(
