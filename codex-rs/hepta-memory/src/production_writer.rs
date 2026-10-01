@@ -1437,7 +1437,13 @@ impl ProductionDurableWriter {
             ProductionTargetOutcome::Committed {
                 receipt: target_receipt,
             } => {
-                let applied = self.apply(occurrence_key, target_receipt.clone()).await;
+                let applied = self
+                    .settle_terminal_dispatch(
+                        occurrence_key,
+                        LocalOutcomeState::Committed,
+                        &target_receipt,
+                    )
+                    .await;
                 match applied {
                     Ok(local) => Ok(ProductionDispatchReceipt {
                         request,
@@ -1454,7 +1460,9 @@ impl ProductionDurableWriter {
                 }
             }
             ProductionTargetOutcome::NotApplied { reason } => {
-                let local = self.reject(occurrence_key, &reason).await?;
+                let local = self
+                    .settle_terminal_dispatch(occurrence_key, LocalOutcomeState::Rejected, &reason)
+                    .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -1466,7 +1474,9 @@ impl ProductionDurableWriter {
                 })
             }
             ProductionTargetOutcome::Rejected { reason } => {
-                let local = self.reject(occurrence_key, &reason).await?;
+                let local = self
+                    .settle_terminal_dispatch(occurrence_key, LocalOutcomeState::Rejected, &reason)
+                    .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -1487,6 +1497,20 @@ impl ProductionDurableWriter {
                 external_effect: false,
             }),
         }
+    }
+
+    async fn settle_terminal_dispatch(
+        &self,
+        occurrence_key: &str,
+        state: LocalOutcomeState,
+        payload: &str,
+    ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        Ok(self
+            .lease
+            .settle_dispatch_terminal(occurrence_key, state, payload)
+            .await?
+            .into())
     }
 }
 

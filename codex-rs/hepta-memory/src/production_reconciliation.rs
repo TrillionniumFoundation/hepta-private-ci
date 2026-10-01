@@ -203,3 +203,7 @@ impl ProductionDurableWriter {
 #[cfg(test)]
 #[path = "production_reconciliation_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "production_reconciliation_race_tests.rs"]
+mod race_tests;

@@ -8,6 +8,8 @@
 
 use std::collections::BTreeMap;
 use std::fmt;
+use std::ops::Bound::Excluded;
+use std::ops::Bound::Unbounded;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -35,9 +37,12 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
+use tokio::sync::Mutex;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
+
+const MAX_PRODUCTION_DESTINATIONS: usize = 256;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
@@ -107,13 +112,15 @@ impl AgentdProductionOperationRuntimeConfig {
         let destination = target.destination_id();
         if destination.is_empty()
             || destination == self.target.destination_id()
+            || self.additional_targets.len() >= MAX_PRODUCTION_DESTINATIONS - 1
             || self
                 .additional_targets
                 .iter()
                 .any(|(_, existing)| existing.destination_id() == destination)
         {
             return Err(AgentdError::Invalid(
-                "production operation destinations must be non-empty and unique".to_string(),
+                "production operation destinations must be non-empty, unique and limited to 256"
+                    .to_string(),
             ));
         }
         self.additional_targets.push((final_use, target));
@@ -137,6 +144,11 @@ impl AgentdProductionOperationRuntimeConfig {
             ));
         }
         let mut destinations = BTreeMap::new();
+        if self.additional_targets.len() >= MAX_PRODUCTION_DESTINATIONS {
+            return Err(AgentdError::Invalid(
+                "production operation destinations exceed the 256-destination limit".to_string(),
+            ));
+        }
         destinations.insert(self.target.destination_id(), ());
         for (_, target) in &self.additional_targets {
             if target.destination_id().is_empty()
@@ -204,6 +216,8 @@ impl AgentdProductionOperationRuntimeConfig {
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
+    // Clone-shared scheduling state; this cursor grants no write authority.
+    reconciliation_after: Arc<Mutex<Option<String>>>,
     grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
@@ -292,6 +306,7 @@ impl AgentdProductionWriterHost {
             )),
             mutation: Some(mutation),
             dispatchers: BTreeMap::new(),
+            reconciliation_after: Arc::default(),
             grants: None,
         })
     }
@@ -318,6 +333,7 @@ impl AgentdProductionWriterHost {
         Ok(Self {
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
+            reconciliation_after: Arc::default(),
             grants: None,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
@@ -430,9 +446,13 @@ impl AgentdProductionWriterHost {
         target: Arc<dyn FinalUseProductionOutboxTarget>,
     ) -> Result<Self, AgentdError> {
         let destination = target.destination_id().to_string();
-        if destination.is_empty() || self.dispatchers.contains_key(&destination) {
+        if destination.is_empty()
+            || self.dispatchers.contains_key(&destination)
+            || self.dispatchers.len() >= MAX_PRODUCTION_DESTINATIONS
+        {
             return Err(AgentdError::Invalid(
-                "production operation destination must be non-empty and unique".to_string(),
+                "production operation destinations must be non-empty, unique and limited to 256"
+                    .to_string(),
             ));
         }
         self.dispatchers.insert(
@@ -516,10 +536,27 @@ impl AgentdProductionWriterHost {
             ));
         }
         let mut total = 0_usize;
-        for dispatcher in self.dispatchers.values() {
+        for _ in 0..self.dispatchers.len() {
             if total >= limit {
                 break;
             }
+            let dispatcher = {
+                let mut after = self.reconciliation_after.lock().await;
+                let (destination, dispatcher) = after
+                    .as_ref()
+                    .and_then(|after| self.dispatchers.range((Excluded(after), Unbounded)).next())
+                    .or_else(|| self.dispatchers.first_key_value())
+                    .ok_or_else(|| {
+                        AgentdError::Protocol(
+                            "production reconciliation has no attached destination".to_string(),
+                        )
+                    })?;
+                // Advance before awaiting the observer, including cancellation
+                // or an unavailable/indeterminate observation. Release the lock
+                // before I/O so one slow destination cannot lock other clones.
+                *after = Some(destination.clone());
+                dispatcher.clone()
+            };
             total += dispatcher
                 .reconcile(self.writer.as_ref(), limit - total)
                 .await?;
@@ -547,3 +584,7 @@ impl AgentdProductionWriterHost {
             .await?)
     }
 }
+
+#[cfg(test)]
+#[path = "production_writer_host_tests.rs"]
+mod tests;
