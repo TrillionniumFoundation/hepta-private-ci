@@ -88,11 +88,10 @@ def runtime_env(tmp_path_factory: pytest.TempPathFactory) -> PreparedRuntimeEnv:
         env=os.environ.copy(),
         timeout_s=240,
     )
-    ensure_runtime_package_installed(
-        python,
-        ROOT,
-        install_target=isolated_site,
-    )
+    # The frozen SDK environment already installs its exact public runtime pin.
+    # Verify that installation instead of downloading another release archive;
+    # package staging and isolated-target installation have separate coverage.
+    ensure_runtime_package_installed(python, ROOT)
 
     env = os.environ.copy()
     env["PYTHONPATH"] = os.pathsep.join([str(isolated_site), str(ROOT / "src")])
@@ -127,6 +126,9 @@ def _run_python(
     cwd: Path | None = None,
     timeout_s: int = 180,
 ) -> subprocess.CompletedProcess[str]:
+    # Explicit model tests may select a model supported by the active login;
+    # the default follows the real runtime profile instead of a stale model pin.
+    source = "import os\n" + source
     return _run_command(
         [str(runtime_env.python), "-c", source],
         cwd=cwd or ROOT,
@@ -238,7 +240,7 @@ def test_real_thread_and_turn_start_smoke(runtime_env: PreparedRuntimeEnv) -> No
 
             with Codex() as codex:
                 thread = codex.thread_start(
-                    model="gpt-5.4",
+                    model=os.environ.get("CODEX_REAL_TEST_MODEL"),
                     config={"model_reasoning_effort": "high"},
                 )
                 result = thread.turn("hello").run()
@@ -270,7 +272,7 @@ def test_real_thread_run_convenience_smoke(runtime_env: PreparedRuntimeEnv) -> N
 
             with Codex() as codex:
                 thread = codex.thread_start(
-                    model="gpt-5.4",
+                    model=os.environ.get("CODEX_REAL_TEST_MODEL"),
                     config={"model_reasoning_effort": "high"},
                 )
                 result = thread.run("say ok")
@@ -336,7 +338,7 @@ def test_real_async_thread_turn_usage_and_ids_smoke(
             async def main():
                 async with AsyncCodex() as codex:
                     thread = await codex.thread_start(
-                        model="gpt-5.4",
+                        model=os.environ.get("CODEX_REAL_TEST_MODEL"),
                         config={"model_reasoning_effort": "high"},
                     )
                     result = await (await thread.turn("say ok")).run()
@@ -374,7 +376,7 @@ def test_real_async_thread_run_convenience_smoke(
             async def main():
                 async with AsyncCodex() as codex:
                     thread = await codex.thread_start(
-                        model="gpt-5.4",
+                        model=os.environ.get("CODEX_REAL_TEST_MODEL"),
                         config={"model_reasoning_effort": "high"},
                     )
                     result = await thread.run("say ok")
@@ -462,7 +464,7 @@ def test_real_streaming_smoke_turn_completed(runtime_env: PreparedRuntimeEnv) ->
 
             with Codex() as codex:
                 thread = codex.thread_start(
-                    model="gpt-5.4",
+                    model=os.environ.get("CODEX_REAL_TEST_MODEL"),
                     config={"model_reasoning_effort": "high"},
                 )
                 turn = thread.turn("Reply with one short sentence.")
@@ -495,11 +497,19 @@ def test_real_turn_interrupt_smoke(runtime_env: PreparedRuntimeEnv) -> None:
 
             with Codex() as codex:
                 thread = codex.thread_start(
-                    model="gpt-5.4",
+                    model=os.environ.get("CODEX_REAL_TEST_MODEL"),
                     config={"model_reasoning_effort": "high"},
                 )
-                turn = thread.turn("Count from 1 to 200 with commas.")
-                turn.interrupt()
+                turn = thread.turn("Count from 1 to 1000 with commas.")
+                interrupted = False
+                original_status = None
+                for event in turn.stream():
+                    if not interrupted and event.method == "item/agentMessage/delta":
+                        turn.interrupt()
+                        interrupted = True
+                    if event.method == "turn/completed":
+                        original_status = event.payload.turn.status.value
+                assert interrupted and original_status == "interrupted"
                 follow_up = thread.turn("Say 'ok' only.").run()
                 print(json.dumps({"status": follow_up.status.value}))
             """

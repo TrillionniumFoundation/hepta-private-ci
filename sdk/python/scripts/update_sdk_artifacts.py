@@ -410,16 +410,6 @@ def _variant_collision_key(base: str, variant: dict[str, Any], generated_name: s
     return "|".join(parts)
 
 
-def _set_discriminator_titles(props: dict[str, Any], owner: str) -> None:
-    for key in DISCRIMINATOR_KEYS:
-        prop = props.get(key)
-        if not isinstance(prop, dict):
-            continue
-        if _string_literal(prop) is None or "title" in prop:
-            continue
-        prop["title"] = f"{owner}{_to_pascal_case(key)}"
-
-
 def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
     seen = {
         variant["title"]
@@ -451,11 +441,6 @@ def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
             seen.add(generated_name)
             variant_name = generated_name
 
-        if isinstance(variant_name, str):
-            props = variant.get("properties")
-            if isinstance(props, dict):
-                _set_discriminator_titles(props, variant_name)
-
         _annotate_schema(variant, base)
 
 
@@ -468,10 +453,13 @@ def _annotate_schema(value: Any, base: str | None = None) -> None:
     if not isinstance(value, dict):
         return
 
-    owner = value.get("title")
+    # Keep inline discriminators as scalar Literals. A title on those fields
+    # makes newer generators expose a RootModel wrapper instead of a string.
     props = value.get("properties")
-    if isinstance(owner, str) and isinstance(props, dict):
-        _set_discriminator_titles(props, owner)
+    if isinstance(props, dict):
+        for prop in props.values():
+            if isinstance(prop, dict) and _string_literal(prop) is not None:
+                prop.pop("title", None)
 
     one_of = value.get("oneOf")
     if isinstance(one_of, list):
@@ -588,6 +576,7 @@ def generate_v2_all(schema_dir: Path) -> None:
                 "--use-standard-collections",
                 "--enum-field-as-literal",
                 "one",
+                "--no-use-specialized-enum",
                 "--field-constraints",
                 "--use-default-kwarg",
                 "--snake-case-field",
@@ -623,8 +612,14 @@ def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
         class_end = len(source)
 
     class_source = source[class_start:class_end]
-    nullable_with_default = "    email: str | None = None"
-    if class_source.count(nullable_with_default) != 1:
+    # Recent generators preserve required-but-nullable fields directly.
+    # Older outputs need the implicit default removed without changing the wire type.
+    required_nullable = "    email: str | None"
+    email_lines = [line for line in class_source.splitlines() if line.lstrip().startswith("email:")]
+    if email_lines == [required_nullable]:
+        return
+    nullable_with_default = required_nullable + " = None"
+    if email_lines != [nullable_with_default]:
         raise RuntimeError(
             "Generated ChatgptAccount email did not have the expected nullable shape"
         )
