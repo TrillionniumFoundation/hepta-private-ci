@@ -35,6 +35,12 @@ const MAX_RECORDS: usize = 1_000_000;
 const EVENT_FENCE: u8 = 0;
 const EVENT_PLAN: u8 = 1;
 
+#[path = "fenced_holdout_replay.rs"]
+mod replay;
+use replay::replay_event;
+use replay::replay_event_owned;
+use replay::transition_payload;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
     Binding,
@@ -101,6 +107,7 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
     file: File,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
+    journal: FinalHoldoutJournalV1,
     length: u64,
     poisoned: bool,
 }
@@ -122,6 +129,8 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             file,
             binding,
             state: None,
+            journal: FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+                .map_err(|_| LockedFileCasErrorV1::Capacity)?,
             length: HEADER as u64,
             poisoned: false,
         })
@@ -157,6 +166,8 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         }
 
         let mut state: Option<FinalHoldoutCasRecordV1> = None;
+        let mut journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+            .map_err(|_| LockedFileCasErrorV1::Capacity)?;
         let mut minimum_witnessed = minimum.is_none();
         let mut cursor = HEADER;
         while cursor < bytes.len() {
@@ -179,7 +190,12 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             if checksum != Digest32::of_bytes(payload).as_array() {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
-            state = Some(replay_event(binding, state, payload)?);
+            state = Some(replay_event_owned(
+                binding,
+                state.take(),
+                &mut journal,
+                payload,
+            )?);
             if minimum.is_some_and(|anchor| {
                 state
                     .as_ref()
@@ -195,6 +211,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             file,
             binding,
             state,
+            journal,
             length,
             poisoned: false,
         })
@@ -301,7 +318,9 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         let record_count = source_state
             .as_ref()
             .map_or(0, |record| record.journal.records.len() as u64);
-        let fence_generation = source_state.as_ref().map_or(0, |record| record.fence.generation);
+        let fence_generation = source_state
+            .as_ref()
+            .map_or(0, |record| record.fence.generation);
         let state_digest = source_state
             .as_ref()
             .map_or(Digest32::ZERO, |record| record.state_digest);
@@ -321,6 +340,13 @@ impl LockedFileFinalHoldoutCasStoreV1 {
 }
 
 impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
+    fn canonical_journal_cache(&self, binding: Digest32) -> Option<FinalHoldoutJournalV1> {
+        if self.poisoned || binding != self.binding || self.state.is_none() {
+            return None;
+        }
+        Some(self.journal.clone())
+    }
+
     fn load(
         &mut self,
         binding: Digest32,
@@ -380,6 +406,14 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         if payload.len() > MAX_FRAME {
             return Err(FinalHoldoutCasStoreError::Rejected);
         }
+        // Public record fields are not proof that the journal transition is
+        // canonical. Persist only the exact state that these bytes will replay.
+        let mut candidate = self.journal.clone();
+        let replayed = replay_event(binding, self.state.as_ref(), &mut candidate, &payload)
+            .map_err(|_| FinalHoldoutCasStoreError::Rejected)?;
+        if &replayed != next {
+            return Err(FinalHoldoutCasStoreError::Rejected);
+        }
         let next_length = self
             .length
             .checked_add(4)
@@ -399,159 +433,11 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
             self.poisoned = true;
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
-        self.state = Some(next.clone());
+        self.state = Some(replayed);
+        self.journal = candidate;
         self.length = next_length;
         Ok(())
     }
-}
-
-fn transition_payload(
-    current: Option<&FinalHoldoutCasRecordV1>,
-    next: &FinalHoldoutCasRecordV1,
-) -> Result<Vec<u8>, LockedFileCasErrorV1> {
-    match current {
-        None => {
-            if !next.journal.records.is_empty() {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            encode_fence(&next.fence)
-        }
-        Some(current) if next.journal == current.journal => {
-            if next.fence == current.fence {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            if next.fence.generation <= current.fence.generation {
-                return Err(LockedFileCasErrorV1::Rollback);
-            }
-            encode_fence(&next.fence)
-        }
-        Some(current) => {
-            if next.fence != current.fence
-                || next.journal.records.len() != current.journal.records.len() + 1
-                || next.journal.records[..current.journal.records.len()]
-                    != current.journal.records[..]
-            {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            let record = next
-                .journal
-                .records
-                .last()
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let encoded =
-                encode_holdout_plan(&record.plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut payload = vec![EVENT_PLAN];
-            payload.extend_from_slice(&encoded);
-            Ok(payload)
-        }
-    }
-}
-
-fn replay_event(
-    binding: Digest32,
-    current: Option<FinalHoldoutCasRecordV1>,
-    payload: &[u8],
-) -> Result<FinalHoldoutCasRecordV1, LockedFileCasErrorV1> {
-    let tag = *payload.first().ok_or(LockedFileCasErrorV1::Corrupt)?;
-    match tag {
-        EVENT_FENCE => {
-            let fence = decode_fence(payload)?;
-            let journal = match current {
-                Some(ref current) => {
-                    if fence.generation <= current.fence.generation {
-                        return Err(LockedFileCasErrorV1::Rollback);
-                    }
-                    FinalHoldoutJournalV1::from_snapshot_with_record_limit(
-                        current.journal.clone(),
-                        MAX_RECORDS,
-                    )
-                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?
-                }
-                None => FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
-                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
-            };
-            FinalHoldoutCasRecordV1::new(binding, fence, journal.snapshot())
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)
-        }
-        EVENT_PLAN => {
-            let current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let plan =
-                decode_holdout_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
-                current.journal.clone(),
-                MAX_RECORDS,
-            )
-            .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let receipt = journal
-                .consume(journal.head_digest(), &plan)
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            FinalHoldoutCasRecordV1::new(binding, current.fence, journal.snapshot())
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)
-        }
-        _ => Err(LockedFileCasErrorV1::Corrupt),
-    }
-}
-
-fn encode_fence(fence: &HoldoutWriterFenceV1) -> Result<Vec<u8>, LockedFileCasErrorV1> {
-    if fence.generation == 0 || fence.lease_digest.is_zero() {
-        return Err(LockedFileCasErrorV1::Binding);
-    }
-    let owner = fence.owner_id.as_str().as_bytes();
-    let owner_len = u16::try_from(owner.len()).map_err(|_| LockedFileCasErrorV1::Capacity)?;
-    let mut payload = vec![EVENT_FENCE];
-    payload.extend_from_slice(&owner_len.to_be_bytes());
-    payload.extend_from_slice(owner);
-    payload.extend_from_slice(&fence.generation.to_be_bytes());
-    payload.extend_from_slice(fence.lease_digest.as_array());
-    Ok(payload)
-}
-
-fn decode_fence(payload: &[u8]) -> Result<HoldoutWriterFenceV1, LockedFileCasErrorV1> {
-    if payload.first().copied() != Some(EVENT_FENCE) || payload.len() < 1 + 2 + 8 + 32 {
-        return Err(LockedFileCasErrorV1::Corrupt);
-    }
-    let owner_len = u16::from_be_bytes([payload[1], payload[2]]) as usize;
-    let owner_start = 3;
-    let owner_end = owner_start + owner_len;
-    let generation_end = owner_end + 8;
-    let lease_end = generation_end + 32;
-    if lease_end != payload.len() {
-        return Err(LockedFileCasErrorV1::Corrupt);
-    }
-    let owner = std::str::from_utf8(
-        payload
-            .get(owner_start..owner_end)
-            .ok_or(LockedFileCasErrorV1::Corrupt)?,
-    )
-    .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-    let generation_bytes = payload
-        .get(owner_end..generation_end)
-        .ok_or(LockedFileCasErrorV1::Corrupt)?;
-    let generation = u64::from_be_bytes(
-        generation_bytes
-            .try_into()
-            .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
-    );
-    let lease = payload
-        .get(generation_end..lease_end)
-        .ok_or(LockedFileCasErrorV1::Corrupt)?;
-    let lease_digest = Digest32::from_array(
-        lease
-            .try_into()
-            .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
-    );
-    let owner_id = StableId::new(owner).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-    if generation == 0 || lease_digest.is_zero() {
-        return Err(LockedFileCasErrorV1::Corrupt);
-    }
-    Ok(HoldoutWriterFenceV1 {
-        owner_id,
-        generation,
-        lease_digest,
-    })
 }
 
 fn validate_minimum(

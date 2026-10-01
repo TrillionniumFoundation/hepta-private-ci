@@ -98,6 +98,7 @@
     },
     "recoverySource": {
       "acceptedUnknownAnchorRequiresReopen": true,
+      "activatedTrustExpiryCheckedAtSelectedHostFinalUse": true,
       "boundedPendingDiscovery": true,
       "canonicalTypedQualificationArchive": true,
       "coldRestartDoesNotRetainPreCrashTypedObjects": true,
@@ -123,7 +124,9 @@
       "processKillFixtureCutCount": 7,
       "rootActivatedTrustResolvedPerAttempt": true,
       "selectedHostArtifactResumeE2EFixture": true,
+      "selectedHostBareVerifierCompileRejected": true,
       "selectedHostBindingSwapRejected": true,
+      "selectedHostPublicFinalUseRequiresRootActivatedTrust": true,
       "trustFrontierMonotonicWithinPage": true,
       "unverifiedResumeHelperCratePrivate": true,
       "writeAheadPublicationPhases": true
@@ -137,5 +140,5 @@
     },
     "verifiedHoldoutCompaction": true
   },
-  "statusSemantics": "Generated lexical source inventory only; compilation, product invocation, exact-tree execution, target-host qualification, independent acceptance, activation and release are separate facts."
+  "statusSemantics": "Generated lexical source inventory only; root-activated selected-host trust and its compiler-negative boundary are source/API facts, while compilation, product invocation, exact-tree execution, authenticated target-host sessions, independent acceptance, activation and release are separate facts."
 }

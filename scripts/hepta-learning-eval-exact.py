@@ -4,6 +4,7 @@
 This proves only the commands actually run against one immutable checkout. It
 never edits source/status, issues operator acceptance, or manufactures host data.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,7 +57,9 @@ def validate_checkout(
     parents = git(root, "show", "-s", "--format=%P", "HEAD").split()
     if kind == "merge":
         if base is None or parents != [base, candidate]:
-            raise ValueError("merge must have ordered parents [exact base, exact candidate]")
+            raise ValueError(
+                "merge must have ordered parents [exact base, exact candidate]"
+            )
     elif kind != "head" or source != candidate:
         raise ValueError("head qualification must test the exact candidate")
     return {
@@ -281,11 +284,16 @@ def commands(output: Path) -> list[tuple[str, list[str], str]]:
             [
                 "cargo",
                 "llvm-cov",
+                "nextest",
                 "--locked",
                 "-p",
                 "codex-hepta-intelligence-eval",
                 "--all-targets",
                 "--no-default-features",
+                "--retries",
+                "0",
+                "--test-threads",
+                "4",
                 "--fail-under-lines",
                 "85",
                 "--json",
@@ -368,10 +376,14 @@ def validate_outputs(output: Path) -> dict[str, Any]:
         or profile["attempts"]["attemptCount"] != 1024
         or profile["attempts"]["eventCount"] != 7168
         or profile["holdout"]["fenceTransitions"] != 512
+        or profile["holdout"]["planRecords"] != 512
+        or profile["holdout"]["retryPreserved"] is not True
         or profile["holdout"]["anchorPreserved"] is not True
         or profile["holdout"]["afterBytes"] >= profile["holdout"]["beforeBytes"]
     ):
-        raise ValueError("storage profile does not satisfy the preregistered source profile")
+        raise ValueError(
+            "storage profile does not satisfy the preregistered source profile"
+        )
     return {
         "defaultProductionCoverage": {
             "count": count,

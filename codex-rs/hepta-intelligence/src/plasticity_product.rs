@@ -514,8 +514,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         evaluation_binding.extend_from_slice(admission.evidence_digest.as_array());
         evaluation_binding
             .extend_from_slice(admission.decision.decision.evidence_digest.as_array());
-        evaluation_binding
-            .extend_from_slice(admission.decision.authentication_digest.as_array());
+        evaluation_binding.extend_from_slice(admission.decision.authentication_digest.as_array());
         evaluation_binding.extend_from_slice(admission.decision.trust_digest.as_array());
     }
     if let Some(unexpected) = evaluations.keys().next() {

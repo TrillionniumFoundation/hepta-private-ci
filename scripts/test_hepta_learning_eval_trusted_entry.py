@@ -47,9 +47,7 @@ def pull_request(
     }
 
 
-def exact_summary(
-    *, base: str = BASE, merge: str = MERGE
-) -> dict[str, object]:
+def exact_summary(*, base: str = BASE, merge: str = MERGE) -> dict[str, object]:
     return {
         "baseCommit": base,
         "syntheticMergeCommit": merge,
@@ -113,9 +111,7 @@ class StrictArtifactTests(unittest.TestCase):
             root = Path(temporary)
             self.write(root)
             self.assertEqual(
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                ),
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"]),
                 {"ok": True},
             )
 
@@ -154,36 +150,28 @@ class StrictArtifactTests(unittest.TestCase):
             root = Path(temporary)
             path = root / MODULE.SUMMARY_NAMES["exact"]
             path.write_text('{"ok": true}', encoding="utf-8")
-            self.assertEqual(
-                MODULE.load_strict_summary(root, path.name), {"ok": True}
-            )
+            self.assertEqual(MODULE.load_strict_summary(root, path.name), {"ok": True})
 
     def test_duplicate_top_level_json_key_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.write(root, '{"claims": {}, "claims": {}}')
             with self.assertRaisesRegex(ValueError, "duplicate JSON object key"):
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                )
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"])
 
     def test_duplicate_nested_json_key_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.write(root, '{"outer": {"runId": "1", "runId": "2"}}')
             with self.assertRaisesRegex(ValueError, "duplicate JSON object key"):
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                )
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"])
 
     def test_nonfinite_json_constant_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.write(root, '{"value": NaN}')
             with self.assertRaisesRegex(ValueError, "non-finite JSON"):
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                )
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"])
 
     def test_extra_regular_file_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -191,9 +179,7 @@ class StrictArtifactTests(unittest.TestCase):
             self.write(root)
             (root / "companion.txt").write_text("untrusted", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "inventory mismatch"):
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                )
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"])
 
     def test_symlinked_directory_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -207,9 +193,7 @@ class StrictArtifactTests(unittest.TestCase):
             except OSError as error:
                 self.skipTest(f"symlink unavailable: {error}")
             with self.assertRaisesRegex(ValueError, "symlinks"):
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                )
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"])
 
     def test_artifact_depth_is_bounded(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -220,9 +204,7 @@ class StrictArtifactTests(unittest.TestCase):
                 nested.mkdir()
             self.write(nested)
             with self.assertRaisesRegex(ValueError, "depth"):
-                MODULE.load_strict_summary(
-                    root, MODULE.SUMMARY_NAMES["source"]
-                )
+                MODULE.load_strict_summary(root, MODULE.SUMMARY_NAMES["source"])
 
     def test_artifact_entry_count_is_bounded(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -257,9 +239,7 @@ class ProducerConclusionTests(unittest.TestCase):
         ):
             with self.subTest(conclusion=conclusion):
                 self.assertEqual(
-                    MODULE.normalized_job_conclusions(
-                        self.jobs(conclusion), "2"
-                    ),
+                    MODULE.normalized_job_conclusions(self.jobs(conclusion), "2"),
                     {"compile-default": "failure"},
                 )
 
@@ -267,9 +247,9 @@ class ProducerConclusionTests(unittest.TestCase):
         for conclusion in ("success", "cancelled", "skipped"):
             with self.subTest(conclusion=conclusion):
                 self.assertEqual(
-                    MODULE.normalized_job_conclusions(
-                        self.jobs(conclusion), "2"
-                    )["compile-default"],
+                    MODULE.normalized_job_conclusions(self.jobs(conclusion), "2")[
+                        "compile-default"
+                    ],
                     conclusion,
                 )
 
@@ -299,8 +279,10 @@ class ProducerConclusionTests(unittest.TestCase):
 
 class ControlPlaneIdentityTests(unittest.TestCase):
     def test_checked_in_control_plane_inventory_is_regular(self):
-        if not (MODULE.ROOT / ".git").is_dir():
-            self.skipTest("repository checkout is not mounted in this unit-test sandbox")
+        if not ((MODULE.ROOT / ".git").is_dir() or (MODULE.ROOT / ".git").is_file()):
+            self.skipTest(
+                "repository checkout is not mounted in this unit-test sandbox"
+            )
         for relative in MODULE.TRUSTED_CONTROL_PLANE_PATHS:
             with self.subTest(path=relative):
                 self.assertTrue(MODULE.trusted_control_plane_text(relative))
@@ -338,9 +320,7 @@ class ControlPlaneIdentityTests(unittest.TestCase):
             except OSError as error:
                 self.skipTest(f"symlink unavailable: {error}")
             with self.assertRaisesRegex(ValueError, "not regular"):
-                MODULE.trusted_control_plane_text(
-                    "scripts/check.py", root=root
-                )
+                MODULE.trusted_control_plane_text("scripts/check.py", root=root)
 
     def test_all_declared_control_plane_files_are_compared(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -381,20 +361,28 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("trusted\n", encoding="utf-8")
                 content[relative] = "trusted\n"
-            changed = MODULE.TRUSTED_CONTROL_PLANE_PATHS[-1]
-            content[changed] = "changed\n"
-
-            with mock.patch.object(
-                MODULE,
-                "_REPORTER",
-                SimpleNamespace(
-                    fetch_candidate_workflow=lambda repository, path, source, token: content[path]
-                ),
+            for changed in (
+                MODULE.TRUSTED_CONTROL_PLANE_PATHS[-1],
+                "scripts/just-shell.py",
             ):
-                with self.assertRaisesRegex(ValueError, "differs from trusted"):
-                    MODULE.validate_trusted_control_plane_identity(
-                        REPOSITORY, SOURCE, "token", root=root
-                    )
+                content[changed] = "changed\n"
+                with (
+                    self.subTest(changed=changed),
+                    mock.patch.object(
+                        MODULE,
+                        "_REPORTER",
+                        SimpleNamespace(
+                            fetch_candidate_workflow=lambda repository, path, source, token: (
+                                content[path]
+                            )
+                        ),
+                    ),
+                ):
+                    with self.assertRaisesRegex(ValueError, "differs from trusted"):
+                        MODULE.validate_trusted_control_plane_identity(
+                            REPOSITORY, SOURCE, "token", root=root
+                        )
+                content[changed] = "trusted\n"
 
 
 class CompleteJobInventoryTests(unittest.TestCase):
@@ -460,8 +448,7 @@ class MarkerTests(unittest.TestCase):
 
     def test_modern_and_legacy_marker_together_are_rejected(self):
         legacy = (
-            f"{MODULE.LEGACY_SOURCE_MARKER[0]}\nold\n"
-            f"{MODULE.LEGACY_SOURCE_MARKER[1]}\n"
+            f"{MODULE.LEGACY_SOURCE_MARKER[0]}\nold\n{MODULE.LEGACY_SOURCE_MARKER[1]}\n"
         )
         with self.assertRaisesRegex(ValueError, "both modern and legacy"):
             MODULE.validate_marker_inventory(self.block() + legacy, "source")
@@ -469,8 +456,7 @@ class MarkerTests(unittest.TestCase):
     def test_source_replacement_rejects_duplicate_exact_marker(self):
         exact = self.block("exact") + self.block("exact")
         replacement = (
-            f"{MODULE.MARKERS['source'][0]}\nnew\n"
-            f"{MODULE.MARKERS['source'][1]}\n"
+            f"{MODULE.MARKERS['source'][0]}\nnew\n{MODULE.MARKERS['source'][1]}\n"
         )
         with self.assertRaisesRegex(ValueError, "duplicate machine marker"):
             MODULE.replace_single_marker(exact, replacement, "source")
@@ -478,8 +464,7 @@ class MarkerTests(unittest.TestCase):
     def test_replacement_preserves_all_non_marker_text(self):
         body = "prefix\n" + self.block() + "suffix\n"
         replacement = (
-            f"{MODULE.MARKERS['source'][0]}\nnew\n"
-            f"{MODULE.MARKERS['source'][1]}\n"
+            f"{MODULE.MARKERS['source'][0]}\nnew\n{MODULE.MARKERS['source'][1]}\n"
         )
         changed = MODULE.replace_single_marker(body, replacement, "source")
         self.assertEqual(changed, "prefix\n" + replacement + "suffix\n")
@@ -492,8 +477,7 @@ class MarkerTests(unittest.TestCase):
             "suffix\n"
         )
         replacement = (
-            f"{MODULE.MARKERS['source'][0]}\nnew\n"
-            f"{MODULE.MARKERS['source'][1]}\n"
+            f"{MODULE.MARKERS['source'][0]}\nnew\n{MODULE.MARKERS['source'][1]}\n"
         )
         changed = MODULE.replace_single_marker(body, replacement, "source")
         self.assertNotIn(MODULE.LEGACY_SOURCE_MARKER[0], changed)
@@ -502,9 +486,7 @@ class MarkerTests(unittest.TestCase):
 
 class FinalPullRequestScopeTests(unittest.TestCase):
     def test_no_go_reporter_rejects_ready_for_review_pr(self):
-        with mock.patch.object(
-            MODULE, "_REPORTER", fake_reporter(mock.Mock())
-        ):
+        with mock.patch.object(MODULE, "_REPORTER", fake_reporter(mock.Mock())):
             with self.assertRaisesRegex(ValueError, "non-draft"):
                 MODULE.validate_final_pr_scope(
                     pull_request(draft=False),
@@ -516,9 +498,7 @@ class FinalPullRequestScopeTests(unittest.TestCase):
                 )
 
     def test_base_repository_substitution_is_rejected(self):
-        with mock.patch.object(
-            MODULE, "_REPORTER", fake_reporter(mock.Mock())
-        ):
+        with mock.patch.object(MODULE, "_REPORTER", fake_reporter(mock.Mock())):
             with self.assertRaisesRegex(ValueError, "base repository"):
                 MODULE.validate_final_pr_scope(
                     pull_request(base_repository="attacker/fork"),
@@ -530,9 +510,7 @@ class FinalPullRequestScopeTests(unittest.TestCase):
                 )
 
     def test_exact_base_change_before_patch_is_rejected(self):
-        with mock.patch.object(
-            MODULE, "_REPORTER", fake_reporter(mock.Mock())
-        ):
+        with mock.patch.object(MODULE, "_REPORTER", fake_reporter(mock.Mock())):
             with self.assertRaisesRegex(ValueError, "base changed"):
                 MODULE.validate_final_pr_scope(
                     pull_request(base="9" * 40),
@@ -544,9 +522,7 @@ class FinalPullRequestScopeTests(unittest.TestCase):
                 )
 
     def test_exact_merge_change_before_patch_is_rejected(self):
-        with mock.patch.object(
-            MODULE, "_REPORTER", fake_reporter(mock.Mock())
-        ):
+        with mock.patch.object(MODULE, "_REPORTER", fake_reporter(mock.Mock())):
             with self.assertRaisesRegex(ValueError, "synthetic merge changed"):
                 MODULE.validate_final_pr_scope(
                     pull_request(merge="9" * 40),
@@ -561,9 +537,7 @@ class FinalPullRequestScopeTests(unittest.TestCase):
         current = pull_request()
         stale = pull_request(head="9" * 40)
         request = mock.Mock(side_effect=[current, stale])
-        with mock.patch.object(
-            MODULE, "_REPORTER", fake_reporter(request)
-        ):
+        with mock.patch.object(MODULE, "_REPORTER", fake_reporter(request)):
             with self.assertRaisesRegex(ValueError, "stale"):
                 MODULE.update_current_pull_request_strict(
                     {},
@@ -589,9 +563,7 @@ class FinalPullRequestScopeTests(unittest.TestCase):
             updated = pull_request(body=payload["body"])
             return updated
 
-        with mock.patch.object(
-            MODULE, "_REPORTER", fake_reporter(request)
-        ):
+        with mock.patch.object(MODULE, "_REPORTER", fake_reporter(request)):
             body = MODULE.update_current_pull_request_strict(
                 {},
                 "source",

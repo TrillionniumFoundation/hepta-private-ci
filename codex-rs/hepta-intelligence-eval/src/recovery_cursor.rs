@@ -59,7 +59,10 @@ impl RecoveryCursor {
             let mut value = Self {
                 file,
                 binding,
-                progress: Progress { generation: 0, after: None },
+                progress: Progress {
+                    generation: 0,
+                    after: None,
+                },
                 slot: 1,
             };
             value.save(None)?;
@@ -88,7 +91,12 @@ impl RecoveryCursor {
             (None, Some(second)) => (second, 1),
             (None, None) => return Err(Error::Corrupt),
         };
-        Ok(Self { file, binding, progress, slot })
+        Ok(Self {
+            file,
+            binding,
+            progress,
+            slot,
+        })
     }
 
     pub(super) fn after(&self) -> Option<&StableId> {
@@ -103,7 +111,11 @@ impl RecoveryCursor {
             return Ok(());
         }
         let next = Progress {
-            generation: self.progress.generation.checked_add(1).ok_or(Error::Capacity)?,
+            generation: self
+                .progress
+                .generation
+                .checked_add(1)
+                .ok_or(Error::Capacity)?,
             after: after.cloned(),
         };
         let bytes = encode(&next, self.binding)?;
@@ -111,7 +123,8 @@ impl RecoveryCursor {
             return Err(Error::Indeterminate);
         }
         let slot = 1 - self.slot;
-        self.file.seek(SeekFrom::Start((slot * SLOT_BYTES) as u64))
+        self.file
+            .seek(SeekFrom::Start((slot * SLOT_BYTES) as u64))
             .and_then(|_| self.file.write_all(&bytes))
             .and_then(|()| self.file.sync_all())
             .map_err(|_| Error::Indeterminate)?;
@@ -173,7 +186,10 @@ fn decode(bytes: &[u8], binding: Digest32) -> Result<Option<Progress>, Error> {
         }
         _ => return Err(Error::Corrupt),
     };
-    if bytes[ID_START + length..BODY_BYTES].iter().any(|byte| *byte != 0) {
+    if bytes[ID_START + length..BODY_BYTES]
+        .iter()
+        .any(|byte| *byte != 0)
+    {
         return Err(Error::Corrupt);
     }
     Ok(Some(Progress { generation, after }))

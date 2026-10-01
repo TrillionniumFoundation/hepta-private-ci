@@ -33,6 +33,7 @@ rust_test(
         "//codex-rs/hepta-ndu",
         "//codex-rs/hepta-objective",
         "//codex-rs/hepta-types",
+        "@crates//:ed25519-dalek",
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],

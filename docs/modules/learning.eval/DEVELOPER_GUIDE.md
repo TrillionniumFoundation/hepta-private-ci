@@ -29,7 +29,7 @@ only for the isolated compatibility fixture and must not appear in a product dep
 manifest.
 
 ```mermaid
-flowchart LR
+flowchart TD
     P[Producer evidence] --> V[Signature and current-trust verification]
     V --> E[Independent evaluation]
     E --> C[Consumer-bound admission]
@@ -54,13 +54,11 @@ external publication owner is read back and the exact nonzero result is observed
 
 ```mermaid
 sequenceDiagram
-    participant Caller
     participant Runner
     participant AttemptJournal
     participant HoldoutOwner
     participant Provider
     participant PublicationOwner
-    Caller->>Runner: frozen plan + attempt identity
     Runner->>AttemptJournal: IntentPersisted
     Runner->>HoldoutOwner: fenced consume
     HoldoutOwner-->>Runner: durable consumption receipt
@@ -73,12 +71,20 @@ sequenceDiagram
     Runner->>PublicationOwner: create-or-read exact publication
     PublicationOwner-->>Runner: read-verified durable result
     Runner->>AttemptJournal: Published
-    Runner-->>Caller: authority-free qualification receipt
 ```
 
 The supported public namespace is `codex_hepta_intelligence_eval::product`. The raw
 `ProductEvaluationRunnerV1`, direct decision primitives, and in-memory attempt journal are
 not part of that canonical product facade.
+
+The single-outcome receipt evidence domain is
+`hepta.intelligence-eval.product-qualification.v4`. Integrity validation binds
+every signed-decision field, including disposition, identities and the ordered
+failed-metric list. Its outer receipt-seal domain remains v1. A domain-v3
+in-memory receipt must be regenerated after verifying the original evaluation
+or typed archive; candidate/use signatures over its old evidence digest must
+also be reissued. Archive, journal and publication wire formats are unchanged.
+Regeneration does not permit another publication of an existing effect.
 
 ## 4. State machine
 
@@ -95,7 +101,6 @@ stateDiagram-v2
     HoldoutConsumed --> ComparisonSealed
     ComparisonSealed --> Failed
     ComparisonSealed --> QualificationArtifactsPersisted
-    ComparisonSealed --> QualificationDecided
     QualificationArtifactsPersisted --> Failed
     QualificationArtifactsPersisted --> QualificationDecided
     QualificationDecided --> PublicationPending
@@ -107,7 +112,9 @@ stateDiagram-v2
 
 Every transition is attempt-, plan-, phase-, predecessor-, and payload-bound. A repeated
 identical transition is idempotent; an identity reused with different semantics is a
-conflict.
+conflict. Public product qualification always passes through
+`QualificationArtifactsPersisted`; readable historical compatibility records do not
+authorize a new product attempt to skip archive persistence.
 
 ## 5. Persistence and recovery
 
@@ -136,6 +143,14 @@ Crash handling is fail-closed:
 A real deployment must additionally qualify directory durability, mount options,
 linearizable lock/CAS semantics, power-loss behavior, and failure-domain independence.
 
+Immediately before a selected-host first publication write, the guard reloads
+the entire archive and compares its byte digest and original holdout-record
+digest, then samples current clock/trust and re-verifies the exact decision.
+Cold recovery derives the expected identity from validated anchored attempt
+history, rather than accepting a fresh digest calculated from replacement disk
+contents. An archive or outer holdout substitution after `PublicationPending`
+creates no publication and remains unresolved for read reconciliation.
+
 ## 6. Statistical contract
 
 Plans bind the objective, dataset, folds, estimand, metric roles, support rules, temporal
@@ -143,6 +158,24 @@ windows, cluster assignments, and confidence procedure. Fixed-analysis qualifica
 not import adaptive thresholds after holdout use. Multi-outcome evaluation preserves each
 native measurement channel; renaming a metric cannot substitute for independent measured
 outcomes.
+
+ESS admission uses finite Q32 outward bounds on the original propensity ratios
+and, for sequential OPE, their products at every depth. Nearest/ties-to-even
+weights and receipt ESS are point diagnostics. Admission requires a proven
+lower bound at the frozen floor or exact positive-weight equality proving
+`ESS = n` at a floor no greater than `n`. An upper bound can prove insufficient
+support; a nonuniform unresolved interval returns `NumericalSupportGap`. It must never be
+reported as a proof that true ESS either passes or fails the floor.
+
+At the maximum floor `ESS = n`, identical positive true weights satisfy the
+Cauchy equality check even when their probabilities have different encodings.
+Sequential equality uses fixed 129-limb buffers for `horizon <= 128`, including
+the `2^8192` endpoint; it is an equality proof, not arbitrary exact rational ESS.
+See the [production contract](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md#ess-certification-from-original-propensities)
+for the bound formulas and retained resource caps. Near-floor nonuniform data
+can remain a numerical support gap. A strict boundary regression separates two
+ESS values by approximately `2.4e-20`; it demonstrates threshold correctness,
+not a measurable practical effect or statistical power gain.
 
 Repository tests can establish deterministic estimators, digest binding, fold separation,
 capacity, and recovery behavior. Real future-window provenance, statistical power,
@@ -204,7 +237,9 @@ PR status is a separate trust boundary. The trusted default-branch
 `workflow_run` reporter downloads `qualification-summary.json` or
 `exact-summary.json` as **untrusted data**, then verifies:
 
-- the exact artifact name and one regular, bounded summary file;
+- the exact artifact name and regular, bounded files: source qualification requires
+  exactly `qualification-summary.json` and its consistent `CURRENT_STATUS.run.json`;
+  exact-tree qualification requires exactly `exact-summary.json`;
 - schema and canonical SHA-256;
 - producer repository, workflow run ID, and run attempt;
 - candidate commit and tree;
@@ -231,3 +266,47 @@ acceptance, independently administered infrastructure must provide and sign:
 
 Until those facts exist and every required source/exact check is green on one immutable
 candidate, the PR remains Draft and the release posture remains `NO_GO`.
+
+## 11. Adversarial review invariants
+
+The evaluator sits in the qualification plane between authenticated learning
+observations/artifacts and the intelligence or plasticity consumers. It emits
+evidence with `DENY_ALL`; it does not select artifacts, mutate production learning
+state, activate a runtime, or authorize effects. Source implementation, developer
+verification, target-host qualification, independent acceptance and release are
+separate completion dimensions.
+
+The detailed development material covers the frozen analysis contract, estimator
+assumptions, metric roles, signed independence, holdout consumption, seven-phase
+attempt lifecycle, typed archives, recovery, capacity, consumers and qualification.
+Review that material against the actual executable source; a generated source
+inventory is not a test receipt.
+
+The following failure cases must remain regression obligations:
+
+| Failure case | Required behavior |
+| --- | --- |
+| An exact propensity ratio exceeds the cumulative ceiling but rounds down into it | Admission uses a conservative upper bound independent of point-estimate rounding. |
+| Observed returns look bounded while an unobserved admissible trajectory has greater weighted return | Confidence envelopes cover the complete plan-level estimator range, including nuisance predictions and numerical error. A sample maximum cannot establish a Hoeffding range. |
+| Subject signatures outlive the root-signed trust distribution | Agentd rejects the expired activation even when the underlying signatures still verify. |
+| Archive or journal work advances time after ingress verification | Selected-host publication rechecks the clock, activation and original signed archive at the actual sink boundary. Expiry preserves unresolved history without publishing. |
+| A public single-outcome decision header is changed without changing its old evidence digest | The v4 receipt integrity check rejects changed disposition, IDs or failed-metric content/order. |
+| Complete archive bytes or only the outer holdout digest are substituted after Pending | Compare the original byte and holdout digests from prepared inputs or validated cold history before any publication. Retain unresolved Pending on rejection. |
+| Rounded weights yield an ESS at the floor while true propensity weights differ | Certify original ratios with outward bounds; exact positive-weight equality can establish `ESS = n`, while unresolved nonuniform data returns a numerical support gap. |
+| A publicly constructible CAS record encodes a noncanonical journal state | The exact state reproduced by the proposed persisted event must equal the entire candidate record before writing. |
+| A valid checkpoint is paired with a different same-length journal prefix | Recovery verifies the original framed prefix digest, event count and byte frontier before restoring reducer state. |
+| Complete post-anchor frames remain readable after an unknown sync result | Recovery synchronizes the locked journal before acknowledging its recovered frontier or advancing the independent anchor. |
+| A deterministic rejection occurs before any write | The owner remains usable and its durable state is unchanged; accepted-or-unknown writes require reopen and reconciliation. |
+
+API narrowing, parser/identity validation and trusted reporting checks must fail
+for the intended reason. Missing imports, stale test expectations, undiscovered
+filters, pending workflows and unrelated compiler errors cannot count as passing
+qualification.
+
+Performance claims also require the appropriate workload. Checkpoint recovery
+still streams and hashes the original prefix; only reducer execution is limited
+to the tail. Nonempty holdout histories must be measured independently of
+empty-journal fence takeover. The retained v2 registry digest requires whole-set
+work, so current wire-compatible recovery is not constant time in record count.
+These limits belong in the selected-host capacity evidence and must not be
+concealed by small fixtures or renamed as production completion.

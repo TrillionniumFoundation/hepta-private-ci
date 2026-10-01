@@ -164,9 +164,7 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             let mut raw = [0u8; 4];
             file.read_exact(&mut raw).map_err(io_error)?;
             let count = u32::from_be_bytes(raw) as usize;
-            if !(1..=MAX_FRAME).contains(&count)
-                || length - cursor - 4 < count as u64 + 32
-            {
+            if !(1..=MAX_FRAME).contains(&count) || length - cursor - 4 < count as u64 + 32 {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
             }
             let mut payload = vec![0u8; count];
@@ -178,8 +176,7 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
             }
             let transition = decode_transition(&payload)?;
-            let (receipt, appended) =
-                preview_transition(&attempts, &plan_owners, transition)?;
+            let (receipt, appended) = preview_transition(&attempts, &plan_owners, transition)?;
             if !appended {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
             }
@@ -202,6 +199,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
         if !anchor_seen || file.metadata().map_err(io_error)?.len() != length {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
+        // A complete tail may have survived an outcome-unknown sync. Establish
+        // file durability before an anchored recovery acknowledges its frontier.
+        file.sync_all()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         // Legacy prefixes remain readable, including a prefix that did not
         // reserve enough space. New admission is refused while existing work
         // may spend the remaining bytes; migration never rewrites consumption.
@@ -293,12 +294,7 @@ impl ProductEvaluationAttemptJournalV1 for LockedFileProductEvaluationAttemptJou
         } else if self
             .capacity
             .reserved()
-            .check(
-                self.length,
-                self.event_count,
-                maximum_bytes,
-                maximum_events,
-            )
+            .check(self.length, self.event_count, maximum_bytes, maximum_events)
             .is_ok()
         {
             reservation.check(
@@ -387,8 +383,8 @@ fn encode_transition(
 ) -> Result<Vec<u8>, ProductEvaluationAttemptJournalErrorV1> {
     transition.validate()?;
     let id = transition.attempt_id.as_str().as_bytes();
-    let length = u16::try_from(id.len())
-        .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
+    let length =
+        u16::try_from(id.len()).map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
     let mut bytes = Vec::with_capacity(2 + id.len() + 97);
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(id);
@@ -415,12 +411,11 @@ fn decode_transition(
     let end = 2 + length;
     let id = std::str::from_utf8(&payload[2..end])
         .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?;
-    let digest =
-        |bytes: &[u8]| -> Result<Digest32, ProductEvaluationAttemptJournalErrorV1> {
-            Ok(Digest32::from_array(bytes.try_into().map_err(|_| {
-                ProductEvaluationAttemptJournalErrorV1::Corrupt
-            })?))
-        };
+    let digest = |bytes: &[u8]| -> Result<Digest32, ProductEvaluationAttemptJournalErrorV1> {
+        Ok(Digest32::from_array(bytes.try_into().map_err(|_| {
+            ProductEvaluationAttemptJournalErrorV1::Corrupt
+        })?))
+    };
     let transition = ProductEvaluationAttemptTransitionV1 {
         attempt_id: StableId::new(id)
             .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?,
@@ -433,19 +428,11 @@ fn decode_transition(
     Ok(transition)
 }
 
-fn acquire(
-    file: &File,
-    binding: Digest32,
-) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
+fn acquire(file: &File, binding: Digest32) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
     if binding.is_zero() {
         return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
     }
-    if !file
-        .metadata()
-        .map_err(io_error)?
-        .file_type()
-        .is_file()
-    {
+    if !file.metadata().map_err(io_error)?.file_type().is_file() {
         return Err(ProductEvaluationAttemptJournalErrorV1::NotRegular);
     }
     match file.try_lock() {

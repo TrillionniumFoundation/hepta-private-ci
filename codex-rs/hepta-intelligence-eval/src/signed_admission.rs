@@ -5,7 +5,7 @@
 //! and returns an integrity-sealed, authority-free receipt. It does not consume a
 //! final holdout, publish product qualification evidence, or mint selection,
 //! activation, promotion, or release authority. Product qualification must still
-//! use [`crate::ProductEvaluationRunnerV1`].
+//! use [`crate::RecordedProductEvaluationRunnerV1`].
 
 use std::error::Error as StdError;
 use std::fmt;

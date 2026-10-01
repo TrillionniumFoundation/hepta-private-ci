@@ -207,10 +207,11 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             })
             .ok_or_else(rejected)?;
         let execution = sealed.transition.terminal_digest;
-        let request = ProductQualificationPublicationRequestV1::new(execution, decision)
-            .map_err(|error| {
+        let request = ProductQualificationPublicationRequestV1::new(execution, decision).map_err(
+            |error| {
                 RecordedProductEvaluationErrorV1::Evaluation(ProductEvaluationError::Sink(error))
-            })?;
+            },
+        )?;
         if request.request_digest != latest.transition.terminal_digest {
             return Err(rejected());
         }

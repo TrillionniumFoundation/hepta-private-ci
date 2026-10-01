@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 use std::fs;
 use std::fs::OpenOptions;
@@ -6,6 +7,8 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_types::FixedQ32;
 
@@ -17,6 +20,9 @@ use crate::FencedFinalHoldoutOwnerV1;
 use crate::HoldoutFenceIssuerV1;
 use crate::MetricContractV1;
 use crate::freeze_cross_fold_plan;
+
+#[path = "fenced_holdout_replay_tests.rs"]
+mod replay_tests;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -32,17 +38,32 @@ fn digest(value: &str) -> Digest32 {
 }
 
 struct TempFile {
+    root: PathBuf,
     path: PathBuf,
 }
 
 impl TempFile {
     fn new() -> Self {
-        let path = std::env::temp_dir().join(format!(
-            "hepta-fenced-cas-{}-{}",
-            std::process::id(),
-            NEXT.fetch_add(1, Ordering::Relaxed)
-        ));
-        Self { path }
+        for _ in 0..16 {
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos();
+            let root = std::env::temp_dir().join(format!(
+                "hepta-fenced-cas-{}-{nonce}-{}",
+                std::process::id(),
+                NEXT.fetch_add(/*val*/ 1, Ordering::Relaxed)
+            ));
+            match fs::create_dir(&root) {
+                Ok(()) => {
+                    let path = root.join("store.cas");
+                    return Self { root, path };
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                Err(error) => panic!("reserve private temp store directory: {error}"),
+            }
+        }
+        panic!("could not reserve a private temp store directory")
     }
 
     fn create(&self) -> File {
@@ -67,7 +88,7 @@ impl TempFile {
 
 impl Drop for TempFile {
     fn drop(&mut self) {
-        let _ = fs::remove_file(&self.path);
+        let _ = fs::remove_dir_all(&self.root);
     }
 }
 
@@ -288,4 +309,116 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
             .err(),
         Some(LockedFileCasErrorV1::Rollback)
     );
+}
+
+#[test]
+fn malformed_initial_snapshot_is_rejected_before_any_file_write() {
+    let temp = TempFile::new();
+    let binding = digest("binding");
+    let mut store =
+        LockedFileFinalHoldoutCasStoreV1::create(temp.create(), binding).expect("create store");
+    let mut snapshot = FinalHoldoutJournalV1::new().snapshot();
+    snapshot.head_digest = digest("invented-empty-head");
+    let malformed = FinalHoldoutCasRecordV1::new(
+        binding,
+        HoldoutWriterFenceV1 {
+            owner_id: id("owner"),
+            generation: 1,
+            lease_digest: digest("lease"),
+        },
+        snapshot,
+    )
+    .expect("metadata digest is constructible for the malformed snapshot");
+    malformed
+        .validate(binding)
+        .expect("metadata digest is valid");
+    let before = store.byte_len();
+    assert_eq!(
+        store.compare_and_swap(binding, None, &malformed),
+        Err(FinalHoldoutCasStoreError::Rejected)
+    );
+    assert_eq!(store.load(binding), Ok(None));
+    assert_eq!(store.byte_len(), before);
+    drop(store);
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, None)
+        .expect("rejected snapshot leaves a recoverable empty store");
+    assert_eq!(recovered.anchor(), None);
+}
+
+#[test]
+fn append_rejects_every_noncanonical_record_field_without_consuming_the_plan() {
+    let temp = TempFile::new();
+    let binding = digest("binding");
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::create(temp.create(), binding).expect("create store");
+    let first = owner(store, None);
+    let fence = first.fence().clone();
+    let mut store = first.into_store();
+    let current = store.load(binding).expect("load").expect("current");
+    let before = store.byte_len();
+    let mut journal = FinalHoldoutJournalV1::new();
+    journal
+        .consume(journal.head_digest(), &plan("canonical-plan"))
+        .expect("stage canonical plan");
+    let canonical = journal.snapshot();
+    let mut malformed = vec![canonical.clone(); 5];
+    malformed[0].head_digest = digest("wrong-head");
+    malformed[1].records[0].sequence = 2;
+    malformed[2].records[0].predecessor_head_digest = digest("wrong-predecessor");
+    malformed[3].records[0].record_digest = digest("wrong-record");
+    malformed[4].records[0].use_receipt.use_digest = digest("wrong-use");
+    for snapshot in malformed {
+        let next = FinalHoldoutCasRecordV1::new(binding, fence.clone(), snapshot)
+            .expect("metadata digest");
+        assert_eq!(
+            store.compare_and_swap(binding, Some(current.state_digest), &next),
+            Err(FinalHoldoutCasStoreError::Rejected)
+        );
+        assert_eq!(store.load(binding), Ok(Some(current.clone())));
+        assert_eq!(store.byte_len(), before);
+    }
+    let next = FinalHoldoutCasRecordV1::new(binding, fence, canonical).expect("canonical record");
+    store
+        .compare_and_swap(binding, Some(current.state_digest), &next)
+        .expect("rejected mutations never consume the canonical plan");
+    let retained = store.anchor();
+    drop(store);
+    let mut recovered = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, retained)
+        .expect("recover exact persisted state");
+    assert_eq!(recovered.load(binding), Ok(Some(next)));
+}
+
+#[test]
+fn replay_keeps_one_canonical_journal_across_interleaved_fence_takeovers() {
+    let temp = TempFile::new();
+    let binding = digest("binding");
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::create(temp.create(), binding).expect("create store");
+    let mut current = owner(store, None);
+    let mut retained = current.anchor();
+    for index in 0..12 {
+        current
+            .consume(&plan(&format!("replay-{index}")))
+            .expect("consume plan");
+        if index == 5 {
+            retained = current.anchor();
+        }
+        current = FencedFinalHoldoutOwnerV1::recover(
+            current.into_store(),
+            binding,
+            HoldoutWriterFenceV1 {
+                owner_id: id(&format!("owner-{index}")),
+                generation: index + 2,
+                lease_digest: digest(&format!("lease-{index}")),
+            },
+        )
+        .expect("take over");
+    }
+    let mut store = current.into_store();
+    let expected = store.load(binding).expect("load");
+    drop(store);
+    let mut recovered =
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, Some(retained))
+            .expect("recover witnessed prefix and later transitions");
+    assert_eq!(recovered.load(binding), Ok(expected));
 }

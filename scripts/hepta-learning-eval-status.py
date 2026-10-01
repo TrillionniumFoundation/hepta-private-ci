@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate conservative lexical source truth for learning.eval."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,13 +9,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-from hepta_rust_identifiers import contains_rust_identifier
+from hepta_rust_identifiers import contains_rust_identifier, rust_code_tokens
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = ROOT / "docs/modules/learning.eval/CURRENT_STATUS.json"
 MODEL = ROOT / "scripts/learning_eval_status_model.json"
 MAP = ROOT / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
 EVAL_ROOT = ROOT / "codex-rs/hepta-intelligence-eval"
+# Fixed owned roots prevent a partial or stale implementation map from omitting
+# executable source, build inputs, fixtures or newly added files from observation.
+SOURCE_IDENTITY_ROOTS = ("codex-rs/hepta-intelligence-eval",)
 FALSE_CLAIMS = {
     "productionImplementation",
     "targetHostQualified",
@@ -39,6 +43,7 @@ TRUE_SOURCE = {
 REQUIRED_SYMBOLS = {
     "RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison",
     "RecordedProductEvaluationRunnerV1::qualify_and_persist",
+    "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts",
     "admit_signed_eligibility_v2",
     "ReconciledProductQualificationSinkV1::persist",
     "LockedFileProductEvaluationAttemptJournalV1",
@@ -49,7 +54,7 @@ REQUIRED_SYMBOLS = {
     "LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint",
     "AnchoredProductEvaluationAttemptJournalV1::recover_with_checkpoint",
     "RecordedProductEvaluationRunnerV1::reconcile_pending_page",
-    "Archive::persist",
+    "PreparedArchive::persist",
     "qualification_archive::recover",
     "RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host",
     "RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist_on_selected_host",
@@ -67,13 +72,11 @@ REQUIRED_TOKENS = {
     "codex-rs/hepta-intelligence-eval/src/qualification_archive.rs": [
         "No decoder callback",
         "QualificationArtifactsPersisted",
-        "archive.verify(verifier, now)",
     ],
     "codex-rs/hepta-intelligence-eval/src/selected_host_recovery_controller.rs": [
         "recover_selected_host_pending_page",
         "ActivatedLearningTrustV1",
         "selected-host recovery trust regressed",
-        "cursor.save(Some(&id))",
         "PublicationPending",
     ],
     "codex-rs/hepta-intelligence-eval/src/attempt_capacity.rs": [
@@ -142,6 +145,14 @@ REQUIRED_TOKENS = {
         "External gates remain false",
     ],
 }
+REQUIRED_CODE_CALLS = {
+    "codex-rs/hepta-intelligence-eval/src/qualification_archive.rs": [
+        "archive.verify(verifier, now)",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/selected_host_recovery_controller.rs": [
+        "cursor.save(Some(&id))",
+    ],
+}
 
 
 def canonical(value: object) -> str:
@@ -167,6 +178,19 @@ def require_tokens() -> None:
         for token in tokens:
             if token not in text:
                 raise SystemExit(f"{relative}: missing {token!r}")
+    for relative, calls in REQUIRED_CODE_CALLS.items():
+        path = ROOT / relative
+        if not path.is_file():
+            raise SystemExit(f"missing required path: {relative}")
+        tokens = rust_code_tokens(path.read_text(encoding="utf-8"))
+        for call in calls:
+            expected = rust_code_tokens(call)
+            if not any(
+                tokens[index : index + len(expected)] == expected
+                and (index == 0 or tokens[index - 1] not in (".", ":"))
+                for index in range(len(tokens) - len(expected) + 1)
+            ):
+                raise SystemExit(f"{relative}: missing code call {call!r}")
 
 
 def external_references(symbol: str) -> list[str]:
@@ -183,7 +207,10 @@ def external_references(symbol: str) -> list[str]:
 
 def validate_map(model: dict) -> None:
     value = json.loads(MAP.read_text(encoding="utf-8"))
-    if value.get("schema") != "hepta.module-implementation-map.v3" or value.get("module") != "learning.eval":
+    if (
+        value.get("schema") != "hepta.module-implementation-map.v3"
+        or value.get("module") != "learning.eval"
+    ):
         raise SystemExit("implementation-map identity drift")
     rows = value.get("operations", [])
     symbols = [row.get("nativeSymbol") for row in rows]
@@ -213,17 +240,55 @@ def validate_map(model: dict) -> None:
         raise SystemExit("external claim self-issued")
     source = value.get("sourceBase", {})
     commit, tree = source.get("commit", ""), source.get("tree", "")
-    if len(commit) != 40 or git("rev-parse", f"{commit}^{{tree}}").stdout.strip() != tree:
+    if (
+        len(commit) != 40
+        or git("rev-parse", f"{commit}^{{tree}}").stdout.strip() != tree
+    ):
         raise SystemExit("source observation identity drift")
     git("merge-base", "--is-ancestor", commit, "HEAD")
     for caller in model["sourceFacts"]["callers"]:
         checked_paths.add(caller["sourcePath"])
-    changed = [
-        path for path in sorted(checked_paths)
-        if git("diff", "--quiet", commit, "--", path, check=False).returncode == 1
-    ]
+    observed_paths = sorted(checked_paths | set(SOURCE_IDENTITY_ROOTS))
+    changed = sorted(
+        set(
+            filter(
+                None,
+                git(
+                    "diff",
+                    "--no-ext-diff",
+                    "--name-only",
+                    "-z",
+                    commit,
+                    "--",
+                    *observed_paths,
+                ).stdout.split("\0"),
+            )
+        )
+    )
     if changed:
-        raise SystemExit("mapped executable source changed after observation: " + ", ".join(changed))
+        raise SystemExit(
+            "owned or mapped source changed after observation: " + ", ".join(changed)
+        )
+    untracked = sorted(
+        set(
+            filter(
+                None,
+                git(
+                    "ls-files",
+                    "--others",
+                    "--exclude-standard",
+                    "-z",
+                    "--",
+                    *observed_paths,
+                ).stdout.split("\0"),
+            )
+        )
+    )
+    if untracked:
+        raise SystemExit(
+            "untracked owned or mapped source lacks observation: "
+            + ", ".join(untracked)
+        )
 
 
 def validate() -> dict:
@@ -252,9 +317,22 @@ def main() -> None:
     parser.add_argument("command", choices=("write", "verify", "print"))
     args = parser.parse_args()
     if args.command == "verify":
-        for pattern in ("test_hepta_rust_identifiers.py", "test_hepta_learning_eval_projection.py"):
+        for pattern in (
+            "test_hepta_rust_identifiers.py",
+            "test_hepta_learning_eval_projection.py",
+            "test_hepta_learning_eval_status.py",
+        ):
             subprocess.run(
-                [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"), "-p", pattern],
+                [
+                    sys.executable,
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    str(ROOT / "scripts"),
+                    "-p",
+                    pattern,
+                ],
                 check=True,
             )
     output = canonical(validate())
@@ -264,9 +342,19 @@ def main() -> None:
         STATUS.write_text(output, encoding="utf-8")
         print(json.dumps({"written": str(STATUS.relative_to(ROOT))}))
     elif not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != output:
-        raise SystemExit("learning.eval status is stale; run scripts/hepta-learning-eval-status.py write")
+        raise SystemExit(
+            "learning.eval status is stale; run scripts/hepta-learning-eval-status.py write"
+        )
     else:
-        print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": 6}))
+        print(
+            json.dumps(
+                {
+                    "status": "ok",
+                    "evidenceClass": "lexical_source_inventory",
+                    "documentsChecked": 6,
+                }
+            )
+        )
 
 
 if __name__ == "__main__":

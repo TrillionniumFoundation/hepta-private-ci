@@ -37,7 +37,7 @@ impl TempFile {
             .read(true)
             .write(true)
             .open(&path)
-            .expect("create temporary file");
+            .unwrap_or_else(|error| panic!("create temporary file: {error:?}"));
         Self { path }
     }
 
@@ -46,7 +46,7 @@ impl TempFile {
             .read(true)
             .write(true)
             .open(&self.path)
-            .expect("reopen temporary file")
+            .unwrap_or_else(|error| panic!("reopen temporary file: {error:?}"))
     }
 }
 
@@ -57,7 +57,7 @@ impl Drop for TempFile {
 }
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid test id")
+    StableId::new(value).unwrap_or_else(|error| panic!("valid test id: {error:?}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -107,7 +107,7 @@ fn frozen_plan() -> codex_hepta_intelligence_eval::CrossFoldPlanReceiptV1 {
         final_holdout_window_id: id("final-window"),
         final_holdout_digest: digest("final-holdout"),
     })
-    .expect("freeze plan")
+    .unwrap_or_else(|error| panic!("freeze plan: {error:?}"))
 }
 
 #[test]
@@ -122,8 +122,8 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
         generation: 1,
         lease_digest: digest("lease"),
     };
-    let mut owner = FencedFinalHoldoutOwnerV1::initialize(store, binding, fence)
-        .expect("initialize owner");
+    let mut owner =
+        FencedFinalHoldoutOwnerV1::initialize(store, binding, fence).expect("initialize owner");
     let use_receipt = owner.consume(&frozen_plan()).expect("consume holdout plan");
     assert!(!use_receipt.record_digest.is_zero());
     let source_anchor = owner.anchor();

@@ -32,7 +32,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 pub fn id(value: &str) -> StableId {
-    StableId::new(value.to_owned()).expect("valid id")
+    StableId::new(value.to_owned()).unwrap_or_else(|error| panic!("valid id: {error:?}"))
 }
 
 pub fn digest(value: &str) -> Digest32 {
@@ -66,7 +66,9 @@ fn temporal(name: &str) -> TemporalEvaluationPlan {
             minimum_clusters: 2,
         },
     };
-    plan.plan_digest = plan.canonical_digest().expect("canonical plan");
+    plan.plan_digest = plan
+        .canonical_digest()
+        .unwrap_or_else(|error| panic!("canonical plan: {error:?}"));
     plan
 }
 
@@ -101,9 +103,9 @@ fn inputs(channel: &str, outcome: FixedQ32) -> TemporalComparisonInputsV1 {
             actions: vec![OpeAction {
                 action_id: id("action"),
                 behavior_probability: ProbabilityQ32::from_raw(1 << 32)
-                    .expect("probability"),
+                    .unwrap_or_else(|error| panic!("probability: {error:?}")),
                 evaluation_probability: ProbabilityQ32::from_raw(1 << 32)
-                    .expect("probability"),
+                    .unwrap_or_else(|error| panic!("probability: {error:?}")),
                 predicted_outcome: FixedQ32::ZERO,
             }],
             finalized_outcome: Some(outcome),
@@ -129,10 +131,7 @@ fn inputs(channel: &str, outcome: FixedQ32) -> TemporalComparisonInputsV1 {
     }
 }
 
-fn channel(
-    name: &str,
-    data: &TemporalComparisonInputsV1,
-) -> ProductOutcomeChannelContractV1 {
+fn channel(name: &str, data: &TemporalComparisonInputsV1) -> ProductOutcomeChannelContractV1 {
     ProductOutcomeChannelContractV1 {
         metric_id: id(name),
         channel_id: id(name),
@@ -144,7 +143,8 @@ fn channel(
         measurement_start_micros: 20,
         measurement_end_micros: 100,
         provenance_digest: digest(&format!("custodian-{name}")),
-        inputs_digest: product_outcome_inputs_digest_v1(data).expect("input digest"),
+        inputs_digest: product_outcome_inputs_digest_v1(data)
+            .unwrap_or_else(|error| panic!("input digest: {error:?}")),
         candidate_plan: temporal(&format!("{name}-candidate")),
         baseline_plan: temporal(&format!("{name}-baseline")),
     }
@@ -245,14 +245,17 @@ pub fn fixture() -> (
             },
         })
         .collect();
-    let plan = freeze(channels, roles.clone()).expect("frozen outcome plan");
+    let plan = freeze(channels, roles.clone())
+        .unwrap_or_else(|error| panic!("frozen outcome plan: {error:?}"));
     let batch = plan
         .channels()
         .iter()
         .zip(data)
         .map(|(contract, inputs)| ProductOutcomeInputV1 {
             channel_id: contract.channel_id.clone(),
-            contract_digest: contract.canonical_digest().expect("contract digest"),
+            contract_digest: contract
+                .canonical_digest()
+                .unwrap_or_else(|error| panic!("contract digest: {error:?}")),
             inputs,
         })
         .collect();

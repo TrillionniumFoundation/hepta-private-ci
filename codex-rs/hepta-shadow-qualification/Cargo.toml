@@ -31,9 +31,7 @@ toml = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
-# Legacy raw-runner numerical fixtures are explicit compatibility tests.
-# Default product ingress is checked independently by the external API fixtures.
-codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["trusted-inprocess-eval"] }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-ndu = { path = "../hepta-ndu" }

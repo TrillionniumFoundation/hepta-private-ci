@@ -25,8 +25,6 @@ mod ndu_convergence;
 mod ndu_well_posedness;
 #[cfg(test)]
 mod test_tempfile;
-#[cfg(test)]
-pub(crate) use test_tempfile::NamedTempFile;
 pub use attempt_durability::DurableProductEvaluationAttemptJournalV1;
 pub use attempt_journal::AnchoredProductEvaluationAttemptJournalV1;
 pub use attempt_journal::InMemoryProductEvaluationAttemptJournalV1;
@@ -57,6 +55,8 @@ pub use fenced_holdout_file::LockedFileCasCapacityV1;
 pub use fenced_holdout_file::LockedFileCasCompactionReceiptV1;
 pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
+#[cfg(test)]
+pub(crate) use test_tempfile::NamedTempFile;
 mod ope;
 pub mod product;
 mod product_runner;
@@ -169,8 +169,6 @@ pub use product_runner::FinalHoldoutProviderV1;
 pub use product_runner::ProductEvaluationError;
 #[cfg(feature = "trusted-inprocess-eval")]
 pub use product_runner::ProductEvaluationRunnerV1;
-#[cfg(not(feature = "trusted-inprocess-eval"))]
-pub(crate) use product_runner::ProductEvaluationRunnerV1;
 pub use product_runner::ProductEvidenceSinkErrorV1;
 pub use product_runner::ProductFrozenEvaluationPlanV1;
 pub use product_runner::ProductMetricSourceContractV1;

@@ -62,9 +62,7 @@ pub(crate) fn validated_history<J: ProductEvaluationAttemptJournalV1>(
     let mut replay = InMemoryProductEvaluationAttemptJournalV1::default();
     for (index, receipt) in history.iter().enumerate() {
         receipt.validate_integrity()?;
-        if &receipt.transition.attempt_id != attempt_id
-            || receipt.sequence != (index as u64) + 1
-        {
+        if &receipt.transition.attempt_id != attempt_id || receipt.sequence != (index as u64) + 1 {
             return Err(ProductAttemptRecoveryErrorV1::EvidenceMismatch);
         }
         let expected = replay
@@ -107,18 +105,21 @@ where
     current
         .validate(namespace)
         .map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
-    let recovered = FinalHoldoutJournalV1::from_snapshot_with_record_limit(current.journal, 1_000_000)
-        .map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
+    let recovered =
+        FinalHoldoutJournalV1::from_snapshot_with_record_limit(current.journal, 1_000_000)
+            .map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
     let consumed = recovered
         .records()
         .iter()
         .find(|record| record.plan.plan_digest == intent.plan_digest)
         .ok_or(ProductAttemptRecoveryErrorV1::Unresolved)?;
-    Ok(journal.append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
-        attempt_id.clone(),
-        intent.plan_digest,
-        consumed.record_digest,
-    ))?)
+    Ok(
+        journal.append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
+            attempt_id.clone(),
+            intent.plan_digest,
+            consumed.record_digest,
+        ))?,
+    )
 }
 
 /// Read-verify the exact preregistered publication; never repeat a store write.
@@ -140,23 +141,29 @@ where
         .last()
         .ok_or(ProductAttemptRecoveryErrorV1::MissingIntent)?;
     latest.validate_integrity()?;
-    if !matches!(latest.transition.phase,
-        Phase::QualificationDecided | Phase::PublicationPending | Phase::Published)
-    {
+    if !matches!(
+        latest.transition.phase,
+        Phase::QualificationDecided | Phase::PublicationPending | Phase::Published
+    ) {
         return Err(ProductAttemptRecoveryErrorV1::WrongPhase);
     }
-    let sealed = history.iter()
+    let sealed = history
+        .iter()
         .find(|receipt| receipt.transition.phase == Phase::ComparisonSealed)
         .ok_or(ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
-    let decided = history.iter()
+    let decided = history
+        .iter()
         .find(|receipt| receipt.transition.phase == Phase::QualificationDecided)
         .ok_or(ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
     let execution = sealed.transition.terminal_digest;
     let request_digest = decided.transition.terminal_digest;
-    let record = store.load(execution)
+    let record = store
+        .load(execution)
         .map_err(|_| ProductAttemptRecoveryErrorV1::Unresolved)?
         .ok_or(ProductAttemptRecoveryErrorV1::Unresolved)?;
-    record.validate().map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
+    record
+        .validate()
+        .map_err(|_| ProductAttemptRecoveryErrorV1::EvidenceMismatch)?;
     if record.request.execution_digest != execution
         || record.request.request_digest != request_digest
     {
@@ -267,8 +274,8 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
 }
 
 #[cfg(test)]
-#[path = "attempt_recovery_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "attempt_publication_integrity_tests.rs"]
 mod publication_integrity_tests;
+#[cfg(test)]
+#[path = "attempt_recovery_tests.rs"]
+mod tests;

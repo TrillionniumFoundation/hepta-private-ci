@@ -182,10 +182,8 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> ProductEvaluationAttemptJournalV1
         // wrapper: a deterministic rejection must not strand reservations held
         // by already admitted attempts.
         self.poisoned = true;
-        let receipt = match ProductEvaluationAttemptJournalV1::append(
-            &mut self.journal,
-            transition,
-        ) {
+        let receipt = match ProductEvaluationAttemptJournalV1::append(&mut self.journal, transition)
+        {
             Ok(receipt) => receipt,
             Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate) => {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);

@@ -28,7 +28,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 pub fn id(value: &str) -> StableId {
-    StableId::new(value.to_owned()).expect("valid id")
+    StableId::new(value.to_owned()).unwrap_or_else(|error| panic!("valid id: {error:?}"))
 }
 
 pub fn digest(value: &str) -> Digest32 {
@@ -102,7 +102,9 @@ fn temporal(name: &str) -> TemporalEvaluationPlan {
             minimum_clusters: 2,
         },
     };
-    plan.plan_digest = plan.canonical_digest().expect("canonical temporal plan");
+    plan.plan_digest = plan
+        .canonical_digest()
+        .unwrap_or_else(|error| panic!("canonical temporal plan: {error:?}"));
     plan
 }
 
@@ -128,7 +130,7 @@ pub fn product_plan() -> (
         &candidate,
         &baseline,
     )
-    .expect("freeze product plan");
+    .unwrap_or_else(|error| panic!("freeze product plan: {error:?}"));
     (plan, candidate, baseline)
 }
 
@@ -145,7 +147,9 @@ impl FinalHoldoutProviderV1 for Provider {
         &mut self,
         _receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
-        self.inputs.take().ok_or(ProductProviderErrorV1::Unavailable)
+        self.inputs
+            .take()
+            .ok_or(ProductProviderErrorV1::Unavailable)
     }
 }
 
@@ -194,9 +198,9 @@ pub fn inputs() -> TemporalComparisonInputsV1 {
                 .map(|(action, weight)| OpeAction {
                     action_id: id(action),
                     behavior_probability: ProbabilityQ32::from_raw(1 << 31)
-                        .expect("behavior probability"),
+                        .unwrap_or_else(|error| panic!("behavior probability: {error:?}")),
                     evaluation_probability: ProbabilityQ32::from_raw(weight)
-                        .expect("evaluation probability"),
+                        .unwrap_or_else(|error| panic!("evaluation probability: {error:?}")),
                     predicted_outcome: FixedQ32::ZERO,
                 })
                 .collect(),

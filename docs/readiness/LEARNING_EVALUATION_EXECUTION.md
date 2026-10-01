@@ -33,7 +33,9 @@ Corrections append superseding receipts. Identity separation is verified through
 
 The mandatory baseline evaluator computes IPS, SNIPS and cross-fitted doubly robust estimates in deterministic order. Outcome models use episode-, principal- and future-window separation. Confidence intervals cluster repeated decisions and use preregistered counter-based bootstrap or conservative exact intervals.
 
-Multiple objectives, prompt factors, timing arms, models and subgroups use declared correction. A candidate passes efficacy only when its lower confidence bound exceeds the baseline upper bound and every safety, support, privacy, resource and retention floor passes. An average cannot compensate for a protected-slice failure.
+Multiple objectives, prompt factors, timing arms, models and subgroups use declared correction. Qualification applies the frozen V2 metric-role contract: `PrimarySuperiority` requires conservative direction-adjusted improvement strictly beyond its registered margin; `NonInferiority` permits regression only within its registered bound, including equality; `AbsoluteConstraint` applies its registered directional bound without requiring relative superiority. The zero-margin maximize primary case requires candidate LCB above baseline UCB. Every applicable absolute, safety, support, privacy, resource and retention floor must also pass; an average cannot compensate for a protected-slice failure.
+
+The normative default product and compatibility boundary is [PRODUCTION_CONTRACT.md](../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md); the exact V2 roles and margins are described in [EVIDENCE_ADMISSION.md](../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md#preregistered-metric-roles). Roles, directions and margins must be frozen before holdout use. Passing these statistical gates emits authority-free eligibility evidence; independent acceptance, selection, activation and release remain separate gates.
 
 ## 6. Future windows and retention
 

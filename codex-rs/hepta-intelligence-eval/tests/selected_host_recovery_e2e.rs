@@ -41,7 +41,7 @@ fn create(path: &Path) -> File {
         .write(true)
         .create_new(true)
         .open(path)
-        .expect("create test file")
+        .unwrap_or_else(|error| panic!("create test file: {error:?}"))
 }
 
 fn reopen(path: &Path) -> File {
@@ -49,7 +49,7 @@ fn reopen(path: &Path) -> File {
         .read(true)
         .write(true)
         .open(path)
-        .expect("reopen test file")
+        .unwrap_or_else(|error| panic!("reopen test file: {error:?}"))
 }
 
 #[test]
@@ -116,8 +116,7 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
         .qualification_bundle(&temporal, &context)
         .expect("qualification bundle");
     let roles = temporal.product_plan.metric_roles.clone();
-    let (trust, evidence) =
-        verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
+    let (trust, evidence) = verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
     let selected_host_binding = digest("selected-host-binding");
     let mut current_clock = clock(50);
     let interrupted = runner.qualify_and_persist_on_selected_host(
@@ -140,9 +139,7 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
         ))
     ));
     assert_eq!(
-        fs::read_dir(&artifact_root)
-            .expect("artifact root")
-            .count(),
+        fs::read_dir(&artifact_root).expect("artifact root").count(),
         1
     );
     assert_eq!(

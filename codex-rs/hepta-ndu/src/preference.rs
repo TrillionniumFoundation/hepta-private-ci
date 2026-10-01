@@ -119,6 +119,8 @@ pub struct NduSolverTerminationReceipt {
     pub disposition: SolveDisposition,
     pub iterations: u32,
     pub terminal_residual_raw: i64,
+    /// Maximum post-update residual across emitted iteration receipts. A
+    /// zero-iteration solve retains the initial residual instead.
     pub maximum_residual_raw: i64,
     pub projection_count: u32,
     pub predecessor_digest: Digest32,
@@ -278,7 +280,7 @@ pub fn solve_preference_target(
 
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_raw = initial_residual_raw;
+    let mut maximum_residual_raw = 0_i64;
 
     for iteration in 1..=MAX_ITERATIONS {
         let (next, receipt) = update_once(&state, &target, eta, iteration)?;

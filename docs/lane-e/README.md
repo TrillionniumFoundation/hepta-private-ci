@@ -35,6 +35,19 @@ An external gate stays open until an immutable, independently issued receipt is
 bound to the exact candidate; it is never marked complete to make the local gap
 count green.
 
+For `learning.eval`, the matrix's `operations` retains the original closed-world
+source inventory. Raw `ProductEvaluationRunnerV1` entries are compatibility-only:
+the runner is crate-private by default and public only with
+`trusted-inprocess-eval`. Signed V2/V3 decision entries are crate-internal
+verification primitives; a `nativeSymbol` in this source inventory does not
+declare a public export. The existing `productCallsites` records name the
+canonical public recorded evaluation and archived qualification entrypoints.
+Their `source_composed` states do not establish deployed invocation or
+target-host qualification. The current public boundary is normative in
+[PRODUCTION_CONTRACT.md](../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md),
+and [NATIVE_MAPPING.md](../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md)
+maps the complete current persistence and recovery composition.
+
 ## Read order
 
 1. `LANE_E_IMPLEMENTATION_MATRIX.json` — operation-to-symbol, test and gate map.
@@ -43,7 +56,7 @@ count green.
 3. `../../qualification/lane-e/TEST_TRACEABILITY.json` — dossier case to native
    test and CI mapping.
 4. `../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md` — normative learning.eval production API and holdout-owner contract.
-5. Each crate's `NATIVE_MAPPING.md` — exported Rust surface and host obligations.
+5. Each crate's `NATIVE_MAPPING.md` — native surfaces, visibility and host obligations.
 6. `../../scripts/hepta-lane-e-closure.py` — read-only closed-world verifier.
 7. Existing normative sources under `docs/modules`, `docs/learning`,
    `docs/readiness` and `qualification/module-execution-dossiers`.

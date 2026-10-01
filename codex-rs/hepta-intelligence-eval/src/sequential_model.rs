@@ -129,6 +129,8 @@ pub enum SequentialEvidenceGap {
     WeightLimit,
     NumericResolution,
     DepthSupport,
+    /// Outward original-ratio bounds cannot certify the declared ESS floor.
+    NumericalSupportGap,
     InsufficientTrajectories,
     InsufficientClusters,
     ConfidenceEnvelope,

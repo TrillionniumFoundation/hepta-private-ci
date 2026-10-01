@@ -21,7 +21,7 @@ independent acceptance, activation or release authority.
 | Surface | Classification | Required use |
 |---|---|---|
 | `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | default product evaluation ingress | persists intent before provider/holdout access and records consumption before observations are released |
-| `RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts` and selected-host qualification methods | default product qualification ingress | derive and persist the canonical typed recovery archive before current V2/V3 verification, decision and durable publication |
+| `RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts` and selected-host qualification methods | default product qualification ingress | derive the canonical typed archive, verify current V2/V3 evidence, and persist/anchor the exact bytes before decision and publication |
 | `RecordedProductEvaluationRunnerV1::qualify_and_persist` | crate-internal unarchived composition helper | never cross-crate product ingress; retained only for owner-local tests and composition beneath the archived entrypoint |
 | `freeze_product_evaluation_plan_v1` | production plan freeze | freezes metric roles, estimator mapping and candidate/baseline temporal identities before holdout use |
 | `CrossFoldPlanV1::execute_temporal_cross_fit_v1` | bounded statistical source executor | executes every preregistered temporal fold and requires exact lineage and recomputed output-digest equality |
@@ -62,11 +62,62 @@ synthetic fixtures into real future-calendar efficacy evidence.
 `SequentialPlan::estimate_cluster_intervals_v1` layers conservative fixed-analysis
 cluster intervals over finite-horizon PDIS/DR. The confidence plan, minimum
 cluster count and absolute trajectory-return envelope are preregistered. Too few
-clusters or an observed estimate outside the envelope is a typed evidence gap.
+clusters, an observed estimate outside the envelope, or a declaration below the
+plan-level contribution bound is a typed evidence gap. Observed sample maxima,
+including observed nuisance predictions or discounts, cannot establish the
+range required by the concentration bound.
+
+Let `H` be the frozen horizon, `W` the cumulative importance-weight ceiling and
+`T` be one for a separate terminal value and zero otherwise. The validator uses
+the global reward/terminal range `[-1, 1]`, prediction range `[-129, 129]` and
+discount range `[0, 1]` to bound PDIS by `(H + T) W` and DR by
+`129 + 130 H W + 129 (H - 1) W + T W`, plus conservative Q32 rounding error.
+Both exact propensity products and the products of numerically rounded ratios
+use outward admission bounds. A declared envelope must cover the larger bound;
+it may exceed the old unweighted-return ceiling of 129. Nonrepresentable bounds
+fail closed. These deliberately conservative intervals require adequate
+independent sample size; tightening them needs a preregistered, justified global
+model/range contract, rather than an estimate inferred from the same sample.
 
 Cluster labels remain supplied evidence requiring independent provenance. This
 surface does not provide anytime-valid confidence sequences, adaptive-stopping
 safety, exchangeability proof or causal identification.
+
+### ESS certification from original propensities
+
+Admission certifies effective sample size from the original logged propensity
+ratios. Round-to-nearest/ties-to-even weights and receipt ESS remain deterministic
+point diagnostics; they cannot certify the preregistered support floor. With
+`S = 2^32` and raw evaluation/behavior probabilities `e` and `b`, OPE encloses
+each true weight by `L/S <= e/b <= U/S`, with `L = floor(e*S/b)` and
+`U = ceil(e*S/b)`. Sequential OPE
+starts each trajectory at `L = U = S` and updates every prefix with
+`L = floor(L*e/b)` and `U = ceil(U*e/b)`. Support is checked at each depth.
+
+For nonnegative weights, the true ESS lies between
+`LB = (sum L)^2 / sum U^2` and `UB = (sum U)^2 / sum L^2`. The finite Q32
+certificate admits when `floor(LB*S) >= F` for the frozen raw ESS floor `F`, or
+exact positive-weight equality proves `ESS = n` at a floor no greater than `n`.
+A finite upper certificate with `floor(UB*S) < F` establishes insufficient support;
+a nonuniform interval that remains unresolved returns `OpeError::NumericalSupportGap`
+or `SequentialEvidenceGap::NumericalSupportGap`. That outcome establishes
+neither insufficient true ESS nor a satisfied floor. Zero `sum U^2` establishes
+no support; zero `sum L^2` leaves the upper certificate unresolved. Since true
+ESS is at most the row/trajectory count `n`, `UB >= n` need not be represented.
+The arithmetic uses checked integers and outward bounds without `f64` or an
+unbounded rational-ESS implementation.
+
+A floor above `n` is insufficient support. At a floor exactly equal to `n`,
+Cauchy equality permits admission only for identical positive true weights.
+OPE proves ratio equality by `u128` cross-products; different probability
+encodings of the same ratio remain valid. Sequential equality compares the
+original prefix ratio products using two fixed 129-limb `u64` buffers. At
+`horizon <= 128`, each side contains at most 256 factors bounded by `2^32`;
+the endpoint `2^8192` needs 8,193 bits and fits exactly within 129 limbs. This
+fallback proves equality only, rather than arbitrary exact ESS. Existing caps
+remain 1,000,000 OPE rows, 4,096 sequential trajectories, 65,536 total steps and
+weight/ratio bounds of 50. Near-floor nonuniform data may require a stronger
+preregistered arithmetic profile; the current finite certificate fails closed.
 
 ## Signed admission and typed recovery
 
@@ -83,14 +134,14 @@ For a successful product qualification, the canonical order is:
    observations;
 6. compute the bound estimates and append `ComparisonSealed`;
 7. build a canonical typed archive from the actual evaluation receipt,
-   qualification context, signed evidence and timing evidence, persist it
-   create-only under the selected-host binding and append
-   `QualificationArtifactsPersisted`;
+   qualification context, signed evidence and timing evidence;
 8. inside `learning.eval`, verify current trust, objective, scope, authority
    epoch, signature lifetime, revocation and required actor/key/credential/
    controller separation; V3 additionally verifies observer and time evidence;
-9. append `QualificationDecided` and then `PublicationPending` before invoking
-   the evidence writer;
+9. persist the verified canonical bytes create-only under the selected-host
+   binding, acknowledge `QualificationArtifactsPersisted`, then append
+   `QualificationDecided` and `PublicationPending` before invoking the evidence
+   writer;
 10. append `Published` only after the exact durable publication record is
     observed.
 
@@ -108,6 +159,25 @@ owner state and a signed exact-use payload over run, objective, snapshot,
 predecessor context, candidate set, selected candidate, evaluation, execution
 and publication identity. Computing a fresh digest for arbitrary request fields
 is not sufficient.
+
+### Single-outcome receipt integrity and migration
+
+`ProductQualificationReceiptV1::validate_integrity` binds the complete signed
+decision under the evidence preimage domain
+`hepta.intelligence-eval.product-qualification.v4`: evaluation, candidate and
+baseline IDs, disposition, the length and order of failed metrics, evidence,
+trust and authentication digests, and decision authority. It also retains the
+execution, publication, objective, dataset, principal, snapshot and claim-scope
+bindings. Mutating any public decision field invalidates the receipt. The outer
+`hepta.intelligence-eval.product-qualification-receipt.v1` seal domain remains
+unchanged; it now seals the v4 evidence digest.
+
+An old domain-v3 in-memory receipt cannot be relabeled as v4. Reverify its real
+evaluation or typed archive evidence and issue a fresh receipt; downstream
+candidate/use signatures over the old `evidence_digest` must also be reissued.
+The typed archive, attempt-journal and publication wire formats are unchanged.
+This migration does not rewrite published history or authorize a repeat write.
+The immutable multi-outcome receipt retains its existing digest profile.
 
 ## Final-holdout ownership
 
@@ -135,6 +205,30 @@ with an OS lock, checksummed append, fsync and an independently retained minimum
 anchor. Cross-host deployment additionally requires external evidence that the
 actual shared storage provides linearizable lock/CAS/fsync and directory
 semantics.
+
+The concrete backend accepts a live CAS transition only when its complete
+canonical replay equals the supplied record. Recovery retains one semantic
+journal and syncs the recovered file before returning. For `N` plan records,
+`F` fence events and `B` file bytes, its current worst-case source cost is
+`O(B + N² + F)`, with `O(B + N)` memory under fixed backend ceilings.
+Cold replay moves the existing canonical snapshot and copies only each new
+record, preserving its allocation across fences. The v2 registry's full
+sorted-table digest still contributes quadratic cost as plan history grows;
+live CAS retains candidate cloning and complete canonical-state comparison.
+
+The optional native canonical-journal cache is an optimization capability, not
+an unchecked snapshot constructor. Owner recovery still validates the loaded
+record and compares its complete snapshot with the cache before restoring the
+owner's admission limit. The locked-file backend supplies this cache, making
+repeated in-process takeovers `O(N)` each for `N` retained records. Across `N`
+new plans and `F` cached takeovers, source work remains `O(N² + F(N + 1))`, apart
+from storage synchronization latency. The default `None` cache implementation
+continues strict `O(N²)` snapshot replay per recovery; generic stores repeatedly
+recovering between plans may still incur cubic total work. Every historical
+registry-prefix digest remains strictly verified on that fallback path.
+Source profiles with multiple synthetic plans and reopen/compaction checks
+establish fixture behavior, not linear scaling, full-capacity service objectives
+or target-host latency qualification.
 
 ### Verified compaction
 
@@ -185,9 +279,18 @@ independent anchor authority.
 
 `recover_with_checkpoint` requires the normal journal anchor, the derived
 checkpoint anchor, the checkpoint file and the original append-only journal. It
-restores reducer state and replays only complete later frames. It rejects
-checkpoint substitution, a checkpoint newer than the normal anchor, stale
-journal restore, conflicting tail or truncation.
+first streams the original prefix and verifies checksums, the exact byte/event
+frontier and rolling journal digest against the authenticated checkpoint. It
+then restores reducer state and replays only complete later frames. It rejects
+checkpoint substitution, a checkpoint newer than the normal anchor, same-length
+divergent prefixes, stale journal restore, conflicting tail or truncation.
+The recovered file is synced before any frontier acknowledgement.
+
+Tail-only describes reducer replay. Prefix verification reads and hashes
+`O(B_prefix)` source bytes with a bounded frame buffer; total source-journal reads
+and hashing remain `O(B)` including the tail. Snapshot loading and restored
+reducer state retain their separate bounded memory costs. This contract does
+not promise tail-only I/O.
 
 Checkpointing never truncates or replaces the source journal and never lowers the
 normal anti-rollback anchor. A same-process fixture or trait implementation is
@@ -209,6 +312,19 @@ semantic publication keyed by execution digest:
 submitted write is not permission to call the writer again. A recovered
 `QualificationDecided` may perform the first write only after loading the exact
 typed archive and completing current internal verification.
+
+At the selected-host first-write boundary, the guard compares the SHA-256 digest
+of the complete loaded archive bytes and its original `holdout_record_digest`
+before checking current clock/trust and re-verifying the exact V2/V3 decision.
+One privately prepared canonical byte sequence supplies both the durable
+`QualificationArtifactsPersisted` transition and the initial guard identity.
+Cold recovery derives that identity from validated anchored history:
+`QualificationArtifactsPersisted.terminal_digest` supplies the byte digest and
+`ComparisonSealed.holdout_record_digest` supplies the holdout binding. Reloaded
+disk bytes cannot choose a replacement expected digest. Archive substitution,
+including a changed outer holdout field with an unchanged signed inner payload,
+rejects before publication. After Pending, rejection retains the unresolved
+attempt for read reconciliation and does not permit another submission.
 
 ## Canonical product and consumer chain
 

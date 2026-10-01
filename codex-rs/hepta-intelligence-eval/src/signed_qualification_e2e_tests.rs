@@ -362,14 +362,9 @@ fn signed_qualification_e2e_binds_multi_outcome_privacy_retention_and_unlearning
     };
     let (verifier, evidence) =
         verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
-    let decision = decide_with_signed_evidence_v2(
-        bundle.clone(),
-        roles.clone(),
-        &evidence,
-        &verifier,
-        50,
-    )
-    .unwrap();
+    let decision =
+        decide_with_signed_evidence_v2(bundle.clone(), roles.clone(), &evidence, &verifier, 50)
+            .unwrap();
     assert_eq!(
         decision.decision.disposition,
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
@@ -386,14 +381,8 @@ fn signed_qualification_e2e_binds_multi_outcome_privacy_retention_and_unlearning
             _ => unreachable!(),
         }
         assert!(
-            decide_with_signed_evidence_v2(
-                tampered,
-                roles.clone(),
-                &evidence,
-                &verifier,
-                50,
-            )
-            .is_err(),
+            decide_with_signed_evidence_v2(tampered, roles.clone(), &evidence, &verifier, 50,)
+                .is_err(),
             "field {field} must be signed"
         );
     }

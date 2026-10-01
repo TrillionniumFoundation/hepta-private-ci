@@ -25,7 +25,12 @@ pub(crate) struct Writer(Vec<u8>);
 
 impl Writer {
     pub(crate) fn put(&mut self, bytes: &[u8]) -> Result<()> {
-        if self.0.len().checked_add(bytes.len()).is_none_or(|size| size > MAX_BYTES) {
+        if self
+            .0
+            .len()
+            .checked_add(bytes.len())
+            .is_none_or(|size| size > MAX_BYTES)
+        {
             return Err(invalid());
         }
         self.0.extend_from_slice(bytes);
@@ -54,7 +59,11 @@ impl<'a> Reader<'a> {
     }
 
     pub(crate) fn finish(self) -> Result<()> {
-        if self.0.is_empty() { Ok(()) } else { Err(invalid()) }
+        if self.0.is_empty() {
+            Ok(())
+        } else {
+            Err(invalid())
+        }
     }
 }
 
@@ -94,34 +103,48 @@ integer!(u64, 8);
 integer!(i64, 8);
 
 impl<const N: usize> Wire for [u8; N] {
-    fn write(&self, output: &mut Writer) -> Result<()> { output.put(self) }
+    fn write(&self, output: &mut Writer) -> Result<()> {
+        output.put(self)
+    }
     fn read(input: &mut Reader<'_>) -> Result<Self> {
         input.take(N)?.try_into().map_err(|_| invalid())
     }
 }
 
 impl Wire for Digest32 {
-    fn write(&self, output: &mut Writer) -> Result<()> { output.put(self.as_array()) }
+    fn write(&self, output: &mut Writer) -> Result<()> {
+        output.put(self.as_array())
+    }
     fn read(input: &mut Reader<'_>) -> Result<Self> {
         Ok(Self::from_array(<[u8; 32]>::read(input)?))
     }
 }
 
 impl Wire for FixedQ32 {
-    fn write(&self, output: &mut Writer) -> Result<()> { self.raw().write(output) }
-    fn read(input: &mut Reader<'_>) -> Result<Self> { Ok(Self::from_raw(i64::read(input)?)) }
+    fn write(&self, output: &mut Writer) -> Result<()> {
+        self.raw().write(output)
+    }
+    fn read(input: &mut Reader<'_>) -> Result<Self> {
+        Ok(Self::from_raw(i64::read(input)?))
+    }
 }
 
 impl Wire for StableId {
     fn write(&self, output: &mut Writer) -> Result<()> {
         let bytes = self.as_str().as_bytes();
-        if !(1..=128).contains(&bytes.len()) { return Err(invalid()); }
-        u32::try_from(bytes.len()).map_err(|_| invalid())?.write(output)?;
+        if !(1..=128).contains(&bytes.len()) {
+            return Err(invalid());
+        }
+        u32::try_from(bytes.len())
+            .map_err(|_| invalid())?
+            .write(output)?;
         output.put(bytes)
     }
     fn read(input: &mut Reader<'_>) -> Result<Self> {
         let count = u32::read(input)? as usize;
-        if !(1..=128).contains(&count) { return Err(invalid()); }
+        if !(1..=128).contains(&count) {
+            return Err(invalid());
+        }
         let text = std::str::from_utf8(input.take(count)?).map_err(|_| invalid())?;
         Self::new(text).map_err(|_| invalid())
     }
@@ -129,16 +152,26 @@ impl Wire for StableId {
 
 impl<T: Wire> Wire for Vec<T> {
     fn write(&self, output: &mut Writer) -> Result<()> {
-        if self.len() > MAX_LIST { return Err(invalid()); }
-        u32::try_from(self.len()).map_err(|_| invalid())?.write(output)?;
-        for value in self { value.write(output)?; }
+        if self.len() > MAX_LIST {
+            return Err(invalid());
+        }
+        u32::try_from(self.len())
+            .map_err(|_| invalid())?
+            .write(output)?;
+        for value in self {
+            value.write(output)?;
+        }
         Ok(())
     }
     fn read(input: &mut Reader<'_>) -> Result<Self> {
         let count = u32::read(input)? as usize;
-        if count > MAX_LIST { return Err(invalid()); }
+        if count > MAX_LIST {
+            return Err(invalid());
+        }
         let mut values = Vec::new();
-        for _ in 0..count { values.push(T::read(input)?); }
+        for _ in 0..count {
+            values.push(T::read(input)?);
+        }
         Ok(values)
     }
 }
@@ -147,7 +180,10 @@ impl<T: Wire> Wire for Option<T> {
     fn write(&self, output: &mut Writer) -> Result<()> {
         match self {
             None => 0_u8.write(output),
-            Some(value) => { 1_u8.write(output)?; value.write(output) }
+            Some(value) => {
+                1_u8.write(output)?;
+                value.write(output)
+            }
         }
     }
     fn read(input: &mut Reader<'_>) -> Result<Self> {
@@ -161,11 +197,15 @@ impl<T: Wire> Wire for Option<T> {
 
 impl Wire for AuthorityPosture {
     fn write(&self, output: &mut Writer) -> Result<()> {
-        if self.grants_any() { return Err(invalid()); }
+        if self.grants_any() {
+            return Err(invalid());
+        }
         0_u8.write(output)
     }
     fn read(input: &mut Reader<'_>) -> Result<Self> {
-        if u8::read(input)? != 0 { return Err(invalid()); }
+        if u8::read(input)? != 0 {
+            return Err(invalid());
+        }
         Ok(Self::DENY_ALL)
     }
 }

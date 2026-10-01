@@ -15,9 +15,15 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::push_id;
+use support::PropensityRatio;
+use support::SupportAccumulator;
+use support::SupportCertification;
+use support::WeightBounds;
 
 #[path = "ope_confidence.rs"]
 mod confidence;
+#[path = "ope_support.rs"]
+pub(crate) mod support;
 
 pub use confidence::ClusterAssignment;
 pub use confidence::ClusterConfidenceError;
@@ -89,6 +95,8 @@ pub enum OpeError {
     InvalidOutcome,
     WeightLimit,
     InsufficientSupport,
+    /// The original-ratio ESS cannot be certified at the declared Q32 floor.
+    NumericalSupportGap,
     Arithmetic,
 }
 
@@ -102,8 +110,10 @@ impl StdError for OpeError {}
 /// Compute IPS, SNIPS, DR, ESS and maximum weight without selecting a policy.
 ///
 /// Rewards and predictions are normalized to [0, 1]. All fixed-point division
-/// rounds to nearest, ties to even. Weights are not silently clipped. Pending
-/// outcomes and unsupported actions are rejected rather than converted to zero.
+/// rounds to nearest, ties to even. ESS reports use these numerical weights;
+/// admission certifies the original propensity ratios with outward bounds.
+/// Near-boundary uncertified ESS returns `NumericalSupportGap`. Weights are not
+/// silently clipped. Pending outcomes and unsupported actions reject the input.
 pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeError> {
     if plan.plan_digest.is_zero()
         || plan.minimum_rows == 0
@@ -128,6 +138,9 @@ pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeE
     let mut weighted_outcome_sum = 0_i128;
     let mut dr_sum = 0_i128;
     let mut max_weight = 0_i128;
+    let mut support = SupportAccumulator::default();
+    let mut reference_ratio = None;
+    let mut uniform_positive = true;
     let mut digest_bytes = b"hepta.ope.point-estimate.v1".to_vec();
     digest_bytes.extend_from_slice(plan.plan_digest.as_array());
     digest_bytes.extend_from_slice(&plan.outcome_watermark.to_be_bytes());
@@ -145,6 +158,17 @@ pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeE
         }
         prior = Some(&row.decision_id);
         let (weight, weighted_outcome, dr, row_digest) = estimate_row(plan, row)?;
+        let chosen = row
+            .actions
+            .iter()
+            .find(|action| action.action_id == row.chosen_action)
+            .ok_or(OpeError::UnknownChosenAction)?;
+        let ratio = PropensityRatio {
+            evaluation: chosen.evaluation_probability.raw(),
+            behavior: chosen.behavior_probability.raw(),
+        };
+        support.add(WeightBounds::UNIT.advance(ratio)?)?;
+        uniform_positive &= ratio.same_positive_ratio(*reference_ratio.get_or_insert(ratio));
         weight_sum = checked_add(weight_sum, weight)?;
         weight_square_sum = checked_add(
             weight_square_sum,
@@ -164,9 +188,16 @@ pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeE
             .ok_or(OpeError::Arithmetic)?,
         weight_square_sum,
     )?;
-    // A rounded report must not admit an exact ratio below the support floor.
-    if ess.floor < i128::from(plan.minimum_ess.raw()) {
-        return Err(OpeError::InsufficientSupport);
+    match support.certify(i128::from(plan.minimum_ess.raw()))? {
+        SupportCertification::Supported => {}
+        SupportCertification::Insufficient => return Err(OpeError::InsufficientSupport),
+        SupportCertification::RequiresEquality if !uniform_positive => {
+            return Err(OpeError::InsufficientSupport);
+        }
+        SupportCertification::Unresolved if !uniform_positive => {
+            return Err(OpeError::NumericalSupportGap);
+        }
+        SupportCertification::RequiresEquality | SupportCertification::Unresolved => {}
     }
     let count = i128::try_from(rows.len()).map_err(|_| OpeError::Arithmetic)?;
     let ips = fixed(round_ratio(weighted_outcome_sum, count)?)?;
@@ -301,7 +332,7 @@ pub(super) struct ScaledRatio {
 // Compute a nonnegative rational in Q32 without overflowing a Q96 numerator.
 // Keep squared weights in Q64: rounding every square to Q32 loses tiny weights
 // and can turn a supported policy into a false zero-ESS rejection. Admission
-// compares the floor with an integer Q32 threshold; reports retain ties-even.
+// uses separately certified original-ratio bounds; reports retain ties-even.
 pub(super) fn scaled_ratio(numerator: i128, denominator: i128) -> Result<ScaledRatio, OpeError> {
     if numerator < 0 || denominator <= 0 {
         return Err(OpeError::Arithmetic);

@@ -17,6 +17,11 @@ use super::*;
 const CHECKPOINT_MAGIC: &[u8; 8] = b"HEPTACP1";
 const MAX_CHECKPOINT_BYTES: u64 = MAX_BYTES;
 
+#[path = "attempt_checkpoint_read.rs"]
+mod bounded_read;
+#[path = "attempt_checkpoint_prefix.rs"]
+mod prefix;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct CheckpointRecord {
     binding: Digest32,
@@ -98,14 +103,12 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
                 return Ok(checkpoint_anchor);
             }
         }
-        match authority.compare_and_swap(
-            checkpoint_anchor.binding,
-            expected,
-            checkpoint_anchor,
-        ) {
+        match authority.compare_and_swap(checkpoint_anchor.binding, expected, checkpoint_anchor) {
             Ok(()) => Ok(checkpoint_anchor),
-            Err(error @ (ProductEvaluationAttemptJournalErrorV1::Conflict
-                | ProductEvaluationAttemptJournalErrorV1::Indeterminate)) => {
+            Err(
+                error @ (ProductEvaluationAttemptJournalErrorV1::Conflict
+                | ProductEvaluationAttemptJournalErrorV1::Indeterminate),
+            ) => {
                 if authority.load(checkpoint_anchor.binding)? == Some(checkpoint_anchor) {
                     Ok(checkpoint_anchor)
                 } else {
@@ -145,10 +148,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
         }
         checkpoint.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        let mut checkpoint_bytes = Vec::with_capacity(checkpoint_len as usize);
-        checkpoint
-            .read_to_end(&mut checkpoint_bytes)
-            .map_err(io_error)?;
+        let checkpoint_bytes = bounded_read::read_exact_length(&mut checkpoint, checkpoint_len)?;
+        if checkpoint.metadata().map_err(io_error)?.len() != checkpoint_len {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+        }
         let (record, snapshot) = decode_checkpoint_file(&checkpoint_bytes)?;
         if record.binding != binding
             || record.event_count != retained.event_count
@@ -175,6 +178,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
 
+        // The snapshot authenticates reducer state, not arbitrary bytes at
+        // the same file offset. Hash the skipped prefix without replaying its
+        // reducer so checkpoint and ordinary recovery see the same journal.
+        prefix::verify(&mut file, &header, record)?;
         let (mut attempts, mut plan_owners, mut capacity, snapshot_events) =
             decode_snapshot(snapshot)?;
         if snapshot_events != retained.event_count {
@@ -194,9 +201,7 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             let mut raw = [0_u8; 4];
             file.read_exact(&mut raw).map_err(io_error)?;
             let count = u32::from_be_bytes(raw) as usize;
-            if !(1..=MAX_FRAME).contains(&count)
-                || length - cursor - 4 < count as u64 + 32
-            {
+            if !(1..=MAX_FRAME).contains(&count) || length - cursor - 4 < count as u64 + 32 {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
             }
             let mut payload = vec![0_u8; count];
@@ -229,6 +234,8 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
         if !anchor_seen || file.metadata().map_err(io_error)?.len() != length {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
+        file.sync_all()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         Ok(Self {
             file,
             binding,
@@ -266,12 +273,16 @@ fn encode_snapshot(
     Ok(output)
 }
 
+type DecodedAttemptSnapshot = (
+    AttemptEvents,
+    BTreeMap<[u8; 32], StableId>,
+    AttemptCapacity,
+    u64,
+);
+
 fn decode_snapshot(
     bytes: &[u8],
-) -> Result<
-    (AttemptEvents, BTreeMap<[u8; 32], StableId>, AttemptCapacity, u64),
-    ProductEvaluationAttemptJournalErrorV1,
-> {
+) -> Result<DecodedAttemptSnapshot, ProductEvaluationAttemptJournalErrorV1> {
     let mut input = Input::new(bytes);
     let attempt_count = input.u32()? as usize;
     let mut attempts = AttemptEvents::new();
@@ -386,8 +397,8 @@ fn put_id(
     value: &StableId,
 ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
     let bytes = value.as_str().as_bytes();
-    let length = u16::try_from(bytes.len())
-        .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
+    let length =
+        u16::try_from(bytes.len()).map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
     output.extend_from_slice(&length.to_be_bytes());
     output.extend_from_slice(bytes);
     Ok(())
@@ -414,10 +425,7 @@ impl<'a> Input<'a> {
         Self { bytes, cursor: 0 }
     }
 
-    fn take(
-        &mut self,
-        count: usize,
-    ) -> Result<&'a [u8], ProductEvaluationAttemptJournalErrorV1> {
+    fn take(&mut self, count: usize) -> Result<&'a [u8], ProductEvaluationAttemptJournalErrorV1> {
         let end = self
             .cursor
             .checked_add(count)

@@ -86,9 +86,7 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
             "2026-09-30T00:00:00Z",
             "2026-09-30T00:00:01Z",
         )
-        self.assertTrue(
-            value["claims"]["localDeterministicVerifiedByThisRun"]
-        )
+        self.assertTrue(value["claims"]["localDeterministicVerifiedByThisRun"])
         self.assertEqual(value["authority"], "DENY_ALL")
         self.assertEqual(value["releasePosture"], "NO_GO")
         for name in (
@@ -108,9 +106,7 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
             "2026-09-30T00:00:00Z",
             "2026-09-30T00:00:01Z",
         )
-        self.assertFalse(
-            value["claims"]["localDeterministicVerifiedByThisRun"]
-        )
+        self.assertFalse(value["claims"]["localDeterministicVerifiedByThisRun"])
 
     def test_summary_digest_detects_tampering(self):
         value = MODULE.build_summary(
@@ -120,13 +116,17 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
             "2026-09-30T00:00:01Z",
         )
         value["commands"][0]["status"] = "failed"
-        with self.assertRaisesRegex(ValueError, "claim/result mismatch|digest mismatch"):
+        with self.assertRaisesRegex(
+            ValueError, "claim/result mismatch|digest mismatch"
+        ):
             MODULE.validate_summary(value)
 
     def test_repository_projects_local_deterministic_contract(self):
         root = Path(__file__).resolve().parents[1]
-        if not (root / ".git").is_dir():
-            self.skipTest("repository checkout is not mounted in this unit-test sandbox")
+        if not ((root / ".git").is_dir() or (root / ".git").is_file()):
+            self.skipTest(
+                "repository checkout is not mounted in this unit-test sandbox"
+            )
         docs = root / "docs/modules/learning.eval"
         contract = docs / "LOCAL_DETERMINISTIC_VERIFICATION.md"
         self.assertTrue(contract.is_file())
@@ -151,6 +151,9 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
                 "test_hepta_learning_eval_local_verify.py",
                 "test_hepta_learning_eval_trusted_report.py",
                 "test_hepta_learning_eval_trusted_report_base.py",
+                "hepta-learning-eval-control-plane-identity.py",
+                "test_hepta_learning_eval_control_plane_identity.py",
+                "test_hepta_learning_eval_status.py",
             )
             for name in required:
                 (scripts / name).write_text("# fixture\n", encoding="utf-8")
@@ -159,9 +162,35 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
             inventory = MODULE.python_sources(root)
             for name in required:
                 self.assertIn(f"scripts/{name}", inventory)
-            (scripts / required[0]).unlink()
-            with self.assertRaisesRegex(ValueError, "incomplete"):
-                MODULE.python_sources(root)
+            commands = MODULE.command_inventory(root, root / "output")
+            names = [name for name, _ in commands]
+            self.assertLess(
+                names.index("source-status-tests"), names.index("source-status")
+            )
+            self.assertLess(
+                names.index("control-plane-identity-tests"),
+                names.index("trusted-reporter-tests"),
+            )
+            identity_test = dict(commands)["control-plane-identity-tests"]
+            self.assertEqual(
+                identity_test[1:],
+                ["scripts/test_hepta_learning_eval_control_plane_identity.py", "-v"],
+            )
+            status_test = dict(commands)["source-status-tests"]
+            self.assertEqual(
+                status_test[1:], ["scripts/test_hepta_learning_eval_status.py", "-v"]
+            )
+            for name in (
+                required[0],
+                "test_hepta_learning_eval_status.py",
+                "hepta-learning-eval-control-plane-identity.py",
+                "test_hepta_learning_eval_control_plane_identity.py",
+            ):
+                with self.subTest(name=name):
+                    (scripts / name).unlink()
+                    with self.assertRaisesRegex(ValueError, "incomplete"):
+                        MODULE.python_sources(root)
+                    (scripts / name).write_text("# fixture\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

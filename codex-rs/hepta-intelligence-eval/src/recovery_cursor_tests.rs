@@ -13,18 +13,26 @@ impl Fixture {
     fn new() -> Self {
         let ordinal = NEXT_FILE.fetch_add(1, Ordering::Relaxed);
         Self(std::env::temp_dir().join(format!(
-            "hepta-recovery-cursor-{}-{ordinal}", std::process::id()
+            "hepta-recovery-cursor-{}-{ordinal}",
+            std::process::id()
         )))
     }
 
     fn create(&self) -> File {
-        OpenOptions::new().read(true).write(true).create_new(true)
-            .open(&self.0).expect("create cursor")
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(&self.0)
+            .expect("create cursor")
     }
 
     fn reopen(&self) -> File {
-        OpenOptions::new().read(true).write(true)
-            .open(&self.0).expect("reopen cursor")
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&self.0)
+            .expect("reopen cursor")
     }
 }
 
@@ -34,8 +42,12 @@ impl Drop for Fixture {
     }
 }
 
-fn binding() -> Digest32 { Digest32::of_bytes(b"cursor-scope") }
-fn id(value: &str) -> StableId { StableId::new(value).expect("id") }
+fn binding() -> Digest32 {
+    Digest32::of_bytes(b"cursor-scope")
+}
+fn id(value: &str) -> StableId {
+    StableId::new(value).expect("id")
+}
 
 #[test]
 fn progress_survives_reopen_and_exact_retries_do_not_write() {
@@ -60,7 +72,10 @@ fn progress_survives_reopen_and_exact_retries_do_not_write() {
 fn live_cursor_excludes_a_second_controller() {
     let fixture = Fixture::new();
     let first = RecoveryCursor::open(fixture.create(), binding()).expect("first owner");
-    assert!(matches!(RecoveryCursor::open(fixture.reopen(), binding()), Err(Error::Busy)));
+    assert!(matches!(
+        RecoveryCursor::open(fixture.reopen(), binding()),
+        Err(Error::Busy)
+    ));
     drop(first);
     assert!(RecoveryCursor::open(fixture.reopen(), binding()).is_ok());
 }
@@ -81,9 +96,16 @@ fn torn_latest_slot_replays_predecessor_without_resetting_ownership() {
     fs::write(&fixture.0, &bytes).expect("inject torn latest slot");
     let mut recovered = RecoveryCursor::open(fixture.reopen(), binding()).expect("predecessor");
     assert_eq!(recovered.after(), Some(&first));
-    recovered.save(Some(&second)).expect("replay scheduling progress");
+    recovered
+        .save(Some(&second))
+        .expect("replay scheduling progress");
     drop(recovered);
-    assert_eq!(RecoveryCursor::open(fixture.reopen(), binding()).expect("reopen").after(), Some(&second));
+    assert_eq!(
+        RecoveryCursor::open(fixture.reopen(), binding())
+            .expect("reopen")
+            .after(),
+        Some(&second)
+    );
 }
 
 #[test]
@@ -91,9 +113,10 @@ fn different_host_or_namespace_cannot_adopt_existing_cursor() {
     let fixture = Fixture::new();
     drop(RecoveryCursor::open(fixture.create(), binding()).expect("open"));
     let before = fs::read(&fixture.0).expect("bytes");
-    assert!(matches!(RecoveryCursor::open(
-        fixture.reopen(), Digest32::of_bytes(b"different-scope")
-    ), Err(Error::Binding)));
+    assert!(matches!(
+        RecoveryCursor::open(fixture.reopen(), Digest32::of_bytes(b"different-scope")),
+        Err(Error::Binding)
+    ));
     assert_eq!(fs::read(&fixture.0).expect("unchanged"), before);
 }
 
@@ -103,9 +126,15 @@ fn invalid_slots_and_truncation_fail_closed() {
     drop(RecoveryCursor::open(fixture.create(), binding()).expect("open"));
     let original = fs::read(&fixture.0).expect("bytes");
     fs::write(&fixture.0, vec![0_u8; FILE_BYTES]).expect("erase both slots");
-    assert!(matches!(RecoveryCursor::open(fixture.reopen(), binding()), Err(Error::Corrupt)));
+    assert!(matches!(
+        RecoveryCursor::open(fixture.reopen(), binding()),
+        Err(Error::Corrupt)
+    ));
     fs::write(&fixture.0, &original[..original.len() - 1]).expect("truncate");
-    assert!(matches!(RecoveryCursor::open(fixture.reopen(), binding()), Err(Error::Corrupt)));
+    assert!(matches!(
+        RecoveryCursor::open(fixture.reopen(), binding()),
+        Err(Error::Corrupt)
+    ));
 }
 
 #[test]
@@ -113,9 +142,18 @@ fn excessive_generation_gap_is_not_accepted_as_new_progress() {
     let fixture = Fixture::new();
     drop(RecoveryCursor::open(fixture.create(), binding()).expect("open"));
     let mut bytes = fs::read(&fixture.0).expect("bytes");
-    let substituted = encode(&Progress { generation: 50, after: Some(id("attempt:z")) }, binding())
-        .expect("syntactically valid slot");
+    let substituted = encode(
+        &Progress {
+            generation: 50,
+            after: Some(id("attempt:z")),
+        },
+        binding(),
+    )
+    .expect("syntactically valid slot");
     bytes[SLOT_BYTES..].copy_from_slice(&substituted);
     fs::write(&fixture.0, bytes).expect("substitute slot");
-    assert!(matches!(RecoveryCursor::open(fixture.reopen(), binding()), Err(Error::Corrupt)));
+    assert!(matches!(
+        RecoveryCursor::open(fixture.reopen(), binding()),
+        Err(Error::Corrupt)
+    ));
 }

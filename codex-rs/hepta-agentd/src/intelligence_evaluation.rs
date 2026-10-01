@@ -91,7 +91,8 @@ impl AgentdEvaluationSessionV1 {
         candidate: &StableId,
         now: u64,
     ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
-        if input.run_id != self.run_id
+        if !self.trust.is_current_at(now)
+            || input.run_id != self.run_id
             || input.stage != CanonicalStageV1::EvaluationAdmitted
             || self.current_owner.owner_id.as_str() != "learning.eval"
             || self.signed.bundle.objective_digest != input.objective_digest
@@ -109,12 +110,16 @@ impl AgentdEvaluationSessionV1 {
             selected_candidate_id: candidate.clone(),
         };
         let payload = intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?;
-        let verified = self.trust.verifier().verify(
-            LearningEvidenceRoleV1::Evaluator,
-            &self.signed.use_attestation,
-            &payload,
-            now,
-        ).map_err(AgentdIntelligenceEvaluationError::Evidence)?;
+        let verified = self
+            .trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &self.signed.use_attestation,
+                &payload,
+                now,
+            )
+            .map_err(AgentdIntelligenceEvaluationError::Evidence)?;
         if verified.principal() != &self.signed.bundle.evaluator
             || verified.principal().signing_key_digest != self.current_owner.key_digest
         {
@@ -122,9 +127,14 @@ impl AgentdEvaluationSessionV1 {
         }
         let binding_digest = Digest32::of_bytes(&payload);
         let result = admit_signed_eligibility_v2(
-            self.signed.bundle, self.signed.roles, &self.signed.evidence,
-            self.trust.verifier(), binding_digest, now,
-        ).map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
+            self.signed.bundle,
+            self.signed.roles,
+            &self.signed.evidence,
+            self.trust.verifier(),
+            binding_digest,
+            now,
+        )
+        .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
         if result.authority.grants_any()
             || result.decision.decision.authority.grants_any()
             || result.decision.decision.disposition

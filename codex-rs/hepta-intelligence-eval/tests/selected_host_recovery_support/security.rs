@@ -33,7 +33,7 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identity")
+    StableId::new(value).unwrap_or_else(|error| panic!("fixture identity: {error:?}"))
 }
 
 pub struct FixtureClock {
@@ -58,11 +58,7 @@ impl SelectedHostClockV1 for FixtureClock {
     }
 }
 
-pub fn principal(
-    name: &str,
-    key: &SigningKey,
-    scope: Digest32,
-) -> AuthenticatedPrincipalV1 {
+pub fn principal(name: &str, key: &SigningKey, scope: Digest32) -> AuthenticatedPrincipalV1 {
     AuthenticatedPrincipalV1 {
         principal_id: id(name),
         credential_chain_digest: digest(&format!("{name}-credential")),
@@ -148,11 +144,17 @@ pub fn verifier_and_evidence(
         signature: [0; 64],
     };
     signed.signature = root_key
-        .sign(&signed.signing_bytes().expect("distribution payload"))
+        .sign(
+            &signed
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("distribution payload: {error:?}")),
+        )
         .to_bytes();
-    let activated = activate_learning_trust(&root, signed, None, 50).expect("activated trust");
+    let activated = activate_learning_trust(&root, signed, None, 50)
+        .unwrap_or_else(|error| panic!("activated trust: {error:?}"));
     let verifier = activated.verifier();
-    let payload = evaluation_signing_payload_v2(bundle, roles).expect("evaluation payload");
+    let payload = evaluation_signing_payload_v2(bundle, roles)
+        .unwrap_or_else(|error| panic!("evaluation payload: {error:?}"));
     let evidence = SignedEvaluationEvidenceV1 {
         generator_plan: sign(
             verifier,
@@ -201,7 +203,10 @@ impl ProductEvaluationAttemptAnchorStoreV1 for FaultingAnchorStore {
         binding: Digest32,
     ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
     {
-        let state = self.state.lock().expect("anchor state");
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(|error| panic!("anchor state: {error:?}"));
         if state.retained.is_some_and(|value| value.binding != binding) {
             return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
         }
@@ -214,7 +219,10 @@ impl ProductEvaluationAttemptAnchorStoreV1 for FaultingAnchorStore {
         expected: Option<ProductEvaluationAttemptAnchorV1>,
         next: ProductEvaluationAttemptAnchorV1,
     ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
-        let mut state = self.state.lock().expect("anchor state");
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(|error| panic!("anchor state: {error:?}"));
         if next.binding != binding || state.retained != expected {
             return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
         }

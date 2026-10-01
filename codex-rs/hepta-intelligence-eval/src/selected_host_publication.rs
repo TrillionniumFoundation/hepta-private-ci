@@ -25,6 +25,8 @@ use crate::RecordedProductEvaluationErrorV1;
 
 #[path = "selected_host_facade.rs"]
 mod facade;
+#[path = "selected_host_final_use.rs"]
+mod final_use;
 
 const MAGIC: &[u8; 8] = b"HQPUBF01";
 const FILE_BYTES: usize = 8 + (8 * 32);
@@ -52,9 +54,13 @@ impl LockedQualificationPublicationStoreV1 {
                     fs::set_permissions(&root, fs::Permissions::from_mode(0o700))
                         .map_err(map_io)?;
                 }
-                let parent = root.parent().filter(|path| !path.as_os_str().is_empty())
+                let parent = root
+                    .parent()
+                    .filter(|path| !path.as_os_str().is_empty())
                     .unwrap_or(Path::new("."));
-                File::open(parent).and_then(|file| file.sync_all()).map_err(map_io)?;
+                File::open(parent)
+                    .and_then(|file| file.sync_all())
+                    .map_err(map_io)?;
             }
             Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
             Err(error) => return Err(map_io(error)),
@@ -85,7 +91,10 @@ impl LockedQualificationPublicationStoreV1 {
         &self,
         path: &Path,
         execution_digest: Digest32,
-    ) -> Result<Option<ProductQualificationPublicationRecordV1>, ProductQualificationPublicationStoreErrorV1> {
+    ) -> Result<
+        Option<ProductQualificationPublicationRecordV1>,
+        ProductQualificationPublicationStoreErrorV1,
+    > {
         let metadata = match fs::symlink_metadata(path) {
             Ok(value) => value,
             Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
@@ -99,19 +108,26 @@ impl LockedQualificationPublicationStoreV1 {
             return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
         }
         let mut bytes = Vec::with_capacity(FILE_BYTES);
-        file.take(FILE_BYTES as u64 + 1).read_to_end(&mut bytes).map_err(map_io)?;
+        file.take(FILE_BYTES as u64 + 1)
+            .read_to_end(&mut bytes)
+            .map_err(map_io)?;
         decode_record(&bytes, self.host_binding, execution_digest).map(Some)
     }
 
     fn sync_record(&self, path: &Path) -> Result<(), ProductQualificationPublicationStoreErrorV1> {
-        File::open(path).and_then(|file| file.sync_all()).map_err(map_io)?;
-        File::open(&self.root).and_then(|file| file.sync_all()).map_err(map_io)
+        File::open(path)
+            .and_then(|file| file.sync_all())
+            .map_err(map_io)?;
+        File::open(&self.root)
+            .and_then(|file| file.sync_all())
+            .map_err(map_io)
     }
 
     fn write_record(
         &self,
         record: &ProductQualificationPublicationRecordV1,
-    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1> {
+    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1>
+    {
         record.validate()?;
         let final_path = self.path_for(record.request.execution_digest);
         if let Some(existing) = self.read_path(&final_path, record.request.execution_digest)? {
@@ -124,7 +140,10 @@ impl LockedQualificationPublicationStoreV1 {
         let bytes = encode_record(record, self.host_binding)?;
         let ordinal = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
         let temp = self.root.join(format!(
-            ".{}.{}.{}.tmp", record.request.execution_digest, std::process::id(), ordinal
+            ".{}.{}.{}.tmp",
+            record.request.execution_digest,
+            std::process::id(),
+            ordinal
         ));
         let result = (|| {
             let mut options = OpenOptions::new();
@@ -135,11 +154,14 @@ impl LockedQualificationPublicationStoreV1 {
                 options.mode(0o600);
             }
             let mut file = options.open(&temp).map_err(map_io)?;
-            file.write_all(&bytes).and_then(|()| file.sync_all()).map_err(map_io)?;
+            file.write_all(&bytes)
+                .and_then(|()| file.sync_all())
+                .map_err(map_io)?;
             let observed = match fs::hard_link(&temp, &final_path) {
                 Ok(()) => record.clone(),
                 Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
-                    let existing = self.read_path(&final_path, record.request.execution_digest)?
+                    let existing = self
+                        .read_path(&final_path, record.request.execution_digest)?
                         .ok_or(ProductQualificationPublicationStoreErrorV1::Indeterminate)?;
                     if existing.request != record.request {
                         return Err(ProductQualificationPublicationStoreErrorV1::Conflict);
@@ -160,7 +182,10 @@ impl ProductQualificationPublicationStoreV1 for LockedQualificationPublicationSt
     fn load(
         &mut self,
         execution_digest: Digest32,
-    ) -> Result<Option<ProductQualificationPublicationRecordV1>, ProductQualificationPublicationStoreErrorV1> {
+    ) -> Result<
+        Option<ProductQualificationPublicationRecordV1>,
+        ProductQualificationPublicationStoreErrorV1,
+    > {
         if execution_digest.is_zero() {
             return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
         }
@@ -179,7 +204,8 @@ impl ProductQualificationPublicationStoreV1 for LockedQualificationPublicationSt
         &mut self,
         expected_record_digest: Option<Digest32>,
         request: &ProductQualificationPublicationRequestV1,
-    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1> {
+    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1>
+    {
         if let Some(existing) = self.load(request.execution_digest)? {
             if existing.request != *request
                 || expected_record_digest.is_some_and(|expected| expected != existing.record_digest)
@@ -196,7 +222,8 @@ impl ProductQualificationPublicationStoreV1 for LockedQualificationPublicationSt
             self.host_binding.as_array(),
             request.request_digest.as_array(),
         ]);
-        let record = ProductQualificationPublicationRecordV1::new(request.clone(), publication_digest)?;
+        let record =
+            ProductQualificationPublicationRecordV1::new(request.clone(), publication_digest)?;
         self.write_record(&record)
     }
 }
@@ -208,10 +235,16 @@ fn encode_record(
     record.validate()?;
     let mut bytes = Vec::with_capacity(FILE_BYTES);
     bytes.extend_from_slice(MAGIC);
-    for digest in [host_binding, record.request.execution_digest,
-        record.request.decision_evidence_digest, record.request.trust_digest,
-        record.request.authentication_digest, record.request.request_digest,
-        record.publication_digest, record.record_digest] {
+    for digest in [
+        host_binding,
+        record.request.execution_digest,
+        record.request.decision_evidence_digest,
+        record.request.trust_digest,
+        record.request.authentication_digest,
+        record.request.request_digest,
+        record.publication_digest,
+        record.record_digest,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
     Ok(bytes)
@@ -245,10 +278,14 @@ fn decode_record(
     }
     let record = ProductQualificationPublicationRecordV1 {
         request: ProductQualificationPublicationRequestV1 {
-            execution_digest, decision_evidence_digest, trust_digest,
-            authentication_digest, request_digest,
+            execution_digest,
+            decision_evidence_digest,
+            trust_digest,
+            authentication_digest,
+            request_digest,
         },
-        publication_digest, record_digest,
+        publication_digest,
+        record_digest,
     };
     record.validate()?;
     Ok(record)
@@ -263,12 +300,20 @@ fn map_io(error: io::Error) -> ProductQualificationPublicationStoreErrorV1 {
     }
 }
 
-fn map_store_to_recorded(error: ProductQualificationPublicationStoreErrorV1) -> RecordedProductEvaluationErrorV1 {
+fn map_store_to_recorded(
+    error: ProductQualificationPublicationStoreErrorV1,
+) -> RecordedProductEvaluationErrorV1 {
     let cause = match error {
         ProductQualificationPublicationStoreErrorV1::Conflict
-        | ProductQualificationPublicationStoreErrorV1::Rejected => ProductEvidenceSinkErrorV1::Rejected,
-        ProductQualificationPublicationStoreErrorV1::Unavailable => ProductEvidenceSinkErrorV1::Unavailable,
-        ProductQualificationPublicationStoreErrorV1::Indeterminate => ProductEvidenceSinkErrorV1::Indeterminate,
+        | ProductQualificationPublicationStoreErrorV1::Rejected => {
+            ProductEvidenceSinkErrorV1::Rejected
+        }
+        ProductQualificationPublicationStoreErrorV1::Unavailable => {
+            ProductEvidenceSinkErrorV1::Unavailable
+        }
+        ProductQualificationPublicationStoreErrorV1::Indeterminate => {
+            ProductEvidenceSinkErrorV1::Indeterminate
+        }
     };
     RecordedProductEvaluationErrorV1::Evaluation(ProductEvaluationError::Sink(cause))
 }
@@ -282,7 +327,9 @@ mod tests {
     use codex_hepta_types::AuthorityPosture;
     use codex_hepta_types::StableId;
 
-    fn id(value: &str) -> StableId { StableId::new(value).expect("valid id") }
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("valid id")
+    }
 
     fn request(execution: &[u8]) -> ProductQualificationPublicationRequestV1 {
         ProductQualificationPublicationRequestV1::new(
@@ -292,7 +339,8 @@ mod tests {
                     evaluation_id: id("evaluation:persistent"),
                     candidate_id: id("candidate:persistent"),
                     baseline_id: id("baseline:persistent"),
-                    disposition: IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+                    disposition:
+                        IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
                     failed_metrics: Vec::new(),
                     evidence_digest: Digest32::of_bytes(b"evidence"),
                     authority: AuthorityPosture::DENY_ALL,
@@ -300,25 +348,35 @@ mod tests {
                 trust_digest: Digest32::of_bytes(b"trust"),
                 authentication_digest: Digest32::of_bytes(b"authentication"),
             },
-        ).expect("request")
+        )
+        .expect("request")
     }
 
     #[test]
     fn publication_survives_restart_and_is_idempotent() {
         let root = std::env::temp_dir().join(format!(
-            "hepta-publication-store-{}-{}", std::process::id(), NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
+            "hepta-publication-store-{}-{}",
+            std::process::id(),
+            NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
         ));
         let binding = Digest32::of_bytes(b"selected-host");
         let request = request(b"execution");
         let first = {
-            let mut store = LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
+            let mut store =
+                LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
             store.compare_and_publish(None, &request).expect("publish")
         };
         let second = {
-            let mut store = LockedQualificationPublicationStoreV1::open_existing(&root, binding).expect("reopen");
-            let loaded = store.load(request.execution_digest).expect("load").expect("record");
+            let mut store = LockedQualificationPublicationStoreV1::open_existing(&root, binding)
+                .expect("reopen");
+            let loaded = store
+                .load(request.execution_digest)
+                .expect("load")
+                .expect("record");
             assert_eq!(loaded, first);
-            store.compare_and_publish(None, &request).expect("idempotent")
+            store
+                .compare_and_publish(None, &request)
+                .expect("idempotent")
         };
         assert_eq!(second, first);
         let _ = fs::remove_dir_all(root);
@@ -327,23 +385,32 @@ mod tests {
     #[test]
     fn conflicting_request_and_host_binding_fail_closed() {
         let root = std::env::temp_dir().join(format!(
-            "hepta-publication-conflict-{}-{}", std::process::id(), NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
+            "hepta-publication-conflict-{}-{}",
+            std::process::id(),
+            NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
         ));
         let binding = Digest32::of_bytes(b"selected-host");
         let request = request(b"execution");
         let mut store = LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
         store.compare_and_publish(None, &request).expect("publish");
         let conflict = ProductQualificationPublicationRequestV1 {
-            authentication_digest: Digest32::of_bytes(b"different"), ..request.clone()
+            authentication_digest: Digest32::of_bytes(b"different"),
+            ..request.clone()
         };
-        assert!(matches!(store.compare_and_publish(None, &conflict),
+        assert!(matches!(
+            store.compare_and_publish(None, &conflict),
             Err(ProductQualificationPublicationStoreErrorV1::Conflict)
-            | Err(ProductQualificationPublicationStoreErrorV1::Rejected)));
+                | Err(ProductQualificationPublicationStoreErrorV1::Rejected)
+        ));
         let mut wrong = LockedQualificationPublicationStoreV1::open_existing(
-            &root, Digest32::of_bytes(b"other-host")
-        ).expect("wrong store");
-        assert!(matches!(wrong.load(request.execution_digest),
-            Err(ProductQualificationPublicationStoreErrorV1::Rejected)));
+            &root,
+            Digest32::of_bytes(b"other-host"),
+        )
+        .expect("wrong store");
+        assert!(matches!(
+            wrong.load(request.execution_digest),
+            Err(ProductQualificationPublicationStoreErrorV1::Rejected)
+        ));
         let _ = fs::remove_dir_all(root);
     }
 }

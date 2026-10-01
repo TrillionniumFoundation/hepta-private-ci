@@ -27,6 +27,10 @@ use crate::StableMemoryId;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
+#[path = "cognitive_intelligence_writer_context.rs"]
+mod context;
+pub(crate) use context::MemoryCorrectionTarget;
+
 const EXTRACTOR_CONTRACT: &str = "structured_cognitive_kg_v1";
 pub(crate) const LEGACY_ZERO_FACT_CONTRACT: &str = "legacy_memory_api_zero_v1";
 const MAX_ENTITIES: usize = 64;
@@ -142,8 +146,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                MemoryCorrectionTarget {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,12 +163,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        target: MemoryCorrectionTarget<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let MemoryCorrectionTarget {
+            memory_id,
+            expected_revision,
+        } = target;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active

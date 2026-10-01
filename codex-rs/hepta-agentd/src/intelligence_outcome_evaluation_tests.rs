@@ -20,11 +20,11 @@ mod model;
 // This shared fixture's cold-process helpers are exercised by the evaluator's
 // integration tests. This consumer test only needs its file-backed anchor.
 #[allow(dead_code)]
-#[path = "../../hepta-intelligence-eval/tests/selected_host_recovery_support/cold_storage.rs"]
-mod storage;
-#[allow(dead_code)]
 #[path = "../../hepta-intelligence-eval/tests/selected_host_recovery_support/cold_trust.rs"]
 mod host;
+#[allow(dead_code)]
+#[path = "../../hepta-intelligence-eval/tests/selected_host_recovery_support/cold_storage.rs"]
+mod storage;
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -39,6 +39,10 @@ struct Fixture {
 
 impl Fixture {
     fn new() -> Self {
+        Self::with_trust(host::activate(), 85)
+    }
+
+    fn with_trust(trust: ActivatedLearningTrustV1, qualification_now: u64) -> Self {
         let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
             "hepta-agentd-outcome-use-{}-{ordinal}",
@@ -71,20 +75,14 @@ impl Fixture {
         let attempt_id = host::id("agentd-test-attempt");
         let (plan, mut provider, roles) = model::fixture();
         let evaluated = runner
-            .evaluate_outcome_comparison(
-                attempt_id.clone(),
-                &plan,
-                &mut provider,
-                &mut journal,
-            )
+            .evaluate_outcome_comparison(attempt_id.clone(), &plan, &mut provider, &mut journal)
             .expect("actual native multi-outcome evaluation");
         let context = host::context();
         let bundle = runner
             .outcome_qualification_bundle(&evaluated, &context)
             .expect("native bundle");
-        let trust = host::activate();
         let evidence = host::evidence(&bundle, &roles, None);
-        let mut clock = host::clock(85);
+        let mut clock = host::clock(qualification_now);
         let receipt = runner
             .qualify_outcomes_and_persist_on_selected_host(
                 &attempt_id,
@@ -160,6 +158,70 @@ impl Fixture {
     }
 }
 
+#[test]
+fn multi_outcome_consumer_rejects_expired_distribution_with_live_use_signature() {
+    use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+    use codex_hepta_learning_ledger::LearningTrustRootV1;
+    use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
+    use codex_hepta_learning_ledger::activate_learning_trust;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: host::id("cold-root"),
+        scope_digest: host::digest("cold-scope"),
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 300,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: host::id("cold-distribution"),
+            generation: 1,
+            effective_at: 10,
+            trust: host::definition(/*revoked*/ false),
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 5,
+        expires_at: 84,
+        signature: [0; 64],
+    };
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().expect("distribution"))
+        .to_bytes();
+    let trust = activate_learning_trust(&root, signed, None, 83).expect("live distribution");
+    let fixture = Fixture::with_trust(trust, 83);
+    let payload = fixture
+        .binding
+        .outcome_qualification_use_payload_v1(&fixture.receipt, &fixture.owner, &fixture.trust)
+        .expect("bound use");
+    assert!(!fixture.trust.is_current_at(85));
+    assert!(
+        fixture
+            .trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &fixture.use_attestation,
+                &payload,
+                85,
+            )
+            .is_ok(),
+        "use signature must remain independently valid"
+    );
+    assert!(matches!(
+        fixture.consume(
+            &fixture.binding,
+            &fixture.owner,
+            &fixture.use_attestation,
+            85,
+        ),
+        Err(AgentdIntelligenceEvaluationError::Binding)
+    ));
+}
+
 impl Drop for Fixture {
     fn drop(&mut self) {
         let _ = fs::remove_dir_all(&self.root);
@@ -219,12 +281,7 @@ fn multi_outcome_consumer_rejects_context_owner_and_signature_substitution() {
         }
         assert!(
             fixture
-                .consume(
-                    &fixture.binding,
-                    &changed,
-                    &fixture.use_attestation,
-                    85,
-                )
+                .consume(&fixture.binding, &changed, &fixture.use_attestation, 85,)
                 .is_err(),
             "owner field {field} requires a freshly authenticated use"
         );
@@ -249,11 +306,7 @@ fn multi_outcome_consumer_rejects_context_owner_and_signature_substitution() {
     );
     let payload = fixture
         .binding
-        .outcome_qualification_use_payload_v1(
-            &fixture.receipt,
-            &fixture.owner,
-            &fixture.trust,
-        )
+        .outcome_qualification_use_payload_v1(&fixture.receipt, &fixture.owner, &fixture.trust)
         .expect("payload");
     let wrong_role = host::sign(LearningEvidenceRoleV1::Generator, &payload, 82);
     assert!(

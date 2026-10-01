@@ -4,6 +4,7 @@ Comments and literals are ignored; qualified names and aliases retain the exact
 source identifier. cfg expressions and macro bodies are deliberately retained:
 removing them without the compiler's configuration can hide production callers.
 """
+
 from __future__ import annotations
 
 import re
@@ -12,8 +13,9 @@ _IDENTIFIER = re.compile(r"(?:r#)?([A-Za-z_][A-Za-z_0-9]*)")
 _RAW_STRING = re.compile(r'(?:br|cr|r)(#*)"')
 
 
-def rust_identifiers(source: str) -> set[str]:
-    identifiers: set[str] = set()
+def rust_code_tokens(source: str) -> tuple[str, ...]:
+    """Retain code punctuation and identifier boundaries; literals are barriers."""
+    tokens: list[str] = []
     cursor = 0
     while cursor < len(source):
         if source.startswith("//", cursor):
@@ -38,8 +40,10 @@ def rust_identifiers(source: str) -> set[str]:
             terminator = '"' + raw.group(1)
             end = source.find(terminator, raw.end())
             cursor = len(source) if end < 0 else end + len(terminator)
+            tokens.append("<literal>")
             continue
         if source[cursor] == '"':
+            tokens.append("<literal>")
             cursor += 1
             while cursor < len(source):
                 if source[cursor] == "\\":
@@ -53,17 +57,27 @@ def rust_identifiers(source: str) -> set[str]:
         # A lifetime is not a character literal. Match only a closed character
         # (including escaped and unicode forms); never skip an arbitrary span.
         if source[cursor] == "'":
-            char = re.match(r"'(?:\\u\{[0-9a-fA-F_]+\}|\\x[0-9a-fA-F]{2}|\\.|[^'\\\n])'", source[cursor:])
+            char = re.match(
+                r"'(?:\\u\{[0-9a-fA-F_]+\}|\\x[0-9a-fA-F]{2}|\\.|[^'\\\n])'",
+                source[cursor:],
+            )
             if char:
                 cursor += char.end()
+                tokens.append("<literal>")
                 continue
         identifier = _IDENTIFIER.match(source, cursor)
         if identifier:
-            identifiers.add(identifier.group(1))
+            tokens.append(identifier.group(1))
             cursor = identifier.end()
         else:
+            if not source[cursor].isspace():
+                tokens.append(source[cursor])
             cursor += 1
-    return identifiers
+    return tuple(tokens)
+
+
+def rust_identifiers(source: str) -> set[str]:
+    return {token for token in rust_code_tokens(source) if _IDENTIFIER.fullmatch(token)}
 
 
 def contains_rust_identifier(source: str, symbol: str) -> bool:
