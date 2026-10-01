@@ -24,7 +24,7 @@ from .capacity_policy import (
     StoreCapacityPolicy,
     evaluate_store_capacity,
 )
-from .control_plane import EngineeringError, EngineeringStore, LeaseReceipt, WorkEnvelope
+from .control_plane import _AuditAnchor, EngineeringError, EngineeringStore, LeaseReceipt, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .integration_controller import (
     IntegrationQueueGeneration,
@@ -414,5 +414,5 @@ class EngineeringControlProduct:
     ) -> IntegrationQueueItem:
         return integration_queue_item(self.store, queue_generation_id, package_id)
 
-    def audit_anchor(self) -> dict[str, object]:
+    def audit_anchor(self) -> _AuditAnchor:
         return self.store.audit_anchor()

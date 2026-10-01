@@ -32,6 +32,20 @@ implementation-map provenance must be refreshed and checked against the final
 candidate before its old complete-mapping declaration is accepted for new code.
 Qualification never repairs that mapping or writes new source to make a gate pass.
 
+## Public owner input admission
+
+SQLite-bound time, revision, epoch and audit-offset inputs use exact integers in
+its signed 64-bit range. Positive counters retain the representable maximum;
+mutable lease revision exhaustion rejects atomically. Boolean/float comparisons
+cannot stand in for a lease revision or authority epoch. JSON-only package
+priority retains its larger integer domain.
+
+Identifiers and paths require valid UTF-8. Invalid collection shapes and authority
+elements produce typed owner errors before effects; execution failures raised by
+caller-supplied generators still propagate. Both the ordinary quality workflow and
+read-only collector type-check the canonical store and path policy alongside the
+existing product/evidence boundaries.
+
 ## Bounded audit suffix verification
 
 ### Entry points and limits

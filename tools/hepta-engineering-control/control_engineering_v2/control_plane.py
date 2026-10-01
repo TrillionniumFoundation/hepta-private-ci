@@ -6,7 +6,7 @@ merge, activate, promote, release, deploy, or grant runtime authority.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, is_dataclass
 import hashlib
@@ -15,7 +15,8 @@ from pathlib import Path
 import re
 import sqlite3
 import time
-from typing import Any
+from types import TracebackType
+from typing import Any, NoReturn, TypedDict
 
 from .path_policy import (
     canonical_repo_path as canonical_repo_path,
@@ -61,6 +62,7 @@ MAX_PREDECESSORS = 256
 MAX_ASSIGNMENTS = 128
 MAX_REASONS = 128
 MAX_AUDIT_ROWS = 512
+_MAX_SQLITE_INTEGER = 2**63 - 1
 ZERO_DIGEST = "0" * 64
 DENIED_AUTHORITIES = frozenset(
     {
@@ -138,7 +140,7 @@ class EngineeringError(ValueError):
         self.code = code
 
 
-def _error(code: str) -> None:
+def _error(code: str) -> NoReturn:
     raise EngineeringError(code)
 
 
@@ -146,7 +148,10 @@ def bounded_tuple(values: Iterable[Any], limit: int, code: str) -> tuple[Any, ..
     """Materialize at most *limit* values without exhausting an unbounded input."""
     if type(limit) is not int or limit < 0:
         _error("invalid_bound")
-    iterator = iter(values)
+    try:
+        iterator = iter(values)
+    except TypeError:
+        _error("invalid_iterable")
     result: list[Any] = []
     for _ in range(limit + 1):
         try:
@@ -157,11 +162,16 @@ def bounded_tuple(values: Iterable[Any], limit: int, code: str) -> tuple[Any, ..
 
 
 def checked_id(value: str, label: str = "id") -> str:
+    if not isinstance(value, str):
+        _error("invalid_" + label)
+    try:
+        encoded = value.encode("utf-8")
+    except UnicodeEncodeError:
+        _error("invalid_" + label)
     if (
-        not isinstance(value, str)
-        or not value
+        not value
         or "\x00" in value
-        or len(value.encode("utf-8")) > MAX_ID_BYTES
+        or len(encoded) > MAX_ID_BYTES
     ):
         _error("invalid_" + label)
     return value
@@ -189,6 +199,8 @@ def _checked_git_sha1(value: str, label: str) -> str:
 
 def _canonical_value(value: Any) -> Any:
     if is_dataclass(value):
+        if isinstance(value, type):
+            _error("noncanonical_value")
         return _canonical_value(asdict(value))
     if isinstance(value, Mapping):
         return {str(key): _canonical_value(item) for key, item in value.items()}
@@ -274,6 +286,13 @@ class ScheduleReceipt:
     release_authority: bool = False
 
 
+class _AuditAnchor(TypedDict):
+    sequence: int
+    eventId: str
+    eventDigest: str
+    createdUnixNs: int
+
+
 def _validate_envelope(value: WorkEnvelope) -> WorkEnvelope:
     if not isinstance(value, WorkEnvelope):
         _error("invalid_envelope")
@@ -289,16 +308,23 @@ def _validate_envelope(value: WorkEnvelope) -> WorkEnvelope:
         len(DENIED_AUTHORITIES),
         "authority_ceiling_incomplete",
     )
-    if set(denied) != DENIED_AUTHORITIES or len(denied) != len(DENIED_AUTHORITIES):
+    if (
+        any(not isinstance(item, str) for item in denied)
+        or set(denied) != DENIED_AUTHORITIES
+        or len(denied) != len(DENIED_AUTHORITIES)
+    ):
         _error("authority_ceiling_incomplete")
     if (
         type(value.maximum_assignments) is not int
         or not 1 <= value.maximum_assignments <= MAX_ASSIGNMENTS
     ):
         _error("invalid_assignment_limit")
-    if type(value.expires_unix_ns) is not int or value.expires_unix_ns <= 0:
+    if (
+        type(value.expires_unix_ns) is not int
+        or not 1 <= value.expires_unix_ns <= _MAX_SQLITE_INTEGER
+    ):
         _error("invalid_envelope_expiry")
-    if type(value.revision) is not int or value.revision < 1:
+    if type(value.revision) is not int or not 1 <= value.revision <= _MAX_SQLITE_INTEGER:
         _error("invalid_envelope_revision")
     return WorkEnvelope(
         value.envelope_id,
@@ -435,7 +461,12 @@ class EngineeringStore:
     def __enter__(self) -> "EngineeringStore":
         return self
 
-    def __exit__(self, exc_type, exc, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         try:
             if not self._owner_transaction_unrecoverable:
                 if exc_type is None:
@@ -454,7 +485,7 @@ class EngineeringStore:
             self.connection.close()
 
     @contextmanager
-    def _transaction(self):
+    def _transaction(self) -> Iterator[None]:
         """Own one immediate transaction across state, frontier and audit writes."""
         if self._owner_transaction_unrecoverable:
             _error("owner_transaction_unrecoverable")
@@ -541,7 +572,7 @@ class EngineeringStore:
                 )
             self.connection.execute(f"PRAGMA user_version={STORE_SCHEMA_VERSION}")
 
-    def _claim_capacity_units(self, claim) -> int:
+    def _claim_capacity_units(self, claim: sqlite3.Row) -> int:
         plan_row = self.connection.execute(
             "SELECT semantic_digest,plan_json FROM orchestration_generations "
             "WHERE generation_id=?",
@@ -663,24 +694,27 @@ class EngineeringStore:
         if any(int(row["used"]) > int(row["available"]) for row in totals):
             _error("worker_capacity_state_oversubscribed")
 
-    def assignment_frontier(self, generation_id: str):
+    def assignment_frontier(self, generation_id: str) -> Mapping[str, object]:
         from .hardening import assignment_frontier
 
-        return assignment_frontier(self, generation_id)
+        result: Mapping[str, object] = assignment_frontier(self, generation_id)
+        return result
 
-    def integration_decision_binding(self, decision_id: str):
+    def integration_decision_binding(self, decision_id: str) -> Mapping[str, object]:
         from .closure import integration_decision_binding
 
-        return integration_decision_binding(self, decision_id)
+        result: Mapping[str, object] = integration_decision_binding(self, decision_id)
+        return result
 
-    def integration_decision_seal(self, decision_id: str):
+    def integration_decision_seal(self, decision_id: str) -> Mapping[str, object]:
         from .seal import integration_decision_seal
 
-        return integration_decision_seal(self, decision_id)
+        result: Mapping[str, object] = integration_decision_seal(self, decision_id)
+        return result
 
     def _now(self, now_ns: int | None) -> int:
         value = time.time_ns() if now_ns is None else now_ns
-        if type(value) is not int or value < 0:
+        if type(value) is not int or not 0 <= value <= _MAX_SQLITE_INTEGER:
             _error("invalid_time")
         return value
 
@@ -725,6 +759,8 @@ class EngineeringStore:
             (now, now),
         ).fetchall()
         for row in rows:
+            if int(row["revision"]) >= _MAX_SQLITE_INTEGER:
+                _error("lease_revision_exhausted")
             new_revision = int(row["revision"]) + 1
             self.connection.execute(
                 "UPDATE path_leases SET state='expired',revision=? "
@@ -743,7 +779,7 @@ class EngineeringStore:
 
     def _get_envelope(self, envelope_id: str, now: int) -> sqlite3.Row:
         checked_id(envelope_id, "envelope_id")
-        row = self.connection.execute(
+        row: sqlite3.Row | None = self.connection.execute(
             "SELECT * FROM work_envelopes WHERE envelope_id=?",
             (envelope_id,),
         ).fetchone()
@@ -840,9 +876,9 @@ class EngineeringStore:
     ) -> LeaseReceipt:
         checked_id(lease_id, "lease_id")
         checked_id(holder, "holder")
-        if type(authority_epoch) is not int or authority_epoch < 1:
+        if type(authority_epoch) is not int or not 1 <= authority_epoch <= _MAX_SQLITE_INTEGER:
             _error("invalid_authority_epoch")
-        if type(expires_unix_ns) is not int:
+        if type(expires_unix_ns) is not int or not 1 <= expires_unix_ns <= _MAX_SQLITE_INTEGER:
             _error("invalid_lease_expiry")
         normalized = canonical_paths(paths)
         with self._transaction():
@@ -931,7 +967,11 @@ class EngineeringStore:
         now_ns: int | None = None,
     ) -> LeaseReceipt:
         checked_id(lease_id, "lease_id")
-        if disposition not in {"renew", "release", "revoke"}:
+        if type(expected_revision) is not int or not 1 <= expected_revision <= _MAX_SQLITE_INTEGER:
+            _error("invalid_lease_revision")
+        if type(authority_epoch) is not int or not 1 <= authority_epoch <= _MAX_SQLITE_INTEGER:
+            _error("invalid_authority_epoch")
+        if not isinstance(disposition, str) or disposition not in {"renew", "release", "revoke"}:
             _error("invalid_lease_transition")
         with self._transaction():
             now = self._now(now_ns)
@@ -948,13 +988,16 @@ class EngineeringStore:
                 _error("stale_authority_epoch")
             if row["state"] != "active":
                 _error("lease_not_active")
+            if expected_revision == _MAX_SQLITE_INTEGER:
+                _error("lease_revision_exhausted")
             revision = expected_revision + 1
             expiry = int(row["expires_unix_ns"])
             state = "active"
             if disposition == "renew":
                 envelope = self._get_envelope(str(row["envelope_id"]), now)
-                if type(new_expiry_unix_ns) is not int or new_expiry_unix_ns <= max(
-                    now, expiry
+                if (
+                    type(new_expiry_unix_ns) is not int
+                    or not max(now, expiry) < new_expiry_unix_ns <= _MAX_SQLITE_INTEGER
                 ):
                     _error("invalid_lease_expiry")
                 if new_expiry_unix_ns > int(envelope["expires_unix_ns"]):
@@ -1227,7 +1270,7 @@ class EngineeringStore:
                 now,
             )
 
-    def audit_anchor(self) -> dict[str, object]:
+    def audit_anchor(self) -> _AuditAnchor:
         """Return the current append-only audit head for external immutable anchoring."""
         row = self.connection.execute(
             "SELECT sequence,event_id,event_digest,created_unix_ns "
@@ -1253,7 +1296,7 @@ class EngineeringStore:
         after_sequence: int = 0,
         limit: int = MAX_AUDIT_ROWS,
     ) -> tuple[dict[str, object], ...]:
-        if type(after_sequence) is not int or after_sequence < 0:
+        if type(after_sequence) is not int or not 0 <= after_sequence <= _MAX_SQLITE_INTEGER:
             _error("invalid_audit_query")
         if type(limit) is not int or not 1 <= limit <= MAX_AUDIT_ROWS:
             _error("invalid_audit_query")

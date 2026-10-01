@@ -28,6 +28,7 @@ from .control_plane import (
 from .evidence import SignatureTrustStore
 
 MAX_KEY_CUSTODY_ROLES = 32
+_MAX_SQLITE_INTEGER = 2**63 - 1
 
 _AUDIT_STATE_TABLES = (
     "work_envelopes",
@@ -196,9 +197,13 @@ def _window(observed: int, expires: int, now: int) -> bool:
     return (
         type(observed) is int
         and type(expires) is int
-        and observed <= now < expires
+        and 0 <= observed <= now < expires
         and expires > observed
     )
+
+
+def _sqlite_counter(value: object) -> bool:
+    return type(value) is int and 1 <= value <= _MAX_SQLITE_INTEGER
 
 
 def _require_persisted_types(
@@ -271,12 +276,9 @@ def verify_distributed_revocation_frontier(
         raise EngineeringError("distributed_revocation_frontier_required")
     checked_id(receipt.cluster_id, "cluster_id")
     checked_id(receipt.leader_id, "leader_id")
-    if (
-        type(receipt.leader_term) is not int
-        or receipt.leader_term < 1
-        or type(receipt.frontier_sequence) is not int
-        or receipt.frontier_sequence < 1
-    ):
+    if not all(_sqlite_counter(value) for value in (
+        receipt.leader_term, receipt.frontier_sequence,
+    )):
         raise EngineeringError("distributed_revocation_frontier_order")
     checked_sha256(receipt.frontier_digest, "revocation_frontier_digest")
     if receipt.frontier_digest == "0" * 64:
@@ -379,9 +381,10 @@ def verify_distributed_fence(
         checked_id(value, label)
     if receipt.issuer != "distributed_lease_authority":
         raise EngineeringError("distributed_fence_issuer_role")
-    if any(type(value) is not int or value < 1 for value in (
+    if not all(_sqlite_counter(value) for value in (
         receipt.leader_term, receipt.revocation_frontier_sequence,
         receipt.authority_epoch, receipt.fencing_token, receipt.lease_revision,
+    )) or any(type(value) is not int or value < 1 for value in (
         receipt.envelope_revision, receipt.lease_expires_unix_ns,
     )):
         raise EngineeringError("distributed_fence_order")
@@ -421,7 +424,11 @@ def verify_distributed_fence(
     )
     if receipt.revocation_frontier_digest == "0" * 64:
         raise EngineeringError("distributed_fence_revocation_frontier")
-    if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
+    if (
+        not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now)
+        or receipt.observed_unix_ns > _MAX_SQLITE_INTEGER
+        or receipt.expires_unix_ns > _MAX_SQLITE_INTEGER
+    ):
         raise EngineeringError("distributed_fence_stale")
     if receipt.expires_unix_ns > min(
         lease.expires_unix_ns,

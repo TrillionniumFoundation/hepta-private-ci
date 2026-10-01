@@ -103,6 +103,21 @@ scope unwinds, a reusable connection may begin a fresh transaction. A failed
 rollback instead marks `owner_transaction_unrecoverable`, closes the connection
 and requires a fresh owner to reopen and validate the durable predecessor; close
 does not commit the uncertain state.
+Public owner times, envelope revisions, lease epochs and audit offsets that enter
+SQLite must be exact integers in its signed 64-bit range. Booleans and floats do
+not satisfy revision/epoch comparisons. Lease revision exhaustion rejects before
+any owner effects; other changes within the same operation roll back. Invalid
+UTF-8 identifiers/paths and non-iterable inputs fail with `EngineeringError`.
+A supplied generator's execution error still propagates without owner effects.
+Package priority remains an arbitrary canonical-JSON integer because it is not a
+SQLite integer column or parameter.
+
+Distributed leader terms and revocation sequences persisted by the fence owner
+also fit positive signed 64-bit integers. Persisted fence observation/expiry times
+have `0 <= observed < expires <= 2**63 - 1`; external JSON-only frontier expiry
+is not constrained by SQLite storage. Signatures and full owner binding remain
+required independently of scalar validation.
+
 `SCHEMA.sql` is the single schema source, currently version 10. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;

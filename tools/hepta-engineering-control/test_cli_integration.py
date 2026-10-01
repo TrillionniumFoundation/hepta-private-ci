@@ -108,7 +108,7 @@ class CliIntegrationTests(unittest.TestCase):
             ("unknown", json.dumps({**asdict(self.envelope), "authority": True}), "invalid_input_fields"),
             ("deep", "[" * 2000 + "0" + "]" * 2000, "input_depth_limit_exceeded"),
             ("oversized", " " * (cli.MAX_INPUT_BYTES + 1), "input_byte_limit_exceeded"),
-            ("overflow", json.dumps(asdict(replace(self.envelope, expires_unix_ns=2**100))), "invalid_input"),
+            ("overflow", json.dumps(asdict(replace(self.envelope, expires_unix_ns=2**100))), "invalid_envelope_expiry"),
         )
         for name, content, expected in cases:
             with self.subTest(name=name):

@@ -61,9 +61,13 @@ jobs:
         run: |
           mypy --disallow-untyped-defs --check-untyped-defs \
             --ignore-missing-imports --follow-imports=skip \
+            tools/hepta-engineering-control/control_engineering_v2/control_plane.py \
+            tools/hepta-engineering-control/control_engineering_v2/path_policy.py \
             tools/hepta-engineering-control/control_engineering_v2/time_policy.py \
             tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py \
             tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/worker_registration.py \
+            tools/hepta-engineering-control/control_engineering_v2/product_runtime.py \
             tools/hepta-engineering-control/control_engineering_v2/production_adapters.py \
             tools/hepta-engineering-control/control_engineering_v2/external_controls.py \
             tools/hepta-engineering-control/control_engineering_v2/deployment_evidence.py \

@@ -14,6 +14,7 @@ from control_engineering_v2.external_controls import (
     admit_distributed_fence,
     store_snapshot_digest,
     verify_distributed_fence,
+    verify_distributed_revocation_frontier,
     verify_external_audit_anchor,
     verify_persisted_distributed_fence,
     verify_production_controls,
@@ -66,6 +67,66 @@ class ExternalContextBindingTests(unittest.TestCase):
             self.store, self.fixture.envelope, self.audit(), self.fixture.trust,
             now_ns=self.fixture.now,
         )), 64)
+
+    def test_signed_persisted_frontier_scalars_reject_overflow_without_effects(self):
+        for field in ("leader_term", "frontier_sequence"):
+            for value in (2**63, True):
+                with self.subTest(field=field, value=value):
+                    frontier = self.fixture.sign(replace(
+                        self.frontier, **{field: value}, signature="",
+                    ))
+                    fence = self.fixture.fence(self.lease, frontier)
+                    before = tuple(self.store.connection.iterdump())
+                    with self.assertRaisesRegex(EngineeringError, "distributed_revocation_frontier_order"):
+                        admit_distributed_fence(
+                            self.lease, self.fixture.envelope, fence, frontier,
+                            self.fixture.trust, store=self.store, now_ns=self.fixture.now,
+                        )
+                    self.assertEqual(tuple(self.store.connection.iterdump()), before)
+
+    def test_signed_fence_time_scalars_reject_invalid_windows_without_effects(self):
+        frontier = self.fixture.frontier(expires_offset=2**80 - self.fixture.now)
+        for field, value in (("observed_unix_ns", -1), ("expires_unix_ns", 2**63)):
+            with self.subTest(field=field):
+                fence = self.fixture.sign(replace(self.fence, **{field: value}, signature=""))
+                before = tuple(self.store.connection.iterdump())
+                with self.assertRaisesRegex(EngineeringError, "distributed_fence_stale"):
+                    admit_distributed_fence(
+                        self.lease, self.fixture.envelope, fence, frontier,
+                        self.fixture.trust, store=self.store, now_ns=self.fixture.now,
+                    )
+                self.assertEqual(tuple(self.store.connection.iterdump()), before)
+
+    def test_signed_frontier_negative_observation_is_not_a_valid_window(self):
+        frontier = self.fixture.sign(replace(self.frontier, observed_unix_ns=-1, signature=""))
+        before = tuple(self.store.connection.iterdump())
+        with self.assertRaisesRegex(EngineeringError, "distributed_revocation_frontier_stale"):
+            verify_distributed_revocation_frontier(
+                frontier, self.fixture.trust, now_ns=self.fixture.now,
+            )
+        self.assertEqual(tuple(self.store.connection.iterdump()), before)
+
+    def test_persisted_counter_maximum_and_json_only_expiry_remain_admissible(self):
+        maximum = 2**63 - 1
+        frontier = self.fixture.frontier(
+            sequence=maximum, leader_term=maximum, expires_offset=2**80 - self.fixture.now,
+        )
+        fence = self.fixture.fence(self.lease, frontier)
+        digest = admit_distributed_fence(
+            self.lease, self.fixture.envelope, fence, frontier, self.fixture.trust,
+            store=self.store, now_ns=self.fixture.now,
+        )
+        for table in ("distributed_cluster_frontiers", "distributed_fence_frontiers"):
+            row = self.store.connection.execute(
+                f"SELECT leader_term,revocation_frontier_sequence FROM {table}"
+            ).fetchone()
+            self.assertEqual(tuple(row), (maximum, maximum))
+        before = tuple(self.store.connection.iterdump())
+        self.assertEqual(admit_distributed_fence(
+            self.lease, self.fixture.envelope, fence, frontier, self.fixture.trust,
+            store=self.store, now_ns=self.fixture.now,
+        ), digest)
+        self.assertEqual(tuple(self.store.connection.iterdump()), before)
 
     def test_signed_foreign_envelope_semantics_cannot_override_registered_owner(self):
         original = self.fixture.envelope
