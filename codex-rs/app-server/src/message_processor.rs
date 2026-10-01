@@ -547,7 +547,7 @@ impl MessageProcessor {
             Arc::clone(&skills_watcher),
             turn_cost_worker.as_ref().map(TurnCostWorker::handle),
             config_warnings,
-            hepta.qualification_turn_writer.clone(),
+            hepta.qualification_turn_writer,
         );
         let turn_processor = TurnRequestProcessor::new(
             auth_manager,
