@@ -19,6 +19,9 @@ use crate::PromptDeliveryObservation;
 use crate::RetrievalAssignmentFact;
 use crate::Revocation;
 
+#[path = "retrieval_publication_durable_tests.rs"]
+mod retrieval_publication_tests;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {

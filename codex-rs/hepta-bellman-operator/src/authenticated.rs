@@ -23,6 +23,16 @@ use crate::OperatorRegularityAssessmentV1;
 use crate::admit_operator_regularity;
 use crate::validate_applicability_certificate;
 
+const REQUIRED_ERROR_COMPONENTS: [&str; 7] = [
+    "model",
+    "sensor",
+    "reconstruction",
+    "network",
+    "optimization",
+    "statistical",
+    "rollout",
+];
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedOperatorEvidenceV2 {
     pub generator: SignedLearningEvidenceV1,
@@ -73,6 +83,19 @@ pub fn admit_operator_regularity_with_signed_evidence_v2(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<AuthenticatedOperatorRegularityAdmissionV2, AuthenticatedOperatorError> {
+    // Structural compatibility accepts arbitrary diagnostic components. A
+    // qualification admission must account for the complete registered error
+    // budget, including signed zero-valued evidence for inapplicable terms.
+    if assessment.error_components.len() != REQUIRED_ERROR_COMPONENTS.len()
+        || !REQUIRED_ERROR_COMPONENTS.iter().all(|required| {
+            assessment
+                .error_components
+                .iter()
+                .any(|component| component.component_id.as_str() == *required)
+        })
+    {
+        return Err(AuthenticatedOperatorError::IncompleteErrorBudget);
+    }
     let evaluator_id = assessment.evaluator_id.clone();
     let evaluator_credential_digest = assessment.evaluator_credential_digest;
     let admission = admit_operator_regularity(assessment)?;
@@ -133,6 +156,7 @@ pub enum AuthenticatedOperatorError {
     Operator(OperatorClosureError),
     Evidence(SignedEvidenceError),
     IdentityBinding,
+    IncompleteErrorBudget,
 }
 
 impl fmt::Display for AuthenticatedOperatorError {
@@ -146,7 +170,7 @@ impl StdError for AuthenticatedOperatorError {
         match self {
             Self::Operator(error) => Some(error),
             Self::Evidence(error) => Some(error),
-            Self::IdentityBinding => None,
+            Self::IdentityBinding | Self::IncompleteErrorBudget => None,
         }
     }
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "d845831f2c753b4a3bf3ada5bbd0a09eb8fbe054",
+    "tree": "966e18278aff2193bf18210b20971d6ea5738153"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -440,7 +440,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "a565021f6f6aa4e0d7f794629f3673feec8f2584"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
@@ -504,7 +504,17 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+      "object": "e35fcf7c4b44c3104eb11f7b3be72cc9138f6bc0"
     }
-  ]
+  ],
+  "navigationRebindProvenance": {
+    "previousSourceBase": {
+      "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+      "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    },
+    "previousObservedAtHead": null,
+    "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
+    "historicalExecutionRevalidated": false,
+    "authorityGranted": false
+  }
 }

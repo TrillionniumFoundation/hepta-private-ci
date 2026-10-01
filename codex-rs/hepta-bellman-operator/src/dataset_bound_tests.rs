@@ -135,3 +135,116 @@ fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
     let model = fit_transition_model_verified_v2(verified).expect("fit");
     assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
 }
+
+#[test]
+fn op_06_verified_inputs_reject_relabelled_duplicate_evidence() {
+    let records = [digest("record-a"), digest("record-b")];
+    let receipt = receipt(records.to_vec());
+    let mut plan = tabular_plan(receipt.snapshot.dataset_digest, records);
+    let mut repeated = plan.samples[0].clone();
+    repeated.sample_id = id("relabelled-duplicate");
+    plan.samples.push(repeated);
+    assert!(matches!(
+        verify_tabular_operator_plan_v2(plan, &receipt, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
+
+    let rows = [records[0], records[1], records[0]]
+        .into_iter()
+        .enumerate()
+        .map(|(index, evidence_digest)| WorldModelSampleV1 {
+            sample_id: id(&format!("sample-{index}")),
+            state_id: id("state"),
+            action_id: id("action"),
+            next_state_id: id("next"),
+            outcome: FixedQ32::ONE,
+            evidence_digest,
+        })
+        .collect();
+    assert!(matches!(
+        verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
+}
+
+#[test]
+fn op_06_world_model_verification_enforces_fit_limit_before_membership() {
+    let record = digest("record");
+    let receipt = receipt(vec![record]);
+    let rows = vec![
+        WorldModelSampleV1 {
+            sample_id: id("sample"),
+            state_id: id("state"),
+            action_id: id("action"),
+            next_state_id: id("next"),
+            outcome: FixedQ32::ONE,
+            evidence_digest: record,
+        };
+        MAX_WORLD_MODEL_SAMPLES + 1
+    ];
+    assert!(matches!(
+        verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50),
+        Err(OperatorDatasetBindingError::WorldModel(
+            WorldModelError::SampleLimit
+        ))
+    ));
+}
+
+#[test]
+fn tabular_verification_enforces_fit_bounds_before_receipt_and_membership() {
+    let records = [digest("record-a"), digest("record-b")];
+    let receipt = receipt(records.to_vec());
+    for operation in 0..8 {
+        let mut plan = tabular_plan(receipt.snapshot.dataset_digest, records);
+        let expected = match operation {
+            0 => {
+                plan.sensor_ids.clear();
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            1 => {
+                plan.sensor_ids = vec![id("sensor"); crate::learned::MAX_SENSORS + 1];
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            2 => {
+                plan.action_ids.clear();
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            3 => {
+                plan.action_ids = vec![id("action"); crate::learned::MAX_ACTIONS + 1];
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            4 => {
+                plan.sensor_ids = vec![id("sensor"); crate::learned::MAX_SENSORS];
+                plan.action_ids = vec![id("action"); crate::learned::MAX_ACTIONS];
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            5 => {
+                plan.minimum_samples_per_cell = 0;
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            6 => {
+                plan.minimum_samples_per_cell = crate::learned::MAX_SAMPLES + 1;
+                crate::LearnedOperatorError::InvalidGrid
+            }
+            7 => {
+                plan.samples.clear();
+                crate::LearnedOperatorError::SampleLimit
+            }
+            _ => unreachable!(),
+        };
+        // Even an exact, current receipt cannot admit an impossible native plan.
+        assert_eq!(
+            verify_tabular_operator_plan_v2(plan.clone(), &receipt, 50).map(|_| ()),
+            Err(OperatorDatasetBindingError::Learned(
+                StrictLearnedOperatorError::Learned(expected.clone())
+            ))
+        );
+        // Bounds also precede receipt work and the evidence-membership scan.
+        assert_eq!(
+            verify_tabular_operator_plan_v2(plan, &receipt, 101).map(|_| ()),
+            Err(OperatorDatasetBindingError::Learned(
+                StrictLearnedOperatorError::Learned(expected)
+            ))
+        );
+    }
+}

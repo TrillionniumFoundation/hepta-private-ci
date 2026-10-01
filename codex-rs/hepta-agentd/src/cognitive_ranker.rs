@@ -139,13 +139,15 @@ pub fn cognitive_sensor_id(query: &str) -> Result<StableId, String> {
 /// Bind an action to the *exact* admitted revision and content. A correction or
 /// deletion cannot inherit a score merely by retaining the same memory ID.
 pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, String> {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(&(item.memory_id.len() as u64).to_be_bytes());
-    bytes.extend_from_slice(item.memory_id.as_bytes());
-    bytes.extend_from_slice(&item.revision.to_be_bytes());
-    bytes.extend_from_slice(item.content_sha256.as_bytes());
-    StableId::new(format!("memory-{}", Digest32::of_bytes(&bytes)))
-        .map_err(|error| error.to_string())
+    let memory_id_length_bytes = (item.memory_id.len() as u64).to_be_bytes();
+    let revision_bytes = item.revision.to_be_bytes();
+    let digest = Digest32::of_parts(&[
+        &memory_id_length_bytes,
+        item.memory_id.as_bytes(),
+        &revision_bytes,
+        item.content_sha256.as_bytes(),
+    ]);
+    StableId::new(format!("memory-{digest}")).map_err(|error| error.to_string())
 }
 
 impl PinnedCognitiveRanker {
@@ -174,6 +176,9 @@ impl PinnedCognitiveRanker {
             .map_err(|error| error.to_string())?;
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
+        }
+        if model.producer_id() != &candidate.spec().manifest.producer_id {
+            return Err("model producer differs from selected registry artifact".to_string());
         }
         let value = Self {
             owner,
@@ -303,6 +308,13 @@ impl PinnedCognitiveRanker {
         }
         let sensor = cognitive_sensor_id(query)?;
         self.with_current(|| {
+            if items.is_empty() {
+                return Ok(CognitiveRankObservation {
+                    policy_digest: self.policy_digest,
+                    propensity: ProbabilityQ32::ONE,
+                    applied: false,
+                });
+            }
             let mut scored = Vec::with_capacity(items.len());
             for (index, item) in items.iter().enumerate() {
                 match self.model.predict(&sensor, &cognitive_action_id(item)?) {
