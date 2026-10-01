@@ -73,8 +73,17 @@ required_boundary_ids = [
   "secrets_original_once_issuer",
   "secrets_original_effect_clock_budget",
   "secrets_agent_runtime_consume",
-  "bao_receipt_consumer_registration"
+  "bao_receipt_consumer_registration",
+  "secrets_root_policy_maintenance"
 ]
+
+[[boundary]]
+id = "secrets_root_policy_maintenance"
+symbol = "maintain_secrets_runtime_policy"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_maintenance.rs"
+definition_markers = ["pub async fn maintain_secrets_runtime_policy", "BoundSocket::bind", "AuthBusAuthorityHost::open", "config.roles.authority.trusted_time()", "observe_trusted_time_attestation", "host.replace_policy", "host.revoke_policy", "host.close().await"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["maintain-runtime-policy", "codex_hepta_bao_adapter::maintain_secrets_runtime_policy"]
 
 [[boundary]]
 id = "supervisor_authorized_boot"

@@ -47,6 +47,12 @@ async fn main() -> std::process::ExitCode {
             Some("serve-runtime") if operation.is_none() => {
                 codex_hepta_bao_adapter::serve_secrets_runtime(codex_hepta_bao_adapter::SecretsRuntimeServiceConfig::load_root_owned(path)?, shutdown).await
             }
+            Some("maintain-runtime-policy") => {
+                let intent = operation.as_deref().ok_or(ConsumerPortError::Invalid)?;
+                let output = codex_hepta_bao_adapter::maintain_secrets_runtime_policy(path, std::path::Path::new(intent)).await?;
+                println!("{}", serde_json::to_string(&output).map_err(|_| ConsumerPortError::Unavailable)?);
+                Ok(())
+            }
             Some("serve-consumer") if operation.is_none() => {
                 codex_hepta_bao_adapter::serve_credential_consumer(
                     CredentialConsumerServiceConfig::load_root_owned(path)?,

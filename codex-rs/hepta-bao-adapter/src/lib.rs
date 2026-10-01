@@ -61,9 +61,15 @@ mod runtime_clock;
 #[cfg(target_os = "linux")]
 mod runtime_config;
 #[cfg(target_os = "linux")]
+mod runtime_maintenance;
+#[cfg(target_os = "linux")]
 pub use runtime_client::SecretsRuntimeClient;
 #[cfg(target_os = "linux")]
 pub use runtime_client::SecretsRuntimeClientConfig;
+#[cfg(target_os = "linux")]
+pub use runtime_maintenance::SecretsPolicyMaintenanceResult;
+#[cfg(target_os = "linux")]
+pub use runtime_maintenance::maintain_secrets_runtime_policy;
 #[cfg(target_os = "linux")]
 mod runtime_service;
 #[cfg(target_os = "linux")]

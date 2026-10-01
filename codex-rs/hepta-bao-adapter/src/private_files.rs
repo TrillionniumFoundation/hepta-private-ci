@@ -8,6 +8,11 @@ const MAX_FRAME_BYTES: usize = 32 * 1024;
 pub(crate) fn read_root_configuration<T: serde::de::DeserializeOwned>(
     path: &Path,
 ) -> Result<T, ConsumerPortError> {
+    read_root_configuration_bound(path).map(|(value, _digest)| value)
+}
+pub(crate) fn read_root_configuration_bound<T: serde::de::DeserializeOwned>(
+    path: &Path,
+) -> Result<(T, [u8; 32]), ConsumerPortError> {
     use std::io::Read;
     if !path.is_absolute()
         || path.components().any(|component| {
@@ -50,7 +55,11 @@ pub(crate) fn read_root_configuration<T: serde::de::DeserializeOwned>(
     if bytes.len() > MAX_FRAME_BYTES {
         return Err(ConsumerPortError::Invalid);
     }
-    serde_json::from_slice(&bytes).map_err(unavailable)
+    let value = serde_json::from_slice(&bytes).map_err(unavailable)?;
+    Ok((
+        value,
+        codex_hepta_types::Digest32::of_bytes(&bytes).into_array(),
+    ))
 }
 pub(crate) fn read_private(
     path: &Path,
