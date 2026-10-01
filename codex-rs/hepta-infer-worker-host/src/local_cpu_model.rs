@@ -176,6 +176,7 @@ impl CpuNeuronModelDriver {
         &self.head_digest
     }
 
+    #[cfg(feature = "agentd-host")]
     pub(crate) fn feature_dimensions(&self) -> Result<(usize, usize), Error> {
         let weights = self.weights.as_ref().ok_or(Error::ModelNotLoaded)?;
         Ok((weights.input, weights.output))
