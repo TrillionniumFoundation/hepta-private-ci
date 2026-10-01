@@ -31,8 +31,16 @@ use crate::RequiredOrganSet;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
 
+#[track_caller]
+fn must<T, E: std::fmt::Debug>(result: Result<T, E>, context: &str) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("{context}: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid stable id")
+    must(StableId::new(value), "valid stable id")
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -88,7 +96,7 @@ fn policy() -> NduProductionPolicyV1 {
 
 fn contributions() -> ContributionSet {
     let objective = digest("objective");
-    let generation = Generation::new(1).expect("generation");
+    let generation = must(Generation::new(/*value*/ 1), "generation");
     ContributionSet {
         objective_digest: objective,
         generation,
@@ -155,12 +163,22 @@ struct Fixture {
 }
 
 fn fixture() -> Fixture {
-    let store_dir = tempfile::tempdir().expect("store tempdir");
-    let authority_dir = tempfile::tempdir().expect("authority tempdir");
-    std::fs::set_permissions(store_dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private store permissions");
-    std::fs::set_permissions(authority_dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private authority permissions");
+    let store_dir = must(tempfile::tempdir(), "store tempdir");
+    let authority_dir = must(tempfile::tempdir(), "authority tempdir");
+    must(
+        std::fs::set_permissions(
+            store_dir.path(),
+            std::fs::Permissions::from_mode(/*mode*/ 0o700),
+        ),
+        "private store permissions",
+    );
+    must(
+        std::fs::set_permissions(
+            authority_dir.path(),
+            std::fs::Permissions::from_mode(/*mode*/ 0o700),
+        ),
+        "private authority permissions",
+    );
 
     let signing = SigningKey::from_bytes(&[91; 32]);
     let head = FinalUseRevocations {
@@ -168,28 +186,32 @@ fn fixture() -> Fixture {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
-        authority_dir.path(),
-        "ndu-issuer".to_string(),
-        signing.verifying_key().to_bytes(),
-        head,
-    )
-    .expect("authority");
+    let authority = must(
+        codex_hepta_contracts::FinalUseAuthority::open_state_dir(
+            authority_dir.path(),
+            "ndu-issuer".to_string(),
+            signing.verifying_key().to_bytes(),
+            head,
+        ),
+        "authority",
+    );
 
-    let owner = NduAuthenticatedOwnerV1::open(
-        store_dir.path(),
-        authority.clone(),
-        NduOwnerContextV1 {
-            principal_id: id("agentd-principal"),
-            owner_id: id("utility.ndu"),
-            host_generation: 7,
-            principal_scope_digest: digest("principal-scope"),
-            fence_digest: digest("host-fence"),
-            revocation_frontier_digest: digest("revocation-frontier"),
-        },
-        policy(),
-    )
-    .expect("authenticated owner");
+    let owner = must(
+        NduAuthenticatedOwnerV1::open(
+            store_dir.path(),
+            authority.clone(),
+            NduOwnerContextV1 {
+                principal_id: id("agentd-principal"),
+                owner_id: id("utility.ndu"),
+                host_generation: 7,
+                principal_scope_digest: digest("principal-scope"),
+                fence_digest: digest("host-fence"),
+                revocation_frontier_digest: digest("revocation-frontier"),
+            },
+            policy(),
+        ),
+        "authenticated owner",
+    );
 
     Fixture {
         owner,
@@ -203,14 +225,14 @@ fn fixture() -> Fixture {
 
 impl Fixture {
     fn sign(&mut self, mutation: &NduOwnerMutationV1, grant_id: &str) -> SignedFinalUseGrant {
-        let binding = self.owner.final_use_binding(mutation).expect("binding");
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_millis() as u64;
+        let binding = must(self.owner.final_use_binding(mutation), "binding");
+        let now = must(SystemTime::now().duration_since(UNIX_EPOCH), "clock").as_millis() as u64;
         let mut nonce = [0_u8; 32];
         nonce[0] = self.next_nonce;
-        self.next_nonce = self.next_nonce.checked_add(1).expect("nonce bound");
+        self.next_nonce = match self.next_nonce.checked_add(/*rhs*/ 1) {
+            Some(next) => next,
+            None => panic!("nonce bound"),
+        };
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "ndu-issuer".to_string(),
@@ -223,7 +245,7 @@ impl Fixture {
         };
         let signature = self
             .signing
-            .sign(&grant.signing_bytes().expect("signing bytes"));
+            .sign(&must(grant.signing_bytes(), "signing bytes"));
         SignedFinalUseGrant {
             grant,
             signature: signature.to_bytes().to_vec(),
