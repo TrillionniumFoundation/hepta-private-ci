@@ -31,6 +31,7 @@ use crate::cognitive_kg_store::load_canonical_generation_tx;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
+use crate::cognitive_test_support::workspace;
 
 fn active_revision(scope: CognitiveScope, content: &str, valid_from: i64) -> MemoryRevisionDraft {
     MemoryRevisionDraft {
@@ -583,4 +584,200 @@ async fn canonical_entity_shape_conflicts_while_live_and_evolves_after_correctio
     let canonical_id = canonical_entity_id(&owner, &scope, "ada");
     assert_eq!(generation.nodes.len(), 1);
     assert_eq!(generation.nodes[0].node_id.as_str(), canonical_id);
+}
+
+#[tokio::test]
+async fn interleaved_memory_history_keeps_exact_old_cuts_and_workspace_isolation() {
+    let temp = TempDir::new().expect("temp directory");
+    let owner = agent_id(108);
+    let owner_layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&owner_layout).await.expect("store");
+    let scope = CognitiveScope::AgentPrivate;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let workspace_sha256 = workspace("kg-interleaved-history");
+    let workspace_scope = CognitiveScope::WorkspacePrivate {
+        workspace_sha256: workspace_sha256.clone(),
+    };
+    let workspace_access = CognitiveAccess::workspace_private(owner.clone(), workspace_sha256);
+    let shared_id = canonical_entity_id(&owner, &scope, "shared");
+    let workspace_shared_id = canonical_entity_id(&owner, &workspace_scope, "shared");
+    let facts = |project: &str| KgFactSetDraft {
+        entities: vec![
+            KgEntityFactDraft {
+                key: "shared".to_string(),
+                entity_type: "person".to_string(),
+                label: "Shared person".to_string(),
+            },
+            KgEntityFactDraft {
+                key: project.to_string(),
+                entity_type: "project".to_string(),
+                label: project.to_string(),
+            },
+        ],
+        relations: vec![KgRelationFactDraft {
+            key: "contributes".to_string(),
+            from_entity_key: "shared".to_string(),
+            to_entity_key: project.to_string(),
+            relation: "contributes_to".to_string(),
+        }],
+    };
+    let mut agent_history = Vec::new();
+    let mut memories = Vec::new();
+    for project in ["first-v1", "second-v1"] {
+        let receipt = store
+            .remember_with_kg(
+                &access,
+                &source(scope.clone(), project, project),
+                &MemoryDraft {
+                    stable_key: project.to_string(),
+                    revision: active_revision(scope.clone(), project, 100),
+                },
+                &facts(project),
+            )
+            .await
+            .expect("independent memory occurrence");
+        agent_history
+            .push(load_generation(&store, &scope, receipt.projection.generation.get()).await);
+        memories.push(receipt.memory);
+    }
+    let together = agent_history.last().expect("two-memory cut");
+    assert_eq!(
+        (
+            together.nodes.len(),
+            together.edges.len(),
+            node(together, &shared_id).supports.len(),
+        ),
+        (3, 2, 2)
+    );
+
+    let workspace_first = store
+        .remember_with_kg(
+            &workspace_access,
+            &source(workspace_scope.clone(), "workspace-v1", "workspace-v1"),
+            &MemoryDraft {
+                stable_key: "workspace-memory".to_string(),
+                revision: active_revision(workspace_scope.clone(), "workspace-v1", 100),
+            },
+            &facts("workspace-v1"),
+        )
+        .await
+        .expect("separate workspace occurrence");
+    let mut workspace_history = vec![
+        load_generation(
+            &store,
+            &workspace_scope,
+            workspace_first.projection.generation.get(),
+        )
+        .await,
+    ];
+    let corrected = store
+        .correct_with_kg(
+            &access,
+            &memories[0].id.memory_id,
+            memories[0].id.revision,
+            &source(scope.clone(), "first-v2", "first-v2"),
+            &active_revision(scope.clone(), "first-v2", 200),
+            &facts("first-v2"),
+        )
+        .await
+        .expect("first identity advances while the second stays live");
+    agent_history
+        .push(load_generation(&store, &scope, corrected.projection.generation.get()).await);
+    let forgotten = store
+        .forget_with_kg(
+            &access,
+            &memories[1].id.memory_id,
+            memories[1].id.revision,
+            &source(scope.clone(), "second-forget", "withdraw second occurrence"),
+            &ForgetMemoryDraft {
+                scope: scope.clone(),
+                reason: "withdraw second occurrence".to_string(),
+                valid_from_unix_seconds: 300,
+                citations: Vec::new(),
+            },
+        )
+        .await
+        .expect("forget only the second identity");
+    agent_history
+        .push(load_generation(&store, &scope, forgotten.projection.generation.get()).await);
+    let after_forget = agent_history.last().expect("forgotten cut");
+    assert_eq!(
+        (
+            after_forget.nodes.len(),
+            after_forget.edges.len(),
+            node(after_forget, &shared_id).supports.len(),
+        ),
+        (2, 1, 1)
+    );
+
+    // Future identities and revisions must not leak backwards into old cuts.
+    let third = store
+        .remember_with_kg(
+            &access,
+            &source(scope.clone(), "third-v1", "third-v1"),
+            &MemoryDraft {
+                stable_key: "third-memory".to_string(),
+                revision: active_revision(scope.clone(), "third-v1", 400),
+            },
+            &facts("third-v1"),
+        )
+        .await
+        .expect("future third identity");
+    agent_history.push(load_generation(&store, &scope, third.projection.generation.get()).await);
+    let future = store
+        .correct_with_kg(
+            &access,
+            &corrected.memory.id.memory_id,
+            corrected.memory.id.revision,
+            &source(scope.clone(), "first-v3", "first-v3"),
+            &active_revision(scope.clone(), "first-v3", 500),
+            &facts("first-v3"),
+        )
+        .await
+        .expect("future revision of the first identity");
+    agent_history.push(load_generation(&store, &scope, future.projection.generation.get()).await);
+    let workspace_future = store
+        .correct_with_kg(
+            &workspace_access,
+            &workspace_first.memory.id.memory_id,
+            workspace_first.memory.id.revision,
+            &source(workspace_scope.clone(), "workspace-v2", "workspace-v2"),
+            &active_revision(workspace_scope.clone(), "workspace-v2", 600),
+            &facts("workspace-v2"),
+        )
+        .await
+        .expect("future workspace revision");
+    workspace_history.push(
+        load_generation(
+            &store,
+            &workspace_scope,
+            workspace_future.projection.generation.get(),
+        )
+        .await,
+    );
+
+    store.pool.close().await;
+    drop(store);
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("reopen all current canonical receipts");
+    for (scope, history, foreign_node_id) in [
+        (scope, agent_history, workspace_shared_id),
+        (workspace_scope, workspace_history, shared_id),
+    ] {
+        for expected in history {
+            let observed = load_generation(&reopened, &scope, expected.generation.get()).await;
+            // Full equality includes nodes, edges, all source supports, the
+            // source vector, authority posture and the canonical digest.
+            assert_eq!(observed, expected);
+            assert!(
+                observed
+                    .nodes
+                    .iter()
+                    .all(|node| node.node_id.as_str() != foreign_node_id)
+            );
+        }
+        assert_full_publication_history(&reopened, &scope).await;
+    }
+    reopened.pool.close().await;
 }

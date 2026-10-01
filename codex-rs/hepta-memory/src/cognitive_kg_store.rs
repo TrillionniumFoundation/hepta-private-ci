@@ -309,18 +309,25 @@ pub(crate) async fn load_canonical_generation_tx(
     // identity, select the latest trigger at or before the requested generation.
     // This replaces complete graph copies per generation while preserving exact
     // historical reconstruction from source-owned immutable revisions.
+    // Deduplicate identities before their indexed latest-trigger lookup, rather
+    // than repeating that lookup for every retained historical receipt.
     let node_rows = sqlx::query(
-        "WITH selected_heads AS (
+        "WITH selected_memories AS (
+             SELECT DISTINCT projection_scope, trigger_memory_id
+             FROM kg_projection_generation_receipts
+             WHERE projection_scope = ? AND generation <= ?
+         ), selected_heads AS (
              SELECT h.trigger_memory_id AS memory_id,
                     h.trigger_memory_revision AS memory_revision
-             FROM kg_projection_generation_receipts h
-             WHERE h.projection_scope = ?
-               AND h.generation <= ?
-               AND h.generation = (
+             FROM selected_memories m
+             JOIN kg_projection_generation_receipts h
+               ON h.projection_scope = m.projection_scope
+              AND h.trigger_memory_id = m.trigger_memory_id
+              AND h.generation = (
                    SELECT MAX(x.generation)
                    FROM kg_projection_generation_receipts x
-                   WHERE x.projection_scope = h.projection_scope
-                     AND x.trigger_memory_id = h.trigger_memory_id
+                   WHERE x.projection_scope = m.projection_scope
+                     AND x.trigger_memory_id = m.trigger_memory_id
                      AND x.generation <= ?
                )
          )
@@ -370,17 +377,22 @@ pub(crate) async fn load_canonical_generation_tx(
     }
 
     let edge_rows = sqlx::query(
-        "WITH selected_heads AS (
+        "WITH selected_memories AS (
+             SELECT DISTINCT projection_scope, trigger_memory_id
+             FROM kg_projection_generation_receipts
+             WHERE projection_scope = ? AND generation <= ?
+         ), selected_heads AS (
              SELECT h.trigger_memory_id AS memory_id,
                     h.trigger_memory_revision AS memory_revision
-             FROM kg_projection_generation_receipts h
-             WHERE h.projection_scope = ?
-               AND h.generation <= ?
-               AND h.generation = (
+             FROM selected_memories m
+             JOIN kg_projection_generation_receipts h
+               ON h.projection_scope = m.projection_scope
+              AND h.trigger_memory_id = m.trigger_memory_id
+              AND h.generation = (
                    SELECT MAX(x.generation)
                    FROM kg_projection_generation_receipts x
-                   WHERE x.projection_scope = h.projection_scope
-                     AND x.trigger_memory_id = h.trigger_memory_id
+                   WHERE x.projection_scope = m.projection_scope
+                     AND x.trigger_memory_id = m.trigger_memory_id
                      AND x.generation <= ?
                )
          )
@@ -628,16 +640,24 @@ pub(crate) async fn graph_source_vector_digest_tx(
     source_snapshot_digest: Digest32,
 ) -> Result<Digest32, CognitiveStoreError> {
     let (scope_kind, workspace_sha256) = scope.database_parts();
-    let memory_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM memory_revisions
-         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
-    )
-    .bind(owner_agent_id)
-    .bind(scope_kind)
-    .bind(workspace_sha256)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
+    // The fact-set primary key permits at most one match per revision, so one
+    // scan computes all three history counts without multiplying memory rows.
+    let (memory_frontier, tombstone_frontier, knowledge_fact_frontier): (i64, i64, i64) =
+        sqlx::query_as(
+            "SELECT COUNT(*),
+                    COUNT(CASE WHEN r.lifecycle = 'tombstoned' THEN 1 END),
+                    COUNT(f.memory_id)
+             FROM memory_revisions r
+             LEFT JOIN kg_revision_fact_sets f
+               ON f.memory_id = r.memory_id AND f.memory_revision = r.revision
+             WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?",
+        )
+        .bind(owner_agent_id)
+        .bind(scope_kind)
+        .bind(workspace_sha256)
+        .fetch_one(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
     // The graph cut contains cited evidence. A standalone source append has
     // no graph facts and must not invalidate a previously published generation
     // when reopening the owner. The broader Lane C snapshot still fences all
@@ -647,30 +667,6 @@ pub(crate) async fn graph_source_vector_digest_tx(
          WHERE s.owner_agent_id = ? AND s.scope_kind = ? AND s.workspace_sha256 IS ?
            AND EXISTS (SELECT 1 FROM memory_citations c
                        WHERE c.source_id = s.source_id AND c.source_revision = s.source_revision)",
-    )
-    .bind(owner_agent_id)
-    .bind(scope_kind)
-    .bind(workspace_sha256)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    let tombstone_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM memory_revisions
-         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?
-           AND lifecycle = 'tombstoned'",
-    )
-    .bind(owner_agent_id)
-    .bind(scope_kind)
-    .bind(workspace_sha256)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    let knowledge_fact_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*)
-         FROM kg_revision_fact_sets f
-         JOIN memory_revisions r
-           ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
-         WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?",
     )
     .bind(owner_agent_id)
     .bind(scope_kind)
@@ -782,7 +778,7 @@ impl CognitiveStore {
                ON s.memory_id = r.memory_id AND s.memory_revision = r.revision
              WHERE r.owner_agent_id = ? AND r.scope_kind = ?
                AND r.workspace_sha256 IS ?
-             ORDER BY r.memory_id LIMIT ?",
+             ORDER BY h.memory_id LIMIT ?",
         )
         .bind(self.owner_agent_id.as_str())
         .bind(scope_kind)

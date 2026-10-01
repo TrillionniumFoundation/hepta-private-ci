@@ -248,6 +248,8 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies the algorithm and pilot ceilings. Current native bounds are enforced in [hepta-cognitive-store](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and [Lane C SQLite](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md). The durable measurement executable [cognitive_store_perf.rs](../../../codex-rs/hepta-memory/examples/cognitive_store_perf.rs) records cold-open, per-commit p50/p95/p99/max, database/WAL/journal bytes, snapshot materialization, recovery-anchor cost and reopen cost. The focused owner qualification workflow configures a 256-record latency sample and a 16,384-record maximum-retained profile. The reusable consolidated qualification also configures these measurements for durable-owner changes. Dependency-selected ordinary native checks do not imply that either profile executed. Measurements are exact-run artifacts, not prose claims or deployment thresholds.
 
+Canonical KG snapshot reads traverse actual Memory heads in `h.memory_id` order. Historical node and edge reconstruction first deduplicates `(projection_scope, trigger_memory_id)` identities at the requested generation, then uses an indexed `MAX(generation)` lookup for each identity. This selects the exact historical cut rather than substituting current heads, and retains scope checks, deterministic output order, capacity caps and bounded query limits. Memory, tombstone and fact frontiers share one aggregate over revisions and their uniquely keyed fact receipts; the exact counts and source-vector digest inputs are unchanged. The query changes have no measured speedup or passing performance claim until the latency and maximum-retained profiles execute against their exact source head; results from an earlier source do not qualify this change.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
@@ -280,14 +282,15 @@ Ordinary development follows [the global development policy](../../DEVELOPMENT.m
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect its output for passes, failures and skips. Explicit qualification uses `--profile qualification` with committed candidate inputs and retains exact source-head and merge-candidate evidence when the selected qualification requires them. A development-profile pass supplies no execution, activation or acceptance fact. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.
 
-From the repository root, the selected integration/recovery library checks are:
+From the repository root, the selected integration/recovery checks are:
 
 ```sh
 just test --locked --lib -p codex-hepta-agentd --no-tests fail -E 'test(cognitive_) | test(production_writer_host)'
+just test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --no-tests fail
 just test --locked --lib -p codex-state --no-tests fail -E 'test(sqlite_recovery)'
 ```
 
-The [architecture convergence workflow](../../../.github/workflows/hepta-architecture-convergence.yml) configures these selections for its source-head/base-merge lanes under the existing native-execution and effects/learning/lifecycle conditions. It records command execution or exact-tree reuse separately. These are Agentd cognitive/context and production-writer-host library checks plus state SQLite recovery checks; the named Agentd product-host integration tests remain required separately. The added commands have no successful execution claim here; retain their current exact-run results before treating this scope as verified.
+The [architecture convergence workflow](../../../.github/workflows/hepta-architecture-convergence.yml) configures these selections for its source-head/base-merge lanes under the existing native-execution and effects/learning/lifecycle conditions. It records command execution or exact-tree reuse separately. These are Agentd cognitive/context and production-writer-host library checks, the default-profile named Agentd product-host recovery/writer integration, and state SQLite recovery checks. The qualification-only write seam and independently selected deployment-host acceptance remain separate. The configured commands have no successful execution claim here; retain their current exact-run results before treating this scope as verified.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
