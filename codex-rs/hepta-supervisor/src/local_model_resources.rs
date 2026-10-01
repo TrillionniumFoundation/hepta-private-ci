@@ -100,6 +100,10 @@ fn validate_current(
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "local-host", target_os = "linux"))]
 #[path = "local_model_resources_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "local_model_resource_validation_tests.rs"]
+mod validation_tests;
