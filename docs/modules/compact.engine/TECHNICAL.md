@@ -46,7 +46,25 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs), which exports the checkpoint, candidate, signed-observation and publication-proposal APIs. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+
+### Target requirements versus implemented source
+
+Sections 3–17 describe registered boundaries and development obligations. Statements about a generation publisher, recovery layer, JSON compatibility, migrations and store admission are requirements for the composed target; they do not establish that those components exist in this native crate. Sections 18–21 describe the actual source subset. The [implementation map](IMPLEMENTATION_MAP.json) retains the separate product and acceptance states.
+
+| Completion dimension | Current source state | Remaining evidence or implementation |
+| --- | --- | --- |
+| Deterministic checkpoint/candidate construction and bounded integrity checks | Implemented pure library | A valid supplied preimage does not establish external source completeness. |
+| Complete source ancestry and current-head eligibility | Implemented in the existing SQLite cognitive owner | Compose the owner observation and frozen external context in a named host; keep current-source checks at use. |
+| Independent-role signatures and sealed publication-proposal admission | Implemented, with current trust/source/policy/selection revalidation | Host declarations and signatures authenticate bindings and observations; they do not execute obligations or grant publication. |
+| Complete bounded restart body codec | Implemented small transport profile (§21) | Persist the actual bytes and compose restoration under current host state; the larger native profile still requires staged storage. |
+| Durable publication, selected CAS and restart/recovery | Open | Implement one fenced owner transaction with current eligibility, dedupe, immutable receipts and recovery. |
+| Named product caller and registered checkpoint read port | Not composed | Bind an actual execution-spine caller and consumer; a registered port or test adapter is not a running path. |
+| Retained-query/reconstruction/contradiction/deletion evaluation and COMPACT-01..04 | Product execution remains open | Execute candidate-specific independent oracles against the composed path. |
+| Replay planning and skill proposal | Open target capabilities | Implement and qualify them separately from checkpoint construction. |
+| Host budgets, independent acceptance and activation/release | Not established by source review | Supply exact-candidate measurements and the applicable external receipts. |
+
+This table reports inspectable implementation scope, not a completion percentage or a passed execution receipt.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -54,6 +72,8 @@ Direct dependencies:
 
 - `cognitive.read`
 - `kernel.operations`
+
+These are the registered runtime owner-port dependencies. Native Cargo dependencies reuse bounded types and the existing `learning.ledger` evidence verifier; verifier reuse does not read or write the learning ledger, compose a runtime port, or establish an additional authoritative writer. The current crate has no operation-ledger client or SQL publisher.
 
 Authoritative write domains:
 
@@ -165,6 +185,10 @@ Current operating and state-format references:
 - [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
 - [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
 - [codex-rs/hepta-compact-engine/src/candidate.rs](../../../codex-rs/hepta-compact-engine/src/candidate.rs).
+- [codex-rs/hepta-compact-engine/src/resources.rs](../../../codex-rs/hepta-compact-engine/src/resources.rs), for aggregate input admission.
+- [codex-rs/hepta-compact-engine/src/authenticated.rs](../../../codex-rs/hepta-compact-engine/src/authenticated.rs), for signed qualification payloads and sealed proof revalidation.
+- [codex-rs/hepta-compact-engine/src/publication.rs](../../../codex-rs/hepta-compact-engine/src/publication.rs), for typed proposal admission and semantic intent identity.
+- [codex-rs/hepta-memory/src/lane_c_lineage.rs](../../../codex-rs/hepta-memory/src/lane_c_lineage.rs), for the existing owner's complete ancestry observation and read revalidation.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -174,6 +198,9 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
 - [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
+- [codex-rs/hepta-compact-engine/src/authenticated_tests.rs](../../../codex-rs/hepta-compact-engine/src/authenticated_tests.rs); named case: `expired_evidence_and_current_revocation_cannot_revalidate_a_stored_admission`.
+- [codex-rs/hepta-compact-engine/src/publication_tests.rs](../../../codex-rs/hepta-compact-engine/src/publication_tests.rs); named case: `current_configured_policy_content_cannot_be_replaced_by_matching_generation_label`.
+- [codex-rs/hepta-memory/src/lane_c_lineage_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_lineage_tests.rs) and [lane_c_lineage_guard_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs), for actual SQLite ancestry, eligibility, metadata and provenance regressions.
 
 In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
 
@@ -289,7 +316,7 @@ Both paths require the full supplied lineage from revision 1. A current-head-onl
 | Candidate digest | Domain `hepta.compaction-candidate.v3`, source vector, policy, selection-input commitment, checkpoint, loss report and the supplied retained/omitted/deleted sequences. Builders canonicalize order; validation binds the order actually supplied. |
 | Lane C checkpoint/proof | The V1 types and digest encoders in [lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs) bind their declared fields and require `DENY_ALL`; they are separate from the legacy Rust checkpoint type. |
 
-Checkpoint IDs include the complete source-vector digest and checkpoint generation to prevent same-generation identity reuse across snapshot scopes. The audit changes the unpublished local candidate's support/candidate digest domains to V3 while retaining the Rust `V2` type names. This is not in-place wire compatibility: no serialized wire contract or migration is implemented here, and consumers of old local candidates must rebuild them from authenticated source inputs.
+Checkpoint IDs include the complete source-vector digest and checkpoint generation to prevent same-generation identity reuse across snapshot scopes. The audit changes the unpublished local candidate's support/candidate digest domains to V3 while retaining the Rust `V2` type names. This is not in-place wire compatibility: no existing cross-owner wire contract or migration is changed. Consumers of old local candidates must rebuild them from authenticated source inputs; section 21 introduces a separate native restart-body version.
 
 Self-consistent digests do not establish source membership, complete input coverage, current deletion state, caller access or authentic ledger frontiers. `MemoryRecord` has no owner/fence/frontier field. The consumer must obtain the inputs and snapshot from one authenticated coherent read and revalidate current lineage/revocation before publication and every selection. Truncated input can otherwise describe an internally consistent but incomplete set.
 
@@ -321,7 +348,7 @@ For `n` revision records and `p` protected IDs, construction performs bounded so
 | [hepta-agentd qualification_writer.rs](../../../codex-rs/hepta-agentd/src/qualification_writer.rs) | Composes the existing local executor for qualification turn lifecycle. It does not call this crate's candidate builder/proof assembler, and its payload explicitly records `production_caller=false`. |
 | [CALLERS.toml](../../../CALLERS.toml) and [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) | No named product callsite currently composes this module. The privileged caller registry is an authority inventory, not proof that a pure library is consumed. The implementation map retains `productionImplementation=false` and `productCallerState=not_composed`. |
 
-Complete integration in the existing execution spine: add an authenticated coherent-read adapter with full lineage and protected coverage; retain the frozen policy/input preimage and call `validate_against_inputs()`; bind independent observations to the exact candidate; publish/reload through the declared `compact_checkpoint` owner with fenced intent, idempotency and revocation-aware selection; then compose a named caller and execute COMPACT-01..04 against that path. Existing hepta-memory stores must remain under their own owner; introducing a bridge requires explicit contract/owner coordination, not direct cross-owner writes or a replacement memory store. Replay scheduling and skill induction remain separate declared capabilities. Target-host qualification, independent acceptance and activation remain separate gates.
+Complete integration in the existing execution spine: compose the existing owner full-lineage adapter in a named host with frozen external context and protected coverage; retain the frozen policy/input preimage and call `validate_against_inputs()`; bind independent observations to the exact candidate; publish/reload through the declared `compact_checkpoint` owner with fenced intent, idempotency and revocation-aware selection; then execute COMPACT-01..04 against that path. Existing hepta-memory stores must remain under their own owner; introducing a bridge requires explicit contract/owner coordination, not direct cross-owner writes or a replacement memory store. Replay scheduling and skill induction remain separate declared capabilities. Target-host qualification, independent acceptance and activation remain separate gates.
 
 The 2026-10-01 adversarial regressions address legacy resurrection, missing protected input, forged payload/support/omission/deletion/accounting, arithmetic overflow, unbound qualification observations and checkpoint identity reuse across snapshots. Their source presence and this document are not execution receipts. Run the focused package checks and inspect their exact-candidate output before claiming source validation; product completion stays open until the integration above is executable and evidenced.
 
@@ -355,10 +382,10 @@ The authoritative `compact_checkpoint` writer remains `compact.engine` in [DATA_
 
 A complete durable stage must implement all of the following together:
 
-- A sealed compact-owned command binding the frozen inputs, authenticated proof, exact source cut, scope/purpose, selected predecessor, adjacent generation and operation/payload identity.
+- Use the sealed proposal (section 20) and complete bounded body (section 21) to bind frozen inputs, authenticated proof, exact source cut, scope/purpose, selected predecessor, adjacent generation and operation/payload identity; neither executes the writer.
 - Same-transaction current source/eligibility verification under `BEGIN IMMEDIATE`, immutable generation receipt insertion, selected-pointer compare-and-swap and destination dedupe. Calling a separate read revalidator before a later write transaction leaves a deletion/correction race.
 - The existing lifetime durable-writer fence and an exact compact-domain final-use grant held across the asynchronous transaction using the existing final-use authority. Learning signatures and ordinary cognitive-mutation capabilities are not publication grants.
-- A restart-resolvable bounded format. Existing outbox payload JSON is capped at 65,536 bytes and store rows at 2 MiB; a 16 MiB source/candidate cannot be put in one envelope or row. A lower complete-command profile or bounded staged rows with a verified digest reference is required.
+- A restart-resolvable bounded format. Existing outbox payload JSON is capped at 65,536 bytes and store rows at 2 MiB; a 16 MiB source/candidate cannot be put in one envelope or row. Section 21 supplies a smaller complete-body profile. Larger proposals require bounded staged rows with a verified digest reference; they are not silently truncated or cached.
 - Registered schema objects, recovery-schema oracle and complete recovery state digest, independent latest recovery witness, explicit selected-pointer reload, signature/source revocation checks and crash/CAS/rollback tests. Bootstrap must represent absent selected state separately from the Lane C vector's nonzero compact-generation placeholder.
 
 Cold support must resolve exact omitted ID/revision/digest against the bound source and current owner eligibility. `latest_memory` alone checks authorization/decoding and is insufficient to admit a currently verified, live and valid cold reference. An updated, pending, expired or deleted head must not resurrect retained or omitted historical support.
@@ -367,7 +394,7 @@ Named production composition, independently executed COMPACT-01..04, target-host
 
 ## 20. Sealed publication proposal admission
 
-The source-only publication admission stage is implemented in [publication.rs](../../../codex-rs/hepta-compact-engine/src/publication.rs), with adversarial regressions in [publication_tests.rs](../../../codex-rs/hepta-compact-engine/src/publication_tests.rs). It creates an immutable typed proposal, not a durable publication receipt. No SQLite writer, selected pointer, outbox destination handler, final-use grant or restart codec is added.
+The source-only publication admission stage is implemented in [publication.rs](../../../codex-rs/hepta-compact-engine/src/publication.rs), with adversarial regressions in [publication_tests.rs](../../../codex-rs/hepta-compact-engine/src/publication_tests.rs). It creates an immutable typed proposal, not a durable publication receipt. The separate body codec is described in section 21. No SQLite writer, selected pointer, outbox destination handler or final-use grant is added.
 
 `CompactionPublicationRequestV1` carries owner/scope/purpose and operation IDs, configured policy generation, expected selected state, the candidate, full frozen policy/input preimages and sealed authenticated proof. `CompactionPublicationContextV1` supplies independently obtained current owner/scope/purpose, policy generation and content digest, selected state, source cut, host verifier and use time. Matching declarations do not establish their external authenticity; host composition must derive them from the actual owners. Stable IDs are bounded identifiers, not agent credentials or writer capabilities.
 
@@ -380,7 +407,7 @@ Selection has two explicit states:
 | `Empty` | Candidate generation is 1 with no predecessor; the source vector's compact generation is the nonzero bootstrap placeholder 1. That placeholder does not mean a checkpoint already exists. |
 | `Selected { generation, checkpoint_digest }` | Digest is nonzero; candidate generation is checked `generation + 1`; predecessor equals that exact digest; the frozen source vector names the same selected generation. Overflow, skipped generation, wrong predecessor or stale selection fails closed. |
 
-`revalidate(context)` repeats admission with newly obtained host state before use. It detects changed selection, namespace, policy generation, source binding, expired evidence and trust rotation. A separate read followed by a later write remains racy: the durable writer must acquire current declarations and repeat these checks inside the same fenced transaction that validates source eligibility and performs selected-pointer CAS, dedupe and immutable receipt insertion. A valid proposal is not evidence that any of those effects happened.
+`revalidate(context)` repeats admission with newly obtained host state before use. It detects changed selection, namespace, policy generation/content digest, source binding, expired evidence and trust rotation. A separate read followed by a later write remains racy: the durable writer must acquire current declarations and repeat these checks inside the same fenced transaction that validates source eligibility and performs selected-pointer CAS, dedupe and immutable receipt insertion. A valid proposal is not evidence that any of those effects happened.
 
 The native semantic intent bytes are fixed-order binary identity bytes:
 
@@ -391,4 +418,29 @@ The native semantic intent bytes are fixed-order binary identity bytes:
 
 The SHA256 of these exact bytes is `intent_digest()`. Four bounded IDs, a fixed destination and fixed-width fields keep the complete identity below 2 KiB. Use time is deliberately excluded, so retrying the same operation under unchanged valid owner/trust state preserves identity. Signed issuance/expiry and trust are already committed by the authenticated-proof digest and are rechecked at use. Input arrival order and other semantically equivalent preimages do not create different intent identities; this commits validated semantic bindings, not every raw field/order of a future body encoding.
 
-These compact identity bytes are **not** the existing outbox's JSON payload and **not** a restart-resolvable body. A writer must freeze an exact bounded transport/body codec, hash the actual admitted JSON bytes for the existing operation/final-use payload binding, preserve or resolve every required preimage after restart, and compare both semantic identity and exact payload identity for dedupe. A digest-only envelope or process-local proposal cache cannot establish durable restart support. The small complete-command versus bounded immutable staged-row choices and all source/trust/fence/recovery requirements in section 19 remain open.
+These compact identity bytes are **not** the existing outbox's JSON payload and **not** a restart-resolvable body. A writer can use the exact bounded body codec in section 21, hash its actual admitted JSON bytes for the existing operation/final-use payload binding, durably preserve every required preimage, and compare both semantic identity and exact payload identity for dedupe. A digest-only envelope or process-local proposal cache cannot establish durable restart support. The complete small-body profile is implemented; immutable staged rows for larger proposals and all writer/source/trust/fence/recovery requirements in section 19 remain open.
+
+## 21. Complete bounded restart body and asynchronous dispatch prerequisite
+
+[publication_body.rs](../../../codex-rs/hepta-compact-engine/src/publication_body.rs) provides `CompactionPublicationProposalV1::encode_restart_body_v1()` and `restore_compaction_publication_body_v1(body, current_context)`. The [encoder](../../../codex-rs/hepta-compact-engine/src/publication_body_codec.rs), [decoder](../../../codex-rs/hepta-compact-engine/src/publication_body_restore.rs) and [adversarial tests](../../../codex-rs/hepta-compact-engine/src/publication_body_tests.rs) are separate. This format is complete for the admitted semantic proposal; it adds no database, publication handler, selection or final-use authority.
+
+The exact ASCII JSON wrapper is `{"bodyHex":"<lowercase hexadecimal>","schemaVersion":1}`. Its field order, spelling and lack of whitespace are normative. Unknown/duplicate fields, different order/version, escaping, uppercase or odd hexadecimal, trailing content and transport bytes above **65,536** are rejected before binary allocation. The wrapper consumes 32 bytes; every binary append checks the **32,752** byte ceiling before extending the buffer. A structurally valid larger native proposal fails encoding in full; the 16 MiB native input ceiling does not promise it fits this smaller transport. These are encoded-byte bounds, not measured RSS limits.
+
+Binary fields use unsigned big-endian integers, 32-byte raw digests, and StableId UTF8 bytes framed by a u32 length. All IDs are validated as bounded StableIds, with no normalization. The layout is:
+
+| Order | Encoded fields |
+| --- | --- |
+| 1 | Domain `hepta.compaction.publication-body.v1` followed by NUL; owner, scope, purpose and operation IDs; u64 configured policy generation. |
+| 2 | Selected tag 0 for Empty, or tag 1 followed by u64 selected generation and checkpoint digest. |
+| 3 | Source vector scope/purpose IDs; u64 memory, knowledge, tombstone and source frontiers, knowledge and compact generations, prompt revision; retrieval and encoder digests; u64 authority epoch; model, tokenizer, template and tool-schema digests. |
+| 4 | Policy ID, algorithm and compatibility digests; u32 retention limit; u32 protected count and original ordered IDs. |
+| 5 | u32 input count; each original record ID, u64 revision, kind/state tags, content digest, optional predecessor tag/digest, u32 citation count and original ordered citation ID/digest pairs; u32 priority and reason digest. |
+| 6 | Source-cut, scope and objective digests and u64 epoch; qualification evaluator ID, candidate and three obligation digests, four boolean tags. |
+| 7 | Generator then Evaluator evidence: evidence/principal IDs, role tag, trust/scope/objective digests, u64 epoch/issued/expiry, payload digest and original 64-byte signature. |
+| 8 | Candidate, checkpoint, authenticated-admission and semantic-intent digests, in that order; no trailing bytes. |
+
+Kind tags are Episode=0, Fact=1, Preference=2, Procedure=3; state is Live=0 or Tombstone=1. Selected, predecessor and boolean tags accept only 0/1. Signed roles accept Generator=0 and Evaluator=2, with the expected role checked by signature admission. Collection counts are bounded by both the versioned type limits and remaining bytes before allocating capacity (minimum encoded widths: protected ID 5, input 88, citation 37). Truncated fields, zero generation/revision, invalid identifiers or tags and additional binary bytes fail closed.
+
+Restoration reconstructs the source snapshot and deterministic candidate from the complete frozen policy/input preimages, re-admits both original signatures with the independently supplied **current** host verifier and time, constructs a new sealed proposal under current owner/scope/purpose/policy/source/selection, and checks all four committed digests. Verified receipts, trust keys, grants and admission tokens are never deserialized from the body. Original policy/input/citation order and signatures survive re-encoding. Candidate-only citation order may normalize during reconstruction: semantic candidate/intent identity is preserved, while whole-object equality is not promised for equivalent raw candidate representations. Hash the actual JSON bytes for transport/final-use/dedupe; that payload hash is distinct from the semantic intent digest.
+
+The existing memory production dispatcher now uses `with_verified_use_async` across the complete target Future, including lazy first polling, rather than validating only Future construction. [production_writer_async_dispatch_tests.rs](../../../codex-rs/hepta-memory/src/production_writer_async_dispatch_tests.rs) covers suspended completion, non-success outcomes and cancellation through the actual durable writer/outbox. The active fence prevents revocation-head commits for the attached authority while a bounded target is active; expiry is checked at effect entry, not continuously renewed. Cancellation releases the process guard but does not prove rollback of queued SQL or detached work. Durable Indeterminate state and the one-shot barrier require independent terminal observation before reconciliation. This prerequisite does not compose native compact publication or provide its same-transaction source checks, CAS, storage/recovery or product acceptance.
