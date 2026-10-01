@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "5c51789e4b65805989b4238b5433af31fa39e81d",
-    "tree": "08d051a361ec2cd35a11c737880f84b09a531709"
+    "commit": "f6b7b34dbc66d007877f9b12c004e3eb6e71ea5e",
+    "tree": "45b5852225033660147a26fb9f727c07402fd54e"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -165,7 +165,7 @@
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "sourceBlob": "709c572e358791f86b13f979fb24cdad70709f44"
     },
     {
       "operation": "authenticated_current_head",
@@ -181,7 +181,7 @@
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "sourceBlob": "709c572e358791f86b13f979fb24cdad70709f44"
     },
     {
       "operation": "authenticated_current_registry_view",
@@ -212,7 +212,7 @@
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "sourceBlob": "709c572e358791f86b13f979fb24cdad70709f44"
     },
     {
       "operation": "lifecycle_journal_append",
@@ -313,7 +313,7 @@
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "sourceBlob": "709c572e358791f86b13f979fb24cdad70709f44"
     },
     {
       "operation": "recover_registry_by_head",
@@ -326,7 +326,7 @@
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "sourceBlob": "709c572e358791f86b13f979fb24cdad70709f44"
     },
     {
       "operation": "current_head_restart_anchor",
@@ -339,7 +339,7 @@
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "sourceBlob": "709c572e358791f86b13f979fb24cdad70709f44"
     },
     {
       "operation": "independent_selection_verify",
@@ -566,7 +566,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "41b8c3456557ad1124f806f0560f3888e2b43a10"
+      "object": "7bd8407f7b9d3f227de3acd12f91157c5533bf53"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
@@ -597,12 +597,36 @@
       "object": "073fcc597aadc6a28cf0b51c839aa5f461f6dc1c"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_admission_quota_tests.rs",
+      "object": "859a696d8ea5a554bc59ea679467ace449bc0112"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_begin_capacity_tests.rs",
+      "object": "70165be1bc3a161e02eb64990812a01834fba2f8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs",
+      "object": "ee82f11c7df7428d9f7a288d9a2c2fdfdd6f4b23"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_generation_tests.rs",
       "object": "48ef2cddf7243701d15ac81b524b10c803035157"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_head_capacity_tests.rs",
+      "object": "2aea2f59113c8dcc3d31f712e25ac4e7eae36fc5"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
+      "object": "709c572e358791f86b13f979fb24cdad70709f44"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_pending_fence_tests.rs",
+      "object": "0667c8df412bcf1618fe9ea16f66c63a105e5ea7"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_pending_payload_tests.rs",
+      "object": "9bf4dc31cf7cf7c8a11ab0fff9e670f22cbd74fc"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs",
@@ -619,6 +643,10 @@
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs",
       "object": "3c8cbdc9426301d23efb2fbc2f98fc059423bc2d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_witness_receipt_tests.rs",
+      "object": "5e21c1813fb7745863b6e9a89c4429d14605dd48"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
@@ -658,7 +686,7 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "48d1a9601d15d60d719aa566320180ce91bb2be2"
+      "object": "3ec79cbabf09ba2f927ee6878a8b54e59b9fde10"
     }
   ]
 }
