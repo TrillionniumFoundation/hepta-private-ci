@@ -135,6 +135,49 @@ fn wal_rejects_a_complete_corrupt_frame() {
     assert!(read_wal_frames(&snapshot, 4096, 1024).is_err());
 }
 
+#[cfg(any(unix, windows))]
+#[test]
+fn mutable_wal_hardlinks_reject_recovery_and_append_without_changing_either_name() {
+    let directory = private_tempdir();
+    let root = PrivateStateRoot::open(directory.path().join("state")).unwrap();
+    let snapshot = root.path().join("journal.json");
+    super::append_wal_frame(&root, &snapshot, b"first", 4096, 1024).unwrap();
+    let wal = wal_path(&snapshot);
+    use std::io::Write as _;
+    std::fs::OpenOptions::new()
+        .append(true)
+        .open(&wal)
+        .unwrap()
+        .write_all(b"H")
+        .unwrap();
+    let alias = directory.path().join("outside-wal");
+    std::fs::hard_link(&wal, &alias).unwrap();
+    let original = std::fs::read(&wal).unwrap();
+    let frames = super::read_wal_frames(&root, &snapshot, 4096, 1024).unwrap();
+    assert!(frames.partial_tail);
+
+    assert!(super::truncate_wal(&root, &snapshot, frames.valid_bytes).is_err());
+    assert!(super::append_wal_frame(&root, &snapshot, b"second", 4096, 1024).is_err());
+    assert_eq!(std::fs::read(&wal).unwrap(), original);
+    assert_eq!(std::fs::read(&alias).unwrap(), original);
+}
+
+#[cfg(any(unix, windows))]
+#[test]
+fn mutable_lock_and_write_reject_hardlinks_without_changing_either_name() {
+    let directory = private_tempdir();
+    let root = PrivateStateRoot::open(directory.path().join("state")).unwrap();
+    let lock = root.path().join("state.lock");
+    super::write_private(&root, &lock, b"operator evidence").unwrap();
+    let alias = directory.path().join("outside-lock");
+    std::fs::hard_link(&lock, &alias).unwrap();
+    for access in [super::FileAccess::Lock, super::FileAccess::Write] {
+        assert!(super::open_private_file_in(&root, &lock, access, /*preexisting*/ true).is_err());
+    }
+    assert_eq!(std::fs::read(&lock).unwrap(), b"operator evidence");
+    assert_eq!(std::fs::read(&alias).unwrap(), b"operator evidence");
+}
+
 #[cfg(unix)]
 #[test]
 fn snapshot_and_wal_are_private_before_publication() {
@@ -228,5 +271,41 @@ fn snapshot_parent_replacement_cannot_redirect_committed_bytes() {
             std::fs::read(original.join("snapshot.json")).unwrap(),
             expected
         );
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn readonly_hardlinks_preserve_private_permissions_and_bytes() {
+    use std::io::Read as _;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let directory = private_tempdir();
+    let root = PrivateStateRoot::open(directory.path().join("state")).unwrap();
+    let path = root.path().join("readonly.json");
+    let original = b"immutable operator evidence";
+    super::write_private(&root, &path, original).unwrap();
+    let alias = directory.path().join("outside-readonly");
+    std::fs::hard_link(&path, &alias).unwrap();
+
+    for mode in [0o400, 0o700] {
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(mode)).unwrap();
+        let mut file = super::open_private_file_in(
+            &root,
+            &path,
+            super::FileAccess::Read,
+            /*preexisting*/ true,
+        )
+        .unwrap();
+        let mut bytes = Vec::new();
+        file.read_to_end(&mut bytes).unwrap();
+        assert_eq!(bytes, original);
+        for name in [&path, &alias] {
+            assert_eq!(
+                std::fs::metadata(name).unwrap().permissions().mode() & 0o777,
+                mode
+            );
+            assert_eq!(std::fs::read(name).unwrap(), original);
+        }
     }
 }

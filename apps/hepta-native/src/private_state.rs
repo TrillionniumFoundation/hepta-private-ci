@@ -20,6 +20,12 @@ pub struct PrivateStateRoot {
     directory: Arc<codex_hepta_private_state::PrivateStateDirectory>,
 }
 
+#[derive(Clone, Copy)]
+enum ChildMode {
+    Open,
+    Create,
+}
+
 impl std::fmt::Debug for PrivateStateRoot {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter
@@ -63,6 +69,96 @@ impl PrivateStateRoot {
 
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    pub(crate) fn child_open(&self, name: &str) -> Result<Self, ShellError> {
+        self.child(name, ChildMode::Open)
+    }
+
+    /// Create a private child, or tighten an existing current-user-owned Unix
+    /// directory from the older staging layout, using its non-following handle.
+    pub(crate) fn child_create(&self, name: &str) -> Result<Self, ShellError> {
+        if let Ok(child) = self.child_open(name) {
+            return Ok(child);
+        }
+        self.child(name, ChildMode::Create)
+    }
+
+    fn child(&self, name: &str, mode: ChildMode) -> Result<Self, ShellError> {
+        let mut components = Path::new(name).components();
+        if !matches!(components.next(), Some(Component::Normal(_)))
+            || components.next().is_some()
+            || name.contains(['\0', '/', '\\'])
+        {
+            return Err(ShellError::InvalidInput(
+                "private-state child must be one normal path component".to_owned(),
+            ));
+        }
+        self.verify()?;
+        let path = self.path.join(name);
+        #[cfg(unix)]
+        let child = {
+            if matches!(mode, ChildMode::Create)
+                && let Err(error) = rustix::fs::mkdirat(
+                    self.directory_handle(),
+                    name,
+                    rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR | rustix::fs::Mode::XUSR,
+                )
+                && error != rustix::io::Errno::EXIST
+            {
+                return Err(std::io::Error::from(error).into());
+            }
+            let directory: std::fs::File = rustix::fs::openat(
+                self.directory_handle(),
+                name,
+                rustix::fs::OFlags::RDONLY
+                    | rustix::fs::OFlags::DIRECTORY
+                    | rustix::fs::OFlags::NOFOLLOW
+                    | rustix::fs::OFlags::CLOEXEC,
+                rustix::fs::Mode::empty(),
+            )
+            .map_err(std::io::Error::from)?
+            .into();
+            if matches!(mode, ChildMode::Create) {
+                use std::os::unix::fs::MetadataExt as _;
+                use std::os::unix::fs::PermissionsExt as _;
+
+                let metadata = directory.metadata()?;
+                if !metadata.is_dir() || metadata.uid() != rustix::process::geteuid().as_raw() {
+                    return Err(ShellError::Security(
+                        "private-state child is not a current-principal directory".to_owned(),
+                    ));
+                }
+                directory.set_permissions(std::fs::Permissions::from_mode(0o700))?;
+            }
+            verify_directory_metadata(&directory.metadata()?, &path)?;
+            Self {
+                path,
+                directory: Arc::new(directory),
+            }
+        };
+        #[cfg(not(unix))]
+        let child = match mode {
+            ChildMode::Create => Self::open(path)?,
+            ChildMode::Open => Self::open_existing(path)?,
+        };
+        self.verify()?;
+        child.verify()?;
+        Ok(child)
+    }
+
+    #[cfg(windows)]
+    pub(crate) fn verify_file(&self, file: &std::fs::File) -> Result<(), ShellError> {
+        self.directory.verify_file(file).map_err(|error| {
+            ShellError::Security(format!("native private-state file trust changed: {error}"))
+        })
+    }
+
+    #[cfg(windows)]
+    pub(crate) fn verify_mutable_file(&self, file: &std::fs::File) -> Result<(), ShellError> {
+        self.directory.verify_mutable_file(file).map_err(|error| {
+            ShellError::Security(format!("native mutable-state file trust changed: {error}"))
+        })
     }
 
     #[cfg(unix)]
@@ -137,7 +233,6 @@ fn verify_existing(path: &Path) -> Result<(), ShellError> {
 #[cfg(unix)]
 fn open_verified_directory(path: &Path) -> Result<std::fs::File, ShellError> {
     use std::fs::File;
-    use std::os::unix::fs::MetadataExt as _;
 
     let directory: File = rustix::fs::open(
         path,
@@ -154,7 +249,14 @@ fn open_verified_directory(path: &Path) -> Result<std::fs::File, ShellError> {
         ))
     })?
     .into();
-    let metadata = directory.metadata()?;
+    verify_directory_metadata(&directory.metadata()?, path)?;
+    Ok(directory)
+}
+
+#[cfg(unix)]
+fn verify_directory_metadata(metadata: &std::fs::Metadata, path: &Path) -> Result<(), ShellError> {
+    use std::os::unix::fs::MetadataExt as _;
+
     if !metadata.is_dir()
         || metadata.mode() & 0o777 != 0o700
         || metadata.uid() != rustix::process::geteuid().as_raw()
@@ -164,7 +266,7 @@ fn open_verified_directory(path: &Path) -> Result<std::fs::File, ShellError> {
             path.display()
         )));
     }
-    Ok(directory)
+    Ok(())
 }
 
 #[cfg(windows)]
@@ -192,3 +294,7 @@ fn verify_existing(_path: &Path) -> Result<(), ShellError> {
         "native private-state roots are unsupported on this platform".to_owned(),
     ))
 }
+
+#[cfg(test)]
+#[path = "private_state_child_tests.rs"]
+mod child_tests;

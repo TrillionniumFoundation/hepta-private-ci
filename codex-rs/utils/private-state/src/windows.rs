@@ -160,12 +160,9 @@ impl PrivateStateDirectory {
             return Err(io::Error::last_os_error());
         }
         let owned = unsafe { OwnedHandle::from_raw_handle(handle as RawHandle) };
-        verify_regular(
-            handle,
-            sid_ptr(&self.current_user_sid),
-            sid_ptr(&self.system_sid),
-        )?;
-        Ok(std::fs::File::from(owned))
+        let file = std::fs::File::from(owned);
+        self.verify_mutable_file(&file)?;
+        Ok(file)
     }
 
     pub fn replace(&self, staging: &str, destination: &str) -> io::Result<()> {
@@ -223,6 +220,29 @@ impl PrivateStateDirectory {
             sid_ptr(&self.current_user_sid),
             sid_ptr(&self.system_sid),
         )
+    }
+
+    /// Verify the private owner and DACL on the exact file handle a caller will
+    /// read or mutate. This does not reopen or confer authority on its pathname.
+    pub fn verify_file(&self, file: &std::fs::File) -> io::Result<()> {
+        verify_regular(
+            file.as_raw_handle() as HANDLE,
+            sid_ptr(&self.current_user_sid),
+            sid_ptr(&self.system_sid),
+        )
+    }
+
+    /// A mutable private file must have one directory entry. A held-handle check
+    /// cannot prevent a trusted principal from adding a hardlink afterward.
+    pub fn verify_mutable_file(&self, file: &std::fs::File) -> io::Result<()> {
+        self.verify_file(file)?;
+        if file_info(file.as_raw_handle() as HANDLE)?.nNumberOfLinks != 1 {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "mutable private state file has multiple directory entries",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -798,3 +818,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "windows_acl_tests.rs"]
+mod acl_tests;

@@ -2,6 +2,7 @@
 //! parameter, never an environment variable or product API that can weaken
 //! persistence.
 use std::fs::File;
+#[cfg(not(unix))]
 use std::fs::OpenOptions;
 use std::io::Read as _;
 use std::io::Write as _;
@@ -319,8 +320,36 @@ pub(crate) fn open_private_file_in(
         }
         open_private_file(path, &mut options, preexisting)?
     };
-    if let Err(error) = validate_private_file(&file, path, preexisting).and_then(|()| root.verify())
-    {
+    let validation = (|| {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt as _;
+
+            if !matches!(access, FileAccess::Read) && file.metadata()?.nlink() != 1 {
+                return Err(ShellError::Security(
+                    "mutable native state file has multiple directory entries".to_owned(),
+                ));
+            }
+        }
+        validate_private_file(&file, path, preexisting)?;
+        #[cfg(unix)]
+        if !matches!(access, FileAccess::Read) {
+            use std::os::unix::fs::PermissionsExt as _;
+
+            if file.metadata()?.permissions().mode() & 0o777 != 0o600 {
+                file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+            }
+        }
+        #[cfg(windows)]
+        match access {
+            FileAccess::Read => root.verify_file(&file)?,
+            FileAccess::Write | FileAccess::Append | FileAccess::Lock | FileAccess::CreateNew => {
+                root.verify_mutable_file(&file)?;
+            }
+        }
+        root.verify()
+    })();
+    if let Err(error) = validation {
         drop(file);
         if matches!(access, FileAccess::CreateNew) {
             let _ = remove_private_file_in(root, path);
@@ -358,20 +387,12 @@ fn sync_private_root(root: &PrivateStateRoot) -> Result<(), ShellError> {
 
 /// Validate the same handle used for mutation. A path-only check followed by a
 /// normal open can follow a replaced link or create a dangling link's target.
-pub(crate) fn open_private_file(
+#[cfg(not(unix))]
+fn open_private_file(
     path: &Path,
     options: &mut OpenOptions,
     preexisting: bool,
 ) -> Result<File, ShellError> {
-    #[cfg(not(unix))]
-    let _ = preexisting;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt as _;
-        options.mode(0o600).custom_flags(
-            (rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::NONBLOCK).bits() as i32,
-        );
-    }
     #[cfg(windows)]
     {
         use std::os::windows::fs::OpenOptionsExt as _;
@@ -412,9 +433,6 @@ fn validate_private_file(file: &File, path: &Path, preexisting: bool) -> Result<
                 path.display()
             )));
         }
-        if mode != 0o600 {
-            file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
-        }
     }
     Ok(())
 }
@@ -422,3 +440,7 @@ fn validate_private_file(file: &File, path: &Path, preexisting: bool) -> Result<
 #[cfg(test)]
 #[path = "journal_storage_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "journal_windows_tests.rs"]
+mod windows_tests;
