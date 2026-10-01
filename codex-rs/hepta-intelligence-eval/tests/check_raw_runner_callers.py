@@ -10,6 +10,7 @@ from pathlib import Path
 RAW_RUNNER = re.compile(
     r"(?<![A-Za-z0-9_])ProductEvaluationRunnerV1(?![A-Za-z0-9_])"
 )
+RAW_STRING_PREFIX = re.compile(r'(?:br|r)(?P<hashes>#{0,255})"')
 PUBLIC_LOW_LEVEL = re.compile(
     r"(?m)^\s*pub\s+use\s+signed_evaluation::decide_with_signed_evidence_v[23]\s*;"
 )
@@ -54,12 +55,12 @@ def strip_comments_and_literals(source: str) -> str:
             index += 2
             continue
 
-        raw = re.match(r"(?:br|r)(?P<hashes>#{0,255})\"", source[index:])
+        raw = RAW_STRING_PREFIX.match(source, index)
         if raw:
-            prefix_length = raw.end()
+            prefix_end = raw.end()
             hashes = raw.group("hashes")
             terminator = '"' + hashes
-            end = source.find(terminator, index + prefix_length)
+            end = source.find(terminator, prefix_end)
             if end == -1:
                 out.extend(" " * (length - index))
                 break
