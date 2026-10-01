@@ -340,7 +340,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn picker_subprocess_environment_is_allowlisted() {
-        let mut command = Command::new("/bin/true");
+        let mut command = Command::new("/usr/bin/true");
         command.env("HEPTA_UNTRUSTED_TEST_VALUE", "must-not-survive");
         restrict_desktop_environment(&mut command);
         assert!(

@@ -6,21 +6,21 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
-fn fixture() -> (
-    tempfile::TempDir,
-    std::path::PathBuf,
-    SigningKey,
-    SignedFinalUseGrant,
-) {
-    let parent = tempfile::tempdir().unwrap();
+fn fixture() -> Result<
+    (
+        tempfile::TempDir,
+        std::path::PathBuf,
+        SigningKey,
+        SignedFinalUseGrant,
+    ),
+    Box<dyn std::error::Error>,
+> {
+    let parent = tempfile::tempdir()?;
     let state = parent.path().join("authority-state");
     let mut issuer_material = [0_u8; 32];
-    getrandom::fill(&mut issuer_material).unwrap();
+    getrandom::fill(&mut issuer_material)?;
     let issuer = SigningKey::from_bytes(&issuer_material);
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_millis() as u64;
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
     let mut nonce = [0_u8; 32];
     let mut request_sha256 = [0_u8; 32];
     let mut scope_sha256 = [0_u8; 32];
@@ -31,7 +31,7 @@ fn fixture() -> (
         &mut scope_sha256,
         &mut payload_sha256,
     ] {
-        getrandom::fill(value).unwrap();
+        getrandom::fill(value)?;
     }
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -49,16 +49,13 @@ fn fixture() -> (
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 30_000,
     };
-    let signature = issuer
-        .sign(&grant.signing_bytes().unwrap())
-        .to_bytes()
-        .to_vec();
-    (
+    let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+    Ok((
         parent,
         state,
         issuer,
         SignedFinalUseGrant { grant, signature },
-    )
+    ))
 }
 
 fn open(
@@ -75,8 +72,9 @@ fn open(
 }
 
 #[test]
-fn windows_durable_nonce_survives_restart_and_keeps_single_owner() {
-    let (_parent, state, issuer, signed) = fixture();
+fn windows_durable_nonce_survives_restart_and_keeps_single_owner()
+-> Result<(), Box<dyn std::error::Error>> {
+    let (_parent, state, issuer, signed) = fixture()?;
     let head = FinalUseRevocations {
         authority_epoch: 17,
         revision: 1,
@@ -99,11 +97,12 @@ fn windows_durable_nonce_survives_restart_and_keeps_single_owner() {
         reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::AlreadyClaimed
     );
+    Ok(())
 }
 
 #[test]
-fn windows_revocation_head_survives_restart() {
-    let (_parent, state, issuer, signed) = fixture();
+fn windows_revocation_head_survives_restart() -> Result<(), Box<dyn std::error::Error>> {
+    let (_parent, state, issuer, signed) = fixture()?;
     let authority = open(
         &state,
         &issuer,
@@ -137,4 +136,5 @@ fn windows_revocation_head_survives_restart() {
         reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::Revoked
     );
+    Ok(())
 }

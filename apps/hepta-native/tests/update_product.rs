@@ -78,7 +78,7 @@ fn updater_does_not_accept_exit_zero_as_product_startup() {
     let (signing, keys, keys_path) = key_fixture(root.path());
     let candidate = root.path().join("candidate");
     let target = root.path().join("installed");
-    std::fs::copy("/bin/true", &candidate).unwrap();
+    std::fs::copy("/usr/bin/true", &candidate).unwrap();
     std::fs::write(&target, b"#!/bin/sh\nexit 0\n").unwrap();
     std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o751)).unwrap();
     let before = digest_file(&target).unwrap();
