@@ -494,6 +494,10 @@ impl PreparedAgentdIntelligenceRunV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "V1 exposes the prepared value and its large public envelope; boxing would change the public variant contract"
+)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
     Ready(PreparedAgentdIntelligenceRunV1),
     Abstained,
@@ -503,6 +507,10 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 /// Result of the canonical runner after the exact prepared envelope has also
 /// crossed the Agentd-owned run-admission and context-attachment boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "V1 exposes prepared and run receipt values; boxing would change existing public pattern and constructor contracts"
+)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
         prepared: PreparedAgentdIntelligenceRunV1,
@@ -602,6 +610,10 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 }
 
 #[derive(Debug)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "V1 exposes the pending value and its large public LedgerEvent for exact replay; boxing changes that contract"
+)]
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),

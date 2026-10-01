@@ -176,6 +176,13 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "the upstream self-iteration production coordinator has not yet composed this retained submission boundary"
+        )
+    )]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -193,6 +200,13 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed topology plasticity.
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "the upstream self-iteration production coordinator has not yet composed this retained submission boundary"
+        )
+    )]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,

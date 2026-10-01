@@ -77,9 +77,16 @@
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-automation/src/scheduler.rs",
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "symbol": "queue_submission_is_not_occurrence_or_taskflow_success",
           "kind": "scheduler_and_recovery",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "symbol": "proven_absent_unknown_dispatch_reuses_same_occurrence_identity",
+          "kind": "scheduler_unknown_dispatch_recovery",
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",

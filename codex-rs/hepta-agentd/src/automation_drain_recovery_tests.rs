@@ -2,7 +2,6 @@ use super::*;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_fleet::AgentLifecycle;
-use pretty_assertions::assert_eq;
 
 async fn admitted_work(store: &AutomationStore) -> AutomationOccurrenceWork {
     let task = store

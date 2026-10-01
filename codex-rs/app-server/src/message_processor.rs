@@ -343,7 +343,7 @@ impl MessageProcessor {
             state_db.as_ref(),
         ) {
             drain.bind_historical_owner(
-                config.codex_home.clone(),
+                config.codex_home.as_path().to_path_buf(),
                 Arc::clone(database),
                 Arc::clone(queue),
             );

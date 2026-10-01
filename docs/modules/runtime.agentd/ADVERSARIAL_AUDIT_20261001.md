@@ -1,6 +1,6 @@
 # runtime.agentd 对抗审计与整改记录
 
-审计日期：2026-10-01（Asia/Shanghai）。基线：`a126987b84737dbc2ee2592442a314117bddb4a2`。本文记录该基线之后的审计候选，交付分支为 `audit/runtime-agentd-20261001`。精确源码对象由实施映射的 current-source observation 记录；原生测试执行资格仍按第 7 节保留。
+审计日期：2026-10-01（UTC）。基线：`a126987b84737dbc2ee2592442a314117bddb4a2`。本文记录该基线之后的审计候选，交付分支为 `audit/runtime-agentd-20261001`。精确源码对象由实施映射的 current-source observation 记录；原生测试执行资格仍按第 7 节保留。
 
 ## 1. 审计结论与证据口径
 
@@ -32,6 +32,8 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 本次检查同时发现历史映射与当前 source 不一致：部分已接线的 final-use AuthBus/Fleet 校验仍被标成缺失；组件 API 恢复曾被描述得接近 daemon 产品恢复；canonical capability 与 CLI runner 选项之间的区别不够清楚。对应技术指南、映射和 dossier 已更新。
 
 严格源码绑定检查另发现七份基线映射引用真实但非当前 main 祖先的旁支提交。已在 [历史来源快照](../../../qualification/module-source-origins/20261001/README.md) 完整保留原 map、commit/tree/blob、角色和观察；以实际集成基线重新建立 sourceBase，再用原严格迁移器刷新当前路径对象。没有添加 Git 父关系、放松 ancestry 校验或提升 boolean 资格。全部 40 份实施映射和技术文档校验随后通过；历史导航证据不成为执行凭证。
+
+当前 Agentd map 登记 20 个边界操作，每个都有测试文件引用；这些引用不等于完整函数清单、具体分支覆盖率或测试执行成功。全项目 40 份 map 的额外审查发现部分操作仍没有测试绑定、许多引用仅到文件级，因此没有以文档存在或路径存在计算模块完成百分比。
 
 当前映射明确限定自身范围：它不是整个 crate 的闭世界函数清单。`nativeSourceMappingComplete` 与 `closedWorldPublicFunctions` 不应因登记了若干组件而被改成 `true`。文档增加了实际 caller、测试入口、版本兼容和尚未接通的物理执行 / 恢复边界。
 
@@ -94,11 +96,16 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | 本轮检查 | 已观察结果 | 证据边界 |
 |---|---|---|
 | Objective scoped nextest | 61 passed，2 个原有 ignored 未执行，退出 0 | 修正 JSON fixture 与 owner 的空 legal action set 合约矛盾；没有放宽 validator |
-| 全部 `scripts/test_hepta_*.py` | guards 修复阶段 710/710 passed | Python 回归；后续正式 schema 与 Lane A 同步后须再次执行 |
+| 全部 `scripts/test_hepta_*.py` | guards 修复阶段 710/710 passed；后续一次全量重跑出现 subprocess timeout，相关子集 9/9 passed；再跑因共享磁盘满失败 | 当前最终全量仍须重新验证；子集成功不代替全量 |
+| learning.eval 原生 library / scoped Clippy | 116 passed、0 skipped，nextest 与 `just fix -p codex-hepta-intelligence-eval` 均退出 0 | 真正执行 sealed receipt、原证据时效与 scheduled revocation 回归；不代替整个 Agentd 验证 |
+| Fleet / NDU scoped native libraries | 初次 134 passed / 1 failed；修正 UID fixture 前提后 135 cases passed，nextest 0 skipped | Fleet 58 项完整行为通过；跨 UID root case 因仅映射 UID 0 明示 capability-unexecuted，不算跨 UID owner 验证；NDU 76/76 实际通过 |
+| Intelligence / Automation scoped native libraries | 初次 106 passed / 1 failed；拆开两个证据到期前提后 107/107 passed、0 skipped | 精确断言 qualification 与 candidate expiry 错误，保留 0 ports / 0 append / disk unchanged；没有放宽生产校验 |
+| Agentd CI wiring Python | 15/15 passed，退出 0 | 检查 source/merge、平台、依赖与终态 gate 接线，不代替实际 native jobs |
 | Lane B path guard / truth | 11 modules、62 operations、20 delegated owners、86 bindings 对齐 | canonical 全局 owner 解析；仍拒绝未注册、重复、重叠和歧义根 |
 | Lane E closure verify | `findingCount=0`、`ok=true`、退出 0 | 静态边界验收；不等于 native/product execution qualification |
-| Fleet dependency / Bazel lock | Unix libc、AuthBus/Operations state shim 依赖须通过官方 lock 命令同步 | 不手工伪造 lock/provenance；最终结果另补 |
-| 最终 native suites / Clippy / 格式 / 精确源码绑定 | 集中验证进行中 | 未完成的命令不记为通过 |
+| Fleet dependency / Bazel lock | 完整 Cargo metadata 更新实际 dependency graph；官方 `just bazel-lock-update` 两次退出 0，MODULE.bazel.lock 无漂移 | 原 workspace 已有依赖，Cargo.lock 保留真实新增关系；未手工伪造 lock |
+| Agentd native / scoped Clippy | 完整 nextest 在 dependency codegen 被 SIGKILL，退出 101；第一次 `just fix` 因磁盘满退出 101；后续 metadata 编译发现 PathBuf 类型与测试依赖导入错误，均已修复；最终 scoped Clippy 进行中 | 两次失败均无 Agentd test execution；未完成的命令不记为通过 |
+| 格式 / workspace preflight / 精确源码绑定 | `just fmt` 和 diff 检查已执行；preflight 193 manifests、0 errors；最终 source observation 刷新进行中 | canonical maps 一处已删除的 Rust 测试引用在严格迁移时被拒绝，已按真实 owner 回归修正文档，未放宽 validator |
 
 原生测试、编译、文档导航、真实产品组成与目标部署验收分别记账。后续最终结果必须绑定实际发布源码对象，不能把历史成功或 skipped job 归入当前候选。
 
@@ -108,9 +115,11 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 |---|---|
 | Prompt directory 的 nlink 会随合法目录项变化，旧 generic identity 导致 macOS 首次 owner open 被判损坏 | 目录比较稳定 dev/ino/uid/mode；regular private files 保留 nlink=1。回归验证合法目录项创建后 commit/reopen，继续拒绝换 inode、硬链接与宽权限 |
 | Fleet startup 遍历在校验前读取 peer 子树；text/JSON metadata 预检后仍可能无界读，FIFO/symlink 替换可阻塞 | owner 级 ControlRoot/DirectoryGuard 在 migration、scan 和每个读取边界校验完整 namespace；同 handle 有界读并前后核身份。Unix no-follow/nonblocking；信任锚是 Fleet root owner/root。保留合法 0644/0444/0555、root 读 nonroot 整树及原 hardlink crash recovery |
+| Fleet 公共 constructor 捕获 canonical guard，却保留外部父目录别名作为后续写路径；别名 ABA 可让 chmod 先改错另一 root 再返回失败 | registry layout 与 guard 一次绑定解析后的 canonical root；新建根先解析实际存在祖先，保留合法父目录别名与 `/tmp` 兼容，并拒绝 final root symlink。真实 publication seal 故障注入验证受害 root mode 不变。Agentd config 已拒绝非 canonical root，本项是 Fleet 公共 owner 防护，不能称为 Agentd 接收鉴权绕过 |
 | macOS 不允许 rename 已不可写的 staging directory | rename 前保留 owner write，发布后封存和 fsync。精确 pending retry 校验完整 manifest/files/digest/program/args；一般 admission 拒绝未封存根。rename 后 seal/fsync 失败保留 destination，不删除可能已被认可的 release；故障注入覆盖这些窗口 |
 | App Server drain 关闭原 RPC，automation 无法获得后续历史终态 | 原 owner Rust capability 只持 SQLite SELECT owner 与 QueueStore，不持 dispatcher/manager/event sink。后台任务与线程真实 join 才开放；timeout 不 ack。当前 rollout pointer 前后纯 SELECT、完整绑定 thread/client/payload/turn；禁止 repair、resume、start、reserve、wake |
 | 新 observer 若使用普通 thread read 会隐藏写入；旧 Indeterminate 可饿死后续 drain blocker；历史 JSONL 可无界分配/解压 | 使用无 repair 的 current pointer；专用 selector 优先 admitted/running；每 record 1MiB、扫描 32MiB/65536 lines/4s、zstd window 32MiB，完整扫描才接受 terminal。超界/截断/未知保留 uncertainty，Missing unknown dispatch 不重新派发 |
+| TaskFlow 历史终态恢复曾混用 spawn generation，且 RPC→history receipt 与恢复 claim 后崩溃不能稳定重放 | Running/Draining 共用 owner API；核验已 Reconciled 的真实 step intent/payload/outcome，复用不可覆写 canonical receipt。有效 lease 使用原 TaskFlow fence，过期才用 owner counter 与完整原行 CAS claim；不得 dispatch、续租或改物理执行身份 |
 | public 低层 evaluation V2 让 Agentd/plasticity 绕过 fenced holdout、sealed estimator 与 durable publication；receipt seal 漏 disposition/baseline/failed metrics | V2 收为 crate-internal；两个消费者和 evaluated-shadow 统一消费真实 ProductEvaluationRunner 封存回执。新封印绑定完整 decision；当前 owner verifier 重验原 Generator/Evaluator/Observer 窗口与 scheduled revocation，另验证精确 use signature。没有公共 unsigned wrapper |
 | CI 文档与 fixture 漂移，包括 operation counts、跨 lane owner、NDU/Objective/migration fixture、陈旧源字符串测试 | 按正式 registry、owner 合约、真实 runner 和原生行为同步。global outbox capacity fixture 分散 issuer 以保留原 per-issuer 512 限额；不扩大容量或删除 replay/active-row保护。原始七份历史来源快照保持不变 |
 | AuthBus/Operations 绕过中央 SQLite shim，strict Clippy 拒绝 | 集中固定 WAL/FULL/FK/busy timeout 的 durable pool 和隔离 schema-reference memory pool，保留 owner 原连接上限；每连接 disk-full 故障测试仅保留明确 test-only 定点例外 |
@@ -131,6 +140,6 @@ Fleet 全目录防护与正常 drain 历史观察的源代码 P1 已有实现及
 
 ## 10. 迭代停止标准
 
-本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation 与 publication cleanup。收口需在最终冻结源码上完成适当验证、严格源码绑定与独立复审；仍有确证问题则继续修复。
+本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA 和实际编译接线错误。收口需在最终冻结源码上完成适当验证、严格源码绑定与独立复审；仍有确证问题则继续修复。
 
 停止代表在已审边界与既定可信 operator/root 模型内，当前轮没有新的可独立修补发现。它不代表所有未来风险为零，也不能把第 9 节缺失的产品或部署证据改成已完成。

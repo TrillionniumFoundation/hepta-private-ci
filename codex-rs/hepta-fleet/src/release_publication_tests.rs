@@ -47,6 +47,93 @@ fn fixture() -> (tempfile::TempDir, FleetRegistry, PathBuf) {
     (temp, registry, source)
 }
 
+#[cfg(unix)]
+#[test]
+fn alias_flip_between_publication_checks_cannot_chmod_another_fleet() {
+    use std::os::unix::fs::PermissionsExt;
+
+    struct AliasIo {
+        alias: PathBuf,
+        original: PathBuf,
+        victim: PathBuf,
+    }
+    impl PublicationIo for AliasIo {
+        fn seal(&self, path: &Path) -> Result<(), FleetRegistryError> {
+            std::fs::remove_file(&self.alias)?;
+            std::os::unix::fs::symlink(&self.victim, &self.alias)?;
+            let result = NativePublicationIo.seal(path);
+            std::fs::remove_file(&self.alias)?;
+            std::os::unix::fs::symlink(&self.original, &self.alias)?;
+            result
+        }
+        fn sync(&self, path: &Path) -> Result<(), FleetRegistryError> {
+            NativePublicationIo.sync(path)
+        }
+    }
+
+    let (temp, registry, source) = fixture();
+    let original = temp.path().canonicalize().expect("canonical owner parent");
+    std::fs::set_permissions(&original, std::fs::Permissions::from_mode(0o755))
+        .expect("alias is reachable by other UIDs");
+    let redirects = original.join("redirects");
+    std::fs::create_dir(&redirects).expect("alias parent");
+    std::fs::set_permissions(&redirects, std::fs::Permissions::from_mode(0o777))
+        .expect("untrusted alias mutation boundary");
+    let alias = redirects.join("selected");
+    std::os::unix::fs::symlink(&original, &alias).expect("initial owner selection");
+    let bound = FleetRegistry::open_existing(
+        HeptaFleetRoot::parse(alias.join("fleet")).expect("alias root"),
+    )
+    .expect("stable alias");
+    let id = ReleaseId::parse("alias-publication").expect("release ID");
+    let expected = registry
+        .install_release(id.clone(), &source, Vec::new())
+        .expect("prepared immutable owner content");
+    let destination = bound.layout().releases_root().join(id.as_str());
+    let staging = destination.with_file_name(".alias-staging");
+    set_mode(&destination, /*mode*/ 0o755).expect("writable prepared directory");
+    std::fs::rename(&destination, &staging).expect("prepared publication");
+    let victim = original.join("victim");
+    std::fs::create_dir(&victim).expect("victim parent");
+    let victim_registry = FleetRegistry::initialize(
+        HeptaFleetRoot::parse(victim.join("fleet")).expect("victim root"),
+    )
+    .expect("unrelated Fleet");
+    let victim_destination = victim_registry.layout().releases_root().join(id.as_str());
+    std::fs::create_dir(&victim_destination).expect("unrelated writable directory");
+    set_mode(&victim_destination, /*mode*/ 0o755).expect("victim permissions");
+    let io = AliasIo {
+        alias,
+        original,
+        victim,
+    };
+    let result = publish_prepared_directory(&bound.control, &staging, &destination, &io);
+    // Check side effects even when a late validation would report an error:
+    // the former lexical layout chmod'ed this victim then rejected its own
+    // still-writable destination after the alias had returned to normal.
+    assert_eq!(
+        std::fs::metadata(&victim_destination)
+            .expect("victim identity")
+            .permissions()
+            .mode()
+            & 0o777,
+        0o755
+    );
+    result.expect("publication is bound to the captured canonical owner");
+    assert_eq!(
+        resolve_catalog_release(
+            &bound.control,
+            bound.layout().releases_root(),
+            &id,
+            ReleaseRootSeal::Required
+        )
+        .expect("bound native release"),
+        expected
+    );
+    make_tree_removable(&destination);
+    set_mode(&source, /*mode*/ 0o700).expect("fixture cleanup");
+}
+
 #[test]
 fn seal_and_sync_failures_retain_the_renamed_object_without_deleting_an_admitted_release() {
     for step in [

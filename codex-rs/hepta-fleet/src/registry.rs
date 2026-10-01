@@ -58,7 +58,7 @@ pub struct FleetRegistry {
 
 impl FleetRegistry {
     pub fn initialize(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
-        let layout = fleet_root.layout();
+        let layout = resolve_control_layout(&fleet_root)?;
         for directory in [
             layout.fleet_root().as_path(),
             layout.state_root(),
@@ -83,7 +83,7 @@ impl FleetRegistry {
     }
 
     pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
-        let layout = fleet_root.layout();
+        let layout = resolve_control_layout(&fleet_root)?;
         let control = ControlRoot::capture(layout.fleet_root().as_path())?;
         let registry = Self { layout, control };
         for directory in [
@@ -315,6 +315,71 @@ impl FleetRegistry {
             layout,
         })
     }
+}
+
+/// Bind every owner path to one resolved destination. Parent aliases (including
+/// macOS /tmp) remain valid inputs, but later alias changes cannot redirect IO.
+/// Missing suffixes are appended only after resolving their existing ancestor.
+fn resolve_control_layout(root: &HeptaFleetRoot) -> Result<HeptaFleetLayout, FleetRegistryError> {
+    let mut ancestor = root
+        .as_path()
+        .parent()
+        .ok_or_else(|| FleetRegistryError::Invalid("control root has no parent".to_string()))?
+        .to_path_buf();
+    let mut missing = vec![
+        root.as_path()
+            .file_name()
+            .ok_or_else(|| {
+                FleetRegistryError::Invalid("control root has no final component".to_string())
+            })?
+            .to_os_string(),
+    ];
+    loop {
+        match std::fs::symlink_metadata(&ancestor) {
+            Ok(_) => break,
+            Err(error) if error.kind() == ErrorKind::NotFound => {
+                missing.push(
+                    ancestor
+                        .file_name()
+                        .ok_or_else(|| {
+                            FleetRegistryError::Invalid(
+                                "control root has no existing ancestor".to_string(),
+                            )
+                        })?
+                        .to_os_string(),
+                );
+                if !ancestor.pop() {
+                    return Err(error.into());
+                }
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
+    let mut resolved = ancestor.canonicalize()?;
+    if !resolved.is_dir() {
+        return Err(FleetRegistryError::Corrupt(
+            "control root ancestor is not a directory".to_string(),
+        ));
+    }
+    for component in missing.into_iter().rev() {
+        resolved.push(component);
+    }
+    // Resolve parent aliases, never the final component. Recheck its type at
+    // the captured parent so an alias change cannot bypass final-link refusal.
+    match std::fs::symlink_metadata(&resolved) {
+        Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_dir() => {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "control root is not a physical directory: {}",
+                resolved.display()
+            )));
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    HeptaFleetRoot::parse(resolved)
+        .map(|root| root.layout())
+        .map_err(|error| FleetRegistryError::Invalid(error.to_string()))
 }
 
 enum PublishOutcome {

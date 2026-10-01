@@ -67,7 +67,7 @@ pub(crate) struct AgentdAutomationEffectReservation {
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -281,6 +281,10 @@ impl AgentdAutomationEffectHost {
         .await
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the reserved effect boundary keeps the owner store and exact signed dispatch inputs explicit"
+    )]
     pub(crate) async fn execute_reserved(
         &self,
         reservation: AgentdAutomationEffectReservation,
@@ -419,7 +423,9 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(
+                        receipt,
+                    )));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -465,9 +471,9 @@ impl AgentdAutomationEffectHost {
                             "reconcile authorized effect terminal observation: {error}"
                         ))
                     })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
-                    }
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(
+                        AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)),
+                    ),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),

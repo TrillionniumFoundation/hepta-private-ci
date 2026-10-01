@@ -144,11 +144,19 @@
       "tests": [
         {
           "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
-          "symbol": "registered scalar, enum and action implication fixtures"
+          "symbol": "interval_intersection_returns_a_witness_and_ignores_soft_constraints"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "finite_enum_inclusion_and_exclusion_are_intersected"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "horn_solver_and_each_minimal_core_match_exhaustive_boolean_assignments"
         },
         {
           "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
-          "symbol": "bounded exhaustive feasibility fixtures"
+          "symbol": "all_three_action_graphs_match_truth_table_and_have_minimal_conflicts"
         }
       ],
       "designOperation": "check_feasibility_v1",

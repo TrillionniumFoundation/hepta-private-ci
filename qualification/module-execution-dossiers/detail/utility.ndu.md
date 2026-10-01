@@ -87,8 +87,8 @@ Runtime cost is deterministic and bounded by the declared dimensions. Dense cova
 - `NDU-DETAIL-06`: `RequireEqual` rejects conflicting owner values.
 - `NDU-DETAIL-07`: Pareto tolerance changes the frontier and changes the policy digest.
 - `NDU-DETAIL-08`: registered slow damping that cannot reach residual tolerance in 64 iterations returns unavailable.
-- `NDU-DETAIL-09`: protocol publication requires complete objective/subject/event/coefficient context and a structurally valid, subject-bound local solver receipt.
-- `NDU-DETAIL-10`: projection journal reopens exactly; tampering, truncation, hash-valid impossible transitions and revoked-projection resurrection reject.
+- `NDU-DETAIL-09`: protocol publication requires complete objective/subject/event/coefficient context and a structurally valid, subject-bound local solver receipt. The private solver fixture calls the actual protocol binder with zero or excessive iteration, non-adjacent revision, negative residual and zero state digest, and expects the exact invalid-receipt error before any canonical receipt is returned.
+- `NDU-DETAIL-10`: live selection and revocation require the exact recorded projection and leave no journal entry on rejection; recording it permits both operations. Separate reopen fixtures reject hash-valid selection and revocation without a projection. Tampering, truncation and revoked-projection resurrection also reject.
 - `NDU-DETAIL-11`: durable writer reopen preserves selected/revoked state, rejects a second live writer and discards a stale uncommitted temporary image.
 - `NDU-DETAIL-12`: backup restore validates the complete image and rejects rollback that would remove later committed history such as a revocation.
 - `NDU-DETAIL-13`: revocation of one objective/subject does not revoke identical projection bytes under another objective/subject.
