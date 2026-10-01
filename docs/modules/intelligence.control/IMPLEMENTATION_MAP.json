@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "42b7e5992c9fd676b84eda654d21d3df8b7f9eed",
-    "tree": "c132a72aa9ec81ec35fbc22f2ce4b98ed584f40a"
+    "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
+    "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
   },
   "observedAtHead": {
-    "commit": "42b7e5992c9fd676b84eda654d21d3df8b7f9eed",
-    "tree": "c132a72aa9ec81ec35fbc22f2ce4b98ed584f40a"
+    "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
+    "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -642,11 +642,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "4dea1b06d8ea3a9ec2e4383cd321b357f9b8f2a6"
+      "object": "2a9e38c86d103ead3706b6ccf25aecbbfed97a65"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "1ccf03cc994521b1555a75bad475c19b1542b826"
+      "object": "61a148610400130f786816ca9c21869d8010757a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
@@ -654,7 +654,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "be68f136ec0fcf1e753dcabd51af294b5ad42a89"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -662,7 +662,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "77bc3af6c6584c3e6157557ece1522f8bb9a9553"
+      "object": "3ef2d03487696f4b5942d329a7ca6b24b87f3355"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
@@ -670,11 +670,15 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "object": "50521deb90a5c118995e15209f5799292b4c3c3f"
+      "object": "79c77f0d2be4a330efd681879059c1d382b95448"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+      "object": "077c4d5e5372ab69db4cd8ef53302fb16ea723b2"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
-      "object": "e54e92ee4590645ef665e777a1f08c956f7abb9a"
+      "object": "da9b1a53cc95a9f652df622ad5f0c523b30cc6d3"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
@@ -690,7 +694,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "c64fa526429bd17616a7b1b1421da6212234a926"
+      "object": "24b36fe4cfbf9a150d5e40fd4de3688a8f50be4b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -766,7 +770,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "c7d424d879659d1148af9039360945b9bcb91d5b"
     },
     {
       "path": "codex-rs/hepta-neuron",
@@ -774,7 +778,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "b189ee1fa70517ff43d860ee80c392f57f1c94b2"
+      "object": "927115ef3b78728304fe4421edaf516faaa67967"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
