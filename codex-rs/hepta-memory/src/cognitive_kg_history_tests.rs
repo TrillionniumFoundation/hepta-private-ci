@@ -1,4 +1,6 @@
 //! Bounded long-history probe, separate from active-graph capacity measurements.
+use pretty_assertions::assert_eq;
+
 use super::*;
 use crate::ForgetMemoryDraft;
 

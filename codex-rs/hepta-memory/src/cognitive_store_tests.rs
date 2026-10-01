@@ -17,6 +17,7 @@ use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
+use crate::ForgetMemoryDraft;
 use crate::KgEntityFactDraft;
 use crate::KgFactSetDraft;
 use crate::KgRelationFactDraft;
@@ -784,6 +785,199 @@ async fn reopen_recomputes_current_projection_digests_and_exact_fts_rows() {
 }
 
 #[tokio::test]
+async fn reopen_rejects_memory_fts_source_drift() {
+    for tamper in [
+        "UPDATE memory_fts SET content = 'unrelated searchable content'",
+        "DELETE FROM memory_fts",
+        "INSERT INTO memory_fts (memory_id, revision, content)
+         SELECT memory_id, revision, content FROM memory_fts",
+        "UPDATE memory_fts SET revision = revision + 1",
+        "UPDATE memory_fts SET memory_id = 'unbound-memory-id'",
+    ] {
+        let temp = TempDir::new().expect("memory FTS temp dir");
+        let owner = agent_id(/*suffix*/ 85);
+        let store = seeded_projection_store(&temp, &owner).await;
+        sqlx::query(tamper)
+            .execute(&store.pool)
+            .await
+            .expect("drift the memory FTS projection");
+        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
+            .fetch_all(&store.pool)
+            .await
+            .expect("structural integrity after a legal FTS update");
+        assert_eq!(quick_check, vec!["ok".to_string()]);
+        store.pool.close().await;
+        drop(store);
+        let error = match CognitiveStore::open(&layout(&temp, &owner)).await {
+            Ok(_) => panic!("memory FTS source drift must fail reopen: {tamper}"),
+            Err(error) => error,
+        };
+        expect_corrupt_with(
+            error,
+            "memory FTS rows do not match immutable memory revisions",
+        );
+    }
+}
+
+#[tokio::test]
+async fn reopen_preserves_memory_fts_history_and_rejects_obsolete_content_drift() {
+    let temp = TempDir::new().expect("historical memory FTS temp dir");
+    let owner = agent_id(/*suffix*/ 86);
+    let owner_layout = layout(&temp, &owner);
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let store = seeded_projection_store(&temp, &owner).await;
+    let memory_id = StableMemoryId::for_key(
+        &owner,
+        &CognitiveScope::AgentPrivate,
+        "projection-integrity-memory",
+    );
+    let original = store
+        .latest_memory(&access, &memory_id)
+        .await
+        .expect("original indexed revision");
+    let corrected_content = "Ada develops an updated analytical engine.";
+    let corrected = store
+        .correct_with_kg(
+            &access,
+            &memory_id,
+            original.id.revision,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "fts-correction",
+                corrected_content,
+            ),
+            &MemoryRevisionDraft {
+                scope: CognitiveScope::AgentPrivate,
+                content: corrected_content.to_string(),
+                verification: MemoryVerification::Verified,
+                lifecycle: MemoryLifecycleState::Active,
+                valid_from_unix_seconds: 100,
+                valid_to_unix_seconds: None,
+                citations: Vec::new(),
+            },
+            &KgFactSetDraft::default(),
+        )
+        .await
+        .expect("correct indexed revision");
+    let forgotten = store
+        .forget_with_kg(
+            &access,
+            &memory_id,
+            corrected.memory.id.revision,
+            &source(CognitiveScope::AgentPrivate, "fts-forget", "withdraw"),
+            &ForgetMemoryDraft {
+                scope: CognitiveScope::AgentPrivate,
+                reason: "withdraw".to_string(),
+                valid_from_unix_seconds: 100,
+                citations: Vec::new(),
+            },
+        )
+        .await
+        .expect("index tombstoned revision");
+    store.pool.close().await;
+    drop(store);
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("valid superseded and tombstoned FTS history must reopen");
+    let indexed_history: Vec<(i64, String)> =
+        sqlx::query_as("SELECT revision, content FROM memory_fts ORDER BY revision")
+            .fetch_all(&reopened.pool)
+            .await
+            .expect("retained FTS history");
+    assert_eq!(
+        indexed_history,
+        vec![
+            (1, original.content),
+            (2, corrected.memory.content),
+            (3, forgotten.memory.content),
+        ]
+    );
+    sqlx::query("UPDATE memory_fts SET content = 'obsolete content drift' WHERE revision = 1")
+        .execute(&reopened.pool)
+        .await
+        .expect("drift an obsolete indexed revision");
+    reopened.pool.close().await;
+    drop(reopened);
+    let error = match CognitiveStore::open(&owner_layout).await {
+        Ok(_) => panic!("obsolete FTS content drift must fail reopen"),
+        Err(error) => error,
+    };
+    expect_corrupt_with(
+        error,
+        "memory FTS rows do not match immutable memory revisions",
+    );
+}
+
+#[tokio::test]
+async fn reopen_rejects_obsolete_entity_fts_source_drift() {
+    for tamper in [
+        "UPDATE kg_revision_entity_fts SET label = 'obsolete entity text drift'
+         WHERE memory_revision = 1",
+        "DELETE FROM kg_revision_entity_fts WHERE memory_revision = 1",
+        "INSERT INTO kg_revision_entity_fts (
+             memory_id, memory_revision, entity_key, canonical_entity_id, entity_type, label
+         ) SELECT memory_id, memory_revision, entity_key, canonical_entity_id, entity_type, label
+           FROM kg_revision_entity_fts WHERE memory_revision = 1",
+    ] {
+        let temp = TempDir::new().expect("obsolete entity FTS temp dir");
+        let owner = agent_id(/*suffix*/ 87);
+        let owner_layout = layout(&temp, &owner);
+        let access = CognitiveAccess::agent_private(owner.clone());
+        let store = seeded_projection_store(&temp, &owner).await;
+        let memory_id = StableMemoryId::for_key(
+            &owner,
+            &CognitiveScope::AgentPrivate,
+            "projection-integrity-memory",
+        );
+        let content = "The current revision contains no graph entities.";
+        store
+            .correct_with_kg(
+                &access,
+                &memory_id,
+                /*expected_revision*/ 1,
+                &source(
+                    CognitiveScope::AgentPrivate,
+                    "entity-fts-correction",
+                    content,
+                ),
+                &MemoryRevisionDraft {
+                    scope: CognitiveScope::AgentPrivate,
+                    content: content.to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: None,
+                    citations: Vec::new(),
+                },
+                &KgFactSetDraft::default(),
+            )
+            .await
+            .expect("supersede the indexed entities");
+        store.pool.close().await;
+        drop(store);
+        let reopened = CognitiveStore::open(&owner_layout)
+            .await
+            .expect("valid obsolete entity FTS history must reopen");
+        sqlx::query(tamper)
+            .execute(&reopened.pool)
+            .await
+            .expect("drift obsolete entity FTS rows");
+        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
+            .fetch_all(&reopened.pool)
+            .await
+            .expect("structural integrity after legal historical FTS updates");
+        assert_eq!(quick_check, vec!["ok".to_string()]);
+        reopened.pool.close().await;
+        drop(reopened);
+        let error = match CognitiveStore::open(&owner_layout).await {
+            Ok(_) => panic!("obsolete entity FTS source drift must fail reopen: {tamper}"),
+            Err(error) => error,
+        };
+        expect_corrupt_with(error, "FTS rows do not match immutable entity facts");
+    }
+}
+
+#[tokio::test]
 async fn reopen_rejects_revision_fts_entity_key_drift() {
     for replacement_key in ["unbound-entity-key", "engine"] {
         let temp = TempDir::new().expect("FTS key temp dir");
@@ -817,7 +1011,7 @@ async fn reopen_rejects_revision_fts_entity_key_drift() {
             Ok(_) => panic!("FTS entity key {replacement_key:?} must fail reopen"),
             Err(error) => error,
         };
-        expect_corrupt_with(error, "FTS rows have an unbound entity key");
+        expect_corrupt_with(error, "FTS rows do not match immutable entity facts");
     }
 }
 
