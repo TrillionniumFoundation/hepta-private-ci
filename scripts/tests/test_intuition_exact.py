@@ -152,6 +152,43 @@ class EvidenceTests(unittest.TestCase):
         log.write_text("x" * 100000)
         self.assertLessEqual(len(q.log_summary(log)), 16384)
 
+    def test_log_summary_keeps_early_compiler_errors_and_tail(self):
+        log = self.root / "compiler.log"
+        failures = [
+            f"\x1b[31merror[E{i:04}]: failure {i}\x1b[0m\n"
+            f"  --> owner{i}.rs:10:2\n"
+            "   | source context\n\n"
+            for i in range(15)
+        ]
+        log.write_text(
+            "".join(failures)
+            + "Compiling dependency\n" * 10000
+            + "final command failed\n"
+        )
+        summary = q.log_summary(log)
+        for i in range(15):
+            self.assertIn(f"error[E{i:04}]: failure {i}", summary)
+            self.assertIn(f"owner{i}.rs:10:2", summary)
+        self.assertIn("final command failed", summary)
+        self.assertNotIn("\x1b[", summary)
+        self.assertLessEqual(len(summary), 16384)
+
+    def test_log_summary_reports_omitted_diagnostics_and_caps_large_contexts(self):
+        log = self.root / "many-errors.log"
+        log.write_text(
+            "".join(
+                f"error: failure {i}\n  --> owner{i}.rs:10:2\n" + "x" * 100000 + "\n"
+                for i in range(100)
+            )
+            + "final failure\n"
+        )
+        summary = q.log_summary(log)
+        self.assertIn("32 of 100", summary)
+        self.assertIn("error: failure 0", summary)
+        self.assertIn("owner31.rs:10:2", summary)
+        self.assertIn("final failure", summary)
+        self.assertLessEqual(len(summary), 16384)
+
     def test_real_git_dirty_source_fails_without_running_gate(self):
         repo = self.root / "repo"
         repo.mkdir()

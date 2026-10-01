@@ -266,9 +266,49 @@ def execute(command: list[str], log: Path, cwd: Path, timeout: int) -> int:
 
 
 def log_summary(path: Path) -> str:
+    # Keep early compiler failures visible even when later build output fills the
+    # tail. Full logs remain separately retained and hashed qualification inputs.
+    diagnostics: list[list[str]] = []
+    diagnostic_count = 0
+    current: list[str] | None = None
+    ansi = re.compile(r"\x1b\[[0-9;]*m")
+    diagnostic = re.compile(r"^(?:error(?:\[[^\]]+\])?|warning):")
+    with path.open(encoding="utf-8", errors="replace") as stream:
+        at_line_start = True
+        while line := stream.readline(8192):
+            started_line = at_line_start
+            at_line_start = line.endswith("\n")
+            if not started_line:
+                continue
+            line = ansi.sub("", line.rstrip("\r\n"))
+            if diagnostic.match(line):
+                diagnostic_count += 1
+                current = [] if len(diagnostics) < 32 else None
+                if current is not None:
+                    diagnostics.append(current)
+            if current is not None and len(current) < 12:
+                current.append(line[:512])
+
     with path.open("rb") as stream:
         stream.seek(max(0, path.stat().st_size - 16384))
-        return "\n".join(stream.read().decode("utf-8", "replace").splitlines()[-60:])
+        tail = ansi.sub(
+            "", "\n".join(stream.read().decode("utf-8", "replace").splitlines()[-60:])
+        )
+    if not diagnostics:
+        return tail
+
+    tail = tail[-4096:]
+    header = f"Compiler diagnostic contexts ({len(diagnostics)} of {diagnostic_count}; full log retained):\n"
+    footer = "\nLog tail:\n" + tail
+    budget = 16384 - len(header) - len(footer) - len(diagnostics)
+    per_diagnostic = min(1024, budget // len(diagnostics))
+    contexts = []
+    for lines in diagnostics:
+        context = "\n".join(lines).rstrip()
+        if len(context) > per_diagnostic:
+            context = context[: per_diagnostic - 16] + "\n[truncated]"
+        contexts.append(context)
+    return header + "\n".join(contexts) + footer
 
 
 def nonzero_tests(path: Path) -> bool:
