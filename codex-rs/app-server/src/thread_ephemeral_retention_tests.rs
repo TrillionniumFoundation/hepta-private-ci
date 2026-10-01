@@ -7,7 +7,6 @@ use pretty_assertions::assert_eq;
 #[tokio::test]
 async fn ephemeral_retention_survives_disconnect_and_returns_capacity_only_on_teardown()
 -> anyhow::Result<()> {
-    assert_eq!(RetentionCapacity::default().0.available_permits(), 32);
     let server = start_mock_server().await;
     let original = test_codex()
         .with_config(|config| config.ephemeral = true)

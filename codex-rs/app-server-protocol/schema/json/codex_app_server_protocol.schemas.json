@@ -379,6 +379,30 @@
             },
             "method": {
               "enum": [
+                "thread/ephemeral/retain"
+              ],
+              "title": "Thread/ephemeral/retainRequestMethod",
+              "type": "string"
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ThreadEphemeralRetainParams"
+            }
+          },
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "title": "Thread/ephemeral/retainRequest",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "enum": [
                 "thread/name/set"
               ],
               "title": "Thread/name/setRequestMethod",
@@ -20041,6 +20065,62 @@
         "required": [
           "expectedSessionId"
         ],
+        "type": "object"
+      },
+      "ThreadEphemeralRetainParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "Opt-in V1 residency until explicit exact-session disposal. This grants no execution, terminal observation or history-deletion authority.",
+        "properties": {
+          "expectedSessionId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "protocolVersion": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedSessionId",
+          "operationId",
+          "protocolVersion",
+          "threadId"
+        ],
+        "title": "ThreadEphemeralRetainParams",
+        "type": "object"
+      },
+      "ThreadEphemeralRetainResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "All bindings must match the request before a native caller may cross an effect boundary. Unsupported servers cannot provide this positive V1 ACK.",
+        "properties": {
+          "operationId": {
+            "type": "string"
+          },
+          "protocolVersion": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "operationId",
+          "protocolVersion",
+          "sessionId",
+          "threadId"
+        ],
+        "title": "ThreadEphemeralRetainResponse",
         "type": "object"
       },
       "ThreadExtra": {

@@ -41,7 +41,10 @@ filter = 'test(approval_matrix_covers_all_modes)'
 slow-timeout = { period = "30s", terminate-after = 2 }
 
 [[profile.default.overrides]]
-filter = 'package(codex-app-server-protocol) & (test(typescript_schema_fixtures_match_generated) | test(json_schema_fixtures_match_generated) | test(generate_ts_with_experimental_api_retains_experimental_entries) | test(generated_ts_optional_nullable_fields_only_in_params) | test(generate_json_filters_experimental_fields_and_methods))'
+filter = 'package(codex-app-server-protocol) & (test(typescript_schema_fixtures_match_generated) | test(json_schema_fixtures_match_generated) | test(generate_ts_with_experimental_api_retains_experimental_entries) | test(generated_ts_optional_nullable_fields_only_in_params) | test(generate_json_filters_experimental_fields_and_methods) | test(experimental_precomputed_exports_match_generated))'
+# Complete schema exports enumerate and compare the actual generated API. Their
+# whole-case budget covers generation on contended disks, not a product RPC SLO.
+slow-timeout = { period = "30s", terminate-after = 20 }
 test-group = 'app_server_protocol_codegen'
 
 [[profile.default.overrides]]

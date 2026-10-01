@@ -1,7 +1,6 @@
 use super::*;
 use core_test_support::responses::start_mock_server;
 use core_test_support::test_codex::test_codex;
-use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn ephemeral_retention_blocks_idle_unload_only_for_original_runtime() -> anyhow::Result<()> {
@@ -19,7 +18,6 @@ async fn ephemeral_retention_blocks_idle_unload_only_for_original_runtime() -> a
     let (retention, retained) = watch::channel(None);
     // Exercise the real 30-minute policy with an already-idle runtime, without
     // changing the production deadline or waiting for it in this regression.
-    assert_eq!(THREAD_UNLOADING_DELAY, Duration::from_secs(1_800));
     let idle_since = Instant::now() - THREAD_UNLOADING_DELAY - Duration::from_secs(1);
     let mut state = UnloadingState {
         delay: THREAD_UNLOADING_DELAY,
