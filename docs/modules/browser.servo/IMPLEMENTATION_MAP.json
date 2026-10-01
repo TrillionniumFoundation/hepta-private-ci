@@ -7,11 +7,11 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
-  "sourceMaturity": "native_driver_boundary",
+  "sourceMaturity": "durable_owner_private_parent_and_current_pin_worker_source",
   "declaredRoots": ["apps/hepta-browser", "third_party/servo-patches"],
   "resolvedRoots": ["apps/hepta-browser", "third_party/servo-patches"],
-  "stateOwnerDisposition": "Owns in-process profile/session/page/operation state around an injected browser driver; raw credentials remain external references.",
-  "terminalObserverDisposition": "The driver must supply process, page, action, and reconciliation observations; unit tests use deterministic fake drivers.",
+  "stateOwnerDisposition": "Owns serialized profile/session/page state and durable operation identities around a private isolated worker; credential/file references remain externally owned and their functional brokers are disconnected.",
+  "terminalObserverDisposition": "Node fixture tests exercise owner and transport semantics. Current-pin Servo terminal-observer source is present, but its native build, real effect behavior and process-loss reconciliation require independent execution evidence.",
   "operations": [
     {
       "designOperation": "open_profile",
@@ -30,7 +30,7 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation, and expiry before driver start.",
+      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation and expiry; restores durable operation/terminal identities before driver start and rejects conflicting reuse.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -53,7 +53,7 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Publishes bounded page observations with monotonic page generation and origin identity.",
+      "sourceSemantics": "Publishes bounded monotonic page/document/origin observations; quarantines off-origin state and supplies a snapshot that is consumed by an effect.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -76,24 +76,33 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Revalidates page, destination, payload, authority, and operation identity before one driver effect.",
+      "sourceSemantics": "Validates immutable live/historical request semantics, page/document, destination, payload and authority; cancelled or late authority cannot dispatch; the minimum action/profile/grant deadline bounds fsynced intent plus one local worker-pipe dispatch.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Persistent product-session composition and live authority/revocation owner remain unimplemented.",
+    "Authorized network and credential/file/download brokers remain disconnected.",
+    "Native pipeline-bound document and execution-time deadline admission need adapter implementation and real-worker proof.",
+    "The Node service import closure is not bound by the entry-file digest."
+  ],
   "externalEvidenceGates": [
-    "reproducible Servo binary and patch digest",
-    "OS sandbox/profile/credential/network enforcement",
-    "real navigation/download/business terminal observation"
+    "terminal-success exact-source locked current-pin worker build and feature-graph receipt",
+    "byte-identical reproducible Servo worker artifact, patch digest, dynamic-library closure and SPDX SBOM",
+    "exact-host OS namespace, profile, credential, listener, egress and descendant-cleanup qualification",
+    "cross-profile cookie/cache/storage and stale-element qualification",
+    "real navigation/download/business terminal observation and process-loss reconciliation",
+    "exact-source Agentd final-use handoff execution and persistent product runtime qualification",
+    "target resource measurements and independent operator acceptance, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -112,5 +121,36 @@
   "owner": "browser-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/browser.servo/TECHNICAL.md",
-  "sourceRoot": ["apps/hepta-browser", "third_party/servo-patches"]
+  "sourceRoot": ["apps/hepta-browser", "third_party/servo-patches"],
+  "sourceComposition": {
+    "state": "named_agentd_source_route_present_persistent_product_runtime_not_activated",
+    "agentdPort": "codex-rs/hepta-agentd/src/browser_servo.rs::BrowserServoPort",
+    "agentdTransport": "codex-rs/hepta-agentd/src/browser_servo.rs::ChildBrowserTransport",
+    "agentdExecutable": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+    "parentService": "apps/hepta-browser/src/agentd-service-main.js",
+    "workerSource": "apps/hepta-browser/servo-worker/src/main.rs",
+    "interpretation": "Source navigation only. The legacy not_composed product state denotes the missing activated persistent runtime; native compilation and product execution are not asserted.",
+    "nativeTransport": "codex-rs/hepta-agentd/src/browser_servo_transport.rs",
+    "serviceDigestScope": "Node entrypoint only; imported modules and Node/Bubblewrap runtime closure are not bound by service_sha256."
+  },
+  "remainingImplementationWork": [
+    "persistent product-session lifecycle and live authority/revocation owner",
+    "authorized network broker before enabling actual web access",
+    "credential-reference, upload-reference and download terminal brokers when enabled",
+    "macOS/Windows isolation launchers when targeted",
+    "immutable Node service/runtime closure packaging and digest binding beyond the entrypoint file"
+  ],
+  "sourceIdentityInterpretation": "sourceBase is retained historical mapping provenance; the 2026-10-01 audit started from 997e7beef8151160065df36b024bc8da5c989e93. This navigation update does not renew an execution receipt or change qualification/production flags.",
+  "sourceControls": {
+    "ownerRecovery": "persisted/live profile serialization, immutable historical replay, consumed page snapshots and terminal cache/boot synchronization",
+    "journal": "strict scalar/digest/UTF-8/torn-line replay, terminal monotonicity, file/parent sync and uncertain-write fencing",
+    "journalConcurrency": "same-path process tail plus atomic writer-lock; retained on crash/uncertain write until explicit stopped-writer owner recovery",
+    "journalCache": "qualified local dev/ino/size/mtimeNs/ctimeNs identity; external changes require full replay; identical retries append zero bytes",
+    "workerChannel": "malformed response/EOF/pipe failure closes channel; bounded pending requests and concurrent-start cleanup",
+    "parentChannel": "cancelled authority read, 64-frame and 4-MiB queue, strict UTF-8 and error fencing",
+    "nativeChannel": "bounded read/write waits and queues; no indefinitely joined pipe thread; incomplete/invalid exchange permanently poisons port",
+    "servoWorkerSource": "page/document/result ownership, pre-reserved effects, 4096 operation identities and 16 host events; native build remains an evidence gate",
+    "ci": "affected-source Browser required job, exact Agentd reverse-consumer mapping, structured canonical repository/pin and complete receipt closure checks",
+    "claimLimit": "source controls and fixture results do not prove native Servo or target-qualified production execution"
+  }
 }
