@@ -200,6 +200,59 @@ fn bounded_temporal_query_counts_only_visible_omissions() {
 }
 
 #[test]
+fn temporal_query_retains_only_visible_supports_without_mutating_generation() {
+    let mut supported_edge = edge("node:b");
+    supported_edge.supports = (0..64)
+        .map(|index| {
+            let mut expired = support(&format!("expired:ab:{index:02}"));
+            expired.valid_to_unix_seconds = Some(100);
+            expired
+        })
+        .collect();
+    let mut visible = support("visible:ab");
+    visible.valid_from_unix_seconds = Some(100);
+    visible.valid_to_unix_seconds = Some(200);
+    supported_edge.supports.push(visible.clone());
+    let raw = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("node:a"), node("node:b"), node("node:c")],
+            vec![supported_edge, edge("node:c")],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid support-dense graph: {error}"));
+    let original = raw.clone();
+    let admitted = ValidatedKnowledgeGenerationV2::new(raw)
+        .unwrap_or_else(|error| panic!("valid admitted graph: {error}"));
+    let structural = admitted
+        .query_relations(query(&original))
+        .unwrap_or_else(|error| panic!("valid structural query: {error}"));
+    assert_eq!(structural.edges, vec![original.edges[0].clone()]);
+
+    let mut request = query(&original);
+    request.valid_at_unix_seconds = Some(150);
+    let temporal = admitted
+        .query_relations(request.clone())
+        .unwrap_or_else(|error| panic!("valid temporal query: {error}"));
+    assert_eq!(
+        temporal,
+        query_relations(&original, request)
+            .unwrap_or_else(|error| panic!("valid free temporal query: {error}"))
+    );
+    assert_eq!(
+        temporal.edges,
+        vec![KnowledgeEdgeV2 {
+            identity: original.edges[0].identity.clone(),
+            confidence: original.edges[0].confidence,
+            validity_digest: original.edges[0].validity_digest,
+            supports: vec![visible],
+        }]
+    );
+    assert_eq!(temporal.omitted_count, 1);
+    assert_eq!(admitted.as_generation(), &original);
+}
+
+#[test]
 fn oversized_query_and_delta_lists_are_rejected_before_deduplication() {
     let graph = graph();
     let mut oversized_query = query(&graph);

@@ -483,10 +483,20 @@ fn query_relations_validated(
             omitted_count += 1;
             continue;
         }
-        let mut edge = edge.clone();
-        if let Some(at) = query.valid_at_unix_seconds {
-            edge.supports.retain(|support| support.visible_at(at));
-        }
+        let edge = match query.valid_at_unix_seconds {
+            Some(at) => KnowledgeEdgeV2 {
+                identity: edge.identity.clone(),
+                confidence: edge.confidence,
+                validity_digest: edge.validity_digest,
+                supports: edge
+                    .supports
+                    .iter()
+                    .filter(|support| support.visible_at(at))
+                    .cloned()
+                    .collect(),
+            },
+            None => edge.clone(),
+        };
         edges.push(edge);
     }
     let mut result = KnowledgeRelationResultV2 {
