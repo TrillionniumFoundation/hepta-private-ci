@@ -167,3 +167,61 @@ fn a_final_component_symlink_remains_rejected() {
     symlink(&path, &alias).expect("artifact symlink");
     assert!(ArtifactSnapshot::open(&alias, /*maximum*/ 4096).is_err());
 }
+
+#[cfg(unix)]
+#[test]
+fn inspected_browser_artifact_fifo_replacement_does_not_wait_for_a_writer() {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::process::Command;
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    let (_root, path) = fixture();
+    let inspected = ArtifactPreflight::inspect(&path, /*maximum*/ 4096).expect("regular preflight");
+    fs::remove_file(&path).expect("replace inspected artifact");
+    assert!(
+        Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(&path)
+            .status()
+            .expect("POSIX mkfifo")
+            .success()
+    );
+    let (done, received) = mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        let _ = done.send(inspected.open(/*maximum*/ 4096).is_err());
+    });
+    let first = received.recv_timeout(Duration::from_secs(/*secs*/ 1));
+    let timely = first.is_ok();
+    // A regressed blocking open must be released before the failure assertion.
+    let _cleanup = (!timely).then(|| {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(libc::O_NONBLOCK | libc::O_NOFOLLOW)
+            .open(&path)
+            .expect("FIFO cleanup keeper")
+    });
+    let rejected = first.unwrap_or_else(|_| {
+        received
+            .recv_timeout(Duration::from_secs(/*secs*/ 1))
+            .expect("FIFO cleanup releases worker")
+    });
+    worker.join().expect("open worker");
+    assert!(timely, "replacement FIFO waited for a writer");
+    assert!(
+        rejected,
+        "replacement FIFO was admitted as a Browser artifact"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn inspected_browser_artifact_symlink_replacement_is_rejected() {
+    let (root, path) = fixture();
+    let inspected = ArtifactPreflight::inspect(&path, /*maximum*/ 4096).expect("regular preflight");
+    let retained = root.path().join("retained");
+    fs::rename(&path, &retained).expect("retain original inode");
+    std::os::unix::fs::symlink(&retained, &path).expect("replacement final symlink");
+    assert!(inspected.open(/*maximum*/ 4096).is_err());
+}

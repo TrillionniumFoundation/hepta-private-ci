@@ -33,8 +33,17 @@ struct ExistingBootstrapFile {
     file: File,
 }
 
-impl ExistingBootstrapFile {
-    fn open(path: &Path, access: ExistingAccess, label: &str) -> Result<Self, AgentdError> {
+struct BootstrapFilePreflight {
+    path: PathBuf,
+    canonical: PathBuf,
+    metadata: Metadata,
+    #[cfg(unix)]
+    namespace: OperatorNamespace,
+    access: ExistingAccess,
+}
+
+impl BootstrapFilePreflight {
+    fn inspect(path: &Path, access: ExistingAccess, label: &str) -> Result<Self, AgentdError> {
         require_absolute_regular_file(path, label)?;
         let canonical = path.canonicalize()?;
         let metadata = std::fs::symlink_metadata(path)?;
@@ -45,31 +54,50 @@ impl ExistingBootstrapFile {
         validate_access(&metadata, access, label)?;
         #[cfg(unix)]
         let namespace = OperatorNamespace::capture(&canonical, &metadata)?;
-        let mut options = OpenOptions::new();
-        options.read(true);
-        match access {
-            ExistingAccess::ReadOnly => {}
-            ExistingAccess::ReadWrite => {
-                options.write(true);
-            }
-        }
-        let file = options.open(&canonical)?;
-        let opened = file.metadata()?;
-        #[cfg(unix)]
-        validate_access(&opened, access, label)?;
-        if !opened.is_file() || !same_file_version(&metadata, &opened) {
-            return Err(invalid(label, "changed while opening"));
-        }
         Ok(Self {
             path: path.to_path_buf(),
             canonical,
             metadata,
             #[cfg(unix)]
             namespace,
-            #[cfg(unix)]
             access,
+        })
+    }
+
+    fn open(self, label: &str) -> Result<ExistingBootstrapFile, AgentdError> {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        match self.access {
+            ExistingAccess::ReadOnly => {}
+            ExistingAccess::ReadWrite => {
+                options.write(true);
+            }
+        }
+        #[cfg(unix)]
+        crate::operator_namespace::configure_protected_open(&mut options);
+        let file = options.open(&self.canonical)?;
+        let opened = file.metadata()?;
+        #[cfg(unix)]
+        validate_access(&opened, self.access, label)?;
+        if !opened.is_file() || !same_file_version(&self.metadata, &opened) {
+            return Err(invalid(label, "changed while opening"));
+        }
+        Ok(ExistingBootstrapFile {
+            path: self.path,
+            canonical: self.canonical,
+            metadata: self.metadata,
+            #[cfg(unix)]
+            namespace: self.namespace,
+            #[cfg(unix)]
+            access: self.access,
             file,
         })
+    }
+}
+
+impl ExistingBootstrapFile {
+    fn open(path: &Path, access: ExistingAccess, label: &str) -> Result<Self, AgentdError> {
+        BootstrapFilePreflight::inspect(path, access, label)?.open(label)
     }
 
     fn verify(&self, label: &str) -> Result<(), AgentdError> {

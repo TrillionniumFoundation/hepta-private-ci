@@ -8,6 +8,7 @@
 use std::fs;
 use std::fs::File;
 use std::fs::Metadata;
+use std::fs::OpenOptions;
 use std::io;
 use std::io::Read;
 use std::path::Path;
@@ -35,8 +36,16 @@ struct ArtifactSnapshot {
     namespace: crate::operator_namespace::OperatorNamespace,
 }
 
-impl ArtifactSnapshot {
-    fn open(path: &Path, maximum: usize) -> Result<Self, BrowserServoError> {
+struct ArtifactPreflight {
+    selected_path: PathBuf,
+    physical_path: PathBuf,
+    before: Metadata,
+    #[cfg(unix)]
+    namespace: crate::operator_namespace::OperatorNamespace,
+}
+
+impl ArtifactPreflight {
+    fn inspect(path: &Path, maximum: usize) -> Result<Self, BrowserServoError> {
         let before = fs::symlink_metadata(path).map_err(artifact_io_error)?;
         validate_file(&before, maximum)?;
         let physical_path = path.canonicalize().map_err(artifact_io_error)?;
@@ -49,20 +58,42 @@ impl ArtifactSnapshot {
         let namespace =
             crate::operator_namespace::OperatorNamespace::capture(&physical_path, &before)
                 .map_err(artifact_io_error)?;
-        let file = File::open(&physical_path).map_err(artifact_io_error)?;
-        let opened = file.metadata().map_err(artifact_io_error)?;
-        validate_file(&opened, maximum)?;
-        if !same_file_version(&before, &opened) {
-            return Err(changed_artifact());
-        }
         Ok(Self {
             selected_path: path.to_path_buf(),
             physical_path,
             before,
-            file,
             #[cfg(unix)]
             namespace,
         })
+    }
+
+    fn open(self, maximum: usize) -> Result<ArtifactSnapshot, BrowserServoError> {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        crate::operator_namespace::configure_protected_open(&mut options);
+        let file = options
+            .open(&self.physical_path)
+            .map_err(artifact_io_error)?;
+        let opened = file.metadata().map_err(artifact_io_error)?;
+        validate_file(&opened, maximum)?;
+        if !same_file_version(&self.before, &opened) {
+            return Err(changed_artifact());
+        }
+        Ok(ArtifactSnapshot {
+            selected_path: self.selected_path,
+            physical_path: self.physical_path,
+            before: self.before,
+            file,
+            #[cfg(unix)]
+            namespace: self.namespace,
+        })
+    }
+}
+
+impl ArtifactSnapshot {
+    fn open(path: &Path, maximum: usize) -> Result<Self, BrowserServoError> {
+        ArtifactPreflight::inspect(path, maximum)?.open(maximum)
     }
 
     fn verify(mut self, expected: [u8; 32], maximum: usize) -> Result<PathBuf, BrowserServoError> {

@@ -139,3 +139,93 @@ fn native_snapshot_callback_rechecks_namespace_before_returning_bytes() {
     });
     assert!(result.is_err());
 }
+
+#[test]
+fn inspected_bootstrap_fifo_replacement_is_rejected_for_both_access_modes() {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::process::Command;
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    for access in [ExistingAccess::ReadOnly, ExistingAccess::ReadWrite] {
+        let (_temp, identity) = run_start_owner_fixture();
+        let path = identity.home_root.join("bootstrap");
+        fs::write(&path, b"trusted").expect("bootstrap file");
+        let inspected =
+            BootstrapFilePreflight::inspect(&path, access, LABEL).expect("regular preflight");
+        fs::remove_file(&path).expect("replace inspected file");
+        assert!(
+            Command::new("mkfifo")
+                .args(["-m", "600"])
+                .arg(&path)
+                .status()
+                .expect("POSIX mkfifo")
+                .success()
+        );
+        let (done, received) = mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            let _ = done.send(inspected.open(LABEL).is_err());
+        });
+        let first = received.recv_timeout(Duration::from_secs(/*secs*/ 1));
+        let timely = first.is_ok();
+        // ReadWrite FIFO opens may already be finite; descriptor admission
+        // must still reject that type. ReadOnly must not wait for a writer.
+        let _cleanup = (!timely).then(|| {
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(libc::O_NONBLOCK | libc::O_NOFOLLOW)
+                .open(&path)
+                .expect("FIFO cleanup keeper")
+        });
+        let rejected = first.unwrap_or_else(|_| {
+            received
+                .recv_timeout(Duration::from_secs(/*secs*/ 1))
+                .expect("FIFO cleanup releases worker")
+        });
+        worker.join().expect("open worker");
+        assert!(timely, "replacement FIFO waited for a writer");
+        assert!(
+            rejected,
+            "replacement FIFO was admitted as a bootstrap file"
+        );
+    }
+}
+
+#[test]
+fn inspected_bootstrap_symlink_replacement_is_rejected_for_both_access_modes() {
+    for access in [ExistingAccess::ReadOnly, ExistingAccess::ReadWrite] {
+        let (_temp, identity) = run_start_owner_fixture();
+        let path = identity.home_root.join("bootstrap");
+        let retained = identity.home_root.join("retained");
+        fs::write(&path, b"trusted").expect("bootstrap file");
+        let inspected =
+            BootstrapFilePreflight::inspect(&path, access, LABEL).expect("regular preflight");
+        fs::rename(&path, &retained).expect("retain original inode");
+        std::os::unix::fs::symlink(&retained, &path).expect("replacement final symlink");
+        match inspected
+            .open(LABEL)
+            .err()
+            .expect("reject replacement symlink")
+        {
+            AgentdError::Io(error) => assert_eq!(error.raw_os_error(), Some(libc::ELOOP)),
+            error => panic!("expected the real no-follow open to reject the symlink: {error}"),
+        }
+    }
+}
+
+#[test]
+fn protected_bootstrap_open_retains_read_write_access() {
+    use std::io::Seek;
+    use std::io::Write;
+
+    let (_temp, identity) = run_start_owner_fixture();
+    let path = identity.home_root.join("bootstrap");
+    fs::write(&path, b"trusted").expect("bootstrap file");
+    let mut file = open_existing_rw(&path, LABEL).expect("read-write owner file");
+    file.write_all(b"updated").expect("owner write");
+    file.rewind().expect("owner read position");
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes).expect("owner read");
+    assert_eq!(bytes, b"updated");
+}

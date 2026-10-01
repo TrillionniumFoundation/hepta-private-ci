@@ -3,6 +3,7 @@
 use std::fs;
 use std::fs::File;
 use std::fs::Metadata;
+use std::fs::OpenOptions;
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
@@ -27,8 +28,15 @@ struct ProtectedEffectFile {
     file: File,
 }
 
-impl ProtectedEffectFile {
-    fn open(path: &Path, max_bytes: u64, label: &str) -> Result<Self, AgentdError> {
+struct EffectFilePreflight {
+    path: PathBuf,
+    metadata: Metadata,
+    #[cfg(unix)]
+    namespace: OperatorNamespace,
+}
+
+impl EffectFilePreflight {
+    fn inspect(path: &Path, max_bytes: u64, label: &str) -> Result<Self, AgentdError> {
         if !path.is_absolute() {
             return Err(AgentdError::Invalid(format!("{label} must be absolute")));
         }
@@ -42,21 +50,40 @@ impl ProtectedEffectFile {
         validate_file_metadata(&metadata, max_bytes, label)?;
         #[cfg(unix)]
         let namespace = OperatorNamespace::capture(&canonical, &metadata)?;
-        let file = File::open(&canonical)?;
-        let opened = file.metadata()?;
-        validate_file_metadata(&opened, max_bytes, label)?;
-        if !same_file_version(&metadata, &opened) {
-            return Err(AgentdError::Invalid(format!(
-                "{label} changed while opening"
-            )));
-        }
         Ok(Self {
             path: canonical,
             metadata,
             #[cfg(unix)]
             namespace,
+        })
+    }
+
+    fn open(self, max_bytes: u64, label: &str) -> Result<ProtectedEffectFile, AgentdError> {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        crate::operator_namespace::configure_protected_open(&mut options);
+        let file = options.open(&self.path)?;
+        let opened = file.metadata()?;
+        validate_file_metadata(&opened, max_bytes, label)?;
+        if !same_file_version(&self.metadata, &opened) {
+            return Err(AgentdError::Invalid(format!(
+                "{label} changed while opening"
+            )));
+        }
+        Ok(ProtectedEffectFile {
+            path: self.path,
+            metadata: self.metadata,
+            #[cfg(unix)]
+            namespace: self.namespace,
             file,
         })
+    }
+}
+
+impl ProtectedEffectFile {
+    fn open(path: &Path, max_bytes: u64, label: &str) -> Result<Self, AgentdError> {
+        EffectFilePreflight::inspect(path, max_bytes, label)?.open(max_bytes, label)
     }
 
     fn read(self, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
