@@ -19,6 +19,7 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::sync::Mutex;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -362,6 +363,7 @@ impl ArtifactOwnerVerifierV1 {
 pub struct LearningArtifactOwnerHost {
     root: PathBuf,
     writer_fence: File,
+    publication_fence: Mutex<()>,
     verifier: ArtifactOwnerVerifierV1,
     lease: SignedArtifactWriterLeaseV1,
     verified_lease: VerifiedArtifactWriterLeaseV1,
@@ -454,6 +456,7 @@ impl LearningArtifactOwnerHost {
         Ok(Self {
             root,
             writer_fence,
+            publication_fence: Mutex::new(()),
             verifier,
             lease,
             verified_lease,
@@ -492,6 +495,13 @@ impl LearningArtifactOwnerHost {
         expected_registry_predecessor_head: Digest32,
         now: u64,
     ) -> Result<ArtifactPublicationTransactionV1, ArtifactOwnerHostError> {
+        // The OS fence excludes other hosts; this fence serializes mutation
+        // through shared references to this same Send + Sync host. Poisoning
+        // may follow an interrupted effect and therefore fails closed.
+        let _publication_guard = self
+            .publication_fence
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         let writer = self.require_current_writer(now)?;
         if admission.validated_manifest.manifest.predecessor_ids.len() > 1 {
             return Err(ArtifactPublicationError::UnsupportedMultiPredecessorLineage.into());
@@ -504,7 +514,17 @@ impl LearningArtifactOwnerHost {
             return Err(ArtifactOwnerHostError::WriterLeaseContext);
         }
         let existing = self.recover_publication(&operation_id)?;
-        if existing.is_none() {
+        let new_operation = existing.is_none();
+        if new_operation {
+            // The public host boundary must preserve the service's single
+            // unfinished-operation invariant before any new durable effect.
+            // Otherwise two Prepared operations can make a valid namespace
+            // impossible to reopen through the named product service.
+            if let Some(pending) = records::recovery_required_operations(self)?.first() {
+                return Err(ArtifactOwnerHostError::RecoveryRequired(
+                    pending.operation_id.clone(),
+                ));
+            }
             let current_predecessor = match self.discover_current_head(now)? {
                 Some(current) => {
                     current
@@ -601,6 +621,10 @@ impl LearningArtifactOwnerHost {
         bytes: &[u8],
         now: u64,
     ) -> Result<PathBuf, ArtifactOwnerHostError> {
+        let _publication_guard = self
+            .publication_fence
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         self.require_current_transaction(transaction, now)?;
         let manifest = &transaction.intent().admission.validated_manifest.manifest;
         let relative = PathBuf::from("payloads").join(format!(
@@ -631,6 +655,10 @@ impl LearningArtifactOwnerHost {
         binding: Digest32,
         now: u64,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
+        let _publication_guard = self
+            .publication_fence
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         self.require_current_transaction(transaction, now)?;
         registry_replay::validate_intent_record(
             registry
@@ -673,6 +701,10 @@ impl LearningArtifactOwnerHost {
         withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
+        let _publication_guard = self
+            .publication_fence
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         self.require_current_transaction(transaction, now)?;
         let current = self.discover_current_head(now)?;
         if current.as_ref().is_some_and(|current| {
@@ -771,6 +803,10 @@ impl LearningArtifactOwnerHost {
         withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<crate::ArtifactPublicationReceiptV1, ArtifactOwnerHostError> {
+        let _publication_guard = self
+            .publication_fence
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         self.require_current_transaction(transaction, now)?;
         let current = self
             .discover_current_head(now)?
@@ -1631,6 +1667,7 @@ pub enum ArtifactOwnerHostError {
     SignerRevoked,
     WriterLeaseContext,
     WriterFenceBusy,
+    RecoveryRequired(StableId),
     RegistryPredecessorMismatch,
     CurrentHeadContext,
     CurrentHeadConflict,
@@ -2403,3 +2440,7 @@ mod transaction_binding_tests;
 #[cfg(test)]
 #[path = "owner_generation_tests.rs"]
 mod generation_tests;
+
+#[cfg(test)]
+#[path = "owner_pending_fence_tests.rs"]
+mod pending_fence_tests;
