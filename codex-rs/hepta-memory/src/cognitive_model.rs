@@ -220,7 +220,14 @@ impl StableMemoryId {
 
     pub fn parse(value: impl Into<String>) -> Result<Self, String> {
         let value = value.into();
-        parse_stable_id(&value, "memory:v2:")?;
+        // Compiled historical migrations retain legacy identities verbatim.
+        // Accept their bounded representation without changing new-ID hashing.
+        let prefix = if value.starts_with("memory:v1:") {
+            "memory:v1:"
+        } else {
+            "memory:v2:"
+        };
+        parse_stable_id(&value, prefix)?;
         Ok(Self(value))
     }
 }
@@ -452,3 +459,7 @@ fn parse_stable_id(value: &str, prefix: &str) -> Result<(), String> {
         .ok_or_else(|| format!("stable id must start with {prefix}"))?;
     Sha256Digest::parse(digest.to_string()).map(|_| ())
 }
+
+#[cfg(test)]
+#[path = "cognitive_model_legacy_tests.rs"]
+mod legacy_tests;

@@ -65,10 +65,15 @@ const ACK_LOST_DIGEST_DOMAIN: &[u8] = b"hepta.kernel.operations.ack-lost.v1\0";
 const OWNER_HANDOFF_UNKNOWN_DIGEST_DOMAIN: &[u8] =
     b"hepta.kernel.operations.owner-handoff-unknown-effect.v1\0";
 
+#[cfg(test)]
+type TestClock = std::sync::Arc<dyn Fn() -> Result<i64, DurableOperationError> + Send + Sync>;
+
 #[derive(Clone)]
 pub struct DurableOperationStore {
     pub(crate) pool: SqlitePool,
     path: PathBuf,
+    #[cfg(test)]
+    clock: Option<TestClock>,
 }
 
 impl DurableOperationStore {
@@ -91,6 +96,8 @@ impl DurableOperationStore {
         let store = Self {
             pool,
             path: path.to_path_buf(),
+            #[cfg(test)]
+            clock: None,
         };
         store.recover_expired_leases().await?;
         Ok(store)
@@ -104,6 +111,17 @@ impl DurableOperationStore {
         self.pool.close().await;
     }
 
+    // Sample persisted timestamps only after the SQLite writer fence. A caller
+    // may have waited while another writer advanced durable time or a lease
+    // expired; pre-fence wall-clock samples cannot authorize that later cut.
+    fn write_time(&self) -> Result<i64, DurableOperationError> {
+        #[cfg(test)]
+        if let Some(clock) = &self.clock {
+            return clock();
+        }
+        now_millis()
+    }
+
     /// Atomically creates the operation ledger row and its source-side outbox.
     pub async fn prepare_intent(
         &self,
@@ -114,12 +132,12 @@ impl DurableOperationStore {
             return Err(DurableOperationError::Invalid("self predecessor"));
         }
         let semantic_digest = intent.semantic_digest();
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         ensure_clock_not_behind(&mut tx, now).await?;
         if tombstone_exists(&mut tx, intent, semantic_digest).await? {
             return Err(DurableOperationError::Retired(intent.operation_id.clone()));
@@ -254,12 +272,12 @@ impl DurableOperationStore {
         lease: Duration,
     ) -> Result<Option<DispatchClaim>, DurableOperationError> {
         let lease_ms = validate_lease(lease)?;
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         ensure_clock_not_behind(&mut tx, now).await?;
         recover_expired_leases_tx(&mut tx, now).await?;
         let candidate = sqlx::query(
@@ -360,12 +378,12 @@ impl DurableOperationStore {
         lease: Duration,
     ) -> Result<DispatchClaim, DurableOperationError> {
         let lease_ms = validate_lease(lease)?;
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         let status = require_current_lease(&mut tx, claim, now).await?;
         let fence = status
             .fence
@@ -427,13 +445,12 @@ impl DurableOperationStore {
         let binding = claim.intent.final_use_binding();
         let signing_bytes = signed.grant.signing_bytes()?;
         let authority_digest = Digest32::of_bytes(&signing_bytes);
-        let token = authority.claim(signed, &binding)?;
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         require_current_lease(&mut tx, claim, now).await?;
         let operation =
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
@@ -445,6 +462,14 @@ impl DurableOperationStore {
                 to: "dispatching",
             });
         }
+        // Final-use grant freshness is evaluated at this admitted write cut,
+        // after any lock wait, and before entering dispatching durably.
+        let token = authority.claim(signed, &binding)?;
+        // Claim persistence includes synchronous durable I/O and can cross the
+        // operation lease deadline. Its nonce remains consumed if this fresh
+        // lease check rejects; only an admitted current lease may dispatch.
+        let now = self.write_time()?;
+        require_current_lease(&mut tx, claim, now).await?;
         let revision = next_revision(operation.revision)?;
         sqlx::query(
             "UPDATE operation_ledger SET state = 'dispatching', authority_epoch = ?,
@@ -544,12 +569,12 @@ impl DurableOperationStore {
         if dispatch_digest.is_zero() {
             return Err(DurableOperationError::Invalid("dispatch digest"));
         }
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         require_current_lease(&mut tx, claim, now).await?;
         let operation =
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
@@ -596,12 +621,12 @@ impl DurableOperationStore {
         if acknowledgement_digest.is_zero() {
             return Err(DurableOperationError::Invalid("acknowledgement digest"));
         }
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         let status = load_outbox_tx(
             &mut tx,
             &claim.intent.destination,
@@ -661,12 +686,12 @@ impl DurableOperationStore {
         if reason_digest.is_zero() {
             return Err(DurableOperationError::Invalid("indeterminate digest"));
         }
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         let operation =
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
                 .await?
@@ -750,15 +775,15 @@ impl DurableOperationStore {
         if retry_ms > MAX_DURABLE_LEASE_MS {
             return Err(DurableOperationError::Invalid("retry duration"));
         }
-        let now = now_millis()?;
-        let next_eligible = now
-            .checked_add(i64::try_from(retry_ms).map_err(|_| DurableOperationError::Capacity)?)
-            .ok_or(DurableOperationError::Capacity)?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
+        let next_eligible = now
+            .checked_add(i64::try_from(retry_ms).map_err(|_| DurableOperationError::Capacity)?)
+            .ok_or(DurableOperationError::Capacity)?;
         require_current_lease(&mut tx, claim, now).await?;
         let operation =
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
@@ -824,12 +849,12 @@ impl DurableOperationStore {
         receipt: &ReconciliationReceiptV1,
     ) -> Result<DurableOperationRecord, DurableOperationError> {
         receipt.validate()?;
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
             .await?
             .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
@@ -932,12 +957,12 @@ impl DurableOperationStore {
         operation_id: &StableId,
         owner_generation: Generation,
     ) -> Result<DurableOperationRecord, DurableOperationError> {
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         ensure_clock_not_behind(&mut tx, now).await?;
         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
             .await?
@@ -1160,12 +1185,12 @@ impl DurableOperationStore {
         // so a larger unsigned cutoff is equivalent to its greatest value.
         // Keep checked conversion for identities, revisions and stored times.
         let before = i64::try_from(terminal_before_unix_ms).unwrap_or(i64::MAX);
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         let rows = sqlx::query(
             "SELECT l.scope_id, l.operation_id, l.semantic_digest, l.destination,
                     l.payload_digest, l.terminal_outcome, l.terminal_evidence_digest
@@ -1249,12 +1274,12 @@ impl DurableOperationStore {
     }
 
     pub async fn recover_expired_leases(&self) -> Result<(), DurableOperationError> {
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now = self.write_time()?;
         ensure_clock_not_behind(&mut tx, now).await?;
         recover_expired_leases_tx(&mut tx, now).await?;
         tx.commit().await.map_err(sqlx_error)

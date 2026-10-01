@@ -412,7 +412,7 @@ impl CognitiveStore {
                 ));
             }
         }
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(capability)
     }
 
@@ -483,7 +483,7 @@ impl CognitiveStore {
                 "memory federation head changed during revoke".to_string(),
             ));
         }
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(FederationRevocation {
             capability_id: capability.id.clone(),
             generation: capability.generation,

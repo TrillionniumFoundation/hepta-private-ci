@@ -187,24 +187,7 @@ async fn verify_admitted_snapshot(
             "KG fact validity escapes its immutable memory revision".to_string(),
         ));
     }
-    let mismatched_citation_scope: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM memory_citations c
-         JOIN memory_revisions m
-           ON m.memory_id = c.memory_id AND m.revision = c.memory_revision
-         JOIN source_ledger s
-           ON s.source_id = c.source_id AND s.source_revision = c.source_revision
-         WHERE m.owner_agent_id != s.owner_agent_id
-            OR m.scope_kind != s.scope_kind
-            OR m.workspace_sha256 IS NOT s.workspace_sha256",
-    )
-    .fetch_one(&mut *connection)
-    .await
-    .map_err(unavailable)?;
-    if mismatched_citation_scope != 0 {
-        return Err(CognitiveStoreError::Corrupt(
-            "memory citation does not match the exact owner and scope".to_string(),
-        ));
-    }
+    integrity::verify_admitted_citation_scope(connection).await?;
     let incomplete_projection_receipts: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM kg_projection_generation_receipts r
          WHERE NOT EXISTS (

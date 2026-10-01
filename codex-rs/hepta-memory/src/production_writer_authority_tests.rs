@@ -222,26 +222,30 @@ async fn revocation_while_waiting_for_write_lock_blocks_all_semantic_mutations()
 
 #[tokio::test]
 async fn revocation_before_commit_rolls_back_semantics_and_provenance_together() {
-    for kind in [
-        MutationKind::Remember,
-        MutationKind::Correct,
-        MutationKind::Forget,
-    ] {
-        let temp = TempDir::new().unwrap();
-        let (writer, capability, verifier, memory_id) = fixture(&temp).await;
-        let before = writer.recovery_anchor().await.unwrap();
-        // Permit preflight and the check under the write lock, then revoke
-        // when the complete semantic/provenance transaction reaches commit.
-        verifier
-            .revoke_on_call
-            .store(verifier.calls.load(Ordering::SeqCst) + 3, Ordering::SeqCst);
-        let result = mutate(&capability, &memory_id, kind).await;
-        assert!(matches!(
-            result,
-            Err(ProductionCognitiveMutationError::Authority(
-                ProductionWriterError::AuthorityRejected(_)
-            ))
-        ));
-        assert_eq!(writer.recovery_anchor().await.unwrap(), before);
+    // Check both the complete semantic/provenance state and the later cut
+    // after awaited full-schema and owner-budget admission. Rejecting only
+    // at the earlier cut would miss revocation during admission itself.
+    for revoke_on_call in [3, 4] {
+        for kind in [
+            MutationKind::Remember,
+            MutationKind::Correct,
+            MutationKind::Forget,
+        ] {
+            let temp = TempDir::new().unwrap();
+            let (writer, capability, verifier, memory_id) = fixture(&temp).await;
+            let before = writer.recovery_anchor().await.unwrap();
+            verifier.revoke_on_call.store(
+                verifier.calls.load(Ordering::SeqCst) + revoke_on_call,
+                Ordering::SeqCst,
+            );
+            let result = mutate(&capability, &memory_id, kind).await;
+            assert!(matches!(
+                result,
+                Err(ProductionCognitiveMutationError::Authority(
+                    ProductionWriterError::AuthorityRejected(_)
+                ))
+            ));
+            assert_eq!(writer.recovery_anchor().await.unwrap(), before);
+        }
     }
 }

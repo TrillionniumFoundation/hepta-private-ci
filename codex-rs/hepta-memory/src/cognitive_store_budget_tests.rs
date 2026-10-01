@@ -7,6 +7,7 @@ use super::*;
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
+use crate::cognitive_model::MAX_SOURCE_BYTES;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
@@ -24,6 +25,221 @@ fn assert_budget_error(result: Result<(), CognitiveStoreError>) {
         matches!(result, Err(CognitiveStoreError::Invalid(message)) if message.contains("startup row/byte bounds")),
         "oversized logical state must be rejected before materialization"
     );
+}
+
+async fn logical_counts(store: &CognitiveStore) -> Vec<(&'static str, i64)> {
+    let mut transaction = store.pool.begin().await.expect("count snapshot");
+    let verified = super::super::schema::verify_schema(&mut transaction)
+        .await
+        .expect("compiled count schema");
+    let mut counts = Vec::with_capacity(verified.tables.len());
+    for table in verified.tables {
+        // The names come exclusively from exact compiled-schema admission.
+        let mut query = sqlx::QueryBuilder::<sqlx::Sqlite>::new("SELECT COUNT(*) FROM \"");
+        query.push(table).push("\"");
+        let count = query
+            .build_query_scalar::<i64>()
+            .fetch_one(&mut *transaction)
+            .await
+            .expect("logical table count");
+        counts.push((table, count));
+    }
+    transaction.commit().await.expect("close count snapshot");
+    counts
+}
+
+#[tokio::test]
+async fn legal_source_appends_stop_atomically_at_reopen_budget_and_replay_at_capacity() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(90);
+    let owner_layout = layout(&temp, &owner);
+    let first = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("first writer");
+    let second = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("independent second writer");
+    let access = CognitiveAccess::agent_private(owner);
+    let mut draft = source(CognitiveScope::AgentPrivate, "capacity-0", "evidence");
+    // Every payload obeys the public source API's actual 1 MiB ceiling. Do not
+    // lower the production budget or bypass its write path to reach capacity.
+    draft.content = vec![b'x'; MAX_SOURCE_BYTES];
+    let max_attempts = usize::try_from(MAX_BYTES).expect("positive byte budget") / MAX_SOURCE_BYTES;
+    let mut accepted = 0_i64;
+    let mut last_committed = None;
+    let mut rejected = false;
+    for index in 0..=max_attempts {
+        draft.event_key = format!("capacity-{index}");
+        let writer = if index % 2 == 0 { &first } else { &second };
+        match writer.append_source(&access, &draft).await {
+            Ok(receipt) => {
+                accepted += 1;
+                last_committed = Some((draft.clone(), receipt));
+            }
+            Err(error) => {
+                assert_budget_error(Err(error));
+                rejected = true;
+                break;
+            }
+        }
+    }
+    assert!(
+        rejected,
+        "legal writes must stop before crossing the startup budget"
+    );
+    assert!(accepted > 0, "capacity fixture must commit ordinary writes");
+    // Fill the residual byte budget with legal Memory-sized sources so the
+    // sealed composite below reaches the budget gate with a valid exact
+    // Source/Memory binding, rather than failing its input-size contract.
+    draft.content = vec![b'x'; crate::cognitive_model::MAX_MEMORY_BYTES];
+    for index in 0..=max_attempts {
+        draft.event_key = format!("capacity-residual-{index}");
+        let writer = if index % 2 == 0 { &first } else { &second };
+        match writer.append_source(&access, &draft).await {
+            Ok(receipt) => {
+                accepted += 1;
+                last_committed = Some((draft.clone(), receipt));
+            }
+            Err(error) => {
+                assert_budget_error(Err(error));
+                break;
+            }
+        }
+        assert!(index < max_attempts, "residual budget must be exhausted");
+    }
+    let counts = logical_counts(&first).await;
+    assert_eq!(
+        counts.iter().find(|(table, _)| *table == "source_ledger"),
+        Some(&("source_ledger", accepted)),
+        "rejected append must leave no extra source row"
+    );
+    let anchor = first
+        .recovery_anchor()
+        .await
+        .expect("admitted boundary cut");
+    let (last_draft, last_receipt) = last_committed.expect("committed source");
+    assert_eq!(
+        second
+            .append_source(&access, &last_draft)
+            .await
+            .expect("exact replay at capacity"),
+        last_receipt
+    );
+    assert_budget_error(second.append_source(&access, &draft).await.map(|_| ()));
+    assert_eq!(logical_counts(&first).await, counts);
+    assert_eq!(
+        second
+            .recovery_anchor()
+            .await
+            .expect("unchanged boundary cut"),
+        anchor,
+        "rejected retry and exact replay must preserve all owner data"
+    );
+    first.pool.close().await;
+    second.pool.close().await;
+    drop(first);
+    drop(second);
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("all acknowledged appends must remain reopenable");
+    assert_eq!(logical_counts(&reopened).await, counts);
+    assert_eq!(
+        reopened
+            .append_source(&access, &last_draft)
+            .await
+            .expect("exact replay after reopen"),
+        last_receipt
+    );
+    // The sealed production composite must reject the same exhaustion only
+    // after rolling back source, Memory, facts, FTS and operation provenance.
+    let authority = crate::ProductionAuthorityLease::from_verified_parts(
+        reopened.owner_agent_id().clone(),
+        codex_hepta_contracts::Sha256Digest::for_bytes(b"capacity qualification grant"),
+        /*authority_epoch*/ 1,
+        /*owner_epoch*/ 1,
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_secs()
+            + 3_600,
+        crate::ProductionAuthorityToken::from_verified_bytes(
+            b"capacity qualification token".to_vec(),
+        )
+        .expect("token"),
+    )
+    .expect("qualification authority");
+    let verifier = |_authority: &crate::ProductionAuthorityLease,
+                    _owner: &codex_hepta_contracts::AgentId| Ok(());
+    let writer = std::sync::Arc::new(
+        crate::ProductionDurableWriter::open_with_live_verifier(
+            reopened.clone(),
+            authority,
+            std::sync::Arc::new(verifier),
+            "capacity:production",
+            /*generation*/ 1,
+        )
+        .await
+        .expect("live writer within remaining capacity"),
+    );
+    let capability = writer
+        .cognitive_mutation_capability()
+        .expect("sealed capability");
+    let before_production = logical_counts(&reopened).await;
+    let before_anchor = reopened
+        .recovery_anchor()
+        .await
+        .expect("production boundary anchor");
+    let memory = crate::MemoryDraft {
+        stable_key: "capacity:production-memory".to_string(),
+        revision: crate::MemoryRevisionDraft {
+            scope: CognitiveScope::AgentPrivate,
+            content: "x".repeat(crate::cognitive_model::MAX_MEMORY_BYTES),
+            verification: crate::MemoryVerification::Verified,
+            lifecycle: crate::MemoryLifecycleState::Active,
+            valid_from_unix_seconds: 100,
+            valid_to_unix_seconds: None,
+            citations: Vec::new(),
+        },
+    };
+    let facts = crate::KgFactSetDraft::default();
+    for _ in 0..2 {
+        let result = crate::ProductionCognitiveMutation::remember_with_kg(
+            &capability,
+            &access,
+            &draft,
+            &memory,
+            &facts,
+        )
+        .await;
+        assert!(matches!(result,
+            Err(crate::ProductionCognitiveMutationError::Store(CognitiveStoreError::Invalid(message)))
+            if message.contains("startup row/byte bounds")
+        ));
+        assert_eq!(logical_counts(&reopened).await, before_production);
+        assert_eq!(
+            reopened
+                .recovery_anchor()
+                .await
+                .expect("rejected composite anchor"),
+            before_anchor
+        );
+    }
+    drop(capability);
+    drop(writer);
+    reopened.pool.close().await;
+    drop(reopened);
+    let after_production = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("rejected production mutation preserves reopen");
+    assert_eq!(logical_counts(&after_production).await, before_production);
+    assert_eq!(
+        after_production
+            .recovery_anchor()
+            .await
+            .expect("reopened production anchor"),
+        before_anchor
+    );
+    after_production.pool.close().await;
 }
 
 #[tokio::test]

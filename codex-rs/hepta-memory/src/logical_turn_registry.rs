@@ -47,6 +47,9 @@ pub const LOGICAL_TURN_REGISTRY_PRODUCTION_CALLER: bool = false;
 
 const MAX_TEXT_BYTES: usize = 512;
 const MAX_REGISTRY_ROWS: usize = 16_384;
+#[cfg(test)]
+#[path = "logical_turn_registry_capacity_tests.rs"]
+mod capacity_tests;
 const IDENTITY_DOMAIN: &[u8] = b"hepta-memory:logical-turn-identity:v1";
 const ATTEMPT_DOMAIN: &[u8] = b"hepta-memory:logical-turn-attempt:v1";
 const GENESIS_ATTEMPT: &[u8] = b"hepta-memory:logical-turn-attempt:genesis:v1";
@@ -874,10 +877,7 @@ async fn commit_reservation(
     transaction: Transaction<'_, Sqlite>,
     reservation: LogicalTurnReservation,
 ) -> Result<LogicalTurnReservation, LogicalTurnRegistryError> {
-    transaction
-        .commit()
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::commit_admitted(transaction).await?;
     Ok(reservation)
 }
 
@@ -1263,6 +1263,11 @@ async fn append_attempt(
     previous_sha256: &Sha256Digest,
     recorded_at_unix_seconds: i64,
 ) -> Result<LogicalTurnAttempt, LogicalTurnRegistryError> {
+    if registry_sequence > u64::try_from(MAX_REGISTRY_ROWS).unwrap_or(u64::MAX) {
+        return Err(LogicalTurnRegistryError::Invalid(format!(
+            "logical-turn registry exceeds {MAX_REGISTRY_ROWS} event rows"
+        )));
+    }
     let lease_sequence: i64 = sqlx::query_scalar(
         "SELECT lease_sequence FROM cognitive_local_leases
          WHERE owner_agent_id = ? AND lease_id = ? AND generation = ?

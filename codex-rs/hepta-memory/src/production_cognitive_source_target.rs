@@ -395,10 +395,16 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
                     CognitiveStoreError::Corrupt(reason) | CognitiveStoreError::Unavailable(reason),
                 ) => return ProductionTargetOutcome::Indeterminate { reason },
             };
-            if let Err(error) = transaction.commit().await {
-                return ProductionTargetOutcome::Indeterminate {
-                    reason: error.to_string(),
-                };
+            match crate::cognitive_store::commit_admitted(transaction).await {
+                Ok(()) => {}
+                Err(
+                    CognitiveStoreError::Invalid(reason)
+                    | CognitiveStoreError::AccessDenied(reason)
+                    | CognitiveStoreError::Conflict(reason),
+                ) => return ProductionTargetOutcome::Rejected { reason },
+                Err(
+                    CognitiveStoreError::Corrupt(reason) | CognitiveStoreError::Unavailable(reason),
+                ) => return ProductionTargetOutcome::Indeterminate { reason },
             }
             ProductionTargetOutcome::Committed {
                 receipt: Self::receipt(&id),

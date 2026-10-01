@@ -629,6 +629,15 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+# The bundled SQLite C engine inherits this package's OPT_LEVEL through its
+# build script. Use its normal optimized engine for every development/test
+# consumer while retaining unoptimized Rust owner code and unchanged checks.
+[profile.dev.package.libsqlite3-sys]
+opt-level = 2
+
+[profile.test.package.libsqlite3-sys]
+opt-level = 2
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0

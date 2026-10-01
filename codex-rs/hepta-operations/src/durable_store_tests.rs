@@ -1,6 +1,15 @@
 use super::*;
 
 use std::collections::BTreeSet;
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::Arc;
+#[cfg(unix)]
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicI64;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::task::Poll;
 use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseGrant;
@@ -26,6 +35,325 @@ fn intent(payload: &[u8]) -> OperationIntentV1 {
         destination: stable_id("automation.taskflow"),
         payload_digest: Digest32::of_bytes(payload),
         owner_generation: generation(1),
+    }
+}
+
+fn controlled_clock(
+    first: &mut DurableOperationStore,
+    second: &mut DurableOperationStore,
+) -> (Arc<AtomicI64>, Arc<AtomicUsize>) {
+    let now = Arc::new(AtomicI64::new(1000));
+    let samples = Arc::new(AtomicUsize::new(0));
+    let clock_now = Arc::clone(&now);
+    let clock_samples = Arc::clone(&samples);
+    let clock: TestClock = Arc::new(move || {
+        clock_samples.fetch_add(1, Ordering::SeqCst);
+        Ok(clock_now.load(Ordering::SeqCst))
+    });
+    first.clock = Some(Arc::clone(&clock));
+    second.clock = Some(clock);
+    (now, samples)
+}
+
+async fn poll_pending_once<F: Future>(mut future: Pin<&mut F>) {
+    std::future::poll_fn(|context| {
+        assert!(future.as_mut().poll(context).is_pending());
+        Poll::Ready(())
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn queued_writer_samples_clock_after_the_committed_predecessor_cut() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let mut first = DurableOperationStore::open(&path).await.expect("first");
+    let mut second = DurableOperationStore::open(&path).await.expect("second");
+    let (clock, samples) = controlled_clock(&mut first, &mut second);
+    let operation = intent(b"serialized clock");
+    first
+        .prepare_intent(&operation)
+        .await
+        .expect("original prepare");
+    let mut predecessor = first
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("held writer");
+    sqlx::query("UPDATE operation_ledger SET updated_at_ms = 2000")
+        .execute(&mut *predecessor)
+        .await
+        .expect("predecessor advances durable clock");
+    sqlx::query("UPDATE cross_owner_outbox SET updated_at_ms = 2000")
+        .execute(&mut *predecessor)
+        .await
+        .expect("matching atomic outbox update");
+    samples.store(0, Ordering::SeqCst);
+    let pending = second.prepare_intent(&operation);
+    tokio::pin!(pending);
+    // Poll the real method while another SQLite connection owns the write
+    // fence. No wall-clock sample may authorize this still-blocked request.
+    poll_pending_once(pending.as_mut()).await;
+    assert_eq!(samples.load(Ordering::SeqCst), 0);
+    clock.store(2000, Ordering::SeqCst);
+    predecessor
+        .commit()
+        .await
+        .expect("release predecessor fence");
+    let prepared = pending
+        .await
+        .expect("normal writer reorder is not clock rollback");
+    assert_eq!(prepared.disposition, PrepareDisposition::AlreadyPresent);
+    assert_eq!(prepared.record.updated_at_unix_ms, 2000);
+
+    // An actual clock rollback remains fail closed even for an exact retry.
+    clock.store(1999, Ordering::SeqCst);
+    assert!(matches!(
+        second.prepare_intent(&operation).await,
+        Err(DurableOperationError::ClockRollback)
+    ));
+    assert_eq!(
+        second
+            .operation(&operation.scope_id, &operation.operation_id)
+            .await
+            .expect("unchanged row")
+            .expect("existing identity"),
+        prepared.record
+    );
+    first.close().await;
+    second.close().await;
+}
+
+#[tokio::test]
+async fn blocked_renewal_checks_lease_expiry_at_the_acquired_writer_cut() {
+    for after_wait in [1050, 1100] {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let path = directory.path().join("operations.sqlite3");
+        let mut first = DurableOperationStore::open(&path).await.expect("first");
+        let mut second = DurableOperationStore::open(&path).await.expect("second");
+        let (clock, samples) = controlled_clock(&mut first, &mut second);
+        let operation = intent(b"blocked lease boundary");
+        first.prepare_intent(&operation).await.expect("prepare");
+        let claim = first
+            .claim_next(
+                &operation.destination,
+                &stable_id("worker:test"),
+                generation(1),
+                Duration::from_millis(100),
+            )
+            .await
+            .expect("claim")
+            .expect("lease");
+        assert_eq!(claim.expires_at_unix_ms, 1100);
+        let before = (
+            first
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("operation")
+                .expect("record"),
+            first
+                .outbox_status(
+                    &operation.destination,
+                    &operation.scope_id,
+                    &operation.operation_id,
+                )
+                .await
+                .expect("outbox")
+                .expect("row"),
+        );
+        let held_writer = first
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("held SQLite writer");
+        samples.store(0, Ordering::SeqCst);
+        let pending = second.renew_claim(&claim, Duration::from_millis(200));
+        tokio::pin!(pending);
+        poll_pending_once(pending.as_mut()).await;
+        assert_eq!(samples.load(Ordering::SeqCst), 0);
+        clock.store(after_wait, Ordering::SeqCst);
+        held_writer
+            .commit()
+            .await
+            .expect("release writer after clock advances");
+        let result = pending.await;
+        let after = (
+            second
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("operation after wait")
+                .expect("record"),
+            second
+                .outbox_status(
+                    &operation.destination,
+                    &operation.scope_id,
+                    &operation.operation_id,
+                )
+                .await
+                .expect("outbox after wait")
+                .expect("row"),
+        );
+        if after_wait == 1100 {
+            assert!(matches!(result, Err(DurableOperationError::StaleLease)));
+            assert_eq!(after, before);
+        } else {
+            let renewed = result.expect("still-live claim can renew after waiting");
+            let mut expected_claim = claim.clone();
+            expected_claim.fence += 1;
+            expected_claim.expires_at_unix_ms = 1250;
+            assert_eq!(renewed, expected_claim);
+            let (mut expected_operation, mut expected_outbox) = before;
+            expected_operation.writer_fence += 1;
+            expected_operation.revision += 1;
+            expected_operation.updated_at_unix_ms = 1050;
+            expected_outbox.fence += 1;
+            expected_outbox.lease_until_unix_ms = Some(1250);
+            expected_outbox.updated_at_unix_ms = 1050;
+            assert_eq!(after, (expected_operation, expected_outbox));
+        }
+        first.close().await;
+        second.close().await;
+    }
+}
+
+#[cfg(unix)]
+struct ClaimPersistenceClock {
+    operation_clock: Arc<AtomicI64>,
+    after_persistence: i64,
+    armed: AtomicBool,
+    samples: AtomicUsize,
+}
+
+#[cfg(unix)]
+impl codex_hepta_contracts::AuthorityClock for ClaimPersistenceClock {
+    fn now_unix_ms(&self) -> Result<u64, codex_hepta_contracts::AuthorityTrustError> {
+        if self.armed.load(Ordering::SeqCst) && self.samples.fetch_add(1, Ordering::SeqCst) > 0 {
+            // The second claim-time sample happens after append_claim fsync.
+            self.operation_clock
+                .store(self.after_persistence, Ordering::SeqCst);
+        }
+        u64::try_from(self.operation_clock.load(Ordering::SeqCst))
+            .map_err(|_| codex_hepta_contracts::AuthorityTrustError::Invalid)
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn dispatch_rechecks_lease_after_final_use_claim_persistence() {
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    for after_persistence in [1099, 1100] {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let path = directory.path().join("operations.sqlite3");
+        let mut store = DurableOperationStore::open(&path).await.expect("store");
+        let operation_clock = Arc::new(AtomicI64::new(1000));
+        let clock = Arc::clone(&operation_clock);
+        store.clock = Some(Arc::new(move || Ok(clock.load(Ordering::SeqCst))));
+        let operation = intent(b"claim persistence lease boundary");
+        store.prepare_intent(&operation).await.expect("prepare");
+        let claim = store
+            .claim_next(
+                &operation.destination,
+                &stable_id("worker:test"),
+                generation(1),
+                Duration::from_millis(100),
+            )
+            .await
+            .expect("claim")
+            .expect("lease");
+        let before = (
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("original operation")
+                .expect("row"),
+            store
+                .outbox_status(
+                    &operation.destination,
+                    &operation.scope_id,
+                    &operation.operation_id,
+                )
+                .await
+                .expect("original outbox")
+                .expect("row"),
+        );
+        operation_clock.store(1050, Ordering::SeqCst);
+        let authority_clock = Arc::new(ClaimPersistenceClock {
+            operation_clock,
+            after_persistence,
+            armed: AtomicBool::new(false),
+            samples: AtomicUsize::new(0),
+        });
+        // Reuse the actual trusted signing fixture and durable authority state,
+        // with a controlled time window that remains live across both cases.
+        let (original_authority, mut signed, authority_dir) = authority_fixture(&operation, 31);
+        drop(original_authority);
+        signed.grant.not_before_unix_ms = 1000;
+        signed.grant.expires_at_unix_ms = 10000;
+        let signing = SigningKey::from_bytes(&[47; 32]);
+        signed.signature = signing
+            .sign(&signed.grant.signing_bytes().expect("grant bytes"))
+            .to_bytes()
+            .to_vec();
+        let authority = FinalUseAuthority::open_state_dir_with_clock(
+            authority_dir.path(),
+            "security-owner".to_string(),
+            signing.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            authority_clock.clone(),
+        )
+        .expect("controlled durable authority");
+        authority_clock.armed.store(true, Ordering::SeqCst);
+        let result = store.authorize_dispatch(&authority, &signed, &claim).await;
+        let after = (
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("operation after claim")
+                .expect("row"),
+            store
+                .outbox_status(
+                    &operation.destination,
+                    &operation.scope_id,
+                    &operation.operation_id,
+                )
+                .await
+                .expect("outbox after claim")
+                .expect("row"),
+        );
+        assert_eq!(
+            authority
+                .capacity()
+                .expect("durable nonce capacity")
+                .used_nonces,
+            1
+        );
+        assert!(matches!(
+            authority.claim(&signed, &signed.grant.binding),
+            Err(codex_hepta_contracts::FinalUseError::AlreadyClaimed)
+        ));
+        if after_persistence == 1100 {
+            assert!(matches!(result, Err(DurableOperationError::StaleLease)));
+            assert_eq!(after, before);
+        } else {
+            let authorized = result.expect("claim remains live before lease deadline");
+            assert_eq!(authorized.claim(), &claim);
+            let (mut expected_operation, expected_outbox) = before;
+            expected_operation.state = DurableOperationState::Dispatching;
+            expected_operation.authority_epoch = Some(9);
+            expected_operation.authority_digest = Some(Digest32::of_bytes(
+                &signed.grant.signing_bytes().expect("authority bytes"),
+            ));
+            expected_operation.revision += 1;
+            expected_operation.updated_at_unix_ms = 1099;
+            assert_eq!(after, (expected_operation, expected_outbox));
+        }
+        store.close().await;
     }
 }
 

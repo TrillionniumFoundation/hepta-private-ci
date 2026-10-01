@@ -107,10 +107,7 @@ impl LocalLeaseOutbox {
             }
             Err(error) => return Err(error),
         };
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 }

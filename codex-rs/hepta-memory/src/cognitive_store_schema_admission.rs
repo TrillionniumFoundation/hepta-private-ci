@@ -1,5 +1,8 @@
 //! Version-aware admission of owner schema before compiled migrations execute.
 
+use std::collections::BTreeSet;
+use std::sync::Arc;
+
 use codex_hepta_contracts::AgentId;
 use sqlx::Row;
 use sqlx::SqliteConnection;
@@ -18,11 +21,29 @@ const MAX_SCHEMA_OBJECTS: i64 = 1024;
 const MAX_MIGRATIONS: usize = 64;
 type SchemaObject = (String, String, String, Option<String>);
 static REFERENCES: OnceCell<Vec<Vec<SchemaObject>>> = OnceCell::const_new();
+static CATALOG_QUERY: OnceCell<Option<Arc<str>>> = OnceCell::const_new();
+
+pub(in super::super) enum MigrationAdmission {
+    AlreadyCurrentOwned,
+    NeedsInitialization,
+}
 
 pub(in super::super) async fn admit_before_migration(
     connection: &mut SqliteConnection,
     owner: &AgentId,
-) -> Result<(), CognitiveStoreError> {
+) -> Result<MigrationAdmission, CognitiveStoreError> {
+    // This fixed SQLite header scalar does not evaluate owner schema. Check it
+    // before byte-bounding any TEXT metadata: public digests and text limits
+    // use UTF-8, whereas CAST(TEXT AS BLOB) in UTF-16 uses different bytes.
+    let encoding: String = sqlx::query_scalar("PRAGMA encoding")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    if encoding != "UTF-8" {
+        return Err(CognitiveStoreError::Corrupt(
+            "cognitive owner database encoding must be UTF-8".to_string(),
+        ));
+    }
     let has_ledger = verify_existing_migrations_schema(connection).await?;
     let prefix = if has_ledger {
         migration_prefix(connection).await?
@@ -151,11 +172,48 @@ pub(in super::super) async fn admit_before_migration(
                 return Err(CognitiveStoreError::Corrupt(message));
             }
         }
+        if count == 1 && prefix == MIGRATOR.migrations.len() {
+            // This already-owned current database needs no initialization.
+            // The caller closes this fence without writes and independently
+            // verifies every current data contract in fresh admitted cuts.
+            return Ok(MigrationAdmission::AlreadyCurrentOwned);
+        }
     }
-    Ok(())
+    if prefix > 0 {
+        // Check the admitted historical constraints in this same locked cut.
+        // A dangling citation or memory head can retain valid content hashes
+        // and FTS rows, yet must not let migrations revoke old KG state first.
+        if sqlx::query("SELECT 1 FROM pragma_foreign_key_check LIMIT 1")
+            .fetch_optional(&mut *connection)
+            .await
+            .map_err(unavailable)?
+            .is_some()
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "SQLite foreign_key_check rejected the cognitive store".to_string(),
+            ));
+        }
+        // Stable evidence and memory-search checks precede pending migrations
+        // that revoke or replace old KG projections. A known-invalid ledger
+        // must leave the authenticated historical state untouched on refusal.
+        super::super::integrity::verify_admitted_ledger_contents(connection).await?;
+        // CHECK constraints can be bypassed by a data-adversary writer while
+        // hashes, references and FTS remain valid. Authenticate their compiled
+        // definitions first, then accept only the single bounded success row.
+        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
+            .fetch_all(&mut *connection)
+            .await
+            .map_err(unavailable)?;
+        if quick_check != ["ok"] {
+            return Err(CognitiveStoreError::Corrupt(
+                "SQLite quick_check rejected the cognitive store".to_string(),
+            ));
+        }
+    }
+    Ok(MigrationAdmission::NeedsInitialization)
 }
 
-pub(super) async fn verify_full_schema(
+pub(in super::super) async fn verify_full_schema(
     connection: &mut SqliteConnection,
 ) -> Result<(), CognitiveStoreError> {
     if migration_prefix(connection).await? != MIGRATOR.migrations.len() {
@@ -164,8 +222,98 @@ pub(super) async fn verify_full_schema(
         ));
     }
     let references = references().await?;
+    let expected = &references[MIGRATOR.migrations.len()];
+    let count = schema_metadata_count(connection).await?;
+    // EXCEPT compares sets, so matching cardinality is required as well: a
+    // duplicated catalog row must not disappear from the equality proof.
+    if count == expected.len() as i64
+        && let Some(query) = compiled_catalog_query().await?
+    {
+        // Every literal comes only from the fresh compiled migration oracle,
+        // never owner catalog bytes. The bounded owner catalog is data here;
+        // this query does not evaluate its stored SQL definitions.
+        let matches: bool = sqlx::query_scalar(sqlx::AssertSqlSafe(Arc::clone(query)))
+            .fetch_one(&mut *connection)
+            .await
+            .map_err(unavailable)?;
+        if matches {
+            return Ok(());
+        }
+    }
+    // Preserve the original typed fetch and mismatch classifications. This
+    // also retains its bounds if an internal caller violated the snapshot
+    // precondition. Historical/startup admission keeps this generic path.
     let actual = schema_metadata(connection).await?;
-    compare_schema(&actual, &references[MIGRATOR.migrations.len()])
+    compare_schema(&actual, expected)
+}
+
+async fn compiled_catalog_query() -> Result<Option<&'static Arc<str>>, CognitiveStoreError> {
+    let query = CATALOG_QUERY
+        .get_or_try_init(|| async {
+            let references = references().await?;
+            let expected = &references[MIGRATOR.migrations.len()];
+            let mut names = BTreeSet::new();
+            if expected.is_empty()
+                || expected
+                    .iter()
+                    .any(|object| !names.insert(object.0.as_str()))
+            {
+                return Err(CognitiveStoreError::Corrupt(
+                    "compiled cognitive schema reference names invalid".to_string(),
+                ));
+            }
+            let mut query =
+                String::from("WITH expected(name, type, tbl_name, sql) AS MATERIALIZED (VALUES ");
+            for (index, (name, kind, table, sql)) in expected.iter().enumerate() {
+                if index > 0 {
+                    query.push(',');
+                }
+                query.push('(');
+                for (field_index, value) in [
+                    Some(name.as_str()),
+                    Some(kind.as_str()),
+                    Some(table.as_str()),
+                    sql.as_deref(),
+                ]
+                .into_iter()
+                .enumerate()
+                {
+                    if field_index > 0 {
+                        query.push(',');
+                    }
+                    if let Some(value) = value {
+                        if value.contains('\0') {
+                            return Err(CognitiveStoreError::Corrupt(
+                                "compiled cognitive schema reference contains NUL".to_string(),
+                            ));
+                        }
+                        query.push('\'');
+                        query.push_str(&value.replace('\'', "''"));
+                        query.push('\'');
+                    } else {
+                        query.push_str("NULL");
+                    }
+                }
+                query.push(')');
+            }
+            query.push_str(
+                ") SELECT NOT EXISTS (
+                    SELECT name, type, tbl_name, sql FROM sqlite_schema
+                    EXCEPT SELECT name, type, tbl_name, sql FROM expected
+                 ) AND NOT EXISTS (
+                    SELECT name, type, tbl_name, sql FROM expected
+                    EXCEPT SELECT name, type, tbl_name, sql FROM sqlite_schema
+                 )",
+            );
+            if query.len() > MAX_SCHEMA_BYTES as usize {
+                // Escaped SQL can be larger than its valid metadata. This is
+                // an optimization bound, not a new owner admission policy.
+                return Ok(None);
+            }
+            Ok(Some(Arc::<str>::from(query)))
+        })
+        .await?;
+    Ok(query.as_ref())
 }
 
 async fn migration_prefix(connection: &mut SqliteConnection) -> Result<usize, CognitiveStoreError> {
@@ -245,10 +393,25 @@ async fn migration_prefix(connection: &mut SqliteConnection) -> Result<usize, Co
 async fn schema_metadata(
     connection: &mut SqliteConnection,
 ) -> Result<Vec<SchemaObject>, CognitiveStoreError> {
+    schema_metadata_count(connection).await?;
+    // Include ALL application objects, FTS shadow definitions and autoindexes.
+    // Page numbers and contents are not schema authority. SQLite's own catalog
+    // has no row in sqlite_schema, so no name-prefix exclusion is necessary.
+    sqlx::query_as("SELECT name, type, tbl_name, sql FROM sqlite_schema ORDER BY name")
+        .fetch_all(&mut *connection)
+        .await
+        .map_err(unavailable)
+}
+
+async fn schema_metadata_count(
+    connection: &mut SqliteConnection,
+) -> Result<i64, CognitiveStoreError> {
     let (count, bytes): (i64, i64) = sqlx::query_as(
         "SELECT COUNT(*), COALESCE(SUM(object_bytes), 0) FROM (
-            SELECT length(CAST(name AS BLOB)) + length(CAST(type AS BLOB)) +
-                   length(CAST(tbl_name AS BLOB)) + COALESCE(length(CAST(sql AS BLOB)), 0)
+            SELECT COALESCE(length(CAST(name AS BLOB)), 0) +
+                   COALESCE(length(CAST(type AS BLOB)), 0) +
+                   COALESCE(length(CAST(tbl_name AS BLOB)), 0) +
+                   COALESCE(length(CAST(sql AS BLOB)), 0)
                    AS object_bytes FROM sqlite_schema LIMIT 1025
          )",
     )
@@ -260,13 +423,7 @@ async fn schema_metadata(
             "cognitive compiled schema metadata exceeds bounds".to_string(),
         ));
     }
-    // Include ALL application objects, FTS shadow definitions and autoindexes.
-    // Page numbers and contents are not schema authority. SQLite's own catalog
-    // has no row in sqlite_schema, so no name-prefix exclusion is necessary.
-    sqlx::query_as("SELECT name, type, tbl_name, sql FROM sqlite_schema ORDER BY name")
-        .fetch_all(&mut *connection)
-        .await
-        .map_err(unavailable)
+    Ok(count)
 }
 
 fn compare_schema(
@@ -345,3 +502,7 @@ mod tests;
 #[cfg(test)]
 #[path = "cognitive_store_schema_ownership_tests.rs"]
 mod ownership_tests;
+
+#[cfg(test)]
+#[path = "cognitive_store_schema_catalog_tests.rs"]
+mod catalog_tests;

@@ -82,7 +82,7 @@ impl CognitiveStore {
         let receipt = self
             .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 
@@ -149,7 +149,7 @@ impl CognitiveStore {
                 facts,
             )
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 
@@ -228,7 +228,7 @@ impl CognitiveStore {
                 draft,
             )
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 

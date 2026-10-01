@@ -14,7 +14,9 @@ use crate::framing::frame_part;
 
 #[path = "cognitive_store_schema_admission.rs"]
 mod admission;
+pub(super) use admission::MigrationAdmission;
 pub(super) use admission::admit_before_migration;
+pub(super) use admission::verify_full_schema;
 
 const MAX_SCHEMA_BYTES: i64 = 1024 * 1024;
 // Exact sqlite_schema SQL produced by the pinned SQLx migrator. A separate

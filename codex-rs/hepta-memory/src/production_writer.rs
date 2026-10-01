@@ -828,7 +828,7 @@ impl ProductionDurableWriter {
             &receipt.occurrence_key,
             self.generation(),
             self.lease.fencing_token(),
-            now_unix_ms()?,
+            resolve_dispatch_claim_time,
             lease_duration_ms,
         )
         .await?)
@@ -847,7 +847,13 @@ impl ProductionDurableWriter {
         {
             return Err(ProductionWriterError::StaleReceipt);
         }
-        Ok(operation_claims::renew(&self.store, claim, now_unix_ms()?, lease_duration_ms).await?)
+        Ok(operation_claims::renew(
+            &self.store,
+            claim,
+            resolve_dispatch_claim_time,
+            lease_duration_ms,
+        )
+        .await?)
     }
 
     pub async fn recover(
@@ -1265,7 +1271,8 @@ impl ProductionDurableWriter {
         })?
         .event_id;
         let entered_claim =
-            operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?;
+            operation_claims::mark_entered(&self.store, &owner_claim, resolve_dispatch_claim_time)
+                .await?;
 
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
@@ -1285,16 +1292,42 @@ impl ProductionDurableWriter {
                     let _ = operation_claims::mark_settled(
                         &self.store,
                         &entered_claim,
-                        now_unix_ms().unwrap_or(1),
+                        resolve_dispatch_claim_time,
                     )
                     .await;
                 }
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
-        {
+        // The retained verifier is external synchronous code. Run it before
+        // the final grant check so a slow verifier or a revocation it triggers
+        // cannot invalidate an already-checked grant before target entry.
+        let retained_authority = self.live_verifier.as_ref().map_or(Ok(()), |verifier| {
+            verifier
+                .verify(&self.authority, self.store.owner_agent_id())
+                .map_err(ProductionWriterError::AuthorityRejected)
+        });
+        let entry = retained_authority.and_then(|()| {
+            final_use
+                .with_verified_use(token, expected, || {
+                    // Grant persistence can outlast either owner deadline. Keep
+                    // these synchronous checks next to the actual target call;
+                    // the already-entered generation remains its durable fence.
+                    self.authority
+                        .validate_for_agent(self.store.owner_agent_id())?;
+                    if now_unix_ms()? >= entered_claim.lease_expires_at_unix_ms {
+                        return Err(ProductionWriterError::Local(
+                            LocalLeaseOutboxError::StaleFence(
+                                "dispatch claim expired before target entry".to_string(),
+                            ),
+                        ));
+                    }
+                    Ok(target.dispatch(request.clone()))
+                })
+                .map_err(ProductionWriterError::FinalUse)
+                .and_then(std::convert::identity)
+        });
+        let future = match entry {
             Ok(future) => future,
             Err(error) => {
                 if self
@@ -1309,11 +1342,11 @@ impl ProductionDurableWriter {
                     let _ = operation_claims::mark_settled(
                         &self.store,
                         &entered_claim,
-                        now_unix_ms().unwrap_or(1),
+                        resolve_dispatch_claim_time,
                     )
                     .await;
                 }
-                return Err(ProductionWriterError::FinalUse(error));
+                return Err(error);
             }
         };
         let outcome = future.await;
@@ -1343,7 +1376,7 @@ impl ProductionDurableWriter {
             let _ = operation_claims::mark_settled(
                 &self.store,
                 &entered_claim,
-                now_unix_ms().unwrap_or(1),
+                resolve_dispatch_claim_time,
             )
             .await;
         }
@@ -1558,6 +1591,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
+            crate::cognitive_store::admit_commit_state(&mut transaction).await?;
+            self.writer.verify_retained_authority()?;
             transaction
                 .commit()
                 .await
@@ -1610,6 +1645,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
+            crate::cognitive_store::admit_commit_state(&mut transaction).await?;
+            self.writer.verify_retained_authority()?;
             transaction
                 .commit()
                 .await
@@ -1660,6 +1697,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
+            crate::cognitive_store::admit_commit_state(&mut transaction).await?;
+            self.writer.verify_retained_authority()?;
             transaction
                 .commit()
                 .await
@@ -2429,6 +2468,10 @@ fn validate_text(value: &str, label: &str, max_bytes: usize) -> Result<(), Produ
     Ok(())
 }
 
+fn resolve_dispatch_claim_time() -> Result<u64, LocalLeaseOutboxError> {
+    now_unix_ms().map_err(|error| LocalLeaseOutboxError::Clock(error.to_string()))
+}
+
 fn now_unix_ms() -> Result<u64, ProductionWriterError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -2449,6 +2492,10 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
 #[cfg(test)]
 #[path = "production_writer_authority_tests.rs"]
 mod authority_tests;
+
+#[cfg(test)]
+#[path = "production_operation_claim_clock_tests.rs"]
+mod operation_claim_clock_tests;
 
 #[cfg(test)]
 mod tests {

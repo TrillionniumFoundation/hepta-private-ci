@@ -45,6 +45,9 @@ pub const LOCAL_LEASE_OUTBOX_KG_WRITE_AUTHORITY: bool = false;
 pub const LOCAL_LEASE_OUTBOX_PRODUCTION_CALLER: bool = false;
 
 const MAX_LEASE_ROWS: usize = 4_096;
+#[cfg(test)]
+#[path = "local_lease_outbox_capacity_tests.rs"]
+mod capacity_tests;
 /// Production owner ceiling for one lease/shard. This is deliberately above
 /// the 100k pending-operation target because one operation appends admission,
 /// dispatch and terminal/reconciliation events.
@@ -598,10 +601,7 @@ impl LocalLeaseOutbox {
                 }
             }
         };
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         let handle = Self::from_lease(store, &state)?;
         Ok(if replay {
             LocalLeaseAcquire::Replay(handle)
@@ -819,10 +819,7 @@ impl LocalLeaseOutbox {
             binding.as_ref(),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalLeaseAcquire::Acquired(Self::from_lease(
             store, &lease,
         )?))
@@ -1282,10 +1279,7 @@ impl LocalLeaseOutbox {
             Some(&persisted_binding),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(lease)
     }
 
@@ -1338,10 +1332,7 @@ impl LocalLeaseOutbox {
             binding.as_ref(),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(lease)
     }
 
@@ -1446,10 +1437,7 @@ impl LocalLeaseOutbox {
                 fault,
             )
             .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(admission)
     }
 
@@ -2114,10 +2102,7 @@ impl LocalLeaseOutbox {
             },
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalOutcomeReceipt {
             lease_id: self.lease_id.clone(),
             occurrence_key: occurrence_key.to_string(),
@@ -2534,10 +2519,7 @@ impl LocalLeaseOutbox {
             },
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalOutcomeReceipt {
             lease_id: self.lease_id.clone(),
             occurrence_key,
@@ -2614,10 +2596,7 @@ impl LocalLeaseOutbox {
                 allow_exact_replay,
             )
             .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(outcome)
     }
 
@@ -3032,10 +3011,7 @@ impl LocalLeaseOutbox {
             binding.as_ref(),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalReplayFinalization::Released {
             outcome,
             lease: released,
@@ -3423,7 +3399,15 @@ pub(crate) async fn append_lease(
     previous: Option<&LocalLease>,
     binding: Option<&LocalLeaseBinding>,
 ) -> Result<LocalLease, LocalLeaseOutboxError> {
-    let sequence = previous.map_or(1, |lease| lease.lease_sequence + 1);
+    let sequence = bounded_next_sequence(
+        previous
+            .map(|lease| to_i64(lease.lease_sequence, "lease sequence"))
+            .transpose()?
+            .unwrap_or(0),
+        MAX_LEASE_ROWS,
+        "lease journal",
+        "lease sequence",
+    )?;
     let previous_sha256 = previous
         .map(|lease| lease.lease_sha256.clone())
         .unwrap_or_else(|| Sha256Digest::for_bytes(GENESIS_LEASE_SHA256));

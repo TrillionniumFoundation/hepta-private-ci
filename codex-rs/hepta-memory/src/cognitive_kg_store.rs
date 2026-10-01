@@ -772,7 +772,7 @@ impl CognitiveStore {
                      WHERE q.memory_id = r.memory_id
                        AND q.memory_revision = r.revision) AS actual_relation_count
              FROM memory_heads h
-             JOIN memory_revisions r
+             CROSS JOIN memory_revisions r
                ON r.memory_id = h.memory_id AND r.revision = h.revision
              LEFT JOIN kg_revision_fact_sets s
                ON s.memory_id = r.memory_id AND s.memory_revision = r.revision
@@ -792,37 +792,8 @@ impl CognitiveStore {
                 "KG projection exceeds the {MAX_SCOPE_HEADS}-head scope limit"
             )));
         }
-        let mut heads = Vec::with_capacity(head_rows.len());
-        for row in head_rows {
-            let fact_set_sha256: Option<String> =
-                row.try_get("fact_set_sha256").map_err(unavailable)?;
-            let Some(fact_set_sha256) = fact_set_sha256 else {
-                return Err(CognitiveStoreError::Corrupt(
-                    "current memory head has no immutable KG fact-set receipt".to_string(),
-                ));
-            };
-            let entity_count: i64 = row.try_get("entity_count").map_err(unavailable)?;
-            let relation_count: i64 = row.try_get("relation_count").map_err(unavailable)?;
-            let actual_entity_count: i64 =
-                row.try_get("actual_entity_count").map_err(unavailable)?;
-            let actual_relation_count: i64 =
-                row.try_get("actual_relation_count").map_err(unavailable)?;
-            if entity_count != actual_entity_count || relation_count != actual_relation_count {
-                return Err(CognitiveStoreError::Corrupt(
-                    "current memory head has an incomplete immutable KG fact set".to_string(),
-                ));
-            }
-            Sha256Digest::parse(fact_set_sha256.clone()).map_err(CognitiveStoreError::Corrupt)?;
-            heads.push(ProjectionHead {
-                memory_id: row.try_get("memory_id").map_err(unavailable)?,
-                revision: row.try_get("revision").map_err(unavailable)?,
-                content_sha256: row.try_get("content_sha256").map_err(unavailable)?,
-                verification: row.try_get("verification").map_err(unavailable)?,
-                lifecycle: row.try_get("lifecycle").map_err(unavailable)?,
-                fact_set_sha256,
-            });
-        }
-        let input_heads_sha256 = input_heads_digest(&projection_scope, &heads);
+        let input_heads_sha256 = input_head_rows_digest(&projection_scope, &head_rows)?;
+        drop(head_rows);
         let generation_vector_digest = graph_source_vector_digest_tx(
             transaction,
             self.owner_agent_id.as_str(),
@@ -1109,22 +1080,82 @@ impl CognitiveStore {
 }
 
 pub(crate) fn input_heads_digest(scope: &str, heads: &[ProjectionHead]) -> Sha256Digest {
+    let mut hasher = input_heads_hasher(scope, heads.len());
+    for head in heads {
+        frame_input_head(
+            &mut hasher,
+            [
+                head.memory_id.as_bytes(),
+                &head.revision.to_be_bytes(),
+                head.content_sha256.as_bytes(),
+                head.verification.as_bytes(),
+                head.lifecycle.as_bytes(),
+                head.fact_set_sha256.as_bytes(),
+            ],
+        );
+    }
+    finish_digest(hasher)
+}
+
+fn input_head_rows_digest(
+    scope: &str,
+    rows: &[sqlx::sqlite::SqliteRow],
+) -> Result<Sha256Digest, CognitiveStoreError> {
+    let mut hasher = input_heads_hasher(scope, rows.len());
+    for row in rows {
+        // Ordinals follow the complete head query above. Checked borrowed
+        // decodes retain its actual SQLite type and UTF-8 validation.
+        let fact_set_sha256: Option<&str> = row.try_get(/*index*/ 5_usize).map_err(unavailable)?;
+        let Some(fact_set_sha256) = fact_set_sha256 else {
+            return Err(CognitiveStoreError::Corrupt(
+                "current memory head has no immutable KG fact-set receipt".to_string(),
+            ));
+        };
+        let entity_count: i64 = row.try_get(/*index*/ 6_usize).map_err(unavailable)?;
+        let relation_count: i64 = row.try_get(/*index*/ 7_usize).map_err(unavailable)?;
+        let actual_entity_count: i64 = row.try_get(/*index*/ 8_usize).map_err(unavailable)?;
+        let actual_relation_count: i64 = row.try_get(/*index*/ 9_usize).map_err(unavailable)?;
+        if entity_count != actual_entity_count || relation_count != actual_relation_count {
+            return Err(CognitiveStoreError::Corrupt(
+                "current memory head has an incomplete immutable KG fact set".to_string(),
+            ));
+        }
+        Sha256Digest::parse(fact_set_sha256).map_err(CognitiveStoreError::Corrupt)?;
+        let memory_id: &str = row.try_get(/*index*/ 0_usize).map_err(unavailable)?;
+        let revision: i64 = row.try_get(/*index*/ 1_usize).map_err(unavailable)?;
+        let content_sha256: &str = row.try_get(/*index*/ 2_usize).map_err(unavailable)?;
+        let verification: &str = row.try_get(/*index*/ 3_usize).map_err(unavailable)?;
+        let lifecycle: &str = row.try_get(/*index*/ 4_usize).map_err(unavailable)?;
+        frame_input_head(
+            &mut hasher,
+            [
+                memory_id.as_bytes(),
+                &revision.to_be_bytes(),
+                content_sha256.as_bytes(),
+                verification.as_bytes(),
+                lifecycle.as_bytes(),
+                fact_set_sha256.as_bytes(),
+            ],
+        );
+    }
+    Ok(finish_digest(hasher))
+}
+
+fn input_heads_hasher(scope: &str, head_count: usize) -> Sha256 {
     let mut hasher = Sha256::new();
     frame_part(&mut hasher, b"hepta:cognitive:kg-projection-input:v1");
     frame_part(&mut hasher, scope.as_bytes());
     frame_part(
         &mut hasher,
-        &u64::try_from(heads.len()).unwrap_or(u64::MAX).to_be_bytes(),
+        &u64::try_from(head_count).unwrap_or(u64::MAX).to_be_bytes(),
     );
-    for head in heads {
-        frame_part(&mut hasher, head.memory_id.as_bytes());
-        frame_part(&mut hasher, &head.revision.to_be_bytes());
-        frame_part(&mut hasher, head.content_sha256.as_bytes());
-        frame_part(&mut hasher, head.verification.as_bytes());
-        frame_part(&mut hasher, head.lifecycle.as_bytes());
-        frame_part(&mut hasher, head.fact_set_sha256.as_bytes());
+    hasher
+}
+
+fn frame_input_head(hasher: &mut Sha256, fields: [&[u8]; 6]) {
+    for field in fields {
+        frame_part(hasher, field);
     }
-    finish_digest(hasher)
 }
 
 pub(crate) fn output_digest(
@@ -1206,3 +1237,7 @@ pub(crate) fn canonical_relation_kind(
         &[relation.as_bytes()],
     )?))
 }
+
+#[cfg(test)]
+#[path = "cognitive_kg_head_digest_tests.rs"]
+mod head_digest_tests;

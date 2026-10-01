@@ -80,9 +80,10 @@ async fn reopening_rejects_fts_inverted_index_corruption_with_unchanged_content_
             .await
             .expect("retained FTS content rows");
     assert_eq!(after, before);
-    // The pinned SQLite now invokes FTS5 xIntegrity from quick_check as well.
-    // It rejects the malformed physical index before the later explicit FTS
-    // command, so require that exact earlier corruption gate on reopen.
+    // The pinned SQLite invokes FTS5 xIntegrity from quick_check as well.
+    // A current owner skips initialization and is rejected by the independently
+    // admitted reopen quick-check before its separate FTS verification phase.
+    // Historical admission still checks FTS before pending migrations execute.
     let physical: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
         .fetch_all(&store.pool)
         .await

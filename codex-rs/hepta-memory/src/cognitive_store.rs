@@ -58,6 +58,8 @@ mod recovery;
 mod schema;
 #[path = "cognitive_store_verification.rs"]
 mod verification;
+pub(crate) use budget::admit_commit_state;
+pub(crate) use budget::commit_admitted;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
@@ -86,9 +88,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("memory_revisions", "table"),
     ("memory_revisions_no_update", "trigger"),
     ("memory_revisions_no_delete", "trigger"),
+    ("memory_revisions_scope_frontier", "index"),
     ("memory_citations", "table"),
     ("memory_citations_no_update", "trigger"),
     ("memory_citations_no_delete", "trigger"),
+    ("memory_citations_source_lookup", "index"),
     ("memory_heads", "table"),
     ("memory_fts", "table"),
     ("kg_projection", "table"),
@@ -212,7 +216,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "a011a0cae25f4a7c020d5f3083e02dbd7d8e844111d83c486767f6bbf878776c";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -345,22 +349,31 @@ impl CognitiveStore {
             // Admit the exact compiled historical schema before pending
             // migrations can execute SQL against any existing owner object.
             // The lock keeps this check and migrations in one serialized cut.
-            schema::admit_before_migration(&mut transaction, layout.agent_id()).await?;
-            MIGRATOR
-                .run(&mut *transaction)
-                .await
-                .map_err(classify_migrate_error)?;
-            schema::verify_schema(&mut transaction).await?;
-            sqlx::query(
-                "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
-                 VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
-            )
-            .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
-            .bind(layout.agent_id().as_str())
-            .execute(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            transaction.commit().await.map_err(unavailable)?;
+            match schema::admit_before_migration(&mut transaction, layout.agent_id()).await? {
+                schema::MigrationAdmission::AlreadyCurrentOwned => {
+                    // No initialization SQL runs for an admitted current owner.
+                    // Do not carry its validation proof across this fence: the
+                    // verifier below authenticates every new transaction cut.
+                    transaction.rollback().await.map_err(unavailable)?;
+                }
+                schema::MigrationAdmission::NeedsInitialization => {
+                    MIGRATOR
+                        .run(&mut *transaction)
+                        .await
+                        .map_err(classify_migrate_error)?;
+                    schema::verify_schema(&mut transaction).await?;
+                    sqlx::query(
+                        "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
+                         VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
+                    )
+                    .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
+                    .bind(layout.agent_id().as_str())
+                    .execute(&mut *transaction)
+                    .await
+                    .map_err(unavailable)?;
+                    commit_admitted(transaction).await?;
+                }
+            }
             verify_store(&pool, layout.agent_id()).await?;
             database_file.verify()
         }
@@ -406,7 +419,7 @@ impl CognitiveStore {
         let source = self
             .append_source_tx(&mut transaction, access, draft)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        commit_admitted(transaction).await?;
         Ok(source)
     }
 

@@ -1091,6 +1091,11 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    let compiled_versions = sqlx::migrate!("./migrations")
+        .iter()
+        .map(|migration| migration.version.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
     assert_eq!(
         sqlx::query_scalar::<_, String>(
             "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
@@ -1098,6 +1103,6 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .fetch_one(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"
+        compiled_versions
     );
 }
