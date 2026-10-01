@@ -25,6 +25,8 @@ use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_prompt_registry::FactorSource;
 use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
+use codex_hepta_prompt_registry::PromptFactorRelation;
+use codex_hepta_prompt_registry::PromptFactorRelationKind;
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_types::Generation;
@@ -321,6 +323,45 @@ fn hard_conflict_cannot_be_outweighed_by_positive_numeric_utility() {
 }
 
 #[test]
+fn candidate_missing_from_complete_interaction_graph_cannot_be_selected() {
+    let priced = priced(vec![("factor:a", "realization:a", 1, 100)]);
+    let request = PromptPortfolioRequestV1 {
+        portfolio_id: id("portfolio:graph-coverage"),
+        graph_query_id: id("query:graph-coverage"),
+        token_budget: 1,
+        maximum_selected_factors: 1,
+        requested_valid_until_unix_ms: 5_000,
+    };
+    let absent = graph(&["factor:b"], Vec::new());
+    assert_eq!(
+        select_portfolio_v1(
+            &priced,
+            &absent,
+            Vec::new(),
+            &verifier(),
+            request.clone(),
+            100
+        ),
+        Err(CanonicalPromptError::KnowledgeGraph(
+            "candidate factor missing from complete graph: factor:a".to_owned()
+        ))
+    );
+    let represented = graph(&["factor:a"], Vec::new());
+    let selected =
+        select_portfolio_v1(&priced, &represented, Vec::new(), &verifier(), request, 100)
+            .expect("represented factor without relations remains eligible");
+    assert_eq!(selected.receipt.factor_ids, vec![id("factor:a")]);
+    assert_eq!(
+        selected.registry_digest,
+        priced.candidates.registry_snapshot.registry_digest
+    );
+    assert_eq!(
+        selected.receipt.receipt_digest,
+        selected.compute_receipt_digest()
+    );
+}
+
+#[test]
 fn incomplete_candidate_completeness_cannot_be_authenticated_for_pricing() {
     let receipt = CandidateSetCompletenessReceiptV1 {
         set_id: id("set:1"),
@@ -368,43 +409,56 @@ fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
     assert!(!enumerated.receipt.authority.grants_any());
 }
 
-#[test]
-fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
-    let temp = tempfile::tempdir().expect("tempdir");
-    let (mut registry, _tuple, authority, signing_key, now) =
-        registry_fixture(&temp.path().join("registry"), &[1, 2]);
+fn selected_portfolio(
+    registry: &DurablePromptRegistry,
+    factor_ids: Vec<StableId>,
+) -> SelectedPromptPortfolioV1 {
     let snapshot = registry
         .snapshot_v2(digest("generation-vector"), &model_tuple())
         .expect("snapshot");
-    let realization = registry
+    let realizations = registry
         .read_compatible_v2(
             &snapshot,
             digest("generation-vector"),
             &model_tuple(),
             100,
-            vec![id("factor:a")],
+            factor_ids.clone(),
             8,
         )
         .expect("bindings")
-        .bindings[0]
-        .clone();
-    let selected = SelectedPromptPortfolioV1 {
+        .bindings;
+    let bindings = factor_ids
+        .iter()
+        .map(|factor_id| {
+            let realization = realizations
+                .iter()
+                .find(|binding| &binding.factor_id == factor_id)
+                .expect("selected realization")
+                .clone();
+            PromptCandidateBindingV1 {
+                factor_id: factor_id.clone(),
+                binding_digest: realization.digest(),
+                realization,
+            }
+        })
+        .collect::<Vec<_>>();
+    let mut selected = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
             candidate_set_digest: digest("candidate-set"),
-            factor_ids: vec![id("factor:a")],
+            factor_ids,
             interaction_digest: digest("interaction"),
             expected_utility_q32: FixedQ32::from_raw(10),
-            total_token_upper_bound: 1,
+            total_token_upper_bound: bindings
+                .iter()
+                .map(|binding| binding.realization.token_cost)
+                .sum(),
             valid_until_unix_ms: 5_000,
-            receipt_digest: digest("portfolio-receipt"),
+            receipt_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         },
-        selected: vec![PromptCandidateBindingV1 {
-            factor_id: id("factor:a"),
-            binding_digest: realization.digest(),
-            realization,
-        }],
+        selected: bindings,
+        registry_digest: snapshot.registry_digest,
         objective_digest: digest("objective"),
         state_digest: digest("state"),
         model_tuple: model_tuple(),
@@ -415,6 +469,16 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
     };
+    selected.receipt.receipt_digest = selected.compute_receipt_digest();
+    selected
+}
+
+#[test]
+fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, signing_key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1, 2]);
+    let selected = selected_portfolio(&registry, vec![id("factor:a")]);
     let live = exercise_v1(
         registry.registry().expect("registry"),
         &selected,
@@ -447,6 +511,186 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     .expect("exercise receipt");
     assert_eq!(exercise.decision, PromptExerciseActionV1::RejectStale);
     assert!(!exercise.authority.grants_any());
+}
+
+#[test]
+fn relation_only_source_drift_rejects_co_selected_unchanged_realizations() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, signing_key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    let factor = PromptFactor {
+        factor_id: id("factor:b"),
+        proposer_id: id("proposer:2"),
+        semantic_version: id("v1"),
+        semantic_purpose: "second governed factor for relation evidence".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:truth")],
+        content_digest: digest("factor:b"),
+        source: FactorSource::GovernedInternal,
+        lifecycle: Lifecycle::Draft,
+    };
+    registry
+        .register_factor(factor.clone())
+        .expect("second factor");
+    let scope = digest("scope:prompt:second-factor");
+    let evidence = digest("evidence:prompt:second-factor");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "admission:prompt:2".to_owned(),
+        nonce: [72; 32],
+        binding: final_use_admission_binding(&factor, &id("reviewer:2"), scope, evidence)
+            .expect("second factor binding"),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
+        .expect("admit second factor");
+    let admitted_factor = registry
+        .registry()
+        .expect("registry")
+        .factor(&factor.factor_id)
+        .expect("admitted second factor");
+    let tuple = model_tuple();
+    let realization = PromptRealizationBindingV2 {
+        realization_id: id("realization:second-factor"),
+        factor_id: factor.factor_id.clone(),
+        model_id: tuple.model_id.clone(),
+        model_version: tuple.model_version.clone(),
+        model_digest: tuple.model_digest,
+        tokenizer_digest: tuple.tokenizer_digest,
+        template_digest: tuple.template_digest,
+        tool_schema_digest: tuple.tool_schema_digest,
+        context_profile_digest: tuple.context_profile_digest,
+        locale_id: tuple.locale_id.clone(),
+        role: PromptRoleV2::DeveloperInstruction,
+        payload_digest: digest("second factor payload"),
+        token_cost: 1,
+        expires_unix_ms: None,
+    };
+    let publisher = id("publisher:prompt");
+    let scope = digest("scope:second-realization");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "realization:prompt:second-factor".to_owned(),
+        nonce: [73; 32],
+        binding: final_use_realization_binding(
+            admitted_factor,
+            &publisher,
+            scope,
+            &realization,
+            None,
+        )
+        .expect("second realization binding"),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .register_realization_payload_final_use_v2(
+            &authority,
+            &signed,
+            &publisher,
+            scope,
+            realization,
+            b"second factor payload".to_vec(),
+            None,
+        )
+        .expect("second realization");
+    let selected = selected_portfolio(&registry, vec![id("factor:a"), id("factor:b")]);
+    assert_eq!(
+        selected.receipt.factor_ids,
+        vec![id("factor:a"), id("factor:b")]
+    );
+    let request = PromptExerciseRequestV1 {
+        decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
+        current_state_digest: digest("state"),
+        generation_vector_digest: digest("generation-vector"),
+        model_tuple: model_tuple(),
+        now_unix_ms: 200,
+        wait_value_q32: FixedQ32::ZERO,
+        policy_digest: digest("exercise-policy"),
+    };
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &selected,
+            request.clone()
+        )
+        .expect("live exercise")
+        .decision,
+        PromptExerciseActionV1::Exercise
+    );
+    registry
+        .register_factor_relation(PromptFactorRelation {
+            relation_id: id("relation:a:b:conflict"),
+            left_factor_id: id("factor:a"),
+            right_factor_id: id("factor:b"),
+            kind: PromptFactorRelationKind::Conflicts,
+            evidence_digest: digest("relation evidence"),
+        })
+        .expect("persist conflict evidence");
+    let snapshot = registry
+        .snapshot_v2(request.generation_vector_digest, &request.model_tuple)
+        .expect("current snapshot");
+    assert_ne!(snapshot.registry_digest, selected.registry_digest);
+    assert_eq!(
+        registry
+            .read_compatible_v2(
+                &snapshot,
+                request.generation_vector_digest,
+                &request.model_tuple,
+                request.now_unix_ms,
+                selected.receipt.factor_ids.clone(),
+                2
+            )
+            .expect("unchanged compatible bindings")
+            .bindings,
+        selected
+            .selected
+            .iter()
+            .map(|binding| binding.realization.clone())
+            .collect::<Vec<_>>()
+    );
+    let rejected = exercise_v1(
+        registry.registry().expect("registry"),
+        &selected,
+        request.clone(),
+    )
+    .expect("source drift decision");
+    assert_eq!(rejected.decision, PromptExerciseActionV1::RejectStale);
+    assert!(!rejected.authority.grants_any());
+
+    // Replacing the frozen source field cannot reuse the previous checksum.
+    let mut replaced = selected;
+    replaced.registry_digest = snapshot.registry_digest;
+    assert_ne!(
+        replaced.receipt.receipt_digest,
+        replaced.compute_receipt_digest()
+    );
+    assert_eq!(
+        exercise_v1(registry.registry().expect("registry"), &replaced, request)
+            .expect("checksum drift decision")
+            .decision,
+        PromptExerciseActionV1::RejectStale
+    );
 }
 
 fn registry_fixture(

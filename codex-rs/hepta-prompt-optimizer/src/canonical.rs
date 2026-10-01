@@ -530,6 +530,9 @@ pub struct PromptPortfolioReceiptV1 {
 pub struct SelectedPromptPortfolioV1 {
     pub receipt: PromptPortfolioReceiptV1,
     pub selected: Vec<PromptCandidateBindingV1>,
+    /// Exact owner snapshot used for enumeration. Any owner source mutation
+    /// requires re-enumeration and selection before an intervention boundary.
+    pub registry_digest: Digest32,
     pub objective_digest: Digest32,
     pub state_digest: Digest32,
     pub model_tuple: PromptModelTupleV2,
@@ -539,6 +542,26 @@ pub struct SelectedPromptPortfolioV1 {
     pub graph_generation_digest: Digest32,
     pub selection_method: PromptSelectionMethodV1,
     pub optimality: PromptOptimalityDisclosureV1,
+}
+
+impl SelectedPromptPortfolioV1 {
+    /// Computes the proposal checksum, including the exact registry source.
+    /// This binds evidence and confers no authentication or execution authority.
+    #[must_use]
+    pub fn compute_receipt_digest(&self) -> Digest32 {
+        digest_portfolio_receipt(
+            &self.receipt.portfolio_id,
+            self.registry_digest,
+            self.receipt.candidate_set_digest,
+            &self.receipt.factor_ids,
+            self.receipt.interaction_digest,
+            self.receipt.expected_utility_q32,
+            self.receipt.total_token_upper_bound,
+            self.receipt.valid_until_unix_ms,
+            self.pricing_set_digest,
+            self.graph_generation_digest,
+        )
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -581,6 +604,16 @@ pub fn select_portfolio_v1(
         .iter()
         .map(|row| row.binding.factor_id.clone())
         .collect::<Vec<_>>();
+    if let Some(missing) = factor_ids.iter().find(|factor_id| {
+        graph
+            .nodes
+            .binary_search_by(|node| node.node_id.cmp(factor_id))
+            .is_err()
+    }) {
+        return Err(CanonicalPromptError::KnowledgeGraph(format!(
+            "candidate factor missing from complete graph: {missing}"
+        )));
+    }
     let relation_result = query_relations(
         graph,
         KnowledgeRelationQueryV2 {
@@ -791,18 +824,7 @@ pub fn select_portfolio_v1(
         &requires,
         &conflicts,
     );
-    let receipt_digest = digest_portfolio_receipt(
-        &request.portfolio_id,
-        priced.candidates.candidates_digest,
-        &selected_ids,
-        interaction_digest,
-        expected_utility,
-        total_token_upper_bound,
-        valid_until,
-        priced.pricing_set_digest,
-        graph.generation_digest,
-    );
-    Ok(SelectedPromptPortfolioV1 {
+    let mut portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
             candidate_set_digest: priced.candidates.candidates_digest,
@@ -811,10 +833,11 @@ pub fn select_portfolio_v1(
             expected_utility_q32: expected_utility,
             total_token_upper_bound,
             valid_until_unix_ms: valid_until,
-            receipt_digest,
+            receipt_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         },
         selected: selected_bindings,
+        registry_digest: priced.candidates.registry_snapshot.registry_digest,
         objective_digest: priced.candidates.receipt.objective_digest,
         state_digest: priced.candidates.receipt.state_digest,
         model_tuple: priced.candidates.model_tuple.clone(),
@@ -824,7 +847,9 @@ pub fn select_portfolio_v1(
         graph_generation_digest: graph.generation_digest,
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    })
+    };
+    portfolio.receipt.receipt_digest = portfolio.compute_receipt_digest();
+    Ok(portfolio)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -892,6 +917,8 @@ pub fn exercise_v1(
     let mut decision = if portfolio.selected.is_empty() {
         PromptExerciseActionV1::NoIntervention
     } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
+        || portfolio.receipt.receipt_digest != portfolio.compute_receipt_digest()
+        || portfolio.receipt.authority.grants_any()
         || request.current_state_digest != portfolio.state_digest
         || request.generation_vector_digest != portfolio.generation_vector_digest
         || request.model_tuple != portfolio.model_tuple
@@ -916,6 +943,9 @@ pub fn exercise_v1(
             MAX_CANONICAL_PROMPT_FACTORS as u32,
         );
         match current {
+            _ if current_snapshot.registry_digest != portfolio.registry_digest => {
+                PromptExerciseActionV1::RejectStale
+            }
             Err(_) => PromptExerciseActionV1::RejectStale,
             Ok(set) => {
                 let current_by_realization = set
@@ -1247,6 +1277,7 @@ fn digest_interactions(
 #[allow(clippy::too_many_arguments)]
 fn digest_portfolio_receipt(
     portfolio_id: &StableId,
+    registry_digest: Digest32,
     candidate_set_digest: Digest32,
     factor_ids: &[StableId],
     interaction_digest: Digest32,
@@ -1259,6 +1290,7 @@ fn digest_portfolio_receipt(
     let mut bytes = b"hepta.prompt-optimizer.portfolio-receipt.v1".to_vec();
     push_id(&mut bytes, portfolio_id);
     for digest in [
+        registry_digest,
         candidate_set_digest,
         interaction_digest,
         pricing_set_digest,

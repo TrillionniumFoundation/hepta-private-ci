@@ -674,7 +674,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         })
         .unwrap_or_else(|error| panic!("enumerate: {error}"));
     assert_eq!(candidates.candidates[0].realization, realization);
-    let portfolio = SelectedPromptPortfolioV1 {
+    let mut portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:agentd-product"),
             candidate_set_digest: candidates.receipt.receipt_digest,
@@ -683,10 +683,11 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             expected_utility_q32: FixedQ32::ONE,
             total_token_upper_bound: 4,
             valid_until_unix_ms: logical_now + 10_000,
-            receipt_digest: digest("portfolio-receipt"),
+            receipt_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         },
         selected: candidates.candidates,
+        registry_digest: candidates.registry_snapshot.registry_digest,
         objective_digest: digest("objective:agentd-product"),
         state_digest: digest("state:agentd-product"),
         model_tuple: tuple.clone(),
@@ -697,6 +698,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
     };
+    portfolio.receipt.receipt_digest = portfolio.compute_receipt_digest();
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: portfolio.state_digest,
