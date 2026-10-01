@@ -882,89 +882,7 @@ impl DurableOperationStore {
         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
             .await?
             .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
-        if operation.intent.owner_generation != receipt.observer_generation {
-            return Err(DurableOperationError::StaleGeneration);
-        }
-        if operation.state.is_terminal() {
-            if operation.terminal_outcome == Some(receipt.outcome)
-                && operation.terminal_evidence_digest == Some(receipt.evidence_digest)
-                && operation.terminal_observer_id.as_ref() == Some(&receipt.observer_id)
-                && operation.terminal_observer_generation == Some(receipt.observer_generation)
-            {
-                tx.commit().await.map_err(sqlx_error)?;
-                return Ok(operation);
-            }
-            return Err(DurableOperationError::Conflict(operation_id.clone()));
-        }
-        if !matches!(
-            operation.state,
-            DurableOperationState::Dispatching
-                | DurableOperationState::Dispatched
-                | DurableOperationState::Indeterminate
-        ) {
-            return Err(DurableOperationError::InvalidTransition {
-                from: operation.state,
-                to: "terminal_observation",
-            });
-        }
-        let state = match receipt.outcome {
-            ReconciliationOutcome::Applied => DurableOperationState::Applied,
-            ReconciliationOutcome::NotApplied => DurableOperationState::NotApplied,
-            ReconciliationOutcome::Quarantined => DurableOperationState::Quarantined,
-        };
-        let revision = next_revision(operation.revision)?;
-        sqlx::query(
-            "UPDATE operation_ledger SET state = ?, terminal_outcome = ?,
-             terminal_evidence_digest = ?, terminal_observer_id = ?,
-             terminal_observer_generation = ?, revision = ?, updated_at_ms = ?, terminal_at_ms = ?
-             WHERE scope_id = ? AND operation_id = ?",
-        )
-        .bind(state.as_str())
-        .bind(state.as_str())
-        .bind(receipt.evidence_digest.as_array().as_slice())
-        .bind(receipt.observer_id.as_str())
-        .bind(encode_u64(receipt.observer_generation.get()))
-        .bind(to_i64(revision)?)
-        .bind(now)
-        .bind(now)
-        .bind(scope_id.as_str())
-        .bind(operation_id.as_str())
-        .execute(&mut *tx)
-        .await
-        .map_err(sqlx_error)?;
-        if let Some(status) = load_outbox_tx(
-            &mut tx,
-            &operation.intent.destination,
-            scope_id,
-            operation_id,
-        )
-        .await?
-            && status.state != DurableOutboxState::Acknowledged
-        {
-            let fence = status
-                .fence
-                .checked_add(1)
-                .ok_or(DurableOperationError::Capacity)?;
-            sqlx::query(
-                "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
-                     lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
-                     terminal_at_ms = COALESCE(terminal_at_ms, ?)
-                     WHERE destination = ? AND scope_id = ? AND operation_id = ?",
-            )
-            .bind(to_i64(fence)?)
-            .bind(receipt.evidence_digest.as_array().as_slice())
-            .bind(now)
-            .bind(now)
-            .bind(operation.intent.destination.as_str())
-            .bind(scope_id.as_str())
-            .bind(operation_id.as_str())
-            .execute(&mut *tx)
-            .await
-            .map_err(sqlx_error)?;
-        }
-        let operation = load_operation_tx(&mut tx, scope_id, operation_id)
-            .await?
-            .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+        let operation = observe_terminal_tx(&mut tx, operation, receipt, now).await?;
         tx.commit().await.map_err(sqlx_error)?;
         Ok(operation)
     }
@@ -1275,6 +1193,8 @@ impl DurableOperationStore {
 
     /// Resolve an authoritative destination dedupe receipt as terminal applied
     /// evidence. Absence is deliberately not treated as `NotApplied` here.
+    /// The destination identity and its own dedupe-domain digest must match
+    /// the source intent, including during exact historical receipt replay.
     pub async fn reconcile_destination_receipt(
         &self,
         receipt: &DestinationApplyReceipt,
@@ -1284,17 +1204,44 @@ impl DurableOperationStore {
         if receipt.outcome_digest.is_zero() {
             return Err(DurableOperationError::Invalid("destination outcome digest"));
         }
-        self.observe_terminal(
+        receipt.identity.validate()?;
+        if receipt.semantic_digest != receipt.identity.semantic_digest() {
+            return Err(DurableOperationError::Invalid("destination semantic digest"));
+        }
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
+        let now = now_millis()?;
+        let operation = load_operation_tx(
+            &mut tx,
             &receipt.identity.scope_id,
             &receipt.identity.operation_id,
+        )
+        .await?
+        .ok_or_else(|| DurableOperationError::Missing(receipt.identity.operation_id.clone()))?;
+        if operation.intent.scope_id != receipt.identity.scope_id
+            || operation.intent.operation_id != receipt.identity.operation_id
+            || operation.intent.destination != receipt.identity.destination
+            || operation.intent.payload_digest != receipt.identity.payload_digest
+        {
+            return Err(DurableOperationError::Conflict(receipt.identity.operation_id.clone()));
+        }
+        let operation = observe_terminal_tx(
+            &mut tx,
+            operation,
             &ReconciliationReceiptV1 {
                 outcome: ReconciliationOutcome::Applied,
                 evidence_digest: receipt.outcome_digest,
                 observer_id,
                 observer_generation,
             },
+            now,
         )
-        .await
+        .await?;
+        tx.commit().await.map_err(sqlx_error)?;
+        Ok(operation)
     }
 
     pub async fn recover_expired_leases(&self) -> Result<(), DurableOperationError> {
@@ -1369,6 +1316,102 @@ async fn require_current_lease(
         return Err(DurableOperationError::StaleLease);
     }
     Ok(status)
+}
+
+// Both public terminal entry points keep evidence binding, current generation
+// and terminal projection under the same source writer transaction.
+async fn observe_terminal_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+    operation: DurableOperationRecord,
+    receipt: &ReconciliationReceiptV1,
+    now: i64,
+) -> Result<DurableOperationRecord, DurableOperationError> {
+    receipt.validate()?;
+    let scope_id = &operation.intent.scope_id;
+    let operation_id = &operation.intent.operation_id;
+    if operation.intent.owner_generation != receipt.observer_generation {
+        return Err(DurableOperationError::StaleGeneration);
+    }
+    if operation.state.is_terminal() {
+        if operation.terminal_outcome == Some(receipt.outcome)
+            && operation.terminal_evidence_digest == Some(receipt.evidence_digest)
+            && operation.terminal_observer_id.as_ref() == Some(&receipt.observer_id)
+            && operation.terminal_observer_generation == Some(receipt.observer_generation)
+        {
+            return Ok(operation);
+        }
+        return Err(DurableOperationError::Conflict(operation_id.clone()));
+    }
+    if !matches!(
+        operation.state,
+        DurableOperationState::Dispatching
+            | DurableOperationState::Dispatched
+            | DurableOperationState::Indeterminate
+    ) {
+        return Err(DurableOperationError::InvalidTransition {
+            from: operation.state,
+            to: "terminal_observation",
+        });
+    }
+    let state = match receipt.outcome {
+        ReconciliationOutcome::Applied => DurableOperationState::Applied,
+        ReconciliationOutcome::NotApplied => DurableOperationState::NotApplied,
+        ReconciliationOutcome::Quarantined => DurableOperationState::Quarantined,
+    };
+    let revision = next_revision(operation.revision)?;
+    sqlx::query(
+        "UPDATE operation_ledger SET state = ?, terminal_outcome = ?,
+         terminal_evidence_digest = ?, terminal_observer_id = ?,
+         terminal_observer_generation = ?, revision = ?, updated_at_ms = ?, terminal_at_ms = ?
+         WHERE scope_id = ? AND operation_id = ?",
+    )
+    .bind(state.as_str())
+    .bind(state.as_str())
+    .bind(receipt.evidence_digest.as_array().as_slice())
+    .bind(receipt.observer_id.as_str())
+    .bind(encode_u64(receipt.observer_generation.get()))
+    .bind(to_i64(revision)?)
+    .bind(now)
+    .bind(now)
+    .bind(scope_id.as_str())
+    .bind(operation_id.as_str())
+    .execute(&mut **tx)
+    .await
+    .map_err(sqlx_error)?;
+    if let Some(status) = load_outbox_tx(
+        tx,
+        &operation.intent.destination,
+        scope_id,
+        operation_id,
+    )
+    .await?
+        && status.state != DurableOutboxState::Acknowledged
+    {
+        let fence = status
+            .fence
+            .checked_add(1)
+            .ok_or(DurableOperationError::Capacity)?;
+        sqlx::query(
+            "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
+                 lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
+                 terminal_at_ms = COALESCE(terminal_at_ms, ?)
+                 WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+        )
+        .bind(to_i64(fence)?)
+        .bind(receipt.evidence_digest.as_array().as_slice())
+        .bind(now)
+        .bind(now)
+        .bind(operation.intent.destination.as_str())
+        .bind(scope_id.as_str())
+        .bind(operation_id.as_str())
+        .execute(&mut **tx)
+        .await
+        .map_err(sqlx_error)?;
+    }
+    let operation = load_operation_tx(tx, scope_id, operation_id)
+        .await?
+        .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+    Ok(operation)
 }
 
 async fn recover_expired_leases_tx(

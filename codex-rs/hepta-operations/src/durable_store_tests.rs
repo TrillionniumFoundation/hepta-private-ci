@@ -471,6 +471,96 @@ async fn durable_claim_intent_rejects_payload_and_predecessor_substitution() {
 
 #[cfg(unix)]
 #[tokio::test]
+async fn destination_receipt_binding_is_checked_before_terminal_projection_and_replay() {
+    use crate::DestinationApplyStart;
+    use crate::DestinationDedupeStore;
+    use crate::DestinationOperationIdentity;
+
+    let directory = tempfile::tempdir().expect("tempdir");
+    let store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
+        .await
+        .expect("source open");
+    let destination = DestinationDedupeStore::open_standalone(
+        &directory.path().join("destination.sqlite3"),
+    )
+    .await
+    .expect("destination open");
+    let operation = intent(b"exact destination receipt payload");
+    store.prepare_intent(&operation).await.expect("prepare");
+    let claim = store
+        .claim_operation(
+            &operation.scope_id,
+            &operation.operation_id,
+            &stable_id("worker:destination-receipt"),
+            generation(/*value*/ 1),
+            Duration::from_secs(/*secs*/ 30),
+        )
+        .await
+        .expect("claim")
+        .expect("row");
+    let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 46);
+    let authorized = store.authorize_dispatch(&authority, &signed, &claim).await.expect("authorize");
+    store.execute_authorized(authorized, |_| DispatchEffect::Dispatched {
+        value: (),
+        dispatch_digest: Digest32::of_bytes(b"receipt dispatch"),
+        acknowledgement_digest: Some(Digest32::of_bytes(b"receipt acknowledgement")),
+    }).await.expect("dispatch");
+    let identity = DestinationOperationIdentity {
+        destination: operation.destination.clone(),
+        scope_id: operation.scope_id.clone(),
+        operation_id: operation.operation_id.clone(),
+        payload_digest: operation.payload_digest,
+    };
+    let DestinationApplyStart::Apply(apply) = destination.begin_apply(&identity).await.expect("destination entry") else {
+        panic!("first destination application");
+    };
+    let receipt = apply.commit_applied(Digest32::of_bytes(b"destination applied outcome")).await.expect("destination receipt");
+    let observer = stable_id("observer:destination-receipt");
+    let mut wrong_destination = receipt.clone();
+    wrong_destination.identity.destination = stable_id("other.destination");
+    wrong_destination.semantic_digest = wrong_destination.identity.semantic_digest();
+    let mut wrong_payload = receipt.clone();
+    wrong_payload.identity.payload_digest = Digest32::of_bytes(b"substituted destination payload");
+    wrong_payload.semantic_digest = wrong_payload.identity.semantic_digest();
+    let mut wrong_scope = receipt.clone();
+    wrong_scope.identity.scope_id = stable_id("other:scope");
+    wrong_scope.semantic_digest = wrong_scope.identity.semantic_digest();
+    let mut wrong_operation = receipt.clone();
+    wrong_operation.identity.operation_id = stable_id("other:operation");
+    wrong_operation.semantic_digest = wrong_operation.identity.semantic_digest();
+    let mut wrong_semantic_domain = receipt.clone();
+    wrong_semantic_domain.semantic_digest = operation.semantic_digest();
+    let substitutions = [wrong_destination, wrong_payload, wrong_scope, wrong_operation, wrong_semantic_domain];
+    assert!(matches!(
+        store.reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 2)).await,
+        Err(DurableOperationError::StaleGeneration)
+    ));
+    let mut before = store.adopt_unsettled_generation(&operation.scope_id, &operation.operation_id, generation(/*value*/ 2)).await.expect("new source owner");
+    for terminal_replay in [false, true] {
+        for substituted in &substitutions {
+            assert!(matches!(
+                store.reconcile_destination_receipt(substituted, observer.clone(), generation(/*value*/ 2)).await,
+                Err(DurableOperationError::Conflict(_) | DurableOperationError::Missing(_) | DurableOperationError::Invalid(_))
+            ));
+        }
+        assert!(matches!(
+            store.reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 1)).await,
+            Err(DurableOperationError::StaleGeneration)
+        ));
+        assert_eq!(store.operation(&operation.scope_id, &operation.operation_id).await.expect("after rejected receipt").expect("row"), before);
+        let settled = store.reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 2)).await.expect("exact typed receipt");
+        assert_eq!(settled.state, DurableOperationState::Applied);
+        if terminal_replay {
+            assert_eq!(settled, before);
+        }
+        before = settled;
+    }
+    destination.close().await;
+    store.close().await;
+}
+
+#[cfg(unix)]
+#[tokio::test]
 async fn crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
