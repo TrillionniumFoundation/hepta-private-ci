@@ -15,7 +15,9 @@ B4 has two independent closed sets:
 The optional ``call_pattern`` is a Python regular expression over Rust code with
 comments, literals and cfg-test items stripped. It exists for method syntax such
 as ``authority.claim(...)`` where a fully-qualified symbol does not appear at
-the call site. Rows without it retain the original exact-symbol behavior.
+the call site. ``receiver_type`` instead derives receivers from explicit type,
+binding and field declarations, refusing unresolved possible authority calls.
+Rows without either option retain the original exact-symbol behavior.
 """
 
 from __future__ import annotations
@@ -34,6 +36,13 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "CALLERS.toml"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from hepta_typed_callers import (
+    UnresolvedTypedReceiver,
+    authority_fields,
+    has_authority_call,
+)
+
 RAW_STRING_START = re.compile(r'r(#{0,255})"')
 
 
@@ -50,6 +59,8 @@ class Boundary:
     product_callers: tuple[str, ...]
     caller_markers: tuple[str, ...]
     call_pattern: str | None
+    receiver_type: str | None = None
+    receiver_methods: tuple[str, ...] = ()
 
 
 def _load_manifest(path: Path) -> dict[str, Any]:
@@ -106,6 +117,22 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 raise VerificationFailure(
                     f"{identifier}: invalid call_pattern: {exc}"
                 ) from exc
+        receiver_type = row.get("receiver_type")
+        if receiver_type is not None and (
+            not isinstance(receiver_type, str)
+            or not re.fullmatch(r"[A-Za-z_]\w*", receiver_type)
+        ):
+            raise VerificationFailure(f"{identifier}: invalid receiver_type")
+        receiver_methods = (
+            _string_tuple(row, "receiver_methods") if "receiver_methods" in row else ()
+        )
+        if receiver_methods and (
+            receiver_type is None
+            or any(
+                not re.fullmatch(r"[A-Za-z_]\w*", method) for method in receiver_methods
+            )
+        ):
+            raise VerificationFailure(f"{identifier}: invalid receiver_methods")
         identifiers.add(identifier)
         symbols.add(symbol)
         boundaries.append(
@@ -117,6 +144,8 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 product_callers=_string_tuple(row, "product_callers"),
                 caller_markers=_string_tuple(row, "caller_markers"),
                 call_pattern=call_pattern,
+                receiver_type=receiver_type,
+                receiver_methods=receiver_methods,
             )
         )
     return tuple(boundaries)
@@ -257,13 +286,50 @@ def _strip_rust_non_code(source: str) -> str:
     return "".join(output)
 
 
+def _cfg_without_test(expression: str) -> bool | None:
+    """Evaluate only the test atom; unknown platform/features remain possible."""
+    expression = expression.strip()
+    if expression == "test":
+        return False
+    composite = re.fullmatch(r"(all|any|not)\s*\((.*)\)", expression, re.DOTALL)
+    if composite is None:
+        return None
+    operator, body = composite.groups()
+    arguments = []
+    depth = start = 0
+    for index, char in enumerate(body):
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        elif char == "," and depth == 0:
+            arguments.append(body[start:index])
+            start = index + 1
+    if body[start:].strip():
+        arguments.append(body[start:])
+    values = [_cfg_without_test(argument) for argument in arguments]
+    if operator == "not":
+        return not values[0] if len(values) == 1 and values[0] is not None else None
+    if operator == "all":
+        return (
+            False
+            if False in values
+            else (True if all(value is True for value in values) else None)
+        )
+    return (
+        True
+        if True in values
+        else (False if all(value is False for value in values) else None)
+    )
+
+
 def _strip_cfg_test_items(code: str) -> str:
-    """Blank Rust items guarded by a cfg expression containing the `test` atom.
+    """Blank Rust items whose cfg expression cannot hold outside tests.
 
     The input has already had comments and literals blanked, so bracket/brace
     matching cannot be confused by braces inside strings. Newlines are retained
-    to keep diagnostics stable. This intentionally removes both `cfg(test)` and
-    compound forms such as `cfg(all(test, unix))`.
+    to keep diagnostics stable. `cfg(all(test, unix))` is test-only; production
+    alternatives such as `cfg(any(test, unix))` and `cfg(not(test))` are retained.
     """
 
     output = list(code)
@@ -276,10 +342,8 @@ def _strip_cfg_test_items(code: str) -> str:
         if attr_end is None:
             break
         attribute = code[start : attr_end + 1]
-        if (
-            re.search(r"\bcfg\b", attribute) is None
-            or re.search(r"\btest\b", attribute) is None
-        ):
+        cfg = re.fullmatch(r"#\[\s*cfg\s*\((.*)\)\s*\]", attribute, re.DOTALL)
+        if cfg is None or _cfg_without_test(cfg.group(1)) is not False:
             index = attr_end + 1
             continue
 
@@ -291,12 +355,14 @@ def _strip_cfg_test_items(code: str) -> str:
                 break
             extra_end = _matching_delimiter(code, cursor + 1, "[", "]")
             if extra_end is None:
-                return "".join(output)
+                raise VerificationFailure("unbalanced Rust attribute in caller scan")
             cursor = extra_end + 1
 
         item_end = _rust_item_end(code, cursor)
         if item_end is None:
-            item_end = len(code) - 1
+            raise VerificationFailure(
+                "cannot determine cfg-test item boundary in caller scan"
+            )
         for offset in range(start, item_end + 1):
             if output[offset] != "\n":
                 output[offset] = " "
@@ -329,6 +395,36 @@ def _skip_space(source: str, index: int) -> int:
 
 def _rust_item_end(source: str, start: int) -> int | None:
     """Find the end of one already-lexed Rust item conservatively."""
+
+    # An attribute can guard a struct field or a struct-expression entry. Those
+    # end at a top-level comma, not at the next function body or semicolon.
+    # Preserve the enclosing brace even when the final field has no comma.
+    field = re.match(r"(?:pub(?:\([^)]*\))?\s+)?\w+\s*:(?!:)", source[start:])
+    if field:
+        paren = bracket = brace = angle = 0
+        for index in range(start, len(source)):
+            char = source[index]
+            if char == "(":
+                paren += 1
+            elif char == ")" and paren:
+                paren -= 1
+            elif char == "[":
+                bracket += 1
+            elif char == "]" and bracket:
+                bracket -= 1
+            elif char == "{":
+                brace += 1
+            elif char == "}" and brace:
+                brace -= 1
+            elif char == "}" and not (paren or bracket or angle):
+                return index - 1
+            elif char == "<" and not (paren or bracket or brace):
+                angle += 1
+            elif char == ">" and angle:
+                angle -= 1
+            elif char == "," and not (paren or bracket or brace or angle):
+                return index
+        return None
 
     paren = 0
     bracket = 0
@@ -402,13 +498,36 @@ def _verify_boundary(
         call_pattern = re.compile(re.escape(boundary.symbol) + r"\s*\(")
     else:
         call_pattern = re.compile(boundary.call_pattern)
+    try:
+        fields = (
+            authority_fields(source_index, boundary.receiver_type)
+            if boundary.receiver_type
+            else {}
+        )
+    except UnresolvedTypedReceiver as error:
+        raise VerificationFailure(f"{boundary.identifier}: {error}") from error
     observed: set[str] = set()
     for relative, code in source_index.items():
         if relative == boundary.definition_path or _is_ignored(
             relative, ignored_fragments
         ):
             continue
-        if call_pattern.search(code):
+        if boundary.receiver_type:
+            try:
+                methods = boundary.receiver_methods or (
+                    boundary.symbol.rsplit("::", 1)[-1],
+                )
+                matched = any(
+                    has_authority_call(code, boundary.receiver_type, method, fields)
+                    for method in methods
+                )
+            except UnresolvedTypedReceiver as error:
+                raise VerificationFailure(
+                    f"{boundary.identifier}: {relative}: {error}"
+                ) from error
+        else:
+            matched = bool(call_pattern.search(code))
+        if matched:
             observed.add(relative)
     expected = set(boundary.product_callers)
     if observed != expected:
@@ -433,6 +552,8 @@ def _verify_boundary(
         "id": boundary.identifier,
         "symbol": boundary.symbol,
         "callPattern": boundary.call_pattern,
+        "receiverType": boundary.receiver_type,
+        "receiverMethods": list(boundary.receiver_methods),
         "productCallers": sorted(observed),
     }
 
