@@ -152,6 +152,7 @@ export class BrowserProfileHost {
           processId,
           pageGeneration: 0,
           documentDigest: null,
+          bootstrapNavigationAvailable: true,
           allowedOrigins,
           effectGrants,
           operations: new Map(),
@@ -260,9 +261,8 @@ export class BrowserProfileHost {
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
-      const state = this.#profile(input, true);
-      const { operationId, requestSemantics, requestDigest } =
-        admitNewOperation(state, input, this.#clock());
+      const state = this.#profile(input, false);
+      const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
         const durable = await this.#journal.getOperation(
@@ -270,10 +270,17 @@ export class BrowserProfileHost {
           state.generation,
           operationId,
         );
-        if (durable) prior = this.#entryFromDurable(durable, requestSemantics);
+        if (durable)
+          prior = this.#entryFromDurable(
+            durable,
+            this.#requestSemanticsFromDurableInput(state, input, durable),
+          );
       }
       if (prior) {
-        if (prior.requestDigest !== requestDigest) {
+        if (
+          prior.requestDigest !==
+          reconciliationRequestDigest(state, input, prior.semantics)
+        ) {
           throw new TypeError(
             "operation identity was reused with changed semantics",
           );
@@ -286,16 +293,27 @@ export class BrowserProfileHost {
         }
         return prior.receipt;
       }
+      this.#profile(input, true);
+      const { requestSemantics, requestDigest } = admitNewOperation(
+        state,
+        input,
+        this.#clock(),
+      );
       if (this.#activeOperationCount(state) >= MAX_OUTSTANDING_OPERATIONS) {
         throw new TypeError("profile operation capacity is exhausted");
       }
+      const dispatchDeadlineMs = Math.min(
+        requestSemantics.deadlineMs,
+        state.expiresAtMs,
+        state.effectGrants.get(requestSemantics.effectGrantDigest).expiresAtMs,
+      );
 
       let entry = null;
       try {
         const observed = requireRecord(
           await this.#withVerifiedUse(
             Object.freeze({ ...requestSemantics, requestDigest }),
-            requestSemantics.deadlineMs,
+            dispatchDeadlineMs,
             async (verified) => {
               requireRecord(verified, "verified-use witness");
               if (verified.authorized !== true) {
@@ -323,6 +341,11 @@ export class BrowserProfileHost {
                   "final-use authority epoch changed before dispatch",
                 );
               }
+              futureDeadline(
+                dispatchDeadlineMs,
+                this.#clock(),
+                "final-use dispatch deadline",
+              );
               const semantics = Object.freeze({
                 ...requestSemantics,
                 verifiedUseTokenWitnessDigest: witnessDigest,
@@ -347,10 +370,12 @@ export class BrowserProfileHost {
                 this.#durableRecord(state, entry),
               );
               state.operations.set(operationId, entry);
+              state.documentDigest = null;
+              state.bootstrapNavigationAvailable = false;
               return this.#callDriver(
                 "dispatch",
                 semantics,
-                requestSemantics.deadlineMs,
+                dispatchDeadlineMs,
               );
             },
           ),
@@ -457,7 +482,7 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
-    return exclusive(this.#locks, `${profileId}:${generation}`, async () => {
+    return exclusive(this.#locks, profileId, async () => {
       const durable = await this.#journal.getOperation(
         profileId,
         generation,
@@ -479,14 +504,33 @@ export class BrowserProfileHost {
         input,
         durable,
       );
-      const requestDigest = canonicalDigest(semantics);
+      const requestDigest = reconciliationRequestDigest(
+        pseudoState,
+        input,
+        semantics,
+      );
       if (requestDigest !== durable.requestDigest) {
         throw new TypeError(
           "persisted reconciliation changed immutable semantics",
         );
       }
+      const applyReceipt = (receipt) => {
+        const live = this.#profiles.get(profileId);
+        const entry = live?.operations.get(operationId);
+        if (
+          live?.generation === generation &&
+          live.principalId === durable.principalId &&
+          entry?.requestDigest === durable.requestDigest &&
+          entry.semanticDigest === durable.semanticDigest
+        ) {
+          entry.receipt = receipt;
+          entry.phase = receipt.terminalObserved ? "terminal" : "indeterminate";
+          this.#pruneTerminalOperations(live);
+        }
+        return receipt;
+      };
       if (durable.terminalObserved === true)
-        return this.#receiptFromDurable(durable);
+        return applyReceipt(this.#receiptFromDurable(durable));
       const effectSemantics = Object.freeze({
         ...semantics,
         verifiedUseTokenWitnessDigest: durable.verifiedUseTokenWitnessDigest,
@@ -520,8 +564,14 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
-      return receipt;
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
+      return applyReceipt(receipt);
     });
   }
 
@@ -703,6 +753,7 @@ export class BrowserProfileHost {
       ...state,
       pageGeneration: durable.pageGeneration,
       documentDigest: durable.documentDigest,
+      bootstrapNavigationAvailable: true,
       allowedOrigins: new Set([durable.destinationOrigin]),
       effectGrants: new Map([
         [
@@ -736,9 +787,15 @@ export class BrowserProfileHost {
       finishConsumer = resolve;
     });
     let enteredOnce = false;
+    let cancelled = false;
 
     const authorityCall = Promise.resolve().then(() =>
       this.#authority.withVerifiedUse(request, async (verified) => {
+        if (cancelled) {
+          throw new TypeError(
+            "final-use authority consumer arrived after cancellation",
+          );
+        }
         if (enteredOnce) {
           throw new TypeError(
             "final-use authority invoked the consumer more than once",
@@ -757,20 +814,29 @@ export class BrowserProfileHost {
     // verified-use consumer has started, its driver operation owns its own
     // deadline; racing a second authority timer here can misclassify a driver
     // timeout as an authority failure.
-    const first = await callWithDeadline({
-      call: () =>
-        Promise.race([
-          authorityCall.then((value) => ({ kind: "completed", value })),
-          entered.then(() => ({ kind: "entered" })),
-        ]),
-      payload: null,
-      now: this.#clock,
-      deadlineMs,
-      timeoutCapMs: this.#driverCallTimeoutMs,
-      abortable: false,
-      timeoutName: "browser authority",
-    });
-    if (first.kind === "completed") return first.value;
+    let first;
+    try {
+      first = await callWithDeadline({
+        call: () =>
+          Promise.race([
+            authorityCall.then((value) => ({ kind: "completed", value })),
+            entered.then(() => ({ kind: "entered" })),
+          ]),
+        payload: null,
+        now: this.#clock,
+        deadlineMs,
+        timeoutCapMs: this.#driverCallTimeoutMs,
+        abortable: false,
+        timeoutName: "browser authority",
+      });
+    } catch (error) {
+      cancelled = true;
+      throw error;
+    }
+    if (first.kind === "completed") {
+      cancelled = true;
+      return first.value;
+    }
 
     await consumerFinished;
     // After the local consumer settles, bound only the authority-side
@@ -788,8 +854,22 @@ export class BrowserProfileHost {
   }
 
   #callDriver(method, payload, deadlineMs) {
+    if (deadlineMs <= this.#clock()) {
+      const error = new Error("browser driver dispatch deadline has expired");
+      error.name = "BrowserDriverTimeoutError";
+      return Promise.reject(error);
+    }
     return callWithDeadline({
-      call: (value, context) => this.#driver[method](value, context),
+      call: (value, context) => {
+        if (deadlineMs <= this.#clock()) {
+          const error = new Error(
+            "browser driver dispatch deadline has expired",
+          );
+          error.name = "BrowserDriverTimeoutError";
+          throw error;
+        }
+        return this.#driver[method](value, context);
+      },
       payload,
       now: this.#clock,
       deadlineMs,

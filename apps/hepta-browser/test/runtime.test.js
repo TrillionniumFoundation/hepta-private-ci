@@ -72,6 +72,7 @@ function authority({ authorized = true, witnessDigest = W1, delay = 0 } = {}) {
 function driver({ terminalOnReconcile = true, dispatchImpl } = {}) {
   let dispatchCalls = 0;
   let stopCalls = 0;
+  let pageGeneration = 0;
   return {
     get actCalls() {
       return dispatchCalls;
@@ -87,7 +88,7 @@ function driver({ terminalOnReconcile = true, dispatchImpl } = {}) {
     },
     async observe() {
       return {
-        pageGeneration: 1,
+        pageGeneration: ++pageGeneration,
         documentDigest: D3,
         origin: "https://example.com",
       };
@@ -138,7 +139,7 @@ async function preparedHost(options = {}) {
     clock,
     driverCallTimeoutMs: options.driverCallTimeoutMs ?? 50,
   });
-  await host.openProfile(input());
+  await host.openProfile(options.profileInput ?? input());
   await host.observePage({
     profileId: "profile.1",
     principalId: "principal.1",
@@ -450,8 +451,18 @@ test("terminal operation retention uses durable tombstones instead of exhausting
   });
   const { host } = await preparedHost({ driver: fakeDriver });
   for (let index = 0; index < 300; index += 1) {
+    if (index > 0)
+      await host.observePage({
+        profileId: "profile.1",
+        principalId: "principal.1",
+        generation: 1,
+        observationBudget: 128,
+      });
     const receipt = await host.navigateOrAct(
-      operation({ operationId: `operation.${index}` }),
+      operation({
+        operationId: `operation.${index}`,
+        pageGeneration: index + 1,
+      }),
     );
     assert.equal(receipt.terminalObserved, true);
   }
@@ -488,4 +499,258 @@ test("effect grants can be admitted after profile open without widening final-us
   });
   const result = await host.navigateOrAct(operation());
   assert.equal(result.status, "indeterminate");
+});
+
+test("timed-out authority cannot dispatch a late consumer after the profile closes", async () => {
+  let release;
+  let lateConsumer;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const finalAuthority = {
+    withVerifiedUse(request, consumer) {
+      lateConsumer = gate.then(() =>
+        consumer({
+          authorized: true,
+          witnessDigest: W1,
+          authorityEpoch: request.authorityEpoch,
+          requestDigest: request.requestDigest,
+        }),
+      );
+      return lateConsumer;
+    },
+  };
+  const { host, fakeDriver, journal } = await preparedHost({
+    authority: finalAuthority,
+    driverCallTimeoutMs: 10,
+  });
+  await assert.rejects(host.navigateOrAct(operation()), {
+    name: "BrowserAuthorityTimeoutError",
+  });
+  await host.closeProfile({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+  });
+  release();
+  await assert.rejects(lateConsumer, /after cancellation/);
+  assert.equal(fakeDriver.dispatchCalls, 0);
+  assert.deepEqual(await journal.listOperations("profile.1", 1), []);
+});
+
+test("durable intent latency cannot dispatch after request, effect, or profile expiry", async () => {
+  for (const scope of ["request", "effect", "profile"]) {
+    let now = 1_000;
+    const expiresAtMs = scope === "effect" ? 9_500 : 15_000;
+    const deadlineMs = scope === "request" ? 9_000 : 12_000;
+    const boundaryExpiry =
+      scope === "request" ? 9_000 : scope === "effect" ? 9_500 : 10_000;
+    const baseJournal = new MemoryBrowserOperationJournal();
+    const journal = {
+      async recordDispatch(record) {
+        await baseJournal.recordDispatch(record);
+        now = boundaryExpiry;
+      },
+      recordObservation: (...args) => baseJournal.recordObservation(...args),
+      getOperation: (...args) => baseJournal.getOperation(...args),
+      listOperations: (...args) => baseJournal.listOperations(...args),
+    };
+    const { host, fakeDriver } = await preparedHost({
+      journal,
+      clock: () => now,
+      profileInput: input({ effectGrants: [effectGrant({ expiresAtMs })] }),
+    });
+    const receipt = await host.navigateOrAct(operation({ deadlineMs }));
+    assert.equal(fakeDriver.dispatchCalls, 0, scope);
+    assert.equal(receipt.status, "indeterminate", scope);
+    assert.equal(receipt.observationReason, "driver_timeout", scope);
+    assert.equal(
+      (await journal.listOperations("profile.1", 1)).length,
+      1,
+      scope,
+    );
+  }
+});
+
+test("live and persisted reconciliation share the same profile serialization", async () => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  let reconcileCalls = 0;
+  const fakeDriver = driver();
+  fakeDriver.reconcile = async () => {
+    reconcileCalls += 1;
+    await gate;
+    return { terminalObserved: true, status: "succeeded", outcomeDigest: D1 };
+  };
+  const { host } = await preparedHost({ driver: fakeDriver });
+  await host.navigateOrAct(operation());
+  const live = host.reconcileOperation(operation());
+  const persisted = host.reconcilePersistedOperation(operation());
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(reconcileCalls, 1);
+  release();
+  const [left, right] = await Promise.all([live, persisted]);
+  assert.deepEqual(right, left);
+  assert.equal(reconcileCalls, 1);
+});
+
+test("new effects consume the page snapshot while exact old operations replay after newer observations", async () => {
+  const { host, fakeDriver } = await preparedHost();
+  const first = await host.navigateOrAct(operation());
+  await assert.rejects(
+    host.navigateOrAct(operation({ operationId: "operation.new" })),
+    /stale page generation/,
+  );
+  const observed = await host.observePage({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    observationBudget: 128,
+  });
+  assert.equal(observed.pageGeneration, 2);
+  assert.deepEqual(await host.navigateOrAct(operation()), first);
+  await assert.rejects(
+    host.navigateOrAct(operation({ deadlineMs: 8_999 })),
+    /changed semantics/,
+  );
+  await host.navigateOrAct(
+    operation({ operationId: "operation.new", pageGeneration: 2 }),
+  );
+  assert.equal(fakeDriver.dispatchCalls, 2);
+});
+
+test("an expired profile allows exact operation replay without renewed effect authority", async () => {
+  let now = 1_000;
+  const { host, fakeDriver } = await preparedHost({ clock: () => now });
+  const first = await host.navigateOrAct(operation());
+  now = 20_000;
+  assert.deepEqual(await host.navigateOrAct(operation()), first);
+  await assert.rejects(
+    host.navigateOrAct(operation({ operationId: "operation.new" })),
+    /profile grant has expired/,
+  );
+  assert.equal(fakeDriver.dispatchCalls, 1);
+});
+
+test("authority completion without entering the consumer cannot authorize a deferred callback", async () => {
+  let release;
+  let lateConsumer;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const finalAuthority = {
+    async withVerifiedUse(request, consumer) {
+      lateConsumer = gate.then(() =>
+        consumer({
+          authorized: true,
+          witnessDigest: W1,
+          authorityEpoch: request.authorityEpoch,
+          requestDigest: request.requestDigest,
+        }),
+      );
+      return { terminalObserved: false };
+    },
+  };
+  const { host, fakeDriver, journal } = await preparedHost({
+    authority: finalAuthority,
+  });
+  await assert.rejects(host.navigateOrAct(operation()), TypeError);
+  release();
+  await assert.rejects(lateConsumer, /after cancellation/);
+  assert.equal(fakeDriver.dispatchCalls, 0);
+  assert.deepEqual(await journal.listOperations("profile.1", 1), []);
+});
+
+test("the driver invocation rechecks expiry after the scheduled call enters its microtask", async () => {
+  let intentWritten = false;
+  let boundaryClockReads = 0;
+  const baseJournal = new MemoryBrowserOperationJournal();
+  const journal = {
+    async recordDispatch(record) {
+      await baseJournal.recordDispatch(record);
+      intentWritten = true;
+    },
+    recordObservation: (...args) => baseJournal.recordObservation(...args),
+    getOperation: (...args) => baseJournal.getOperation(...args),
+    listOperations: (...args) => baseJournal.listOperations(...args),
+  };
+  const { host, fakeDriver } = await preparedHost({
+    journal,
+    clock: () => (intentWritten && ++boundaryClockReads >= 3 ? 9_000 : 1_000),
+  });
+  const receipt = await host.navigateOrAct(operation());
+  assert.equal(receipt.observationReason, "driver_timeout");
+  assert.equal(fakeDriver.dispatchCalls, 0);
+});
+
+test("persisted reconciliation updates the matching live cache so replay and cleanup see terminality", async () => {
+  const { host, fakeDriver } = await preparedHost();
+  await host.navigateOrAct(operation());
+  const terminal = await host.reconcilePersistedOperation(operation());
+  assert.equal(terminal.terminalObserved, true);
+  assert.deepEqual(await host.navigateOrAct(operation()), terminal);
+  const closed = await host.closeProfile({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+  });
+  assert.equal(closed.terminalObserved, true);
+  assert.equal(fakeDriver.dispatchCalls, 1);
+});
+
+test("pruned bootstrap operation replays from its durable snapshot without new authority", async () => {
+  const fakeDriver = driver({
+    dispatchImpl: async () => ({
+      terminalObserved: true,
+      status: "succeeded",
+      outcomeDigest: D1,
+    }),
+  });
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => 1_000,
+    driverCallTimeoutMs: 50,
+  });
+  await host.openProfile(input());
+  const bootstrap = operation({
+    operationId: "operation.bootstrap",
+    pageGeneration: 0,
+  });
+  const first = await host.navigateOrAct(bootstrap);
+  for (let index = 1; index <= 256; index += 1) {
+    await host.observePage({
+      profileId: "profile.1",
+      principalId: "principal.1",
+      generation: 1,
+      observationBudget: 128,
+    });
+    await host.navigateOrAct(
+      operation({
+        operationId: `operation.fresh.${index}`,
+        pageGeneration: index,
+      }),
+    );
+  }
+  assert.deepEqual(await host.navigateOrAct(bootstrap), first);
+  assert.equal(fakeDriver.dispatchCalls, 257);
+});
+
+test("persisted reconciliation requires the original deadline even after that deadline expires", async () => {
+  const { host, fakeDriver } = await preparedHost();
+  await host.navigateOrAct(operation());
+  for (const deadlineMs of [8_999, undefined]) {
+    await assert.rejects(
+      host.reconcilePersistedOperation(operation({ deadlineMs })),
+      /immutable semantics|positive safe integer/,
+    );
+  }
+  assert.equal(
+    (await host.reconcilePersistedOperation(operation())).terminalObserved,
+    true,
+  );
+  assert.equal(fakeDriver.dispatchCalls, 1);
 });

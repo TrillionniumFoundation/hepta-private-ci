@@ -157,7 +157,8 @@ export function admitNewOperation(state, input, now) {
     action === "navigate" &&
     pageGeneration === 0 &&
     state.pageGeneration === 0 &&
-    state.documentDigest === null;
+    state.documentDigest === null &&
+    state.bootstrapNavigationAvailable !== false;
   if (
     !bootstrapNavigation &&
     (pageGeneration === 0 ||
