@@ -9349,11 +9349,23 @@
         "codex-rs/hepta-agentd/src/client.rs",
         "codex-rs/hepta-agent-protocol/src/lib.rs",
         "codex-rs/hepta-agent-protocol/src/capabilities.rs",
+        "codex-rs/app-server-client/src/lib.rs",
+        "codex-rs/app-server-client/src/remote.rs",
+        "codex-rs/app-server-client/src/remote_send_guard.rs",
+        "codex-rs/app-server-client/src/remote_send_guard_tests.rs",
+        "codex-rs/app-server-client/BUILD.bazel",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-operations/src/exact_claim.rs",
+        "codex-rs/hepta-operations/src/durable_store_tests.rs",
+        "codex-rs/hepta-operations/src/durable_clock_tests.rs",
+        "codex-rs/model-provider/src/provider_effect.rs",
         ".github/workflows/automation-taskflow-focused.yml",
         ".github/workflows/hepta-lane-b-truth.yml"
       ],
       "coOwnerModules": [
-        "runtime.agentd"
+        "runtime.agentd",
+        "runtime.codex",
+        "kernel.operations"
       ],
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",

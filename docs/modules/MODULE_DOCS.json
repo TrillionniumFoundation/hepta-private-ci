@@ -248,7 +248,8 @@
         "ASM-2-DEBIAN-BRIDGE-SANDBOX",
         "ASM-3-STATE-MIGRATION-QUALIFICATION",
         "P0.7B-B2-TOOL-NET-FS",
-        "P0.7D-FAULT-MATRIX"
+        "P0.7D-FAULT-MATRIX",
+        "TASKFLOW-1-EXECUTION-BOUNDARY"
       ],
       "threats": [
         "blind_retry_after_unknown_effect",
@@ -599,7 +600,8 @@
         "capability_revocation"
       ],
       "workPackages": [
-        "P0.7B-B1B-MODEL-BOUNDARY"
+        "P0.7B-B1B-MODEL-BOUNDARY",
+        "TASKFLOW-1-EXECUTION-BOUNDARY"
       ],
       "threats": []
     },
@@ -2502,9 +2504,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "TASKFLOW-1-EXECUTION-BOUNDARY",
-      "sha256": "2c58e8dc6fcfaf28af35045dcb5c71f6924be685afa0e74d5ea304458b2d4879",
-      "bytes": 41164,
-      "words": 5037,
+      "sha256": "636e78f76149c61441aab54dee46fbb016d61294ec914c952cd998d49ea053d5",
+      "bytes": 56052,
+      "words": 6965,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
