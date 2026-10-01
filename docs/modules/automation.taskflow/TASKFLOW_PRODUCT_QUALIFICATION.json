@@ -183,5 +183,71 @@
     "localModuleClippyPassed": true,
     "localDependencyInclusiveClippyPassed": false,
     "localAgentdTestsPassed": false
+  },
+  "secondAudit": {
+    "status": "source_optimized_local_taskflow_host_tests_passed_full_agentd_socket_case_blocked_hosted_validation_required",
+    "reviewBaselineCommit": "b72ce251e3106e94d9063855baa7a0dde13b7dfd",
+    "runtimeSourceCommit": "a6edeeb61be3db83a44cb1bcd5fd683f008676eb",
+    "runtimeSourceTree": "947f5ff6b7314b4679b62063f3b1896ee1a8632b",
+    "localVerification": {
+      "agentdLibrary": {
+        "command": "just test --locked --offline -p codex-hepta-agentd --lib --test-threads=1",
+        "total": 172,
+        "passed": 171,
+        "failed": 1,
+        "skipped": 0,
+        "fullSuitePassed": false,
+        "taskflowRelatedPassed": 20,
+        "taskflowRelatedFailed": 0,
+        "blocker": {
+          "test": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+          "reason": "The environment denies Unix socket creation with EPERM; an independent socket-creation probe confirms the restriction."
+        }
+      },
+      "protectedFileRegressions": {
+        "passed": 3,
+        "total": 3
+      },
+      "expiredLeaseRestartRecovery": {
+        "passed": true,
+        "dispatchPosts": 1,
+        "lookupGets": 1,
+        "newDispatchAuthorizationGranted": false
+      },
+      "fix": {
+        "command": "just fix --locked --offline --no-deps -p codex-hepta-agentd --lib",
+        "exitCode": 0,
+        "existingWarningsRetained": true,
+        "strictClippyPassClaimed": false
+      },
+      "rustfmt": {
+        "passed": true
+      },
+      "diffCheck": {
+        "passed": true
+      },
+      "sourceAfterFix": {
+        "testedRustFilesUnchanged": true,
+        "fileCount": 3
+      },
+      "callerVerifier": {
+        "fullClosurePassed": true,
+        "boundaries": 45,
+        "rustFiles": 4366,
+        "authorityGranted": false
+      },
+      "implementationMap": {
+        "jsonValid": true,
+        "allReferencedPathsExist": true
+      },
+      "manualReview": {
+        "newActionableProductionLogicFindingsInReviewedScope": false,
+        "scope": "Protected-file handle/byte bounds, original-fence expired-lease recovery, provider identity/profile retention and the executed automation-related Agentd regressions."
+      }
+    },
+    "hostedExactSourceAndMainMergeValidationRequired": true,
+    "targetHostQualified": false,
+    "authorityGranted": false,
+    "semantics": "This supplements the retained first-audit observations. Scoped local TaskFlow host tests passed, while the complete Agentd library suite has one environment-blocked Unix-socket test. No complete hosted CI, actual provider/target-host execution, independent acceptance, deployment, activation or release qualification is inferred."
   }
 }
