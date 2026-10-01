@@ -296,3 +296,240 @@ async fn owner_projection_sees_uncommitted_correction_and_tombstone_then_rollbac
         fixture.memory
     );
 }
+
+#[tokio::test]
+async fn caller_owned_write_lock_serializes_projection_against_external_correction() {
+    let fixture = owner_fixture(
+        "before lock",
+        CognitiveScope::AgentPrivate,
+        /*valid_to_unix_seconds*/ None,
+    )
+    .await;
+    let expected = fixture
+        .store
+        .lane_c_lineage(
+            &fixture.access,
+            &fixture.scope,
+            /*now_unix_seconds*/ 150,
+        )
+        .await
+        .expect("original cut");
+    let mut transaction = write_locked(&fixture).await;
+    let mut contender = fixture
+        .store
+        .pool
+        .acquire()
+        .await
+        .expect("second owner connection");
+    let busy_timeout: i64 = sqlx::query_scalar("PRAGMA busy_timeout")
+        .fetch_one(&mut *contender)
+        .await
+        .expect("timeout");
+    sqlx::query("PRAGMA busy_timeout = 0")
+        .execute(&mut *contender)
+        .await
+        .expect("fail-fast contender");
+    let blocked = sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut *contender)
+        .await
+        .expect_err("write lock is held");
+    assert!(
+        matches!(blocked, sqlx::Error::Database(error) if error.code().and_then(|code| code.parse::<i32>().ok()).is_some_and(|code| matches!(code & 255, 5 | 6)))
+    );
+    assert_eq!(
+        transaction
+            .revalidate_lineage(&expected, /*now_unix_seconds*/ 150)
+            .await
+            .expect("same locked cut"),
+        expected
+    );
+    transaction.commit().await.expect("release write lock");
+    // PRAGMA assignments do not accept a bound parameter. This value is the
+    // integer read from the same connection, not caller-supplied SQL text.
+    let mut restore_timeout = sqlx::QueryBuilder::<Sqlite>::new("PRAGMA busy_timeout = ");
+    restore_timeout.push(busy_timeout);
+    restore_timeout
+        .build()
+        .execute(&mut *contender)
+        .await
+        .expect("restore timeout");
+    drop(contender);
+    fixture
+        .store
+        .correct_memory(
+            &fixture.access,
+            &fixture.memory.id.memory_id,
+            /*expected_revision*/ 1,
+            &memory_revision(
+                fixture.scope.clone(),
+                "after lock",
+                fixture.citation.clone(),
+            ),
+        )
+        .await
+        .expect("external correction after unlock");
+    let mut current = LaneCOwnerTransaction::begin_read(
+        &fixture.store,
+        &fixture.access,
+        &fixture.scope,
+        /*now_unix_seconds*/ 150,
+    )
+    .await
+    .expect("new read transaction");
+    assert!(matches!(
+        current
+            .revalidate_lineage(&expected, /*now_unix_seconds*/ 150)
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+    current.commit().await.expect("new cut commit");
+}
+
+#[tokio::test]
+async fn same_transaction_revalidation_recomputes_time_and_current_head_eligibility() {
+    let fixture = owner_fixture(
+        "expires",
+        CognitiveScope::AgentPrivate,
+        /*valid_to_unix_seconds*/ Some(200),
+    )
+    .await;
+    let expected = fixture
+        .store
+        .lane_c_lineage(
+            &fixture.access,
+            &fixture.scope,
+            /*now_unix_seconds*/ 150,
+        )
+        .await
+        .expect("eligible before expiry");
+    let mut transaction = write_locked(&fixture).await;
+    let valid = transaction
+        .revalidate_lineage(&expected, /*now_unix_seconds*/ 199)
+        .await
+        .expect("still eligible");
+    assert_eq!(valid.records(), expected.records());
+    assert_eq!(
+        valid.source_binding_digest(),
+        expected.source_binding_digest()
+    );
+    assert!(matches!(
+        transaction
+            .revalidate_lineage(&expected, /*now_unix_seconds*/ 200)
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+    let expired = transaction
+        .lineage(/*now_unix_seconds*/ 200)
+        .await
+        .expect("expired head excluded");
+    assert_eq!(
+        (
+            expired.source_head_count(),
+            expired.excluded_head_count(),
+            expired.records(),
+            expired.current_heads()
+        ),
+        (1, 1, &[][..], &[][..])
+    );
+    let mut provisional =
+        memory_revision(fixture.scope.clone(), "pending", fixture.citation.clone());
+    provisional.verification = MemoryVerification::Provisional;
+    fixture
+        .store
+        .revise_memory_revision_tx(
+            &mut transaction.transaction,
+            &transaction.access,
+            &fixture.memory.id.memory_id,
+            /*expected_revision*/ 1,
+            &provisional,
+        )
+        .await
+        .expect("uncommitted unverified head");
+    let excluded = transaction
+        .lineage(/*now_unix_seconds*/ 200)
+        .await
+        .expect("pending head excludes its ancestors");
+    assert_eq!(
+        (
+            excluded.source_head_count(),
+            excluded.excluded_head_count(),
+            excluded.records(),
+            excluded.current_heads()
+        ),
+        (1, 1, &[][..], &[][..])
+    );
+    assert_ne!(
+        excluded.source_head_manifest_digest(),
+        expired.source_head_manifest_digest()
+    );
+    assert!(
+        matches!(transaction.revalidate_lineage(&expected, /*now_unix_seconds*/ 149).await, Err(CognitiveStoreError::Invalid(message)) if message == "lineage clock regressed")
+    );
+    transaction
+        .transaction
+        .rollback()
+        .await
+        .expect("rollback pending head");
+    let foreign = CognitiveAccess::agent_private(agent_id(/*suffix*/ 62));
+    assert!(matches!(fixture.store.revalidate_lane_c_lineage(
+        &foreign, &fixture.scope, &expected, /*now_unix_seconds*/ 149,
+    ).await, Err(CognitiveStoreError::Invalid(message)) if message == "lineage clock regressed"));
+}
+
+#[tokio::test]
+async fn default_read_transaction_is_a_historical_cut_and_new_transaction_detects_wal_write() {
+    let fixture = owner_fixture(
+        "original cut",
+        CognitiveScope::AgentPrivate,
+        /*valid_to_unix_seconds*/ None,
+    )
+    .await;
+    let mut transaction = LaneCOwnerTransaction::begin_read(
+        &fixture.store,
+        &fixture.access,
+        &fixture.scope,
+        /*now_unix_seconds*/ 150,
+    )
+    .await
+    .expect("default read");
+    let pinned = transaction
+        .lineage(/*now_unix_seconds*/ 150)
+        .await
+        .expect("pinned owner cut");
+    tokio::time::timeout(
+        Duration::from_secs(/*secs*/ 30),
+        fixture.store.correct_memory(
+            &fixture.access,
+            &fixture.memory.id.memory_id,
+            /*expected_revision*/ 1,
+            &memory_revision(
+                fixture.scope.clone(),
+                "new WAL cut",
+                fixture.citation.clone(),
+            ),
+        ),
+    )
+    .await
+    .expect("WAL writer can complete beside default reader")
+    .expect("external correction");
+    assert_eq!(
+        transaction
+            .revalidate_lineage(&pinned, /*now_unix_seconds*/ 150)
+            .await
+            .expect("same historical snapshot"),
+        pinned
+    );
+    transaction.commit().await.expect("finish historical read");
+    assert!(matches!(
+        fixture
+            .store
+            .revalidate_lane_c_lineage(
+                &fixture.access,
+                &fixture.scope,
+                &pinned,
+                /*now_unix_seconds*/ 150,
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}
