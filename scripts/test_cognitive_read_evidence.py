@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -15,6 +16,7 @@ from cognitive_read_evidence import (
     emit,
     git,
     nextest_log_problems,
+    qualification_env,
     validate_candidate_claims,
     validate_evidence,
 )
@@ -62,6 +64,17 @@ class EvidenceGateTests(unittest.TestCase):
 
     def test_complete_evidence_is_accepted(self):
         self.assertEqual(validate_evidence(self.evidence, self.required), [])
+
+    def test_real_native_binary_is_built_before_any_product_gate(self):
+        labels = list(self.required)
+        build = labels.index("native-product-binary")
+        for label in TEST_GATES:
+            self.assertLess(build, labels.index(label))
+        self.assertEqual(
+            self.required["native-product-binary"],
+            ["cargo", "build", "--manifest-path", "codex-rs/Cargo.toml",
+             "--locked", "-p", "codex-cli", "--bin", "codex"],
+        )
 
     def test_pinned_nextest_structured_multiline_version_is_accepted(self):
         commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
@@ -304,6 +317,59 @@ class CandidateSourceIntegrityTests(unittest.TestCase):
             candidate_source_problems(self.root),
             ["candidate has untracked source input:  .hepta-evidence/input.rs"],
         )
+
+
+class QualificationToolchainTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.path = self.root / "codex-rs/rust-toolchain.toml"
+        self.path.parent.mkdir()
+
+    def test_committed_pin_overrides_the_callers_default_for_child_commands(self):
+        self.path.write_text('[toolchain]\nchannel = "1.95.0"\n')
+        with patch.dict("os.environ", {"RUSTUP_TOOLCHAIN": "1.98.1"}):
+            env = qualification_env(self.root)
+            child = subprocess.check_output(
+                ["python3", "-c", "import os; print(os.environ['RUSTUP_TOOLCHAIN'])"],
+                env=env,
+                text=True,
+            ).strip()
+        self.assertEqual(child, "1.95.0")
+        self.assertEqual(env["PYTHONPATH"], str(self.root / "scripts"))
+
+    def test_pin_is_read_from_this_candidate_without_a_fallback(self):
+        self.path.write_text('[toolchain]\nchannel = "1.96.0"\n')
+        self.assertEqual(qualification_env(self.root)["RUSTUP_TOOLCHAIN"], "1.96.0")
+        self.path.unlink()
+        with self.assertRaises(ValueError):
+            qualification_env(self.root)
+
+    def test_missing_malformed_or_floating_pins_are_rejected(self):
+        for text in (
+            '[toolchain]\ncomponents = ["clippy"]\n',
+            '[toolchain\nchannel = "1.95.0"\n',
+            '[toolchain]\nchannel = "stable"\n',
+            '[toolchain]\nchannel = 195\n',
+            '[toolchain]\nchannel = "1.95.0"\nchannel = "1.98.1"\n',
+            '[toolchain]\nchannel = "1.95.0"\n[toolchain]\nchannel = "1.98.1"\n',
+        ):
+            self.path.write_text(text)
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                qualification_env(self.root)
+
+    def test_binary_resolver_uses_the_exact_shared_target_directory(self):
+        self.path.write_text('[toolchain]\nchannel = "1.95.0"\n')
+        for target in ("relative-target", str(self.root / "absolute-target")):
+            with self.subTest(target=target), patch.dict(
+                "os.environ", {"CARGO_TARGET_DIR": target, "CARGO_BIN_EXE_codex": "/different/codex"}
+            ):
+                env = qualification_env(self.root)
+            expected = (self.root / target).resolve()
+            self.assertEqual(env["CARGO_TARGET_DIR"], str(expected))
+            name = "codex.exe" if os.name == "nt" else "codex"
+            self.assertEqual(env["CARGO_BIN_EXE_codex"], str(expected / "debug" / name))
 
 
 if __name__ == "__main__":

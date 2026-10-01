@@ -124,6 +124,16 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
             "-D",
             "warnings",
         ],
+        "native-product-binary": [
+            cargo[0],
+            "build",
+            *cargo[1:],
+            "--locked",
+            "-p",
+            "codex-cli",
+            "--bin",
+            "codex",
+        ],
     }
     for label, package in zip(
         (
@@ -481,6 +491,57 @@ def candidate_source_problems(root: Path) -> list[str]:
     return problems
 
 
+def qualification_env(root: Path) -> dict[str, str]:
+    """Select the committed Rust toolchain for every gate and version receipt."""
+    path = root / "codex-rs/rust-toolchain.toml"
+    try:
+        body = path.read_text()
+    except OSError as error:
+        raise ValueError("missing or invalid committed Rust toolchain") from error
+    # Python 3.10 is supported by this repository. Read only the release pin's
+    # closed literal shape rather than depending on 3.11's tomllib or treating
+    # an unsupported/missing field as a default toolchain.
+    tables = list(re.finditer(r"(?m)^\s*\[([^]\r\n]+)\]\s*(?:#[^\r\n]*)?$", body))
+    selected = [index for index, table in enumerate(tables) if table.group(1) == "toolchain"]
+    if len(selected) != 1:
+        raise ValueError("missing or invalid committed Rust toolchain")
+    index = selected[0]
+    start = tables[index].end()
+    end = tables[index + 1].start() if index + 1 < len(tables) else len(body)
+    table = body[start:end]
+    channels = re.findall(r"(?m)^\s*channel\s*=([^\r\n]*)$", table)
+    pin = (
+        re.fullmatch(r"\s*(['\"])([0-9]+\.[0-9]+\.[0-9]+)\1\s*(?:#.*)?", channels[0])
+        if len(channels) == 1
+        else None
+    )
+    if pin is None:
+        raise ValueError("qualification requires a pinned Rust release toolchain")
+    channel = pin.group(2)
+    env = dict(
+        os.environ,
+        CARGO_TERM_COLOR="never",
+        NO_COLOR="1",
+        RUST_MIN_STACK="8388608",
+        RUSTUP_TOOLCHAIN=channel,
+        PYTHONPATH=str(root / "scripts"),
+    )
+    # Cargo is invoked both from the repo root and by just from codex-rs.
+    # Normalize a relative target directory once so both invocations share the
+    # candidate build. Do not accept an inherited path to a different Codex.
+    target = Path(env.get("CARGO_TARGET_DIR", str(root / "codex-rs/target")))
+    if not target.is_absolute():
+        target = root / target
+    target = target.resolve()
+    env["CARGO_TARGET_DIR"] = str(target)
+    executable = "codex.exe" if os.name == "nt" else "codex"
+    profile_root = target
+    if env.get("CARGO_BUILD_TARGET"):
+        profile_root = target / env["CARGO_BUILD_TARGET"]
+    env["CARGO_BIN_EXE_codex"] = str(profile_root / "debug" / executable)
+    return env
+
+
 def validate_candidate_claims(
     candidate: str,
     kind: str,
@@ -662,13 +723,7 @@ def run(
     if not evidence.is_relative_to(root / ".hepta-evidence") or evidence.exists():
         raise ValueError("require a new evidence directory below .hepta-evidence")
     evidence.mkdir(parents=True)
-    env = dict(
-        os.environ,
-        CARGO_TERM_COLOR="never",
-        NO_COLOR="1",
-        RUST_MIN_STACK="8388608",
-    )
-    env["PYTHONPATH"] = str(root / "scripts")
+    env = qualification_env(root)
     versions = []
     for tool in ("rustc", "cargo", "just"):
         try:
