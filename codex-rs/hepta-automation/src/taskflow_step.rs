@@ -87,6 +87,16 @@ pub enum TaskFlowStepObservation {
     Indeterminate,
 }
 
+#[derive(Clone, Copy)]
+enum StepReadMode<'a> {
+    Fence(&'a TaskFlowFence),
+    Terminal,
+    ProvenAbsent {
+        proof_digest: &'a Sha256Digest,
+        requeue_command_id: &'a str,
+    },
+}
+
 impl TaskFlowStepObservation {
     fn as_str(self) -> &'static str {
         match self {
@@ -558,7 +568,7 @@ impl AutomationStore {
         attempt: u32,
         fence: &TaskFlowFence,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
-        self.read_verified_step(run_id, step_id, attempt, Some(fence))
+        self.read_verified_step(run_id, step_id, attempt, StepReadMode::Fence(fence))
             .await
     }
 
@@ -568,8 +578,28 @@ impl AutomationStore {
         step_id: &str,
         attempt: u32,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
-        self.read_verified_step(run_id, step_id, attempt, None)
+        self.read_verified_step(run_id, step_id, attempt, StepReadMode::Terminal)
             .await
+    }
+
+    pub(crate) async fn read_absent_taskflow_step(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        proof_digest: &Sha256Digest,
+        requeue_command_id: &str,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        self.read_verified_step(
+            run_id,
+            step_id,
+            attempt,
+            StepReadMode::ProvenAbsent {
+                proof_digest,
+                requeue_command_id,
+            },
+        )
+        .await
     }
 
     async fn read_verified_step(
@@ -577,11 +607,15 @@ impl AutomationStore {
         run_id: &str,
         step_id: &str,
         attempt: u32,
-        fence: Option<&TaskFlowFence>,
+        mode: StepReadMode<'_>,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
         validate_common_without_digests(run_id, step_id, attempt, "read")?;
-        if let Some(fence) = fence {
-            validate_fence(self, fence)?;
+        match mode {
+            StepReadMode::Fence(fence) => validate_fence(self, fence)?,
+            StepReadMode::ProvenAbsent { proof_digest, .. } => {
+                validate_digest(proof_digest, "provider absence proof digest")?;
+            }
+            StepReadMode::Terminal => {}
         }
         ensure_step_schema(self).await?;
         let mut tx = self.begin_step_tx().await?;
@@ -600,7 +634,7 @@ impl AutomationStore {
             attempt,
             &events,
         )?;
-        if let Some(fence) = fence {
+        if let StepReadMode::Fence(fence) = mode {
             if receipt.state == TaskFlowStepState::Reconciled {
                 // Recovery may legitimately re-fence a still-Running run projection
                 // after this immutable step has already reached its terminal
@@ -612,8 +646,8 @@ impl AutomationStore {
                 check_historical_fence(&run, &receipt.fence, fence)?;
             }
         } else {
-            // This owner-local path only observes a completed run. It cannot
-            // settle an uncertain effect or authorize a new provider attempt.
+            // These owner-local paths only observe completed evidence. They
+            // cannot settle uncertainty or authorize a new provider attempt.
             let terminal = matches!(
                 (run.state, receipt.observation, receipt.final_outcome),
                 (
@@ -634,12 +668,48 @@ impl AutomationStore {
                     Some(TaskFlowReconcileOutcome::Failed)
                 )
             );
-            if !terminal
-                || !matches!(
-                    receipt.state,
-                    TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
-                )
-            {
+            let readable = match mode {
+                StepReadMode::Terminal => {
+                    terminal
+                        && matches!(
+                            receipt.state,
+                            TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
+                        )
+                }
+                StepReadMode::ProvenAbsent {
+                    proof_digest,
+                    requeue_command_id,
+                } => {
+                    // The run chain was verified in this transaction. Require
+                    // this exact attempt's committed absence requeue event so
+                    // a cancelled step alone cannot skip projection repair.
+                    let payload: Option<String> = sqlx::query_scalar(
+                        "SELECT payload_json FROM taskflow_events
+                         WHERE owner_agent_id = ? AND run_id = ? AND command_id = ?
+                           AND transition = 'requeued_proven_absent'",
+                    )
+                    .bind(self.taskflow_owner_agent_id().as_str())
+                    .bind(run_id)
+                    .bind(requeue_command_id)
+                    .fetch_optional(&mut *tx)
+                    .await
+                    .map_err(|_| TaskFlowError::Unavailable)?;
+                    let requeue = payload
+                        .as_deref()
+                        .map(serde_json::from_str::<crate::TaskFlowTransition>)
+                        .transpose()
+                        .map_err(|_| corrupt("provider absence requeue payload"))?;
+                    receipt.state == TaskFlowStepState::Reconciled
+                        && receipt.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                        && receipt.receipt_digest.as_ref() == Some(proof_digest)
+                        && matches!(requeue,
+                            Some(crate::TaskFlowTransition::RequeueProvenAbsent {
+                                proof_digest: stored,
+                            }) if stored == *proof_digest)
+                }
+                StepReadMode::Fence(_) => unreachable!(),
+            };
+            if !readable {
                 tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
                 return Ok(None);
             }

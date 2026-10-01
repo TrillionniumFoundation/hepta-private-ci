@@ -304,14 +304,15 @@ impl AgentdAutomationEffectHost {
                 "pending effect owner/destination differs from the configured host".to_string(),
             ));
         }
-        let run = store
-            .taskflow_run(run_id)
+        let fence = store
+            .authorized_taskflow_effect_fence(run_id, step_id, attempt)
             .await
-            .map_err(|error| AgentdError::Protocol(format!("read effect TaskFlow run: {error}")))?
+            .map_err(|error| {
+                AgentdError::Protocol(format!("read historical effect fence: {error}"))
+            })?
             .ok_or_else(|| {
-                AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
+                AgentdError::Invalid("authorized effect has no historical step fence".to_string())
             })?;
-        let fence = self.historical_fence(&run)?;
         if let Some(local) = store
             .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
             .await
@@ -472,16 +473,6 @@ impl AgentdAutomationEffectHost {
                 "TaskFlow owner lease is not current".to_string(),
             ));
         }
-        self.historical_fence(run)
-    }
-
-    // Observation of a started effect uses its complete historical owner
-    // identity. An expired lease prevents dispatch, not read-only lookup and
-    // settlement; uncertainty must never require reclaiming or sending again.
-    fn historical_fence(
-        &self,
-        run: &codex_hepta_automation::TaskFlowRun,
-    ) -> Result<TaskFlowFence, AgentdError> {
         if run.owner_agent_id != self.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "TaskFlow run is owned by a different Agent".to_string(),
@@ -1149,7 +1140,7 @@ mod tests {
         let statement = HttpProviderEffectContractAttestation::statement_for(
             "agentd-product-effect-contract",
             &rotated_digest,
-            1,
+            /*authority_epoch*/ 1,
         );
         changed[1]["dispatch_url"] = serde_json::json!(rotated_contract.dispatch_url);
         changed[1]["contract_sha256"] = serde_json::json!(rotated_digest.as_str());
@@ -1341,11 +1332,18 @@ mod tests {
         // while another physical dispatch still requires the live attachment.
         fixture
             .registry
-            .compare_and_transition(&fixture.identity.agent_id, 0, AgentLifecycle::Starting)
+            .compare_and_transition(
+                &fixture.identity.agent_id,
+                /*expected_generation*/ 0,
+                AgentLifecycle::Starting,
+            )
             .expect("start Agent");
-        let state =
-            crate::AgentdState::new(fixture.identity.clone(), fixture.registry.clone(), 128)
-                .expect("Agent state");
+        let state = crate::AgentdState::new(
+            fixture.identity.clone(),
+            fixture.registry.clone(),
+            /*event_capacity*/ 128,
+        )
+        .expect("Agent state");
         let cognitive =
             codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
                 .await
@@ -1358,7 +1356,11 @@ mod tests {
             .expect("runtime prerequisites");
         fixture
             .registry
-            .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+            .compare_and_transition(
+                &fixture.identity.agent_id,
+                /*expected_generation*/ 1,
+                AgentLifecycle::Running,
+            )
             .expect("running Agent");
         state.refresh_generation().expect("current generation");
         state.mark_app_server_ready().expect("App Server ready");
@@ -1377,7 +1379,11 @@ mod tests {
             attempt: intent.attempt,
         };
         let recovered = state
-            .response(20, 1, historical.clone())
+            .response(
+                /*request_id*/ 20,
+                /*spawn_generation*/ 1,
+                historical.clone(),
+            )
             .await
             .expect("durable terminal recovery with scheduler detached");
         assert_eq!(
@@ -1398,8 +1404,8 @@ mod tests {
         );
         let denied = state
             .response(
-                21,
-                1,
+                /*request_id*/ 21,
+                /*spawn_generation*/ 1,
                 crate::AgentdMethod::AutomationExecuteEffect {
                     intent: intent.clone(),
                     wire_payload_hex: hex(WIRE),
@@ -1414,26 +1420,38 @@ mod tests {
         );
         fixture
             .registry
-            .compare_and_transition(&fixture.identity.agent_id, 2, AgentLifecycle::Draining)
+            .compare_and_transition(
+                &fixture.identity.agent_id,
+                /*expected_generation*/ 2,
+                AgentLifecycle::Draining,
+            )
             .expect("drain current generation");
         state.refresh_generation().expect("draining generation");
         state
             .mark_draining()
             .expect("close new admission and ports");
         let during_drain = state
-            .response(22, 1, historical.clone())
+            .response(
+                /*request_id*/ 22,
+                /*spawn_generation*/ 1,
+                historical.clone(),
+            )
             .await
             .expect("historical recovery during drain");
         assert_eq!(during_drain.payload, recovered.payload);
         assert!(matches!(
-            state.response(23, 2, historical).await,
+            state
+                .response(
+                    /*request_id*/ 23, /*spawn_generation*/ 2, historical
+                )
+                .await,
             Err(AgentdError::GenerationFenced(_))
         ));
         assert!(matches!(
             state
                 .response(
-                    24,
-                    1,
+                    /*request_id*/ 24,
+                    /*spawn_generation*/ 1,
                     crate::AgentdMethod::AutomationExecuteEffect {
                         intent,
                         wire_payload_hex: hex(WIRE),

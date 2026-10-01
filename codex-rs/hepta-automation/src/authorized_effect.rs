@@ -605,7 +605,7 @@ fn provider_effect_intent(
         &intent.destination_id,
         &intent.run_id,
         &intent.step_id,
-        2,
+        /*version*/ 2,
     )?;
     Ok(ProviderEffectIntent::new(key, payload_digest))
 }
@@ -989,7 +989,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1005,7 +1005,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1024,7 +1024,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1041,7 +1041,7 @@ impl AutomationStore {
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
                 now_ms,
-                None,
+                /*provider*/ None,
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
@@ -1065,6 +1065,68 @@ impl AutomationStore {
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .map(AuthorizedEffectPending::from))
+    }
+
+    /// Recover the exact fence that authored an owned durable effect attempt.
+    /// Completed effects and committed provider-absence requeues use verified
+    /// immutable step history after live lease fields clear or a successor is
+    /// claimed. Unsettled effects retain the ordinary current run/step fence
+    /// checks. This read never authorizes provider dispatch.
+    pub async fn authorized_taskflow_effect_fence(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<TaskFlowFence>, AuthorizedEffectError> {
+        let Some(durable) = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        let historical = if let Some(observation) = durable.observation.as_ref()
+            && observation.kind == EffectDispatchObservationKind::ProvenAbsent
+        {
+            self.read_absent_taskflow_step(
+                run_id,
+                step_id,
+                attempt,
+                &observation.evidence_digest,
+                &effect_command_id("requeue-absent", &durable),
+            )
+            .await?
+        } else {
+            self.read_terminal_taskflow_step(run_id, step_id, attempt)
+                .await?
+        };
+        let step = if let Some(historical) = historical {
+            historical
+        } else {
+            let run = self
+                .taskflow_run(run_id)
+                .await?
+                .ok_or(AuthorizedEffectError::RecoveryRequired)?;
+            let fence = TaskFlowFence::new(
+                run.owner_agent_id,
+                run.owner_id.ok_or(TaskFlowError::StaleFence)?,
+                run.owner_epoch.ok_or(TaskFlowError::StaleFence)?,
+                run.generation.ok_or(TaskFlowError::StaleFence)?,
+                run.fencing_token.ok_or(TaskFlowError::StaleFence)?,
+            )?;
+            self.read_taskflow_step(run_id, step_id, attempt, &fence)
+                .await?
+                .ok_or(AuthorizedEffectError::RecoveryRequired)?
+        };
+        if step.owner_agent_id != durable.owner_agent_id
+            || step.intent_digest != durable.intent_digest
+            || step.payload_digest != durable.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect fence history differs from durable provider attempt".to_string(),
+            )
+            .into());
+        }
+        Ok(Some(step.fence))
     }
 
     /// Settle already-durable local provider evidence into TaskFlow before a
@@ -1096,9 +1158,10 @@ impl AutomationStore {
     ///
     /// The wire payload is hashed inside automation and must equal the durable
     /// TaskFlow payload digest before a final-use nonce is consumed.  A
-    /// provider-stable logical key is then derived from destination + run +
-    /// step, deliberately excluding the local attempt so a safely retried
-    /// attempt reuses the same provider occurrence identity.
+    /// provider-stable logical key is then derived from owner + destination +
+    /// run + step, deliberately excluding the local attempt so a safely
+    /// retried attempt reuses the same provider occurrence identity. Historical
+    /// version-one attempts retain their original provider keys for recovery.
     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
         &self,
         authority: &FinalUseAuthority,
@@ -1251,7 +1314,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1267,7 +1330,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1283,7 +1346,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1430,7 +1493,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         effect_now_ms(now_ms, started_at)?,
-                        None,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1726,6 +1789,31 @@ impl AutomationStore {
         fence: &TaskFlowFence,
         observation: &crate::effect_dispatch_ledger::EffectDispatchObservation,
     ) -> Result<(), AuthorizedEffectError> {
+        if let Some(settled) = self
+            .read_absent_taskflow_step(
+                &durable.run_id,
+                &durable.step_id,
+                durable.attempt,
+                &observation.evidence_digest,
+                &effect_command_id("requeue-absent", durable),
+            )
+            .await?
+        {
+            if settled.fence != *fence {
+                return Err(TaskFlowError::StaleFence.into());
+            }
+            if settled.intent_digest != durable.intent_digest
+                || settled.payload_digest != durable.payload_digest
+            {
+                return Err(TaskFlowError::Conflict(
+                    "settled provider absence differs from durable step".to_string(),
+                )
+                .into());
+            }
+            // The exact attempt already requeued. Historical observation must
+            // not mutate a successor's run or step, even under the same owner.
+            return Ok(());
+        }
         let run = self
             .taskflow_run(&durable.run_id)
             .await?
@@ -2052,20 +2140,22 @@ mod intent_tests {
     fn provider_keys_frame_components_scope_agents_and_preserve_version_one() {
         let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
         let other = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other owner");
-        let first = taskflow_provider_key(&owner, "provider:test", "a:b", "c", 2).expect("key");
+        let first =
+            taskflow_provider_key(&owner, "provider:test", "a:b", "c", /*version*/ 2).expect("key");
         assert_ne!(
             first,
-            taskflow_provider_key(&owner, "provider:test", "a", "b:c", 2).expect("key")
+            taskflow_provider_key(&owner, "provider:test", "a", "b:c", /*version*/ 2).expect("key")
         );
         assert_ne!(
             first,
-            taskflow_provider_key(&other, "provider:test", "a:b", "c", 2).expect("key")
+            taskflow_provider_key(&other, "provider:test", "a:b", "c", /*version*/ 2).expect("key")
         );
         assert_eq!(
-            taskflow_provider_key(&owner, "provider:test", "a:b", "c", 1).expect("legacy key"),
+            taskflow_provider_key(&owner, "provider:test", "a:b", "c", /*version*/ 1)
+                .expect("legacy key"),
             ProviderEffectKey::for_logical_effect("provider:test", "taskflow:a:b:c")
                 .expect("legacy contract")
         );
-        assert!(taskflow_provider_key(&owner, "provider:test", "a:b", "c", 3).is_err());
+        assert!(taskflow_provider_key(&owner, "provider:test", "a:b", "c", /*version*/ 3).is_err());
     }
 }

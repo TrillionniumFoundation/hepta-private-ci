@@ -1023,7 +1023,13 @@ impl AutomationStore {
             }
             return Ok(run);
         }
-        reject_unresolved_steps(&mut tx, self.taskflow_owner_agent_id(), run_id, None).await?;
+        reject_unresolved_steps(
+            &mut tx,
+            self.taskflow_owner_agent_id(),
+            run_id,
+            /*step_id*/ None,
+        )
+        .await?;
         let effect_attempts: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM taskflow_effect_dispatch_attempts
              WHERE owner_agent_id = ? AND run_id = ?",
@@ -1041,8 +1047,13 @@ impl AutomationStore {
               AND o.run_id = a.run_id
               AND o.step_id = a.step_id
               AND o.attempt = a.attempt
+             LEFT JOIN taskflow_effect_dispatch_reconciliations r
+               ON r.owner_agent_id = a.owner_agent_id
+              AND r.run_id = a.run_id
+              AND r.step_id = a.step_id
+              AND r.attempt = a.attempt
              WHERE a.owner_agent_id = ? AND a.run_id = ?
-               AND (o.observation IS NULL OR o.observation != 'proven_absent')",
+               AND COALESCE(r.observation, o.observation, '') != 'proven_absent'",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
@@ -1376,7 +1387,7 @@ impl AutomationStore {
                 &mut tx,
                 self.taskflow_owner_agent_id(),
                 &command.run_id,
-                None,
+                /*step_id*/ None,
             )
             .await?;
         }
