@@ -79,9 +79,7 @@ class CheckSourceTests(unittest.TestCase):
 
     def test_owner_and_conversation_controls_cannot_be_inferred_from_fixture(self):
         for field in ("owner", "conversation"):
-            invalid = (
-                (None, 1, "true") if field == "owner" else (None, False, 1, "true")
-            )
+            invalid = (None, 1, "true")
             for value in invalid:
                 self.branch, self.protection, self.checks = fixture()
                 if field == "owner":
@@ -102,6 +100,8 @@ class CheckSourceTests(unittest.TestCase):
         self.protection["required_pull_request_reviews"][
             "require_code_owner_reviews"
         ] = False
+        self.protection["required_conversation_resolution"]["enabled"] = False
+        self.protection["enforce_admins"]["enabled"] = False
         self.assertEqual(self.validate(), [100, 200])
         self.checks[1]["app"]["id"] += 1
         with self.assertRaises(controls.ControlError):
