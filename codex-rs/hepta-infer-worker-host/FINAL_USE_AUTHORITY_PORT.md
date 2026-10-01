@@ -68,15 +68,84 @@ final-use authority configuration. The current Unix implementation pins:
 - the configured revoked grant set;
 - a bounded issuer request timeout.
 
-Unsafe paths, symlinks, unsafe ownership/permissions, wrong peer identity,
-malformed or oversized frames, unknown fields, signer/key mismatch, invalid
-signature, wrong binding, expiry, revoked grant, nonce replay, stale revocation
-head, or durable-store failure fail closed before physical `turn/start`.
+The configuration path must be absolute. Its no-follow open accepts only a
+single-link regular file owned by root or the effective worker UID, without
+group/world write permission, and reads at most 64 KiB. The socket leaf must
+be a socket owned by the configured issuer UID with no world access; its
+immediate parent must be a directory without group/world write permission.
+The connected peer UID is checked before request bytes are sent. These checks
+do not validate every ancestor or establish worker/issuer UID separation:
+the host must protect the complete path and provision the trust topology.
+The [configuration fields and invocation](../../docs/readiness/LANE_B_NATIVE_HOST.md#native-worker-authority-configuration)
+and [configuration/socket implementation](src/final_use_authorizer.rs) are the
+source adapter contract, not proof of deployed ACLs.
 
-The wire exchange is bounded and length framed. The request carries schema
-version, operation `runtime.codex.turn_start`, and the complete
-`FinalUseBinding`. The response carries exactly one signed grant or an
-explicit denial plus the issuer's revocation head.
+Wrong peer identity, malformed or oversized frames, unknown fields,
+signer/key mismatch, invalid signature, wrong binding, expiry, revoked grant,
+nonce replay, stale revocation head, or durable-store failure fail closed
+before physical `turn/start`.
+
+### Issuer interoperability
+
+The independent issuer implements the request/response types in
+[`final_use_authorizer.rs`](src/final_use_authorizer.rs) and the grant/binding
+types in [`hepta-contracts/final_use.rs`](../hepta-contracts/src/final_use.rs).
+The worker does not start an issuer service. Each exchange opens one Unix
+connection, sends one request and reads one response. Each frame is a
+four-byte unsigned big-endian JSON byte length followed by exactly that many
+UTF-8 JSON bytes; it has no line delimiter. Request length is 1 through
+16 KiB and response length is 1 through 64 KiB. The configured exchange
+timeout is 1 through 30000 ms and also consumes the native request's remaining
+absolute deadline.
+
+Wire field names are snake_case and all these types reject unknown fields.
+The request object contains exactly `schema_version: 1`,
+`operation: "runtime.codex.turn_start"`, and `binding`. The binding contains
+`subject_id`, `destination_id`, `request_sha256`, `scope_sha256` and
+`payload_sha256`. Its digests are JSON arrays of exactly 32 integers in
+0 through 255, not hex or base64 strings, and must be nonzero.
+
+The response object has the following fields:
+
+| Field | Exact value or representation |
+| --- | --- |
+| `schema_version` | Integer `1` |
+| `revocations` | Object containing nonzero `authority_epoch`, nonzero `revision`, and `revoked_grant_ids`, an array of grant-ID strings representing a set |
+| `grant` | A signed-grant object for approval, otherwise `null` or omitted |
+| `denial_reason` | A nonempty string of at most 1024 UTF-8 bytes for denial, otherwise `null` or omitted |
+
+Exactly one of `grant` and `denial_reason` must be non-null. The revocation
+head is required for either outcome. An identical head is accepted; an update
+must increase revision, cannot decrease epoch, and cannot remove revoked IDs
+within the same epoch. Revocation-head authentication comes from the protected
+Unix channel and pinned peer UID. The grant's Ed25519 signature does not sign
+the response or its separate `revocations` field. The issuer must authenticate
+and authorize its callers and obtain any policy inputs needed to approve the
+exact binding; the request carries digests, not the original prompt or full
+model/provider context.
+
+A signed-grant object contains `grant` and `signature`. The nested `grant`
+contains, in its Rust serialization order, `schema_version`, `signer_id`,
+`authority_epoch`, `grant_id`, `nonce`, `binding`, `not_before_unix_ms`, and
+`expires_at_unix_ms`. Its schema version is `1`, signer must match the pinned
+configuration and epoch must match the current trusted head. `nonce` is a
+nonzero 32-byte integer array; `signature` is a 64-byte Ed25519 integer array.
+The returned binding must equal the requested binding. Signer, grant, subject,
+destination and revoked-grant identifiers contain 1 through 128 ASCII
+letters/digits or `_-.:/`.
+
+The authoritative signing input is `FinalUseGrant::signing_bytes()`:
+the bytes `hepta.kernel.authority.final-use.v1` followed by one NUL byte,
+then the compact `serde_json::to_vec` serialization of the unsigned grant in
+the declaration order above. The nested binding uses the declaration order
+listed for the request. This is the existing Rust serialization contract,
+not a generic canonical-JSON algorithm; do not sign the received JSON text,
+the outer response, a hex/base64 representation, or the signature field.
+Reuse `signing_bytes()` where possible. Timestamps are unsigned Unix
+milliseconds, with `not_before_unix_ms <= now < expires_at_unix_ms` and a
+positive grant lifetime no longer than 300000 ms. The
+[issuer fixture](src/final_use_authorizer_tests.rs) demonstrates framing and
+signing against these exact source types; it is not a deployed service.
 
 ## 4. Revocation freshness boundary
 
@@ -86,11 +155,16 @@ expiry and that locally trusted head at effect entry.
 
 This does **not** make the worker an independent revocation-distribution
 service. A revocation that exists upstream but has not yet reached the worker
-cannot be discovered by `enter()` on its own. Production qualification must
-therefore establish the deployed issuer/revocation distribution, trusted time,
-peer/socket ACLs, key custody, and an external anti-rollback recovery
-procedure. Restoring or relocating the local authority store is not an
-independent anti-rollback oracle.
+cannot be discovered by `enter()` on its own. The current Unix adapter calls
+`FinalUseAuthority::open_state_dir`: it uses one pinned key, the system clock,
+and no external `AuthorityFrontierStore`. The shared authority also exposes a
+constructor accepting an issuer key ring, host clock and external frontier,
+but this CLI and its configuration do not compose it. That host integration
+remains source work,
+in addition to independently qualifying the deployed issuer/revocation
+distribution, trusted time, peer/socket ACLs, key custody and anti-rollback
+recovery procedure. Restoring or relocating the local authority store is not
+an independent anti-rollback oracle.
 
 ## 5. Tool/effect ceiling
 
