@@ -236,6 +236,31 @@ remaining RunStart time; the native App Server driver retains its own physical
 request timeout and reconciliation semantics. None of these clocks converts an
 unknown physical result into safe replay.
 
+The native observer polls the exact bound Agentd run alongside process health.
+An individual `RunCancel` propagates to the existing physical `turn/interrupt`
+path even when the owner remains ready and the embedding token is unchanged.
+Each status RPC shares the remaining observation deadline and its RPC cap;
+run ID, running generation, context/envelope identity and revision are checked
+before interpreting control state. Missing, regressed or indeterminate state
+stops observation for reconciliation and never authorizes a new model send.
+The observer rechecks control state before terminal publication so a concurrent
+Completed notification cannot erase cancellation. A late physical terminal is
+retained as evidence while its cancelled execution boundary remains cancelled.
+Before sending, exact-run stop state is checked while the local pre-effect abort
+proof is still available; a known stop consumes that proof rather than claiming
+an uncertain dispatch failed. The final publication receipt is also checked for
+retained cancellation because another observer can win the same-phase terminal
+race. These checks do not create a cross-owner atomic send/cancel transaction.
+On restart, a newly recovered intelligence terminal inherits durable stop
+intent, prior refusal boundaries, lost-owner authority and observed usage before
+settlement. Its current Agentd state and terminal publication receipt are also
+checked before the first journal settlement. Exact rehydrated attachment and
+dispatch states, or an uncancelled Indeterminate with authenticated physical
+terminal evidence, can be reconciled without another model send. An
+already-cached terminal remains byte-for-byte unchanged. Learning
+may acknowledge those physical facts without promoting cancelled execution to
+successful execution authority.
+
 Learning file/grant/writer operations use bounded blocking slots and retain real
 capacity until completion after request detachment. Arbitrary synchronous storage
 I/O cannot be safely interrupted as an individual in-process thread. The existing

@@ -45,7 +45,8 @@
       "id": "generation_fence",
       "tests": [
         "running_generation_differs_from_spawn_and_is_admitted",
-        "forged_generation_or_fence_is_rejected_before_mutation"
+        "forged_generation_or_fence_is_rejected_before_mutation",
+        "revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence"
       ],
       "supportScope": "composition-bound coordinator admission; not Supervisor process-restart E2E"
     },
@@ -146,6 +147,22 @@
         "rollback_lock_and_parent_links_fail_without_mutating_target"
       ],
       "supportScope": "separately retained, locked rollback floor using one anchored parent handle for read/lock/replace and fail-closed uncertain writes; target-host restore/crash qualification remains open"
+    },
+    {
+      "id": "individual_run_cancellation",
+      "tests": [
+        "bound_run_cancel_reaches_physical_interrupt_and_late_completed_stays_cancelled",
+        "terminal_first_selection_and_historical_cancel_cannot_restore_success",
+        "mixed_run_identity_and_unknown_control_state_stop_without_replay",
+        "run_owner_poll_is_bounded_by_the_remaining_observation_deadline",
+        "same_phase_terminal_receipt_preserves_cancel_after_final_status_check",
+        "pre_send_control_gate_aborts_cancel_or_mixed_run_with_live_proof_and_persists_no_effect",
+        "durable_cancel_without_terminal_survives_full_thread_read_recovery",
+        "recovered_terminal_retains_prior_stop_authority_and_usage",
+        "current_control_cancellation_stops_new_recovery_but_exact_rehydrated_attachment_is_allowed",
+        "fresh_recovery_publication_cancel_race_is_frozen_as_cancelled"
+      ],
+      "supportScope": "exact-run pre-send, live and terminal control checks with mocked Agentd RPC and App Server transport; real local journal reopen and authenticated ThreadRead fixture projections; no target-host cancellation latency or daemon crash-cut qualification"
     }
   ],
   "ordinaryProductTests": [
@@ -644,6 +661,72 @@
     {
       "name": "nonterminal_physical_or_agentd_observations_cannot_reach_outcome_evidence",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_product_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "bound_run_cancel_reaches_physical_interrupt_and_late_completed_stays_cancelled",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "terminal_first_selection_and_historical_cancel_cannot_restore_success",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "mixed_run_identity_and_unknown_control_state_stop_without_replay",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "run_owner_poll_is_bounded_by_the_remaining_observation_deadline",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "same_phase_terminal_receipt_preserves_cancel_after_final_status_check",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_terminal_cancel_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "pre_send_control_gate_aborts_cancel_or_mixed_run_with_live_proof_and_persists_no_effect",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_terminal_cancel_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "durable_cancel_without_terminal_survives_full_thread_read_recovery",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_boundary_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "recovered_terminal_retains_prior_stop_authority_and_usage",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_boundary_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "current_control_cancellation_stops_new_recovery_but_exact_rehydrated_attachment_is_allowed",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_publication_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "fresh_recovery_publication_cancel_race_is_frozen_as_cancelled",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_publication_tests.rs",
       "package": "codex-hepta-infer-worker-host",
       "executionStatus": "pending"
     }

@@ -80,6 +80,11 @@ would weaken these guarantees.
 | Timeout/completion state is not linearized | Watchdog and request use separate counted flags; completion races publication | One shared worker state orders timeout accounting and completion |
 | Provider factory can publish a late successful result | Watchdog expires while host invocation factory returns success | Check worker rejection and deadline before accepting the result |
 | Native recovered terminal is not projected into Agentd | Native journal supplies a real terminal but Agentd remains indeterminate | Reconcile the same run's terminal without repeating provider effects |
+| Individual run cancellation does not reach native execution | Another authenticated client cancels the dispatched run, but the embedding's global token and process health remain unchanged | Observe the exact bound run during live execution and route its cancellation through the existing interrupt/grace path |
+| A known cancellation can still precede a physical send | The run is cancelled during final-use preparation after its dispatch projection, while only the global token is checked before model send | Recheck the exact run while the local pre-effect abort proof remains available; consume that proof before persisting native cancellation |
+| Crash recovery can wash away durable stop intent | Cancellation is journaled before a crash but no terminal is settled; ThreadRead then reports Completed | Preserve the retained refusal boundary before journaling a newly recovered physical terminal; never mutate an already-cached terminal |
+| Recovery can freeze success before observing cancellation in its owner receipt | Agentd is cancelled after a new ThreadRead status check and before terminal publication, while native has already settled Succeeded | Reconcile the exact terminal and inspect its owner receipt before the first journal settlement; allow authenticated uncancelled lost-ack recovery |
+| Same-phase terminal publication can hide cancellation | Another observer publishes a late Succeeded after cancellation; an idempotent publication returns that receipt | Inspect the returned owner's retained cancellation reason before granting native success |
 | Native lifecycle generation is compared to process identity | The control client uses spawn generation while the canonical run uses the next Running generation; a real admitted run is rejected | Keep the wire identity at spawn and validate run receipts against checked `spawn + 1`; reject overflow |
 | Completed provider message is omitted without deltas | A legal done-only response yields a successful terminal with empty captured output | Collect authoritative completed messages by item identity, with de-duplication and existing byte bounds |
 | Recovered output may be projected from a partial history view | ThreadRead Summary omits earlier messages after the stream is lost | Require a Full view before recovered output projection; reject partial views without replay |
@@ -97,6 +102,7 @@ would weaken these guarantees.
 | Ready publication can exceed the remaining budget | Final DTO construction and integrity checks happen after the last observed deadline check | Check monotonic and durable deadlines again immediately before Ready publication |
 | Module declaration collides with project qualification schema | A source-only map claims generic v3 schema but lacks its observed execution contract | Register a distinct source-declaration schema and validate it through the owner verifier without granting execution |
 | Legacy qualification appends skip Prepared integrity | An explicitly enabled qualification path records public decision fields after the prepared DTO was mutated | Validate the existing private Prepared seal before either qualification append; production learning already had this gate |
+| A durable run-start regression uses an unrelated fence | The baseline fixture constructs an arbitrary digest despite requiring the composed source identity | Derive the fixture fence from its actual runtime composition; retain the production fence check and forged-fence regression |
 
 The latest baseline already has final currentness fences for abstention and
 slow-path terminal outcomes. An early reading of the older checkout suggested
@@ -149,6 +155,30 @@ App Server fixture. That fixture omitted streaming text frames; investigating
 it also exposed the completed-message collection defect above. These partial
 results do not qualify the later corrected candidate. Final native assertions
 and exact source-head/base-merge CI remain pending unless recorded separately.
+
+Subsequent source-head run `36784727055` at `cc49113e8fec61c3c1ca955d3fd5bf3cc168f26f`
+and base-merge run `36784733685` at `4c20734afe7861dfa6b63276e955d0efa854c667`
+both passed 104 intelligence, 52 operation-owner, 119 ledger and 53 native
+tests. Operations and ledger each had one ignored test; native had none. Their
+default Agentd stage had 219 passed, one ignored and one failed: the baseline
+durable run-start fixture used an unrelated fence. This iteration corrects that
+fixture without changing the production identity check. These results predate
+the new individual-run cancellation bridge and cannot qualify that change.
+The final cancellation iteration adds ten native regressions covering pre-send,
+live, terminal-publication and recovery cuts. Two independent closing source
+reviews found no additional confirmed actionable issue. The final focused
+verifier run passed all 143 Python tests, and tracked declarations and derived
+metadata checks passed. Scoped Rust formatting and `git diff --check` passed;
+the local native/default-Agentd test and package-fix commands had not completed
+at the final source snapshot; dependency compilation was constrained by an
+exhausted shared local disk. These attempts do not establish the new native
+assertions. Exact-candidate CI and required
+production gates remain pending until their actual command records exist.
+The current head's development-documents run also passed all 691 Python tests;
+its final integration gate failed on other modules' historical source
+observations/anchors. Strict diagnostics failed on existing memory-extension
+and codex-core dependency lints. No failing gate is weakened or reported as a
+success.
 
 Source references, added tests and successful declaration checks are not
 substitutes for native test execution. No historical receipt, bootstrap artifact

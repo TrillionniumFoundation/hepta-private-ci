@@ -47,6 +47,16 @@ compatible snapshot and aggregate identity. Rehashing substituted fields or
 grafting a different valid same-registry compilation cannot change that lineage;
 such changes fail with `Integrity` rather than alter staged developer fragments.
 
+An individual Agentd `RunCancel` now reaches a bound native physical observer
+without requiring process-health loss or embedding-wide cancellation. The
+bridge is private and leaves public bindings, wire enums and journal schemas
+unchanged. A terminal observed concurrently with cancellation retains its
+physical status but cannot restore a successful execution boundary. Callers
+must continue to require separate Agentd and learning closure receipts.
+New intelligence terminal recovery preserves the journal's stop intent and
+retained authority/usage. Existing cached terminal observations are returned
+unchanged, preserving their digest and separate control-closure diagnostics.
+
 ## Durable compatibility
 
 SQLite migrations are append-only and versioned. Existing semantic digests,

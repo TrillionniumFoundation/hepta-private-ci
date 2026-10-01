@@ -58,7 +58,8 @@
         "codex-rs/hepta-agentd/src/intelligence_worker_state.rs",
         "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
         "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-        "codex-rs/hepta-agentd/src/intelligence_product_qualification_integrity_tests.rs"
+        "codex-rs/hepta-agentd/src/intelligence_product_qualification_integrity_tests.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
       ],
       "reviewGlobs": [
         "codex-rs/hepta-agentd/src/intelligence_product*",
@@ -78,7 +79,8 @@
         "codex-rs/hepta-agentd/src/intelligence_commit_state.rs",
         "codex-rs/hepta-agentd/src/intelligence_worker_state.rs",
         "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
-        "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
       ],
       "requirementIds": [
         "generation_fence",
@@ -153,7 +155,13 @@
         "codex-rs/hepta-infer-worker-host/src/native_output_observation_tests.rs",
         "codex-rs/hepta-infer-worker-host/src/native_output_recovery_tests.rs",
         "codex-rs/hepta-infer-worker-host/src/native_intelligence_product_tests.rs",
-        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_observation.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_observation_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_boundary.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_terminal_cancel_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_boundary_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_publication_tests.rs"
       ],
       "reviewGlobs": [
         "codex-rs/hepta-infer-worker-host/**",
@@ -162,7 +170,8 @@
       ],
       "requirementIds": [
         "actual_owner_outputs",
-        "exact_learning_identity"
+        "exact_learning_identity",
+        "individual_run_cancellation"
       ],
       "requiredCommandRecords": [
         "native-tests.json",

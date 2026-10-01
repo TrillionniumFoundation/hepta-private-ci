@@ -29,6 +29,13 @@ lanes; do not transplant logs from an older head.
 `Unavailable` means the durable result may be unknown. It is never evidence that
 a commit or physical effect failed.
 
+For an individual admitted run, use Agentd `RunCancel` with its current revision.
+The bound native observer detects the stop intent through exact-run status and
+requests `turn/interrupt`; a ready process alone does not clear cancellation.
+Track cancellation-to-stop latency and distinguish an accepted cancellation
+from a confirmed physical stop. A late Completed event remains a physical fact
+with a cancelled execution boundary, and unknown outcomes remain reconcile-only.
+
 ## 3. Restart and crash handling
 
 1. Keep the original operation identity, semantic digest, generation and fence.
