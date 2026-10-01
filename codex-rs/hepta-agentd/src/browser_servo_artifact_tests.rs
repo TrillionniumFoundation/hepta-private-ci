@@ -19,7 +19,8 @@ fn artifact_stream_preserves_all_selected_bytes_at_the_limit() {
 #[test]
 fn artifact_stream_rejects_growth_without_scanning_the_unbounded_tail() {
     let mut input = Cursor::new(vec![b'x'; 1_000_000]);
-    let error = stream_bounded(&mut input, /*maximum*/ 64, |_| {}).expect_err("oversized live contents");
+    let error =
+        stream_bounded(&mut input, /*maximum*/ 64, |_| {}).expect_err("oversized live contents");
     assert_eq!(error.kind(), io::ErrorKind::InvalidData);
     assert_eq!(input.position(), 65);
 }
@@ -27,7 +28,8 @@ fn artifact_stream_rejects_growth_without_scanning_the_unbounded_tail() {
 #[test]
 fn artifact_stream_rejects_contents_truncated_after_metadata_admission() {
     let mut input = Cursor::new([]);
-    let error = stream_bounded(&mut input, /*maximum*/ 64, |_| {}).expect_err("empty live contents");
+    let error =
+        stream_bounded(&mut input, /*maximum*/ 64, |_| {}).expect_err("empty live contents");
     assert_eq!(error.kind(), io::ErrorKind::InvalidData);
 }
 
