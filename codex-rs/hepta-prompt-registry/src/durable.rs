@@ -57,6 +57,10 @@ mod payloads;
 #[path = "durable_lifecycle_validation.rs"]
 mod lifecycle_validation;
 
+#[path = "durable_recovery.rs"]
+mod recovery;
+pub use recovery::PromptRegistryRecoveryAnchor;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -79,6 +83,9 @@ impl fmt::Debug for DurablePromptRegistry {
 }
 
 impl DurablePromptRegistry {
+    /// Bootstrap or reopen internally validated state without an independent
+    /// current-cut witness. A self-consistent old backup cannot be detected by
+    /// this path; use `open_state_dir_with_recovery_anchor` for anchored recovery.
     pub fn open_state_dir(
         directory: &Path,
         maximum_records: usize,
@@ -1291,15 +1298,35 @@ struct Store {
     fail_storage_full_before_rename_once: Cell<bool>,
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OpenPolicy {
+    BootstrapAllowed,
+    ExistingStateRequired,
+}
+
 impl Store {
     fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
-        let root = prepare_directory(directory)?;
+        Self::open_with_policy(directory, OpenPolicy::BootstrapAllowed)
+    }
+
+    fn open_with_policy(
+        directory: &Path,
+        policy: OpenPolicy,
+    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
+        let root = match policy {
+            OpenPolicy::BootstrapAllowed => prepare_directory(directory)?,
+            OpenPolicy::ExistingStateRequired => prepare_directory_with_policy(directory, policy)?,
+        };
         // Serialize bootstrap before a marker exists. Otherwise another opener
         // could acquire the new marker between its creation and file locking,
         // strand the creator, and leave an apparently initialized empty store.
         // The descriptor retains this lock for the owner's complete lifetime.
         root.try_lock()
             .map_err(|_| DurableRegistryError::StateLocked)?;
+        let has_state = entry_exists(&root, "registry.json")?;
+        if policy == OpenPolicy::ExistingStateRequired && !has_state {
+            return Err(DurableRegistryError::RecoveryStateMissing);
+        }
         let (lock, new_owner_marker) = match open_private(&root, "registry.lock", Access::CreateNew)
         {
             Ok(lock) => (lock, true),
@@ -1332,7 +1359,6 @@ impl Store {
             #[cfg(test)]
             fail_storage_full_before_rename_once: Cell::new(false),
         };
-        let has_state = entry_exists(&store.root, "registry.json")?;
         if !has_state {
             if !store.new_owner_marker {
                 return Err(DurableRegistryError::Corrupt);
@@ -1456,14 +1482,33 @@ enum Access {
 
 #[cfg(unix)]
 fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
+    prepare_directory_with_policy(root, OpenPolicy::BootstrapAllowed)
+}
+
+#[cfg(unix)]
+fn prepare_directory_with_policy(
+    root: &Path,
+    policy: OpenPolicy,
+) -> Result<File, DurableRegistryError> {
+    prepare_directory_with_parent_sync(root, policy, File::sync_all)
+}
+
+#[cfg(unix)]
+fn prepare_directory_with_parent_sync(
+    root: &Path,
+    policy: OpenPolicy,
+    sync_parent: impl FnOnce(&File) -> std::io::Result<()>,
+) -> Result<File, DurableRegistryError> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
 
-    let created = match std::fs::DirBuilder::new().mode(0o700).create(root) {
-        Ok(()) => true,
-        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => false,
-        Err(_) => return Err(DurableRegistryError::Unavailable),
-    };
+    if policy == OpenPolicy::BootstrapAllowed {
+        match std::fs::DirBuilder::new().mode(0o700).create(root) {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(_) => return Err(DurableRegistryError::Unavailable),
+        }
+    }
     let directory: File = rustix::fs::open(
         root,
         rustix::fs::OFlags::RDONLY
@@ -1472,7 +1517,13 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
             | rustix::fs::OFlags::CLOEXEC,
         rustix::fs::Mode::empty(),
     )
-    .map_err(|_| DurableRegistryError::UnsafeStateDirectory)?
+    .map_err(|error| {
+        if policy == OpenPolicy::ExistingStateRequired && error == rustix::io::Errno::NOENT {
+            DurableRegistryError::RecoveryStateMissing
+        } else {
+            DurableRegistryError::UnsafeStateDirectory
+        }
+    })?
     .into();
     let metadata = directory
         .metadata()
@@ -1483,17 +1534,22 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
     {
         return Err(DurableRegistryError::UnsafeStateDirectory);
     }
-    if created {
-        // Syncing files and the owner directory cannot make a new directory's
-        // name durable in its parent. Fence that first-publication boundary too.
-        let parent = root
-            .parent()
-            .filter(|parent| !parent.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        File::open(parent)
-            .and_then(|parent| parent.sync_all())
-            .map_err(map_precommit_io)?;
-    }
+    // A failed first parent sync leaves a directory behind. Repeat this fence
+    // for existing directories too, so a successful retry cannot skip making
+    // the owner directory's name durable before any selected publication.
+    // Resolve the actual parent from the opened owner, not its spelling. A
+    // relative "." or a path ending in ".." can otherwise sync the owner or a
+    // child while leaving the owner's entry in its real parent unfenced.
+    let parent: File = rustix::fs::openat(
+        &directory,
+        "..",
+        rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::DIRECTORY | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::Mode::empty(),
+    )
+    .map_err(std::io::Error::from)
+    .map_err(map_precommit_io)?
+    .into();
+    sync_parent(&parent).map_err(map_precommit_io)?;
     Ok(directory)
 }
 
@@ -1537,6 +1593,14 @@ fn open_private(
 
 #[cfg(not(unix))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
+    Err(DurableRegistryError::UnsafeStateDirectory)
+}
+
+#[cfg(not(unix))]
+fn prepare_directory_with_policy(
+    _root: &Path,
+    _policy: OpenPolicy,
+) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
@@ -1594,6 +1658,12 @@ pub enum DurableRegistryError {
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,
+    /// The independently supplied current-cut witness has an invalid shape.
+    InvalidRecoveryAnchor,
+    /// The validated selected state differs from the independently supplied cut.
+    RecoveryAnchorMismatch,
+    /// Anchored recovery cannot bootstrap an absent owner or selected state.
+    RecoveryStateMissing,
     /// Rename may have succeeded but directory fsync failed; disk state is
     /// unknown and the current writer is poisoned until reopened.
     IndeterminateDurability,

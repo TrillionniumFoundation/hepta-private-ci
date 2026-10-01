@@ -38,6 +38,7 @@ pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
 pub use delivery::RealizationDeliveryV2;
 pub use durable::DurablePromptRegistry;
 pub use durable::DurableRegistryError;
+pub use durable::PromptRegistryRecoveryAnchor;
 pub use protocol::PromptFactorV1;
 pub use protocol::PromptRealizationV1;
 pub use protocol::ProtocolCodecError;

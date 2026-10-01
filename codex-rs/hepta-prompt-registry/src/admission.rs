@@ -14,6 +14,7 @@ use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::IdProfileV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
@@ -249,8 +250,9 @@ impl<'a> FinalUseAdmissionAuthority<'a> {
         expected_evidence_digest: Digest32,
         consumer: impl FnOnce(VerifiedAdmission) -> T,
     ) -> Result<T, AdmissionError> {
-        let reviewer_id = StableId::new(signed.grant.binding.subject_id.clone())
-            .map_err(|_| AdmissionError::InvalidGrant)?;
+        let reviewer_id =
+            StableId::with_profile(&signed.grant.binding.subject_id, IdProfileV1::Stable)
+                .map_err(|_| AdmissionError::InvalidGrant)?;
         let expected = final_use_admission_binding(
             factor,
             &reviewer_id,
@@ -500,10 +502,10 @@ pub(crate) const fn map_final_use_error(error: FinalUseError) -> AdmissionError 
 
 fn validate_grant_shape(grant: &AdmissionGrantV1) -> Result<(), AdmissionError> {
     if grant.schema_version != 1
-        || StableId::new(grant.signer_id.clone()).is_err()
-        || StableId::new(grant.grant_id.clone()).is_err()
-        || StableId::new(grant.binding.factor_id.clone()).is_err()
-        || StableId::new(grant.binding.reviewer_id.clone()).is_err()
+        || StableId::with_profile(&grant.signer_id, IdProfileV1::Stable).is_err()
+        || StableId::with_profile(&grant.grant_id, IdProfileV1::Stable).is_err()
+        || StableId::with_profile(&grant.binding.factor_id, IdProfileV1::Stable).is_err()
+        || StableId::with_profile(&grant.binding.reviewer_id, IdProfileV1::Stable).is_err()
         || grant.binding.factor_content_sha256 == [0; 32]
         || grant.binding.reviewed_scope_sha256 == [0; 32]
         || grant.binding.evidence_sha256 == [0; 32]
