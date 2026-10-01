@@ -63,12 +63,13 @@ async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
         clippy::disallowed_methods,
         reason = "test-only connection hook injects SQLite disk-full on every reconnect; production uses the state shim"
     )]
-    store.pool = sqlx::sqlite::SqlitePoolOptions::new()
+    let reopened_pool = sqlx::sqlite::SqlitePoolOptions::new()
         .max_connections(4)
         .min_connections(4)
         .connect_with(options)
         .await
         .expect("reopen owner pool with per-connection fault");
+    store.pool = reopened_pool;
     let mut held = Vec::new();
     for _ in 0..4 {
         let mut connection = store.pool.acquire().await.expect("fault connection");
