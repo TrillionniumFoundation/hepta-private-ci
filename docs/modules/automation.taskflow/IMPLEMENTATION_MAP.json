@@ -31,17 +31,17 @@
         {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_v2_dst_tzdb_revision",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/tests/automation.rs",
           "kind": "legacy_schedule_compatibility",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
           "kind": "real_agentd_calendar_v2_capability_negotiation_and_product_control",
-          "command": "cargo test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
+          "command": "just test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
         }
       ],
       "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records; Agentd advertises automation.calendar_v2@1.0 and generation-fences the typed creation call.",
@@ -79,12 +79,12 @@
         {
           "path": "codex-rs/hepta-automation/src/scheduler.rs",
           "kind": "scheduler_and_recovery",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_due_materialization",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
@@ -121,12 +121,12 @@
         {
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "deterministic_occurrence_and_generation_fence",
-          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
           "kind": "restart_reconciliation_identity",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         }
       ],
       "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity, while unresolved provider contact remains quarantined.",
@@ -165,22 +165,22 @@
         {
           "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
           "kind": "canonical_final_use_intent_binding",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
           "kind": "durable_indeterminate_terminal_reconciliation",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "durable_step_and_terminal_propagation",
-          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
-          "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+          "command": "just test -p codex-hepta-automation --test authorized_effect"
         },
         {
           "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
@@ -293,8 +293,12 @@
     "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/automation_protected_file.rs",
+    "codex-rs/hepta-agentd/src/automation_protected_file_tests.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
     "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
     "codex-rs/hepta-agentd/src/automation_service.rs",

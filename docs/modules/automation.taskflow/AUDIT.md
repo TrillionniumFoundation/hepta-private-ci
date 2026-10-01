@@ -1,7 +1,7 @@
-# automation.taskflow adversarial audit — 2026-10-01
+# automation.taskflow adversarial audit
 
-Baseline: `997e7beef8151160065df36b024bc8da5c989e93` on the inspected `main` checkout.
-Candidate identity and native results are supplied by the final Git/CI evidence; this report is not an activation receipt.
+This stable audit guide records failure mechanisms, repaired invariants, regression locations and remaining implementation boundaries.
+Git history preserves prior revisions. Current candidate identity, test results and pull-request status are supplied only by exact-candidate Git/CI evidence; this document is not an execution or activation receipt.
 Primary owner: `automation-platform`; Agentd composition co-owner: `agent-runtime`.
 Contracts, write domains and authority ceilings remain those of the canonical registries.
 
@@ -35,7 +35,7 @@ The timer's built-in workflow is `codex_turn`; configured HTTP execution require
 Priority P1 denotes a correctness, authority or availability boundary; P2 denotes narrower liveness or documentation accuracy.
 The locations below identify source fixes and executable regressions, not independent acceptance evidence.
 
-| ID | Priority | Baseline failure and resulting behavior | Owning source / regression |
+| ID | Priority | Failure mechanism and resulting behavior | Owning source / regression |
 | --- | --- | --- | --- |
 | AF-01 | P1 | Forged/stale claim tuples or mutated payloads could reach materialization/preparation; durable claim, canonical instant/revision and prompt/thread now revalidate before outbox creation | `lifecycle.rs`, `automation_taskflow.rs`; `occurrence_materialization_rejects_stale_and_forged_claims`, `preparation_rejects_payload_mutated_after_materialization` |
 | AF-02 | P1 | Unknown/claimed step work could be abandoned through progression, takeover or another attempt; latest unresolved steps now block those mutations transactionally | `taskflow_guard.rs`, `taskflow.rs`, `taskflow_step.rs`; `tests/taskflow_step.rs` and authorized-effect crash cases |
@@ -43,30 +43,38 @@ The locations below identify source fixes and executable regressions, not indepe
 | AF-04 | P2 | Saturating successor arithmetic admitted a repeated maximum version; checked version+1 now rejects overflow | `neural_circuit.rs`; `saturated_version_cannot_admit_same_version_successor` |
 | AF-05 | P1 | Retirement could strand admitted execution; API, SQL trigger and reopen checks now reject admitted/running/indeterminate work | `timer_lifecycle.rs`, migration `0020`; `retirement_waits_for_lifecycle_settlement_while_handoff_preserves_it` |
 | AF-06 | P1 | Provider identities lacked owner isolation; new v2 keys bind owner/run/step while persisted v1 attempts retain original recovery keys | `authorized_effect.rs`, `effect_dispatch_ledger.rs`, migration `0021`, Agentd host; `provider_identity_is_owner_scoped_and_preserves_historical_recovery` |
-| AF-07 | P1 | Effect entry lacked exact live-lease admission, and stale recovery could append evidence; live admission and historical-attempt recovery fences now validate before mutation/contact | `authorized_effect.rs`, `effect_dispatch_ledger.rs`; `expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant`, `stale_recovery_fence_cannot_append_terminal_provider_evidence` |
+| AF-07 | P1 | Effect entry lacked exact live-lease admission, stale recovery could append evidence, and writer/final-use waits could admit with a pre-wait timestamp; logical entry time plus monotonic elapsed time now revalidates at writer admission and inside the authorized consumer immediately before driver contact, while historical recovery checks its exact fence | `authorized_effect.rs`, `effect_dispatch_ledger.rs`, `tests/authorized_effect/effect_admission_tests.rs`; expired-lease, stale-recovery and four sync/async writer/consumer-wait regressions |
 | AF-08 | P1 | Host synchronous thread joining blocked runtime progress; native async dispatch now retains the final-use active fence without the join | Agentd `automation_effect_host.rs`; `host_dispatches_exact_wire_payload_once` |
 | AF-09 | P1 | Same-frontier revocation contents, raced file reads and unbounded HTTP body buffering weakened trust/capacity checks; full-head equality, capped stable-file reads and <=65536-byte streamed responses now reject drift/oversize | Agentd host and `model-provider/src/provider_effect.rs`; host/provider source tests |
 | AF-10 | P2 | One unresolved occurrence could monopolize observation; successful still-pending snapshots now rotate with exact CAS, and queue/turn observations have a 5-second deadline | `occurrence_observer.rs`, Agentd `automation_recovery.rs`; `completed_observations_rotate_work_without_overwriting_newer_state` and timeout regression |
 | AF-11 | P2 | Calendar resume bypassed canonical timing/forbidden overlap; finite delayed coalescing incorrectly depended on an expired profile reference | `schedule_v2.rs`, `lifecycle.rs`; resume/finite-profile regressions and `disabling_and_resuming_cannot_bypass_forbidden_overlap` |
 | AF-12 | P1 | Terminal crash recovery could reinterpret a settled step, and pre-step reclaim compared differently scaled generations; exact terminal receipt/outcome and same-unit generations now govern recovery | `automation_taskflow.rs`; `terminal_recovery_cannot_rewrite_a_settled_historical_step`, `pre_step_crash_reclaims_using_taskflow_generation_units` |
 | AF-13 | P1 | Scheduler detachment could remove explicit external-effect recovery along with admission; Agentd retains a recovery-only store while new execution remains disabled | Agentd `state.rs` / `state_control.rs`; `host_dispatches_exact_wire_payload_once` exercises detached control reaching exact-attempt validation and denied new execution |
-| AF-14 | P2 | Guide/dossier stopped at schema16 and denied an existing configured host; documentation now reflects schema22, actual control composition and layered completion | `TECHNICAL.md`, execution dossier and native mapping |
+| AF-14 | P2 | Guide/dossier stopped at schema16 and denied an existing configured host; documentation now reflects the current schema, actual control composition and layered completion | `TECHNICAL.md`, execution dossier and native mapping |
 | AF-15 | P2 | The inherited map anchor was not an ancestor of the inspected candidate; a scoped fresh navigation review now binds current source objects and explicitly retains the superseded identity/reason | `IMPLEMENTATION_MAP.json`; development navigation verification, without transferring executable acceptance evidence |
 | AF-16 | P1 | Recovery recomputed host identity from current configuration; new HTTP attempts now persist immutable scope/attested-contract binding before contact and reject changed remote recovery, while already durable terminal evidence remains locally recoverable | migration `0022`, authorized-effect ledger and Agentd host; durable binding/reopen and scope/reattested-endpoint drift regressions |
+| AF-17 | P2 | String parsing rejected the IPv6 loopback HTTP fixture; typed URL hosts now accept loopback addresses while retaining HTTPS for non-loopback destinations | `model-provider/src/provider_effect.rs`; `attested_http_adapter_accepts_ipv6_loopback_fixture_only` |
+| AF-18 | P1 | The directly consumed durable operation kernel sampled time before writer admission, allowing queued writes to falsely report clock rollback or renew an expired lease | `hepta-operations/src/durable_store.rs`; held-writer, true rollback and delayed-renewal regressions |
+| AF-19 | P2 | Calendar search assumed local-label order matched UTC order, missed midnight rollbacks and inclusive profile boundaries, and scanned past finite ends; UTC envelopes now bound both directions and unsupported triple overlaps reject at validation | `schedule_v2.rs`; midnight, adjacent-transition, finite-end and three-way-overlap regressions |
+| AF-20 | P1 | A cancelled, disabled, expired or non-running occurrence could cross the first queue-contact boundary; exact current task/run/claim and both lease horizons now guard first intent, with monotonic elapsed time at the scheduler contact cut | `store.rs`, `scheduler.rs`; first-intent and delayed-preparation regressions; existing uncertainty remains historically recoverable |
+| AF-21 | P2 | Expired local claims could roll lifecycle identity before settling the old step; safely cancelled backlog could retain an orphan Claimed lifecycle and permanently freeze schedule policy | `automation_taskflow.rs`, `taskflow_step.rs`, `taskflow.rs`, `lifecycle.rs`; exact attempt/fence and independent-contact barriers, expired-claim and disable/resume regressions |
+| AF-22 | P1 | A recording command collision could leave an already-sent effect without a writable projection; contradictory recovery could poison immutable evidence before terminal-step validation | `authorized_effect.rs`, `effect_dispatch_ledger.rs`, `taskflow_step.rs`; pre-contact command uniqueness and atomic terminal outcome/receipt guards in both write directions |
+| AF-23 | P1 | Status NotFound was treated as proven absence, and Accepted admission was lost when flattened into an opaque indeterminate receipt; typed initial status and dispatch/lookup acceptance witnesses now preserve admission across restart. Known Accepted excludes both later rejection and proven absence while allowing terminal execution observations | migration `0023`, authorized bridge and HTTP host; NotFound quarantine, `lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absence`, `rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch` |
+| AF-24 | P2 | Agent draining blocked current-generation historical recovery; the narrow recovery gate now permits settlement while preserving critical/revocation readiness, exact generation and denied new execution | Agentd `state_control.rs`; draining recovery, stale generation and execution-denial assertions |
+| AF-25 | P1 | A regular configuration file replaced by a FIFO before open could block the host; Unix open now uses NOFOLLOW/NONBLOCK and rejects nonregular descriptors | Actual shared `automation_protected_file.rs` and sibling tests; isolated runtime target reads the same production source |
+| AF-26 | P2 | The focused CI only watched an obsolete branch, and documentation used a dated status file with an incomplete owner write envelope | `.github/workflows/automation-taskflow-focused.yml`, stable `AUDIT.md`, work packages and guide; relevant-path PR/main triggers, locked repository test runner and precise host source registration |
 
 Permanent retirement is stricter than compatible handoff, but does not erase a safely stopped backlog.
 Provider-proven-absent pending/claimed work can remain behind its tombstone after leased/uncertain drain; it cannot admit a new provider effect.
 Schema19's pre-existing migration convergence preserves recognized SQL/checksums and rejects unknown, dirty or conflicting historical identities.
 
-## Two-round convergence
+## Repeat-review method
 
-Round 1 compared documentation and registries to actual callers, then reviewed identity/authority, durable lifecycle, progression and host execution independently.
-It produced the primary admission, unresolved-work, canonical-definition, retirement, provider identity, host and bounded-observer fixes.
-Round 2 re-read the combined changes at crash and compatibility boundaries rather than treating individual agent findings as final proof.
-It refined safe retired backlog handling, preserved v1 lookup identity, checked terminal receipt cuts and corrected generation-unit reclaim.
-It also checked post-retirement external-effect recovery continuity and retained explicit source/product limitations.
-Regression and review convergence is bounded by this inspected scope; it is not a claim that no bugs or future optimizations exist.
-Unfinished integration and target-host work remain recorded below instead of being counted as source completion.
+Compare documentation and registries to actual callers, then review identity/authority, durable lifecycle, progression and host execution independently.
+After each coherent source repair, re-read the combined changes at pre-contact, lost-reply, terminal-persistence, cancellation, retirement, reopen and compatibility cuts.
+Exercise concurrent writer admission, exact command/attempt identity, historical provider lookup, scope/contract drift and timezone boundaries through their owning native APIs.
+Run affected-package regressions before repeating the adversarial review. Stop a review round only when no new concrete defect remains in that inspected scope; record unresolved implementation and evidence boundaries separately.
+Review convergence is bounded by scope and evidence. It is not a claim that no bugs or future optimizations exist.
 
 ## Remaining implementation work
 
@@ -84,35 +92,29 @@ Unfinished integration and target-host work remain recorded below instead of bei
 - Measure queue age, latency distributions, memory/storage growth and recovery work; source ceilings are not measured SLOs.
 - Obtain independent acceptance and activation decisions; promotion/release remain separately governed.
 
-## Validation record
+## Candidate verification requirements
 
-Primary source repair head: `a2946119486f7d7a8fa652a080b2a875ab78150b`; source tree: `c9439cfa27ba12a30ab2feb90fc7e39430ac04be`. The separately reviewed schema22 stage is `67189d6ec2d7e3d3bcaddc7b53f9552d266dabce`, tree `7c24dd796565ca2c922fe308fa732bde5332ba6e`.
-The final candidate includes subsequent documentation/provenance commits; its identity is available in [PR 1311](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1311).
+Resolve the source head/tree, current base and any prospective merge from fresh Git/CI receipts. Attach command outputs and their exact candidate identity to the review; do not cache live results or pull-request state here.
 
-| Check | Observed result |
+| Check | Required evidence and interpretation |
 | --- | --- |
-| `just test -p codex-hepta-automation --offline --locked` | PASS, 118/118 including schema22 |
-| `just test -p codex-model-provider --lib --offline --locked` | PASS, 84/84 |
-| Automation structural qualification feature | PASS, 123/123 including schema22 |
-| `codex-hepta-agentd` library tests | NOT EXECUTED: four build attempts ended with SIGKILL in unchanged `codex-protocol`/`codex-core` dependencies under the shared 8 GiB memory limit; host runtime regression execution remains unproved locally |
-| Scoped `just fix` for automation, model-provider and Agentd | PASS on final schema22 source with warnings; library and test targets type-check, which does not execute their tests |
-| `just fmt` and whitespace | PASS |
-| Privileged caller verifier self-test and verify | PASS |
-| Readiness registry verification | PASS, 40 modules and 31 protocols |
-| Module docs and implementation maps, development profile | PASS, 40 documents/maps; historical execution evidence is not requalified |
-| TaskFlow exact source observation | PASS at `60c7f061ebef5ccd4612ef6a412460ce766bb236`: 34 checked paths and 18 current source objects; no execution or acceptance receipt is reissued |
-| Local document links and whitespace | PASS |
+| `just test -p codex-hepta-automation --offline --locked` | Execute the affected owner package, including migrations, lifecycle and effect regressions. |
+| `just test -p codex-hepta-automation --features taskflow-structural-qualification --offline --locked` | Execute the feature-gated kernel/step qualification cases; compilation alone does not pass them. |
+| `just test -p codex-model-provider --lib --offline --locked` | Execute provider transport/status validation when that owner changes. |
+| `just test -p codex-hepta-operations --lib --offline --locked` | Execute durable operation regressions when the consumed kernel owner changes. |
+| `just test -p codex-hepta-agentd --lib --offline --locked` | Execute actual runtime composition/recovery cases; a dependency build failure leaves them unexecuted. |
+| Scoped `just fix`, `just fmt` and whitespace | Apply repository-required lint/format checks; static test-target type-checking does not execute tests. |
+| Privileged caller verifier | Run its self-test and source verification after final-use/caller changes. |
+| Readiness, module docs and implementation maps | Run development-profile navigation checks on the committed candidate; they do not requalify historical execution or acceptance evidence. |
+| TaskFlow exact source observation | Bind the current source paths/blobs and owner callers through the scoped native map. Retain superseded non-ancestral provenance with its reason; never transfer old execution evidence to a fresh navigation observation. |
+| Selected-host/provider qualification | Supply independent provisioning, restore, authority, authentic timezone and performance evidence before activation. |
 
-Required source checks use affected-package `just test`, structural qualification and scoped format/lint checks under repository instructions.
-Document/reference checks include `hepta-module-docs.py verify`, `hepta-implementation-maps.py verify` and `hepta-readiness.py verify` on the committed candidate.
-Fetching the inherited anchor established that it belonged to a different history branch, rather than merely being absent from the shallow checkout. The map records a fresh scoped source-navigation review and retains the invalid inherited identity/reason explicitly; no old execution evidence is reissued. The stronger map binds exact current blobs and the reviewed source tree. Final native/navigation results are recorded only from actual command output.
-
-Initial remote CI is not wholly green. The source caller verifier passed; its downstream closed-set regression fixture has pre-existing missing boundary entries and invalid regexes in the exact baseline. Windows Bazel Clippy failed before compilation with an argument-length error; Python SDK failures include an unavailable `git` subprocess. Those unchanged checks do not constitute a TaskFlow regression or a successful required-check receipt.
-Whole-repository qualification-profile map verification is blocked by other inherited non-ancestral/stale observations. Those independent module observations are not refreshed or promoted by this scoped TaskFlow review.
+Separate a failed regression from a build failure, a skipped step and a passed check. Earlier failures in an aggregate job can prevent the TaskFlow commands from executing at all. Inspect the exact failing owner and baseline source before attributing an aggregate failure to this module; required checks remain unsatisfied until their current candidate receipts pass.
+Verify inherited map ancestry against the current candidate. A scoped TaskFlow navigation repair must not refresh or promote independent module observations. Whole-repository qualification remains governed by each owner's exact evidence.
 
 ## Operational continuity
 
 Keep existing Agentd ownership, private per-Agent storage and kernel authority; do not add another execution spine to close an integration gap.
-Preserve schema22, immutable observation/reconciliation history, provider-key version/contract binding, stable queue identity and unresolved effects during rollback.
+Preserve schema23, immutable observation/reconciliation and provider admission history, provider-key version/contract binding, stable queue identity and unresolved effects during rollback.
 Use a newer fenced compatible owner for handoff; do not revive predecessor handles or restore an old database over current receipts.
 Retain provider status access for pending effects before changing configuration or removing admission; control recovery does not authorize new execution.

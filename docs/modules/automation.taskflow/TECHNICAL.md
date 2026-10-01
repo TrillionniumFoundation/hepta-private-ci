@@ -39,8 +39,12 @@ Existing owning runtime composition:
 - `codex-rs/hepta-agentd/src/automation.rs`
 - `codex-rs/hepta-agentd/src/automation_recovery.rs`
 - `codex-rs/hepta-agentd/src/automation_effect_host.rs` for optional authorized HTTP effect control
+- `codex-rs/hepta-agentd/src/automation_protected_file.rs` for the shared private configuration/revocation file boundary
+- `codex-rs/hepta-agentd/src/automation_service.rs` / `src/state.rs` for scheduler attachment and recovery-only store retention
 - `codex-rs/hepta-agentd/src/state_control.rs` / `src/client.rs`
-- `codex-rs/hepta-agent-protocol` for capability-negotiated Calendar V2 control
+- `codex-rs/hepta-agent-protocol/src/lib.rs` for typed Calendar V2 and external-effect control; `src/capabilities.rs` owns additive capability negotiation
+
+The TaskFlow work package names these precise Agentd composition paths under the `runtime.agentd` co-owner. Shared protocol changes remain confined to the consumed control contract; this does not transfer Agentd's other runtime responsibilities to automation.
 
 The durable causal-chain implementation is described in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md). The legacy local execution-boundary calculator in `src/taskflow_execution_boundary.rs` remains a deny-all structural assessment and is **not** the positive provider dispatcher. Positive external effect dispatch is the separately bounded `src/authorized_effect.rs` seam consuming kernel-owned final-use authority.
 
@@ -301,6 +305,8 @@ Agentd's optional effect host loads the attested HTTP provider configuration and
 
 The host uses native async HTTP dispatch under the final-use active fence; it does not block an Agentd runtime thread with a worker join. New configured HTTP attempts persist an immutable `provider_contract_binding` before contact: a domain-separated SHA256 over the length-framed provider scope and exact attested HTTP contract digest, covering endpoints, lookup template, headers, timeout and contract ID. Recovery first settles an already durable terminal/proven-absence observation; before any remote lookup, a stored binding that differs from the configured host rejects. Explicit effect-reconcile control preserves stored key version. The scheduled observer handles Codex queue/turn occurrences, not arbitrary external-effect backlogs.
 
+Provider admission acknowledgment is distinct from effect execution outcome. The first observation retains the driver's optional typed `Unknown`, `Accepted`, `Completed` or `Rejected` status instead of reconstructing it from an opaque receipt digest. Both an initial dispatch `Accepted` and a later lookup `Accepted` durably record the same per-attempt append-only admission witness before observation/projection. An earlier `Accepted` or a legacy `NULL` status cannot become failed merely because a later lookup says `Rejected`; the attempt remains unresolved. Known acceptance also rejects a later `ProvenAbsent` claim. A known initial `Unknown` can refine to `Rejected` only without an intervening acceptance witness. A generic owner-supplied terminal `Observed(Failed)` still represents an observed execution failure; it is not a provider admission rejection.
+
 Retiring/detaching the wake-up service does not drain the independent direct-effect ledger. Agentd retains its originally attached store for exact-attempt effect reconciliation; new execute still requires the live scheduler store, and readiness/generation checks remain in force. This recovery-only route consumes no fresh grant and cannot dispatch a new effect.
 
 The strict V1 host file binds `provider_scope`, `destination_id`, `final_use_scope_sha256`, dispatch/status endpoints, headers, timeout, provider contract digest/signature/verifying key, final-use signer/verifying key and an absolute revocation file. Both files must be canonical, regular, non-symlink and private on Unix; host configuration is <=64 KiB, revocations <=4 MiB, headers <=64, timeout 1..=30000 ms and effect wire bytes <=24 KiB. Same-revision changed revocation contents and rolled-back frontiers reject. Provider `NotFound`, `Unknown` or non-terminal acknowledgment remain indeterminate; status absence alone never authorizes replay.
@@ -309,14 +315,15 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v22 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v23 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, bounded terminal-observer continuation cursor, recovery phase and terminal receipt.
 - `automation_occurrence_events`: append-only hash-chained occurrence history.
 - `taskflow_step_outbox`: normal-schema durable `prepared -> claimed -> recorded -> reconciled` per-step receipt chain.
 - `taskflow_effect_dispatch_attempts`: immutable pre-provider intent/payload/final-use/destination/grant identity, provider-key version and nullable provider-contract binding.
-- `taskflow_effect_dispatch_observations`: immutable first provider observation.
+- `taskflow_effect_dispatch_observations`: immutable first provider observation with nullable typed provider-acknowledgment status.
+- `taskflow_effect_provider_acceptances`: one append-only provider-admission witness per attempt retains an observed `Accepted` across lookup/reopen and prevents a contradictory later rejection from creating terminal failure.
 - `taskflow_effect_dispatch_reconciliations`: immutable terminal reconciliation after a first `indeterminate` observation.
 - `automation_calendar_schedule_versions`: append-only Calendar V2 bytes and digest per schedule revision.
 - `destination_operation_dedupe`: immutable kernel operation/receipt identity at the schedule destination.
@@ -325,7 +332,7 @@ Schema v22 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations retain v12 Calendar V2, v13 append-only effect reconciliation, v14 frozen legacy claim revisions, v15 proven-absence legacy recovery and v16 terminal-observer cursors. V17 adds kernel operation dedupe; v18 adds timer lifecycle; v19 converges the two known historical migration branches by exact version/checksum identity without rewriting their SQL/checksums. Unknown, dirty or conflicting histories reject transactionally. V20 prevents permanent retirement with unsettled occurrences; v21 records provider-key version; v22 adds an immutable nullable provider-contract digest, with new configured HTTP attempts binding scope and exact attested transport contract before contact. Legacy/generic adapters retain `None`. A binary that does not understand schema v22 must not replace the owner against an upgraded store. Legacy dispatch ambiguity still requires exact provider-proven absence before a fresh claim; retired occurrence/client identities are never reused.
+Migrations retain v12 Calendar V2, v13 append-only effect reconciliation, v14 frozen legacy claim revisions, v15 proven-absence legacy recovery and v16 terminal-observer cursors. V17 adds kernel operation dedupe; v18 adds timer lifecycle; v19 converges the two known historical migration branches by exact version/checksum identity without rewriting their SQL/checksums. Unknown, dirty or conflicting histories reject transactionally. V20 prevents permanent retirement with unsettled occurrences; v21 records provider-key version; v22 adds an immutable nullable provider-contract digest, with new configured HTTP attempts binding scope and exact attested transport contract before contact. Legacy/generic adapters retain `None`. V23 retains nullable typed initial provider acknowledgment and append-only acceptance witnesses; migration never invents a prior status for legacy observations. A binary that does not understand schema v23 must not replace the owner against an upgraded store. Legacy dispatch ambiguity still requires exact provider-proven absence before a fresh claim; retired occurrence/client identities are never reused.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -337,6 +344,8 @@ Serialized definitions must match their canonical digest; the constructor placeh
 
 For external effects, automation computes `AuthorizedEffectIntent` itself over run/step/attempt/operation/subject/destination/payload/final-use-scope/policy-generation/dependency-state/compensation identity. `FinalUseAuthority::claim` durably consumes the signed grant nonce. The synchronous path uses `with_verified_effect`; the async path uses an active-dispatch fence entered after live revalidation and before the provider future is created. No mutex guard is held across `await`. A concurrent trusted revocation update returns explicit `DispatchInProgress` and may commit only after the bounded provider future completes or is cancelled, preserving the same before-or-after linearization without blocking a runtime thread. The immutable dispatch attempt separately records the concrete grant ID, authority epoch and nonce digest. Driver errors are allowed only before provider contact; ambiguous contact or a non-terminal provider acknowledgement returns `Indeterminate` and is later closed only by append-only provider reconciliation.
 
+Effect admission advances the caller's logical entry time by monotonic elapsed time. SQLite writer admission samples after acquiring `BEGIN IMMEDIATE`; the authorized consumer checks the admitted lease expiry again after final-use entry, immediately before calling the driver or creating its provider future. An expired pre-contact lease rejects without provider contact. If the attempt was already persisted, local no-contact evidence settles that exact attempt; a consumed grant nonce remains spent.
+
 ## 8. Failure semantics, recovery and rollback
 
 Crash boundaries are explicit:
@@ -346,7 +355,7 @@ Crash boundaries are explicit:
 - after possible App Server admission: stable-id `ReconcileOnly`; no blind duplicate;
 - after persisted turn: store turn identity, then observe terminal status from persisted turn history;
 - after terminal provider observation but before run projection settlement: reconcile the historical step first, then a newer Agent generation may re-fence only the TaskFlow run projection for `Indeterminate -> Reconcile`; it does not replay the effect;
-- indeterminate external effect: dependent mutation remains blocked; restart scanning returns both never-observed attempts and attempts whose first observation is `indeterminate`. A later terminal/proven-absent owner receipt is appended as separate reconciliation evidence and never overwrites or redispatches the first attempt.
+- indeterminate external effect: dependent mutation remains blocked; restart scanning returns both never-observed attempts and attempts whose first observation is `indeterminate`. A later terminal execution receipt is appended as separate reconciliation evidence and never overwrites or redispatches the first attempt. Provider absence can settle an attempt only without known accepted admission; known acceptance excludes both rejection and proven absence, while observed execution success/failure can settle it.
 
 Rollback preserves schedule revision, deterministic occurrence identity, stable queue identity and provider reconciliation state.
 
@@ -414,8 +423,9 @@ Focused source tests include:
 - legacy `src/effect_executor_tests.rs` only through the test-only reducer
 - Agentd automation/recovery unit and process qualification paths.
 - `codex-rs/hepta-agentd/src/automation_effect_host.rs` exercises the configured host against real SQLite and a mock HTTP provider; it is source verification, not an independent provider/host receipt.
+- The Unix regressions in `codex-rs/hepta-agentd/src/automation_protected_file_tests.rs` exercise the same private file boundary used by the actual host: opening a replaced FIFO does not block, symlinks and permissive files reject, and actual reads enforce the exact byte limit. The focused Bazel target `//codex-rs/hepta-agentd:hepta-agentd-protected-config-tests` isolates this file boundary; it does not execute the complete HTTP/control host.
 
-In `codex-rs`, exact-head CI runs the full `codex-hepta-automation` package, repeats it with `taskflow-structural-qualification`, and executes the explicit TaskFlow kernel/step Bazel targets. The deterministic synthetic merge runs the same TaskFlow qualification set. Documentation, source mapping and fixture presence are not substitutes for those receipts or for provider/host qualification.
+The reusable/manual `hepta-lane-b-truth.yml` source-closure workflow defines exact-source and deterministic synthetic-merge checks for the full `codex-hepta-automation` package, `taskflow-structural-qualification` and the explicit TaskFlow kernel/step Bazel targets. The focused automation workflow defines related-path pull-request/main-push triggers, affected-owner `just test --locked` commands, bounded build parallelism and cancellation of superseded candidates. A workflow definition does not prove that the current candidate triggered it or reached each command; obtain fresh command receipts for the applicable source and merge candidates. Documentation, source mapping and fixture presence are not substitutes for those receipts or for provider/host qualification.
 
 ### Neural Circuit test plan (not executed-test receipts)
 
@@ -515,13 +525,13 @@ Completion has separate observable layers:
 | --- | --- |
 | Documentation | Detailed guide, execution dossier and native mapping exist; exact candidate verification is required after source/doc changes. |
 | Durable automation | Calendar V2, occurrence/TaskFlow causal chain, bounded recovery, kernel dedupe and timer lifecycle are implemented. |
-| External effects | Optional configured Agentd HTTP host and final-use/reconciliation seams exist; arbitrary scheduled-effect workflows and selected-host provider evidence remain separate. |
+| External effects | Optional configured Agentd HTTP host, final-use/reconciliation seams and durable typed admission observations exist; arbitrary scheduled-effect workflows and selected-host provider evidence remain separate. |
 | Neural Circuits | Candidate compiler and successor admission guard exist; actual DecisionCells, ingress, joins, feedback, subcircuits and fair runtime execution remain targets. |
 | Production | Selected-host execution, authentic/current timezone provenance, deployment, independent acceptance and activation remain unproved; promotion/release are separately governed. |
 
 The adversarial audit identified stale schema/host documentation, blocking host dispatch, retirement that could strand admitted work, unresolved-step progression/retry, lease/terminal-receipt substitution, calendar recovery boundaries, forged definition digests and saturated successor versions. Their source fixes and regression locations must be read alongside exact candidate test output; this guide supplies no test-success or deployment claim. Repository status remains `production_implementation=false` until its registered evidence requirements pass.
 
-The [2026-10-01 adversarial audit](AUDIT_2026-10-01.md) records fixed findings, repeat-review scope and remaining integration/evidence work. New configured HTTP attempts pin provider scope/contract identity, and remote recovery rejects changed configuration. The store retains the digest, not a recoverable copy of credentials/configuration. Legacy/generic `None` attempts still require original key/status-lookup continuity or remain unresolved. Restore the original configured contract for remote lookup of bound pending work; a safe automatic rotation protocol remains unfinished, and historical v1 key ambiguity cannot be retroactively removed.
+The [adversarial audit guide](AUDIT.md) records repaired invariants, regression locations, repeat-review method and remaining integration/evidence work. Current candidate identities, live test results and pull-request state belong to exact-candidate Git/CI receipts. New configured HTTP attempts pin provider scope/contract identity, and remote recovery rejects changed configuration. The store retains the digest, not a recoverable copy of credentials/configuration. Legacy/generic `None` attempts still require original key/status-lookup continuity or remain unresolved. Restore the original configured contract for remote lookup of bound pending work; a safe automatic rotation protocol remains unfinished, and historical v1 key ambiguity cannot be retroactively removed.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
