@@ -33,6 +33,12 @@ use crate::TickReport;
 #[path = "tick_control_deadline_tests.rs"]
 mod deadline_tests;
 
+#[path = "tick_matrix_fault_tests.rs"]
+mod matrix_fault_tests;
+
+#[path = "tick_pending_deadline_tests.rs"]
+mod pending_deadline_tests;
+
 #[derive(Default)]
 struct Faults {
     main_drain_failures: u32,
