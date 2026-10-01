@@ -709,7 +709,7 @@ fn validate_generation_fields(
     }
     let mut node_ids = BTreeSet::new();
     for node in nodes {
-        if !node_ids.insert(node.node_id.clone()) {
+        if !node_ids.insert(&node.node_id) {
             return Err(KnowledgeGenerationErrorV2::DuplicateNode(
                 node.node_id.to_string(),
             ));
@@ -724,7 +724,7 @@ fn validate_generation_fields(
         {
             return Err(KnowledgeGenerationErrorV2::UnknownEdgeNode);
         }
-        if !edge_ids.insert(edge.identity.clone()) {
+        if !edge_ids.insert(&edge.identity) {
             return Err(KnowledgeGenerationErrorV2::DuplicateEdge(
                 edge.identity.clone(),
             ));
@@ -742,13 +742,17 @@ fn canonicalize_supports(
         return Err(KnowledgeGenerationErrorV2::SupportLimitExceeded);
     }
     supports.sort();
-    let mut identities = BTreeSet::new();
+    // Derived Ord starts with source identity and revision, so duplicates are
+    // adjacent after sorting. Check all supports before removing tombstones.
+    let mut previous: Option<&KnowledgeSupportV2> = None;
     for support in supports.iter() {
         support.validate()?;
-        let identity = (support.source_id.clone(), support.source_revision);
-        if !identities.insert(identity) {
+        if previous.is_some_and(|value| {
+            value.source_id == support.source_id && value.source_revision == support.source_revision
+        }) {
             return Err(KnowledgeGenerationErrorV2::DuplicateSupport);
         }
+        previous = Some(support);
     }
     Ok(())
 }

@@ -713,7 +713,7 @@ fn register_second_factor(
         template_digest: tuple.template_digest,
         tool_schema_digest: tuple.tool_schema_digest,
         context_profile_digest: tuple.context_profile_digest,
-        locale_id: tuple.locale_id.clone(),
+        locale_id: tuple.locale_id,
         role: PromptRoleV2::DeveloperInstruction,
         payload_digest: digest("second factor payload"),
         token_cost: 1,

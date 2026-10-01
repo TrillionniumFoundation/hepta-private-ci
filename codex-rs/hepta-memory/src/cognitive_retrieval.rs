@@ -866,8 +866,8 @@ impl CognitiveStore {
                     .verified
                     .relation_kinds()
                     .iter()
+                    .filter(|&kind| !typed_kinds.contains(kind))
                     .cloned()
-                    .filter(|kind| !typed_kinds.contains(kind))
                     .collect::<BTreeSet<_>>()
                     .into_iter()
                     .collect(),

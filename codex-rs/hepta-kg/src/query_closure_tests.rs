@@ -17,7 +17,8 @@ fn duplicate_support_identity_is_rejected_even_with_recomputed_digest() {
             &mut candidate.nodes[0].supports
         };
         let mut duplicate = supports[0].clone();
-        duplicate.source_fact_digest = digest("different-content-same-source-revision");
+        let duplicate_digest = digest("different-content-same-source-revision");
+        duplicate.source_fact_digest = duplicate_digest;
         supports.push(duplicate);
         supports.sort();
         candidate.generation_digest =
@@ -26,6 +27,23 @@ fn duplicate_support_identity_is_rejected_even_with_recomputed_digest() {
             candidate.validate(),
             Err(KnowledgeGenerationErrorV2::DuplicateSupport)
         );
+        assert_eq!(
+            build_complete_generation(
+                generation(1),
+                input(candidate.nodes.clone(), candidate.edges.clone()),
+            ),
+            Err(KnowledgeGenerationErrorV2::DuplicateSupport)
+        );
+        let supports = if on_edge {
+            &mut candidate.edges[0].supports
+        } else {
+            &mut candidate.nodes[0].supports
+        };
+        supports
+            .iter_mut()
+            .find(|support| support.source_fact_digest == duplicate_digest)
+            .expect("duplicate fixture")
+            .tombstoned = true;
         assert_eq!(
             build_complete_generation(generation(1), input(candidate.nodes, candidate.edges)),
             Err(KnowledgeGenerationErrorV2::DuplicateSupport)
