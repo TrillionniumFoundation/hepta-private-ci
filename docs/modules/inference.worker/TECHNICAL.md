@@ -225,6 +225,8 @@ Current focused test sources (source references, not pass receipts):
 
 The product E2E calls the driver library and constructs its authority configuration directly. It does not spawn `hepta-infer-worker` or exercise its protected configuration file, stdin/stdout, exit status or signal handling. Executable-caller coverage remains separate from this source composition.
 
+The worker's in-process Agentd composition passes its helper-capable test executable explicitly to `CognitiveTestHost::start`. `core_test_support` installs the real Codex arg0 helper dispatch in that harness; the fixture does not rely on an unconfigured executable path or qualify the worker CLI lifecycle.
+
 In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. For the cross-owner hosted composition, also run `just test -p codex-hepta-agentd --test runtime_codex_product_e2e`. These commands are invocations, not stored results. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.

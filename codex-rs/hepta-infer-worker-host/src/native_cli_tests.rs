@@ -4,12 +4,23 @@ use super::NativeCliOptions;
 use super::parse;
 use std::path::PathBuf;
 
+fn fixture_path(name: &str) -> String {
+    std::env::current_dir()
+        .unwrap()
+        .join(name)
+        .to_string_lossy()
+        .into_owned()
+}
+
 fn required_arguments() -> Vec<String> {
+    let agentd_socket = fixture_path("agent.sock");
+    let journal = fixture_path("journal");
+    let authority_config = fixture_path("authority.json");
     [
         "--profile",
         "native-app-server",
         "--agentd-socket",
-        "/agent.sock",
+        &agentd_socket,
         "--agent-id",
         "agent-1",
         "--generation",
@@ -17,13 +28,13 @@ fn required_arguments() -> Vec<String> {
         "--model",
         "model-1",
         "--journal",
-        "/journal",
+        &journal,
         "--request-id",
         "request-1",
         "--maximum-in-flight",
         "2",
         "--final-use-authority-config",
-        "/authority.json",
+        &authority_config,
     ]
     .into_iter()
     .map(str::to_string)
@@ -52,15 +63,15 @@ fn complete_invocation_is_parsed_before_external_io() {
     assert_eq!(
         parse(arguments).unwrap(),
         Invocation::Run(Box::new(NativeCliOptions {
-            agentd_socket: PathBuf::from("/agent.sock"),
+            agentd_socket: PathBuf::from(fixture_path("agent.sock")),
             agent_id: "agent-1".into(),
             generation: 7,
             model: "model-1".into(),
-            journal: PathBuf::from("/journal"),
+            journal: PathBuf::from(fixture_path("journal")),
             request_id: "request-1".into(),
             maximum_in_flight: 2,
             context_query: None,
-            final_use_authority_config: PathBuf::from("/authority.json"),
+            final_use_authority_config: PathBuf::from(fixture_path("authority.json")),
             intelligence: Some(IntelligenceCliOptions {
                 run_id: "run-1".into(),
                 expected_revision: 3,
