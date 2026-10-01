@@ -26,6 +26,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 path, pin,
             )?
         }
+        "describe-current-operational" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::describe_current_cpu_operational(
+                path, pin,
+            )?
+        }
         _ => return Err("unsupported initial operational purpose".into()),
     };
     println!("{}", serde_json::to_string(&report)?);

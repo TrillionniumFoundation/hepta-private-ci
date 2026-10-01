@@ -78,6 +78,20 @@ pub fn open_installed_cpu_neuron_generation_v1(
     worker: CpuNeuronControlConfigV1,
     admission: AgentdNeuronArtifactAdmissionV1,
 ) -> Result<AgentdNeuronHandleV2, AgentdError> {
+    open_guarded_cpu_neuron_generation(plan, mode, control, clock, worker, admission)
+}
+
+pub(crate) fn open_guarded_cpu_neuron_generation<G>(
+    plan: CpuNeuronGenerationPlanV1,
+    mode: CpuNeuronGenerationOpenModeV1,
+    control: Arc<Mutex<DurableInferenceControl>>,
+    clock: Arc<dyn AuthorityClock>,
+    worker: CpuNeuronControlConfigV1,
+    admission: G,
+) -> Result<AgentdNeuronHandleV2, AgentdError>
+where
+    G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
+{
     for path in [
         &plan.model_manifest,
         &plan.generation_store,

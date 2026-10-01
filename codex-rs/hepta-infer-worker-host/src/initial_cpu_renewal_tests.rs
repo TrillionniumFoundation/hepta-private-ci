@@ -36,6 +36,33 @@ fn profile() -> HostResult<Profile> {
 }
 
 #[test]
+fn frozen_profile_rejects_invalid_runtime_resources_before_files_or_roles() -> HostResult<()> {
+    let mut value = profile()?;
+    value.resources.write_amplification_ppm = 10_000_000;
+    let error = value
+        .validate(/*now*/ 200)
+        .err()
+        .ok_or("invalid envelope accepted")?;
+    assert!(matches!(
+        error.downcast_ref::<codex_hepta_neuron::NeuronRuntimeError>(),
+        Some(codex_hepta_neuron::NeuronRuntimeError::InvalidConfig)
+    ));
+    value.resources.write_amplification_ppm = 4_000_000;
+    // The fixture deliberately has no Root source files. A valid envelope must
+    // proceed to actual custody checks instead of passing the entire profile.
+    let error = value
+        .validate(/*now*/ 200)
+        .err()
+        .ok_or("missing Root custody accepted")?;
+    assert!(
+        error
+            .downcast_ref::<codex_hepta_neuron::NeuronRuntimeError>()
+            .is_none()
+    );
+    Ok(())
+}
+
+#[test]
 fn fresh_operational_scope_cannot_change_model_normalization_roles_or_gates() -> HostResult<()> {
     let original = profile()?;
     let mut fresh = profile()?;

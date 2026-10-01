@@ -168,6 +168,14 @@ impl Profile {
         )?)
     }
     pub(super) fn validate(&self, now: u64) -> HostResult<()> {
+        NeuronResourceEnvelopeV1 {
+            p95_latency_micros: self.resources.p95_latency_micros,
+            p99_latency_micros: self.resources.p99_latency_micros,
+            transient_allocation_bytes: self.resources.transient_allocation_bytes,
+            checkpoint_bytes: self.resources.checkpoint_bytes,
+            write_amplification_ppm: self.resources.write_amplification_ppm,
+        }
+        .validate()?;
         self.validate_identity()?;
         if self.frozen_at_ms > now || self.expires_at_ms <= now {
             return Err("fixed CPU current authority expired or not issued".into());
@@ -307,6 +315,7 @@ impl Profile {
             Digest32::of_bytes(&runtime.calibration_evidence_payload_v1()?);
         runtime.calibration.ood_artifact_digest =
             Digest32::of_bytes(&runtime.ood_evidence_payload_v1()?);
+        runtime.validate_native(&native)?;
         runtime.semantic_digest()?;
         Ok((runtime, native))
     }

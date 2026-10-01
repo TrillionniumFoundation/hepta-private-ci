@@ -136,6 +136,22 @@ pub struct NeuronResourceEnvelopeV1 {
     pub write_amplification_ppm: u32,
 }
 
+impl NeuronResourceEnvelopeV1 {
+    /// Validate the original product resource envelope before any role spends
+    /// work evaluating, publishing or installing an unusable runtime profile.
+    pub fn validate(&self) -> Result<(), NeuronRuntimeError> {
+        if self.p95_latency_micros == 0
+            || self.p99_latency_micros < self.p95_latency_micros
+            || self.transient_allocation_bytes == 0
+            || self.checkpoint_bytes == 0
+            || !(1_000_000..=4_000_000).contains(&self.write_amplification_ppm)
+        {
+            return Err(NeuronRuntimeError::InvalidConfig);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronRuntimeConfigV1 {
     pub config_id: StableId,
@@ -160,7 +176,10 @@ pub struct NeuronRuntimeConfigV1 {
 }
 
 impl NeuronRuntimeConfigV1 {
-    pub(crate) fn validate_native(&self, native: &SparseConfig) -> Result<(), NeuronRuntimeError> {
+    /// Check the complete immutable physical tuple using the same validation
+    /// performed by the durable runtime constructor.
+    pub fn validate_native(&self, native: &SparseConfig) -> Result<(), NeuronRuntimeError> {
+        self.resource_envelope.validate()?;
         for (field, digest) in [
             ("model manifest", self.model_manifest_digest),
             ("encoder", self.encoder_digest),
@@ -185,11 +204,6 @@ impl NeuronRuntimeConfigV1 {
             || self.state_width != native.width
             || !(1..=MAX_INPUT_FEATURES).contains(&self.input_feature_dimension)
             || !(1..=MAX_MODULATORS).contains(&self.modulator_dimension)
-            || self.resource_envelope.p95_latency_micros == 0
-            || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
-            || self.resource_envelope.transient_allocation_bytes == 0
-            || self.resource_envelope.checkpoint_bytes == 0
-            || !(1_000_000..=4_000_000).contains(&self.resource_envelope.write_amplification_ppm)
         {
             return Err(NeuronRuntimeError::InvalidConfig);
         }

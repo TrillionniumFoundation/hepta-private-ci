@@ -124,10 +124,10 @@ impl AgentdNeuronRuntimeV2Host {
                 "Neuron V2 runtime is stopped".to_string(),
             ));
         }
+        invocation.validate(identity, record)?;
         let input = self
             .tick_provider
             .build_tick(identity, record, invocation)?;
-        invocation.validate(identity, record)?;
         let runtime_body_digest = record.runtime_body_digest;
         self.controller
             .prepare(
