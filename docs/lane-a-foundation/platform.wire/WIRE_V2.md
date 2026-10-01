@@ -73,15 +73,27 @@ V2 is selected only by explicit HPTN negotiation or by a caller that has
 already bound version 2 out of band. Unknown versions remain fail-closed.
 Security-sensitive callers requiring metadata binding must require the
 `METADATA_BOUND_DIGEST` capability so a V1-only peer cannot silently
-downgrade that property.
+downgrade that property. A live connection then passes frames through
+`NegotiatedStreamingDecoder`, which rejects any frame version different from
+the completed HPTN selection; `decode_frame` remains an offline parser.
 
 ## Schema and streaming layers
 
 Framing does not interpret a domain payload. `SchemaRegistry` admits a stable
 schema identity, compatible wire-version range and payload bound before a
-`PayloadCodec` performs typed semantic validation. `StreamingDecoder`
-checks the fixed 54-byte header before accepting the advertised body and caps
-connection-local buffering at two maximum-size frames.
+`PayloadCodec` performs typed semantic validation. `StreamingDecoder` copies only enough input to validate the fixed 54-byte
+header before accepting the advertised body. `StreamDecodeBatch` preserves a
+valid completed prefix together with a later terminal error from the same
+chunk; a terminal decoder is poisoned. Completed frames transfer ownership
+rather than repeatedly shifting an unread suffix. Resumable `feed` consumes a
+bounded prefix, reports `bytes_consumed` and yields without poisoning when its
+byte or frame-work allowance is exhausted. The transport resumes with the
+unconsumed suffix. Compatibility `push`/`push_batch` reject a chunk before
+consumption when buffered bytes plus the chunk exceed the byte ceiling. Their
+completed-frame work ceiling instead preserves any completed prefix and then
+terminates with a resource error; these wrappers do not provide resumable yield. See [BOUNDED_FEED.md](../../modules/platform.wire/BOUNDED_FEED.md)
+and [HARDENED_SESSION.md](../../modules/platform.wire/HARDENED_SESSION.md) for
+live authenticated typed ingress and its independent resource owners.
 
 ## Non-claims
 

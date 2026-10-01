@@ -1,0 +1,44 @@
+name: Platform Wire exact worktree export
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/platform-wire-worktree-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export exact source worktree
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify and package exact worktree
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          tar --exclude=.git -czf /tmp/platform-wire-worktree.tar.gz .
+          sha256sum /tmp/platform-wire-worktree.tar.gz > /tmp/platform-wire-worktree.tar.gz.sha256
+
+      - name: Upload exact worktree
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-worktree-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            /tmp/platform-wire-worktree.tar.gz
+            /tmp/platform-wire-worktree.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1

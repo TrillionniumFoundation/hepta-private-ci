@@ -55,10 +55,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "${SOURCE_SHA}" \
-            --expected-tree "${SOURCE_TREE}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          python3 scripts/hepta-implementation-maps.py verify --require-current-source
           python3 scripts/hepta-objective-target-measure.py --self-test
 
       - name: Objective and product-composition tests

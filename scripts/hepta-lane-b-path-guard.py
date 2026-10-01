@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import tempfile
 import tomllib
@@ -12,6 +13,16 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+
+
+def resolve_source_roots(root: Path, module: dict[str, Any]) -> list[str]:
+    """Load the shared resolver by path so importlib-based verifier tests work."""
+    source = Path(__file__).resolve().with_name("hepta_module_source_roots.py")
+    spec = importlib.util.spec_from_file_location("lane_b_path_source_roots", source)
+    need(spec is not None and spec.loader is not None, "source-root resolver")
+    implementation = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(implementation)
+    return implementation.resolve_source_roots(root, module)
 
 
 class Invalid(ValueError):
@@ -158,6 +169,53 @@ def verify_anchor(
     )
 
 
+def add_registered_delegate_roots(
+    root: Path, maps: dict[str, dict[str, Any]], roots: dict[str, list[str]]
+) -> None:
+    """Resolve cross-lane delegates through the canonical module registry.
+
+    Lane membership does not transfer source ownership. A delegate may name a
+    registered owner in another lane, but its source still has to resolve under
+    that owner's canonical roots (or an actual direct Cargo dependency).
+    """
+    registry = load(root / "docs/modules/MODULES.json")
+    registered = registry.get("modules")
+    need(isinstance(registered, list) and registered, "canonical module registry")
+    owners: dict[str, dict[str, Any]] = {}
+    for entry in registered:
+        need(isinstance(entry, dict), "canonical module entry")
+        module = entry.get("id")
+        need(
+            isinstance(module, str) and module and module not in owners,
+            "duplicate or invalid canonical module owner",
+        )
+        owners[module] = entry
+
+    for row in maps.values():
+        for operation in row.get("operations", []):
+            for delegate in operation.get("delegatedCallees", []):
+                need(isinstance(delegate, dict), f"{row['module']}: delegate object")
+                owner = delegate.get("ownerModule")
+                need(
+                    isinstance(owner, str) and owner in owners,
+                    f"{row['module']}: unregistered delegated owner",
+                )
+                if owner in roots:
+                    continue
+                try:
+                    resolved = resolve_source_roots(root, owners[owner])
+                except (KeyError, OSError, TypeError, ValueError) as exc:
+                    raise Invalid(
+                        f"{row['module']}: delegated owner roots {owner}: {exc}"
+                    ) from exc
+                need(resolved, f"{row['module']}: delegated owner has no source roots")
+                for owner_root in resolved:
+                    canonical_path(
+                        root, owner_root, f"{owner}: delegated owner root", require_file=None
+                    )
+                roots[owner] = resolved
+
+
 def verify(root: Path = ROOT) -> int:
     truth = load(
         TRUTH
@@ -188,6 +246,8 @@ def verify(root: Path = ROOT) -> int:
             canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
         maps[module] = row
         roots[module] = resolved_roots
+
+    add_registered_delegate_roots(root, maps, roots)
 
     operations = tests = delegates = 0
     for module, row in maps.items():

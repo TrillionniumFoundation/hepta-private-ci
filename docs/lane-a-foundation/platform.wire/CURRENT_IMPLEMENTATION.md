@@ -1,8 +1,37 @@
 # platform.wire current implementation
 
-This document is the entry point for the **current executable** `platform.wire`
-contract. The broader target architecture remains in
-`docs/modules/platform.wire/TECHNICAL.md`.
+This document is the entry point for the **current executable** `platform.wire` contract. The broader target architecture remains in `docs/modules/platform.wire/TECHNICAL.md`; production security and evidence rules are normative in [`SECURITY_AND_QUALIFICATION.md`](../../modules/platform.wire/SECURITY_AND_QUALIFICATION.md).
+
+## Current production API boundary
+
+Production-only builds disable default features and enable `production`. Their
+authenticated owner is `HardenedManagedWireSession`, consumed by
+`HardenedRecordStream<C: BoundPayloadCodec>` for typed ingress. The owner binds
+negotiation, role, frozen policy, channel and direction-specific keys internally;
+raw session and managed-record owners are tooling/test compatibility APIs.
+[`HARDENED_SESSION.md`](../../modules/platform.wire/HARDENED_SESSION.md) defines
+the checked establishment, canonical ingress, budgets, EOF and rotation APIs.
+
+Current runtime/gateway, context/compiler and runtime.codex dependencies still
+enable default `protocol-tooling`. The gateway publishes a read-only HPTA V2
+response; context receipt framing is a compatibility DTO; the normal worker's
+V3 admission is an in-process encode/decode round trip before final-use claim.
+None constructs the hardened authenticated transport owner. Production
+transport composition and peer/channel/key provenance remain incomplete.
+
+## 2026-09-29 validation convergence follow-up
+
+See [`PRODUCTION_VALIDATION_20260929.md`](../../modules/platform.wire/PRODUCTION_VALIDATION_20260929.md) for the generation-test and fleet-validator fixes, real-emitter contract tests, per-record idle reclamation, current-source receipt selection, protected-host failure evidence, and the five-path paired-measurement intake. The separately registered eight-scenario production-composition intake is defined in [`PRODUCTION_INTAKE_20260929.md`](../../modules/platform.wire/PRODUCTION_INTAKE_20260929.md). Core, integrated exact/merge, protected-host, paired performance, production composition and independent acceptance remain distinct evidence scopes. A matching historical receipt set does not qualify the current checkout. No deployed authenticated ingress, gRPC threshold result, production-composition observation, independent acceptance or release is asserted without its actual evidence.
+
+## 2026-09-29 resource-contract update
+
+The tooling-compatible managed ingress owner is `ManagedRecordStream`, constructed by `ManagedAuthenticatedWireSession::into_record_stream`. Its normal `feed` delegates to `feed_with_budget`; the shared, non-Clone `RecordStreamBudget` charges accepted source bytes, full-record authentication attempts and full serialized-frame work, including failed attempts. The production counterpart is the codec-bound `HardenedRecordStream`, with the same three caller-owned budget dimensions and typed output. The existing plain/offline reader has bounded read-call and Interrupted accounting. See [`FRAME_AND_IO_BUDGETS_20260929.md`](../../modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md) and [`BUDGET_AND_STAGING_20260929.md`](../../modules/platform.wire/BUDGET_AND_STAGING_20260929.md) for the compatibility-owner history and [`HARDENED_SESSION.md`](../../modules/platform.wire/HARDENED_SESSION.md) for the production owner.
+
+Commit `188821153bac9fde971124fefd5ba2e8390e63b8` introduced an idle staging-capacity ceiling on that same managed feed path, plus owner-controlled pressure reclamation and ten ordinary crate regressions. The default idle limit is `min(max_feed_bytes, max_record_bytes)` (64 KiB with default limits). Small allocations remain reusable; excessive empty staging capacity is released. Partial headers/bodies, exact consumed offsets, accepted prefixes, authenticated sequence state, egress identity and consuming EOF semantics are preserved. See [`IDLE_RETENTION_20260929.md`](../../modules/platform.wire/IDLE_RETENTION_20260929.md) for API, exact implementation/test blob identities, tests and performance tradeoffs.
+
+The commit above identifies introduction of the code, not a reusable qualification receipt for every descendant. The authoritative current candidate is the full source/tree in the PR's current-candidate section and the actual source/ordered-merge/target-host workflow receipts. Documentation-only descendants still need applicable exact-source checks; queued, running, skipped, cancelled or historical results are not passes. No local Rust compilation or benchmark pass was available in the editing environment.
+
+Idle staging bounds and serialized-frame work budgets do not independently bound active fragments, caller-retained output across turns, transport queues, connection count, allocator overhead or process RSS. Those remain obligations of the existing product/transport owners. This update does not introduce a second authenticator, executor, authority owner or replay journal. It does not grant RustOK, Ready, handoff, activation or release, and it does not replace the unchanged five-path package-size ratio <= 0.70 or p99 ratio <= 0.80 qualification gates.
 
 ## Current executable contract
 
@@ -10,100 +39,171 @@ contract. The broader target architecture remains in
 | --- | --- | --- |
 | Frozen HPTA V1 framing | implemented | `WIRE_V1.md`, V1 boundary tests and frozen vector |
 | HPTA V2 metadata-bound digest | implemented | `WIRE_V2.md`, V2 mutation tests and frozen vector |
-| HPTN version/capability negotiation | implemented | `NEGOTIATION_V1.md` and downgrade tests |
-| Multi-version frame dispatch | implemented | `codex-rs/hepta-wire/src/frame.rs` |
-| Schema admission | implemented framework | `SchemaRegistry` admits stable IDs/version/payload bounds; registered product adapters also pin producer identity |
-| Typed payload serialization | implemented interface | `PayloadCodec`; each product schema supplies its canonical codec |
-| Bounded streaming decode | implemented | validates 54-byte header before advertised body, max two frames buffered |
-| Property testing | implemented | deterministic randomized round-trip and arbitrary-byte decoder tests |
-| Fuzz target | implemented | `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs` |
-| Live cross-runtime loading | implemented qualification path | Rust↔Python raw binary HPTN + HPTA V2 session test |
-| Named product source callers | source-composed | read-only native gateway plus strict schema/producer admission for `context.compiler` receipts and `runtime.codex` intents |
-| Production activation / external acceptance | not granted | requires separate exact-candidate, target-host and operator gates |
+| HPTN version/capability negotiation | implemented | `NEGOTIATION_V1.md`; effective capabilities are restricted to the selected version |
+| Session-bound decode | implemented | `WireSessionDecoder` and `NegotiatedStreamingDecoder` reject a different version before body admission |
+| Multi-version offline frame dispatch | implemented | `src/frame.rs`; deliberately not a live-session API |
+| Canonical fixed-header parser | implemented | `FrameHeader`; shared by one-shot and streaming decode |
+| Frozen schema/policy registry | implemented | bounded producer/role/capability policies and deterministic snapshot digest in `src/registry.rs` |
+| Envelope-coupled typed payload API | implemented | `WireSession::{encode_typed_envelope,decode_typed_envelope}` |
+| Bounded streaming decode | implemented | header-first admission, byte and frame-work budgets, valid-prefix/error batches and terminal poison state |
+| Managed record idle retention | implemented source, current receipt required | same `ManagedRecordStream` feed path, configurable idle ceiling, non-destructive pressure API and eleven retention regressions |
+| Authenticated transcript/session | implemented source | ordered HPTN offers, selected posture, registry snapshot and authenticated channel binding in `src/secure_session.rs` |
+| Direction-separated HPTM records | implemented source | initiator/responder key derivation, independent directional sequences and reflection rejection in `src/directional_session.rs` |
+| Hardened production owner and typed stream | implemented source | `HardenedManagedWireSession` → `HardenedRecordStream<C: BoundPayloadCodec>`; raw authenticated owners are excluded from the production-only public API |
+| Property testing and three fuzz targets | implemented source evidence | `src/property_tests.rs`, `decode_frames`, `managed_records`, `policy_admission`; exact-source execution is a qualification prerequisite |
+| Bidirectional cross-runtime loading | implemented qualification source | Rust→Python and Python→Rust raw HPTN/HPTA V2 session test with strict critical-field rejection |
+| Read-only runtime status caller | source-composed | explicit V2 `Accept` on the existing native-gateway runtime status route |
+| Product-bound runtime.codex caller | source-composed | `hepta-infer-worker-host` admits its normal bound `turn/start` intent through HPTA V2 plus `hepta.codex-operation-intent.v3` before final-use claim |
+| Exact-head / synthetic-merge evidence | workflow implemented, current receipt required | Lane A source-head and deterministic merge jobs emit schema-v2 receipts |
+| Protected target-host evidence | workflow implemented, execution pending | fixed self-hosted label, protected environment and exact dispatched SHA |
+| Protected five-path performance intake | contract and workflow implemented, producer evidence absent | registered exact-source paired candidate/gRPC measurements are required; the producer registry is intentionally empty until a real workflow and immutable plan are reviewed |
+| Protected production-composition intake | contract and workflow implemented, producer evidence absent | registered exact-source eight-scenario deployment observations are required; the producer registry is intentionally empty until a real workflow and immutable plan are reviewed |
+| Independent acceptance / release | externally governed, absent until issued | distinct reviewer and operations receipts, then release receipt |
 
-V1 continues to use its frozen payload-only digest. V2 binds schema, producer,
-generation, encoded lengths and payload into a domain-separated SHA-256 frame
-digest. Neither digest is a MAC or signature.
+V1 continues to use its frozen payload-only digest. V2 binds schema, producer, generation, encoded lengths and payload into a domain-separated SHA-256 frame digest. Neither digest is a MAC or signature. Authentication begins only when an authenticated transport channel binding is included in the negotiation transcript and either the transport itself supplies equivalent directional authenticated encryption or HPTM records are used.
 
 ## Public symbols and source bindings
 
-- V1 envelope: `codex-rs/hepta-wire/src/envelope.rs` — `WireEnvelope`
-- V2 envelope: `codex-rs/hepta-wire/src/envelope_v2.rs` — `WireEnvelopeV2`
-- negotiation: `codex-rs/hepta-wire/src/version.rs` — `NegotiationOffer`, `WireCapabilities`, `negotiate`
-- multi-version dispatch: `codex-rs/hepta-wire/src/frame.rs` — `DecodedEnvelope`, `decode_frame`
-- schema admission / typed codec boundary: `codex-rs/hepta-wire/src/schema.rs` — `SchemaRegistry`, `PayloadCodec`
-- streaming decoder: `codex-rs/hepta-wire/src/stream.rs` — `StreamingDecoder`
-- product source caller: `codex-rs/hepta-runtime/src/lib.rs` — `HeptaRuntime::status_wire_v2`
-- product transport surface: `codex-rs/hepta-native-gateway/src/lib.rs`
-- registered `context.compiler` port adapter: `codex-rs/hepta-context-compiler/src/wire.rs`
-- registered `runtime.codex` port adapter: `codex-rs/hepta-codex-adapter/src/wire.rs`
+- V1 envelope: `src/envelope.rs` — `WireEnvelope`.
+- V2 envelope: `src/envelope_v2.rs` — `WireEnvelopeV2`.
+- negotiation: `src/version.rs` — `NegotiationOffer`, `WireCapabilities`, `NegotiatedWire`, `negotiate`.
+- fixed header: `src/frame_header.rs` — `FrameHeader`, `ValidatedFrameHeader`.
+- live negotiated decode: `src/session.rs` — `NegotiatedStreamingDecoder`, `WireSessionDecoder`.
+- multi-version offline dispatch: `src/frame.rs` — `DecodedEnvelope`, `decode_frame`.
+- basic schema codec boundary: `src/schema.rs` — `SchemaRegistry`, `PayloadCodec`.
+- immutable production policy: `src/registry.rs` — `FrozenSchemaRegistryBuilder`, `FrozenSchemaRegistry`, `SchemaPolicy`.
+- authenticated transcript and immutable session: `src/secure_session.rs` — `NegotiationTranscript`, `WireSession`.
+- direction-separated public record layer: `src/directional_session.rs` — `AuthenticatedWireSession`, `SessionMacKey`, `SessionEndpoint`.
+- streaming decoder: `src/stream.rs` — `StreamingDecoder`, `StreamDecodeBatch`.
+- managed authenticated ingress and retention: `src/record_stream.rs` — `ManagedRecordStream`, `RecordStreamBudget`, `idle_buffer_limit_bytes`, `set_idle_buffer_limit_bytes`, `release_idle_buffer`.
+- production-only owner: `src/hardened_managed_session.rs` — `HardenedManagedWireSession`; exposes immutable metadata, bound typed seal/open, explicit retirement and consuming rotation.
+- production typed stream: `src/hardened_record_stream/impl.rs` — `HardenedRecordStream<C: BoundPayloadCodec>`; returns typed batches with exact consumed-byte accounting.
+- read-only caller: `codex-rs/hepta-runtime/src/lib.rs` — `HeptaRuntime::status_wire_v2`.
+- read-only transport surface: `codex-rs/hepta-native-gateway/src/lib.rs`.
+- registered `context.compiler` adapter: `codex-rs/hepta-context-compiler/src/wire.rs`.
+- compatibility runtime.codex V2 adapter and product-bound V3 adapter: `codex-rs/hepta-codex-adapter/src/wire.rs`.
+- normal product caller: `codex-rs/hepta-infer-worker-host/src/native_app_server.rs` — `adapt_product_wire_v3` before final-use authorization and physical `turn/start`.
 
-The existing JSON response from `GET /api/hepta/runtime` remains the default.
-An explicit `Accept: application/x-hepta-wire; version=2` requests the V2
-representation. Unknown wire media-version requests return
-`406 Not Acceptable`.
+The existing JSON response from `GET /api/hepta/runtime` remains the default. An explicit `Accept: application/x-hepta-wire; version=2` requests the V2 representation. Unknown wire media-version requests return `406 Not Acceptable`.
+
+The detailed product payload contract is in [`RUNTIME_CODEX_V3.md`](RUNTIME_CODEX_V3.md). The historical `hepta.codex-operation-intent.v2` payload schema remains closed and product-unbound. `hepta.codex-operation-intent.v3` requires the complete App Server binding and preserves every field used by the domain request digest. Both use HPTA frame version 2; payload schema revision is independent of frame version.
+
+The raw session, authenticated-record and managed-stream symbols above describe
+the `protocol-tooling` surface. They are unavailable as public owners in a
+production-only build; use the hardened owner/stream entries for that build.
 
 ## Durability and activation
 
-The wire library is stateless. Streaming/negotiation state is connection-local
-and is discarded on disconnect. The read-only gateway caller is source-composed
-but this document grants no production activation, effect authority, operator
-acceptance, promotion or release.
+The frame, negotiation, registry and session owners are deterministic in-memory protocol components. They do not persist domain authority, final-use grants or external-effect completion. Durable qualification facts are emitted as source-bound workflow receipts; a receipt is current only for the exact source, tree, registry snapshot, command set and workflow run named by that receipt.
+
+A poisoned decoder, authenticated record session or retired key is terminal for its connection/session. Reuse requires a new authenticated transport, fresh transcript, fresh session identifier and a newly admitted registry snapshot. Process restart does not transform an old receipt or old session into current authority.
+
+Source composition is not activation. Product activation remains fail-closed until exact-head, synthetic-merge, protected target-host and three-target fuzz evidence agree for the same candidate, the same-source five-path performance and eight-scenario production-composition receipts pass, and distinct independent reviewer and operations acceptance receipts are present. `productionImplementation`, `activation` and `release` therefore remain false until those external conditions are satisfied.
+
+## Negotiation, session and admission invariants
+
+`NegotiatedWire` exposes the selected version, selected-version effective capabilities, common advertised capabilities and required capabilities. Only `negotiate` constructs it. A caller cannot replace the selected version or erase requirements before passing it into a session decoder.
+
+`WireSession` additionally binds the negotiated result to:
+
+- one immutable `FrozenSchemaRegistry` snapshot;
+- one runtime role;
+- the ordered HPTN negotiation transcript;
+- an authenticated transport channel binding;
+- one derived session identifier.
+
+Every admitted envelope must match the selected version, schema bounds, effective capability requirements, producer allowlist and runtime-role allowlist. Typed encode/decode uses the envelope schema and session version rather than accepting unrelated caller-supplied identities.
+
+## Authenticated record invariants
+
+The public `AuthenticatedWireSession` requires an explicit local endpoint role. It derives separate initiator→responder and responder→initiator keys from the master key and immutable session ID. Each direction owns a separate monotonic sequence beginning at one. A reflected outbound record or a peer configured with the same endpoint role fails MAC verification and poisons the public bidirectional session.
+
+The HPTM record authenticates the exact HPTA bytes, session ID and sequence. It proves possession of a session key; it does not authorize the enclosed domain operation or replace the existing final-use claim and revocation checks.
+
+A transport that already provides equivalent authenticated encryption, direction separation and replay ordering may omit HPTM only when its channel binding and equivalence are documented and independently accepted.
+
+## Streaming and resource invariants
+
+Connection-local decode has three explicit outcomes: incomplete input, completed frames, or a terminal error. `StreamDecodeBatch` preserves a completed prefix when a later frame in the same chunk fails. Header bytes are validated before body allocation. Per-feed byte and completed-frame budgets prevent large-body and many-small-frame abuse. Completed frames transfer ownership instead of repeatedly draining the front of a shared vector.
+
+A terminal decoder or authenticated session is poisoned. Clearing a generic stream decoder is valid only after the old connection/session is discarded; it never restores trust in the same byte stream.
+
+The production typed stream additionally checks exact codec revision and
+canonicalization profile and compares authenticated payload bytes with canonical
+re-encoding. A terminal authentication, admission, codec-binding, typed-decode,
+canonicalization or resource failure drops the unique key-bearing owner
+immediately. Consuming `finish()` rejects partial-record EOF. Budget exhaustion
+can yield cooperatively: callers retain the unconsumed suffix and deliver any
+valid typed prefix exactly once. Terminal recovery requires a fresh connection,
+transcript, session identity and keys; rotation cannot reset the old session.
+
+## Product composition and authority boundary
+
+The normal inference-worker caller and read-only gateway caller are source-composed. The V3 DTO carries binding facts and digests, not `VerifiedUseToken` or another consumable grant. The existing final-use owner still revalidates and claims authority immediately before physical `turn/start`.
+
+Successful negotiation, decode, schema admission, MAC verification, re-encode or product DTO validation is not dispatch acknowledgement, terminal external success or effect authorization.
+
+## Evidence-derived lifecycle
+
+`scripts/platform_wire_status.py` derives five fail-closed states:
+
+1. `Designed` from required design documents;
+2. `Implemented` from required native source files;
+3. `Qualified` from source-consistent exact-head, synthetic-merge, protected target-host and passed three-target libFuzzer campaign receipts;
+4. `Accepted` from qualified state plus same-source passed five-path performance and eight-scenario production-composition receipts and distinct independent-reviewer and operations receipts;
+5. `Released` from accepted state plus a source-bound release receipt and artifact digest.
+
+The Lane A workflow emits exact-head and deterministic synthetic-merge receipts even when wider Lane A work later fails. Test floors are bound to the current named suites; a zero-test filter does not qualify. The target-host workflow never checks out an input ref: it checks out `github.sha`, requires the operator-supplied expected SHA to match, uses the fixed `hepta-target-host` self-hosted label and the `platform-wire-target-host` environment, and removes temporary build products after evidence upload.
+
+The protected performance and production intake workflows admit only enabled, reviewed producer registrations for the same source. Their registries are intentionally empty until real paired benchmark and deployment-observation workflows, immutable plans and selected profiles are reviewed. Source code cannot issue production observations, reviewer, operations or release acceptance for itself.
+
+Lifecycle evaluation is an offline consistency check over trusted imported
+receipts. It does not authenticate GitHub run status, protected-environment
+configuration, artifact origin or approver identity. The importing owner must
+verify that provenance. Well-formed local JSON and the evaluator's output do not
+grant acceptance, activation or release authority.
 
 ## Target-only design
 
-The following remain outside the current `platform.wire` implementation or
-require their owning integration:
+The formal target architecture includes authenticated deployment-channel ownership, protected key custody and rotation, target-host execution, rolling and mixed-version operations, canary evidence, independent acceptance and release governance. The repository contains source and workflow machinery for several of these controls, but their external facts cannot be self-issued by this module.
 
-- authenticated negotiation-transcript and encoded-frame binding at an
-  untrusted production transport/session boundary;
-- admission and qualification of additional product-domain schema codecs;
-- independent target-host qualification, activation and external acceptance.
-
-A cryptographic MAC/signature layer must belong to the transport/session or
-security owner; V2 deliberately does not turn the codec into an authority
-issuer.
+Additional actuation schemas, transport substitutions and authenticated-encryption equivalence profiles remain target-only until they are registered with strict codecs and frozen policies, exercised on the intended host, and independently accepted. No target-only capability may be inferred from frame validity, successful negotiation, source composition, a generated status file or a passing repository-local test.
 
 ## Known limits and non-claims
 
-V1 payload integrity does not bind metadata. V2's frame digest binds metadata
-but is still unkeyed and therefore does not authenticate a peer. Schema
-admission is a framework; each product schema must supply a strict
-`PayloadCodec`, and each registered product port must pin its admitted
-producer identities. Successful negotiation/decode/re-encode is not dispatch
-acknowledgement, terminal external success or authorization.
-
-The streaming decoder bounds its own connection-local buffer. The owning
-transport must still enforce read deadlines, connection limits and
-authentication.
+- V1 payload integrity does not bind metadata.
+- V2 metadata integrity remains unkeyed and does not authenticate a peer.
+- The transport owner must provide an authenticated channel binding and protect key creation, storage, rotation and destruction.
+- Additional product-domain schemas require registered strict codecs and frozen policies before admission.
+- Exact-head, synthetic-merge and target-host receipts are current only for the exact SHA named in each artifact.
+- Protected-environment configuration, real producer registration and execution, independent review, operator acceptance, canary, promotion and release remain external governance facts.
 
 ## Verification
 
-Current source evidence includes:
+Current source/test identities include:
 
-- V1 and V2 unit/boundary/frozen-vector tests;
-- negotiation capability and downgrade tests;
-- schema admission tests for missing/unknown critical fields;
-- incremental stream and buffer-bound tests;
-- deterministic property tests and a cargo-fuzz target;
-- a raw-binary Rust↔Python HPTN + HPTA V2 session test;
-- native gateway content-negotiation tests;
-- `context.compiler` and `runtime.codex` strict schema/producer-admission adapter tests, including wrong-producer rejection.
+- V1/V2 unit, boundary and frozen-vector tests;
+- effective-capability, downgrade and negotiation canonicality tests;
+- session-bound version, producer, role and capability denial tests;
+- frozen registry entry/subject limits and registration-order-stable snapshot tests;
+- typed envelope round trips;
+- stream chunking, valid-prefix delivery, work/byte ceilings and poison tests;
+- HPTM tamper, replay, cross-session, reflected-record and same-endpoint-direction rejection;
+- deterministic property tests and three fixed cargo-fuzz targets;
+- hardened owner destruction, bound canonical ingress, typed stream budgets/EOF and production-only compile-fail fixtures;
+- bidirectional raw-binary Rust↔Python HPTN/HPTA V2 tests with strict malformed-payload rejection;
+- native-gateway content negotiation, `context.compiler` producer/schema checks, runtime.codex V2 compatibility and V3 complete-binding tests;
+- runtime.codex product E2E through the normal inference-worker path;
+- five-path performance plan/report/producer-registry validation and threshold negative tests;
+- eight-scenario production plan/report/producer-registry validation, resource/recovery negative tests and exact-source intake contracts;
+- schema-v2 lifecycle receipt validation and evidence-derived status self-tests.
 
-The vectors are machine-checked by the Lane A foundation verifier. Source tests
-are not independent acceptance receipts until the exact candidate and required
-merge/target-host workflows pass.
+These are source/test identities until the exact candidate and required merge/target-host workflows pass and their artifacts are retained. Performance and production contracts are not the corresponding external measurements. Independent acceptance and release remain separate even after qualification is green.
 
 ## Integration prerequisites
 
-An untrusted producer/consumer pair must authenticate the HPTN transcript and
-the encoded HPTA frame using the selected transport/session security boundary.
-Consumers must register the exact schema descriptor and matching strict codec
-before typed decode. Security-sensitive callers must pin required capabilities
-during negotiation so required V2 integrity/schema properties cannot silently
-downgrade to V1.
+A production transport integration must construct one immutable registry snapshot, negotiate a coherent version-scoped capability posture, bind the ordered transcript to an authenticated transport channel, enforce endpoint direction and monotonic sequence/replay policy, and use only session-bound frame admission. Direct any-version decoding is restricted to offline compatibility and qualification tooling.
 
-Production claims additionally require exact-head and deterministic
-synthetic-merge execution, target-host product execution, independent semantic
-and security review, operator acceptance and the repository's activation,
-promotion and release gates.
+Every product schema must have a strict codec plus registered schema revision, producer allowlist, runtime-role allowlist, generation policy, canonicalization profile and payload/resource bounds. The product owner must retain final-use authority and revalidate immediately before the physical effect; wire admission never mints that authority.
+
+Activation requires the hardened typed owner composed at the authenticated product transport boundary, current exact-head, deterministic synthetic-merge, protected target-host and three-target fuzz receipts for the same source candidate, same-source passed five-path performance and eight-scenario production-composition receipts, followed by distinct independent-reviewer and operations acceptance. Rolling upgrade and mixed-version evidence, key-rotation and retirement evidence, canary/rollback evidence and a source-bound release receipt are required before release can be asserted.

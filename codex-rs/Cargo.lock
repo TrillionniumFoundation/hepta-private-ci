@@ -4227,6 +4227,10 @@ name = "codex-hepta-wire"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "hmac 0.12.1",
+ "serde_json",
+ "sha2 0.10.9",
+ "zeroize",
 ]
 
 [[package]]

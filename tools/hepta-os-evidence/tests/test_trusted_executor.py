@@ -370,13 +370,38 @@ class TrustedExecutorTest(unittest.TestCase):
         self.assertEqual(self.result()["status"], "CAPTURE_FAILED_NO_RETRY")
 
     def test_authority_expiry_bounds_running_harness(self):
-        self.prepare(sleep_seconds=1, expiry_seconds=0.25)
-        started = time.monotonic()
-        clock = lambda: NOW + timedelta(seconds=time.monotonic() - started)
-        with self.assertRaisesRegex(ExecutionError, "authorization_expired"):
-            execute(NONCE, config=self.config, now=NOW, clock=clock)
-        self.assertLess(time.monotonic() - started, 1.5)
-        self.assertTrue(self.result()["target_contact_performed"])
+        self.prepare(sleep_seconds=5, expiry_seconds=0.25)
+        # Test expiry during actual execution, not filesystem/setup latency.
+        # The separate pre-contact/containment tests cover those earlier cuts.
+        clock_now = [NOW]
+        launched_at = []
+        finished_at = []
+        original_popen = trusted_executor.subprocess.Popen
+        original_run = trusted_executor.run_harness
+
+        def launch_then_expire(*args, **kwargs):
+            proc = original_popen(*args, **kwargs)
+            launched_at.append(time.monotonic())
+            clock_now[0] = NOW + timedelta(seconds=0.3)
+            return proc
+
+        def observed_run(*args, **kwargs):
+            result = original_run(*args, **kwargs)
+            finished_at.append(time.monotonic())
+            return result
+
+        with (
+            mock.patch.object(trusted_executor.subprocess, "Popen", side_effect=launch_then_expire),
+            mock.patch.object(trusted_executor, "run_harness", side_effect=observed_run),
+        ):
+            with self.assertRaisesRegex(ExecutionError, "authorization_expired_during_execution"):
+                execute(NONCE, config=self.config, now=NOW, clock=lambda: clock_now[0])
+        self.assertEqual(len(launched_at), 1)
+        self.assertEqual(len(finished_at), 1)
+        self.assertLess(finished_at[0] - launched_at[0], 1.5)
+        result = self.result()
+        self.assertTrue(result["target_contact_performed"])
+        self.assertTrue(result["cleanup_confirmed"])
 
     def test_containment_setup_crossing_expiry_never_launches_harness(self):
         self.prepare(expiry_seconds=0.25)

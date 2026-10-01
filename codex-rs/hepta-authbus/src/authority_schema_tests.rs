@@ -24,22 +24,35 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             // data or untrusted SQL fragments are interpolated.
             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
+            // Keep the destructive fixture DDL on one SQLite connection. A
+            // pooled second connection may retain a stale schema cache between
+            // DROP and CREATE and report the just-dropped trigger as existing.
+            let mut connection = store.pool.acquire().await.unwrap();
             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
-                .execute(&store.pool)
+                .execute(&mut *connection)
                 .await
                 .unwrap();
+            let remaining: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM sqlite_schema WHERE type = 'trigger' AND name = ?",
+            )
+            .bind(&name)
+            .fetch_one(&mut *connection)
+            .await
+            .unwrap();
+            assert_eq!(remaining, 0, "trigger {name} remained after DROP");
             if replace {
                 sqlx::query(sqlx::AssertSqlSafe(format!(
                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
                 )))
-                .execute(&store.pool)
+                .execute(&mut *connection)
                 .await
                 .unwrap();
             }
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
-                .fetch_one(&store.pool)
+                .fetch_one(&mut *connection)
                 .await
                 .unwrap();
+            drop(connection);
             assert_eq!(check, "ok");
             store.pool.close().await;
             assert!(

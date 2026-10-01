@@ -407,13 +407,15 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill active capacity using copies with independent fixture identities;
-    // admission hashing/signatures are exercised separately, not 4096 times.
-    sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
+    // Fill the global queue across independent issuers. A single issuer may
+    // not consume global capacity; its separate fairness regression below
+    // exercises that lower limit. These inert rows are never claimed.
+    sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < ?)
+        INSERT INTO authbus_outbox SELECT randomblob(32), 'fixture-issuer:' || x, key_epoch, 'fixture:' || x,
         subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
+        .bind(AUTHBUS_OUTBOX_MAX_ROWS - 1)
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(

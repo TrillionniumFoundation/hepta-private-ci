@@ -41,9 +41,7 @@ fn required_metadata_binding_prevents_v1_downgrade() -> Result<(), Box<dyn Error
     let local = NegotiationOffer::current();
     let remote = NegotiationOffer::new(
         vec![1],
-        WireCapabilities::METADATA_BOUND_DIGEST
-            .union(WireCapabilities::SCHEMA_ADMISSION)
-            .union(WireCapabilities::STREAM_DECODING),
+        WireCapabilities::SCHEMA_ADMISSION.union(WireCapabilities::STREAM_DECODING),
     )?;
     assert!(matches!(
         negotiate(&local, &remote, WireCapabilities::METADATA_BOUND_DIGEST),
@@ -54,6 +52,29 @@ fn required_metadata_binding_prevents_v1_downgrade() -> Result<(), Box<dyn Error
         WireVersion::V1
     );
     Ok(())
+}
+
+#[test]
+fn known_version_capability_incoherence_rejects_at_constructor_and_decoder() {
+    assert_eq!(
+        NegotiationOffer::new(vec![1], WireCapabilities::METADATA_BOUND_DIGEST),
+        Err(NegotiationError::IncoherentCapability {
+            capability: WireCapabilities::METADATA_BOUND_DIGEST.bits(),
+            minimum_version: WireVersion::V2.as_u16(),
+        })
+    );
+
+    let raw_v1_with_v2_capability: [u8; 18] = [
+        0x48, 0x50, 0x54, 0x4e, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x01, 0x00, 0x01,
+    ];
+    assert_eq!(
+        NegotiationOffer::decode(&raw_v1_with_v2_capability),
+        Err(NegotiationError::IncoherentCapability {
+            capability: WireCapabilities::METADATA_BOUND_DIGEST.bits(),
+            minimum_version: WireVersion::V2.as_u16(),
+        })
+    );
 }
 
 #[test]

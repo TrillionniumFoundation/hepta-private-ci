@@ -1,0 +1,158 @@
+name: Platform wire fuzz qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-types/**"
+      - "docs/lane-a-foundation/platform.wire/**"
+      - "docs/modules/platform.wire/**"
+      - "scripts/platform_wire_fuzz_campaign.py"
+      - "scripts/tests/test_platform_wire_fuzz_campaign.py"
+      - ".github/workflows/platform-wire-fuzz.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-types/**"
+      - "docs/lane-a-foundation/platform.wire/**"
+      - "docs/modules/platform.wire/**"
+      - "scripts/platform_wire_fuzz_campaign.py"
+      - "scripts/tests/test_platform_wire_fuzz_campaign.py"
+      - ".github/workflows/platform-wire-fuzz.yml"
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+    inputs:
+      duration_seconds:
+        description: Total execution budget across three targets (60..1800 seconds)
+        required: false
+        default: "300"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-fuzz-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FUZZ_TOOLCHAIN: nightly-2026-09-20
+  FUZZ_INSTALL_TOOLCHAIN: "1.95.0"
+  CARGO_FUZZ_VERSION: "0.13.2"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  fuzz:
+    name: Exact-source libFuzzer qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      REQUESTED_SECONDS: ${{ inputs.duration_seconds }}
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Initialize source-bound not-run evidence before preparation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_fuzz_campaign.py init
+          python3 -m unittest discover -s scripts/tests -p test_platform_wire_fuzz_campaign.py -v
+
+      - name: Install pinned fuzz tool into an isolated root
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$PWD/.hepta-evidence/platform-wire-fuzz/preparation"
+          tool_root="$RUNNER_TEMP/platform-wire-fuzz-tools"
+          mkdir -p "$evidence" "$tool_root"
+          printf 'FUZZ_TOOL_ROOT=%s\n' "$tool_root" >> "$GITHUB_ENV"
+          printf '%s/bin\n' "$tool_root" >> "$GITHUB_PATH"
+          export PATH="$tool_root/bin:$PATH"
+          {
+            rustup toolchain install "$FUZZ_INSTALL_TOOLCHAIN" --profile minimal
+            rustup toolchain install "$FUZZ_TOOLCHAIN" --profile minimal --component llvm-tools-preview
+            cargo +"$FUZZ_INSTALL_TOOLCHAIN" install cargo-fuzz \
+              --locked --version "$CARGO_FUZZ_VERSION" --root "$tool_root"
+            test -x "$tool_root/bin/cargo-fuzz"
+            "$tool_root/bin/cargo-fuzz" --version
+            rustc +"$FUZZ_INSTALL_TOOLCHAIN" --version --verbose
+            rustc +"$FUZZ_TOOLCHAIN" --version --verbose
+          } 2>&1 | tee "$evidence/toolchain.log"
+
+      - name: Verify cargo-fuzz survives the step boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$PWD/.hepta-evidence/platform-wire-fuzz/preparation"
+          test -n "$FUZZ_TOOL_ROOT"
+          test "$(command -v cargo-fuzz)" = "$FUZZ_TOOL_ROOT/bin/cargo-fuzz"
+          {
+            cargo-fuzz --version
+            cargo +"$FUZZ_TOOLCHAIN" fuzz --version
+            printf 'cargo_fuzz_path=%s\n' "$(command -v cargo-fuzz)"
+          } 2>&1 | tee "$evidence/cross-step-command.log"
+
+      - name: Seed protocol, managed-session and policy corpora
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_fuzz_campaign.py seed
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path("codex-rs/hepta-wire/fuzz/corpus/managed_records")
+          expected = {mode: bytes([mode, 13]) + b"wire-seed" for mode in range(7)}
+          observed = {}
+          for mode, payload in expected.items():
+              path = root / f"mode-{mode}"
+              if not path.is_file():
+                  raise SystemExit(f"missing deterministic managed_records seed: {path}")
+              actual = path.read_bytes()
+              if actual != payload:
+                  raise SystemExit(f"managed_records seed drift: {path}")
+              observed[mode] = len(actual)
+          print(f"verified managed_records deterministic modes: {sorted(observed)}")
+          PY
+
+      - name: Check and build all actual fuzz targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$PWD/.hepta-evidence/platform-wire-fuzz/preparation"
+          cargo +"$FUZZ_TOOLCHAIN" check --manifest-path codex-rs/hepta-wire/fuzz/Cargo.toml --all-targets 2>&1 | tee "$evidence/check.log"
+          cd codex-rs/hepta-wire
+          cargo +"$FUZZ_TOOLCHAIN" fuzz build 2>&1 | tee "$evidence/build.log"
+
+      - name: Execute three independent bounded fuzz scenarios
+        run: python3 scripts/platform_wire_fuzz_campaign.py run
+
+      - name: Finalize passed, failed or not-run execution evidence
+        if: always()
+        run: python3 scripts/platform_wire_fuzz_campaign.py finalize
+
+      - name: Enforce all three scenarios on the exact source
+        if: always()
+        run: python3 scripts/platform_wire_fuzz_campaign.py check
+
+      - name: Retain command logs, corpus, crashes, lock and receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-fuzz-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .hepta-evidence/platform-wire-fuzz
+            codex-rs/hepta-wire/fuzz/corpus
+            codex-rs/hepta-wire/fuzz/artifacts
+            codex-rs/hepta-wire/fuzz/Cargo.lock
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,126 @@
+name: Platform wire exact source and merge
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-*/**'
+      - 'codex-rs/Cargo.*'
+      - 'docs/lane-a-foundation/**'
+      - 'docs/modules/platform.wire/**'
+      - 'scripts/*wire*'
+      - 'scripts/tests/test_platform_wire_*.py'
+      - 'scripts/*lane_a*'
+      - '.github/workflows/*wire*'
+      - '.github/workflows/lane-a-foundation.yml'
+      - 'docs/modules/MODULES.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_TERM_COLOR: never
+
+jobs:
+  qualify:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    name: Wire ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      WIRE_LANE: ${{ matrix.lane }}
+      HEPTA_CI_LANE: ${{ matrix.lane == 'synthetic-merge' && 'base-merge' || 'source-head' }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve immutable parent tuple
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [[ -z "$BASE_SHA" ]]; then
+            BASE_SHA="$(git rev-parse refs/remotes/origin/main)"
+          fi
+          git cat-file -e "$BASE_SHA^{commit}"
+          printf 'BASE_SHA=%s\nRECORDS=%s\nCARGO_TARGET_DIR=%s\n' \
+            "$BASE_SHA" "$RUNNER_TEMP/wire-$WIRE_LANE-$GITHUB_RUN_ID" \
+            "$RUNNER_TEMP/wire-build-$WIRE_LANE" >> "$GITHUB_ENV"
+      - name: Construct deterministic ordered merge
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
+          author-name: Hepta Wire CI
+          author-email: hepta-wire-ci@users.noreply.github.com
+          message: Synthetic platform.wire merge
+      - name: Bind the actual tested commit and execution lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          TESTED_SHA="$(git rev-parse HEAD)"
+          if [[ "$WIRE_LANE" = source-head ]]; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          else
+            test "$(git rev-list --parents -n 1 HEAD)" = "$TESTED_SHA $BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse 'HEAD^{tree}')" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          fi
+          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
+      - name: Install repository toolchain
+        id: toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component clippy,rustfmt
+          rustup default "$toolchain"
+      - name: Execute actual commands and retain identity-bound evidence
+        id: execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_exact_qualification.py run \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" --lane "$WIRE_LANE"
+      - name: Validate command records and write a current-subject receipt
+        if: always()
+        env:
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+          TOOLCHAIN_OUTCOME: ${{ steps.toolchain.outcome }}
+        shell: bash
+        run: |
+          python3 scripts/platform_wire_exact_qualification.py receipt \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" --lane "$WIRE_LANE" \
+            --setup-outcome "$TOOLCHAIN_OUTCOME" --execution-outcome "$EXECUTION_OUTCOME"
+      - name: Retain command records and raw logs even after failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wire-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/wire-${{ matrix.lane }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+      - name: Reject any source mutation
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"

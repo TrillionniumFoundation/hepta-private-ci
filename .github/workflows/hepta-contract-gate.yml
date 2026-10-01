@@ -45,7 +45,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify --expected-sha "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 scripts/hepta-implementation-maps.py verify --require-current-source
           python3 scripts/hepta-technical-receipts.py verify
           python3 scripts/hepta-implementation-dossiers.py verify
           # Includes module, algorithm, readiness, CNS and HNMF checks.

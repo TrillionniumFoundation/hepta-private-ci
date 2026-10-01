@@ -144,11 +144,23 @@
       "tests": [
         {
           "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
-          "symbol": "registered scalar, enum and action implication fixtures"
+          "symbol": "interval_intersection_returns_a_witness_and_ignores_soft_constraints"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "finite_enum_inclusion_and_exclusion_are_intersected"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "positive_closure_enables_only_forced_actions_and_terminates_cycles"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "forbidden_actions_and_transitive_antecedents_are_not_unforced"
         },
         {
           "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
-          "symbol": "bounded exhaustive feasibility fixtures"
+          "symbol": "all_three_action_graphs_match_truth_table_and_have_minimal_conflicts"
         }
       ],
       "designOperation": "check_feasibility_v1",
@@ -349,8 +361,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "2f69fa25b413e93b6ee087441d855bfe3abb6cbc",
+    "tree": "7e1fcd18f71b4da7496c726f465c1dae00f47f65"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",

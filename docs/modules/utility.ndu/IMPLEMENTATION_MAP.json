@@ -44,8 +44,7 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -87,8 +86,7 @@
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_evaluation_policy_digest",
@@ -112,8 +110,7 @@
       "designOperation": "canonical_evaluation_policy_digest",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_preference_target",
@@ -147,22 +144,21 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "sourcePathExists": true
     },
     {
       "operation": "bind_solver_iteration_receipt_v1",
@@ -187,15 +183,14 @@
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
           "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_backward_regression",
@@ -213,14 +208,25 @@
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
-          "symbol": "scaled, correlated, singular and covariance analytic fixtures"
+          "symbol": "scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "centers_both_terms_and_recovers_correlated_goldens"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "identity_covariance_reduces_to_cross_moment_over_dt"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "rejects_singular_indefinite_ill_conditioned_and_collapsed_covariance"
         }
       ],
       "designOperation": "solve_backward_regression",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
+      "sourcePathExists": true
     },
     {
       "operation": "convert_z_to_original_q24",
@@ -262,8 +268,7 @@
       "designOperation": "convert_z_to_original_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "91e51909b9231686e8218e1f5564c3025859418b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionJournalV1",
@@ -298,7 +303,11 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -308,8 +317,7 @@
       "designOperation": "NduProjectionJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionStoreV1",
@@ -357,8 +365,7 @@
       "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "sourcePathExists": true
     },
     {
       "operation": "admit_ndu_coefficient_profile",
@@ -384,8 +391,7 @@
       "designOperation": "admit_ndu_coefficient_profile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "project_z_estimate_to_coefficient_q24",
@@ -422,8 +428,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduAuthenticatedOwnerV1",
@@ -475,8 +480,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -540,8 +544,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "2f69fa25b413e93b6ee087441d855bfe3abb6cbc",
+    "tree": "7e1fcd18f71b4da7496c726f465c1dae00f47f65"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -609,7 +613,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "efa0c78c5335b495321987be2c08550da03834a2"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -649,7 +653,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "d9ae6f5531fd39ed56b5f58640fefa5acc0905a6"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -657,7 +661,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-      "object": "3018e57b24b4e5a3a86b9b205504744426ade4f0"
+      "object": "ac932a3d02d71761f54e4408ed602034dbac3685"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",

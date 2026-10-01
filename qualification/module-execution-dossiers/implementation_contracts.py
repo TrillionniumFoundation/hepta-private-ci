@@ -296,6 +296,21 @@ def git(root: Path,*args: str) -> bytes:
         raise Invalid('required Git read failed: '+' '.join(args))
     return result.stdout
 
+def entrypoint_identifiers(symbol: str) -> tuple[str, ...]:
+    """Return every concrete identifier named by one documented entrypoint."""
+    if not isinstance(symbol, str) or not symbol.strip():
+        raise Invalid("malformed native entrypoint symbol")
+    identifiers_required: list[str] = []
+    for alternative in symbol.split(" / "):
+        components = [component.strip() for component in alternative.split("::")]
+        if not components or any(not component.isidentifier() for component in components):
+            raise Invalid("malformed native entrypoint symbol: " + symbol)
+        identifiers_required.append(components[-1])
+    if len(set(identifiers_required)) != len(identifiers_required):
+        raise Invalid("duplicate native entrypoint symbol: " + symbol)
+    return tuple(identifiers_required)
+
+
 def current_native_bindings(root: Path) -> dict[str, Any]:
     native = read_json(root / REL / 'NATIVE_BINDINGS.json')
     lane_a = read_json(root / REL / 'NATIVE_BINDINGS_LANE_A.json')
@@ -354,7 +369,11 @@ def verify_repository(root: Path) -> dict[str,Any]:
             if not isinstance(entry, dict) or set(entry) != {'path', 'symbol'}:
                 raise Invalid(mid+': malformed native entrypoint')
             path = inside(root, entry['path'])
-            if not path.is_file() or entry['symbol'] not in identifiers(path, path.read_bytes()):
+            if not path.is_file():
+                raise Invalid(mid+': missing native entrypoint '+str(entry))
+            observed_identifiers = identifiers(path, path.read_bytes())
+            required_identifiers = entrypoint_identifiers(entry['symbol'])
+            if any(identifier not in observed_identifiers for identifier in required_identifiers):
                 raise Invalid(mid+': missing native entrypoint '+str(entry))
             native_references['entrypoints'] += 1
         for key in ('testFiles', 'runtimeDocuments'):

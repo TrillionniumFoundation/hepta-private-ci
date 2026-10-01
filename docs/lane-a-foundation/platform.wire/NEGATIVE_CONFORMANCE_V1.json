@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "protocols": ["HPTA", "HPTN"],
+  "description": "Canonical negative vectors for fail-closed frame, negotiated-session and negotiation-offer admission.",
+  "canonicalV2FrameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010203",
+  "canonicalOfferHex": "4850544e00010200000000000000000700010002",
+  "frameCases": [
+    {
+      "name": "bad_magic",
+      "decoder": "wire_v2",
+      "frameHex": "58505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010203",
+      "expectedError": "magic"
+    },
+    {
+      "name": "unsupported_version",
+      "decoder": "wire_v2",
+      "frameHex": "48505441006300010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010203",
+      "expectedError": "version"
+    },
+    {
+      "name": "zero_schema_length",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200000001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010203",
+      "expectedError": "identity_length"
+    },
+    {
+      "name": "zero_generation",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200010001000000000000000024c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010203",
+      "expectedError": "generation"
+    },
+    {
+      "name": "zero_payload_length",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000007370010203",
+      "expectedError": "payload_length"
+    },
+    {
+      "name": "truncated_header",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000",
+      "expectedError": "truncated"
+    },
+    {
+      "name": "trailing_byte",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e00000003737001020300",
+      "expectedError": "length_mismatch"
+    },
+    {
+      "name": "advertised_payload_too_long",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000047370010203",
+      "expectedError": "length_mismatch"
+    },
+    {
+      "name": "payload_digest_mismatch",
+      "decoder": "wire_v2",
+      "frameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010202",
+      "expectedError": "digest_mismatch"
+    },
+    {
+      "name": "noncanonical_schema_identity",
+      "decoder": "wire_v2",
+      "frameHex": "4850544100020001000100000000000000010dc97c05ecbbcbc67389425dd720d5d49e7f6089a6bd3a7003a29d884b16c1d7000000032f70010203",
+      "expectedError": "identity_encoding"
+    },
+    {
+      "name": "v1_after_v2_negotiation",
+      "decoder": "negotiated_v2",
+      "frameHex": "485054410001000100010000000000000001039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81000000037370010203",
+      "expectedError": "negotiated_version_mismatch"
+    }
+  ],
+  "offerCases": [
+    {
+      "name": "bad_negotiation_magic",
+      "offerHex": "5850544e00010200000000000000000700010002",
+      "expectedError": "magic"
+    },
+    {
+      "name": "unsupported_negotiation_format",
+      "offerHex": "4850544e00020200000000000000000700010002",
+      "expectedError": "format"
+    },
+    {
+      "name": "empty_version_set",
+      "offerHex": "4850544e00010000000000000000000700010002",
+      "expectedError": "empty_versions"
+    },
+    {
+      "name": "nonzero_reserved_byte",
+      "offerHex": "4850544e00010201000000000000000700010002",
+      "expectedError": "reserved"
+    },
+    {
+      "name": "unknown_capability_bit",
+      "offerHex": "4850544e00010200000000000000000800010002",
+      "expectedError": "unknown_capabilities"
+    },
+    {
+      "name": "noncanonical_version_order",
+      "offerHex": "4850544e00010200000000000000000700020001",
+      "expectedError": "noncanonical_versions"
+    },
+    {
+      "name": "zero_advertised_version",
+      "offerHex": "4850544e00010200000000000000000700000002",
+      "expectedError": "invalid_version"
+    },
+    {
+      "name": "negotiation_trailing_byte",
+      "offerHex": "4850544e0001020000000000000000070001000200",
+      "expectedError": "length_mismatch"
+    }
+  ]
+}

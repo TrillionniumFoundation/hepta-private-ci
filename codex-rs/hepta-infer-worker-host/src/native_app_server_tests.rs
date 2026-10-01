@@ -46,7 +46,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &observed(notification),
+        &binding,
+        &mut NativeMessageOutput::default(),
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -398,8 +403,14 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 }
 
 #[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
+fn wire_admission_and_cognitive_final_use_precede_physical_turn_start() {
     let source = include_str!("native_app_server.rs");
+    let wire_admission = source
+        .find("let request_receipt = adapt_product_wire_v3(")
+        .expect("product-bound wire admission");
+    let authority_claim = source
+        .find("authorizer.claim(authority_binding.clone())")
+        .expect("final-use authority claim");
     let durable_dispatch = source
         .find("control.dispatch_native_with_pre_effect_abort(")
         .expect("durable native dispatch");
@@ -407,11 +418,13 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("request_typed_observed(ClientRequest::TurnStart")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
+    assert!(wire_admission < authority_claim);
+    assert!(authority_claim < durable_dispatch);
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
@@ -763,4 +776,54 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn completed_only_output_is_bound_deduplicated_and_never_predeclares_success() {
+    let mut output = output();
+    let binding = binding();
+    let mut messages = NativeMessageOutput::default();
+    let item = ThreadItem::AgentMessage {
+        id: "message-final".to_string(),
+        text: "fresh context accepted".to_string(),
+        phase: None,
+        memory_citation: None,
+        delivery: None,
+    };
+    let completed = |thread: &str| {
+        observed(ServerNotification::ItemCompleted(
+            codex_app_server_protocol::ItemCompletedNotification {
+                thread_id: thread.to_string(),
+                turn_id: "turn-a".to_string(),
+                completed_at_ms: 0,
+                item: item.clone(),
+            },
+        ))
+    };
+    assert!(!observe_event(&mut output, &completed("foreign"), &binding, &mut messages).unwrap());
+    assert!(output.output.is_empty());
+    for _ in 0..2 {
+        assert!(
+            !observe_event(&mut output, &completed("thread-a"), &binding, &mut messages).unwrap()
+        );
+        assert_eq!(output.output, "fresh context accepted");
+        assert!(!output.terminal_observed);
+        assert!(!output.succeeded());
+    }
+    let mut notification = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(value) = &mut notification {
+        value.turn.items.push(item);
+    }
+    assert!(
+        observe_event(
+            &mut output,
+            &observed(notification),
+            &binding,
+            &mut messages
+        )
+        .unwrap()
+    );
+    assert_eq!(output.output, "fresh context accepted");
+    assert!(output.terminal_observed);
+    assert!(output.codex_terminal_correlation_digest.is_some());
 }

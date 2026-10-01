@@ -309,8 +309,8 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "deterministic in-memory reference",
+            "DurableOperationStore` is the production-oriented SQLite owner",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",

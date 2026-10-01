@@ -81,8 +81,25 @@ product_callers = [
 [[surface]]
 crate = "codex-hepta-wire"
 role = "transport_neutral_versioned_wire_contract"
-public_items = ["WireEnvelopeV2"]
-product_callers = ["codex-rs/hepta-runtime/src/lib.rs"]
+public_items = [
+  "WireEnvelopeV2",
+  "NegotiatedStreamingDecoder",
+  "StreamDecodeBatch",
+]
+product_callers = [
+  "codex-rs/hepta-runtime/src/lib.rs",
+  "codex-rs/hepta-context-compiler/src/wire.rs",
+  "codex-rs/hepta-codex-adapter/src/wire.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-codex-adapter"
+role = "product_bound_runtime_codex_wire_admission"
+public_items = [
+  "CodexOperationIntentWireV3",
+  "adapt_product_wire_v3",
+]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/native_app_server.rs"]
 
 [[surface]]
 crate = "codex-hepta-runtime"

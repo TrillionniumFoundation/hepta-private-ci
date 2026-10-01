@@ -1,0 +1,228 @@
+name: Platform wire throughput qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "scripts/platform_wire_managed_fleet_profile.py"
+      - "scripts/platform_wire_fleet_contract.py"
+      - "scripts/platform_wire_performance_gate.py"
+      - "scripts/platform_wire_receipt_subject.py"
+      - "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
+      - ".github/workflows/platform-wire-benchmark.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "scripts/platform_wire_managed_fleet_profile.py"
+      - "scripts/platform_wire_fleet_contract.py"
+      - "scripts/platform_wire_performance_gate.py"
+      - "scripts/platform_wire_receipt_subject.py"
+      - "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
+      - ".github/workflows/platform-wire-benchmark.yml"
+  schedule:
+    - cron: "47 3 * * *"
+  workflow_dispatch:
+    inputs:
+      near_limit_iterations:
+        description: Near-limit V2 decode iterations (1..256)
+        required: false
+        default: "32"
+        type: string
+      long_connection_frames:
+        description: Sequential long-connection frames (100..100000)
+        required: false
+        default: "10000"
+        type: string
+      fleet_rounds:
+        description: Multi-peer managed-owner rounds per scenario (8..256)
+        required: false
+        default: "32"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-throughput-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  throughput:
+    name: Exact-source bounded throughput probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Resolve bounded workload
+        id: workload
+        env:
+          INPUT_NEAR: ${{ inputs.near_limit_iterations }}
+          INPUT_LONG: ${{ inputs.long_connection_frames }}
+          INPUT_FLEET: ${{ inputs.fleet_rounds }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            near=4
+            long=1000
+            fleet=8
+          elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            near="$INPUT_NEAR"
+            long="$INPUT_LONG"
+            fleet="$INPUT_FLEET"
+          else
+            near=32
+            long=10000
+            fleet=32
+          fi
+          [[ "$near" =~ ^[0-9]{1,3}$ ]]
+          [[ "$long" =~ ^[0-9]{1,6}$ ]]
+          [[ "$fleet" =~ ^[0-9]{1,3}$ ]]
+          near=$((10#$near))
+          long=$((10#$long))
+          fleet=$((10#$fleet))
+          if (( near < 1 || near > 256 )); then
+            echo "near-limit iterations must be within 1..256" >&2
+            exit 2
+          fi
+          if (( long < 100 || long > 100000 )); then
+            echo "long-connection frames must be within 100..100000" >&2
+            exit 2
+          fi
+          if (( fleet < 8 || fleet > 256 )); then
+            echo "managed-fleet rounds must be within 8..256" >&2
+            exit 2
+          fi
+          printf 'near=%s\nlong=%s\nfleet=%s\n' "$near" "$long" "$fleet" >> "$GITHUB_OUTPUT"
+
+      - name: Install the repository-pinned measurement toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
+          python3 scripts/platform_wire_performance_gate.py --self-test
+
+      - name: Build and run release throughput and managed-fleet probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          cargo run --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire \
+            --release \
+            --example throughput_probe \
+            -- \
+            "${{ steps.workload.outputs.near }}" \
+            "${{ steps.workload.outputs.long }}" \
+            | tee .hepta-evidence/platform-wire-throughput-metrics.json
+          python3 -m json.tool \
+            .hepta-evidence/platform-wire-throughput-metrics.json \
+            >/dev/null
+          python3 scripts/platform_wire_managed_fleet_profile.py --self-test
+          cargo run --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire \
+            --release \
+            --example managed_fleet_profile \
+            -- "${{ steps.workload.outputs.fleet }}" \
+            | tee .hepta-evidence/platform-wire-managed-fleet-metrics.json
+          python3 scripts/platform_wire_managed_fleet_profile.py \
+            --input .hepta-evidence/platform-wire-managed-fleet-metrics.json \
+            --rounds "${{ steps.workload.outputs.fleet }}"
+          python3 scripts/platform_wire_fleet_contract.py \
+            --input .hepta-evidence/platform-wire-managed-fleet-metrics.json \
+            --rounds "${{ steps.workload.outputs.fleet }}"
+
+      - name: Write exact-source measurement receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc_version="$(rustc --version --verbose | tr '\n' ';')"
+          cargo_version="$(cargo --version)"
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          export rustc_version cargo_version generated_at
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          import subprocess
+          from pathlib import Path
+
+          throughput_path = Path(".hepta-evidence/platform-wire-throughput-metrics.json")
+          fleet_path = Path(".hepta-evidence/platform-wire-managed-fleet-metrics.json")
+          throughput = json.loads(throughput_path.read_text())
+          fleet = json.loads(fleet_path.read_text())
+          tested_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          if tested_sha != os.environ["SOURCE_SHA"]:
+              raise SystemExit("measurement source mismatch")
+          receipt = {
+              "schema": "hepta.platform-wire.throughput-receipt.v2",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": tested_sha,
+              "status": "passed",
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "generated_at": os.environ["generated_at"],
+              "runner_os": platform.platform(),
+              "runner_machine": platform.machine(),
+              "rustc": os.environ["rustc_version"],
+              "cargo": os.environ["cargo_version"],
+              "throughput_metrics_sha256": hashlib.sha256(
+                  throughput_path.read_bytes()
+              ).hexdigest(),
+              "managed_fleet_metrics_sha256": hashlib.sha256(
+                  fleet_path.read_bytes()
+              ).hexdigest(),
+              "throughput_metrics": throughput,
+              "managed_fleet_metrics": fleet,
+              "threshold_policy": "measurement-only-no-cloud-runner-hard-threshold",
+              "scope": "release in-process HPTA decode and public managed HPTM owners",
+              "authenticated_network_ingress": False,
+              "target_host_measured": False,
+              "allocator_calls_measured": False,
+              "transport_queue_wait_measured": False,
+              "multi_process_pressure_measured": False,
+              "independent_acceptance": False,
+          }
+          Path(".hepta-evidence/platform-wire-throughput-receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+
+      - name: Retain measurement evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-throughput-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: |
+            .hepta-evidence/platform-wire-throughput-*.json
+            .hepta-evidence/platform-wire-managed-fleet-metrics.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 180

@@ -3,7 +3,8 @@
 
 This is NOT an activation token or proof of credential separation. The evaluator
 App must be independently operated; its ID comes from administration-owned
-configuration, never a value supplied by candidate code. No write API is used.
+configuration, never a value supplied by candidate code. Repository state is
+never mutated; the optional transport probe carries no ref command or pack data.
 Ruleset-only protection is deliberately unsupported by this profile: it fails
 closed rather than treating unrelated rulesets as effective branch protection.
 """
@@ -186,12 +187,14 @@ def observe(repository: str, expected_sha: str, evaluator_app: int) -> dict[str,
 
 
 def observe_write_transport_denial(repository: str, token: str) -> dict[str, Any]:
-    """Observe an explicit GitHub receive-pack denial without attempting a write.
+    """Observe an explicit GitHub receive-pack denial without a ref command.
 
-    A GET of the smart-HTTP advertisement does not upload Git objects or update
-    refs. Only GitHub's explicit 403 write-access rejection qualifies; generic
-    HTTP failures, redirects, bad credentials and timeouts remain unknown. This
-    is not proof of branch-rule enforcement or independent credential custody.
+    The request body is exactly one Git flush packet (``0000``): it contains no
+    ref update command, object pack or capability request, so it cannot update
+    repository state. Unlike the public receive-pack advertisement, the POST is
+    evaluated at the write transport boundary. Only GitHub's exact 403 denial
+    qualifies; generic failures and successful/ambiguous responses remain
+    unknown. This is not proof of branch rules or independent credential custody.
     """
     require(bool(REPOSITORY.fullmatch(repository))
             and all(part not in (".", "..") for part in repository.split("/")), "Invalid repository")
@@ -203,9 +206,17 @@ def observe_write_transport_denial(repository: str, token: str) -> dict[str, Any
     connection = http.client.HTTPSConnection(
         "github.com", timeout=API_TIMEOUT_SECONDS, context=ssl.create_default_context())
     try:
-        connection.request("GET", f"/{repository}.git/info/refs?service=git-receive-pack",
-                           headers={"Authorization": f"Basic {authorization}",
-                                    "User-Agent": "hepta-read-only-control-observer"})
+        connection.request(
+            "POST",
+            f"/{repository}.git/git-receive-pack",
+            body=b"0000",
+            headers={
+                "Authorization": f"Basic {authorization}",
+                "Content-Type": "application/x-git-receive-pack-request",
+                "Accept": "application/x-git-receive-pack-result",
+                "User-Agent": "hepta-read-only-control-observer",
+            },
+        )
         response = connection.getresponse()
         body = response.read(MAX_TRANSPORT_RESPONSE_BYTES + 1)
         require(len(body) <= MAX_TRANSPORT_RESPONSE_BYTES, "Transport response exceeds the observation bound")

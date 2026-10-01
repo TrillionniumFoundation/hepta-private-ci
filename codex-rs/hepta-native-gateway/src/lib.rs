@@ -5,6 +5,10 @@
 
 #![forbid(unsafe_code)]
 
+mod connection_loop;
+mod http_accept;
+mod request_head;
+
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -14,6 +18,9 @@ use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_paths::HeptaStateRoot;
 use codex_hepta_runtime::HeptaRuntime;
+use http_accept::RuntimeRepresentation;
+use request_head::read_request;
+#[cfg(test)]
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
@@ -145,26 +152,13 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
     validate_loopback(actual_addr)?;
     eprintln!("hepta live shell listening on http://{actual_addr}");
 
-    loop {
-        tokio::select! {
-            accepted = listener.accept() => {
-                let (stream, peer) = accepted.context("accept loopback gateway connection")?;
-                if !peer.ip().is_loopback() {
-                    continue;
-                }
-                let runtime = Arc::clone(&runtime);
-                tokio::spawn(async move {
-                    if let Err(error) = serve_connection(stream, runtime).await {
-                        eprintln!("hepta loopback request failed: {error:#}");
-                    }
-                });
-            }
-            signal = tokio::signal::ctrl_c() => {
-                signal.context("wait for gateway shutdown signal")?;
-                return Ok(());
-            }
-        }
-    }
+    connection_loop::serve(
+        listener,
+        runtime,
+        connection_loop::MAX_CONNECTIONS,
+        tokio::signal::ctrl_c(),
+    )
+    .await
 }
 
 fn validate_loopback(address: SocketAddr) -> Result<()> {
@@ -190,43 +184,6 @@ fn truthy(value: &str) -> bool {
     )
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum RuntimeRepresentation {
-    Json,
-    WireV2,
-    UnsupportedWire,
-}
-
-fn runtime_representation(request: &str) -> RuntimeRepresentation {
-    for line in request.lines().skip(1) {
-        if line.is_empty() {
-            break;
-        }
-        let Some((name, value)) = line.split_once(':') else {
-            continue;
-        };
-        if !name.trim().eq_ignore_ascii_case("accept") {
-            continue;
-        }
-        let mut saw_wire = false;
-        for media_type in value.split(',').map(str::trim) {
-            if media_type.eq_ignore_ascii_case("application/x-hepta-wire; version=2") {
-                return RuntimeRepresentation::WireV2;
-            }
-            if media_type
-                .to_ascii_lowercase()
-                .starts_with("application/x-hepta-wire")
-            {
-                saw_wire = true;
-            }
-        }
-        if saw_wire {
-            return RuntimeRepresentation::UnsupportedWire;
-        }
-    }
-    RuntimeRepresentation::Json
-}
-
 async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
         .await
@@ -240,27 +197,6 @@ async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> 
         .await
         .context("loopback shutdown timed out")?
         .context("close loopback response")
-}
-
-async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
-    let mut bytes = Vec::with_capacity(2048);
-    let mut buffer = [0_u8; 2048];
-    loop {
-        if bytes.windows(4).any(|window| window == b"\r\n\r\n") {
-            return Ok(bytes);
-        }
-        let read = stream
-            .read(&mut buffer)
-            .await
-            .context("read loopback request")?;
-        if read == 0 {
-            anyhow::bail!("loopback request ended before complete headers");
-        }
-        bytes.extend_from_slice(&buffer[..read]);
-        if bytes.len() > MAX_REQUEST_BYTES {
-            anyhow::bail!("HTTP request headers exceed {MAX_REQUEST_BYTES} bytes");
-        }
-    }
 }
 
 fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
@@ -294,7 +230,7 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
             "application/json; charset=utf-8",
             br#"{"product":"hepta","status":"ok"}"#,
         )),
-        "/api/hepta/runtime" => match runtime_representation(request) {
+        "/api/hepta/runtime" => match http_accept::runtime_representation(request) {
             RuntimeRepresentation::Json => match runtime.status_json() {
                 Ok(body) => Ok(response("200 OK", "application/json; charset=utf-8", &body)),
                 Err(error) => {
@@ -321,10 +257,10 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
                     ))
                 }
             },
-            RuntimeRepresentation::UnsupportedWire => Ok(response(
+            RuntimeRepresentation::NotAcceptable => Ok(response(
                 "406 Not Acceptable",
                 "application/json; charset=utf-8",
-                br#"{"error":"unsupported wire representation"}"#,
+                br#"{"error":"no acceptable runtime representation"}"#,
             )),
         },
         "/" => Ok(response(
@@ -363,6 +299,10 @@ const CONTROL_SHELL: &str = r#"<!doctype html>
 <script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
 </html>
 "#;
+
+#[cfg(test)]
+#[path = "connection_loop_tests.rs"]
+mod bounded_connections;
 
 #[cfg(test)]
 #[path = "organ_request_tests.rs"]
@@ -485,6 +425,23 @@ mod tests {
         Ok(())
     }
 
+    #[test]
+    fn weighted_accept_header_prefers_json_fallback() -> Result<()> {
+        let response = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire;version=2;q=0.2, application/json;q=0.9\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = response
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("JSON response headers")?
+            + 4;
+        let headers = std::str::from_utf8(&response[..body_start])?;
+        assert!(headers.contains("Content-Type: application/json; charset=utf-8"));
+        Ok(())
+    }
+
     #[tokio::test]
     async fn loopback_socket_serves_metadata_bound_v2_status() -> Result<()> {
         let listener = TcpListener::bind("127.0.0.1:0").await?;
@@ -524,6 +481,16 @@ mod tests {
     fn unsupported_wire_accept_version_fails_closed() -> Result<()> {
         let response = route_request(
             b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=99\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 406 Not Acceptable"));
+        Ok(())
+    }
+
+    #[test]
+    fn rejects_unrelated_accept_range() -> Result<()> {
+        let response = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: text/plain\r\n\r\n",
             &fixture_runtime()?,
         )?;
         assert!(response.starts_with(b"HTTP/1.1 406 Not Acceptable"));

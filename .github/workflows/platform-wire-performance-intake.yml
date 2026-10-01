@@ -1,0 +1,138 @@
+name: Platform wire paired performance intake
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: Exact 40-hex candidate SHA; must equal the dispatched ref head
+        required: true
+        type: string
+      measurement_run_id:
+        description: Successful same-repository registered producer run
+        required: true
+        type: string
+      measurement_workflow_path:
+        description: Exact registered producer workflow path
+        required: true
+        type: string
+      measurement_artifact:
+        description: Exact registered artifact containing the frozen plan and paired report
+        required: true
+        type: string
+      plan_sha256:
+        description: Registered lowercase SHA-256 of performance-plan.json
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: platform-wire-performance-${{ inputs.expected_source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate protected five-path paired measurements
+    environment: platform-wire-performance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+      MEASUREMENT_RUN_ID: ${{ inputs.measurement_run_id }}
+      MEASUREMENT_WORKFLOW_PATH: ${{ inputs.measurement_workflow_path }}
+      MEASUREMENT_ARTIFACT: ${{ inputs.measurement_artifact }}
+      PLAN_SHA256: ${{ inputs.plan_sha256 }}
+      MAX_ARTIFACT_BYTES: 20971520
+      REGISTRY: docs/modules/platform.wire/PERFORMANCE_PRODUCERS.json
+
+    steps:
+      - name: Check out dispatched exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Initialize bounded evidence paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "INPUT_DIR=$RUNNER_TEMP/platform-wire-performance-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/input" >> "$GITHUB_ENV"
+          echo "RECORDS=$RUNNER_TEMP/platform-wire-performance-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/evidence" >> "$GITHUB_ENV"
+
+      - name: Verify selected source and bounded input identities
+        id: setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$INPUT_DIR" "$RECORDS"
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PLAN_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$MEASUREMENT_RUN_ID" =~ ^[0-9]{1,20}$ ]]
+          test "$EXPECTED_SOURCE_SHA" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -f "$REGISTRY" && test ! -L "$REGISTRY"
+          test "$(stat -c %s "$REGISTRY")" -le $((256 * 1024))
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
+          python3 scripts/platform_wire_performance_gate.py --self-test
+          python3 scripts/platform_wire_performance_intake.py self-test
+          python3 scripts/platform_wire_status.py self-test
+
+      - name: Bind and extract the registered exact-source artifact
+        id: metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: python3 scripts/platform_wire_performance_intake.py intake
+
+      - name: Validate registered frozen five-path measurements
+        id: validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_performance_gate.py \
+            --registry "$REGISTRY" \
+            --producer-workflow-path "$MEASUREMENT_WORKFLOW_PATH" \
+            --artifact-name "$MEASUREMENT_ARTIFACT" \
+            --producer-run-identity "$MEASUREMENT_RUN_IDENTITY" \
+            --plan "$INPUT_DIR/performance-plan.json" \
+            --plan-sha256 "$PLAN_SHA256" \
+            --report "$INPUT_DIR/paired-measurements.json" \
+            --source-sha "$SOURCE_SHA" \
+            > "$RECORDS/performance-check.json"
+
+      - name: Retain a source-bound performance outcome
+        if: always()
+        env:
+          SETUP_OUTCOME: ${{ steps.setup.outcome }}
+          METADATA_OUTCOME: ${{ steps.metadata.outcome }}
+          VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_performance_intake.py receipt
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path "$RECORDS/platform-wire-performance.json" \
+            --kind platform-wire-performance
+          python3 scripts/platform_wire_status.py render \
+            --performance "$RECORDS/platform-wire-performance.json" \
+            --format json \
+            --output "$RECORDS/platform-wire-performance-status.json"
+
+      - name: Retain performance evidence and failure context
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-performance-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ env.RECORDS }}/
+            ${{ env.INPUT_DIR }}/performance-plan.json
+            ${{ env.INPUT_DIR }}/paired-measurements.json
+          if-no-files-found: error
+          retention-days: 180

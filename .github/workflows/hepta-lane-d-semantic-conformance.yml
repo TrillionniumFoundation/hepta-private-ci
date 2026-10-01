@@ -68,10 +68,8 @@ jobs:
           python3 scripts/hepta-lane-d-semantic-conformance.py self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
           EXPECTED_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
-          EXPECTED_TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "${EXPECTED_SHA}" \
-            --expected-tree "${EXPECTED_TREE}"
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+          python3 scripts/hepta-implementation-maps.py verify --require-current-source
 
       - name: Verify bounded change policy
         if: github.event_name == 'pull_request'

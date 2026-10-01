@@ -1,0 +1,121 @@
+name: Platform wire target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: Exact 40-hex SHA selected by the operator; must equal the dispatched ref head
+        required: true
+        type: string
+      host_profile:
+        description: Registered protected target-host profile
+        required: true
+        default: hepta-target-host
+        type: choice
+        options:
+          - hepta-target-host
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-target-host-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: Qualify platform.wire on protected target host
+    environment: platform-wire-target-host
+    runs-on:
+      - self-hosted
+      - hepta-target-host
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_NET_OFFLINE: "true"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      HOST_PROFILE: ${{ inputs.host_profile }}
+    steps:
+      - name: Check out dispatched exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Initialize isolated evidence and build paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_root="$RUNNER_TEMP/platform-wire-target-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf 'RECORDS=%s\nCARGO_TARGET_DIR=%s\n' "$evidence_root/evidence" "$evidence_root/build" >> "$GITHUB_ENV"
+
+      - name: Verify trusted subject and pre-provisioned pinned toolchain
+        id: setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_SOURCE_SHA" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$HOST_PROFILE" = "hepta-target-host"
+          command -v rustup
+          command -v python3
+          command -v node
+          test -x /usr/bin/time
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          # No bootstrap or network fetch on the protected host.
+          rustup run "$toolchain" rustc --version --verbose
+          rustup run "$toolchain" cargo --version
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Run identity-bound native and release-profile commands
+        id: execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_target_qualification.py run \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA"
+
+      - name: Retain source-bound outcome even after failure
+        if: always()
+        env:
+          SETUP_OUTCOME: ${{ steps.setup.outcome }}
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_target_qualification.py receipt \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA" \
+            --setup-outcome "$SETUP_OUTCOME" --execution-outcome "$EXECUTION_OUTCOME"
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path "$RECORDS/platform-wire-target-host.json" --kind platform-wire-target-host
+          python3 scripts/platform_wire_status.py render \
+            --target-host "$RECORDS/platform-wire-target-host.json" --format json \
+            --output "$RECORDS/platform-wire-target-host-status.json"
+
+      - name: Retain target-host evidence and failed command logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-target-host-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ env.RECORDS }}/
+          if-no-files-found: error
+          retention-days: 180
+
+      - name: Remove only this run's target-host build products
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$RUNNER_TEMP/platform-wire-target-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/build"
+          test "$CARGO_TARGET_DIR" = "$expected"
+          test ! -L "$CARGO_TARGET_DIR"
+          rm -rf -- "$CARGO_TARGET_DIR"
