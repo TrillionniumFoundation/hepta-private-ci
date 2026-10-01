@@ -177,7 +177,10 @@ async fn reopen_rejects_narrowed_historical_fact_validity_after_restoring_trigge
                     &access,
                     &first.memory.id.memory_id,
                     expected_revision,
-                    &source(&format!("interval-source-{}", expected_revision + 1), content),
+                    &source(
+                        &format!("interval-source-{}", expected_revision + 1),
+                        content,
+                    ),
                     &revision(content),
                     &fact_set,
                 )

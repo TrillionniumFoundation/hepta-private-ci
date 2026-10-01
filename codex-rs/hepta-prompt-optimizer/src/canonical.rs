@@ -120,7 +120,8 @@ pub fn enumerate_factors_v1(
     }
     let maximum_candidates = usize::try_from(request.maximum_candidates)
         .map_err(|_| CanonicalPromptError::CandidateLimit)?;
-    if maximum_candidates == 0 || maximum_candidates > MAX_CANONICAL_PROMPT_FACTORS
+    if maximum_candidates == 0
+        || maximum_candidates > MAX_CANONICAL_PROMPT_FACTORS
         || request.required_factor_ids.len() > MAX_CANONICAL_PROMPT_FACTORS
     {
         return Err(CanonicalPromptError::CandidateLimit);
@@ -435,7 +436,9 @@ pub fn price_factors_v1(
         if evidence.candidate_set_digest != candidates.receipt.receipt_digest
             || evidence.binding_digest != candidate.binding_digest
         {
-            return Err(CanonicalPromptError::InvalidPricingEvidence(candidate.factor_id.to_string()));
+            return Err(CanonicalPromptError::InvalidPricingEvidence(
+                candidate.factor_id.to_string(),
+            ));
         }
         let payload = pricing_evidence_signing_payload_v2(&evidence);
         let evidence = evidence.pricing;
@@ -484,8 +487,16 @@ pub fn price_factors_v1(
                 .map_err(|_| CanonicalPromptError::Arithmetic)?;
         }
         let confidence_interval = PromptConfidenceIntervalV1 {
-            lower_q32: translate_pricing_confidence_bound(evidence.confidence_lower_q32, evidence.expected_incremental_utility_q32, net)?,
-            upper_q32: translate_pricing_confidence_bound(evidence.confidence_upper_q32, evidence.expected_incremental_utility_q32, net)?,
+            lower_q32: translate_pricing_confidence_bound(
+                evidence.confidence_lower_q32,
+                evidence.expected_incremental_utility_q32,
+                net,
+            )?,
+            upper_q32: translate_pricing_confidence_bound(
+                evidence.confidence_upper_q32,
+                evidence.expected_incremental_utility_q32,
+                net,
+            )?,
             support_count: evidence.support_count,
             support_audit_digest: evidence.support_audit_digest,
         };
@@ -674,13 +685,23 @@ pub fn select_portfolio_v1(
         return Err(CanonicalPromptError::GenerationVectorMismatch);
     }
     if factor_graph.source_digest() != priced.candidates.factor_graph_source_digest
-        || factor_graph.registry_revision() != priced.candidates.issued_registry_snapshot.revision.get()
-        || factor_graph.registry_snapshot_digest() != priced.candidates.issued_registry_snapshot.registry_digest
+        || factor_graph.registry_revision()
+            != priced.candidates.issued_registry_snapshot.revision.get()
+        || factor_graph.registry_snapshot_digest()
+            != priced.candidates.issued_registry_snapshot.registry_digest
     {
         return Err(CanonicalPromptError::GraphSourceMismatch);
     }
 
-    select_from_validated_inputs(priced, graph, pair_evidence, verifier, request, now_unix_ms, Some(&generator))
+    select_from_validated_inputs(
+        priced,
+        graph,
+        pair_evidence,
+        verifier,
+        request,
+        now_unix_ms,
+        Some(&generator),
+    )
 }
 
 // The public entrypoint authenticates both owner-issued inputs before this
@@ -695,7 +716,6 @@ fn select_from_validated_inputs(
     now_unix_ms: u64,
     generator: Option<&VerifiedLearningEvidenceV1>,
 ) -> Result<SelectedPromptPortfolioV1, CanonicalPromptError> {
-
     if priced.rows.len() > MAX_CANONICAL_PROMPT_FACTORS {
         return Err(CanonicalPromptError::CandidateLimit);
     }
@@ -809,8 +829,12 @@ fn select_from_validated_inputs(
         };
         if evidence.left_factor_id >= evidence.right_factor_id
             || context.model_tuple_digest != priced.candidates.model_tuple.digest()
-            || by_factor.get(&evidence.left_factor_id).is_none_or(|row| row.binding.binding_digest != context.left_binding_digest)
-            || by_factor.get(&evidence.right_factor_id).is_none_or(|row| row.binding.binding_digest != context.right_binding_digest)
+            || by_factor
+                .get(&evidence.left_factor_id)
+                .is_none_or(|row| row.binding.binding_digest != context.left_binding_digest)
+            || by_factor
+                .get(&evidence.right_factor_id)
+                .is_none_or(|row| row.binding.binding_digest != context.right_binding_digest)
             || evidence.state_digest != priced.candidates.receipt.state_digest
             || evidence.graph_generation_digest != graph.generation_digest
             || evidence.edge_validity_digest != *validity_digest
@@ -925,7 +949,9 @@ fn select_from_validated_inputs(
         .iter()
         .map(|row| row.factor_id.clone())
         .collect::<Vec<_>>();
-    let mut valid_until = request.requested_valid_until_unix_ms.min(admission_expires_at);
+    let mut valid_until = request
+        .requested_valid_until_unix_ms
+        .min(admission_expires_at);
     for binding in &selected_bindings {
         if let Some(expires) = binding.realization.expires_unix_ms {
             valid_until = valid_until.min(expires);
@@ -935,10 +961,14 @@ fn select_from_validated_inputs(
         return Err(CanonicalPromptError::PortfolioExpired);
     }
     if generator.is_some() {
-        let last_valid_at = valid_until.checked_sub(1).ok_or(CanonicalPromptError::InvalidTime)?;
-        let generator = verify_pricing_admission(&priced.admission_proofs, verifier, last_valid_at)?;
+        let last_valid_at = valid_until
+            .checked_sub(1)
+            .ok_or(CanonicalPromptError::InvalidTime)?;
+        let generator =
+            verify_pricing_admission(&priced.admission_proofs, verifier, last_valid_at)?;
         for proof in pair_admission_proofs {
-            let evaluator = verifier.verify(proof.role, &proof.evidence, &proof.payload, last_valid_at)
+            let evaluator = verifier
+                .verify(proof.role, &proof.evidence, &proof.payload, last_valid_at)
                 .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
             verify_signed_role_separation(&generator, &evaluator, last_valid_at)
                 .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
@@ -1155,7 +1185,6 @@ fn validate_candidate_binding(
     }
     Ok(())
 }
-
 
 fn validate_pricing_evidence(
     candidates: &EnumeratedPromptCandidatesV1,

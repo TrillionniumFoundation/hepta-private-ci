@@ -199,14 +199,12 @@ pub(crate) fn canonical_generation_from_projection(
 
     let canonical_nodes = canonical_nodes
         .into_iter()
-        .map(
-            |(node_id, projection)| KnowledgeNodeV2 {
-                node_id,
-                node_kind_id: projection.kind_id,
-                payload_digest: projection.payload_digest,
-                supports: projection.supports,
-            },
-        )
+        .map(|(node_id, projection)| KnowledgeNodeV2 {
+            node_id,
+            node_kind_id: projection.kind_id,
+            payload_digest: projection.payload_digest,
+            supports: projection.supports,
+        })
         .collect::<Vec<_>>();
 
     let mut canonical_edges = BTreeMap::<KnowledgeEdgeIdentityV2, Vec<KnowledgeSupportV2>>::new();
@@ -229,9 +227,9 @@ pub(crate) fn canonical_generation_from_projection(
                 )
             })?;
         let relation = match relation_kinds.entry(edge.relation.clone()) {
-            std::collections::btree_map::Entry::Vacant(entry) => {
-                entry.insert(canonical_relation_kind(&edge.relation)?).clone()
-            }
+            std::collections::btree_map::Entry::Vacant(entry) => entry
+                .insert(canonical_relation_kind(&edge.relation)?)
+                .clone(),
             std::collections::btree_map::Entry::Occupied(entry) => entry.get().clone(),
         };
         let identity = KnowledgeEdgeIdentityV2 {
@@ -310,7 +308,10 @@ pub(crate) async fn load_generation_query_cut_tx(
     projection_scope: &str,
     generation: i64,
 ) -> Result<
-    (KnowledgeGenerationV2, Option<BTreeMap<String, (String, i64)>>),
+    (
+        KnowledgeGenerationV2,
+        Option<BTreeMap<String, (String, i64)>>,
+    ),
     CognitiveStoreError,
 > {
     load_generation_cut_tx(
@@ -328,7 +329,10 @@ async fn load_generation_cut_tx(
     generation: i64,
     mode: ProjectionLoadMode,
 ) -> Result<
-    (KnowledgeGenerationV2, Option<BTreeMap<String, (String, i64)>>),
+    (
+        KnowledgeGenerationV2,
+        Option<BTreeMap<String, (String, i64)>>,
+    ),
     CognitiveStoreError,
 > {
     if generation <= 0 {

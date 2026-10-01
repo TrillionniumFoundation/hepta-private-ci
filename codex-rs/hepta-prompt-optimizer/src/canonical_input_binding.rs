@@ -42,28 +42,36 @@ impl EnumeratedPromptCandidatesV1 {
             || self.generation_vector_digest != self.registry_snapshot.generation_vector_digest
             || self.model_tuple.digest() != self.registry_snapshot.model_tuple_digest
             || self.receipt.candidate_factor_ids.len() != self.candidates.len()
-            || self.candidates.windows(2).any(|pair| pair[0].factor_id >= pair[1].factor_id)
-            || self.candidates.iter().zip(&self.receipt.candidate_factor_ids).any(|(binding, factor)| {
-                &binding.factor_id != factor
-                    || binding.factor_id != binding.realization.factor_id
-                    || binding.realization.validate().is_err()
-                    || binding.realization.digest() != binding.binding_digest
-            })
+            || self
+                .candidates
+                .windows(2)
+                .any(|pair| pair[0].factor_id >= pair[1].factor_id)
+            || self
+                .candidates
+                .iter()
+                .zip(&self.receipt.candidate_factor_ids)
+                .any(|(binding, factor)| {
+                    &binding.factor_id != factor
+                        || binding.factor_id != binding.realization.factor_id
+                        || binding.realization.validate().is_err()
+                        || binding.realization.digest() != binding.binding_digest
+                })
             || self.candidates_digest != digest_candidates(&self.candidates)
             || self.canonical_order_digest != digest_candidate_order(&self.candidates)
-            || self.receipt.receipt_digest != digest_candidate_receipt(
-                &self.receipt.set_id,
-                self.receipt.objective_digest,
-                self.receipt.state_digest,
-                self.receipt.registry_digest,
-                self.registry_snapshot.snapshot_digest,
-                self.model_tuple.digest(),
-                self.receipt.selection_grammar_digest,
-                &self.receipt.candidate_factor_ids,
-                self.candidates_digest,
-                self.canonical_order_digest,
-                self.omitted_count,
-            )
+            || self.receipt.receipt_digest
+                != digest_candidate_receipt(
+                    &self.receipt.set_id,
+                    self.receipt.objective_digest,
+                    self.receipt.state_digest,
+                    self.receipt.registry_digest,
+                    self.registry_snapshot.snapshot_digest,
+                    self.model_tuple.digest(),
+                    self.receipt.selection_grammar_digest,
+                    &self.receipt.candidate_factor_ids,
+                    self.candidates_digest,
+                    self.canonical_order_digest,
+                    self.omitted_count,
+                )
             || self.sealed_input_digest != self.compute_input_digest()
         {
             return Err(CanonicalPromptError::CandidateBindingMismatch);
@@ -119,43 +127,64 @@ impl PricedPromptCandidatesV1 {
             || self.admission_proofs.len() != self.rows.len() + 1
             || self.admission_trust_digest.is_zero()
             || self.admitted_at_unix_ms == 0
-            || self.admission_expires_at_unix_ms != self.admission_proofs.iter().map(|proof| proof.evidence.expires_at).min().unwrap_or(0)
-            || self.admission_proofs.iter().enumerate().any(|(index, proof)| {
-                let expected_role = if index == 0 { LearningEvidenceRoleV1::Generator } else { LearningEvidenceRoleV1::Evaluator };
-                proof.role != expected_role
-                    || proof.evidence.role != proof.role
-                    || proof.evidence.trust_digest != self.admission_trust_digest
-                    || proof.evidence.objective_digest != self.candidates.receipt.objective_digest
-                    || self.admitted_at_unix_ms < proof.evidence.issued_at
-                    || self.admitted_at_unix_ms > proof.evidence.expires_at
-                    || Digest32::of_bytes(&proof.payload) != proof.evidence.payload_digest
-            })
-            || self.rows.iter().zip(&self.candidates.candidates).any(|(row, candidate)| {
-                let pricing = &row.pricing;
-                row.binding != *candidate
-                    || pricing.authority.grants_any()
-                    || pricing.factor_id != candidate.factor_id
-                    || pricing.state_digest != self.candidates.receipt.state_digest
-                    || pricing.token_cost != candidate.realization.token_cost
-                    || pricing.expected_utility_q32 != row.net_utility_q32
-                    || pricing.downside_q32 < FixedQ32::ZERO
-                    || pricing.interference_ppm > 1_000_000
-                    || pricing.confidence_interval.lower_q32 > pricing.confidence_interval.upper_q32
-                    || pricing.confidence_interval.support_count == 0
-                    || pricing.confidence_interval.support_audit_digest.is_zero()
-                    || pricing.receipt_digest != digest_pricing_receipt(
-                        &pricing.factor_id,
-                        pricing.state_digest,
-                        pricing.expected_utility_q32,
-                        pricing.downside_q32,
-                        pricing.token_cost,
-                        pricing.latency_cost_micros,
-                        pricing.interference_ppm,
-                        &pricing.confidence_interval,
-                        self.pricing_policy_digest,
-                        candidate.binding_digest,
-                    )
-            })
+            || self.admission_expires_at_unix_ms
+                != self
+                    .admission_proofs
+                    .iter()
+                    .map(|proof| proof.evidence.expires_at)
+                    .min()
+                    .unwrap_or(0)
+            || self
+                .admission_proofs
+                .iter()
+                .enumerate()
+                .any(|(index, proof)| {
+                    let expected_role = if index == 0 {
+                        LearningEvidenceRoleV1::Generator
+                    } else {
+                        LearningEvidenceRoleV1::Evaluator
+                    };
+                    proof.role != expected_role
+                        || proof.evidence.role != proof.role
+                        || proof.evidence.trust_digest != self.admission_trust_digest
+                        || proof.evidence.objective_digest
+                            != self.candidates.receipt.objective_digest
+                        || self.admitted_at_unix_ms < proof.evidence.issued_at
+                        || self.admitted_at_unix_ms > proof.evidence.expires_at
+                        || Digest32::of_bytes(&proof.payload) != proof.evidence.payload_digest
+                })
+            || self
+                .rows
+                .iter()
+                .zip(&self.candidates.candidates)
+                .any(|(row, candidate)| {
+                    let pricing = &row.pricing;
+                    row.binding != *candidate
+                        || pricing.authority.grants_any()
+                        || pricing.factor_id != candidate.factor_id
+                        || pricing.state_digest != self.candidates.receipt.state_digest
+                        || pricing.token_cost != candidate.realization.token_cost
+                        || pricing.expected_utility_q32 != row.net_utility_q32
+                        || pricing.downside_q32 < FixedQ32::ZERO
+                        || pricing.interference_ppm > 1_000_000
+                        || pricing.confidence_interval.lower_q32
+                            > pricing.confidence_interval.upper_q32
+                        || pricing.confidence_interval.support_count == 0
+                        || pricing.confidence_interval.support_audit_digest.is_zero()
+                        || pricing.receipt_digest
+                            != digest_pricing_receipt(
+                                &pricing.factor_id,
+                                pricing.state_digest,
+                                pricing.expected_utility_q32,
+                                pricing.downside_q32,
+                                pricing.token_cost,
+                                pricing.latency_cost_micros,
+                                pricing.interference_ppm,
+                                &pricing.confidence_interval,
+                                self.pricing_policy_digest,
+                                candidate.binding_digest,
+                            )
+                })
             || self.pricing_set_digest != digest_pricing_set(&self.rows, self.pricing_policy_digest)
             || self.sealed_input_digest != self.compute_input_digest()
         {
@@ -200,10 +229,20 @@ impl PricedPromptCandidatesV1 {
             write_binding(&mut bytes, &row.binding);
             let pricing = &row.pricing;
             push_id(&mut bytes, &pricing.factor_id);
-            for digest in [pricing.state_digest, pricing.receipt_digest, pricing.confidence_interval.support_audit_digest] {
+            for digest in [
+                pricing.state_digest,
+                pricing.receipt_digest,
+                pricing.confidence_interval.support_audit_digest,
+            ] {
                 bytes.extend_from_slice(digest.as_array());
             }
-            for value in [pricing.expected_utility_q32, pricing.downside_q32, pricing.confidence_interval.lower_q32, pricing.confidence_interval.upper_q32, row.net_utility_q32] {
+            for value in [
+                pricing.expected_utility_q32,
+                pricing.downside_q32,
+                pricing.confidence_interval.lower_q32,
+                pricing.confidence_interval.upper_q32,
+                row.net_utility_q32,
+            ] {
                 bytes.extend_from_slice(&value.raw().to_be_bytes());
             }
             bytes.extend_from_slice(&pricing.token_cost.to_be_bytes());
@@ -227,15 +266,18 @@ pub(super) fn verify_pricing_admission(
     verifier: &LearningEvidenceVerifierV1,
     now_unix_ms: u64,
 ) -> Result<VerifiedLearningEvidenceV1, CanonicalPromptError> {
-    let first = proofs.first().ok_or(CanonicalPromptError::PricingBindingMismatch)?;
-    let generator = verifier.verify(first.role, &first.evidence, &first.payload, now_unix_ms)
+    let first = proofs
+        .first()
+        .ok_or(CanonicalPromptError::PricingBindingMismatch)?;
+    let generator = verifier
+        .verify(first.role, &first.evidence, &first.payload, now_unix_ms)
         .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
     for proof in &proofs[1..] {
-        let evaluator = verifier.verify(proof.role, &proof.evidence, &proof.payload, now_unix_ms)
+        let evaluator = verifier
+            .verify(proof.role, &proof.evidence, &proof.payload, now_unix_ms)
             .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
         verify_signed_role_separation(&generator, &evaluator, now_unix_ms)
             .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
     }
     Ok(generator)
 }
-

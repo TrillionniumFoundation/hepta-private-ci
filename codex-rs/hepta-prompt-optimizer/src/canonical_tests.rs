@@ -237,29 +237,35 @@ pub(super) fn learning_trust() -> LearningEvidenceTrustV1 {
         signers: [
             ("evaluator", 7, LearningEvidenceRoleV1::Evaluator),
             ("prompt.optimizer", 8, LearningEvidenceRoleV1::Generator),
-        ].into_iter().map(|(principal, seed, role)| {
-            let public = SigningKey::from_bytes(&[seed; 32]).verifying_key().to_bytes();
+        ]
+        .into_iter()
+        .map(|(principal, seed, role)| {
+            let public = SigningKey::from_bytes(&[seed; 32])
+                .verifying_key()
+                .to_bytes();
             TrustedLearningSignerV1 {
-            principal: AuthenticatedPrincipalV1 {
-                principal_id: id(principal),
-                credential_chain_digest: digest(&format!("credential:{principal}")),
-                signing_key_digest: Digest32::of_bytes(&public),
-                scope_digest: digest("scope"),
-                authority_epoch: 1,
-                authenticated_at: 1,
-                expires_at: 10_000,
-            },
-            controller_id: id(&format!("controller:{principal}")),
-            verifying_key: public,
-            roles: vec![role],
-            revoked_at: None,
-        }}).collect(),
+                principal: AuthenticatedPrincipalV1 {
+                    principal_id: id(principal),
+                    credential_chain_digest: digest(&format!("credential:{principal}")),
+                    signing_key_digest: Digest32::of_bytes(&public),
+                    scope_digest: digest("scope"),
+                    authority_epoch: 1,
+                    authenticated_at: 1,
+                    expires_at: 10_000,
+                },
+                controller_id: id(&format!("controller:{principal}")),
+                verifying_key: public,
+                roles: vec![role],
+                revoked_at: None,
+            }
+        })
+        .collect(),
     }
 }
 
 pub(super) fn verifier() -> LearningEvidenceVerifierV1 {
     LearningEvidenceVerifierV1::new(learning_trust())
-    .unwrap_or_else(|error| panic!("verifier: {error}"))
+        .unwrap_or_else(|error| panic!("verifier: {error}"))
 }
 
 pub(super) fn sign_learning_evidence(
@@ -297,12 +303,26 @@ pub(super) struct PricingFixture {
 }
 
 impl PricingFixture {
-    pub(super) fn price(self, candidates: EnumeratedPromptCandidatesV1) -> Result<PricedPromptCandidatesV1, CanonicalPromptError> {
-        price_factors_v1(candidates, &self.completeness, &self.completeness_evidence, self.evidence, &self.verifier, &self.policy, 100)
+    pub(super) fn price(
+        self,
+        candidates: EnumeratedPromptCandidatesV1,
+    ) -> Result<PricedPromptCandidatesV1, CanonicalPromptError> {
+        price_factors_v1(
+            candidates,
+            &self.completeness,
+            &self.completeness_evidence,
+            self.evidence,
+            &self.verifier,
+            &self.policy,
+            100,
+        )
     }
 }
 
-pub(super) fn authenticated_pricing_inputs(candidates: &EnumeratedPromptCandidatesV1, verifier: LearningEvidenceVerifierV1) -> PricingFixture {
+pub(super) fn authenticated_pricing_inputs(
+    candidates: &EnumeratedPromptCandidatesV1,
+    verifier: LearningEvidenceVerifierV1,
+) -> PricingFixture {
     let completeness = CandidateSetCompletenessReceiptV1 {
         set_id: candidates.receipt.set_id.clone(),
         state_digest: candidates.receipt.state_digest,
@@ -318,40 +338,56 @@ pub(super) fn authenticated_pricing_inputs(candidates: &EnumeratedPromptCandidat
         complete_for_generator: true,
     };
     let completeness_evidence = sign_learning_evidence(
-        &verifier, 8, "prompt.optimizer", LearningEvidenceRoleV1::Generator,
-        "evidence:completeness", &candidate_completeness_signing_payload_v1(&completeness).expect("completeness payload"),
+        &verifier,
+        8,
+        "prompt.optimizer",
+        LearningEvidenceRoleV1::Generator,
+        "evidence:completeness",
+        &candidate_completeness_signing_payload_v1(&completeness).expect("completeness payload"),
     );
-    let evidence = candidates.candidates.iter().map(|candidate| {
-        let utility = FixedQ32::from_raw(if candidate.factor_id == id("factor:a") { 20 } else { 10 });
-        let pricing = PromptPricingEvidenceV1 {
-            factor_id: candidate.factor_id.clone(),
-            state_digest: candidates.receipt.state_digest,
-            model_tuple_digest: candidates.model_tuple.digest(),
-            expected_incremental_utility_q32: utility,
-            downside_q32: FixedQ32::ZERO,
-            confidence_lower_q32: utility,
-            confidence_upper_q32: utility,
-            support_count: 10,
-            latency_cost_micros: 0,
-            interference_ppm: 0,
-            context_crowding_cost_q32: FixedQ32::ZERO,
-            privacy_cost_q32: FixedQ32::ZERO,
-            instability_cost_q32: FixedQ32::ZERO,
-            future_context_option_cost_q32: FixedQ32::ZERO,
-            support_audit_digest: digest("pricing-support-audit"),
-            evidence: completeness_evidence.clone(),
-        };
-        let mut evidence = PromptPricingEvidenceV2 {
+    let evidence = candidates
+        .candidates
+        .iter()
+        .map(|candidate| {
+            let utility = FixedQ32::from_raw(if candidate.factor_id == id("factor:a") {
+                20
+            } else {
+                10
+            });
+            let pricing = PromptPricingEvidenceV1 {
+                factor_id: candidate.factor_id.clone(),
+                state_digest: candidates.receipt.state_digest,
+                model_tuple_digest: candidates.model_tuple.digest(),
+                expected_incremental_utility_q32: utility,
+                downside_q32: FixedQ32::ZERO,
+                confidence_lower_q32: utility,
+                confidence_upper_q32: utility,
+                support_count: 10,
+                latency_cost_micros: 0,
+                interference_ppm: 0,
+                context_crowding_cost_q32: FixedQ32::ZERO,
+                privacy_cost_q32: FixedQ32::ZERO,
+                instability_cost_q32: FixedQ32::ZERO,
+                future_context_option_cost_q32: FixedQ32::ZERO,
+                support_audit_digest: digest("pricing-support-audit"),
+                evidence: completeness_evidence.clone(),
+            };
+            let mut evidence = PromptPricingEvidenceV2 {
                 pricing,
                 candidate_set_digest: candidates.receipt.receipt_digest,
                 binding_digest: candidate.binding_digest,
             };
             evidence.pricing.evidence = sign_learning_evidence(
-            &verifier, 7, "evaluator", LearningEvidenceRoleV1::Evaluator,
-            &format!("evidence:pricing:{}", candidate.factor_id), &pricing_evidence_signing_payload_v2(&evidence),
-        );
-        evidence
-    }).collect();
+                &verifier,
+                7,
+                "evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                &format!("evidence:pricing:{}", candidate.factor_id),
+                &pricing_evidence_signing_payload_v2(&evidence),
+            );
+            evidence
+        })
+        .collect();
     PricingFixture {
         completeness,
         completeness_evidence,
@@ -903,7 +939,9 @@ fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
     )
     .expect("enumerate current owner cut");
     let pricing = authenticated_pricing_inputs(&enumerated, verifier());
-    let priced = pricing.price(enumerated).expect("authenticate current owner pricing");
+    let priced = pricing
+        .price(enumerated)
+        .expect("authenticate current owner pricing");
     let source = registry
         .registry()
         .expect("registry")
@@ -998,7 +1036,10 @@ fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
     );
 }
 
-pub(super) fn current_enumeration(registry: &PromptRegistry, required_factor_ids: Vec<StableId>) -> EnumeratedPromptCandidatesV1 {
+pub(super) fn current_enumeration(
+    registry: &PromptRegistry,
+    required_factor_ids: Vec<StableId>,
+) -> EnumeratedPromptCandidatesV1 {
     let mut request = enumeration_request();
     request.required_factor_ids = required_factor_ids;
     enumerate_factors_v1(registry, request).expect("enumerate current owner cut")
@@ -1006,15 +1047,15 @@ pub(super) fn current_enumeration(registry: &PromptRegistry, required_factor_ids
 
 pub(super) fn enumeration_request() -> PromptEnumerationRequestV1 {
     PromptEnumerationRequestV1 {
-            set_id: id("set:source-cut"),
-            objective_digest: digest("objective"),
-            state_digest: digest("state"),
-            generation_vector_digest: digest("generation-vector"),
-            model_tuple: model_tuple(),
-            now_unix_ms: 100,
-            required_factor_ids: vec![id("factor:a")],
-            maximum_candidates: 8,
-            selection_grammar_digest: digest("grammar"),
+        set_id: id("set:source-cut"),
+        objective_digest: digest("objective"),
+        state_digest: digest("state"),
+        generation_vector_digest: digest("generation-vector"),
+        model_tuple: model_tuple(),
+        now_unix_ms: 100,
+        required_factor_ids: vec![id("factor:a")],
+        maximum_candidates: 8,
+        selection_grammar_digest: digest("grammar"),
     }
 }
 
@@ -1030,14 +1071,18 @@ pub(super) fn selection_request() -> PromptPortfolioRequestV1 {
 
 pub(super) fn owner_projection(registry: &PromptRegistry) -> PromptFactorProjectionV1 {
     codex_hepta_kg::build_prompt_factor_projection_v1(
-        Generation::new(1).expect("generation"), digest("generation-vector"),
+        Generation::new(1).expect("generation"),
+        digest("generation-vector"),
         &registry.factor_graph_source_v1(),
-    ).expect("sealed current owner projection")
+    )
+    .expect("sealed current owner projection")
 }
 
 pub(super) fn current_pair_pricing(registry: &PromptRegistry) -> PricedPromptCandidatesV1 {
     let enumerated = current_enumeration(registry, vec![id("factor:a"), id("factor:b")]);
-    authenticated_pricing_inputs(&enumerated, verifier()).price(enumerated).expect("authenticate pair pricing")
+    authenticated_pricing_inputs(&enumerated, verifier())
+        .price(enumerated)
+        .expect("authenticate pair pricing")
 }
 
 pub(super) fn register_second_realized_factor(
@@ -1346,15 +1391,9 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
         &corrected_source,
     )
     .expect("corrected projection");
-    let mut corrected = select_portfolio_v1(
-        &current,
-        &corrected_graph,
-        &[],
-        &verifier(),
-        request,
-        100,
-    )
-    .expect("current withdrawn graph");
+    let mut corrected =
+        select_portfolio_v1(&current, &corrected_graph, &[], &verifier(), request, 100)
+            .expect("current withdrawn graph");
     assert_eq!(
         corrected.receipt.factor_ids,
         vec![id("factor:a"), id("factor:b")]

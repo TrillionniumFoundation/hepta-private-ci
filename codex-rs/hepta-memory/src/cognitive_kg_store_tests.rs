@@ -152,9 +152,10 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
         .expect("first projection");
     assert_eq!(first.projection.generation.get(), 1);
     let mut transaction = store.pool.begin().await.expect("query-cut transaction");
-    let original_generation = load_canonical_generation_tx(&mut transaction, &scope.projection_key(), 1)
-        .await
-        .expect("generation-only reference");
+    let original_generation =
+        load_canonical_generation_tx(&mut transaction, &scope.projection_key(), 1)
+            .await
+            .expect("generation-only reference");
     let (query_generation, query_supports) =
         load_generation_query_cut_tx(&mut transaction, &scope.projection_key(), 1)
             .await
@@ -163,11 +164,16 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
     assert_eq!(
         query_supports,
         Some(std::collections::BTreeMap::from([(
-            original_generation.edges[0].supports[0].source_id.to_string(),
+            original_generation.edges[0].supports[0]
+                .source_id
+                .to_string(),
             (first.memory.id.memory_id.as_str().to_string(), 1),
         )]))
     );
-    transaction.commit().await.expect("finish query-cut transaction");
+    transaction
+        .commit()
+        .await
+        .expect("finish query-cut transaction");
     assert_eq!(
         sqlx::query_scalar::<_, i64>(
             "SELECT COUNT(*) FROM kg_revision_entity_fts WHERE kg_revision_entity_fts MATCH 'Ada'",
@@ -199,7 +205,11 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
         .expect("replacement projection");
     assert_eq!(second.projection.generation.get(), 2);
     assert_eq!(second.projection.edge_count, 0);
-    let mut transaction = store.pool.begin().await.expect("historical query-cut transaction");
+    let mut transaction = store
+        .pool
+        .begin()
+        .await
+        .expect("historical query-cut transaction");
     let (historical_generation, historical_supports) =
         load_generation_query_cut_tx(&mut transaction, &scope.projection_key(), 1)
             .await
@@ -208,7 +218,9 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
     assert_eq!(
         historical_supports,
         Some(std::collections::BTreeMap::from([(
-            original_generation.edges[0].supports[0].source_id.to_string(),
+            original_generation.edges[0].supports[0]
+                .source_id
+                .to_string(),
             (first.memory.id.memory_id.as_str().to_string(), 1),
         )]))
     );
@@ -217,7 +229,10 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
             .await
             .expect("current query cut excludes the corrected historical relation");
     assert_eq!(current_supports, Some(std::collections::BTreeMap::new()));
-    transaction.commit().await.expect("finish historical query-cut transaction");
+    transaction
+        .commit()
+        .await
+        .expect("finish historical query-cut transaction");
     assert_eq!(
         sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM kg_revision_relations")
             .fetch_one(&store.pool)

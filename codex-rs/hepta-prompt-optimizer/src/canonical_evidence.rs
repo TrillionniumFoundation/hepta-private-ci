@@ -70,6 +70,9 @@ pub(super) fn translate_pricing_confidence_bound(
     raw_utility: FixedQ32,
     net_utility: FixedQ32,
 ) -> Result<FixedQ32, CanonicalPromptError> {
-    let translated = i128::from(bound.raw()) - i128::from(raw_utility.raw()) + i128::from(net_utility.raw());
-    i64::try_from(translated).map(FixedQ32::from_raw).map_err(|_| CanonicalPromptError::Arithmetic)
+    let translated =
+        i128::from(bound.raw()) - i128::from(raw_utility.raw()) + i128::from(net_utility.raw());
+    i64::try_from(translated)
+        .map(FixedQ32::from_raw)
+        .map_err(|_| CanonicalPromptError::Arithmetic)
 }

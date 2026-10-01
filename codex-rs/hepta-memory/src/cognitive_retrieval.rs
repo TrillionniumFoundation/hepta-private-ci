@@ -838,35 +838,34 @@ impl CognitiveStore {
                 continue;
             };
 
-            let generation = match generations
-                .entry((seed.projection_scope.clone(), seed.generation))
-            {
-                std::collections::btree_map::Entry::Vacant(entry) => {
-                    let (canonical, compact_supports) = load_generation_query_cut_tx(
-                        transaction,
-                        &seed.projection_scope,
-                        seed.generation,
-                    )
-                    .await?;
-                    let relation_kinds = canonical
-                        .edges
-                        .iter()
-                        .map(|edge| edge.identity.relation.clone())
-                        .collect();
-                    let canonical =
+            let generation =
+                match generations.entry((seed.projection_scope.clone(), seed.generation)) {
+                    std::collections::btree_map::Entry::Vacant(entry) => {
+                        let (canonical, compact_supports) = load_generation_query_cut_tx(
+                            transaction,
+                            &seed.projection_scope,
+                            seed.generation,
+                        )
+                        .await?;
+                        let relation_kinds = canonical
+                            .edges
+                            .iter()
+                            .map(|edge| edge.identity.relation.clone())
+                            .collect();
+                        let canonical =
                         ValidatedKnowledgeGenerationV2::new(canonical).map_err(|error| {
                             CognitiveStoreError::Corrupt(format!(
                                 "persisted KG generation failed immutable read validation: {error}"
                             ))
                         })?;
-                    entry.insert(RetrievalGeneration {
-                        canonical,
-                        relation_kinds,
-                        compact_supports,
-                    })
-                }
-                std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
-            };
+                        entry.insert(RetrievalGeneration {
+                            canonical,
+                            relation_kinds,
+                            compact_supports,
+                        })
+                    }
+                    std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+                };
             if generation
                 .canonical
                 .as_generation()
