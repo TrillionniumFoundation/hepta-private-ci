@@ -217,3 +217,7 @@ Fleet mandatory 已为三项，但 receipt validator 的有效样本仍只含两
 现有效样本加入从 registry_tests 源码核对的 canonical sweep 精确身份，
 并对全部三项执行既有 missing / prefix / wrong-binary 反例；生产门槛保持三项。
 这次真实 scope 失败日志由 run 36930763804 和 36930754188 保留，不能算原生通过。
+
+收据样本补修源码观察为 `462adb4973c14c958cb696fdf5789ca34fed0a6e`，tree `a9edf57af51a27064e1e631154501789934205af`。
+独立复审确认三项正向样本、九种拒绝场景与现有计划一致，整个 codex-rs tree
+和 v3 生产门槛保持 d74 原字节；新原生执行仍须按最终 head 核对。
