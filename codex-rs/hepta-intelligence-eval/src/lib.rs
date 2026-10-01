@@ -508,6 +508,10 @@ mod fixed_calibration_cycle_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_product_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::HistoricalCalibrationRejectionV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::inspect_completed_calibration_rejection;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_calibration_cycle_host::resume_fixed_calibration_evaluation;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_calibration_cycle_host::run_fixed_calibration_cycle;

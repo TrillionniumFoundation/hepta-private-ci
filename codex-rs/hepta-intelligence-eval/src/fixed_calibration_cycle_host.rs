@@ -21,6 +21,11 @@ type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
 mod resume;
 pub use resume::resume_fixed_calibration_evaluation;
 
+#[path = "fixed_calibration_rejection_history.rs"]
+mod rejection_history;
+pub use rejection_history::HistoricalCalibrationRejectionV1;
+pub use rejection_history::inspect_completed_calibration_rejection;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Source {

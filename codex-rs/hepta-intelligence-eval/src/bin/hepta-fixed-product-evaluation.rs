@@ -3,6 +3,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "linux")]
     {
         let args = std::env::args_os().skip(1).collect::<Vec<_>>();
+        if args.len() == 4 && args[0] == "--inspect-rejected-cycle" {
+            let historical =
+                codex_hepta_intelligence_eval::inspect_completed_calibration_rejection(
+                    std::path::Path::new(&args[1]),
+                    args[2].to_str().ok_or("config digest")?.parse()?,
+                    args[3].to_str().ok_or("completion digest")?.parse()?,
+                )?;
+            println!("{}", serde_json::to_string(&historical)?);
+            return Ok(());
+        }
         if args.len() == 2 && args[0] == "--run-calibration-cycle" {
             return codex_hepta_intelligence_eval::run_fixed_calibration_cycle(
                 std::path::Path::new(&args[1]),
@@ -19,5 +29,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
         }
     }
-    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG".into())
+    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG | --inspect-rejected-cycle ROOT_CONFIG CONFIG_DIGEST COMPLETION_DIGEST".into())
 }
