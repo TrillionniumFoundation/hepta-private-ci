@@ -630,6 +630,10 @@ impl AgentdState {
             return Ok(None);
         };
 
+        // RunStart carries the current Fleet lifecycle generation. The frozen
+        // canonical body separately identifies this process launch; Running
+        // advances the lifecycle beyond that spawn generation.
+        self.require_current_run_start(record)?;
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
         let crate::AgentdIntelligenceInvocationV1 {

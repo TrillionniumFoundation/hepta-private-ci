@@ -86,9 +86,8 @@ impl AgentdIntelligenceInvocationV1 {
         if self.request.run_id != snapshot.run_id
             || self.request.snapshot.objective_digest() != snapshot.objective_digest
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
-            || self.request.snapshot.body_generation().get() != snapshot.generation
+            || self.request.snapshot.body_generation().get() != identity.spawn_generation
             || self.request.legal_candidates.state_digest != snapshot.objective_digest
-            || snapshot.generation != identity.spawn_generation
         {
             return Err(AgentdError::Invalid(
                 "canonical intelligence invocation does not match the durable RunStart identity"
