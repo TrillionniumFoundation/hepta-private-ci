@@ -24,6 +24,13 @@ REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 RULESET_NAME = "Hepta owner-operated main baseline"
 GATE = "CI required"
 WORKFLOW = "blocking-ci.yml"
+# GitHub's built-in Admin repository role; bypass is restricted to PR merging.
+# https://github.com/integrations/terraform-provider-github/blob/main/docs/resources/repository_ruleset.md
+ADMIN_MERGE_BYPASS = {
+    "actor_id": 5,
+    "actor_type": "RepositoryRole",
+    "bypass_mode": "pull_request",
+}
 
 
 class ProtectionError(RuntimeError):
@@ -95,7 +102,7 @@ def desired_ruleset(app_id: int) -> dict[str, Any]:
         "name": RULESET_NAME,
         "target": "branch",
         "enforcement": "active",
-        "bypass_actors": [],
+        "bypass_actors": [dict(ADMIN_MERGE_BYPASS)],
         "conditions": {"ref_name": {"include": ["refs/heads/main"], "exclude": []}},
         "rules": [
             {"type": "deletion"},
@@ -107,7 +114,7 @@ def desired_ruleset(app_id: int) -> dict[str, Any]:
                     "require_code_owner_review": False,
                     "require_last_push_approval": False,
                     "required_approving_review_count": 0,
-                    "required_review_thread_resolution": True,
+                    "required_review_thread_resolution": False,
                 },
             },
             {
@@ -127,10 +134,15 @@ def desired_ruleset(app_id: int) -> dict[str, Any]:
 def verify_ruleset(value: dict[str, Any], app_id: int) -> None:
     if value.get("target") != "branch" or value.get("enforcement") != "active":
         raise ProtectionError("ruleset is not an active branch policy")
-    if value.get("bypass_actors") != []:
-        raise ProtectionError(
-            "ruleset has bypass actors or bypass visibility is unavailable"
-        )
+    bypass = value.get("bypass_actors")
+    if bypass != [] and not (
+        isinstance(bypass, list)
+        and len(bypass) == 1
+        and isinstance(bypass[0], dict)
+        and type(bypass[0].get("actor_id")) is int
+        and bypass[0] == ADMIN_MERGE_BYPASS
+    ):
+        raise ProtectionError("unknown or broader-than-admin-PR bypass policy")
     if value.get("conditions") != desired_ruleset(app_id)["conditions"]:
         raise ProtectionError("ruleset does not exactly target main")
     rows = value.get("rules", [])
@@ -155,8 +167,8 @@ def verify_ruleset(value: dict[str, Any], app_id: int) -> None:
     ):
         if type(review.get(field)) is not bool:
             raise ProtectionError(f"unknown owner-selected review policy: {field}")
-    if review.get("required_review_thread_resolution") is not True:
-        raise ProtectionError("unresolved review conversations do not block merging")
+    if type(review.get("required_review_thread_resolution")) is not bool:
+        raise ProtectionError("unknown owner-selected review conversation policy")
     checks = rules["required_status_checks"].get("parameters", {})
     if checks.get("strict_required_status_checks_policy") is not True:
         raise ProtectionError("checks do not require an up-to-date base")

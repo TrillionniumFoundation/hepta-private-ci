@@ -46,6 +46,11 @@ produces the corresponding deep execution plan without granting any authority.
 The document verifier reports changed shared-path lease requests without
 self-attesting them. Protected-branch status checks remain required for
 integration; the repository owner selects whether reviewer approval is required.
+Administrator enforcement and comment resolution are also owner-selected.
+The supplied main ruleset permits administrators to merge reviewed PR contents
+without creating a direct-push bypass; ordinary required checks remain pinned
+to their real publisher. These repository settings do not authorize a workload
+effect or replace independent runtime evaluation.
 An explicit `verify --require-path-lease-attestation` checks the separate
 activation boundary and rejects touched requests without external attestation;
 a static pass never activates a lease or grants authority.
