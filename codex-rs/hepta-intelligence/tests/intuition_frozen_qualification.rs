@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "This integration test must fail immediately when checked-in frozen datasets, scorer fixtures, or signed qualification evidence are invalid"
+)]
+
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
 use codex_hepta_intelligence::decide_authenticated_intuition_v2;
 use codex_hepta_intuition::AssignmentCommitmentV1;
