@@ -4,6 +4,8 @@
 //! projection is a separate capability surface for Robrix and therefore has no
 //! mutation request constructor and no mutation-success response variant.
 
+use std::collections::BTreeSet;
+
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
@@ -94,12 +96,7 @@ impl RobrixSupervisordResponse {
         }
         match &self.payload {
             RobrixSupervisordPayload::Health(health) => validate_health(health),
-            RobrixSupervisordPayload::Roster { agents } => {
-                if agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
-                    return Err(RobrixProtocolError::InvalidAgentStatus);
-                }
-                agents.iter().try_for_each(validate_agent_status)
-            }
+            RobrixSupervisordPayload::Roster { agents } => validate_roster(agents),
             RobrixSupervisordPayload::Agent(status) => validate_agent_status(status),
             RobrixSupervisordPayload::Error {
                 code,
@@ -113,6 +110,36 @@ impl RobrixSupervisordResponse {
                 }
                 Ok(())
             }
+        }
+    }
+
+    /// Validate both the canonical payload and its outstanding read request.
+    pub fn validate_for(
+        &self,
+        request: &RobrixSupervisordRequest,
+    ) -> Result<(), RobrixProtocolError> {
+        request.validate()?;
+        self.validate(request.request_id)?;
+        match (&request.method, &self.payload) {
+            (_, RobrixSupervisordPayload::Error { actual, .. }) => {
+                if let (RobrixSupervisordMethod::Snapshot { agent_id }, Some(actual)) =
+                    (&request.method, actual)
+                    && agent_id != &actual.agent_id
+                {
+                    return Err(RobrixProtocolError::InvalidAgentStatus);
+                }
+                Ok(())
+            }
+            (RobrixSupervisordMethod::Health, RobrixSupervisordPayload::Health(_)) => Ok(()),
+            (
+                RobrixSupervisordMethod::Roster { limit },
+                RobrixSupervisordPayload::Roster { agents },
+            ) if agents.len() <= usize::from(*limit) => Ok(()),
+            (
+                RobrixSupervisordMethod::Snapshot { agent_id },
+                RobrixSupervisordPayload::Agent(status),
+            ) if agent_id == &status.agent_id => Ok(()),
+            _ => Err(RobrixProtocolError::InvalidEnvelope),
         }
     }
 }
@@ -179,18 +206,36 @@ pub enum RobrixProtocolError {
     MutationPayloadForbidden,
 }
 
-fn validate_health(health: &SupervisordHealth) -> Result<(), RobrixProtocolError> {
-    if health.process_id == 0 {
+pub(crate) fn validate_health(health: &SupervisordHealth) -> Result<(), RobrixProtocolError> {
+    if health.process_id == 0 || health.registered_agents > MAX_SUPERVISORD_ROSTER {
         Err(RobrixProtocolError::InvalidHealth)
     } else {
         Ok(())
     }
 }
 
-fn validate_agent_status(status: &SupervisordAgentStatus) -> Result<(), RobrixProtocolError> {
+pub(crate) fn validate_roster(
+    agents: &[SupervisordAgentStatus],
+) -> Result<(), RobrixProtocolError> {
+    if agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
+        return Err(RobrixProtocolError::InvalidAgentStatus);
+    }
+    let mut seen = BTreeSet::new();
+    for status in agents {
+        validate_agent_status(status)?;
+        if !seen.insert(&status.agent_id) {
+            return Err(RobrixProtocolError::InvalidAgentStatus);
+        }
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_agent_status(
+    status: &SupervisordAgentStatus,
+) -> Result<(), RobrixProtocolError> {
     status
         .control_fence
-        .validate()
+        .validate_observation()
         .map_err(|_| RobrixProtocolError::InvalidAgentStatus)?;
     validate_matrix_status(&status.matrix)?;
     if status.agent_id != status.control_fence.agent_id
@@ -201,8 +246,17 @@ fn validate_agent_status(status: &SupervisordAgentStatus) -> Result<(), RobrixPr
         || status.current_release != status.control_fence.current_release
         || status.previous_release != status.control_fence.previous_release
         || status.release_change_pending != status.control_fence.release_change_pending
-        || (status.healthy && (!status.active || status.lifecycle != AgentLifecycle::Running))
-        || (status.matrix.active
+        || status.active != status.process_id.is_some()
+        || status.active != status.runtime_generation.is_some()
+        || (status.healthy
+            && (!status.active
+                || status.lifecycle != AgentLifecycle::Running
+                || status.runtime_generation != Some(status.lifecycle_generation)
+                || status
+                    .spawn_generation
+                    .zip(status.runtime_generation)
+                    .is_some_and(|(spawn, runtime)| spawn > runtime)))
+        || (status.matrix.healthy
             && (!status.active
                 || status.lifecycle != AgentLifecycle::Running
                 || status.matrix.attached_agent_generation != status.spawn_generation))
@@ -241,7 +295,7 @@ fn validate_matrix_status(status: &SupervisordMatrixStatus) -> Result<(), Robrix
     Ok(())
 }
 
-fn validate_safe_code(value: &str) -> Result<(), RobrixProtocolError> {
+pub(crate) fn validate_safe_code(value: &str) -> Result<(), RobrixProtocolError> {
     if value.is_empty()
         || value.len() > 64
         || !value
@@ -253,7 +307,7 @@ fn validate_safe_code(value: &str) -> Result<(), RobrixProtocolError> {
     Ok(())
 }
 
-fn validate_safe_message(value: &str) -> Result<(), RobrixProtocolError> {
+pub(crate) fn validate_safe_message(value: &str) -> Result<(), RobrixProtocolError> {
     if value.is_empty()
         || value.len() > 1_024
         || value.chars().any(|character| {
@@ -271,3 +325,7 @@ fn validate_safe_message(value: &str) -> Result<(), RobrixProtocolError> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "robrix_protocol_tests.rs"]
+mod tests;

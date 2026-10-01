@@ -62,13 +62,16 @@ impl SupervisordRequest {
             SupervisordMethod::Start { fence, .. }
             | SupervisordMethod::Drain { fence }
             | SupervisordMethod::Stop { fence }
-            | SupervisordMethod::Kill { fence }
             | SupervisordMethod::Restart { fence }
             | SupervisordMethod::Upgrade { fence, .. }
             | SupervisordMethod::Rollback { fence }
             | SupervisordMethod::SignedUpgrade { fence, .. }
             | SupervisordMethod::SignedRollback { fence, .. }
             | SupervisordMethod::ResolveProductionRecovery { fence, .. } => fence.validate(),
+            // Containment only signals already-owned exact handles. Its live
+            // CAS and effect checks still run on the owner, including denied
+            // observations whose lifecycle cannot describe current ownership.
+            SupervisordMethod::Kill { fence } => fence.validate_observation(),
         }
     }
 }
@@ -303,16 +306,28 @@ pub struct SupervisordControlFence {
 
 impl SupervisordControlFence {
     pub fn validate(&self) -> Result<(), SupervisordRequestValidationError> {
-        if self.spawn_generation.is_some() != self.runtime_generation.is_some()
-            || self
-                .spawn_generation
-                .zip(self.runtime_generation)
-                .is_some_and(|(spawn, runtime)| spawn > runtime)
+        self.validate_observation()?;
+        if self
+            .spawn_generation
+            .zip(self.runtime_generation)
+            .is_some_and(|(spawn, runtime)| spawn > runtime)
             || (matches!(
                 self.lifecycle,
                 AgentLifecycle::Starting | AgentLifecycle::Running | AgentLifecycle::Draining
             ) && self.runtime_generation.is_none())
             || (self.lifecycle == AgentLifecycle::Stopped && self.runtime_generation.is_some())
+        {
+            return Err(SupervisordRequestValidationError::InvalidRequest);
+        }
+        Ok(())
+    }
+
+    /// Ownership observations include quarantined or absent runtimes. Their
+    /// lifecycle is not evidence that an effect is eligible or a peer serves.
+    pub(crate) fn validate_observation(&self) -> Result<(), SupervisordRequestValidationError> {
+        if self.spawn_generation.is_some() != self.runtime_generation.is_some()
+            || self.spawn_generation == Some(0)
+            || self.runtime_generation == Some(0)
             || (self.current_release.is_some() && self.current_release == self.previous_release)
             || (self.release_change_pending && self.current_release.is_none())
         {

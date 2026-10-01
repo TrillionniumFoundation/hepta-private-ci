@@ -1034,7 +1034,7 @@ fn agent_status_locked<D: ProcessDriver>(
 }
 
 #[cfg(any(unix, test))]
-fn status_from(
+pub(crate) fn status_from(
     supervisor_epoch: &SupervisorEpoch,
     record: &codex_hepta_fleet::AgentRecord,
     snapshot: Option<AgentSupervisorSnapshot>,
@@ -1051,12 +1051,15 @@ fn status_from(
         .clone()
         .map(ReleaseId::parse)
         .transpose()?;
+    let serving_eligible = record.lifecycle.lifecycle == AgentLifecycle::Running
+        && snapshot.runtime_generation == Some(record.lifecycle.generation)
+        && !snapshot.runtime_fenced;
     let mut status = SupervisordAgentStatus {
         agent_id: agent_id.clone(),
         lifecycle: record.lifecycle.lifecycle,
         lifecycle_generation: record.lifecycle.generation,
         active: snapshot.active,
-        healthy: snapshot.healthy && record.lifecycle.lifecycle == AgentLifecycle::Running,
+        healthy: snapshot.healthy && serving_eligible,
         process_id: snapshot.process_system_id,
         spawn_generation: snapshot.spawn_generation,
         runtime_generation: snapshot.runtime_generation,
@@ -1078,7 +1081,10 @@ fn status_from(
         matrix: SupervisordMatrixStatus {
             configured: snapshot.matrix.configured,
             active: snapshot.matrix.active,
-            healthy: snapshot.matrix.healthy,
+            healthy: snapshot.matrix.healthy
+                && serving_eligible
+                && snapshot.active
+                && snapshot.matrix.attached_agent_generation == snapshot.spawn_generation,
             degraded: snapshot.matrix.degraded,
             process_id: snapshot.matrix.process_system_id,
             attached_agent_generation: snapshot.matrix.attached_agent_generation,
@@ -1184,6 +1190,7 @@ struct HiddenControlState<'a> {
     release_change: &'a Option<crate::ControlReleaseChange>,
     has_last_command: bool,
     matrix: &'a SupervisordMatrixStatus,
+    matrix_runtime_healthy: bool,
     matrix_last_error: &'a Option<String>,
 }
 
@@ -1206,7 +1213,7 @@ fn control_state_digest(
         hidden: HiddenControlState {
             control_revision: snapshot.control_revision,
             active: status.active,
-            healthy: status.healthy,
+            healthy: snapshot.healthy,
             process_id: status.process_id,
             release_state_generation: snapshot.release_state_generation,
             registry_current_release: &record.release_state.current,
@@ -1220,6 +1227,7 @@ fn control_state_digest(
             release_change: &snapshot.release_change,
             has_last_command: snapshot.has_last_command,
             matrix: &status.matrix,
+            matrix_runtime_healthy: snapshot.matrix.healthy,
             matrix_last_error: &snapshot.matrix.last_error,
         },
     };
