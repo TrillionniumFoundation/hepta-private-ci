@@ -24,6 +24,8 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 type TestResult = Result<(), Box<dyn Error + Send + Sync>>;
 
+// This fixture opens old or deliberately corrupted schemas outside normal owner admission.
+#[allow(clippy::disallowed_methods)]
 async fn raw_pool(path: &Path, create: bool) -> Result<SqlitePool, sqlx::Error> {
     SqlitePoolOptions::new()
         .max_connections(1)
@@ -202,14 +204,16 @@ async fn lane_c_witness_reopen_rejects_missing_and_weakened_schema() -> TestResu
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn lane_c_witness_reopen_audits_existing_v17_content() -> TestResult {
-    for (guard_name, mutation) in [
+    for (guard_name, drop_sql, mutation) in [
         (
             "lane_c_scope_witness_direct_update_guard",
+            "DROP TRIGGER lane_c_scope_witness_direct_update_guard",
             "UPDATE lane_c_scope_witness
              SET source_count = source_count + 1, state_revision = state_revision + 1",
         ),
         (
             "lane_c_head_validity_direct_update_guard",
+            "DROP TRIGGER lane_c_head_validity_direct_update_guard",
             "UPDATE lane_c_head_validity
              SET valid_from_unix_seconds = valid_from_unix_seconds + 1",
         ),
@@ -257,13 +261,15 @@ async fn lane_c_witness_reopen_audits_existing_v17_content() -> TestResult {
                 .bind(guard_name)
                 .fetch_one(&pool)
                 .await?;
-        sqlx::raw_sql(&format!("DROP TRIGGER {guard_name}"))
-            .execute(&pool)
-            .await?;
+        sqlx::raw_sql(drop_sql).execute(&pool).await?;
         sqlx::raw_sql(mutation).execute(&pool).await?;
         // Restore the exact compiled definition so schema authentication passes
         // and only the independent reopen content audit can detect this drift.
-        sqlx::raw_sql(&guard_sql).execute(&pool).await?;
+        // This DDL came from one of the two fixed fixture guards above in a
+        // freshly opened, schema-authenticated database, before corruption.
+        sqlx::raw_sql(sqlx::AssertSqlSafe(guard_sql))
+            .execute(&pool)
+            .await?;
         pool.close().await;
         assert!(
             matches!(
@@ -359,15 +365,16 @@ async fn unselected_head_rollback_cannot_restore_an_earlier_selection_witness() 
     // Changing a head's primary identity at an unchanged revision must not
     // leave stale validity rows outside the selected ID set. UPDATE OR REPLACE
     // must be rejected before its conflicting-row deletion can take effect.
-    for table in ["memory_heads", "lane_c_head_validity"] {
-        let identity_error = sqlx::query(&format!(
-            "UPDATE OR REPLACE {table} SET memory_id = ? WHERE memory_id = ?"
-        ))
-        .bind(selected_record.id.memory_id.as_str())
-        .bind(unselected_record.id.memory_id.as_str())
-        .execute(&pool)
-        .await
-        .expect_err("head and validity identities must remain immutable");
+    for mutation in [
+        "UPDATE OR REPLACE memory_heads SET memory_id = ? WHERE memory_id = ?",
+        "UPDATE OR REPLACE lane_c_head_validity SET memory_id = ? WHERE memory_id = ?",
+    ] {
+        let identity_error = sqlx::query(mutation)
+            .bind(selected_record.id.memory_id.as_str())
+            .bind(unselected_record.id.memory_id.as_str())
+            .execute(&pool)
+            .await
+            .expect_err("head and validity identities must remain immutable");
         assert!(
             identity_error
                 .to_string()

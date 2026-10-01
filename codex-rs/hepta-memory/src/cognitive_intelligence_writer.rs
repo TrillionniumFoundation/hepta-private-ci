@@ -153,6 +153,8 @@ impl CognitiveStore {
         Ok(receipt)
     }
 
+    // Keep the existing transaction and independently bound correction inputs explicit.
+    #[allow(clippy::too_many_arguments)]
     pub(crate) async fn correct_with_kg_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

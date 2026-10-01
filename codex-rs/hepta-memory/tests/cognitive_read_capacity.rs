@@ -20,8 +20,6 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::StableId;
 use serde_json::json;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 const RECORDS: usize = 512;
 const REQUESTED_IDS: usize = 512;
@@ -133,14 +131,10 @@ async fn cognitive_read_sqlite_capacity_report() -> Result<(), Box<dyn Error + S
 
     let sqlite_path = layout.cognitive_root().join("cognitive_1.sqlite3");
     let sqlite_file_bytes = fs::metadata(&sqlite_path)?.len();
-    let measurement_pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(
-            SqliteConnectOptions::new()
-                .filename(&sqlite_path)
-                .read_only(true),
-        )
-        .await?;
+    let measurement_config = codex_state::SqliteConfig::from_sqlite_home(
+        codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(layout.cognitive_root())?,
+    );
+    let measurement_pool = measurement_config.open_read_only_pool(&sqlite_path).await?;
     let sqlite_page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
         .fetch_one(&measurement_pool)
         .await?;

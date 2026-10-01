@@ -2615,6 +2615,8 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    // Keep the owner transaction and exact replay inputs together without another adapter.
+    #[allow(clippy::too_many_arguments)]
     async fn append_outcome_in_transaction(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

@@ -241,7 +241,8 @@ async fn cold_recovery_audits_schema_authenticated_lane_c_witness() {
         .expect("isolated corruption fixture");
     sqlx::query("UPDATE lane_c_scope_witness SET source_count = source_count + 1, state_revision = state_revision + 1")
         .execute(&store.pool).await.expect("fixture witness drift");
-    sqlx::raw_sql(&guard)
+    // This fixture restores the exact trigger definition it read from its own schema.
+    sqlx::raw_sql(sqlx::AssertSqlSafe(guard))
         .execute(&store.pool)
         .await
         .expect("restore exact schema");
