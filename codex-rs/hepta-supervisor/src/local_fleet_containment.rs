@@ -156,7 +156,19 @@ pub(super) fn protect_registry(
             "resource anti-rollback frontier must be outside the fleet state root",
         ));
     }
-    set_owner(layout.fleet_root().as_path(), 0, policy.workload_gid, 0o750)?;
+    let socket_traversal = policy
+        .observer_principal
+        .is_some_and(|principal| principal.uid != policy.workload_uid)
+        || policy
+            .controller_principal
+            .as_ref()
+            .is_some_and(|principal| principal.uid != policy.workload_uid);
+    set_owner(
+        layout.fleet_root().as_path(),
+        0,
+        policy.workload_gid,
+        if socket_traversal { 0o751 } else { 0o750 },
+    )?;
     set_owner(layout.state_root(), 0, 0, 0o700)?;
     set_owner(layout.run_root(), 0, 0, 0o711)?;
     set_owner(layout.agents_root(), 0, policy.workload_gid, 0o750)?;

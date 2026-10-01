@@ -53,6 +53,8 @@ pub(crate) struct Policy {
     pub self_iteration_config_directory: Option<PathBuf>,
     #[serde(default)]
     pub observer_principal: Option<crate::daemon::observer::Principal>,
+    #[serde(default)]
+    pub controller_principal: Option<crate::controller_peer::ControllerPrincipal>,
 }
 
 pub struct LocalFleetHost {
@@ -88,6 +90,7 @@ impl LocalFleetHost {
         if let Some(directory) = &policy.self_iteration_config_directory {
             trust::validate_root_directory(directory)?;
         }
+        policy.validate_controller_isolation()?;
         if let Some(principal) = policy.observer_principal
             && (principal.uid == 0 || principal.gid == 0)
         {
@@ -493,3 +496,23 @@ fn hex_digest(bytes: impl AsRef<[u8]>) -> String {
         .map(|byte| format!("{byte:02x}"))
         .collect()
 }
+
+impl Policy {
+    fn validate_controller_isolation(&self) -> Result<(), ProcessDriverError> {
+        if let Some(principal) = &self.controller_principal
+            && (principal.uid == self.workload_uid
+                || principal.gid == self.workload_gid
+                || principal.desktop_uid == self.workload_uid
+                || principal.desktop_uid == 0)
+        {
+            return Err(ProcessDriverError::new(
+                "lifecycle control requires separate workload, gateway and desktop credential principals",
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "local_controller_policy_tests.rs"]
+mod controller_policy_tests;

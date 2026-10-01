@@ -7,6 +7,13 @@ mod authority_bundle;
 mod authority_signer;
 mod control;
 mod control_intent;
+#[cfg(unix)]
+mod controller_client;
+#[cfg(target_os = "linux")]
+mod controller_peer;
+mod controller_protocol;
+#[cfg(unix)]
+pub use controller_client::SupervisorControllerClient;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
@@ -85,6 +92,9 @@ pub use authority_signer::load_signing_key_from_path;
 pub use authority_signer::read_request;
 #[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::sign_request;
+pub use controller_protocol::SUPERVISOR_CONTROLLER_SCHEMA_VERSION;
+pub use controller_protocol::SupervisorControllerMethod;
+pub use controller_protocol::SupervisorControllerRequest;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;

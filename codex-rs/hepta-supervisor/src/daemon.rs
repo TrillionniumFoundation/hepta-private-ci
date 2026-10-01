@@ -139,6 +139,9 @@ use mutation::handle_mutation;
 use mutation::ordinary_mutation_status;
 #[cfg(unix)]
 use mutation::reconcile_ordinary_mutation;
+#[cfg(target_os = "linux")]
+#[path = "daemon_controller.rs"]
+mod controller;
 #[cfg(unix)]
 #[path = "daemon_mutex.rs"]
 mod mutex;
@@ -302,6 +305,10 @@ async fn run_supervisord_inner(
     let mut selection_uid = unsafe { libc::geteuid() };
     let mut selection_gid = unsafe { libc::getegid() };
     let mut observer_principal = None;
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    let mut controller_gate: Option<crate::controller_peer::ControllerPeerGate> = None;
+    #[cfg(all(target_os = "linux", not(feature = "local-host")))]
+    let controller_gate: Option<crate::controller_peer::ControllerPeerGate> = None;
     let mut local_maintenance: Option<tokio::task::JoinHandle<Result<(), SupervisorError>>> = None;
     #[cfg(all(target_os = "linux", feature = "local-host"))]
     let mut installed_host = None;
@@ -319,6 +326,17 @@ async fn run_supervisord_inner(
         selection_uid = host.policy.workload_uid;
         selection_gid = host.policy.workload_gid;
         observer_principal = host.policy.observer_principal;
+        controller_gate = host
+            .policy
+            .controller_principal
+            .clone()
+            .map(|principal| {
+                crate::controller_peer::ControllerPeerGate::open(
+                    principal,
+                    &host.policy.cgroup_root,
+                )
+            })
+            .transpose()?;
         driver = driver.with_local_host(Arc::clone(&host));
         installed_host = Some(host);
     }
@@ -409,6 +427,22 @@ async fn run_supervisord_inner(
         None => None,
     };
     let mut selection_task = tokio::spawn(selection_server.run());
+    #[cfg(target_os = "linux")]
+    let mut controller_task = match controller_gate {
+        Some(gate) => Some(tokio::spawn(
+            controller::ControllerServer::bind(
+                layout.run_root().join("controller/ctl"),
+                Arc::clone(&state),
+                cancellation.clone(),
+                gate,
+            )
+            .await?
+            .run(),
+        )),
+        None => None,
+    };
+    #[cfg(not(target_os = "linux"))]
+    let mut controller_task: Option<tokio::task::JoinHandle<Result<(), SupervisorError>>> = None;
     let tick_state = Arc::clone(&state);
     let tick_cancellation = cancellation.clone();
     let ticker = tokio::spawn(async move {
@@ -426,6 +460,7 @@ async fn run_supervisord_inner(
     let mut selection_finished = false;
     let mut observer_finished = false;
     let mut maintenance_finished = false;
+    let mut controller_finished = false;
     let result = tokio::select! {
         result = server.run() => result,
         result = async {
@@ -444,8 +479,19 @@ async fn run_supervisord_inner(
             observer_finished = true;
             result.map_err(|error| SupervisorError::Invalid(format!("observer server failed: {error}")))?
         },
+        result = async {
+            match &mut controller_task { Some(task) => task.await, None => std::future::pending().await }
+        } => {
+            controller_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("controller server failed: {error}")))?
+        },
     };
     cancellation.cancel();
+    if !controller_finished && let Some(task) = controller_task {
+        task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("controller server failed: {error}"))
+        })??;
+    }
     if !observer_finished && let Some(task) = observer_task {
         task.await.map_err(|error| {
             SupervisorError::Invalid(format!("observer server failed: {error}"))
@@ -651,7 +697,7 @@ async fn serve_connection(
 
 #[cfg(unix)]
 async fn write_response(
-    writer: &mut tokio::io::WriteHalf<UnixStream>,
+    writer: &mut (impl tokio::io::AsyncWrite + Unpin),
     response: SupervisordResponse,
 ) -> Result<(), SupervisorError> {
     let mut bytes = serde_json::to_vec(&response)
