@@ -14,6 +14,7 @@ use pretty_assertions::assert_eq;
 use super::MatrixRestartRecovery;
 use crate::AdoptSpec;
 use crate::Adoption;
+use crate::AgentCommand;
 use crate::ManagedProcess;
 use crate::ProcessDriver;
 use crate::ProcessDriverError;
@@ -22,7 +23,6 @@ use crate::SpawnSpec;
 use crate::SpawnedProcess;
 use crate::Supervisor;
 use crate::SupervisorConfig;
-use crate::SupervisorError;
 use crate::restart_budget::RestartBudgetState;
 use crate::restart_journal::DurableRestartWindow;
 use crate::restart_journal::RESTART_JOURNAL_FILE;
@@ -173,7 +173,7 @@ fn repeated_public_recovery_cannot_buy_a_fresh_matrix_restart_budget() -> Result
 }
 
 #[test]
-fn foreign_companion_journal_is_a_fatal_startup_error() -> Result<()> {
+fn foreign_companion_journal_quarantines_the_agent_and_preserves_evidence() -> Result<()> {
     let fixture = Fixture::new()?;
     let journal = RestartBudgetJournal::new(
         AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dd3")?,
@@ -186,15 +186,26 @@ fn foreign_companion_journal_is_a_fatal_startup_error() -> Result<()> {
     )?;
     write_restart_journal(&fixture.run_root, &journal)?;
     let before = std::fs::read(fixture.run_root.join(RESTART_JOURNAL_FILE))?;
-    assert!(matches!(
-        Supervisor::recover(
-            fixture.registry.clone(),
-            NoDriver,
-            SupervisorConfig::local_default(),
-            Instant::now()
-        ),
-        Err(SupervisorError::CorruptLease(_))
-    ));
+    let (mut supervisor, report) = Supervisor::recover(
+        fixture.registry.clone(),
+        NoDriver,
+        SupervisorConfig::local_default(),
+        Instant::now(),
+    )?;
+    assert!(!report.faults.is_empty());
+    let snapshot = supervisor
+        .snapshot(&fixture.agent)
+        .expect("quarantined agent");
+    assert!(!snapshot.active && !snapshot.healthy && !snapshot.restart_pending);
+    assert!(
+        supervisor
+            .start(
+                &fixture.agent,
+                AgentCommand::new("/bin/true", Vec::new())?,
+                Instant::now(),
+            )
+            .is_err()
+    );
     assert_eq!(
         std::fs::read(fixture.run_root.join(RESTART_JOURNAL_FILE))?,
         before

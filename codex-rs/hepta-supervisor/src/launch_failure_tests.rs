@@ -118,9 +118,13 @@ impl ProcessDriver for Driver {
         self.state.lock().expect("state").spawns += 1;
         let identity = ProcessIdentity::new(42, "retained-launch")
             .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        let layout = HeptaFleetRoot::parse(spec.fleet_root.clone())
+            .map_err(|error| ProcessDriverError::new(error.to_string()))?
+            .layout()
+            .agent(&spec.agent_id);
         match self.fault {
             PublicationFault::AbsentAfterCollision => {
-                std::fs::create_dir(spec.run_root.join("supervisor-process.json"))?;
+                std::fs::create_dir(layout.owner_run_root().join("supervisor-process.json"))?;
             }
             PublicationFault::ExactPublishedLease | PublicationFault::ForeignPublishedLease => {
                 let lease_identity =
@@ -131,7 +135,7 @@ impl ProcessDriver for Driver {
                         identity.clone()
                     };
                 write_lease(
-                    &spec.run_root,
+                    layout.owner_run_root(),
                     &ProcessLease {
                         schema_version: PROCESS_LEASE_SCHEMA_VERSION,
                         agent_id: spec.agent_id.clone(),
@@ -215,7 +219,7 @@ impl Fixture {
             _temp: temp,
             agent,
             registry,
-            run_root: record.layout.run_root().to_path_buf(),
+            run_root: record.layout.owner_run_root().to_path_buf(),
             supervisor,
             slot,
             state,
