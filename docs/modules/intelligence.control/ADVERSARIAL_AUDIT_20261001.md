@@ -722,3 +722,11 @@ external version change. The final development-document verification reports
 40 module guides and 205 contracts. Two independent read-only closing passes
 found no new actionable defect in these platform/manifest adjustments. These
 local observations do not substitute for the final candidate platform jobs.
+
+The final whole-boundary read-only review found no new reproducible production
+logic defect, but caught one overbroad compatibility sentence. It is narrowed
+to the audited Unix fixture registrations. Older Intelligence/Agentd registry
+and signed-profile fixtures still have Unix-profile prerequisites and non-Unix
+registration debt; this audit does not claim whole-module Windows test or
+production parity. This documentation correction leaves all production and test
+source unchanged.

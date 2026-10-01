@@ -130,12 +130,15 @@ cap; the built-in provider preserves its shorter configured policy timeout.
 The provided exit-grace accessor defaults to no additional factory policy. A
 configured factory grace can shorten the runner fence, never disable or delay it.
 
-Unix-socket RPC, durable prompt-registry and anchored rollback-profile fixtures
-are registered only on Unix. The current registry and rollback owners reject
-non-Unix profile construction because a qualified anchored-handle implementation
-is unavailable. Pure identity, optimizer and supervision assertions remain
-available across platforms. This does not establish non-Unix no-follow or
-production execution parity. Bazel's client/adapter/Agentd
+The audited Unix-socket RPC fixtures, Optimizer registry/provenance cases and
+installed factory-containment fixture are registered only on Unix. Older
+Intelligence/Agentd registry and signed-profile fixtures retain their existing
+Unix-profile prerequisites; this change does not close their non-Unix test
+registration debt. The registry and rollback owners reject non-Unix profile
+construction because a qualified anchored-handle implementation is unavailable.
+Pure identity, optimizer and supervision assertions remain cross-platform.
+Non-Unix no-follow and production execution parity remain unqualified.
+Bazel's client/adapter/Agentd
 unit-test variants carry `test-support` only in `testonly` dependency graphs,
 with shared concrete client types. Production libraries and binaries keep the
 ordinary client without test witness constructors.
