@@ -30,7 +30,7 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation and expiry; restores durable operation/terminal identities before driver start and rejects conflicting reuse.",
+      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation and expiry; starts the private worker after profile admission; durable operation and terminal identities are consulted lazily during replay and reconciliation.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
