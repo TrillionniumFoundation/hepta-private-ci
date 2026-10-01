@@ -96,6 +96,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::expect_used,
+        reason = "private fixtures must fail before checking protected reads"
+    )]
     fn opened_handle_cannot_be_rebound_to_a_replacement_path() {
         let (_temp, path) = fixture();
         let opened = fs::File::open(&path).expect("old handle");
@@ -106,6 +110,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::expect_used,
+        reason = "private fixtures must fail before checking protected reads"
+    )]
     fn opened_handle_cannot_be_rebound_through_a_symlink() {
         let (_temp, path) = fixture();
         let opened = fs::File::open(&path).expect("old handle");
@@ -116,6 +124,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::expect_used,
+        reason = "private fixtures must fail before checking protected reads"
+    )]
     fn handle_permissions_and_actual_read_bound_are_enforced() {
         let (_temp, path) = fixture();
         assert_eq!(

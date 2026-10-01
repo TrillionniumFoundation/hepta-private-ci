@@ -758,7 +758,7 @@ mod tests {
             .apply_taskflow_command(
                 &TaskFlowCommand::new(
                     &intent.run_id,
-                    "agentd-product-effect-start",
+                    format!("agentd-product-effect-start:{}", intent.run_id),
                     fence.clone(),
                     claimed.revision,
                     TaskFlowTransition::Start,
@@ -778,7 +778,7 @@ mod tests {
                 &fence,
                 &digest,
                 &intent.payload_digest,
-                "agentd-product-effect-prepare",
+                &format!("agentd-product-effect-prepare:{}", intent.run_id),
                 now_ms + 3,
             )
             .await
@@ -792,7 +792,7 @@ mod tests {
                 &fence,
                 &digest,
                 &intent.payload_digest,
-                "agentd-product-effect-claim",
+                &format!("agentd-product-effect-claim:{}", intent.run_id),
                 now_ms + 4,
             )
             .await
@@ -854,6 +854,7 @@ mod tests {
         let server = MockServer::start().await;
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let payload_digest = intent.payload_digest.clone();
+        let dispatch_provider_operation = provider_operation.clone();
         Mock::given(method("POST"))
             .and(path("/dispatch"))
             .and(body_bytes(WIRE.to_vec()))
@@ -867,7 +868,7 @@ mod tests {
                 ResponseTemplate::new(200).set_body_json(serde_json::json!({
                     "effect_key": key,
                     "payload_sha256": payload_digest.as_str(),
-                    "provider_operation_id_sha256": provider_operation.as_str(),
+                    "provider_operation_id_sha256": dispatch_provider_operation.as_str(),
                     "status": "completed"
                 }))
             })
@@ -1080,7 +1081,6 @@ mod tests {
         server.reset().await;
         let mut late_intent = intent.clone();
         late_intent.run_id.push_str("-expired-recovery");
-        late_intent.operation_id.push_str("-expired-recovery");
         prepare_effect(&fixture, now_ms, &late_intent).await;
         Mock::given(method("POST"))
             .and(path("/dispatch"))

@@ -469,6 +469,8 @@ Focused source tests include:
 - `codex-rs/hepta-automation/tests/authorized_effect.rs`
 - `codex-rs/hepta-automation/src/effect_dispatch_ledger.rs`
 - legacy `src/effect_executor_tests.rs` only through the test-only reducer
+- `codex-rs/hepta-agentd/src/automation_effect_file.rs` (opened-handle path rebinding, symlink substitution, permissions and byte bounds).
+- `codex-rs/hepta-agentd/src/automation_effect_host.rs` (exact wire bytes, pinned profile and lookup-only restart after lease/grant expiry).
 - Agentd automation/recovery unit and process qualification paths.
 
 In `codex-rs`, exact-head CI runs the full `codex-hepta-automation` package, repeats it with `taskflow-structural-qualification`, and executes the explicit TaskFlow kernel/step Bazel targets. The deterministic synthetic merge runs the same TaskFlow qualification set. Documentation, source mapping and fixture presence are not substitutes for those receipts or for provider/host qualification.
