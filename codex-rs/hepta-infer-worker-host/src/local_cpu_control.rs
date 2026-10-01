@@ -27,6 +27,15 @@ use crate::model_worker::ResourceGrant;
 use crate::model_worker::WorkerRequest;
 use crate::model_worker::canonical_neuron_feature_payload_digest;
 
+#[path = "local_cpu_control_owner.rs"]
+mod owner;
+use owner::CpuControlOwner;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+#[path = "local_cpu_control_v2.rs"]
+mod v2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use v2::CpuNeuronControlConfigV2;
+
 #[derive(Clone)]
 pub struct CpuNeuronControlConfigV1 {
     pub worker_id: String,
@@ -37,7 +46,7 @@ pub struct CpuNeuronControlConfigV1 {
 
 pub struct CpuNeuronInferenceControlV1 {
     worker: InferenceWorker<CpuNeuronModelDriver>,
-    control: Arc<Mutex<DurableInferenceControl>>,
+    control: CpuControlOwner,
     manifest: ModelManifest,
     encoder: String,
     head: String,
@@ -99,7 +108,7 @@ impl CpuNeuronInferenceControlV1 {
         worker.load_model(now, manifest.clone())?;
         Ok(Self {
             worker,
-            control,
+            control: CpuControlOwner::Legacy(control),
             manifest,
             encoder,
             head,
@@ -179,11 +188,24 @@ impl NeuronInferenceControlPort for CpuNeuronInferenceControlV1 {
         {
             return Err(NeuronModelError::Rejected);
         }
-        let record = {
-            let mut control = self
-                .control
-                .try_lock()
+        #[cfg(target_os = "linux")]
+        if matches!(&self.control, CpuControlOwner::Shared(_)) {
+            let now = self
+                .clock
+                .now_unix_ms()
                 .map_err(|_| NeuronModelError::Indeterminate)?;
+            self.worker
+                .validate_current_resources(now)
+                .map_err(|_| NeuronModelError::Rejected)?;
+        }
+        // Keep the original writer lease until physical truth is persisted.
+        // In shared mode model calls can neither steal it after dispatch nor
+        // cause an executed result to be lost before observe_feature.
+        let mut control = self
+            .control
+            .try_lock()
+            .map_err(|_| self.control.busy_error())?;
+        let record = {
             match control
                 .feature_record(request)
                 .map_err(|_| NeuronModelError::Indeterminate)?
@@ -220,10 +242,7 @@ impl NeuronInferenceControlPort for CpuNeuronInferenceControlV1 {
                     .map_err(|_| NeuronModelError::Rejected)?,
             )
             .ok_or(NeuronModelError::Rejected)?;
-        let permit = self
-            .control
-            .try_lock()
-            .map_err(|_| NeuronModelError::Indeterminate)?
+        let permit = control
             .dispatch_feature(request)
             .map_err(|_| NeuronModelError::Indeterminate)?;
         let request = permit.into_request();
@@ -260,15 +279,24 @@ impl NeuronInferenceControlPort for CpuNeuronInferenceControlV1 {
             .clock
             .now_unix_ms()
             .map_err(|_| NeuronModelError::Indeterminate)?;
-        let receipt = self
-            .worker
-            .run_neuron_features_receipt(now, &self.manifest.model_id, physical)
-            .map_err(|_| NeuronModelError::Indeterminate)?;
+        let receipt = match &self.control {
+            CpuControlOwner::Legacy(_) => {
+                self.worker
+                    .run_neuron_features_receipt(now, &self.manifest.model_id, physical)
+            }
+            #[cfg(target_os = "linux")]
+            CpuControlOwner::Shared(_) => self.worker.run_neuron_features_receipt_for_model_v2(
+                now,
+                &self.manifest.model_id,
+                codex_hepta_types::Generation::new(self.generation)
+                    .map_err(|_| NeuronModelError::Rejected)?,
+                physical,
+            ),
+        }
+        .map_err(|_| NeuronModelError::Indeterminate)?;
         // A late physical result is still recorded as original truth. The
         // enclosing Neuron owner checks deadlines/authority before result use.
-        self.control
-            .try_lock()
-            .map_err(|_| NeuronModelError::Indeterminate)?
+        control
             .observe_feature(&request, &receipt)
             .map_err(|_| NeuronModelError::Indeterminate)?;
         Ok(receipt)
@@ -283,7 +311,7 @@ impl DurableNeuronInferenceControlPort for CpuNeuronInferenceControlV1 {
         let record = self
             .control
             .try_lock()
-            .map_err(|_| NeuronModelError::Indeterminate)?
+            .map_err(|_| self.control.busy_error())?
             .feature_record(request)
             .map_err(|_| NeuronModelError::Indeterminate)?;
         Ok(match record.map(|record| record.state) {

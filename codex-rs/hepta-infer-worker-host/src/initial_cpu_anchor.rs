@@ -33,6 +33,7 @@ mod selection;
 #[path = "initial_cpu_state.rs"]
 mod state;
 pub use current::open_current_cpu_neuron;
+pub use current::open_current_cpu_neuron_v2;
 pub fn describe_current_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     current::describe_current_operational(path, pin)
 }

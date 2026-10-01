@@ -121,6 +121,62 @@ where
         worker,
     )
     .map_err(|error| AgentdError::Invalid(format!("installed CPU model: {error}")))?;
+    finish_generation(plan, mode, physical, admission)
+}
+
+#[cfg(target_os = "linux")]
+pub(crate) fn open_guarded_cpu_neuron_generation_v2<G>(
+    plan: CpuNeuronGenerationPlanV1,
+    mode: CpuNeuronGenerationOpenModeV1,
+    control: Arc<tokio::sync::Mutex<DurableInferenceControl>>,
+    clock: Arc<dyn AuthorityClock>,
+    worker: crate::CpuNeuronControlConfigV2,
+    admission: G,
+) -> Result<AgentdNeuronHandleV2, AgentdError>
+where
+    G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
+{
+    for path in [
+        &plan.model_manifest,
+        &plan.generation_store,
+        &plan.runtime_index,
+        &plan.witness,
+    ] {
+        if !path.is_absolute() || path.file_name().is_none() {
+            return Err(AgentdError::Invalid(
+                "installed Neuron paths must be absolute files".into(),
+            ));
+        }
+    }
+    if plan.generation_store == plan.runtime_index
+        || plan.generation_store == plan.witness
+        || plan.runtime_index == plan.witness
+        || worker.model_generation != plan.runtime.generation
+    {
+        return Err(AgentdError::Invalid(
+            "installed Neuron V2 model identity".into(),
+        ));
+    }
+    let physical = CpuNeuronInferenceControlV1::open_shared_v2(
+        control,
+        clock,
+        &plan.model_manifest,
+        plan.model_manifest_digest,
+        worker,
+    )
+    .map_err(|error| AgentdError::Invalid(format!("installed V2 CPU model: {error}")))?;
+    finish_generation(plan, mode, physical, admission)
+}
+
+fn finish_generation<G>(
+    plan: CpuNeuronGenerationPlanV1,
+    mode: CpuNeuronGenerationOpenModeV1,
+    physical: CpuNeuronInferenceControlV1,
+    admission: G,
+) -> Result<AgentdNeuronHandleV2, AgentdError>
+where
+    G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
+{
     physical.validate_runtime(&plan.runtime).map_err(|error| {
         AgentdError::Invalid(format!("installed Neuron runtime tuple changed: {error}"))
     })?;

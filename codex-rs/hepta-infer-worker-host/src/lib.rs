@@ -31,6 +31,8 @@ pub mod local_cpu_model;
 mod local_cpu_parameter_compiler;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_control::CpuNeuronControlConfigV1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_control::CpuNeuronControlConfigV2;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_control::CpuNeuronInferenceControlV1;
 #[cfg(feature = "agentd-host")]

@@ -122,6 +122,45 @@ pub fn open_current_cpu_neuron(
     clock: Arc<dyn AuthorityClock>,
     worker: crate::CpuNeuronControlConfigV1,
 ) -> HostResult<codex_hepta_agentd::AgentdNeuronHandleV2> {
+    let guard = current_plan_admission(pointer, &plan, clock.clone(), &worker.worker_id)?;
+    Ok(
+        crate::local_cpu_generation::open_guarded_cpu_neuron_generation(
+            plan, mode, control, clock, worker, guard,
+        )?,
+    )
+}
+
+/// Installed V2 borrows the model owner's sole journal and asks the original
+/// Fleet resource authority on every operation, independently of model gen1.
+pub fn open_current_cpu_neuron_v2(
+    pointer: PathBuf,
+    plan: crate::CpuNeuronGenerationPlanV1,
+    mode: crate::CpuNeuronGenerationOpenModeV1,
+    control: Arc<
+        tokio::sync::Mutex<codex_hepta_infer_core::durable_control::DurableInferenceControl>,
+    >,
+    clock: Arc<dyn AuthorityClock>,
+    worker: crate::CpuNeuronControlConfigV2,
+) -> HostResult<codex_hepta_agentd::AgentdNeuronHandleV2> {
+    let guard = current_plan_admission(
+        pointer,
+        &plan,
+        clock.clone(),
+        &worker.resources.binding().context.principal_id,
+    )?;
+    Ok(
+        crate::local_cpu_generation::open_guarded_cpu_neuron_generation_v2(
+            plan, mode, control, clock, worker, guard,
+        )?,
+    )
+}
+
+fn current_plan_admission(
+    pointer: PathBuf,
+    plan: &crate::CpuNeuronGenerationPlanV1,
+    clock: Arc<dyn AuthorityClock>,
+    worker_id: &str,
+) -> HostResult<CurrentAdmission> {
     let active = CurrentInputs::read(&pointer, clock.clone())?;
     if active.inputs.runtime != plan.runtime
         || active.inputs.native != plan.native
@@ -136,7 +175,7 @@ pub fn open_current_cpu_neuron(
         if plan.generation_store != declared.generation_store
             || plan.runtime_index != declared.runtime_index
             || plan.witness != declared.witness
-            || worker.worker_id != declared.agent_id
+            || worker_id != declared.agent_id
             || rustix::process::geteuid().as_raw() != declared.workload_uid
             || rustix::process::getegid().as_raw() != declared.workload_gid
         {
@@ -145,7 +184,7 @@ pub fn open_current_cpu_neuron(
             );
         }
     }
-    let guard = CurrentAdmission {
+    Ok(CurrentAdmission {
         pointer,
         storage_binding: active.inputs.storage_binding(),
         model_source: active.inputs.profile.model.path.clone(),
@@ -153,12 +192,7 @@ pub fn open_current_cpu_neuron(
         last_now: clock.now_unix_ms()?,
         clock: clock.clone(),
         active,
-    };
-    Ok(
-        crate::local_cpu_generation::open_guarded_cpu_neuron_generation(
-            plan, mode, control, clock, worker, guard,
-        )?,
-    )
+    })
 }
 
 pub(super) fn describe_current_operational(path: &Path, pin: Digest32) -> HostResult<Value> {

@@ -4,6 +4,14 @@ use super::Error;
 use super::MAX_MODELS;
 use super::ResourceGrant;
 
+impl<D: super::ModelDriver> super::InferenceWorker<D> {
+    pub(crate) fn validate_current_resources(&self, now_ms: u64) -> Result<(), Error> {
+        self.grant
+            .current_limits(now_ms, &self.worker_id, self.generation)
+            .map(|_| ())
+    }
+}
+
 #[derive(Debug)]
 pub(super) enum WorkerResources {
     Legacy(ResourceGrant),
