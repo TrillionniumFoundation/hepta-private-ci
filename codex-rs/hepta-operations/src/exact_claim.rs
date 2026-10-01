@@ -31,12 +31,12 @@ impl DurableOperationStore {
         if !(1..=MAX_DURABLE_LEASE_MS).contains(&lease_ms) {
             return Err(DurableOperationError::Invalid("lease duration"));
         }
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
+        let now = now_millis()?;
         let candidate = sqlx::query(
             "SELECT l.destination, l.state AS operation_state, l.owner_generation AS ledger_generation,
                     l.revision, o.state AS outbox_state, o.owner_generation AS outbox_generation,
