@@ -51,7 +51,7 @@ struct Config {
     #[serde(default)]
     current_program_approval_digest: Option<String>,
 }
-fn now_ms() -> HostResult<u64> {
+pub(crate) fn now_ms() -> HostResult<u64> {
     Ok(u64::try_from(
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)?
@@ -61,7 +61,7 @@ fn now_ms() -> HostResult<u64> {
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
-fn boundary(uid: u32, gid: u32) -> HostResult<String> {
+pub(crate) fn boundary(uid: u32, gid: u32) -> HostResult<String> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     let field = |n: &str| {
         status
@@ -113,7 +113,7 @@ fn key_directory(path: &Path, uid: u32) -> HostResult<()> {
     }
     Ok(())
 }
-fn key(path: &Path, uid: u32) -> HostResult<SigningKey> {
+pub(crate) fn key(path: &Path, uid: u32) -> HostResult<SigningKey> {
     key_directory(path.parent().ok_or("key parent")?, uid)?;
     let before = std::fs::symlink_metadata(path)?;
     if !before.is_file()

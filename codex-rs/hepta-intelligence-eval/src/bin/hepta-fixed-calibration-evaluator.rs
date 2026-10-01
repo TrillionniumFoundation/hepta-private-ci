@@ -3,6 +3,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "linux")]
     {
         let args = std::env::args_os().skip(1).collect::<Vec<_>>();
+        if args.len() == 2 && args[0] == "--initial-operational-anchor" {
+            return codex_hepta_intelligence_eval::run_initial_neuron_operational_evaluator(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 2 && args[0] == "--request" {
             return codex_hepta_intelligence_eval::run_fixed_calibration_evaluator(
                 std::path::Path::new(&args[1]),
