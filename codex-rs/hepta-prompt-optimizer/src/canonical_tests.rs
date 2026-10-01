@@ -1,4 +1,7 @@
 use super::*;
+
+#[path = "canonical_integrity_tests.rs"]
+mod provenance;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
@@ -110,7 +113,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         .iter()
         .map(|candidate| candidate.factor_id.clone())
         .collect::<Vec<_>>();
-    let enumerated = EnumeratedPromptCandidatesV1 {
+    let enumerated = integrity::EnumeratedOriginalV1 {
         registry_snapshot: dummy_snapshot(&tuple, generation_vector),
         model_tuple: tuple,
         generation_vector_digest: generation_vector,
@@ -128,7 +131,8 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             authority: AuthorityPosture::DENY_ALL,
         },
         candidates: candidates.clone(),
-    };
+    }
+    .admit();
     let priced_rows = rows
         .into_iter()
         .zip(candidates)
@@ -156,7 +160,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             },
         )
         .collect();
-    PricedPromptCandidatesV1 {
+    integrity::PricedOriginalV1 {
         candidates: enumerated,
         completeness_digest: digest("completeness"),
         pricing_policy_digest: digest("pricing-policy"),
@@ -164,6 +168,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         pricing_set_digest: digest("pricing-set"),
         authority: AuthorityPosture::DENY_ALL,
     }
+    .admit()
 }
 
 fn support(label: &str) -> KnowledgeSupportV2 {
@@ -388,7 +393,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         .expect("bindings")
         .bindings[0]
         .clone();
-    let selected = SelectedPromptPortfolioV1 {
+    let selected = integrity::SelectedOriginalV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
             candidate_set_digest: digest("candidate-set"),
@@ -414,7 +419,8 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         graph_generation_digest: digest("graph"),
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
+    }
+    .admit();
     let live = exercise_v1(
         registry.registry().expect("registry"),
         &selected,
