@@ -9,6 +9,8 @@ use codex_app_server_client::RemoteAppServerRequestHandle;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ThreadEphemeralDisposalParams;
+use codex_app_server_protocol::ThreadEphemeralRetainParams;
+use codex_app_server_protocol::ThreadEphemeralRetainResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
 use codex_app_server_protocol::ThreadUnsubscribeResponse;
 use codex_app_server_protocol::ThreadUnsubscribeStatus;
@@ -58,6 +60,7 @@ pub(crate) struct NativeThreadGuard {
     store: NativeCleanupStore,
     obligation: CleanupObligation,
     phase: Phase,
+    retention_acknowledged: bool,
 }
 
 impl NativeThreadGuard {
@@ -79,6 +82,7 @@ impl NativeThreadGuard {
             store,
             obligation,
             phase,
+            retention_acknowledged: false,
         })
     }
 
@@ -121,8 +125,43 @@ impl NativeThreadGuard {
     }
 
     pub(crate) async fn effect_entered(&mut self) -> Result<()> {
+        if !self.retention_acknowledged {
+            return Err("exact ephemeral retention V1 was not acknowledged before effect".into());
+        }
         self.obligation = self.store.mark_effect_possible(&self.obligation).await?;
         self.phase = Phase::EffectPossible;
+        Ok(())
+    }
+
+    pub(crate) async fn retain_until_disposal(&mut self) -> Result<()> {
+        if !matches!(self.phase, Phase::Prepared) {
+            return Err("ephemeral retention must precede original effect admission".into());
+        }
+        let response: ThreadEphemeralRetainResponse = self
+            .handle
+            .request_typed(ClientRequest::ThreadEphemeralRetain {
+                request_id: RequestId::String(format!(
+                    "hepta-retain:{}",
+                    self.obligation.operation_id
+                )),
+                params: ThreadEphemeralRetainParams {
+                    protocol_version: 1,
+                    thread_id: self.obligation.thread_id.clone(),
+                    expected_session_id: self.obligation.session_id.clone(),
+                    operation_id: self.obligation.operation_id.clone(),
+                },
+            })
+            .await?;
+        if response.protocol_version != 1
+            || response.thread_id != self.obligation.thread_id
+            || response.session_id != self.obligation.session_id
+            || response.operation_id != self.obligation.operation_id
+        {
+            return Err(
+                "ephemeral retention V1 acknowledgement differs from original session".into(),
+            );
+        }
+        self.retention_acknowledged = true;
         Ok(())
     }
 

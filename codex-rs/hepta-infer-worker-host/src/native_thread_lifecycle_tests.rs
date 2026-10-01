@@ -43,6 +43,29 @@ async fn native_thread_lifecycle_effect_possible_drop_retains_session_without_di
         let initialized: Value =
             serde_json::from_str(ws.next().await.ok_or("initialized missing")??.to_text()?)?;
         assert_eq!(initialized["method"], "initialized");
+        for acknowledgement in ["wrong-session", "wrong-version", "unsupported", "exact"] {
+            let request: Value =
+                serde_json::from_str(ws.next().await.ok_or("retention missing")??.to_text()?)?;
+            assert_eq!(request["method"], "thread/ephemeral/retain");
+            assert_eq!(request["params"]["protocolVersion"], 1);
+            assert_eq!(request["params"]["threadId"], "fixture-thread");
+            assert_eq!(request["params"]["expectedSessionId"], "fixture-session");
+            assert_eq!(
+                request["params"]["operationId"],
+                "native.request.v1:fixture-owner-pending"
+            );
+            let reply = if acknowledgement == "unsupported" {
+                json!({"id":request["id"],"error":{"code":-32601,"message":"unsupported"}})
+            } else {
+                json!({"id":request["id"],"result":{
+                    "protocolVersion":if acknowledgement == "wrong-version" {0} else {1},
+                    "threadId":"fixture-thread",
+                    "sessionId":if acknowledgement == "wrong-session" {"another-session"} else {"fixture-session"},
+                    "operationId":"native.request.v1:fixture-owner-pending"
+                }})
+            };
+            ws.send(Message::Text(reply.to_string().into())).await?;
+        }
         held_rx.await?;
         assert!(
             tokio::time::timeout(Duration::from_millis(150), ws.next())
@@ -73,6 +96,17 @@ async fn native_thread_lifecycle_effect_possible_drop_retains_session_without_di
         "fixture-session".to_owned(),
     )
     .await?;
+    assert!(guard.effect_entered().await.is_err());
+    for _ in 0..3 {
+        assert!(guard.retain_until_disposal().await.is_err());
+        assert!(guard.effect_entered().await.is_err());
+        let original = store
+            .obligation("native.request.v1:fixture-owner-pending")
+            .await?
+            .ok_or("original prepared obligation")?;
+        assert_eq!(original.state, CleanupState::Prepared);
+    }
+    guard.retain_until_disposal().await?;
     // This hold is installed before cross-owner dispatch/abort RPCs. Dropping
     // their request while its original ACK is missing cannot restore Prepared.
     guard.effect_entered().await?;

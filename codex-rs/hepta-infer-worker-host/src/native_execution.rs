@@ -179,6 +179,16 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
+        // An ignored nullable flag on an older server is not a residency
+        // promise. The original Prepared obligation precedes this positive V1
+        // handshake; failure never crosses the external effect boundary.
+        await_before_effect(
+            &execution_clock,
+            RPC_TIMEOUT,
+            "App Server exact ephemeral retention V1",
+            thread_guard.retain_until_disposal(),
+        )
+        .await?;
         // Recheck the actual generation after connecting and creating the
         // ephemeral thread. Only now acquire the retrieval result that will be
         // attached to turn/start. Agentd performs exact owner-cut, candidate
