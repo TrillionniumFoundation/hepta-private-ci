@@ -370,12 +370,35 @@ impl CalibrationReferenceBatch {
 }
 fn validate_state(state: &RowState) -> Result<(), AgentdError> {
     if let Some(first) = &state.first_observation {
-        first.validate().map_err(|error| invalid(error.to_string()))?;
-        if first.native_request_id != state.native_request_id || first.prompt_digest != state.prompt_digest
+        first
+            .validate()
+            .map_err(|error| invalid(error.to_string()))?;
+        if first.native_request_id != state.native_request_id
+            || first.prompt_digest != state.prompt_digest
             || first.original_deadline_ms != state.original_deadline_ms
-            || first.native_record.as_ref().is_some_and(|record| record.request.principal_id != state.agent_id || record.request.worker_generation != state.worker_generation)
-            || first.native_record.as_ref().zip(state.observation.as_ref().and_then(|observation| observation.native_record.as_ref())).is_some_and(|(first, latest)| first.request != latest.request || first.dispatch.as_ref().is_some_and(|dispatch| latest.dispatch.as_ref() != Some(dispatch)))
-        { return Err(invalid("reference original attempt binding")); }
+            || first.native_record.as_ref().is_some_and(|record| {
+                record.request.principal_id != state.agent_id
+                    || record.request.worker_generation != state.worker_generation
+            })
+            || first
+                .native_record
+                .as_ref()
+                .zip(
+                    state
+                        .observation
+                        .as_ref()
+                        .and_then(|observation| observation.native_record.as_ref()),
+                )
+                .is_some_and(|(first, latest)| {
+                    first.request != latest.request
+                        || first
+                            .dispatch
+                            .as_ref()
+                            .is_some_and(|dispatch| latest.dispatch.as_ref() != Some(dispatch))
+                })
+        {
+            return Err(invalid("reference original attempt binding"));
+        }
     }
     match &state.observation {
         Some(observation) => {
@@ -397,7 +420,8 @@ fn validate_state(state: &RowState) -> Result<(), AgentdError> {
         }
         None => {
             if !matches!(state.phase.as_str(), "prepared" | "pending_native_recovery")
-                || state.original_execution_latency_us.is_some() || state.first_observation.is_some()
+                || state.original_execution_latency_us.is_some()
+                || state.first_observation.is_some()
             {
                 return Err(invalid("reference state has no native evidence"));
             }

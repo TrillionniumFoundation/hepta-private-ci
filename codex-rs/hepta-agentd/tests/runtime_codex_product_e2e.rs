@@ -168,6 +168,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         // Test-only constructor: production `open` requires Linux process
         // identity in addition to socket ownership and peer UID.
         issuer_process_identity: None,
+        issuer_process_attestation: None,
     })
     .map_err(|error| anyhow::anyhow!(error.to_string()))?;
 

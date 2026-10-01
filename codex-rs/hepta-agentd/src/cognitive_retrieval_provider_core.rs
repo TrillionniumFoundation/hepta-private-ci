@@ -325,7 +325,7 @@ impl LeasedMemoryRetrievalProviderV1 {
             || response.sequence == 0
             || response
                 .publication_digest
-                .is_some_and(|digest| digest.is_zero())
+                .is_some_and(codex_hepta_agent_components::types::Digest32::is_zero)
         {
             return Err("retrieval frontier identity/challenge mismatch".to_string());
         }

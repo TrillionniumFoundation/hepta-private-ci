@@ -894,14 +894,13 @@ pub(crate) async fn revalidate_with_retrieval_executor(
         })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
-    if let (Some(current), Some(expected)) = (current_retrieval, retrieval_context_digest) {
-        if load_retrieval_context(current, owner, body_generation, executor, &request_work)
+    if let (Some(current), Some(expected)) = (current_retrieval, retrieval_context_digest)
+        && load_retrieval_context(current, owner, body_generation, executor, &request_work)
             .await?
             .binding_digest()
             != expected
-        {
-            return Err(CognitiveContextError::RetrievalContextUnavailable);
-        }
+    {
+        return Err(CognitiveContextError::RetrievalContextUnavailable);
     }
     Ok(CognitiveContextRevalidation {
         snapshot_digest: expected_snapshot.to_string(),

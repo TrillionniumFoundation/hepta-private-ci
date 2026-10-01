@@ -3,7 +3,10 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 
 fn observation() -> Result<NativeReferenceObservationV1, Box<dyn std::error::Error>> {
     let directory = tempfile::tempdir()?;
-    let mut control = DurableInferenceControl::open(directory.path().join("native.journal"), /*capacity*/ 8)?;
+    let mut control = DurableInferenceControl::open(
+        directory.path().join("native.journal"),
+        /*capacity*/ 8,
+    )?;
     let output = super::super::tests::settle_fixture(&mut control);
     let record = control.native_record_resolved("assessment-1")?;
     Ok(NativeReferenceObservationV1 {

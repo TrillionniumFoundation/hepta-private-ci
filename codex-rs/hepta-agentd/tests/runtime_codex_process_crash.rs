@@ -93,7 +93,7 @@ fn real_sigkill_before_dispatch_and_abort_fsync_replays_only_committed_owner_sta
     child.kill().expect("kill pre-dispatch-fsync fixture");
     child.wait().expect("wait pre-dispatch-fsync fixture");
 
-    let recovered = AgentRunCoordinator::open_durable(composition(), store.clone())
+    let recovered = AgentRunCoordinator::open_durable(composition(), store)
         .expect("recover context-attached owner");
     let receipt = recovered.run(RUN_ID).expect("context-attached run");
     assert_eq!(receipt.phase, RunPhase::ContextAttached);

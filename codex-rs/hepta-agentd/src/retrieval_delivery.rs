@@ -123,9 +123,12 @@ impl RetrievalDeliveryReceiptV1 {
         if self
             .native_request_id
             .as_ref()
-            .is_some_and(|value| value.is_empty())
+            .is_some_and(std::string::String::is_empty)
             || self.native_revision == Some(0)
-            || self.turn_id.as_ref().is_some_and(|value| value.is_empty())
+            || self
+                .turn_id
+                .as_ref()
+                .is_some_and(std::string::String::is_empty)
         {
             return Err(RetrievalDeliveryError::InvalidStageEvidence);
         }
