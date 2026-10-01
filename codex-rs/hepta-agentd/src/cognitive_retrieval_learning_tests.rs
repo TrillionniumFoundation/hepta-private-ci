@@ -479,9 +479,21 @@ async fn ordinary_socket_reads_from_new_clients_do_not_reuse_assignment_identity
         .unwrap();
     assert_eq!(first.snapshot.items, second.snapshot.items);
     assert_eq!(first.snapshot.items.len(), 1);
-    let capabilities = crate::AgentdClient::new(socket.clone(), owner(), /*spawn_generation*/ 1)
-        .unwrap().capabilities().await.unwrap();
-    assert!(capabilities.capabilities.iter().any(|capability| capability.id == crate::COGNITIVE_CONTEXT_PREPARATION_CAPABILITY && capability.major == 1));
+    let capabilities =
+        crate::AgentdClient::new(socket.clone(), owner(), /*spawn_generation*/ 1)
+            .unwrap()
+            .capabilities()
+            .await
+            .unwrap();
+    assert!(
+        capabilities
+            .capabilities
+            .iter()
+            .any(
+                |capability| capability.id == crate::COGNITIVE_CONTEXT_PREPARATION_CAPABILITY
+                    && capability.major == 1
+            )
+    );
     let snapshot = sink.writer.lock().unwrap().snapshot().unwrap();
     assert_eq!(snapshot.records().len(), 2);
     let assignments = snapshot
@@ -513,11 +525,18 @@ async fn ordinary_socket_reads_from_new_clients_do_not_reuse_assignment_identity
         let receipt = published.preparation.as_ref().unwrap();
         assert_eq!(receipt.read_request_id, 1);
         receipt.validate().unwrap();
-        let inspect = |agent: &AgentId, generation, request_id, context_digest| sink.with_owner_preparation(
-            agent, generation, request_id, receipt.sequence,
-            receipt.event_digest.parse().unwrap(), receipt.chain_digest.parse().unwrap(),
-            context_digest, |actual, _| Ok(actual.clone()),
-        );
+        let inspect = |agent: &AgentId, generation, request_id, context_digest| {
+            sink.with_owner_preparation(
+                agent,
+                generation,
+                request_id,
+                receipt.sequence,
+                receipt.event_digest.parse().unwrap(),
+                receipt.chain_digest.parse().unwrap(),
+                context_digest,
+                |actual, _| Ok(actual.clone()),
+            )
+        };
         assert_eq!(inspect(&owner(), 1, 1, expected).unwrap(), **assignment);
         assert!(inspect(&owner(), 2, 1, expected).is_err());
         assert!(inspect(&owner(), 1, 2, expected).is_err());

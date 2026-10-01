@@ -350,9 +350,7 @@ def nextest_log_problems(
     """Require one complete successful pinned-nextest summary."""
     body = re.sub(r"\x1b\[[0-9;]*m", "", log)
     summaries = [
-        line.strip()
-        for line in body.splitlines()
-        if re.match(r"^\s*Summary\b", line)
+        line.strip() for line in body.splitlines() if re.match(r"^\s*Summary\b", line)
     ]
     if len(summaries) != 1:
         return [f"{label}: require exactly one nextest execution summary"]
@@ -427,9 +425,7 @@ def validate_evidence(
                     body,
                 )
                 if nextest_log_problems(label, body, 1) or len(passed_cases) != 1:
-                    problems.append(
-                        f"{label}: exact binary/case execution not proved"
-                    )
+                    problems.append(f"{label}: exact binary/case execution not proved")
         if label in BENCHMARK_SCHEMAS:
             path = evidence / f"{label}.json"
             try:
@@ -469,9 +465,9 @@ def candidate_source_problems(root: Path) -> list[str]:
     if git(root, "status", "--porcelain", "--untracked-files=no"):
         problems.append("candidate tracked worktree changed during qualification")
     evidence_root = root.resolve() / ".hepta-evidence"
-    for relative in git(
-        root, "ls-files", "--others", "--exclude-standard", "-z"
-    ).split("\0"):
+    for relative in git(root, "ls-files", "--others", "--exclude-standard", "-z").split(
+        "\0"
+    ):
         if not relative:
             continue
         path = root / relative
@@ -502,7 +498,9 @@ def qualification_env(root: Path) -> dict[str, str]:
     # closed literal shape rather than depending on 3.11's tomllib or treating
     # an unsupported/missing field as a default toolchain.
     tables = list(re.finditer(r"(?m)^\s*\[([^]\r\n]+)\]\s*(?:#[^\r\n]*)?$", body))
-    selected = [index for index, table in enumerate(tables) if table.group(1) == "toolchain"]
+    selected = [
+        index for index, table in enumerate(tables) if table.group(1) == "toolchain"
+    ]
     if len(selected) != 1:
         raise ValueError("missing or invalid committed Rust toolchain")
     index = selected[0]

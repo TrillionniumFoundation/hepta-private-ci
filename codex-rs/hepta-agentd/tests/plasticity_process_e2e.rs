@@ -1,8 +1,8 @@
 #![cfg(unix)]
 
-mod support;
 #[path = "../src/plasticity_learning_fixture.rs"]
 mod learning_fixture;
+mod support;
 
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -151,7 +151,11 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             correction_cut_digest: digest("dataset:correction"),
             revocation_cut_digest: digest("dataset:revocation"),
             inclusion_policy_digest: digest("dataset:policy"),
-            source_record_digests: ledger_snapshot.records().iter().map(|record| record.event_digest).collect(),
+            source_record_digests: ledger_snapshot
+                .records()
+                .iter()
+                .map(|record| record.event_digest)
+                .collect(),
             pending_outcomes: 0,
             censored_outcomes: 0,
         },

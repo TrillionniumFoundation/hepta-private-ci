@@ -28,10 +28,7 @@ impl codex_hepta_context_compiler::ExactTokenizerV2 for ByteTokenizer {
         digest("tokenizer")
     }
 
-    fn count_tokens(
-        &self,
-        bytes: &[u8],
-    ) -> Result<u64, ContextCompilerV2Error> {
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
         Ok(u64::try_from(bytes.len()).unwrap_or(u64::MAX))
     }
 }

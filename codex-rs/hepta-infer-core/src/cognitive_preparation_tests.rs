@@ -15,23 +15,37 @@ fn preparation() -> NativeCognitivePreparation {
 fn persisted_preparation_reopens_without_upgrading_unknown_delivery() {
     let fixture = Fixture::new();
     let mut owner = fixture.open();
-    owner.reserve_native(request(), /*maximum_in_flight*/ 1).unwrap();
+    owner
+        .reserve_native(request(), /*maximum_in_flight*/ 1)
+        .unwrap();
     let mut dispatch = dispatch();
     dispatch.cognitive_preparation = Some(preparation());
     owner.dispatch_native("request-1", dispatch).unwrap();
     owner.cancel_native("request-1").unwrap();
     let expected = owner.native_record("request-1").unwrap().clone();
-    let delivery = owner.cognitive_context_delivery(&request(), context_digest()).unwrap().unwrap();
+    let delivery = owner
+        .cognitive_context_delivery(&request(), context_digest())
+        .unwrap()
+        .unwrap();
     let expected_digest = delivery.binding_digest();
     assert_eq!(delivery.preparation(), Some(&preparation()));
-    assert_eq!(delivery.state(), CognitiveContextDeliveryStateV1::AcceptanceUnknown);
+    assert_eq!(
+        delivery.state(),
+        CognitiveContextDeliveryStateV1::AcceptanceUnknown
+    );
     drop(owner);
     let reopened = fixture.open();
     assert_eq!(reopened.native_record("request-1"), Some(&expected));
-    let delivery = reopened.cognitive_context_delivery(&request(), context_digest()).unwrap().unwrap();
+    let delivery = reopened
+        .cognitive_context_delivery(&request(), context_digest())
+        .unwrap()
+        .unwrap();
     assert_eq!(delivery.preparation(), Some(&preparation()));
     assert_eq!(delivery.binding_digest(), expected_digest);
-    assert_eq!(delivery.state(), CognitiveContextDeliveryStateV1::AcceptanceUnknown);
+    assert_eq!(
+        delivery.state(),
+        CognitiveContextDeliveryStateV1::AcceptanceUnknown
+    );
 }
 
 #[test]
@@ -50,14 +64,22 @@ fn invalid_preparation_cannot_enter_the_native_journal() {
     for (context, receipt) in invalid {
         let fixture = Fixture::new();
         let mut owner = fixture.open();
-        let reserved = owner.reserve_native(request(), /*maximum_in_flight*/ 1).unwrap();
+        let reserved = owner
+            .reserve_native(request(), /*maximum_in_flight*/ 1)
+            .unwrap();
         let before = std::fs::read(fixture.0.join("native.journal")).unwrap();
         let mut dispatch = dispatch();
         dispatch.owner_context_digest = context;
         dispatch.cognitive_preparation = Some(receipt);
-        assert!(matches!(owner.dispatch_native("request-1", dispatch), Err(Error::InvalidIdentity(_) | Error::InvalidDigest(_))));
+        assert!(matches!(
+            owner.dispatch_native("request-1", dispatch),
+            Err(Error::InvalidIdentity(_) | Error::InvalidDigest(_))
+        ));
         assert_eq!(owner.native_record("request-1"), Some(&reserved));
-        assert_eq!(std::fs::read(fixture.0.join("native.journal")).unwrap(), before);
+        assert_eq!(
+            std::fs::read(fixture.0.join("native.journal")).unwrap(),
+            before
+        );
     }
 }
 
@@ -65,7 +87,9 @@ fn invalid_preparation_cannot_enter_the_native_journal() {
 fn historical_omission_preserves_canonical_event_and_journal_bytes() {
     let fixture = Fixture::new();
     let mut owner = fixture.open();
-    owner.reserve_native(request(), /*maximum_in_flight*/ 1).unwrap();
+    owner
+        .reserve_native(request(), /*maximum_in_flight*/ 1)
+        .unwrap();
     owner.dispatch_native("request-1", dispatch()).unwrap();
     let before = std::fs::read(fixture.0.join("native.journal")).unwrap();
     assert!(!String::from_utf8_lossy(&before).contains("cognitive_preparation"));
@@ -75,9 +99,22 @@ fn historical_omission_preserves_canonical_event_and_journal_bytes() {
     assert_eq!(serde_json::to_vec(&replayed).unwrap(), historical);
     drop(owner);
     let reopened = fixture.open();
-    assert_eq!(reopened.native_record("request-1").unwrap().dispatch, Some(dispatch()));
-    assert_eq!(std::fs::read(fixture.0.join("native.journal")).unwrap(), before);
-    assert_eq!(reopened.cognitive_context_delivery(&request(), context_digest()).unwrap().unwrap().preparation(), None);
+    assert_eq!(
+        reopened.native_record("request-1").unwrap().dispatch,
+        Some(dispatch())
+    );
+    assert_eq!(
+        std::fs::read(fixture.0.join("native.journal")).unwrap(),
+        before
+    );
+    assert_eq!(
+        reopened
+            .cognitive_context_delivery(&request(), context_digest())
+            .unwrap()
+            .unwrap()
+            .preparation(),
+        None
+    );
 }
 
 #[test]
@@ -99,11 +136,17 @@ fn receipt_substitution_changes_the_native_delivery_binding() {
     for receipt in receipts {
         let fixture = Fixture::new();
         let mut owner = fixture.open();
-        owner.reserve_native(request(), /*maximum_in_flight*/ 1).unwrap();
+        owner
+            .reserve_native(request(), /*maximum_in_flight*/ 1)
+            .unwrap();
         let mut dispatch = dispatch();
         dispatch.cognitive_preparation = receipt;
         owner.dispatch_native("request-1", dispatch).unwrap();
-        let digest = owner.cognitive_context_delivery(&request(), context_digest()).unwrap().unwrap().binding_digest();
+        let digest = owner
+            .cognitive_context_delivery(&request(), context_digest())
+            .unwrap()
+            .unwrap()
+            .binding_digest();
         assert!(bindings.insert(digest.to_string()));
     }
 }

@@ -201,7 +201,9 @@ impl AgentdClient {
                 if let Some(receipt) = &prepared.preparation {
                     receipt.validate().map_err(AgentdError::Protocol)?;
                     if receipt.read_request_id != read_request_id {
-                        return Err(AgentdError::Protocol("cognitive preparation RPC binding mismatch".to_string()));
+                        return Err(AgentdError::Protocol(
+                            "cognitive preparation RPC binding mismatch".to_string(),
+                        ));
                     }
                 }
                 Ok(prepared)

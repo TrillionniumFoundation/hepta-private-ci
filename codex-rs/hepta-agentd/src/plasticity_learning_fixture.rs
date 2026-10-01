@@ -29,7 +29,10 @@ pub fn seed_authenticated_decision(
     maximum_records: usize,
     decision: ledger::EpisodeDecision,
 ) -> ledger::DurableLedger {
-    assert_eq!(decision.completeness, ledger::CandidateSetCompleteness::Complete);
+    assert_eq!(
+        decision.completeness,
+        ledger::CandidateSetCompleteness::Complete
+    );
     let scope = digest("plasticity-fixture-learning-scope");
     let key = SigningKey::from_bytes(&[28; 32]);
     let root_key = SigningKey::from_bytes(&[29; 32]);
@@ -73,11 +76,28 @@ pub fn seed_authenticated_decision(
         expires_at: 90,
         signature: [0; 64],
     };
-    distribution.signature = root_key.sign(&distribution.signing_bytes().unwrap()).to_bytes();
-    let trust = ledger::activate_learning_trust(&root, distribution, /*previous*/ None, /*now*/ 50).unwrap();
-    let create = |path: &Path| OpenOptions::new().create_new(true).read(true).write(true).open(path).unwrap();
+    distribution.signature = root_key
+        .sign(&distribution.signing_bytes().unwrap())
+        .to_bytes();
+    let trust = ledger::activate_learning_trust(
+        &root,
+        distribution,
+        /*previous*/ None,
+        /*now*/ 50,
+    )
+    .unwrap();
+    let create = |path: &Path| {
+        OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(path)
+            .unwrap()
+    };
     let durable = ledger::DurableLedger::create(create(path), binding, maximum_records).unwrap();
-    let witness = ledger::LedgerWitnessStore::create(create(&path.with_extension("witness")), binding).unwrap();
+    let witness =
+        ledger::LedgerWitnessStore::create(create(&path.with_extension("witness")), binding)
+            .unwrap();
     let mut directory_options = OpenOptions::new();
     directory_options.read(true);
     #[cfg(windows)]
@@ -87,7 +107,9 @@ pub fn seed_authenticated_decision(
         directory_options.custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
     }
     let directory = directory_options.open(path.parent().unwrap()).unwrap();
-    let mut writer = ledger::LedgerWriter::from_durable(durable, witness, trust, &directory, &directory).unwrap();
+    let mut writer =
+        ledger::LedgerWriter::from_durable(durable, witness, trust, &directory, &directory)
+            .unwrap();
     let request = ledger::ProductionDecisionV2 {
         record_id: decision.record_id,
         episode_id: decision.episode_id,
@@ -127,13 +149,20 @@ pub fn seed_authenticated_decision(
         signature: [0; 64],
     };
     evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
-    writer.append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50).unwrap();
+    writer
+        .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
+        .unwrap();
     let anchor = writer.witness_frontier().unwrap().anchor;
     drop(writer);
     ledger::DurableLedger::recover(
-        OpenOptions::new().read(true).write(true).open(path).unwrap(),
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path)
+            .unwrap(),
         binding,
         maximum_records,
         ledger::LedgerRecovery::Acknowledged(anchor),
-    ).unwrap()
+    )
+    .unwrap()
 }

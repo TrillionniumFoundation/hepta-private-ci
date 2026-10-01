@@ -11,16 +11,16 @@ use std::collections::BTreeSet;
 use codex_hepta_cognitive_read::MAX_ENCODED_READ_RESULT_BYTES_V2;
 use codex_hepta_cognitive_read::ReadFieldV1;
 use codex_hepta_cognitive_read::ReadIdsRequestV1;
+use codex_hepta_cognitive_types::Citation;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_compact_engine::CognitiveReadCompactionCandidateV1;
 use codex_hepta_compact_engine::CognitiveReadCompactionRetentionV1;
 use codex_hepta_compact_engine::CompactionInputRecordV2;
 use codex_hepta_compact_engine::CompactionPolicyV2;
 use codex_hepta_compact_engine::MAX_COGNITIVE_READ_COMPACTION_IDS;
 use codex_hepta_compact_engine::build_qualified_candidate;
-use codex_hepta_cognitive_types::Citation;
-use codex_hepta_cognitive_types::MemoryRecord;
-use codex_hepta_cognitive_types::RecordState;
-use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -80,7 +80,10 @@ impl CognitiveStore {
                 .validate()
                 .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
             let record_id = retention.record_id.clone();
-            if retention_by_id.insert(record_id.clone(), retention).is_some() {
+            if retention_by_id
+                .insert(record_id.clone(), retention)
+                .is_some()
+            {
                 return Err(CognitiveStoreError::Invalid(format!(
                     "duplicate cognitive compaction ID {record_id}"
                 )));
@@ -199,8 +202,9 @@ async fn load_exact_lineage(
 ) -> Result<Vec<MemoryRecord>, CognitiveStoreError> {
     let (scope_kind, workspace) = scope.database_parts();
     let mut transaction = store.pool.begin().await.map_err(unavailable)?;
-    let ancestry_limit = i64::try_from(MAX_LANE_C_PAGE_ANCESTRY_REVISIONS + 1)
-        .map_err(|_| CognitiveStoreError::Invalid("Lane C ancestry limit exceeds i64".to_string()))?;
+    let ancestry_limit = i64::try_from(MAX_LANE_C_PAGE_ANCESTRY_REVISIONS + 1).map_err(|_| {
+        CognitiveStoreError::Invalid("Lane C ancestry limit exceeds i64".to_string())
+    })?;
     let mut revision_query = QueryBuilder::<Sqlite>::new(
         "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
                 r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
@@ -235,8 +239,9 @@ async fn load_exact_lineage(
         )));
     }
 
-    let citation_limit = i64::try_from(MAX_LANE_C_PAGE_CITATIONS + 1)
-        .map_err(|_| CognitiveStoreError::Invalid("Lane C citation limit exceeds i64".to_string()))?;
+    let citation_limit = i64::try_from(MAX_LANE_C_PAGE_CITATIONS + 1).map_err(|_| {
+        CognitiveStoreError::Invalid("Lane C citation limit exceeds i64".to_string())
+    })?;
     let mut citation_query = QueryBuilder::<Sqlite>::new(
         "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256
          FROM memory_citations c
@@ -338,15 +343,16 @@ async fn load_exact_lineage(
             ));
         }
         let content_digest: String = row.try_get("content_sha256").map_err(unavailable)?;
-        let mut record_citations = citations
-            .remove(&(raw_id, revision))
-            .ok_or_else(|| CognitiveStoreError::Corrupt("missing cognitive citations".to_string()))?;
+        let mut record_citations = citations.remove(&(raw_id, revision)).ok_or_else(|| {
+            CognitiveStoreError::Corrupt("missing cognitive citations".to_string())
+        })?;
         record_citations.sort();
         let record = MemoryRecord {
             record_id: record_id.clone(),
-            revision: Revision::new(u64::try_from(revision).map_err(|error| {
-                CognitiveStoreError::Corrupt(error.to_string())
-            })?)
+            revision: Revision::new(
+                u64::try_from(revision)
+                    .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?,
+            )
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?,
             kind: DURABLE_SQLITE_MEMORY_KIND,
             content_digest: content_digest
@@ -379,7 +385,9 @@ async fn load_exact_lineage(
         ));
     }
     if observed_ids.len() != record_ids.len()
-        || record_ids.iter().any(|record_id| !observed_ids.contains(record_id))
+        || record_ids
+            .iter()
+            .any(|record_id| !observed_ids.contains(record_id))
     {
         return Err(CognitiveStoreError::Conflict(
             "cognitive compaction lineage set changed during acquisition".to_string(),
@@ -414,9 +422,7 @@ fn verify_read_matches_lineage(
             )
         })?;
         let read = read_by_id.get(record_id).ok_or_else(|| {
-            CognitiveStoreError::Conflict(
-                "cognitive compaction exact read lost a head".to_string(),
-            )
+            CognitiveStoreError::Conflict("cognitive compaction exact read lost a head".to_string())
         })?;
         let mut citations = head.citations.clone();
         citations.sort();

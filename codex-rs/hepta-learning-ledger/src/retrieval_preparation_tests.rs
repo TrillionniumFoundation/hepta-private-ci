@@ -251,13 +251,16 @@ fn preparation_identity_advances_with_the_durable_owner_after_reopen() {
         .append_retrieval_assignment_preparation(explicit.clone())
         .unwrap();
     assert_eq!(
-        writer.read_current_retrieval_preparation(
-            first.sequence,
-            first.event_digest,
-            first.chain_digest,
-            &explicit.record_id,
-            &explicit.episode_id,
-        ).unwrap().sequence,
+        writer
+            .read_current_retrieval_preparation(
+                first.sequence,
+                first.event_digest,
+                first.chain_digest,
+                &explicit.record_id,
+                &explicit.episode_id,
+            )
+            .unwrap()
+            .sequence,
         first.sequence,
     );
     assert_eq!(second.sequence.get(), first.sequence.get() + 1);
@@ -299,27 +302,123 @@ fn owner_preparation_receipt_requires_exact_namespace_witness_and_activity() {
     let fixture = Fixture::new();
     let mut writer = writer(&fixture.0);
     let namespace = assignment(id("namespace-record"), id("namespace-episode"));
-    let receipt = writer.append_retrieval_assignment_preparation(namespace.clone()).unwrap();
-    let read = |writer: &ledger::LedgerWriter, sequence, event_digest, chain_digest, record_id: &StableId| {
-        writer.read_current_retrieval_preparation(
-            sequence, event_digest, chain_digest, record_id, &namespace.episode_id,
-        ).map(|record| record.event.record_id().clone())
+    let receipt = writer
+        .append_retrieval_assignment_preparation(namespace.clone())
+        .unwrap();
+    let read = |writer: &ledger::LedgerWriter,
+                sequence,
+                event_digest,
+                chain_digest,
+                record_id: &StableId| {
+        writer
+            .read_current_retrieval_preparation(
+                sequence,
+                event_digest,
+                chain_digest,
+                record_id,
+                &namespace.episode_id,
+            )
+            .map(|record| record.event.record_id().clone())
     };
-    let issued_id = read(&writer, receipt.sequence, receipt.event_digest, receipt.chain_digest, &namespace.record_id).unwrap();
-    assert!(read(&writer, LogicalSequence::new(receipt.sequence.get() + 1).unwrap(), receipt.event_digest, receipt.chain_digest, &namespace.record_id).is_err());
-    assert!(read(&writer, receipt.sequence, digest("different-event"), receipt.chain_digest, &namespace.record_id).is_err());
-    assert!(read(&writer, receipt.sequence, receipt.event_digest, digest("different-chain"), &namespace.record_id).is_err());
-    assert!(read(&writer, receipt.sequence, receipt.event_digest, receipt.chain_digest, &id("different-owner-namespace")).is_err());
+    let issued_id = read(
+        &writer,
+        receipt.sequence,
+        receipt.event_digest,
+        receipt.chain_digest,
+        &namespace.record_id,
+    )
+    .unwrap();
+    assert!(
+        read(
+            &writer,
+            LogicalSequence::new(receipt.sequence.get() + 1).unwrap(),
+            receipt.event_digest,
+            receipt.chain_digest,
+            &namespace.record_id
+        )
+        .is_err()
+    );
+    assert!(
+        read(
+            &writer,
+            receipt.sequence,
+            digest("different-event"),
+            receipt.chain_digest,
+            &namespace.record_id
+        )
+        .is_err()
+    );
+    assert!(
+        read(
+            &writer,
+            receipt.sequence,
+            receipt.event_digest,
+            digest("different-chain"),
+            &namespace.record_id
+        )
+        .is_err()
+    );
+    assert!(
+        read(
+            &writer,
+            receipt.sequence,
+            receipt.event_digest,
+            receipt.chain_digest,
+            &id("different-owner-namespace")
+        )
+        .is_err()
+    );
     let pending = assignment(id("pending-record"), id("pending-episode"));
-    writer.backend.append(receipt.chain_digest, ledger::LedgerEvent::RetrievalAssignment(pending.clone())).unwrap();
-    assert!(matches!(read(&writer, receipt.sequence, receipt.event_digest, receipt.chain_digest, &namespace.record_id), Err(ProductionLedgerError::WitnessLag)));
-    let explicit = writer.append_retrieval_assignment_current(pending.clone()).unwrap();
-    assert!(writer.read_current_retrieval_preparation(explicit.sequence, explicit.event_digest, explicit.chain_digest, &pending.record_id, &pending.episode_id).is_err());
-    writer.commit(explicit.chain_digest, ledger::LedgerEvent::Revocation(ledger::Revocation {
-        record_id: id("revoke-owner-preparation"),
-        target_record_id: issued_id,
-        authority_id: id("privacy-owner"),
-        reason_digest: digest("withdrawn"),
-    })).unwrap();
-    assert!(read(&writer, receipt.sequence, receipt.event_digest, receipt.chain_digest, &namespace.record_id).is_err());
+    writer
+        .backend
+        .append(
+            receipt.chain_digest,
+            ledger::LedgerEvent::RetrievalAssignment(pending.clone()),
+        )
+        .unwrap();
+    assert!(matches!(
+        read(
+            &writer,
+            receipt.sequence,
+            receipt.event_digest,
+            receipt.chain_digest,
+            &namespace.record_id
+        ),
+        Err(ProductionLedgerError::WitnessLag)
+    ));
+    let explicit = writer
+        .append_retrieval_assignment_current(pending.clone())
+        .unwrap();
+    assert!(
+        writer
+            .read_current_retrieval_preparation(
+                explicit.sequence,
+                explicit.event_digest,
+                explicit.chain_digest,
+                &pending.record_id,
+                &pending.episode_id
+            )
+            .is_err()
+    );
+    writer
+        .commit(
+            explicit.chain_digest,
+            ledger::LedgerEvent::Revocation(ledger::Revocation {
+                record_id: id("revoke-owner-preparation"),
+                target_record_id: issued_id,
+                authority_id: id("privacy-owner"),
+                reason_digest: digest("withdrawn"),
+            }),
+        )
+        .unwrap();
+    assert!(
+        read(
+            &writer,
+            receipt.sequence,
+            receipt.event_digest,
+            receipt.chain_digest,
+            &namespace.record_id
+        )
+        .is_err()
+    );
 }

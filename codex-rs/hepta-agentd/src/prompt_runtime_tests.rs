@@ -707,34 +707,33 @@ fn named_agentd_pipeline_without_tokenizer_rejects_exact_context_proofs() {
         policy_digest: digest("exercise-policy"),
     };
 
-    let result = pipeline
-        .compile_and_stage(
-            "thread:product",
-            "turn:product",
-            "gpt-test",
-            wall_now + 60_000,
-            &portfolio,
-            &exercise_request,
-            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
-                compilation_id: id("compilation:agentd-product"),
-                serialization_id: id("serialization:agentd-product"),
-                attachment_id: id("attachment:agentd-product"),
-                registry_model_tuple: tuple.clone(),
-                context_model_profile: ContextModelProfileV2 {
-                    model_digest: tuple.model_digest,
-                    provider_id_digest: digest("provider:agentd-product"),
-                    provider_model_digest: tuple.model_digest,
-                    tokenizer_digest: tuple.tokenizer_digest,
-                    serializer_digest: digest("serializer:agentd-product"),
-                    template_digest: tuple.template_digest,
-                    tool_schema_digest: tuple.tool_schema_digest,
-                    maximum_context_tokens: 128,
-                },
-                now_unix_ms: logical_now,
-                token_budget: 128,
-                truncation_policy_digest: digest("truncation:agentd-product"),
+    let result = pipeline.compile_and_stage(
+        "thread:product",
+        "turn:product",
+        "gpt-test",
+        wall_now + 60_000,
+        &portfolio,
+        &exercise_request,
+        codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+            compilation_id: id("compilation:agentd-product"),
+            serialization_id: id("serialization:agentd-product"),
+            attachment_id: id("attachment:agentd-product"),
+            registry_model_tuple: tuple.clone(),
+            context_model_profile: ContextModelProfileV2 {
+                model_digest: tuple.model_digest,
+                provider_id_digest: digest("provider:agentd-product"),
+                provider_model_digest: tuple.model_digest,
+                tokenizer_digest: tuple.tokenizer_digest,
+                serializer_digest: digest("serializer:agentd-product"),
+                template_digest: tuple.template_digest,
+                tool_schema_digest: tuple.tool_schema_digest,
+                maximum_context_tokens: 128,
             },
-        );
+            now_unix_ms: logical_now,
+            token_budget: 128,
+            truncation_policy_digest: digest("truncation:agentd-product"),
+        },
+    );
     assert!(matches!(
         result,
         Err(AgentdPromptPipelineError::ExactTokenizerUnavailable)

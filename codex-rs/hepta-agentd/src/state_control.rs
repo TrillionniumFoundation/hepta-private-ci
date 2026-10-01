@@ -83,7 +83,8 @@ impl AgentdState {
         // not gate core Agent readiness. The required cognitive owner is
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
-        let prepared_context = matches!(&method, crate::AgentdMethod::CognitiveContextPrepare { .. });
+        let prepared_context =
+            matches!(&method, crate::AgentdMethod::CognitiveContextPrepare { .. });
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
@@ -279,18 +280,19 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read_prepared_with_retrieval_context_and_learning(
-                    &store,
-                    &self.identity.agent_id,
-                    self.identity.spawn_generation,
-                    &query,
-                    limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
-                )
-                .await;
+                let result =
+                    crate::cognitive_context::read_prepared_with_retrieval_context_and_learning(
+                        &store,
+                        &self.identity.agent_id,
+                        self.identity.spawn_generation,
+                        &query,
+                        limit,
+                        self.cognitive_ranker.get(),
+                        self.cognitive_retrieval_context.get(),
+                        self.cognitive_retrieval_learning.get(),
+                        Some(request_id),
+                    )
+                    .await;
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;

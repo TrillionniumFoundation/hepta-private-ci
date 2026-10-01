@@ -95,7 +95,9 @@ DELIVERY_GATES = {
         "codex-hepta-agent-protocol",
         ("--lib",),
         "codex-hepta-agent-protocol",
-        ("cognitive_preparation::tests::preparation_response_preserves_snapshot_bytes_and_separates_receipt",),
+        (
+            "cognitive_preparation::tests::preparation_response_preserves_snapshot_bytes_and_separates_receipt",
+        ),
     ),
     "native-preparation-handoff-tests": (
         "codex-hepta-infer-core",

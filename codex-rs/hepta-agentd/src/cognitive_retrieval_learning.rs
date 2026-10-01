@@ -62,9 +62,18 @@ impl CognitiveRetrievalLearningSink {
         if event_digest.is_zero() || chain_digest.is_zero() || expected_context_digest.is_zero() {
             return Err("invalid cognitive preparation receipt".to_string());
         }
-        let writer = self.writer.lock()
+        let writer = self
+            .writer
+            .lock()
             .map_err(|_| "retrieval learning ledger writer lock poisoned".to_string())?;
-        let record = writer.read_current_retrieval_preparation(sequence, event_digest, chain_digest, &record_id, &episode_id)
+        let record = writer
+            .read_current_retrieval_preparation(
+                sequence,
+                event_digest,
+                chain_digest,
+                &record_id,
+                &episode_id,
+            )
             .map_err(|error| error.to_string())?;
         let LedgerEvent::RetrievalAssignment(assignment) = &record.event else {
             return Err("retrieval preparation has wrong event kind".to_string());

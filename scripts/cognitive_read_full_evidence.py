@@ -159,8 +159,16 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         exact_filter(CONTEXT_INGRESS_TESTS),
     ]
     result["prompt-exact-tokenizer-tests"] = [
-        "just", "test", "--locked", "-p", "codex-hepta-intelligence",
-        "--lib", "--no-tests=fail", "--status-level", "pass", "-E",
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "--no-tests=fail",
+        "--status-level",
+        "pass",
+        "-E",
         exact_filter(EXACT_TOKENIZER_TESTS),
     ]
     for label, package in CONSUMER_PACKAGES.items():

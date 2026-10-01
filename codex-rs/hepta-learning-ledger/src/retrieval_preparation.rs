@@ -30,9 +30,14 @@ impl LedgerWriter {
     ) -> Result<&LedgerRecord, ProductionLedgerError> {
         let position = usize::try_from(sequence.get() - 1)
             .map_err(|_| ProductionLedgerError::Binding("retrieval preparation sequence"))?;
-        let record = self.backend.core()?.records().get(position).ok_or(
-            ProductionLedgerError::Binding("retrieval preparation missing"),
-        )?;
+        let record =
+            self.backend
+                .core()?
+                .records()
+                .get(position)
+                .ok_or(ProductionLedgerError::Binding(
+                    "retrieval preparation missing",
+                ))?;
         if record.sequence != sequence
             || record.event_digest != event_digest
             || record.chain_digest != chain_digest
@@ -56,7 +61,9 @@ impl LedgerWriter {
         if assignment.record_id.as_str() != format!("retrieval-preparation:{identity}")
             || assignment.episode_id.as_str() != format!("retrieval-preparation-episode:{identity}")
         {
-            return Err(ProductionLedgerError::Binding("retrieval preparation namespace"));
+            return Err(ProductionLedgerError::Binding(
+                "retrieval preparation namespace",
+            ));
         }
         self.read_current_retrieval_assignment(&assignment.record_id, &assignment.episode_id)
     }

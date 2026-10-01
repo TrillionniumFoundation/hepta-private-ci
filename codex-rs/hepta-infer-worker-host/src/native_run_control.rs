@@ -72,7 +72,10 @@ impl AppServerModelDriver {
                     bytes.extend_from_slice(&record.sequence.get().to_be_bytes());
                     bytes.extend_from_slice(assignment.support_digest.as_array());
                     bytes.extend_from_slice(delivery.binding_digest().as_array());
-                    Ok((delivery.state(), codex_hepta_types::Digest32::of_bytes(&bytes)))
+                    Ok((
+                        delivery.state(),
+                        codex_hepta_types::Digest32::of_bytes(&bytes),
+                    ))
                 },
             )
             .map_err(Into::into)
