@@ -836,3 +836,7 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
 mod isolation_tests;
+
+#[cfg(test)]
+#[path = "run_store_dispatch_tests.rs"]
+mod run_store_dispatch_tests;

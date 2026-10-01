@@ -40,6 +40,12 @@ impl crate::AgentdIntelligenceInvocationProviderV1 for MustNotBuildCanonicalInvo
 }
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    fixture_with_readiness(true)
+}
+
+pub(super) fn fixture_with_readiness(
+    app_server_ready: bool,
+) -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
@@ -79,7 +85,9 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         AgentLifecycle::Running,
     )?;
     state.refresh_generation()?;
-    state.mark_app_server_ready()?;
+    if app_server_ready {
+        state.mark_app_server_ready()?;
+    }
     Ok((temp, registry, state))
 }
 
@@ -213,7 +221,19 @@ fn run_fence(state: &AgentdState, current_generation: u64) -> String {
 
 #[tokio::test]
 async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
-    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let (_temp, _registry, state) = fixture_with_readiness(false).expect("runtime fixture");
+    let cognitive = CognitiveStore::open(&state.identity.layout)
+        .await
+        .expect("real cognitive owner");
+    state
+        .attach_cognitive_store(Arc::new(cognitive))
+        .expect("cognitive attachment");
+    state
+        .mark_runtime_prerequisites_ready()
+        .expect("real owner prerequisites");
+    state
+        .mark_app_server_ready()
+        .expect("ready App Server fixture");
 
     let capabilities = state
         .response(

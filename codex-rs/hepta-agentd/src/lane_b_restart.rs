@@ -2,6 +2,10 @@
 use super::*;
 use crate::config::VerifiedRunStoreRestart;
 
+#[cfg(test)]
+#[path = "lane_b_restart_tests.rs"]
+mod tests;
+
 impl AgentRunCoordinator {
     pub(crate) fn open_durable_for_restart(
         composition: RuntimeComposition,
