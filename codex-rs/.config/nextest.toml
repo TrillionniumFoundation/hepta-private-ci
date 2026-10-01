@@ -96,7 +96,7 @@ max-threads = 1
 # process cut and real synced publication. Their whole-case watchdog is not a
 # product request/freshness deadline. Keep every cut and the 256-attempt soak.
 [[profile.default.overrides]]
-filter = 'package(codex-hepta-intelligence-eval) & (binary(cold_recovery_e2e) | binary(long_running_profile))'
+filter = 'package(codex-hepta-intelligence-eval) & (binary(cold_recovery_e2e) | binary(long_running_profile) | test(recorded_runner::tests::process_tests::process_kill_boundaries_recover_without_releasing_or_republishing))'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
