@@ -9,11 +9,12 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         snapshot: &CanonicalIntelligenceSnapshotV1,
     ) -> Result<(), AgentdIntelligenceProductError> {
-        let mut oracle = FileBackedFreshnessOracleV1::new(
+        let oracle = FileBackedFreshnessOracleV1::new(
             self.authority_file.clone(),
             self.authority_verifier.clone(),
         );
-        validate_current_snapshot(snapshot, &mut oracle)
+        oracle
+            .validate_snapshot(snapshot)
             .map_err(AgentdIntelligenceProductError::Canonical)
     }
 
@@ -247,11 +248,12 @@ impl AgentdIntelligenceProductRunnerV1 {
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
-                let mut oracle = FileBackedFreshnessOracleV1::new(
+                let oracle = FileBackedFreshnessOracleV1::new(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
                 );
-                validate_current_snapshot(&snapshot, &mut oracle)
+                oracle
+                    .validate_snapshot(&snapshot)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());

@@ -1053,3 +1053,6 @@ mod signed;
 
 #[path = "intelligence_candidate_bound_tests.rs"]
 mod candidate_bounds;
+
+#[path = "intelligence_authority_snapshot_tests.rs"]
+mod authority_snapshot;

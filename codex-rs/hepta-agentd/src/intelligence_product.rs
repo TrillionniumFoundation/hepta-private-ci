@@ -35,11 +35,9 @@ pub use evaluation::AgentdSignedEvaluationV1;
 use evaluation::PreparedEvaluationUseV1;
 pub use evaluation::intelligence_evaluation_binding_payload_v1;
 
-use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
-use std::str::FromStr;
 use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
@@ -59,9 +57,9 @@ use codex_hepta_intelligence::CanonicalPortInputV1;
 use codex_hepta_intelligence::CanonicalPortReceiptV1;
 use codex_hepta_intelligence::CanonicalRunOutcomeV1;
 use codex_hepta_intelligence::CanonicalStageV1;
-use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::prepare_intelligence_run;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_intelligence::validate_current_snapshot;
 use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
@@ -135,80 +133,9 @@ const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 #[path = "intelligence_authority_read.rs"]
 mod authority_read;
 
-struct FileBackedFreshnessOracleV1 {
-    path: PathBuf,
-    verifier: IntelligenceAuthorityVerifierV1,
-}
-
-impl FileBackedFreshnessOracleV1 {
-    fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
-        Self { path, verifier }
-    }
-
-    fn read(
-        &self,
-        requested: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        let bytes = authority_read::read_file(&self.path, requested)?;
-        let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        verify_authority_file(&file, &self.verifier, requested)?;
-        if file.schema_version != 1 || file.authority_epoch == 0 {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let frontier = Digest32::from_str(&file.revocation_frontier_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if frontier.is_zero() {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let mut seen = BTreeMap::new();
-        for owner in file.owners {
-            let owner_id = StableId::new(owner.owner_id.clone())
-                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-            if seen.insert(owner_id.clone(), owner).is_some() {
-                return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                    requested.clone(),
-                ));
-            }
-        }
-        let owner = seen
-            .remove(requested)
-            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let generation = Generation::new(owner.generation)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let implementation_digest = Digest32::from_str(&owner.implementation_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let key_digest = Digest32::from_str(&owner.key_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        Ok(CurrentOwnerStateV1 {
-            owner_id: requested.clone(),
-            generation,
-            implementation_digest,
-            key_digest,
-            key_epoch: owner.key_epoch,
-            authority_epoch: file.authority_epoch,
-            revocation_frontier_digest: frontier,
-        })
-    }
-}
-
-impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
-    fn current(
-        &mut self,
-        owner_id: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        self.read(owner_id)
-    }
-}
+#[path = "intelligence_authority.rs"]
+mod authority;
+use authority::FileBackedFreshnessOracleV1;
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
