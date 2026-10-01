@@ -1050,3 +1050,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[path = "intelligence_candidate_bound_tests.rs"]
+mod candidate_bounds;

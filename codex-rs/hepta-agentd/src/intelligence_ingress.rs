@@ -19,6 +19,9 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
 
+// Historical canonical/compatibility capacity; product reserves one slot for abstain.
+pub(crate) const MAX_COMPATIBILITY_INTUITION_CANDIDATES: usize = 128;
+
 /// Host-owned authenticated product material for the intuition stage.
 ///
 /// This value is built by the same trusted invocation provider that supplies the
@@ -60,6 +63,25 @@ impl AgentdIntelligenceInvocationV1 {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<(), AgentdError> {
+        let legal_count = self.request.legal_candidates.candidates.len();
+        let intuition_count = self.inputs.intuition_request.candidates.len();
+        let maximum = if self.intuition_product.is_some() {
+            crate::MAX_PRODUCT_INTUITION_CANDIDATES
+        } else {
+            MAX_COMPATIBILITY_INTUITION_CANDIDATES
+        };
+        if legal_count > maximum || intuition_count > maximum {
+            return Err(if self.intuition_product.is_some() {
+                crate::AgentdIntuitionServiceErrorV1::Policy(
+                    crate::AgentdIntuitionPolicyError::ProductCandidateLimit,
+                )
+                .into()
+            } else {
+                AgentdError::Invalid(
+                    "canonical intelligence candidate count exceeds 128".to_string(),
+                )
+            });
+        }
         let snapshot = &record.snapshot;
         if self.request.run_id != snapshot.run_id
             || self.request.snapshot.objective_digest() != snapshot.objective_digest

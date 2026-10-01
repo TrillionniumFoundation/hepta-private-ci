@@ -150,6 +150,23 @@ impl AgentdIntelligenceProductRunnerV1 {
         mut inputs: AgentdIntelligenceOwnerInputsV1,
         intuition_computation: AgentdIntuitionComputationV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        // Bound raw owner inputs before cloning IDs, hashing, or queueing work.
+        let maximum = match &intuition_computation {
+            AgentdIntuitionComputationV1::Compatibility => {
+                crate::intelligence_ingress::MAX_COMPATIBILITY_INTUITION_CANDIDATES
+            }
+            AgentdIntuitionComputationV1::Product(_) => crate::MAX_PRODUCT_INTUITION_CANDIDATES,
+        };
+        let legal_count = request.legal_candidates.candidates.len();
+        let intuition_count = inputs.intuition_request.candidates.len();
+        if legal_count > maximum || intuition_count > maximum {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::InvalidCandidateSet("candidate count"),
+            ));
+        }
+        if legal_count != intuition_count {
+            return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
+        }
         let candidate_ids = request
             .legal_candidates
             .candidates
