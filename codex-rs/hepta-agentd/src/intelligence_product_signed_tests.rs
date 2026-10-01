@@ -298,3 +298,6 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
 
 #[path = "intelligence_product_final_use_tests.rs"]
 mod final_use;
+
+#[path = "intelligence_evaluation_owner_pin_tests.rs"]
+mod evaluation_owner_pin;

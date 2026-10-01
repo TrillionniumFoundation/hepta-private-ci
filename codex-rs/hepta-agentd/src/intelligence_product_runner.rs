@@ -213,14 +213,14 @@ impl AgentdIntelligenceProductRunnerV1 {
                     .evaluation_trust
                     .as_ref()
                     .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let mut oracle = FileBackedFreshnessOracleV1::new(
+                let oracle = FileBackedFreshnessOracleV1::new(
                     authority_file.clone(),
                     authority_verifier.clone(),
                 );
                 let owner_id = StableId::new("learning.eval")
                     .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
                 let current_owner = oracle
-                    .current(&owner_id)
+                    .current_from_snapshot(&snapshot, &owner_id)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 Some(AgentdEvaluationSessionV1 {
                     run_id: request.run_id.clone(),

@@ -36,6 +36,16 @@ impl FileBackedFreshnessOracleV1 {
         validate_current_snapshot(snapshot, &mut self.snapshot_oracle())
     }
 
+    /// A retained evaluator session must use the exact owner pinned by the
+    /// request, rather than a separately current owner from another manifest.
+    pub(super) fn current_from_snapshot(
+        &self,
+        snapshot: &CanonicalIntelligenceSnapshotV1,
+        owner_id: &StableId,
+    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+        current_from_snapshot(snapshot, &mut self.snapshot_oracle(), owner_id)
+    }
+
     pub(super) fn snapshot_oracle(&self) -> ManifestFreshnessOracleV1<'_> {
         ManifestFreshnessOracleV1 {
             source: self,
@@ -73,6 +83,17 @@ impl FileBackedFreshnessOracleV1 {
             owners,
         })
     }
+}
+
+/// The caller supplies one phase-local manifest oracle. Its final lookup uses
+/// the same authenticated bytes as validation, without reopening the file.
+pub(super) fn current_from_snapshot<O: CanonicalFreshnessOracleV1>(
+    snapshot: &CanonicalIntelligenceSnapshotV1,
+    oracle: &mut O,
+    owner_id: &StableId,
+) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+    validate_current_snapshot(snapshot, oracle)?;
+    oracle.current(owner_id)
 }
 
 impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
