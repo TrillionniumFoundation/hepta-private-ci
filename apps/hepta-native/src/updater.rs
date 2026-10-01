@@ -14,16 +14,27 @@ use crate::security::now_unix_ms;
 
 const UPDATE_SCHEMA: &str = "hepta.native-update.v1";
 const PENDING_SCHEMA: &str = "hepta.native-pending-update.v1";
-use crate::update_handoff::{UpdateHandoff, UpdateReadiness};
+use crate::update_handoff::UpdateHandoff;
+use crate::update_handoff::UpdateReadiness;
+#[path = "update_activation.rs"]
+mod activation;
 #[path = "update_backup_policy.rs"]
 mod backup_policy;
 #[path = "update_confirmation.rs"]
 mod confirmation;
+#[path = "update_stage_policy.rs"]
+mod stage_policy;
+use crate::update_storage::MAX_PACKAGE_BYTES;
+use crate::update_storage::copy_and_sync;
+use crate::update_storage::copy_to_private_root;
 pub use crate::update_storage::digest_file;
-use crate::update_storage::{
-    MAX_PACKAGE_BYTES, copy_and_sync, lock_update_root, lock_update_runner, persist_json_atomic,
-    sync_parent_directory,
-};
+use crate::update_storage::digest_private_file;
+use crate::update_storage::lock_update_root;
+use crate::update_storage::lock_update_runner;
+use crate::update_storage::persist_json_atomic;
+use crate::update_storage::read_private_json;
+use crate::update_storage::remove_private_file;
+pub use activation::activate_staged_update;
 const PRODUCT_UPDATE_CHANNEL: &str = "stable";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -173,8 +184,20 @@ impl UpdateManager {
         package_path: &Path,
         backend_protocol_version: u32,
     ) -> Result<PendingUpdateV1, ShellError> {
+        self.verify_and_stage_at_boundary(manifest, package_path, backend_protocol_version, || {
+            Ok(())
+        })
+    }
+
+    fn verify_and_stage_at_boundary(
+        &self,
+        manifest: SignedUpdateManifestV1,
+        package_path: &Path,
+        backend_protocol_version: u32,
+        observe: impl FnOnce() -> Result<(), ShellError>,
+    ) -> Result<PendingUpdateV1, ShellError> {
         self.private_root.verify()?;
-        let _lock = lock_update_root(&self.root)?;
+        let _lock = lock_update_root(&self.private_root)?;
         manifest.validate(backend_protocol_version)?;
         self.trusted_keys.verify_message(
             &manifest.key_id,
@@ -208,15 +231,26 @@ impl UpdateManager {
                         .to_owned(),
                 ));
             }
-            persist_json_atomic(&self.root.join("last-update-result.json"), &existing)?;
+            persist_json_atomic(
+                &self.private_root,
+                &self.root.join("last-update-result.json"),
+                &existing,
+            )?;
             self.clear_pending_locked()?;
         }
-        let staged_dir = self.root.join("staged");
-        std::fs::create_dir_all(&staged_dir)?;
-        let staged_package = staged_dir.join(format!("{}.package", manifest.package_digest));
-        copy_and_sync(package_path, &staged_package, &manifest.package_digest)?;
-        if digest_file(&staged_package)? != manifest.package_digest {
-            let _ = std::fs::remove_file(&staged_package);
+        let staged_root = self.private_root.child_create("staged")?;
+        stage_policy::admit_staged_package(&staged_root, &manifest.package_digest)?;
+        let staged_package = staged_root
+            .path()
+            .join(format!("{}.package", manifest.package_digest));
+        copy_to_private_root(
+            &staged_root,
+            package_path,
+            &staged_package,
+            &manifest.package_digest,
+        )?;
+        self.private_root.verify()?;
+        if digest_private_file(&staged_root, &staged_package)? != manifest.package_digest {
             return Err(ShellError::Security(
                 "staged native update digest mismatch".to_owned(),
             ));
@@ -233,17 +267,19 @@ impl UpdateManager {
             handoff: None,
             readiness: None,
         };
-        persist_json_atomic(&self.pending_path(), &pending)?;
+        observe()?;
+        persist_json_atomic(&self.private_root, &self.pending_path(), &pending)?;
         Ok(pending)
     }
 
     pub fn load_pending(&self) -> Result<Option<PendingUpdateV1>, ShellError> {
         self.private_root.verify()?;
         let path = self.pending_path();
-        if !path.exists() {
+        let Some(pending): Option<PendingUpdateV1> =
+            read_private_json(&self.private_root, &path, 64 * 1024)?
+        else {
             return Ok(None);
-        }
-        let pending: PendingUpdateV1 = crate::file_input::read_json_file(&path, 64 * 1024)?;
+        };
         validate_pending(&pending)?;
         // Expired admitted requests may recover, but cannot freshly activate.
         self.trusted_keys.verify_message(
@@ -256,7 +292,7 @@ impl UpdateManager {
 
     pub fn clear_pending(&self) -> Result<(), ShellError> {
         self.private_root.verify()?;
-        let _lock = lock_update_root(&self.root)?;
+        let _lock = lock_update_root(&self.private_root)?;
         if self.load_pending()?.is_some_and(|pending| {
             !matches!(
                 pending.status,
@@ -281,23 +317,31 @@ impl UpdateManager {
                 .join(format!("{}.package", pending.manifest.package_digest));
             // Only the exact private, digest-bound staging file belongs to this
             // lifecycle. Foreign paths or replaced content are preserved.
-            if pending.staged_package == owned_package
-                && matches!(digest_file(&owned_package), Ok(digest) if digest == pending.manifest.package_digest)
-            {
-                std::fs::remove_file(&owned_package)?;
-                sync_parent_directory(&owned_package)?;
+            if pending.staged_package == owned_package {
+                let staged_root = match self.private_root.child_open("staged") {
+                    Ok(root) => Some(root),
+                    // Earlier versions created this child with the default
+                    // directory mode. Migrate only a verified, owned child.
+                    Err(ShellError::Security(_)) => Some(self.private_root.child_create("staged")?),
+                    Err(ShellError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => {
+                        None
+                    }
+                    Err(error) => return Err(error),
+                };
+                if let Some(root) = staged_root
+                    && matches!(digest_private_file(&root, &owned_package), Ok(digest) if digest == pending.manifest.package_digest)
+                {
+                    self.private_root.verify()?;
+                    remove_private_file(&root, &owned_package)?;
+                    self.private_root.verify()?;
+                }
             }
             // Predecessor backups live beside the operator-selected installed
             // binary. Preserve rollback evidence until an explicit retention
             // policy authorizes discarding it; pending clearance is not that
             // authority.
         }
-        let path = self.pending_path();
-        if path.exists() {
-            std::fs::remove_file(&path)?;
-            sync_parent_directory(&path)?;
-        }
-        Ok(())
+        remove_private_file(&self.private_root, &self.pending_path())
     }
 
     pub fn recover_interrupted_activation(&self) -> Result<bool, ShellError> {
@@ -318,7 +362,7 @@ impl UpdateManager {
 
     pub fn rollback_unconfirmed(&self) -> Result<bool, ShellError> {
         self.private_root.verify()?;
-        let _lock = lock_update_root(&self.root)?;
+        let _lock = lock_update_root(&self.private_root)?;
         let Some(mut pending) = self.load_pending()? else {
             return Ok(false);
         };
@@ -340,6 +384,7 @@ impl UpdateManager {
             .clone()
             .ok_or_else(|| ShellError::Update("pending update lacks backup path".to_owned()))?;
         transition_pending(
+            &self.private_root,
             &self.pending_path(),
             &mut pending,
             PendingUpdateStatus::RollbackStarted,
@@ -347,6 +392,7 @@ impl UpdateManager {
         )?;
         if !backup.is_file() {
             return recovery_required(
+                &self.private_root,
                 &self.pending_path(),
                 &mut pending,
                 "native update predecessor backup is unavailable",
@@ -356,6 +402,7 @@ impl UpdateManager {
             Ok(digest) => digest,
             Err(error) => {
                 return recovery_required(
+                    &self.private_root,
                     &self.pending_path(),
                     &mut pending,
                     &format!("predecessor backup could not be read safely: {error}"),
@@ -364,6 +411,7 @@ impl UpdateManager {
         };
         if backup_digest != pending.manifest.predecessor_digest {
             return recovery_required(
+                &self.private_root,
                 &self.pending_path(),
                 &mut pending,
                 "native update predecessor backup digest mismatch",
@@ -373,6 +421,7 @@ impl UpdateManager {
             Ok(digest) => digest,
             Err(_) => {
                 return recovery_required(
+                    &self.private_root,
                     &self.pending_path(),
                     &mut pending,
                     "cannot identify installed binary before rollback",
@@ -383,6 +432,7 @@ impl UpdateManager {
             && current_digest != pending.manifest.predecessor_digest
         {
             return recovery_required(
+                &self.private_root,
                 &self.pending_path(),
                 &mut pending,
                 "rollback refused: installed binary is neither candidate nor predecessor",
@@ -390,16 +440,23 @@ impl UpdateManager {
         }
         if let Err(error) = copy_and_sync(&backup, &target, &pending.manifest.predecessor_digest) {
             let message = format!("native update rollback copy failed: {error}");
-            return recovery_required(&self.pending_path(), &mut pending, &message);
+            return recovery_required(
+                &self.private_root,
+                &self.pending_path(),
+                &mut pending,
+                &message,
+            );
         }
         if digest_file(&target)? != pending.manifest.predecessor_digest {
             return recovery_required(
+                &self.private_root,
                 &self.pending_path(),
                 &mut pending,
                 "native update rollback did not restore the admitted predecessor digest",
             );
         }
         transition_pending(
+            &self.private_root,
             &self.pending_path(),
             &mut pending,
             PendingUpdateStatus::RolledBack,
@@ -412,11 +469,11 @@ impl UpdateManager {
     /// transactions still use the separate owner lock.
     pub fn lock_runner(&self) -> Result<File, ShellError> {
         self.private_root.verify()?;
-        lock_update_runner(&self.root)
+        lock_update_runner(&self.private_root)
     }
 
     pub fn prepare_restart(&self, arguments: &[String]) -> Result<UpdateHandoff, ShellError> {
-        let _lock = lock_update_root(&self.root)?;
+        let _lock = lock_update_root(&self.private_root)?;
         let mut pending = self
             .load_pending()?
             .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
@@ -428,7 +485,7 @@ impl UpdateManager {
         let handoff = UpdateHandoff::issue(arguments)?;
         pending.handoff = Some(handoff.clone());
         pending.readiness = None;
-        persist_json_atomic(&self.pending_path(), &pending)?;
+        persist_json_atomic(&self.private_root, &self.pending_path(), &pending)?;
         Ok(handoff)
     }
 
@@ -438,120 +495,6 @@ impl UpdateManager {
             .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
         validate_running_handoff(&pending, handoff)
     }
-}
-
-pub fn activate_staged_update(
-    pending_path: &Path,
-    trusted_keys: &TrustedKeySet,
-    target_path: &Path,
-    backend_protocol_version: u32,
-) -> Result<(), ShellError> {
-    if !pending_path.is_absolute() || !target_path.is_absolute() {
-        return Err(ShellError::InvalidInput(
-            "updater paths must be absolute".to_owned(),
-        ));
-    }
-    let root = pending_path
-        .parent()
-        .ok_or_else(|| ShellError::Update("pending update has no parent directory".to_owned()))?;
-    let _lock = lock_update_root(root)?;
-    let mut pending: PendingUpdateV1 = crate::file_input::read_json_file(pending_path, 64 * 1024)?;
-    validate_pending(&pending)?;
-    if pending.status != PendingUpdateStatus::Staged {
-        return Err(ShellError::Update(format!(
-            "native update activation requires staged state, found {:?}",
-            pending.status
-        )));
-    }
-    pending.manifest.validate(backend_protocol_version)?;
-    trusted_keys.verify_message(
-        &pending.manifest.key_id,
-        &pending.manifest.signature_base64,
-        pending.manifest.signing_message().as_bytes(),
-    )?;
-    if digest_file(&pending.staged_package)? != pending.manifest.package_digest {
-        return Err(ShellError::Security(
-            "staged update changed after verification".to_owned(),
-        ));
-    }
-    if !target_path.is_file() {
-        return Err(ShellError::Update(
-            "native update target predecessor is unavailable".to_owned(),
-        ));
-    }
-    let observed_predecessor = digest_file(target_path)?;
-    if observed_predecessor != pending.manifest.predecessor_digest {
-        return Err(ShellError::Security(
-            "installed native predecessor digest mismatch".to_owned(),
-        ));
-    }
-    let backup = target_path.with_extension(format!(
-        "{}.predecessor",
-        pending.manifest.predecessor_digest
-    ));
-    backup_policy::admit_predecessor_backup(
-        target_path,
-        &backup,
-        &pending.manifest.predecessor_digest,
-    )?;
-    copy_and_sync(target_path, &backup, &pending.manifest.predecessor_digest)?;
-    pending.target_path = Some(target_path.to_owned());
-    pending.backup_path = Some(backup.clone());
-    transition_pending(
-        pending_path,
-        &mut pending,
-        PendingUpdateStatus::ActivationStarted,
-        None,
-    )?;
-
-    if let Err(error) = copy_and_sync(
-        &pending.staged_package,
-        target_path,
-        &pending.manifest.package_digest,
-    ) {
-        let reason = format!("native update activation copy failed: {error}");
-        rollback_after_activation_failure(
-            pending_path,
-            &mut pending,
-            target_path,
-            &backup,
-            &reason,
-        )?;
-        return Err(error);
-    }
-    let installed = match digest_file(target_path) {
-        Ok(digest) => digest,
-        Err(error) => {
-            rollback_after_activation_failure(
-                pending_path,
-                &mut pending,
-                target_path,
-                &backup,
-                &format!("installed candidate could not be read after replacement: {error}"),
-            )?;
-            return Err(error);
-        }
-    };
-    if installed != pending.manifest.package_digest {
-        let reason = "installed native update digest mismatch after replacement";
-        rollback_after_activation_failure(
-            pending_path,
-            &mut pending,
-            target_path,
-            &backup,
-            reason,
-        )?;
-        return Err(ShellError::Security(
-            "installed native update digest mismatch; predecessor rollback recorded".to_owned(),
-        ));
-    }
-    transition_pending(
-        pending_path,
-        &mut pending,
-        PendingUpdateStatus::ActivatedUnconfirmed,
-        None,
-    )?;
-    Ok(())
 }
 
 fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
@@ -601,6 +544,7 @@ fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
 }
 
 fn transition_pending(
+    root: &PrivateStateRoot,
     pending_path: &Path,
     pending: &mut PendingUpdateV1,
     status: PendingUpdateStatus,
@@ -624,15 +568,17 @@ fn transition_pending(
     }
     pending.transition_unix_ms = now_unix_ms()?;
     pending.recovery_reason = recovery_reason;
-    persist_json_atomic(pending_path, pending)
+    persist_json_atomic(root, pending_path, pending)
 }
 
 fn recovery_required<T>(
+    root: &PrivateStateRoot,
     pending_path: &Path,
     pending: &mut PendingUpdateV1,
     reason: &str,
 ) -> Result<T, ShellError> {
     transition_pending(
+        root,
         pending_path,
         pending,
         PendingUpdateStatus::RecoveryRequired,
@@ -644,6 +590,7 @@ fn recovery_required<T>(
 }
 
 fn rollback_after_activation_failure(
+    root: &PrivateStateRoot,
     pending_path: &Path,
     pending: &mut PendingUpdateV1,
     target: &Path,
@@ -651,6 +598,7 @@ fn rollback_after_activation_failure(
     reason: &str,
 ) -> Result<(), ShellError> {
     transition_pending(
+        root,
         pending_path,
         pending,
         PendingUpdateStatus::RollbackStarted,
@@ -658,6 +606,7 @@ fn rollback_after_activation_failure(
     )?;
     if !matches!(digest_file(backup), Ok(digest) if digest == pending.manifest.predecessor_digest) {
         return recovery_required(
+            root,
             pending_path,
             pending,
             "activation failed and predecessor backup is unavailable or invalid",
@@ -667,6 +616,7 @@ fn rollback_after_activation_failure(
         Ok(digest) => digest,
         Err(_) => {
             return recovery_required(
+                root,
                 pending_path,
                 pending,
                 "activation failed and installed binary cannot be identified before rollback",
@@ -677,6 +627,7 @@ fn rollback_after_activation_failure(
         && current_digest != pending.manifest.predecessor_digest
     {
         return recovery_required(
+            root,
             pending_path,
             pending,
             "activation failed; rollback refused because installed binary is neither candidate nor predecessor",
@@ -684,6 +635,7 @@ fn rollback_after_activation_failure(
     }
     if let Err(error) = copy_and_sync(backup, target, &pending.manifest.predecessor_digest) {
         return recovery_required(
+            root,
             pending_path,
             pending,
             &format!("activation failed and predecessor rollback copy failed: {error}"),
@@ -691,12 +643,14 @@ fn rollback_after_activation_failure(
     }
     if !matches!(digest_file(target), Ok(digest) if digest == pending.manifest.predecessor_digest) {
         return recovery_required(
+            root,
             pending_path,
             pending,
             "activation failed and predecessor rollback digest could not be proved",
         );
     }
     transition_pending(
+        root,
         pending_path,
         pending,
         PendingUpdateStatus::RolledBack,
@@ -733,3 +687,7 @@ fn validate_running_handoff(
 #[cfg(test)]
 #[path = "updater_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "update_root_tests.rs"]
+mod root_tests;

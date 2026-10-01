@@ -136,7 +136,7 @@ fn helper_acknowledgement_is_durable_before_success() {
             handoff: Some(handoff.clone()),
             readiness: None,
         };
-        persist_json_atomic(&manager.pending_path(), &pending).unwrap();
+        persist_json_atomic(&manager.private_root, &manager.pending_path(), &pending).unwrap();
         let mut child = Command::new(target)
             .args([
                 "--exact",
@@ -243,7 +243,7 @@ fn failed_candidate_copy_cannot_rollback_over_an_unrelated_newer_binary() {
         handoff: None,
         readiness: None,
     };
-    persist_json_atomic(&pending_path, &pending).unwrap();
+    persist_json_atomic(&_private, &pending_path, &pending).unwrap();
     // Both substitutions happen after admission. Candidate drift fails before
     // replacement; that failure must not authorize restoring over foreign data.
     std::fs::write(&target, b"independently installed newer binary").unwrap();
@@ -251,6 +251,7 @@ fn failed_candidate_copy_cannot_rollback_over_an_unrelated_newer_binary() {
     let copy_error = copy_and_sync(&staged, &target, &pending.manifest.package_digest).unwrap_err();
     assert!(copy_error.to_string().contains("before atomic replacement"));
     let error = rollback_after_activation_failure(
+        &_private,
         &pending_path,
         &mut pending,
         &target,

@@ -2,7 +2,6 @@ use hepta_native::security::TrustedKeySet;
 use hepta_native::update_handoff::UpdateHandoff;
 use hepta_native::updater::PendingUpdateStatus;
 use hepta_native::updater::UpdateManager;
-use hepta_native::updater::activate_staged_update;
 use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
@@ -55,7 +54,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("interrupted update rolled back; restage before activation".into());
     }
     wait_for_executable_release(&target)?;
-    activate_staged_update(&pending, &key_set, &target, protocol)?;
+    manager.activate_staged_update(&target, protocol)?;
     restart_and_observe(&manager, &target, &restart_args)
 }
 

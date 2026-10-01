@@ -15,7 +15,15 @@ impl UpdateManager {
     /// means cancellation won the owner transaction; `false` means the candidate
     /// already committed confirmation and the helper must leave it running.
     pub fn cancel_unconfirmed_restart(&self, handoff: &UpdateHandoff) -> Result<bool, ShellError> {
-        let _lock = lock_update_handoff(&self.root)?;
+        self.cancel_at_boundary(handoff, || Ok(()))
+    }
+
+    pub(super) fn cancel_at_boundary(
+        &self,
+        handoff: &UpdateHandoff,
+        observe: impl FnOnce() -> Result<(), ShellError>,
+    ) -> Result<bool, ShellError> {
+        let _lock = lock_update_handoff(&self.private_root)?;
         let mut pending = self
             .load_pending()?
             .ok_or_else(|| ShellError::Update("missing pending restart cancellation".into()))?;
@@ -35,7 +43,9 @@ impl UpdateManager {
                 "restart cancellation lacks an unconfirmed candidate".into(),
             ));
         }
+        observe()?;
         transition_pending(
+            &self.private_root,
             &self.pending_path(),
             &mut pending,
             PendingUpdateStatus::RollbackStarted,
@@ -50,7 +60,7 @@ impl UpdateManager {
         session: &crate::model::SessionIncarnation,
         view: &crate::model::RuntimeView,
     ) -> Result<(), ShellError> {
-        let lock = lock_update_root(&self.root)?;
+        let lock = lock_update_root(&self.private_root)?;
         let mut pending = self
             .load_pending()?
             .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
@@ -72,7 +82,7 @@ impl UpdateManager {
         // Readiness alone does not make the update terminal: a helper that
         // disappears before its acknowledgement must still leave recoverable
         // activation state. The stdin watcher commits only after observing C.
-        persist_json_atomic(&self.pending_path(), &pending)?;
+        persist_json_atomic(&self.private_root, &self.pending_path(), &pending)?;
         drop(lock);
         let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
         loop {
@@ -115,7 +125,15 @@ impl UpdateManager {
         &self,
         handoff: &UpdateHandoff,
     ) -> Result<(), ShellError> {
-        let _lock = lock_update_handoff(&self.root)?;
+        self.acknowledge_at_boundary(handoff, || Ok(()))
+    }
+
+    pub(super) fn acknowledge_at_boundary(
+        &self,
+        handoff: &UpdateHandoff,
+        observe: impl FnOnce() -> Result<(), ShellError>,
+    ) -> Result<(), ShellError> {
+        let _lock = lock_update_handoff(&self.private_root)?;
         let mut pending = self
             .load_pending()?
             .ok_or_else(|| ShellError::Update("missing pending acknowledgement".into()))?;
@@ -129,7 +147,9 @@ impl UpdateManager {
                 "helper acknowledgement lacks process-bound readiness".into(),
             ));
         }
+        observe()?;
         transition_pending(
+            &self.private_root,
             &self.pending_path(),
             &mut pending,
             PendingUpdateStatus::Confirmed,
