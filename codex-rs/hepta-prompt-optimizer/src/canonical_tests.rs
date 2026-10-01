@@ -473,6 +473,147 @@ fn selected_portfolio(
     selected
 }
 
+fn exercise_request_for(portfolio: &SelectedPromptPortfolioV1) -> PromptExerciseRequestV1 {
+    PromptExerciseRequestV1 {
+        decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
+        current_state_digest: portfolio.state_digest,
+        generation_vector_digest: portfolio.generation_vector_digest,
+        model_tuple: portfolio.model_tuple.clone(),
+        now_unix_ms: 200,
+        wait_value_q32: FixedQ32::ZERO,
+        policy_digest: digest("exercise-policy"),
+    }
+}
+
+#[test]
+fn exercise_rejects_selected_factor_substitution_even_with_recomputed_checksum() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, signing_key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    register_second_factor(&mut registry, &authority, &signing_key, now);
+    let original = selected_portfolio(&registry, vec![id("factor:a")]);
+    let replacement = selected_portfolio(&registry, vec![id("factor:b")]);
+    let request = exercise_request_for(&original);
+    // Both independent selections are currently live under the same owner.
+    for portfolio in [&original, &replacement] {
+        assert_eq!(
+            exercise_v1(
+                registry.registry().expect("registry"),
+                portfolio,
+                request.clone()
+            )
+            .expect("live selection")
+            .decision,
+            PromptExerciseActionV1::Exercise
+        );
+    }
+    let mut substituted = original.clone();
+    substituted.selected = replacement.selected;
+    assert_eq!(substituted.receipt.factor_ids, vec![id("factor:a")]);
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &substituted,
+            request.clone()
+        )
+        .expect("substitution rejection")
+        .decision,
+        PromptExerciseActionV1::RejectStale
+    );
+    // A checksum cannot make the mismatched factor receipt structurally valid.
+    substituted.receipt.receipt_digest = substituted.compute_receipt_digest();
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &substituted,
+            request.clone()
+        )
+        .expect("recomputed substitution rejection")
+        .decision,
+        PromptExerciseActionV1::RejectStale
+    );
+    let mut duplicated = original;
+    duplicated.selected.push(duplicated.selected[0].clone());
+    duplicated.receipt.factor_ids.push(id("factor:a"));
+    duplicated.receipt.total_token_upper_bound *= 2;
+    duplicated.receipt.receipt_digest = duplicated.compute_receipt_digest();
+    assert_eq!(
+        exercise_v1(registry.registry().expect("registry"), &duplicated, request)
+            .expect("duplicate factor rejection")
+            .decision,
+        PromptExerciseActionV1::RejectStale
+    );
+}
+
+#[test]
+fn exercise_binds_realization_objective_state_and_source_vector_to_the_receipt() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (registry, _tuple, _authority, _signing_key, _now) =
+        registry_fixture(&temp.path().join("registry"), &[1, 1]);
+    let original = selected_portfolio(&registry, vec![id("factor:a")]);
+    let request = exercise_request_for(&original);
+    let snapshot = registry
+        .snapshot_v2(original.generation_vector_digest, &original.model_tuple)
+        .expect("snapshot");
+    let alternate = registry
+        .read_compatible_v2(
+            &snapshot,
+            original.generation_vector_digest,
+            &original.model_tuple,
+            /*now_unix_ms*/ 200,
+            vec![id("factor:a")],
+            /*maximum_results*/ 8,
+        )
+        .expect("both current realizations")
+        .bindings
+        .into_iter()
+        .find(|binding| binding.realization_id != original.selected[0].realization.realization_id)
+        .expect("alternate admitted realization");
+    let mut realization_drift = original.clone();
+    realization_drift.selected[0].binding_digest = alternate.digest();
+    realization_drift.selected[0].realization = alternate;
+    let mut objective_drift = original.clone();
+    objective_drift.objective_digest = digest("new-objective");
+    let mut state_drift = original.clone();
+    state_drift.state_digest = digest("new-state");
+    let mut state_request = request.clone();
+    state_request.current_state_digest = state_drift.state_digest;
+    let mut vector_drift = original;
+    vector_drift.generation_vector_digest = digest("new-generation-vector");
+    let mut vector_request = request.clone();
+    vector_request.generation_vector_digest = vector_drift.generation_vector_digest;
+    for (portfolio, request) in [
+        (realization_drift, request.clone()),
+        (objective_drift, request),
+        (state_drift, state_request),
+        (vector_drift, vector_request),
+    ] {
+        assert_eq!(
+            exercise_v1(registry.registry().expect("registry"), &portfolio, request)
+                .expect("proposal drift rejection")
+                .decision,
+            PromptExerciseActionV1::RejectStale
+        );
+    }
+}
+
+#[test]
+fn empty_portfolio_preserves_no_intervention_with_legacy_receipt_metadata() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (registry, _tuple, _authority, _signing_key, _now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    let mut portfolio = selected_portfolio(&registry, vec![id("factor:a")]);
+    let request = exercise_request_for(&portfolio);
+    portfolio.selected.clear();
+    portfolio.state_digest = Digest32::ZERO;
+    assert_eq!(
+        exercise_v1(registry.registry().expect("registry"), &portfolio, request)
+            .expect("no intervention")
+            .decision,
+        PromptExerciseActionV1::NoIntervention
+    );
+}
+
 #[test]
 fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -513,11 +654,12 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     assert!(!exercise.authority.grants_any());
 }
 
-#[test]
-fn relation_only_source_drift_rejects_co_selected_unchanged_realizations() {
-    let temp = tempfile::tempdir().expect("tempdir");
-    let (mut registry, _tuple, authority, signing_key, now) =
-        registry_fixture(&temp.path().join("registry"), &[1]);
+fn register_second_factor(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    now: u64,
+) {
     let factor = PromptFactor {
         factor_id: id("factor:b"),
         proposer_id: id("proposer:2"),
@@ -553,7 +695,7 @@ fn relation_only_source_drift_rejects_co_selected_unchanged_realizations() {
         grant,
     };
     registry
-        .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
+        .admit_factor_final_use(authority, &signed, &factor.factor_id, scope, evidence)
         .expect("admit second factor");
     let admitted_factor = registry
         .registry()
@@ -605,7 +747,7 @@ fn relation_only_source_drift_rejects_co_selected_unchanged_realizations() {
     };
     registry
         .register_realization_payload_final_use_v2(
-            &authority,
+            authority,
             &signed,
             &publisher,
             scope,
@@ -614,6 +756,14 @@ fn relation_only_source_drift_rejects_co_selected_unchanged_realizations() {
             None,
         )
         .expect("second realization");
+}
+
+#[test]
+fn relation_only_source_drift_rejects_co_selected_unchanged_realizations() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, signing_key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    register_second_factor(&mut registry, &authority, &signing_key, now);
     let selected = selected_portfolio(&registry, vec![id("factor:a"), id("factor:b")]);
     assert_eq!(
         selected.receipt.factor_ids,

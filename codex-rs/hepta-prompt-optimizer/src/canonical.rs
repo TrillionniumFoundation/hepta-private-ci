@@ -29,6 +29,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+#[path = "canonical_portfolio.rs"]
+mod portfolio_integrity;
+
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
 pub const MAX_CANONICAL_INTERACTION_EDGES: u32 = 512;
@@ -544,26 +547,6 @@ pub struct SelectedPromptPortfolioV1 {
     pub optimality: PromptOptimalityDisclosureV1,
 }
 
-impl SelectedPromptPortfolioV1 {
-    /// Computes the proposal checksum, including the exact registry source.
-    /// This binds evidence and confers no authentication or execution authority.
-    #[must_use]
-    pub fn compute_receipt_digest(&self) -> Digest32 {
-        digest_portfolio_receipt(
-            &self.receipt.portfolio_id,
-            self.registry_digest,
-            self.receipt.candidate_set_digest,
-            &self.receipt.factor_ids,
-            self.receipt.interaction_digest,
-            self.receipt.expected_utility_q32,
-            self.receipt.total_token_upper_bound,
-            self.receipt.valid_until_unix_ms,
-            self.pricing_set_digest,
-            self.graph_generation_digest,
-        )
-    }
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptPortfolioRequestV1 {
     pub portfolio_id: StableId,
@@ -917,6 +900,7 @@ pub fn exercise_v1(
     let mut decision = if portfolio.selected.is_empty() {
         PromptExerciseActionV1::NoIntervention
     } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
+        || !portfolio.has_consistent_selection()
         || portfolio.receipt.receipt_digest != portfolio.compute_receipt_digest()
         || portfolio.receipt.authority.grants_any()
         || request.current_state_digest != portfolio.state_digest
@@ -1271,39 +1255,6 @@ fn digest_interactions(
         push_id(&mut bytes, left);
         push_id(&mut bytes, right);
     }
-    Digest32::of_bytes(&bytes)
-}
-
-#[allow(clippy::too_many_arguments)]
-fn digest_portfolio_receipt(
-    portfolio_id: &StableId,
-    registry_digest: Digest32,
-    candidate_set_digest: Digest32,
-    factor_ids: &[StableId],
-    interaction_digest: Digest32,
-    expected_utility: FixedQ32,
-    total_tokens: u32,
-    valid_until: u64,
-    pricing_set_digest: Digest32,
-    graph_generation_digest: Digest32,
-) -> Digest32 {
-    let mut bytes = b"hepta.prompt-optimizer.portfolio-receipt.v1".to_vec();
-    push_id(&mut bytes, portfolio_id);
-    for digest in [
-        registry_digest,
-        candidate_set_digest,
-        interaction_digest,
-        pricing_set_digest,
-        graph_generation_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    push_ids(&mut bytes, factor_ids);
-    bytes.extend_from_slice(&expected_utility.raw().to_be_bytes());
-    bytes.extend_from_slice(&total_tokens.to_be_bytes());
-    bytes.extend_from_slice(&valid_until.to_be_bytes());
-    bytes.push(0);
-    bytes.push(0);
     Digest32::of_bytes(&bytes)
 }
 

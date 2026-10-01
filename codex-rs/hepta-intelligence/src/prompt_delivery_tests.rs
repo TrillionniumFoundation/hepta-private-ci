@@ -421,12 +421,12 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
     ));
 }
 
-#[test]
-fn compiler_rejects_relation_only_registry_drift_with_unchanged_selected_bindings() {
-    let temporary = tempfile::tempdir().expect("tempdir");
-    let root = temporary.path().join("prompt-registry-relation-drift");
-    let (mut registry, tuple, authority, signing_key, grant_now) =
-        admitted_registry(&root, b"Inspect evidence before mutation.");
+fn admit_peer_factor(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    grant_now: u64,
+) -> PromptFactor {
     let mut peer = registry
         .registry()
         .expect("registry")
@@ -461,8 +461,144 @@ fn compiler_rejects_relation_only_registry_drift_with_unchanged_selected_binding
         grant,
     };
     registry
-        .admit_factor_final_use(&authority, &signed, &peer.factor_id, scope, evidence)
+        .admit_factor_final_use(authority, &signed, &peer.factor_id, scope, evidence)
         .expect("admit peer before selection");
+    registry
+        .registry()
+        .expect("registry")
+        .factor(&peer.factor_id)
+        .cloned()
+        .expect("admitted peer")
+}
+
+#[test]
+fn compiler_rejects_selected_payload_substitution_under_the_original_factor_receipt() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let root = temporary
+        .path()
+        .join("prompt-registry-selection-substitution");
+    let (mut registry, tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, b"Original admitted instruction.");
+    let peer = admit_peer_factor(&mut registry, &authority, &signing_key, grant_now);
+    let mut realization = registry
+        .registry()
+        .expect("registry")
+        .realization_binding(&id("realization:verify"))
+        .cloned()
+        .expect("original realization");
+    let peer_payload = b"Different admitted instruction.";
+    realization.realization_id = id("realization:peer");
+    realization.factor_id = peer.factor_id.clone();
+    realization.payload_digest = Digest32::of_bytes(peer_payload);
+    let publisher = id("publisher:peer");
+    let scope = digest("scope:realization:peer");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "realization:prompt:peer".to_owned(),
+        nonce: [26; 32],
+        binding: final_use_realization_binding(
+            &peer,
+            &publisher,
+            scope,
+            &realization,
+            /*supersedes_realization_id*/ None,
+        )
+        .expect("peer realization binding"),
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .expect("peer realization signing bytes"),
+            )
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .register_realization_payload_final_use_v2(
+            &authority,
+            &signed,
+            &publisher,
+            scope,
+            realization.clone(),
+            peer_payload.to_vec(),
+            /*supersedes_realization_id*/ None,
+        )
+        .expect("signed peer realization");
+    // Capture the original selection after both payloads exist under one source.
+    let mut selected = canonical_selection(&registry, &tuple, 100);
+    let request = PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:selection-substitution"),
+        serialization_id: id("serialization:selection-substitution"),
+        attachment_id: id("attachment:selection-substitution"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 128,
+        },
+        now_unix_ms: 100,
+        token_budget: 128,
+        truncation_policy_digest: digest("truncation"),
+    };
+    let original = compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        request.clone(),
+    )
+    .expect("original selection compiles under unchanged source");
+    assert_eq!(
+        original.selected_deliveries[0].payload,
+        b"Original admitted instruction.".to_vec()
+    );
+    selected.portfolio.selected = vec![PromptCandidateBindingV1 {
+        factor_id: peer.factor_id,
+        binding_digest: realization.digest(),
+        realization,
+    }];
+    assert_eq!(
+        selected.portfolio.receipt.factor_ids,
+        vec![id("factor:verify")]
+    );
+    for recompute in [false, true] {
+        if recompute {
+            selected.portfolio.receipt.receipt_digest = selected.portfolio.compute_receipt_digest();
+        }
+        let error = compile_prompt_registry_v2(
+            &registry,
+            &selected.portfolio,
+            &selected.exercise_request,
+            request.clone(),
+        )
+        .expect_err("a receipt for the original factor cannot compile a substituted payload");
+        assert!(matches!(
+            error,
+            PromptRegistryCompilationErrorV2::Pipeline(PromptPipelineErrorV1::ExerciseRejected(
+                PromptExerciseActionV1::RejectStale
+            ))
+        ));
+    }
+}
+
+#[test]
+fn compiler_rejects_relation_only_registry_drift_with_unchanged_selected_bindings() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let root = temporary.path().join("prompt-registry-relation-drift");
+    let (mut registry, tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, b"Inspect evidence before mutation.");
+    let peer = admit_peer_factor(&mut registry, &authority, &signing_key, grant_now);
     let selected = canonical_selection(&registry, &tuple, 100);
     let before = registry
         .snapshot_v2(selected.portfolio.generation_vector_digest, &tuple)
