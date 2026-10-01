@@ -149,12 +149,20 @@
       "state": "source_implemented_registered_json_projection_not_activation",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/protocol_tests.rs"
+        "codex-rs/hepta-neuron/src/protocol_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_admission_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-neuron/src/runtime.rs",
+        "symbol": "pub fn canonical_checkpoint(",
+        "buildTarget": "codex-hepta-neuron"
+      },
+      "sourceSemantics": "The public NeuronRuntime::canonical_checkpoint owner entrypoint requires journal/witness frontier agreement and rejects pending reconciliation before invoking the crate-private canonical_checkpoint_v1 converter. canonical_runtime_config_v1 and canonical_tick_receipt_v1 remain public protocol projections; pure checkpoint conversion or wire validation alone does not prove a durable owner commit."
     },
     {
       "operation": "population_sparse_v2",
@@ -175,7 +183,9 @@
     "Stack/rebase the compiled AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind a concrete current inference.control feature port plus selected-artifact/witness lifecycle; a compiled owner boundary is not daemon activation.",
     "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration and recovery path; never reinterpret V1 journal bytes as V2 state.",
     "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation or productExecutionProved.",
-    "Execute unified-candidate rollover/anchor, learned feature host and lost-witness-ack reconciliation tests."
+    "Execute unified-candidate rollover/anchor, learned feature host and lost-witness-ack reconciliation tests.",
+    "Implement an explicitly versioned owner journal transaction that binds the complete owner-config digest and persists the exact full owner output before witness acknowledgement, with migration and crash/retry/reopen tests; preserve the meaning of V1 journal bytes.",
+    "Provide an authenticated learning-owner observation adapter for IndependentModulatorV1; the existing private fields and getters do not form a production construction port."
   ],
   "externalEvidenceGates": [
     "target-host product execution with authenticated selected model/runtime/device evidence",

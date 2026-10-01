@@ -46,7 +46,13 @@ anchored open through the unanchored method. The closure line now provides `File
 
 The host transaction order is: durably commit the journal, durably retain its
 acknowledgement witness, then acknowledge externally. If witness publication is
-uncertain, reconcile the already committed tick before retrying. An anchor cannot
+uncertain, reconcile the already committed tick before retrying. On the same live
+runtime handle, an identical pending input may return its retained exact output
+when the witness reports that exact durable successor, including a successful CAS
+whose response was lost. An old expected anchor may be retried; a different or
+later anchor, an unavailable observation or a poisoned witness stays fail-closed.
+This does not persist the full owner output or make reopened owner retries
+idempotent. An anchor cannot
 protect acknowledgements that the host failed to retain. File witness updates,
 bounded successor-segment rotation/recovery and fresh-generation deletion
 admission are implemented source mechanisms. The host must still own segment
