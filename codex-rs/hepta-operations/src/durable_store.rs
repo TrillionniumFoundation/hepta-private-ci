@@ -535,7 +535,7 @@ impl DurableOperationStore {
                 return Err(error);
             }
         };
-        match observation {
+        let (value, projection) = match observation {
             DispatchEffect::Dispatched {
                 value,
                 dispatch_digest,
@@ -548,35 +548,73 @@ impl DurableOperationStore {
                         .await?;
                     return Err(DurableOperationError::Invalid("dispatch evidence digest"));
                 }
-                self.record_dispatch(&claim, dispatch_digest).await?;
-                match acknowledgement_digest {
-                    Some(acknowledgement) => {
-                        self.acknowledge_outbox(&claim, acknowledgement).await?;
-                    }
-                    None => {
-                        self.mark_indeterminate(&claim, Digest32::of_bytes(ACK_LOST_DIGEST_DOMAIN))
+                let projection = async {
+                    self.record_dispatch(&claim, dispatch_digest).await?;
+                    match acknowledgement_digest {
+                        Some(acknowledgement) => {
+                            self.acknowledge_outbox(&claim, acknowledgement).await?;
+                        }
+                        None => {
+                            self.mark_indeterminate(
+                                &claim,
+                                Digest32::of_bytes(ACK_LOST_DIGEST_DOMAIN),
+                            )
                             .await?;
+                        }
                     }
+                    Ok(())
                 }
-                Ok(value)
+                .await;
+                (value, projection)
             }
             DispatchEffect::NotDispatched {
                 value,
                 reason_digest,
                 retry_after,
             } => {
-                self.release_not_dispatched(&claim, reason_digest, retry_after)
-                    .await?;
-                Ok(value)
+                let projection = self
+                    .release_not_dispatched(&claim, reason_digest, retry_after)
+                    .await;
+                (value, projection)
             }
             DispatchEffect::Indeterminate {
                 value,
                 reason_digest,
             } => {
-                self.mark_indeterminate(&claim, reason_digest).await?;
-                Ok(value)
+                let projection = self
+                    .mark_indeterminate(&claim, reason_digest)
+                    .await
+                    .map(|_| ());
+                (value, projection)
             }
+        };
+        if let Err(error) = projection {
+            // A destination owner can settle before transport bookkeeping.
+            // Only this already-entered dispatch may recognize its exact
+            // immutable Applied receipt; other stale calls remain rejected.
+            if matches!(
+                error,
+                DurableOperationError::StaleLease
+                    | DurableOperationError::Conflict(_)
+                    | DurableOperationError::InvalidTransition { .. }
+            ) && let Some(terminal) = self
+                .operation(&claim.intent.scope_id, &claim.intent.operation_id)
+                .await?
+                && terminal.intent == claim.intent
+                && terminal.writer_fence == claim.fence
+                && terminal.intent.owner_generation == claim.owner_generation
+                && terminal.state == DurableOperationState::Applied
+                && terminal.terminal_outcome == Some(ReconciliationOutcome::Applied)
+                && terminal.terminal_observer_generation == Some(claim.owner_generation)
+                && terminal
+                    .terminal_evidence_digest
+                    .is_some_and(|digest| !digest.is_zero())
+            {
+                return Ok(value);
+            }
+            return Err(error);
         }
+        Ok(value)
     }
 
     pub async fn record_dispatch(

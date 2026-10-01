@@ -561,6 +561,179 @@ async fn destination_receipt_binding_is_checked_before_terminal_projection_and_r
 
 #[cfg(unix)]
 #[tokio::test]
+async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
+    use crate::DestinationApplyStart;
+    use crate::DestinationDedupeStore;
+    use crate::DestinationOperationIdentity;
+    use sqlx::Connection;
+    use std::task::Context;
+    use std::task::Waker;
+    use tokio::sync::oneshot;
+
+    #[derive(Clone, Copy, Eq, PartialEq)]
+    enum Cut {
+        BeforeRecord,
+        BeforeRecordUnknown,
+        BeforeAcknowledgement,
+        BeforeIndeterminate,
+        NewOwner,
+    }
+    for (cut, outcome) in [
+        (Cut::BeforeRecord, ReconciliationOutcome::Applied),
+        (Cut::BeforeRecordUnknown, ReconciliationOutcome::Applied),
+        (Cut::BeforeAcknowledgement, ReconciliationOutcome::Applied),
+        (Cut::BeforeIndeterminate, ReconciliationOutcome::Applied),
+        (Cut::BeforeRecord, ReconciliationOutcome::NotApplied),
+        (Cut::BeforeRecord, ReconciliationOutcome::Quarantined),
+        (Cut::NewOwner, ReconciliationOutcome::Applied),
+    ] {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let mut store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
+            .await
+            .expect("source open");
+        let options = store.pool.connect_options();
+        let pool_options = store
+            .pool
+            .options()
+            .clone()
+            .max_connections(/*max*/ 1)
+            .min_connections(/*min*/ 1);
+        store.pool.close().await;
+        // Keep the production connection policy and actual migrated database.
+        // One fair pool connection makes owner/producer ordering deterministic.
+        store.pool = pool_options
+            .connect_with((*options).clone())
+            .await
+            .expect("single source connection");
+        let destination = DestinationDedupeStore::open_standalone(
+            &directory.path().join("destination.sqlite3"),
+        )
+        .await
+        .expect("destination open");
+        let operation = intent(b"queue owner settles before producer bookkeeping");
+        store.prepare_intent(&operation).await.expect("prepare");
+        let claim = store.claim_operation(
+            &operation.scope_id,
+            &operation.operation_id,
+            &stable_id("worker:projection-race"),
+            generation(/*value*/ 1),
+            Duration::from_secs(/*secs*/ 30),
+        ).await.expect("claim").expect("row");
+        let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 47);
+        let authorized = store.authorize_dispatch(&authority, &signed, &claim).await.expect("authorize");
+        let observer_store = store.clone();
+        let observer_destination = destination.clone();
+        let observer_intent = operation.clone();
+        let owner_proof = Digest32::of_bytes(b"authoritative owner outcome");
+        let observer = async move {
+            let observer_id = stable_id("observer:projection-race");
+            let observer_generation = if cut == Cut::NewOwner {
+                observer_store.adopt_unsettled_generation(
+                    &observer_intent.scope_id,
+                    &observer_intent.operation_id,
+                    generation(/*value*/ 2),
+                ).await.expect("new owner adopts");
+                generation(/*value*/ 2)
+            } else {
+                generation(/*value*/ 1)
+            };
+            loop {
+                let mut connection = observer_store.pool.acquire().await.expect("owner connection");
+                let mut tx = connection.begin_with("BEGIN IMMEDIATE").await.expect("owner writer");
+                let current = load_operation_tx(&mut tx, &observer_intent.scope_id, &observer_intent.operation_id).await.expect("owner source").expect("row");
+                if matches!(cut, Cut::BeforeAcknowledgement | Cut::BeforeIndeterminate)
+                    && current.state == DurableOperationState::Dispatching
+                {
+                    // Producer record_dispatch is already the next FIFO waiter.
+                    // Release this turn, then take the turn before its ack/mark.
+                    tx.rollback().await.expect("let producer record dispatch");
+                    drop(connection);
+                    continue;
+                }
+                if matches!(cut, Cut::BeforeAcknowledgement | Cut::BeforeIndeterminate) {
+                    assert_eq!(current.state, DurableOperationState::Dispatched);
+                }
+                if outcome == ReconciliationOutcome::Applied {
+                    let identity = DestinationOperationIdentity {
+                        destination: observer_intent.destination.clone(),
+                        scope_id: observer_intent.scope_id.clone(),
+                        operation_id: observer_intent.operation_id.clone(),
+                        payload_digest: observer_intent.payload_digest,
+                    };
+                    let DestinationApplyStart::Apply(apply) = observer_destination.begin_apply(&identity).await.expect("owner destination entry") else {
+                        panic!("first owner application");
+                    };
+                    let receipt = apply.commit_applied(owner_proof).await.expect("real destination receipt");
+                    assert_eq!(receipt.identity, identity);
+                    assert_eq!(receipt.semantic_digest, identity.semantic_digest());
+                }
+                let terminal = observe_terminal_tx(
+                    &mut tx,
+                    current,
+                    &ReconciliationReceiptV1 {
+                        outcome,
+                        evidence_digest: owner_proof,
+                        observer_id,
+                        observer_generation,
+                    },
+                    now_millis().expect("owner observation clock"),
+                ).await.expect("owner terminal projection");
+                tx.commit().await.expect("owner terminal commit");
+                return terminal;
+            }
+        };
+        let (owner_sender, owner_receiver) = oneshot::channel();
+        let mut calls = 0;
+        let (result, terminal) = {
+            let execution = store.execute_authorized(authorized, |_| {
+                calls += 1;
+                let mut observer = Box::pin(observer);
+                // Register the owner as an actual pool waiter while the source
+                // entry owns its only connection. This poll cannot write/wait.
+                assert!(observer.as_mut().poll(&mut Context::from_waker(Waker::noop())).is_pending());
+                assert!(owner_sender.send(observer).is_ok());
+                if cut == Cut::BeforeRecordUnknown {
+                    return DispatchEffect::Indeterminate {
+                        value: "accepted queue entry",
+                        reason_digest: Digest32::of_bytes(b"producer lost queue acknowledgement"),
+                    };
+                }
+                DispatchEffect::Dispatched {
+                    value: "accepted queue entry",
+                    dispatch_digest: Digest32::of_bytes(b"producer transport dispatch"),
+                    acknowledgement_digest: if cut == Cut::BeforeIndeterminate {
+                        None
+                    } else {
+                        Some(Digest32::of_bytes(b"producer transport acknowledgement"))
+                    },
+                }
+            });
+            let owner = async { owner_receiver.await.expect("queued owner delivered").await };
+            tokio::join!(execution, owner)
+        };
+        assert_eq!(calls, 1);
+        if outcome == ReconciliationOutcome::Applied && cut != Cut::NewOwner {
+            assert_eq!(result.expect("known Applied wins"), "accepted queue entry");
+        } else {
+            assert!(matches!(result, Err(DurableOperationError::StaleLease)));
+        }
+        assert_eq!(store.operation(&operation.scope_id, &operation.operation_id).await.expect("final source").expect("row"), terminal);
+        assert_eq!(terminal.terminal_outcome, Some(outcome));
+        let outbox = store.outbox_status(&operation.destination, &operation.scope_id, &operation.operation_id).await.expect("final outbox").expect("row");
+        assert_eq!(outbox.acknowledgement_digest, Some(owner_proof));
+        assert_eq!(terminal.dispatch_digest.is_some(), matches!(cut, Cut::BeforeAcknowledgement | Cut::BeforeIndeterminate));
+        assert_eq!(terminal.indeterminate_digest, if cut == Cut::NewOwner {
+            Some(Digest32::of_bytes(OWNER_HANDOFF_UNKNOWN_DIGEST_DOMAIN))
+        } else {
+            None
+        });
+        destination.close().await;
+        store.close().await;
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
 async fn crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
