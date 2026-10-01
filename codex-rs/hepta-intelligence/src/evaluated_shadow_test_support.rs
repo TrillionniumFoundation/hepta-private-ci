@@ -145,6 +145,10 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub fn new() -> Self {
+        Self::with_minimum_improvement(FixedQ32::ZERO)
+    }
+
+    pub fn with_minimum_improvement(minimum_improvement: FixedQ32) -> Self {
         let keys = [
             SigningKey::from_bytes(&[11; 32]),
             SigningKey::from_bytes(&[22; 32]),
@@ -206,7 +210,7 @@ impl Fixture {
         let roles = vec![MetricRoleContractV2 {
             metric_id: id("qualification-metric"),
             role: MetricRoleV2::PrimarySuperiority {
-                minimum_improvement: FixedQ32::ZERO,
+                minimum_improvement,
             },
         }];
         let sources = vec![ProductMetricSourceContractV1 {

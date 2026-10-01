@@ -11,6 +11,7 @@ use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use pretty_assertions::assert_eq;
 use std::fs;
@@ -232,9 +233,18 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
 
 #[test]
 fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
-    let mutations: [fn(&mut Fixture); 10] = [
+    let mutations: [fn(&mut Fixture); 13] = [
         |f| f.qualification.publication_digest = digest("tampered publication"),
         |f| f.qualification.decision.authentication_digest = digest("tampered authentication"),
+        |f| f.qualification.decision.decision.evaluation_id = id("replacement-evaluation"),
+        |f| f.qualification.decision.decision.baseline_id = id("replacement-baseline"),
+        |f| {
+            f.qualification
+                .decision
+                .decision
+                .failed_metrics
+                .push(id("replacement-metric"))
+        },
         |f| f.candidate_evidence.signature[0] ^= 1,
         |f| f.decision_evidence.signature[0] ^= 1,
         |f| {
@@ -263,6 +273,65 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         assert!(ledger.records().unwrap().is_empty());
         assert_eq!(fs::read(path).unwrap(), before);
     }
+}
+
+#[test]
+fn signed_ineligible_product_receipt_cannot_be_changed_to_eligible() {
+    let mut fixture = Fixture::with_minimum_improvement(FixedQ32::ONE);
+    assert_eq!(
+        fixture.qualification.decision.decision.disposition,
+        IndependentEvaluationDispositionV1::Ineligible
+    );
+    assert!(fixture.qualification.validate_integrity().is_ok());
+    let original_payload = evaluated_candidate_signing_payload_v2(
+        &fixture.qualification,
+        &fixture.bytes,
+        fixture.run.snapshot.learning_artifact_generation,
+    )
+    .unwrap_or_else(|error| panic!("original ineligible candidate payload: {error:?}"));
+    assert!(
+        fixture
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &fixture.candidate_evidence,
+                &original_payload,
+                50,
+            )
+            .is_ok(),
+        "the existing candidate signature is valid for the original ineligible receipt"
+    );
+    fixture.qualification.decision.decision.disposition =
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection;
+    fixture
+        .qualification
+        .decision
+        .decision
+        .failed_metrics
+        .clear();
+    let mut ports = Ports::new(&fixture);
+    let temp = tempfile::tempdir()
+        .unwrap_or_else(|error| panic!("ineligible consumer directory: {error:?}"));
+    let path = temp.path().join("ledger");
+    let mut ledger = ledger_at(&path, &fixture);
+    let before = fs::read(&path)
+        .unwrap_or_else(|error| panic!("ineligible consumer ledger baseline: {error:?}"));
+    assert!(matches!(
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, 50),
+        Err(EvaluatedShadowError::Qualification(_))
+    ));
+    assert!(ports.calls.is_empty());
+    assert!(
+        ledger
+            .records()
+            .unwrap_or_else(|error| panic!("ineligible consumer ledger records: {error:?}"))
+            .is_empty()
+    );
+    assert_eq!(
+        fs::read(path)
+            .unwrap_or_else(|error| panic!("unchanged ineligible consumer ledger: {error:?}")),
+        before
+    );
 }
 
 #[test]

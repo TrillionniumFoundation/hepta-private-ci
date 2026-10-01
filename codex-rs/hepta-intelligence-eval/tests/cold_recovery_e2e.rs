@@ -19,6 +19,8 @@ mod controller_tests;
 mod host;
 #[path = "selected_host_recovery_support/eligible_model.rs"]
 mod outcome_model;
+#[path = "selected_host_recovery_support/qualification_receipt_tests.rs"]
+mod qualification_receipt_tests;
 #[path = "selected_host_recovery_support/cold_storage.rs"]
 mod storage;
 #[allow(dead_code)]
