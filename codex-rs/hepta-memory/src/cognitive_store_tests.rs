@@ -11,6 +11,8 @@ use tempfile::TempDir;
 
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 
 use crate::CognitiveAccess;
@@ -652,6 +654,28 @@ fn expect_corrupt_with(error: CognitiveStoreError, needle: &str) {
     }
 }
 
+async fn quick_check_on_fresh_pool(database_path: &Path) -> Vec<String> {
+    // SQLite 3.51.3 can retain an obsolete FTS integrity-check cache when
+    // another pooled connection writes. Inspect the durable file as reopen does.
+    let sqlite_home = AbsolutePathBuf::try_from(
+        database_path
+            .parent()
+            .expect("database parent")
+            .to_path_buf(),
+    )
+    .expect("absolute SQLite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_read_only_pool(database_path)
+        .await
+        .expect("fresh read-only integrity pool");
+    let result = sqlx::query_scalar("PRAGMA quick_check(1)")
+        .fetch_all(&pool)
+        .await
+        .expect("fresh structural integrity check");
+    pool.close().await;
+    result
+}
+
 #[tokio::test]
 async fn reopen_rejects_foreign_owned_rows_inside_agent_local_store() {
     let temp = TempDir::new().expect("foreign-owner temp dir");
@@ -797,17 +821,23 @@ async fn reopen_rejects_memory_fts_source_drift() {
         let temp = TempDir::new().expect("memory FTS temp dir");
         let owner = agent_id(/*suffix*/ 85);
         let store = seeded_projection_store(&temp, &owner).await;
+        let database_path = store.path().to_path_buf();
+        assert_eq!(
+            quick_check_on_fresh_pool(&database_path).await,
+            vec!["ok".to_string()],
+            "valid seed before tamper: {tamper}"
+        );
         sqlx::query(tamper)
             .execute(&store.pool)
             .await
             .expect("drift the memory FTS projection");
-        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
-            .fetch_all(&store.pool)
-            .await
-            .expect("structural integrity after a legal FTS update");
-        assert_eq!(quick_check, vec!["ok".to_string()]);
         store.pool.close().await;
         drop(store);
+        assert_eq!(
+            quick_check_on_fresh_pool(&database_path).await,
+            vec!["ok".to_string()],
+            "legal FTS update preserves durable structural integrity: {tamper}"
+        );
         let error = match CognitiveStore::open(&layout(&temp, &owner)).await {
             Ok(_) => panic!("memory FTS source drift must fail reopen: {tamper}"),
             Err(error) => error,
@@ -828,6 +858,7 @@ async fn reopen_rejects_noninteger_fts_revisions_despite_numeric_join_affinity()
         let temp = TempDir::new().expect("FTS revision type temp dir");
         let owner = agent_id(/*suffix*/ 88);
         let store = seeded_projection_store(&temp, &owner).await;
+        let database_path = store.path().to_path_buf();
         let original = sqlx::query("SELECT revision FROM memory_fts")
             .fetch_one(&store.pool)
             .await
@@ -842,11 +873,6 @@ async fn reopen_rejects_noninteger_fts_revisions_despite_numeric_join_affinity()
             .execute(&store.pool)
             .await
             .expect("change FTS revision storage type");
-        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
-            .fetch_all(&store.pool)
-            .await
-            .expect("structural integrity after revision type drift");
-        assert_eq!(quick_check, vec!["ok".to_string()]);
         let joined = sqlx::query(
             "SELECT f.revision FROM memory_fts f
              JOIN memory_revisions r
@@ -858,6 +884,11 @@ async fn reopen_rejects_noninteger_fts_revisions_despite_numeric_join_affinity()
         assert!(joined.try_get::<i64, _>("revision").is_err());
         store.pool.close().await;
         drop(store);
+        assert_eq!(
+            quick_check_on_fresh_pool(&database_path).await,
+            vec!["ok".to_string()],
+            "revision type drift preserves durable structural integrity: {tamper}"
+        );
         let error = match CognitiveStore::open(&layout(&temp, &owner)).await {
             Ok(_) => panic!("noninteger FTS revision must fail reopen: {tamper}"),
             Err(error) => error,
@@ -1012,17 +1043,23 @@ async fn reopen_rejects_obsolete_entity_fts_source_drift() {
         let reopened = CognitiveStore::open(&owner_layout)
             .await
             .expect("valid obsolete entity FTS history must reopen");
+        let database_path = reopened.path().to_path_buf();
+        assert_eq!(
+            quick_check_on_fresh_pool(&database_path).await,
+            vec!["ok".to_string()],
+            "valid retained seed before tamper: {tamper}"
+        );
         sqlx::query(tamper)
             .execute(&reopened.pool)
             .await
             .expect("drift obsolete entity FTS rows");
-        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
-            .fetch_all(&reopened.pool)
-            .await
-            .expect("structural integrity after legal historical FTS updates");
-        assert_eq!(quick_check, vec!["ok".to_string()]);
         reopened.pool.close().await;
         drop(reopened);
+        assert_eq!(
+            quick_check_on_fresh_pool(&database_path).await,
+            vec!["ok".to_string()],
+            "historical FTS update preserves durable structural integrity: {tamper}"
+        );
         let error = match CognitiveStore::open(&owner_layout).await {
             Ok(_) => panic!("obsolete entity FTS source drift must fail reopen: {tamper}"),
             Err(error) => error,

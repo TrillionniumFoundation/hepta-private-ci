@@ -644,8 +644,8 @@ fn compiler_rejects_relation_only_registry_drift_with_unchanged_selected_binding
     registry
         .register_factor_relation(PromptFactorRelation {
             relation_id: id("relation:verify:peer:conflict"),
-            left_factor_id: id("factor:verify"),
-            right_factor_id: peer.factor_id,
+            left_factor_id: peer.factor_id,
+            right_factor_id: id("factor:verify"),
             kind: PromptFactorRelationKind::Conflicts,
             evidence_digest: digest("evidence:verify:peer:conflict"),
         })
