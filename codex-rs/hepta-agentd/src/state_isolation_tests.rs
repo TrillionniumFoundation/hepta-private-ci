@@ -434,7 +434,7 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
             18,
             1,
             crate::AgentdMethod::RunStatus {
-                run_id: released.run_id,
+                run_id: released.run_id.clone(),
             },
         )
         .await
@@ -442,7 +442,7 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     let AgentdPayload::RunStatus { run } = status.payload else {
         panic!("expected run status");
     };
-    assert!(run.is_none());
+    assert_eq!(run, Some(released));
 }
 
 #[tokio::test]
