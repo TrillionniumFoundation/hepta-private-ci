@@ -6,8 +6,6 @@
 //! the release is registered. Qualification-only direct AgentRelease fixtures
 //! keep those bindings absent and never acquire production authority.
 
-use std::io::ErrorKind;
-use std::io::Read;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -365,95 +363,9 @@ pub fn write_release_transaction(
     Ok(())
 }
 
-/// Read the small release/intent journals without following links or blocking
-/// on special files. Check the named and opened identities before and after
-/// the bounded read, using the same ownership contract as lifecycle journals.
+/// Release and signed-intent journals share the active lifecycle file boundary.
 pub(crate) fn read_release_journal(path: &Path) -> std::io::Result<Option<Vec<u8>>> {
-    let mut options = std::fs::OpenOptions::new();
-    options.read(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC);
-    }
-    let mut file = match options.open(path) {
-        Ok(file) => file,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error),
-    };
-    let opened = file.metadata()?;
-    let named = std::fs::symlink_metadata(path)?;
-    validate_release_journal_metadata(&opened)?;
-    validate_release_journal_metadata(&named)?;
-    same_release_journal_file(&opened, &named)?;
-    let mut bytes = Vec::new();
-    (&mut file)
-        .take((MAX_RELEASE_JOURNAL_BYTES + 1) as u64)
-        .read_to_end(&mut bytes)?;
-    if bytes.len() > MAX_RELEASE_JOURNAL_BYTES || bytes.len() as u64 != opened.len() {
-        return Err(std::io::Error::new(
-            ErrorKind::InvalidData,
-            "release journal changed during read or exceeds its file bound",
-        ));
-    }
-    let after = file.metadata()?;
-    let named_after = std::fs::symlink_metadata(path)?;
-    validate_release_journal_metadata(&after)?;
-    validate_release_journal_metadata(&named_after)?;
-    same_release_journal_file(&opened, &after)?;
-    same_release_journal_file(&after, &named_after)?;
-    Ok(Some(bytes))
-}
-
-fn validate_release_journal_metadata(metadata: &std::fs::Metadata) -> std::io::Result<()> {
-    if !metadata.file_type().is_file() || metadata.len() > MAX_RELEASE_JOURNAL_BYTES as u64 {
-        return Err(std::io::Error::new(
-            ErrorKind::InvalidData,
-            "release journal is not a bounded regular file",
-        ));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        // SAFETY: geteuid takes no arguments and has no memory-safety preconditions.
-        let owner = unsafe { libc::geteuid() };
-        if metadata.uid() != owner || metadata.nlink() != 1 || metadata.mode() & 0o022 != 0 {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                "release journal ownership, links, or permissions are unsafe",
-            ));
-        }
-    }
-    Ok(())
-}
-
-fn same_release_journal_file(
-    before: &std::fs::Metadata,
-    after: &std::fs::Metadata,
-) -> std::io::Result<()> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        if before.dev() != after.dev()
-            || before.ino() != after.ino()
-            || before.mtime() != after.mtime()
-            || before.mtime_nsec() != after.mtime_nsec()
-            || before.ctime() != after.ctime()
-            || before.ctime_nsec() != after.ctime_nsec()
-        {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                "release journal identity changed during open/read",
-            ));
-        }
-    }
-    if before.len() != after.len() || before.modified()? != after.modified()? {
-        return Err(std::io::Error::new(
-            ErrorKind::InvalidData,
-            "release journal changed during open/read",
-        ));
-    }
-    Ok(())
+    crate::durable_publish::read_regular_bounded(path, MAX_RELEASE_JOURNAL_BYTES)
 }
 
 fn valid_sha256(value: &str) -> bool {

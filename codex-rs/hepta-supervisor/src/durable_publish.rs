@@ -1,6 +1,124 @@
 use std::fs::OpenOptions;
 use std::io;
+use std::io::Read;
 use std::path::Path;
+
+/// Read one bounded, stable, single-link state file. On Unix the final path
+/// component is opened without following links or blocking on special files.
+/// Parent directories remain part of the trusted supervisor-owned boundary.
+pub(crate) fn read_regular_bounded(path: &Path, maximum: usize) -> io::Result<Option<Vec<u8>>> {
+    read_regular_bounded_at(path, maximum, |_, _| {})
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum ReadBoundary {
+    BeforeOpen,
+    BeforeRead,
+    AfterRead,
+}
+
+fn read_regular_bounded_at(
+    path: &Path,
+    maximum: usize,
+    mut boundary: impl FnMut(ReadBoundary, &Path),
+) -> io::Result<Option<Vec<u8>>> {
+    let read_limit = maximum
+        .checked_add(1)
+        .and_then(|limit| u64::try_from(limit).ok())
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid state-file bound"))?;
+    let before = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    validate_read_metadata(&before, maximum)?;
+    boundary(ReadBoundary::BeforeOpen, path);
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC);
+    }
+    let mut file = options.open(path).map_err(|error| {
+        #[cfg(unix)]
+        if error.raw_os_error() == Some(libc::ELOOP) {
+            return invalid_read("state path became a symbolic link");
+        }
+        if error.kind() == io::ErrorKind::NotFound {
+            return invalid_read("state file disappeared during open");
+        }
+        error
+    })?;
+    let opened = file.metadata()?;
+    let named = std::fs::symlink_metadata(path)?;
+    validate_read_metadata(&opened, maximum)?;
+    validate_read_metadata(&named, maximum)?;
+    same_read_file(&before, &opened)?;
+    same_read_file(&opened, &named)?;
+    boundary(ReadBoundary::BeforeRead, path);
+    let mut bytes = Vec::new();
+    (&mut file).take(read_limit).read_to_end(&mut bytes)?;
+    boundary(ReadBoundary::AfterRead, path);
+    if bytes.len() > maximum || bytes.len() as u64 != opened.len() {
+        return Err(invalid_read(
+            "state file changed during read or exceeds its bound",
+        ));
+    }
+    let after = file.metadata()?;
+    let named_after = std::fs::symlink_metadata(path)?;
+    validate_read_metadata(&after, maximum)?;
+    validate_read_metadata(&named_after, maximum)?;
+    same_read_file(&opened, &after)?;
+    same_read_file(&after, &named_after)?;
+    Ok(Some(bytes))
+}
+
+fn invalid_read(message: &str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
+}
+
+fn validate_read_metadata(metadata: &std::fs::Metadata, maximum: usize) -> io::Result<()> {
+    if !metadata.file_type().is_file() || metadata.len() > maximum as u64 {
+        return Err(invalid_read("state path is not a bounded regular file"));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        // SAFETY: geteuid takes no arguments and has no memory-safety preconditions.
+        let owner = unsafe { libc::geteuid() };
+        if metadata.uid() != owner || metadata.nlink() != 1 || metadata.mode() & 0o022 != 0 {
+            return Err(invalid_read(
+                "state-file ownership, links, or permissions are unsafe",
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn same_read_file(before: &std::fs::Metadata, after: &std::fs::Metadata) -> io::Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if before.dev() != after.dev()
+            || before.ino() != after.ino()
+            || before.mode() != after.mode()
+            || before.uid() != after.uid()
+            || before.gid() != after.gid()
+            || before.nlink() != after.nlink()
+            || before.mtime() != after.mtime()
+            || before.mtime_nsec() != after.mtime_nsec()
+            || before.ctime() != after.ctime()
+            || before.ctime_nsec() != after.ctime_nsec()
+        {
+            return Err(invalid_read("state-file identity changed during open/read"));
+        }
+    }
+    if before.len() != after.len() || before.modified()? != after.modified()? {
+        return Err(invalid_read("state file changed during open/read"));
+    }
+    Ok(())
+}
 
 /// Write and synchronize one same-directory staging file, then publish it.
 /// A directory-sync failure is an ambiguous durable outcome: the destination
@@ -137,6 +255,10 @@ fn publish_same_directory(
         "durable publication is unsupported on this platform",
     ))
 }
+
+#[cfg(test)]
+#[path = "durable_read_tests.rs"]
+mod read_tests;
 
 #[cfg(test)]
 mod tests {
