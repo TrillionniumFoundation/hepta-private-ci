@@ -18,14 +18,12 @@ use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::DurableCognitiveSnapshot;
-use codex_hepta_memory::RetrievalCandidateIdentityV1;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory::execute_owner_observation;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
-use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
@@ -274,29 +272,23 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         });
     }
 
-    let mut downstream_policy_digest = None;
-    let mut delivery_propensity = ProbabilityQ32::ONE;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
         let rank_query = query.to_string();
-        let (ranked_items, rank_observation) = tokio::task::spawn_blocking(move || {
-            let observation = ranker.rank(
+        let ranked_items = tokio::task::spawn_blocking(move || {
+            ranker.rank(
                 &rank_owner,
                 body_generation,
                 &rank_query,
                 &mut admitted_items,
             )?;
-            Ok::<_, String>((admitted_items, observation))
+            Ok::<_, String>(admitted_items)
         })
         .await
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
         admitted_items = ranked_items;
-        if rank_observation.applied {
-            downstream_policy_digest = Some(rank_observation.policy_digest);
-            delivery_propensity = rank_observation.propensity;
-        }
     }
 
     let ordered_bindings = admitted_items
@@ -464,56 +456,25 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let assignment =
             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
         let request_id = request_id.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
-        let selected = assignment
-            .selected_candidates
-            .iter()
-            .map(|candidate| {
-                (
-                    (
-                        candidate.record_id.as_str().to_string(),
-                        candidate.record_revision.get(),
-                    ),
-                    candidate.clone(),
-                )
-            })
-            .collect::<BTreeMap<_, _>>();
-        let delivered_candidates = response
-            .items
-            .iter()
-            .map(|item| {
-                selected
-                    .get(&(item.memory_id.clone(), item.revision))
-                    .cloned()
-                    .ok_or(CognitiveContextError::RetrievalLearningUnavailable)
-            })
-            .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
-        let context_exposed = !delivered_candidates.is_empty();
-        let published_context_digest = if context_exposed {
-            Some(Digest32::of_bytes(&serde_json::to_vec(&response).map_err(
-                |error| CognitiveStoreError::Invalid(error.to_string()),
-            )?))
-        } else {
-            None
-        };
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
+        // This await precedes the final owner fence and response publication.
+        // Record only the retrieval assignment, with no delivered candidates,
+        // exposure digest or downstream delivery claim. Actual consumer
+        // exposure requires a separate acknowledgement after publication.
         tokio::task::spawn_blocking(move || {
-            sink.append_with_delivery_policy(
-                &owner,
-                body_generation,
-                request_id,
-                &assignment,
-                &delivered_candidates,
-                context_exposed,
-                published_context_digest,
-                downstream_policy_digest,
-                delivery_propensity,
-            )
+            sink.append(&owner, body_generation, request_id, &assignment)
         })
         .await
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
     }
+    // Optional providers and the durable learning sink can suspend after the
+    // earlier owner check. Reacquire the complete cut after every such await;
+    // an unchanged retrieval binding does not prove the ledger stayed current.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
     Ok(response)
 }
 
@@ -675,6 +636,11 @@ pub(crate) async fn revalidate_with_retrieval_context(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
 
+    // The selected cut predates retrieval/ranker awaits. Validate its complete
+    // owner witness immediately before constructing the final-use receipt.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
     Ok(CognitiveContextRevalidation {
         snapshot_digest: expected_snapshot.to_string(),
         read_digest: current_read_binding.to_string(),

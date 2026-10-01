@@ -63,7 +63,7 @@ impl CurrentMemoryRetrievalContext for SwitchingContext {
     }
 }
 
-async fn fixture(
+pub(super) async fn fixture(
     suffix: u16,
 ) -> (
     tempfile::TempDir,

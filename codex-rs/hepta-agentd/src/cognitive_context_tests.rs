@@ -33,6 +33,9 @@ fn encoded_read_budget_unavailability_is_local_not_store_failure() {
 #[path = "cognitive_context_hnmf_tests.rs"]
 mod hnmf;
 
+#[path = "cognitive_context_concurrency_tests.rs"]
+mod concurrency;
+
 #[tokio::test]
 async fn final_use_reacquires_only_delivered_ids_with_the_global_owner_witness() {
     let temp = tempfile::tempdir().unwrap();
