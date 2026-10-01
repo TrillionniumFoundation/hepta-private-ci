@@ -51,6 +51,9 @@ use crate::driver::SpawnedProcess;
 mod process_ref;
 use process_ref::ProcessRef;
 
+#[path = "unix_peer_identity.rs"]
+mod peer_identity;
+
 #[path = "unix_initialization.rs"]
 mod initialization;
 
@@ -527,6 +530,7 @@ fn query_agent_health_once(
     }
 
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    peer_identity::ensure_process_peer(&stream, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -587,6 +591,7 @@ fn read_agent_drain_frame(
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    peer_identity::ensure_process_peer(&stream, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(request)?;
@@ -687,6 +692,7 @@ fn query_matrix_health_once(
     }
 
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    peer_identity::ensure_process_peer(&stream, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -810,3 +816,7 @@ mod tests;
 #[cfg(test)]
 #[path = "unix_drain_tests.rs"]
 mod drain_tests;
+
+#[cfg(test)]
+#[path = "unix_peer_identity_tests.rs"]
+mod peer_identity_tests;
