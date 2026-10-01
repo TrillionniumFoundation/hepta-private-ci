@@ -5,10 +5,12 @@
 //! as part of the same local state bundle.
 
 #[cfg(unix)]
-use std::fs::File;
+use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
+#[cfg(unix)]
+use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -27,6 +29,8 @@ use crate::AgentdIdentity;
 use crate::authbus_trust::hex_bytes;
 #[cfg(unix)]
 use crate::operator_namespace::OperatorNamespace;
+#[cfg(unix)]
+use crate::operator_namespace::configure_protected_open;
 
 const MAX_FRONTIER_FILE_BYTES: u64 = 64 * 1024;
 const MAX_FRONTIER_TRUST_FILE_BYTES: u64 = 8 * 1024;
@@ -185,59 +189,98 @@ fn read_external_file(
     identity: &AgentdIdentity,
     maximum_bytes: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    use std::os::unix::fs::MetadataExt;
+    InspectedExternalFrontierFile::inspect(path, identity, maximum_bytes)?.read()
+}
 
-    if !path.is_absolute() {
-        return Err(invalid("recovery frontier files must use absolute paths"));
+#[cfg(unix)]
+struct InspectedExternalFrontierFile {
+    path: PathBuf,
+    maximum_bytes: u64,
+    before: std::fs::Metadata,
+    namespace: OperatorNamespace,
+}
+
+#[cfg(unix)]
+impl InspectedExternalFrontierFile {
+    fn inspect(
+        path: &Path,
+        identity: &AgentdIdentity,
+        maximum_bytes: u64,
+    ) -> Result<Self, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        if !path.is_absolute() {
+            return Err(invalid("recovery frontier files must use absolute paths"));
+        }
+        let canonical = path.canonicalize()?;
+        let home = identity.home_root.canonicalize()?;
+        if canonical != path || canonical.starts_with(&home) {
+            return Err(invalid(
+                "recovery frontier files must be canonical and outside the Agent home rollback domain",
+            ));
+        }
+        let before = std::fs::symlink_metadata(path)?;
+        if !before.is_file()
+            || before.nlink() != 1
+            || before.mode() & 0o022 != 0
+            || before.len() > maximum_bytes
+        {
+            return Err(invalid(
+                "recovery frontier files must be bounded, regular and not writable by group/other",
+            ));
+        }
+        let namespace = OperatorNamespace::capture(path, &before)?;
+        Ok(Self {
+            path: path.to_path_buf(),
+            maximum_bytes,
+            before,
+            namespace,
+        })
     }
-    let canonical = path.canonicalize()?;
-    let home = identity.home_root.canonicalize()?;
-    if canonical != path || canonical.starts_with(&home) {
-        return Err(invalid(
-            "recovery frontier files must be canonical and outside the Agent home rollback domain",
-        ));
+
+    fn read(self) -> Result<Vec<u8>, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        let Self {
+            path,
+            maximum_bytes,
+            before,
+            namespace,
+        } = self;
+        let mut options = OpenOptions::new();
+        options.read(true);
+        configure_protected_open(&mut options);
+        let mut file = options.open(&path)?;
+        let opened = file.metadata()?;
+        let identity_tuple = |metadata: &std::fs::Metadata| {
+            (
+                metadata.dev(),
+                metadata.ino(),
+                metadata.len(),
+                metadata.mtime(),
+                metadata.mtime_nsec(),
+                metadata.ctime(),
+                metadata.ctime_nsec(),
+            )
+        };
+        if identity_tuple(&opened) != identity_tuple(&before) {
+            return Err(invalid("recovery frontier file changed while opening"));
+        }
+        let mut bytes = Vec::new();
+        file.by_ref()
+            .take(maximum_bytes.saturating_add(1))
+            .read_to_end(&mut bytes)?;
+        let after = std::fs::symlink_metadata(&path)?;
+        namespace.verify(&path, &after)?;
+        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > maximum_bytes
+            || !after.is_file()
+            || identity_tuple(&after) != identity_tuple(&before)
+            || identity_tuple(&file.metadata()?) != identity_tuple(&before)
+        {
+            return Err(invalid("recovery frontier file changed while reading"));
+        }
+        Ok(bytes)
     }
-    let before = std::fs::symlink_metadata(path)?;
-    if !before.is_file()
-        || before.nlink() != 1
-        || before.mode() & 0o022 != 0
-        || before.len() > maximum_bytes
-    {
-        return Err(invalid(
-            "recovery frontier files must be bounded, regular and not writable by group/other",
-        ));
-    }
-    let namespace = OperatorNamespace::capture(path, &before)?;
-    let mut file = File::open(path)?;
-    let opened = file.metadata()?;
-    let identity_tuple = |metadata: &std::fs::Metadata| {
-        (
-            metadata.dev(),
-            metadata.ino(),
-            metadata.len(),
-            metadata.mtime(),
-            metadata.mtime_nsec(),
-            metadata.ctime(),
-            metadata.ctime_nsec(),
-        )
-    };
-    if identity_tuple(&opened) != identity_tuple(&before) {
-        return Err(invalid("recovery frontier file changed while opening"));
-    }
-    let mut bytes = Vec::new();
-    file.by_ref()
-        .take(maximum_bytes.saturating_add(1))
-        .read_to_end(&mut bytes)?;
-    let after = std::fs::symlink_metadata(path)?;
-    namespace.verify(path, &after)?;
-    if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > maximum_bytes
-        || !after.is_file()
-        || identity_tuple(&after) != identity_tuple(&before)
-        || identity_tuple(&file.metadata()?) != identity_tuple(&before)
-    {
-        return Err(invalid("recovery frontier file changed while reading"));
-    }
-    Ok(bytes)
 }
 
 #[cfg(not(unix))]

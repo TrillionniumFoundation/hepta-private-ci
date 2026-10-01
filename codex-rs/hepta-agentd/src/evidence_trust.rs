@@ -2,10 +2,12 @@
 
 use std::collections::BTreeSet;
 #[cfg(unix)]
-use std::fs::File;
+use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
+#[cfg(unix)]
+use std::path::PathBuf;
 
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
@@ -20,6 +22,8 @@ use crate::AgentdIdentity;
 use crate::authbus_trust::hex_bytes;
 #[cfg(unix)]
 use crate::operator_namespace::OperatorNamespace;
+#[cfg(unix)]
+use crate::operator_namespace::configure_protected_open;
 
 const MAX_EVIDENCE_ISSUERS: usize = 32;
 const MAX_EVIDENCE_ROLES_PER_ISSUER: usize = 16;
@@ -133,61 +137,93 @@ impl EvidenceTrust {
 
 #[cfg(unix)]
 fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
-    use std::os::unix::fs::MetadataExt;
+    InspectedEvidenceTrustFile::inspect(path, identity)?.read()
+}
 
-    if !path.is_absolute()
-        || path.parent() != Some(identity.home_root.as_path())
-        || identity.home_root.canonicalize()? != identity.home_root
-    {
-        return Err(invalid(
-            "evidence trust file must be a direct child of the canonical Agent home",
-        ));
+#[cfg(unix)]
+struct InspectedEvidenceTrustFile {
+    path: PathBuf,
+    before: std::fs::Metadata,
+    namespace: OperatorNamespace,
+}
+
+#[cfg(unix)]
+impl InspectedEvidenceTrustFile {
+    fn inspect(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        if !path.is_absolute()
+            || path.parent() != Some(identity.home_root.as_path())
+            || identity.home_root.canonicalize()? != identity.home_root
+        {
+            return Err(invalid(
+                "evidence trust file must be a direct child of the canonical Agent home",
+            ));
+        }
+        let home = std::fs::metadata(&identity.home_root)?;
+        let before = std::fs::symlink_metadata(path)?;
+        if !home.is_dir()
+            || home.mode() & 0o077 != 0
+            || !before.is_file()
+            || before.nlink() != 1
+            || before.uid() != home.uid()
+            || before.mode() & 0o077 != 0
+            || before.len() > MAX_EVIDENCE_TRUST_FILE_BYTES
+        {
+            return Err(invalid(
+                "evidence trust file must be a private owner-controlled regular file",
+            ));
+        }
+        let namespace = OperatorNamespace::capture(path, &before)?;
+        Ok(Self {
+            path: path.to_path_buf(),
+            before,
+            namespace,
+        })
     }
-    let home = std::fs::metadata(&identity.home_root)?;
-    let before = std::fs::symlink_metadata(path)?;
-    if !home.is_dir()
-        || home.mode() & 0o077 != 0
-        || !before.is_file()
-        || before.nlink() != 1
-        || before.uid() != home.uid()
-        || before.mode() & 0o077 != 0
-        || before.len() > MAX_EVIDENCE_TRUST_FILE_BYTES
-    {
-        return Err(invalid(
-            "evidence trust file must be a private owner-controlled regular file",
-        ));
+
+    fn read(self) -> Result<Vec<u8>, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        let Self {
+            path,
+            before,
+            namespace,
+        } = self;
+        let mut options = OpenOptions::new();
+        options.read(true);
+        configure_protected_open(&mut options);
+        let mut file = options.open(&path)?;
+        let opened = file.metadata()?;
+        let identity_tuple = |metadata: &std::fs::Metadata| {
+            (
+                metadata.dev(),
+                metadata.ino(),
+                metadata.len(),
+                metadata.mtime(),
+                metadata.mtime_nsec(),
+                metadata.ctime(),
+                metadata.ctime_nsec(),
+            )
+        };
+        if identity_tuple(&opened) != identity_tuple(&before) {
+            return Err(invalid("evidence trust file changed while opening"));
+        }
+        let mut bytes = Vec::new();
+        file.by_ref()
+            .take(MAX_EVIDENCE_TRUST_FILE_BYTES + 1)
+            .read_to_end(&mut bytes)?;
+        let after = std::fs::symlink_metadata(&path)?;
+        namespace.verify(&path, &after)?;
+        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_EVIDENCE_TRUST_FILE_BYTES
+            || !after.is_file()
+            || identity_tuple(&after) != identity_tuple(&before)
+            || identity_tuple(&file.metadata()?) != identity_tuple(&before)
+        {
+            return Err(invalid("evidence trust file changed while reading"));
+        }
+        Ok(bytes)
     }
-    let namespace = OperatorNamespace::capture(path, &before)?;
-    let mut file = File::open(path)?;
-    let opened = file.metadata()?;
-    let identity_tuple = |metadata: &std::fs::Metadata| {
-        (
-            metadata.dev(),
-            metadata.ino(),
-            metadata.len(),
-            metadata.mtime(),
-            metadata.mtime_nsec(),
-            metadata.ctime(),
-            metadata.ctime_nsec(),
-        )
-    };
-    if identity_tuple(&opened) != identity_tuple(&before) {
-        return Err(invalid("evidence trust file changed while opening"));
-    }
-    let mut bytes = Vec::new();
-    file.by_ref()
-        .take(MAX_EVIDENCE_TRUST_FILE_BYTES + 1)
-        .read_to_end(&mut bytes)?;
-    let after = std::fs::symlink_metadata(path)?;
-    namespace.verify(path, &after)?;
-    if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_EVIDENCE_TRUST_FILE_BYTES
-        || !after.is_file()
-        || identity_tuple(&after) != identity_tuple(&before)
-        || identity_tuple(&file.metadata()?) != identity_tuple(&before)
-    {
-        return Err(invalid("evidence trust file changed while reading"));
-    }
-    Ok(bytes)
 }
 
 #[cfg(not(unix))]
@@ -200,3 +236,7 @@ fn read_owner_file(_path: &Path, _identity: &AgentdIdentity) -> Result<Vec<u8>, 
 fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence: {message}"))
 }
+
+#[cfg(all(test, unix))]
+#[path = "evidence_trust_file_tests.rs"]
+mod file_tests;

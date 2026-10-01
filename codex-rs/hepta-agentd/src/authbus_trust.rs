@@ -1,10 +1,12 @@
 //! One explicitly installed owner key and bounded thread allowlist.
 
 #[cfg(unix)]
-use std::fs::File;
+use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
+#[cfg(unix)]
+use std::path::PathBuf;
 
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_types::Generation;
@@ -16,6 +18,8 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 #[cfg(unix)]
 use crate::operator_namespace::OperatorNamespace;
+#[cfg(unix)]
+use crate::operator_namespace::configure_protected_open;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -89,61 +93,100 @@ pub(crate) fn read_private_owner_file(
     identity: &AgentdIdentity,
     maximum_bytes: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    use std::os::unix::fs::MetadataExt;
+    InspectedPrivateOwnerFile::inspect(path, identity, maximum_bytes)?.read()
+}
 
-    if !path.is_absolute()
-        || path.parent() != Some(identity.home_root.as_path())
-        || identity.home_root.canonicalize()? != identity.home_root
-    {
-        return Err(invalid(
-            "trust file must be a direct child of the canonical Agent home",
-        ));
+#[cfg(unix)]
+struct InspectedPrivateOwnerFile {
+    path: PathBuf,
+    maximum_bytes: u64,
+    before: std::fs::Metadata,
+    namespace: OperatorNamespace,
+}
+
+#[cfg(unix)]
+impl InspectedPrivateOwnerFile {
+    fn inspect(
+        path: &Path,
+        identity: &AgentdIdentity,
+        maximum_bytes: u64,
+    ) -> Result<Self, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        if !path.is_absolute()
+            || path.parent() != Some(identity.home_root.as_path())
+            || identity.home_root.canonicalize()? != identity.home_root
+        {
+            return Err(invalid(
+                "trust file must be a direct child of the canonical Agent home",
+            ));
+        }
+        let home = std::fs::metadata(&identity.home_root)?;
+        let before = std::fs::symlink_metadata(path)?;
+        if !home.is_dir()
+            || home.mode() & 0o077 != 0
+            || !before.is_file()
+            || before.nlink() != 1
+            || before.uid() != home.uid()
+            || before.mode() & 0o077 != 0
+            || before.len() > maximum_bytes
+        {
+            return Err(invalid(
+                "trust file must be a private owner-controlled regular file",
+            ));
+        }
+        let namespace = OperatorNamespace::capture(path, &before)?;
+        Ok(Self {
+            path: path.to_path_buf(),
+            maximum_bytes,
+            before,
+            namespace,
+        })
     }
-    let home = std::fs::metadata(&identity.home_root)?;
-    let before = std::fs::symlink_metadata(path)?;
-    if !home.is_dir()
-        || home.mode() & 0o077 != 0
-        || !before.is_file()
-        || before.nlink() != 1
-        || before.uid() != home.uid()
-        || before.mode() & 0o077 != 0
-        || before.len() > maximum_bytes
-    {
-        return Err(invalid(
-            "trust file must be a private owner-controlled regular file",
-        ));
+
+    fn read(self) -> Result<Vec<u8>, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        let Self {
+            path,
+            maximum_bytes,
+            before,
+            namespace,
+        } = self;
+        let mut options = OpenOptions::new();
+        options.read(true);
+        configure_protected_open(&mut options);
+        let mut file = options.open(&path)?;
+        let opened = file.metadata()?;
+        let identity = |m: &std::fs::Metadata| {
+            (
+                m.dev(),
+                m.ino(),
+                m.len(),
+                m.mtime(),
+                m.mtime_nsec(),
+                m.ctime(),
+                m.ctime_nsec(),
+            )
+        };
+        if identity(&opened) != identity(&before) {
+            return Err(invalid("trust file changed while opening"));
+        }
+        let mut bytes = Vec::new();
+        file.by_ref()
+            .take(maximum_bytes.saturating_add(1))
+            .read_to_end(&mut bytes)?;
+        let after = std::fs::symlink_metadata(&path)?;
+        namespace.verify(&path, &after)?;
+        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > maximum_bytes
+            || !after.is_file()
+            || identity(&after) != identity(&before)
+            || identity(&file.metadata()?) != identity(&before)
+        {
+            return Err(invalid("trust file changed while reading"));
+        }
+        Ok(bytes)
     }
-    let namespace = OperatorNamespace::capture(path, &before)?;
-    let mut file = File::open(path)?;
-    let opened = file.metadata()?;
-    let identity = |m: &std::fs::Metadata| {
-        (
-            m.dev(),
-            m.ino(),
-            m.len(),
-            m.mtime(),
-            m.mtime_nsec(),
-            m.ctime(),
-            m.ctime_nsec(),
-        )
-    };
-    if identity(&opened) != identity(&before) {
-        return Err(invalid("trust file changed while opening"));
-    }
-    let mut bytes = Vec::new();
-    file.by_ref()
-        .take(maximum_bytes.saturating_add(1))
-        .read_to_end(&mut bytes)?;
-    let after = std::fs::symlink_metadata(path)?;
-    namespace.verify(path, &after)?;
-    if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > maximum_bytes
-        || !after.is_file()
-        || identity(&after) != identity(&before)
-        || identity(&file.metadata()?) != identity(&before)
-    {
-        return Err(invalid("trust file changed while reading"));
-    }
-    Ok(bytes)
 }
 
 #[cfg(not(unix))]
@@ -160,3 +203,7 @@ pub(crate) fn read_private_owner_file(
 pub(crate) fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("AuthBus text: {message}"))
 }
+
+#[cfg(all(test, unix))]
+#[path = "authbus_trust_file_tests.rs"]
+mod file_tests;
