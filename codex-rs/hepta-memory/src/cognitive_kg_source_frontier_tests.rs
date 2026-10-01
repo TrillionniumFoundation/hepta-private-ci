@@ -1,4 +1,5 @@
 use codex_hepta_types::Digest32;
+use pretty_assertions::assert_eq;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 
