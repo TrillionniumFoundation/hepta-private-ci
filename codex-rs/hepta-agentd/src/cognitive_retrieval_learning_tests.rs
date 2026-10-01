@@ -1,5 +1,11 @@
 use super::*;
 
+#[path = "cognitive_context_delivery_tests.rs"]
+mod delivery;
+
+#[path = "cognitive_context_delivery_current_tests.rs"]
+mod delivery_current;
+
 use std::fs::File;
 use std::fs::OpenOptions;
 
