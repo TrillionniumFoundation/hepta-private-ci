@@ -435,7 +435,10 @@
     {
       "sourcePath": "scripts/hepta-upgrade-secrets-product",
       "nativeSymbol": "main/apply",
-      "state": "root_existing_software_revision_cas_and_same_pending_publication_recovery"
+      "state": "root_existing_software_revision_cas_and_same_pending_publication_recovery",
+      "tests": [
+        "scripts/test_hepta_secrets_software_upgrade.py"
+      ]
     }
   ],
   "sourceObjects": [
@@ -457,7 +460,7 @@
     },
     {
       "path": "codex-rs/hepta-bao-adapter",
-      "object": "7347056b280c39c0ef59d02b30371d824304c734"
+      "object": "96eaaf3cc68f4cee719bee5d937c0894576e89cc"
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/authority_frontier.rs",
@@ -581,7 +584,11 @@
     },
     {
       "path": "scripts/hepta-maintain-secrets-product",
-      "object": "1a89ce7000fc86384941534ada109980d0552d11"
+      "object": "3e791bb190184693287700e57864bc31fdc498f3"
+    },
+    {
+      "path": "scripts/hepta-upgrade-secrets-product",
+      "object": "7ccf32d61e3a60d2808b9a008c52b59cbb372756"
     }
   ],
   "agentdQualification": {
@@ -658,5 +665,9 @@
     "ownerDatabaseKeysQuotaPeriodOrAckReplaced": false,
     "servicesStartedByUpgrader": false,
     "installedCaller": false
+  },
+  "observedAtHead": {
+    "commit": "2ba0b5672322a6ce7393fab94455c4ed4bf6d032",
+    "tree": "fd249e364235a3056632ad0387b54b075f34211e"
   }
 }
