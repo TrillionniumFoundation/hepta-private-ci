@@ -115,6 +115,45 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
+      - name: Native toolchain workflow regressions
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/native-toolchain-workflow.json" --minimum-tests 5 -- python3 -m unittest -v scripts.test_hepta_native_toolchain_workflow
+      - name: Pin native Rust toolchain from workspace
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+          import tomllib
+
+          with Path("codex-rs/rust-toolchain.toml").open("rb") as stream:
+              configuration = tomllib.load(stream)
+          toolchain = configuration.get("toolchain")
+          channel = toolchain.get("channel") if isinstance(toolchain, dict) else None
+          if not isinstance(channel, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", channel) is None:
+              raise SystemExit("workspace Rust channel must be a nonempty single-line toolchain identifier")
+          with Path(os.environ["GITHUB_ENV"]).open("a", encoding="utf-8", newline="\n") as stream:
+              stream.write(f"RUSTUP_TOOLCHAIN={channel}\n")
+          PY
+      - name: Verify pinned Rust identity across working directories
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RUSTUP_TOOLCHAIN:?workspace Rust toolchain pin missing}"
+          root_rustc="$(rustc -Vv)"
+          root_cargo="$(cargo -V)"
+          workspace_rustc="$(cd codex-rs && rustc -Vv)"
+          workspace_cargo="$(cd codex-rs && cargo -V)"
+          printf 'Repository root, pin %s\n%s\n%s\n' "$RUSTUP_TOOLCHAIN" "$root_rustc" "$root_cargo"
+          printf 'Workspace, pin %s\n%s\n%s\n' "$RUSTUP_TOOLCHAIN" "$workspace_rustc" "$workspace_cargo"
+          test "$root_rustc" = "$workspace_rustc"
+          test "$root_cargo" = "$workspace_cargo"
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |

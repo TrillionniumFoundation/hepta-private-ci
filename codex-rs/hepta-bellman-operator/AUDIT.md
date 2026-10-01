@@ -61,6 +61,7 @@ work, finite-design geometry and already existing explicit consumers.
 | Reused client correlation ID | Independent clients restart request IDs, causing durable identity conflicts | V2 identity binds the complete canonical intent, including causal assignment and exact frame, in a new domain |
 | Wrong transport frame | A private pending handle could be paired with another frame by an internal caller | Full digest and length are checked before the first write |
 | Detached append queue | Connection timeout released its permit while non-cancellable blocking appends could accumulate | A separate 32-slot reservation follows the actual worker and pending confirmation until completion/drop |
+| Inconsistent CI toolchain selection | Root Cargo commands could use runner default Rust while workspace `just` commands selected the repository pin, with an observed second full build | Native CI reads the workspace toolchain pin before Rust commands, records both directory identities and requires equality; latency improvement awaits a new executed job |
 
 The tests cover equal-output/different-input digest changes, canonical permutation,
 integer extrema and half ties, malformed mutable artifacts, forged but correctly
@@ -274,11 +275,11 @@ candidate identities. The exact OOD comparison restores a valid boundary value.
   code. The workflow failed later because the independent `runtime_executable`
   filter observed zero passing tests despite command exit zero. That gate was
   preserved. Same-tree synthetic-merge reuse is not a second executed native run.
-- The automatic learning qualification step now adds separate transport-fault,
+- The automatic learning qualification step adds separate transport-fault,
   named real-socket and Ledger publication receipts with minimum **7 / 1 / 16**
-  passing cases, while preserving existing commands and gates. Configuration and
-  test source alone do not establish execution; the new delivered head must
-  complete these remote package and socket checks.
+  passing cases, while preserving existing commands and gates. Their actual
+  full-package execution is recorded below; configuration is not counted as
+  execution.
 - Native `just fix -p codex-hepta-bellman-operator -p
   codex-hepta-learning-ledger` and the real-source consumer manifest fix passed.
   The complete original `codex-hepta-agentd` package's `just fix --tests` also
@@ -291,6 +292,74 @@ candidate identities. The exact OOD comparison restores a valid boundary value.
   new guard warnings are gone. No functional tests were repeated after final
   fix/format. The final independent scoped review found no further concrete
   defect; the external integration and acceptance limits above remain open.
+
+### Delivered Rust source: actual full-package CI
+
+Source-head job [110474996931](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36893429600/job/110474996931)
+executed clean commit `643610dd692c81f30e0d5cdde3adadf6de86d105`, tree
+`a064a82efd2654066b1ab2b3df085b02d62e786f`. Before/after source identities
+were identical and clean in the command records.
+
+| Native receipt | Observed result |
+|---|---|
+| Original Agentd transport/worker fault cases | 7 passed |
+| Original complete AgentdState/control/client socket case | 1 passed |
+| Native Ledger publication cases | 16 passed |
+| Complete Ledger package | 134 passed; one existing opt-in growth case ignored |
+| Generation/reload/rollback | 1 passed |
+| Evaluation closure | 17 passed |
+| Self-evolution selection | 3 passed |
+| Independent selector admission | 1 passed |
+
+The real socket case executed reused client-local request IDs, exact confirmed
+frames and EOF, preparation without rows, 32-slot reservation exhaustion and
+late lifecycle rejection with Unknown intent. This establishes the bounded
+control transport path in the actual Agentd package, beyond the local consumer
+manifest. It does not execute the whole default learning loop or establish
+production/scientific acceptance. Overlapping local and remote cases are not
+added together as distinct coverage.
+
+The [execution artifact](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36893429600/artifacts/11180062210)
+ZIP SHA-256 is `32028e358574b5eb036464728306fed2871680a62d23204565dc0d083c7d07b1`.
+The three new receipt log SHA-256 values are:
+
+- Host: `6b92febdf131872c9204952e233a00e746d306587898af9d1384c5171d5884ef`.
+- Socket: `dcd8993704fc9083920c50cb3a2fdf67447fc5c61c4230b6f7cbade18785701e`.
+- Ledger publication: `be6a1106970b6ce77db0d3273cc8c36985cc8e79f7c6673d0f7d4f58f1ad9b6d`.
+
+The learning qualification step passed. The job then failed at the unchanged
+`runtime_executable` filter: command exit zero, zero observed passing tests,
+required minimum one. The gate remains intact. Same-tree synthetic-merge reuse
+is not a second native execution and no green global pipeline is claimed.
+
+### Final CI toolchain consistency optimization
+
+That job spent **804.58 seconds** on the seven-case host command while its tests
+took **0.373 seconds**; its log shows a second complete dependency/Agentd build.
+The subsequent socket command reused that build and took **3.14 seconds** in
+total, including **0.186 seconds** of tests. The job ran root Cargo commands
+and workspace `just` commands without a common `RUSTUP_TOOLCHAIN`. The exact
+[runner image](https://github.com/actions/runner-images/blob/ubuntu24-arm64/20260927.135/images/ubuntu/Ubuntu2404-Arm64-Readme.md)
+lists default Rust/Cargo 1.98.1, while `codex-rs/rust-toolchain.toml` pins 1.95.0.
+Mixed compiler selection is a strong inference from these inputs and the
+rebuild, not a compiler-fingerprint diagnosis; the old log did not print both
+compiler identities.
+
+Native CI now reads the channel from that TOML, rejects missing/malformed or
+unsafe multiline identifiers before appending `GITHUB_ENV`, and prints and
+compares root/workspace `rustc -Vv` and `cargo -V` before native Rust commands.
+Existing test commands, filters, minima, profiles and targets are unchanged.
+Five Python regressions **passed**, executing the production inline program
+against isolated dynamic configurations and validating append preservation,
+injection refusal, missing/malformed configuration and step ordering. A relevant
+workflow/execution-record validation run completed **58 passed**, including these
+five new cases and overlapping earlier cases. Its first invocation lacked the
+existing suites' `PYTHONPATH=scripts`; the corrected invocation passed. The new
+cases are separately registered
+with a minimum-five CI execution receipt. Measured build savings and the new
+delivered head's compiler identity still require its own subsequent CI run.
+The final optimization changes CI/tests/documentation only; delivered Rust
+source and native test blobs remain identical to the executed `643610dd` head.
 
 ### Previously executed operator and owner qualification
 
