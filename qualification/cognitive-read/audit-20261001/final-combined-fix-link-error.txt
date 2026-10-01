@@ -1,0 +1,13 @@
+cargo clippy --fix --tests --allow-dirty {args}
+   Compiling libsqlite3-sys v0.37.0
+error: linking with `cc` failed: exit status: 1
+  |
+  = note:  "cc" "-m64" "/workspace/scratch/ae9f1c224624/cognitive-target/debug/build/libsqlite3-sys-632ca9190186db68/rustcmHHNaf/symbols.o" "<2 object files omitted>" "-Wl,--as-needed" "-Wl,-Bstatic" "/workspace/scratch/ae9f1c224624/cognitive-target/debug/deps/{libpkg_config-0fbd3bebb9c32def,libcc-7f0b8412637d7ab4,libfind_msvc_tools-573c9a72643a9aa1,libjobserver-ea95b227c7f7e1b5,liblibc-7efb4750a15a2fe5,libshlex-a7c69f9969bd3958,libvcpkg-cbbc4b10c1b3be4f}.rlib" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib/{libstd-*,libpanic_unwind-*,libobject-*,libmemchr-*,libaddr2line-*,libgimli-*,libcfg_if-*,librustc_demangle-*,libstd_detect-*,libhashbrown-*,librustc_std_workspace_alloc-*,libminiz_oxide-*,libadler2-*,libunwind-*,liblibc-*,librustc_std_workspace_core-*,liballoc-*,libcore-*,libcompiler_builtins-*}.rlib" "-Wl,-Bdynamic" "-lgcc_s" "-lutil" "-lrt" "-lpthread" "-lm" "-ldl" "-lc" "-L" "/workspace/scratch/ae9f1c224624/cognitive-target/debug/build/libsqlite3-sys-632ca9190186db68/rustcmHHNaf/raw-dylibs" "-B<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/bin/gcc-ld" "-fuse-ld=lld" "-Wl,--eh-frame-hdr" "-Wl,-z,noexecstack" "-L" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib" "-o" "/workspace/scratch/ae9f1c224624/cognitive-target/debug/build/libsqlite3-sys-632ca9190186db68/build_script_build-632ca9190186db68" "-Wl,--gc-sections" "-pie" "-Wl,-z,relro,-z,now" "-Wl,--strip-debug" "-nodefaultlibs"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+          collect2: fatal error: ld terminated with signal 7 [Bus error]
+          compilation terminated.
+          
+
+error: could not compile `libsqlite3-sys` (build script) due to 1 previous error
+error: recipe `fix` failed on line 58 with exit code 101

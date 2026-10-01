@@ -1,0 +1,42 @@
+{
+  "activation": false,
+  "claim_boundary": "Complete cognitive Python regressions only. This observation proves no Rust build, full exact-head or synthetic-merge qualification, target-host acceptance, activation or release.",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_cognitive_read_*.py"
+  ],
+  "commit_at_identity_capture": "0b11302e7438f6fd256f0f98e9861d33b81755f2",
+  "covered_change": "One shared eight-package additional_packages tuple for format/all-target-check/strict-Clippy, including the landed operations source repair, and its existing coverage regression. Base five-package test zip cardinality unchanged.",
+  "identity_provenance": "Git blob and SHA256 identities captured after the original run. The two exclusively edited scripts remained unchanged between that run and this capture, as confirmed by the author and root. These are pre-format working-tree identities, not a receipt rebound to a later committed candidate.",
+  "independent_acceptance": false,
+  "output_provenance": "Transcribed excerpt of the original functions.exec exec_command return. That original run was not redirected to an on-disk log; a complete original process log was not recovered. The suite was not rerun to create this observation.",
+  "product_execution_proved": false,
+  "qualification_passed": false,
+  "release": false,
+  "schema": "hepta.cognitive.read.final-python-observation.v1",
+  "source_objects": [
+    {
+      "git_blob": "981e22e41094da8521e305acaf10ae80c37a9cba",
+      "path": "scripts/cognitive_read_full_evidence.py",
+      "sha256": "5aa1c310e77c34c1f0aeb16f55337314f2c7bbe9c28bc8580ca11cd249d670d6"
+    },
+    {
+      "git_blob": "111c61c007f3c79bef2bc0b188fd2f0e62e31f4c",
+      "path": "scripts/test_cognitive_read_full_evidence.py",
+      "sha256": "0d877890de3ede31718a7b44d1a01c5f571d096bd0f9915977a5d357dff15767"
+    }
+  ],
+  "summary_artifact": "qualification/cognitive-read/audit-20261001/final-python99-terminal-summary.txt",
+  "summary_sha256": "18fcb87b662c6b63f49b2bbae9c1ea1ffc18e15ebac4ab11df07b588bd0338f1",
+  "terminal_summary": {
+    "elapsed_seconds": 0.6,
+    "ran": 99,
+    "result": "OK"
+  }
+}

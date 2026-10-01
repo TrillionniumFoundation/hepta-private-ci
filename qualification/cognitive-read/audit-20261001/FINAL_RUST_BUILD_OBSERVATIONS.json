@@ -1,0 +1,114 @@
+{
+  "activation": false,
+  "attempts": [
+    {
+      "exit_code": 101,
+      "failure": "time archive ENOSPC",
+      "path": "qualification/cognitive-read/audit-20261001/final-receipt-bound-tests.txt",
+      "scope": "protocol exact case",
+      "sha256": "c9dd9e0cbc6325174cae583db63699fa80fb72674a3d38cc67b83c51a3bd7d80",
+      "test_execution_proved": false
+    },
+    {
+      "exit_code": 101,
+      "failure": "zerocopy metadata ENOSPC",
+      "path": "qualification/cognitive-read/audit-20261001/final-operations-tests.txt",
+      "scope": "two operations cases",
+      "sha256": "4d91657535e6287ea8709071a6ec23200ed430f9e9ebf449aea80bafdd198509",
+      "test_execution_proved": false
+    },
+    {
+      "exit_code": 101,
+      "failure": "libsqlite3-sys link ENOSPC",
+      "path": "qualification/cognitive-read/audit-20261001/final-combined-fix-enospc.txt",
+      "scope": "combined fix after own cache cleanup",
+      "sha256": "b1265610f7b30b9c293c3dff7aad4d853f0cb2fea16b83c989d088ba749e3f2b",
+      "test_execution_proved": false
+    },
+    {
+      "exit_code": 101,
+      "failure": "libsqlite3-sys link bus error at full filesystem",
+      "path": "qualification/cognitive-read/audit-20261001/final-combined-fix-link-error.txt",
+      "scope": "combined fix with final test inputs",
+      "sha256": "5ab978fe938b6acca13f288995913930a2c7ffe14793520441beb3dad9893c01",
+      "test_execution_proved": false
+    }
+  ],
+  "bazel_lock_check": "passed, no lockfile change",
+  "bazel_lock_update": "passed with current internal Cargo edges",
+  "claim_boundary": "Logs preserve bounded local attempts, not exact committed candidate or synthetic-merge qualification. Earlier protocol scoped fix compiled its test targets before the operations repair; no earlier pass is rebound to these final inputs.",
+  "commit_at_capture": "0b11302e7438f6fd256f0f98e9861d33b81755f2",
+  "final_combined_lint_passed": false,
+  "independent_acceptance": false,
+  "input_objects": [
+    {
+      "git_blob": "48979c0148a52da702a2b101fe4539d5ac9e0ff0",
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "d30eeec2453f9459070a5f0be7598601725e1ec28d21f50bc7e7802a45028bf5"
+    },
+    {
+      "git_blob": "ed8e8d6a2352e6ad6b3e53aaaba68c2bda43cfe5",
+      "path": "codex-rs/hepta-agent-protocol/src/cognitive_preparation.rs",
+      "sha256": "a0c6342aa3f3260c9167bf47a34241e3716f4d66b1530b496170512b2050b3d0"
+    },
+    {
+      "git_blob": "e32ebe765f28f9979d415e70908659bdd443eec3",
+      "path": "codex-rs/hepta-agent-protocol/src/cognitive_preparation_tests.rs",
+      "sha256": "2ef078b528d9f44ca1a257f72445043d17d6d4aecfa77b6b9e97fd00310d3b2a"
+    },
+    {
+      "git_blob": "951b6ab814ac024812bdcc523973f55e268c5aff",
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "sha256": "457f59252cb0fbf208f73acf8bcebbc42eae5ad1bc6f7b6bd7acce98890f8e12"
+    },
+    {
+      "git_blob": "5f590dbeed13df3f942519ac258d502219665b21",
+      "path": "codex-rs/hepta-operations/BUILD.bazel",
+      "sha256": "ca25f3afa2ffd516e1f213bca752b52402840abebc6ae52b62fe3552cb550da7"
+    },
+    {
+      "git_blob": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+      "path": "codex-rs/hepta-operations/Cargo.toml",
+      "sha256": "140c5b0d1b003dcb08d58d9ae2fe5069975b178ae79603f70ea2027f8b444533"
+    },
+    {
+      "git_blob": "216f5200fb864dab7fd43ed073515a0bb0aea37f",
+      "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+      "sha256": "9a4e9ba75ca96b52bedc39667cf92e85838d79f1cbbab28ce37acd27a033c393"
+    },
+    {
+      "git_blob": "d2980982fcb88ba944faa746a399bb8250e869d3",
+      "path": "codex-rs/hepta-operations/src/destination_dedupe_tests.rs",
+      "sha256": "293242074aeae3901dd0deb0e8d352c14a5fea69351f1f4e61c59a7fd98094eb"
+    },
+    {
+      "git_blob": "e84fda6bd45fd7f65cf79706ee6b826ba26d8607",
+      "path": "codex-rs/hepta-operations/src/durable_store.rs",
+      "sha256": "9d090892a7938fd6212cab736f1b8bd16bc2bf74d22e21af2e35bafa92633a3e"
+    },
+    {
+      "git_blob": "06108e9a116327c8ed98281bcf45283959005f22",
+      "path": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "sha256": "375a38b303bed7b72d9e7ed83228aa35f1e4cf72f94b1eb861e0bd3ed45205c9"
+    },
+    {
+      "git_blob": "e270c00192353076d1d2a05e3cd92348a9081b49",
+      "path": "codex-rs/hepta-operations/src/exact_claim_tests.rs",
+      "sha256": "8b989a7d5118e321d4b3344b1ae19e4548839836f5b9234096a75dd4eb23d13a"
+    },
+    {
+      "git_blob": "d803dd5de2e098980441da30b4031154aeb16f3b",
+      "path": "codex-rs/hepta-operations/src/fault_tests.rs",
+      "sha256": "15b4a960f8d296e7d35e67e3ef03d0a307a5503fd6f3b5a65baac9257d887158"
+    },
+    {
+      "git_blob": "e0c5faa35642c79e4918649ea2a0bfa1645e9dc5",
+      "path": "codex-rs/hepta-operations/tests/destination_recovery_binding.rs",
+      "sha256": "021fd48492f39c17e258911d1452cda12a77190e85c71f568c30bacca22d3d47"
+    }
+  ],
+  "product_execution_proved": false,
+  "release": false,
+  "schema": "hepta.cognitive.read.final-rust-build-observation.v1",
+  "source_identity_kind": "pre-format working-tree input observation; dependency failures occurred before final source checks"
+}

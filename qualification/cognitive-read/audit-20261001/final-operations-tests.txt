@@ -1,0 +1,8 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling zerocopy v0.8.37
+error: failed to write to `/workspace/scratch/ae9f1c224624/cognitive-target/debug/deps/rmeta8ieoa3/full.rmeta`: No space left on device (os error 28)
+
+error: could not compile `zerocopy` (lib) due to 1 previous error
+error: command `/workspace/scratch/89fe97a34325/verification-tools/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-operations --lib --locked --offline` exited with code 101
+error: recipe `test` failed on line 88 with exit code 101
