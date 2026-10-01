@@ -29,15 +29,18 @@ use crate::fit_transition_model;
 
 const MAX_WORLD_MODEL_SAMPLES: usize = 65_536;
 
-/// Opaque proof that a tabular plan names the exact frozen dataset and exact
-/// source-record evidence admitted by `learning.ledger`; every training row
-/// must name one record in that frozen set.
+/// Opaque result of receipt self-consistency, objective/dataset identity and
+/// exact source-record digest membership checks, including row cardinality.
+/// This does not authenticate the freeze issuer, derive targets or labels,
+/// or check current owner corrections and revocations.
 #[derive(Clone, Debug)]
 pub struct VerifiedTabularOperatorPlanV2 {
     plan: TabularOperatorPlanV1,
 }
 
-/// Opaque proof that world-model rows are exactly the frozen dataset rows.
+/// Opaque result of receipt self-consistency and exact source-record digest
+/// membership checks, including row cardinality. It does not authenticate
+/// the freeze issuer, validate row semantics or check current owner revocations.
 #[derive(Clone, Debug)]
 pub struct VerifiedWorldModelDatasetV2 {
     model_id: StableId,
