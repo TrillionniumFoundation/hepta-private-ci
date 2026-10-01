@@ -152,6 +152,118 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
 }
 
 #[tokio::test]
+async fn absent_typed_relation_channels_preserve_empty_results_and_fence_each_seed() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(/*suffix*/ 92);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let content = "Beacon has an ordinary referenced target.";
+    let receipt = store
+        .remember_with_kg(
+            &access,
+            &source(scope.clone(), "ordinary-relation", content),
+            &MemoryDraft {
+                stable_key: "ordinary-relation".to_string(),
+                revision: revision(scope, content),
+            },
+            &KgFactSetDraft {
+                entities: vec![
+                    KgEntityFactDraft {
+                        key: "first".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Beacon First".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "second".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Beacon Second".to_string(),
+                    },
+                ],
+                relations: vec![KgRelationFactDraft {
+                    key: "ordinary".to_string(),
+                    from_entity_key: "first".to_string(),
+                    to_entity_key: "second".to_string(),
+                    relation: "references".to_string(),
+                }],
+            },
+        )
+        .await
+        .expect("ordinary relation");
+    let request = RetrievalRequest::new("Beacon", /*now_unix_seconds*/ 200);
+    let fts = store
+        .validate_retrieval_request(&access, &request)
+        .expect("query");
+    let mut transaction = store.pool.begin().await.expect("read transaction");
+    let mut seeds = store
+        .entity_fts_channel_tx(
+            &mut transaction,
+            &access,
+            &fts,
+            /*now*/ 200,
+            RetrievalScopes::Accessible,
+        )
+        .await
+        .expect("seeds")
+        .values;
+    assert!(seeds.len() > 1);
+    let mut generations = RetrievalGenerations::new();
+    for kind in [
+        KgRelationSemanticV1::Causes,
+        KgRelationSemanticV1::ProcedureStep,
+        KgRelationSemanticV1::Contradicts,
+    ] {
+        let channel = store
+            .typed_relation_channel_tx(
+                &mut transaction,
+                &seeds,
+                &mut generations,
+                /*now*/ 200,
+                kind,
+            )
+            .await
+            .expect("absent typed kind");
+        assert_eq!(
+            (channel.values, channel.limit),
+            (Vec::new(), RetrievalLimitObservation::Exhausted)
+        );
+    }
+    let ordinary = store
+        .graph_channel_tx(&mut transaction, &seeds, &mut generations, /*now*/ 200)
+        .await
+        .expect("ordinary graph channel");
+    assert_eq!(
+        (ordinary.values, ordinary.limit),
+        (
+            vec![MemoryKey {
+                memory_id: receipt.memory.id.memory_id.as_str().to_string(),
+                revision: receipt.memory.id.revision,
+            }],
+            RetrievalLimitObservation::Exhausted,
+        )
+    );
+    seeds[1].generation_sha256 = Some(Sha256Digest::for_bytes(b"wrong-absent-kind-generation"));
+    assert!(matches!(
+        store
+            .typed_relation_channel_tx(
+                &mut transaction,
+                &seeds,
+                &mut generations,
+                /*now*/ 200,
+                KgRelationSemanticV1::Causes,
+            )
+            .await,
+        Err(CognitiveStoreError::Corrupt(_))
+    ));
+    transaction
+        .rollback()
+        .await
+        .expect("close read transaction");
+}
+
+#[tokio::test]
 async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(/*suffix*/ 91);
