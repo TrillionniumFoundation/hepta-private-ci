@@ -186,7 +186,7 @@ fn copy_at_boundaries(
         std::fs::create_dir_all(parent)?;
     }
     observe(CopyBoundary::ParentVerified)?;
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", windows))]
     if let Some(root) = private_root {
         crate::journal_storage::verify_private_destination(root, destination)?;
     }
@@ -221,17 +221,27 @@ fn copy_at_boundaries(
             destination_file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
         }
     }
+    #[cfg(windows)]
+    if let Some(root) = private_root {
+        root.verify_mutable_file(destination_file.as_file())?;
+    }
     observe(CopyBoundary::Opened)?;
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", windows))]
     {
         if let Some(root) = private_root {
             root.verify()?;
+            #[cfg(target_os = "macos")]
             codex_utils_private_state::verify_private_permissions(destination_file.as_file())?;
+            #[cfg(windows)]
+            root.verify_mutable_file(destination_file.as_file())?;
             crate::journal_storage::verify_private_destination(root, destination)?;
         }
         if let Some(root) = source_root {
             root.verify()?;
+            #[cfg(target_os = "macos")]
             codex_utils_private_state::verify_private_permissions(&source_file)?;
+            #[cfg(windows)]
+            root.verify_file(&source_file)?;
         }
     }
     let mut incoming = source_file.take(MAX_PACKAGE_BYTES + 1);
@@ -288,9 +298,12 @@ fn copy_at_boundaries(
     observe(CopyBoundary::FileSynced)?;
     if let Some(root) = private_root {
         root.verify()?;
-        #[cfg(target_os = "macos")]
+        #[cfg(any(target_os = "macos", windows))]
         {
+            #[cfg(target_os = "macos")]
             codex_utils_private_state::verify_private_permissions(destination_file.as_file())?;
+            #[cfg(windows)]
+            root.verify_mutable_file(destination_file.as_file())?;
             crate::journal_storage::verify_private_destination(root, destination)?;
         }
     }
@@ -298,6 +311,8 @@ fn copy_at_boundaries(
         root.verify()?;
         #[cfg(target_os = "macos")]
         codex_utils_private_state::verify_private_permissions(incoming.get_ref())?;
+        #[cfg(windows)]
+        root.verify_file(incoming.get_ref())?;
     }
     destination_file.commit()?;
     if let Some(root) = private_root {
@@ -463,3 +478,7 @@ mod root_tests;
 #[cfg(all(test, target_os = "macos"))]
 #[path = "update_storage_macos_tests.rs"]
 mod macos_tests;
+
+#[cfg(all(test, windows))]
+#[path = "update_storage_windows_tests.rs"]
+mod windows_tests;

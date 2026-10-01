@@ -74,7 +74,7 @@ fn write_at_boundaries(
     root.verify()?;
     private_child_name(root, path)?;
     observe(Boundary::ParentVerified)?;
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", windows))]
     verify_private_destination(root, path)?;
     let mut file = AtomicWriteFile::open(path)?;
     #[cfg(unix)]
@@ -94,21 +94,29 @@ fn write_at_boundaries(
         codex_utils_private_state::verify_private_permissions(file.as_file())?;
         file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
     }
+    #[cfg(windows)]
+    root.verify_mutable_file(file.as_file())?;
     observe(Boundary::Opened)?;
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", windows))]
     {
         root.verify()?;
+        #[cfg(target_os = "macos")]
         codex_utils_private_state::verify_private_permissions(file.as_file())?;
+        #[cfg(windows)]
+        root.verify_mutable_file(file.as_file())?;
         verify_private_destination(root, path)?;
     }
     file.write_all(bytes)?;
     observe(Boundary::Written)?;
     file.sync_all()?;
     observe(Boundary::FileSynced)?;
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", windows))]
     {
         root.verify()?;
+        #[cfg(target_os = "macos")]
         codex_utils_private_state::verify_private_permissions(file.as_file())?;
+        #[cfg(windows)]
+        root.verify_mutable_file(file.as_file())?;
         verify_private_destination(root, path)?;
     }
     file.commit()?;
@@ -375,13 +383,19 @@ pub(crate) fn open_private_file_in(
     Ok(file)
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", windows))]
 pub(crate) fn verify_private_destination(
     root: &PrivateStateRoot,
     path: &Path,
 ) -> Result<(), ShellError> {
     match open_private_file_in(root, path, FileAccess::Read, /*preexisting*/ true) {
-        Ok(_) => Ok(()),
+        Ok(file) => {
+            #[cfg(windows)]
+            root.verify_mutable_file(&file)?;
+            #[cfg(not(windows))]
+            let _ = file;
+            Ok(())
+        }
         Err(ShellError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => root.verify(),
         Err(error) => Err(error),
     }

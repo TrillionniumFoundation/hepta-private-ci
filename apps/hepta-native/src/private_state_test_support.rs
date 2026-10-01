@@ -29,6 +29,34 @@ pub fn private_tempdir() -> TempDir {
     root
 }
 
+#[cfg(windows)]
+pub(crate) fn grant_everyone_read(path: &std::path::Path) -> Vec<u8> {
+    let executable = std::path::PathBuf::from(std::env::var_os("SystemRoot").unwrap())
+        .join("System32/icacls.exe");
+    let output = std::process::Command::new(executable)
+        .arg(path)
+        .args(["/grant", "*S-1-1-0:(R)", "/Q"])
+        .output()
+        .unwrap();
+    assert!(output.status.success(), "{output:?}");
+    windows_acl(path)
+}
+
+#[cfg(windows)]
+pub(crate) fn windows_acl(path: &std::path::Path) -> Vec<u8> {
+    let executable = std::path::PathBuf::from(std::env::var_os("SystemRoot").unwrap())
+        .join("System32/WindowsPowerShell/v1.0/powershell.exe");
+    let output = std::process::Command::new(executable)
+        .args(["-NoProfile", "-NonInteractive", "-Command"])
+        .arg("(Get-Acl -LiteralPath $env:HEPTA_TEST_ACL_PATH).Sddl")
+        .env("HEPTA_TEST_ACL_PATH", path)
+        .output()
+        .unwrap();
+    assert!(output.status.success(), "{output:?}");
+    assert!(String::from_utf8_lossy(&output.stdout).contains(";;;WD)"));
+    output.stdout
+}
+
 #[cfg(target_os = "macos")]
 pub(crate) fn add_macos_acl(path: &std::path::Path, rights: &str) -> Vec<u8> {
     use std::os::unix::fs::PermissionsExt as _;

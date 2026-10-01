@@ -168,8 +168,23 @@ impl PrivateStateDirectory {
     pub fn replace(&self, staging: &str, destination: &str) -> io::Result<()> {
         validate_name(staging)?;
         validate_name(destination)?;
+        self.verify_trust()?;
+        let source = std::fs::File::from(self.open_existing(staging)?);
+        self.verify_mutable_file(&source)?;
+        let previous = match self.open_existing(destination) {
+            Ok(handle) => Some(handle),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => None,
+            Err(error) => return Err(error),
+        };
         let staging_wide = wide_path(&self.path.join(staging))?;
         let destination_wide = wide_path(&self.path.join(destination))?;
+        // These exact-handle checks must precede publication, preserving unsafe
+        // existing evidence. Close the non-delete-sharing verifier handles so
+        // Windows can rename both entries; the pinned root remains held. This
+        // is not a CAS fence against a trusted owner changing either child.
+        drop(previous);
+        drop(source);
+        self.verify_trust()?;
         let result = unsafe {
             MoveFileExW(
                 staging_wide.as_ptr(),
@@ -180,6 +195,7 @@ impl PrivateStateDirectory {
         if result == 0 {
             return Err(io::Error::last_os_error());
         }
+        self.verify_trust()?;
         let _published = self.open_existing(destination)?;
         Ok(())
     }
@@ -822,3 +838,7 @@ mod tests {
 #[cfg(test)]
 #[path = "windows_acl_tests.rs"]
 mod acl_tests;
+
+#[cfg(test)]
+#[path = "windows_replace_tests.rs"]
+mod replace_tests;
