@@ -6,7 +6,9 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location("vertical_reference", Path(__file__).with_name("reference.py"))
+SPEC = importlib.util.spec_from_file_location(
+    "vertical_reference", Path(__file__).with_name("reference.py")
+)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = MODULE
@@ -68,12 +70,48 @@ class VerticalSliceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "outstanding"):
             runtime.stop(7, outstanding_operations=1)
 
-    def test_product_source_has_exact_readiness_and_task_fail_closed_markers(self) -> None:
-        agent_runtime = (ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(encoding="utf-8")
-        unix_driver = (ROOT / "codex-rs/hepta-supervisor/src/unix.rs").read_text(encoding="utf-8")
+    def test_product_source_has_exact_readiness_and_task_fail_closed_markers(
+        self,
+    ) -> None:
+        agent_runtime = (ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(
+            encoding="utf-8"
+        )
+        task_host = (ROOT / "codex-rs/hepta-agentd/src/runtime_tasks.rs").read_text(
+            encoding="utf-8"
+        )
+        unix_driver = (ROOT / "codex-rs/hepta-supervisor/src/unix.rs").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("probe_app_server", agent_runtime)
         self.assertIn("mark_app_server_ready", agent_runtime)
-        self.assertIn("cleanup_runtime_tasks", agent_runtime)
+        # These source bindings are not product execution or authority receipts.
+        self.assertIn(
+            "RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)",
+            agent_runtime,
+        )
+        self.assertRegex(
+            agent_runtime,
+            r"if let Err\(error\) = startup \{\s*tasks\.shutdown\(\)\.await;\s*return Err\(error\);\s*\}",
+        )
+        self.assertRegex(
+            agent_runtime,
+            r"tasks\s*\.run_until\(async move \{\s*shutdown_signal\(\)\.await\?;"
+            r"\s*(?://[^\n]*\n\s*)*drain_runtime\(state\)\.await\s*\}\)\s*\.await",
+        )
+        self.assertRegex(
+            task_host,
+            r"(?s)pub async fn run_until<S>.*?let result = loop.*?"
+            r"self\.shutdown\(\)\.await;.*?\n        result\n    \}",
+        )
+        self.assertRegex(
+            task_host,
+            r"(?s)pub async fn shutdown\(&mut self\) \{\s*self\.stopped = true;"
+            r"\s*self\.cancellation\.cancel\(\);\s*let grace = self\.shutdown_grace;"
+            r"\s*if timeout\(grace, async \{\s*"
+            r"while let Some\(completion\) = self\.tasks\.join_next_with_id\(\)\.await.*?"
+            r"\}\)\s*\.await\s*\.is_err\(\)\s*\{\s*self\.tasks\.abort_all\(\);"
+            r"\s*while let Some\(completion\) = self\.tasks\.join_next_with_id\(\)\.await",
+        )
         self.assertIn("exact_identity", unix_driver)
         self.assertIn("readiness_matches", unix_driver)
         self.assertIn("fenced", unix_driver)
