@@ -31,6 +31,9 @@ use automation_attachment::AutomationAttachment;
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_admission.rs"]
+mod admission;
+
 pub(crate) struct AgentdState {
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
     pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,
@@ -481,6 +484,10 @@ impl AgentdState {
         let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
             AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
         })?;
+        let effect_workers = self
+            .automation_effect_host()
+            .map(|host| host.pending_effect_workers())
+            .unwrap_or(0);
         Ok(DrainSnapshot {
             admission_closed: runtime.lifecycle == AgentLifecycle::Draining
                 && !runtime.app_server_ready
@@ -490,7 +497,8 @@ impl AgentdState {
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
-                && automation_blockers == 0,
+                && automation_blockers == 0
+                && effect_workers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })

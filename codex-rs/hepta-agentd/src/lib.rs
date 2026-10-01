@@ -68,6 +68,8 @@ mod neuron_runtime;
 pub mod neuron_runtime_v2;
 #[cfg(feature = "server")]
 mod objective_runtime;
+#[cfg(all(unix, feature = "server"))]
+mod operator_namespace;
 #[cfg(feature = "server")]
 mod plasticity_anchor_journal;
 #[cfg(feature = "server")]

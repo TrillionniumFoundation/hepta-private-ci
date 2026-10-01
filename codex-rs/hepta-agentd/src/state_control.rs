@@ -448,46 +448,48 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::RunStart { snapshot } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                require_current_run_identity(
-                    &self.identity,
-                    current_generation,
-                    snapshot.generation,
-                    &snapshot.fence_digest,
-                )?;
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let mut candidate = runs.clone();
-                let receipt = candidate
-                    .start_run(now_ms()?, internal_run_snapshot(snapshot))
-                    .map_err(run_error)?;
-                if !receipt.idempotent {
-                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
-                }
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    require_current_run_identity(
+                        &self.identity,
+                        generation,
+                        snapshot.generation,
+                        &snapshot.fence_digest,
+                    )?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .start_run(now_ms()?, internal_run_snapshot(snapshot))
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunAttachContext {
                 expected_revision,
                 attachment,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                require_current_run_identity(
-                    &self.identity,
-                    current_generation,
-                    attachment.generation,
-                    &attachment.fence_digest,
-                )?;
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let mut candidate = runs.clone();
-                let receipt = candidate
-                    .attach_context(
-                        now_ms()?,
-                        expected_revision,
-                        internal_context_attachment(attachment),
-                    )
-                    .map_err(run_error)?;
-                if !receipt.idempotent {
-                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
-                }
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    require_current_run_identity(
+                        &self.identity,
+                        generation,
+                        attachment.generation,
+                        &attachment.fence_digest,
+                    )?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .attach_context(
+                            now_ms()?,
+                            expected_revision,
+                            internal_context_attachment(attachment),
+                        )
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunMarkDispatched {
@@ -695,8 +697,10 @@ impl AgentdState {
                     );
                 };
                 let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
+                let reservation = self.reserve_automation_effect_worker()?;
                 let receipt = host
-                    .execute(
+                    .execute_reserved(
+                        reservation,
                         store,
                         &intent,
                         &wire_payload,
@@ -736,8 +740,9 @@ impl AgentdState {
                         automation_effect_unavailable(),
                     );
                 };
+                let reservation = self.reserve_automation_effect_worker()?;
                 let result = host
-                    .reconcile(store, &run_id, &step_id, attempt, now_ms()?)
+                    .reconcile_reserved(reservation, store, &run_id, &step_id, attempt, now_ms()?)
                     .await?;
                 self.fence_after_durable_change()?;
                 let snapshot = match result {
@@ -1325,20 +1330,6 @@ fn federation_snapshot(
             FederationCapabilityState::Revoked => crate::MemoryFederationCapabilityState::Revoked,
         },
     })
-}
-
-fn require_run_admission_ready(
-    lifecycle: AgentLifecycle,
-    app_server_ready: bool,
-    fenced: bool,
-) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
-        Ok(())
-    } else {
-        Err(AgentdError::Protocol(
-            "run admission is unavailable until this Agent generation is ready".to_string(),
-        ))
-    }
 }
 
 fn require_run_reconciliation_ready(

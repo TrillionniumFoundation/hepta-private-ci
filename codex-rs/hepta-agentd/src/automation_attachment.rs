@@ -25,7 +25,22 @@ impl AutomationAttachment {
     pub(super) async fn drain_blockers(&self) -> Result<u32, AgentdError> {
         match self {
             Self::Available(store) | Self::Retained(store) => {
-                store.drain_blockers().await.map_err(Into::into)
+                // Uncertain provider effects survive their waiting caller and
+                // process. Query the retained original owner before reporting
+                // a zero drain cut, even when no local worker remains.
+                let pending =
+                    store
+                        .pending_authorized_taskflow_effects(1)
+                        .await
+                        .map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "read durable effect drain blockers: {error}"
+                            ))
+                        })?;
+                Ok(store
+                    .drain_blockers()
+                    .await?
+                    .saturating_add(u32::from(!pending.is_empty())))
             }
             Self::Absent => Ok(0),
             Self::Unavailable => Ok(1),

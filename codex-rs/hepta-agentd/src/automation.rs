@@ -404,7 +404,7 @@ fn automation_input(admission: &AutomationAdmission) -> Vec<UserInput> {
     }]
 }
 
-fn unix_time_ms() -> Result<u64, AutomationError> {
+pub(crate) fn unix_time_ms() -> Result<u64, AutomationError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AutomationError::Unavailable)?
