@@ -16,7 +16,12 @@ fn paired_supervised_complete_native_trace_qualifies_and_persists_without_author
     let mut provider = signing.provider(&plan);
     let mut runner = runner();
     let execution = runner
-        .evaluate_registered_paired_supervised(&registration, &mut provider, &signing.verifier, 30)
+        .evaluate_paired_with_clock(
+            &registration,
+            &mut provider,
+            &signing.trust,
+            &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
+        )
         .unwrap();
     assert_eq!(execution.estimate().cluster_count(), 128);
     assert_eq!(provider.release_count, 1);
@@ -25,13 +30,13 @@ fn paired_supervised_complete_native_trace_qualifies_and_persists_without_author
     let evidence = signing.evaluation(&execution, &context);
     let mut sink = Sink::default();
     let receipt = runner
-        .qualify_paired_and_persist(
+        .qualify_paired_with_clock(
             &execution,
             &context,
             &evidence,
-            &signing.verifier,
+            &signing.trust,
             &mut sink,
-            30,
+            &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
         )
         .unwrap();
     assert_eq!(
@@ -69,24 +74,24 @@ fn paired_supervised_native_primary_rejection_keeps_same_durable_evidence_path()
     );
     let mut runner = runner();
     let execution = runner
-        .evaluate_registered_paired_supervised(
+        .evaluate_paired_with_clock(
             &signing.register(&plan),
             &mut provider,
-            &signing.verifier,
-            30,
+            &signing.trust,
+            &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
         )
         .unwrap();
     let context = signing.context();
     let evidence = signing.evaluation(&execution, &context);
     let mut sink = Sink::default();
     let receipt = runner
-        .qualify_paired_and_persist(
+        .qualify_paired_with_clock(
             &execution,
             &context,
             &evidence,
-            &signing.verifier,
+            &signing.trust,
             &mut sink,
-            30,
+            &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
         )
         .unwrap();
     assert_eq!(
@@ -113,11 +118,11 @@ fn paired_supervised_reauthenticates_original_registration_before_any_provider_a
     let before = runner.holdout_state_digest();
     assert!(
         runner
-            .evaluate_registered_paired_supervised(
+            .evaluate_paired_with_clock(
                 &registration,
                 &mut provider,
-                &signing.verifier,
-                901
+                &signing.trust,
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[901]),
             )
             .is_err()
     );
@@ -127,11 +132,11 @@ fn paired_supervised_reauthenticates_original_registration_before_any_provider_a
     let other = SigningFixture::new(true);
     assert!(
         runner
-            .evaluate_registered_paired_supervised(
+            .evaluate_paired_with_clock(
                 &registration,
                 &mut provider,
-                &other.verifier,
-                30
+                &other.trust,
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );
@@ -150,11 +155,11 @@ fn paired_supervised_after_consumption_failure_cannot_release_fresh_holdout_on_r
     let before = runner.holdout_state_digest();
     assert!(
         runner
-            .evaluate_registered_paired_supervised(
+            .evaluate_paired_with_clock(
                 &registration,
                 &mut provider,
-                &signing.verifier,
-                30
+                &signing.trust,
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );
@@ -163,11 +168,11 @@ fn paired_supervised_after_consumption_failure_cannot_release_fresh_holdout_on_r
     provider.observations = Some(signing.cut(&plan));
     assert!(
         runner
-            .evaluate_registered_paired_supervised(
+            .evaluate_paired_with_clock(
                 &registration,
                 &mut provider,
-                &signing.verifier,
-                30
+                &signing.trust,
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );
@@ -276,11 +281,11 @@ fn paired_supervised_authenticates_observer_cut_before_statistics_and_retains_co
     let before = runner.holdout_state_digest();
     assert!(
         runner
-            .evaluate_registered_paired_supervised(
+            .evaluate_paired_with_clock(
                 &signing.register(&plan),
                 &mut provider,
-                &signing.verifier,
-                30
+                &signing.trust,
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );
@@ -313,11 +318,11 @@ fn paired_supervised_uses_actual_registration_and_execution_times_and_current_ob
         );
         assert!(
             runner()
-                .evaluate_registered_paired_supervised(
+                .evaluate_paired_with_clock(
                     &signing.register(&plan),
                     &mut provider,
-                    &signing.verifier,
-                    30
+                    &signing.trust,
+                    &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
                 )
                 .is_err()
         );
@@ -330,11 +335,11 @@ fn paired_supervised_independent_evaluator_cannot_share_observer_controller() {
     let signing = SigningFixture::new(true);
     let mut runner = runner();
     let execution = runner
-        .evaluate_registered_paired_supervised(
+        .evaluate_paired_with_clock(
             &signing.register(&plan),
             &mut signing.provider(&plan),
-            &signing.verifier,
-            30,
+            &signing.trust,
+            &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
         )
         .unwrap();
     let context = signing.context();
@@ -342,13 +347,13 @@ fn paired_supervised_independent_evaluator_cannot_share_observer_controller() {
     let mut sink = Sink::default();
     assert!(
         runner
-            .qualify_paired_and_persist(
+            .qualify_paired_with_clock(
                 &execution,
                 &context,
                 &evidence,
-                &signing.verifier,
+                &signing.trust,
                 &mut sink,
-                30
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );
@@ -361,11 +366,11 @@ fn paired_supervised_rejects_old_ope_signature_zero_receipts_and_missing_publica
     let signing = SigningFixture::new(false);
     let mut runner = runner();
     let execution = runner
-        .evaluate_registered_paired_supervised(
+        .evaluate_paired_with_clock(
             &signing.register(&plan),
             &mut signing.provider(&plan),
-            &signing.verifier,
-            30,
+            &signing.trust,
+            &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
         )
         .unwrap();
     let mut context = signing.context();
@@ -398,13 +403,13 @@ fn paired_supervised_rejects_old_ope_signature_zero_receipts_and_missing_publica
     );
     assert!(
         runner
-            .qualify_paired_and_persist(
+            .qualify_paired_with_clock(
                 &execution,
                 &context,
                 &evidence,
-                &signing.verifier,
+                &signing.trust,
                 &mut sink,
-                30
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );
@@ -412,13 +417,13 @@ fn paired_supervised_rejects_old_ope_signature_zero_receipts_and_missing_publica
     sink.return_zero = true;
     assert!(
         runner
-            .qualify_paired_and_persist(
+            .qualify_paired_with_clock(
                 &execution,
                 &context,
                 &signing.evaluation(&execution, &context),
-                &signing.verifier,
+                &signing.trust,
                 &mut sink,
-                30
+                &mut crate::paired_supervised_host_clock::PairedHostClockV1::fixture(&[30]),
             )
             .is_err()
     );

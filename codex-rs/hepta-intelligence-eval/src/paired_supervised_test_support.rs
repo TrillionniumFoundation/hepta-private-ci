@@ -263,6 +263,7 @@ pub(super) fn inputs(count: usize) -> PairedSupervisedPlanInputsV1 {
 
 pub(super) struct SigningFixture {
     pub(super) verifier: LearningEvidenceVerifierV1,
+    pub(super) trust: ActivatedLearningTrustV1,
     pub(super) principals: [AuthenticatedPrincipalV1; 3],
     keys: [SigningKey; 3],
 }
@@ -298,17 +299,46 @@ impl SigningFixture {
                 revoked_at: None,
             })
             .collect();
-        Self {
-            verifier: LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        let trust = Self::activate(
+            LearningEvidenceTrustV1 {
                 scope_digest: digest("paired-objective-scope"),
                 objective_digest: digest("paired-objective"),
                 authority_epoch: 1,
                 signers,
-            })
-            .unwrap(),
+            },
+            800,
+        );
+        Self {
+            verifier: trust.verifier().clone(),
+            trust,
             principals,
             keys,
         }
+    }
+    fn activate(value: LearningEvidenceTrustV1, expires_at: u64) -> ActivatedLearningTrustV1 {
+        let key = SigningKey::from_bytes(&[74; 32]);
+        let root = LearningTrustRootV1 {
+            root_id: id("fixture-paired-root"),
+            scope_digest: value.scope_digest,
+            verifying_key: key.verifying_key().to_bytes(),
+            valid_from: 1,
+            expires_at: 1_000,
+            revoked_at: None,
+        };
+        let mut distribution = SignedLearningTrustDistributionV1 {
+            distribution: LearningTrustDistributionV1 {
+                distribution_id: id("fixture-paired-root-distribution"),
+                generation: 1,
+                effective_at: 1,
+                trust: value,
+            },
+            root_id: root.root_id.clone(),
+            issued_at: 1,
+            expires_at,
+            signature: [0; 64],
+        };
+        distribution.signature = key.sign(&distribution.signing_bytes().unwrap()).to_bytes();
+        activate_learning_trust(&root, distribution, None, 1).unwrap()
     }
     pub(super) fn sign(
         &self,

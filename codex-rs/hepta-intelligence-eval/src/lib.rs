@@ -43,6 +43,7 @@ pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 mod ope;
 mod paired_supervised_estimate;
+mod paired_supervised_host_clock;
 mod paired_supervised_plan;
 mod paired_supervised_qualification;
 mod paired_supervised_registration;
@@ -479,6 +480,9 @@ mod paired_supervised_tests;
 
 #[cfg(test)]
 mod paired_supervised_boundary_tests;
+
+#[cfg(test)]
+mod paired_supervised_current_trust_tests;
 
 #[cfg(test)]
 mod calibration_cycle_tests;

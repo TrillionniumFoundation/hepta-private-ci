@@ -3,8 +3,8 @@
 
 use std::collections::BTreeSet;
 
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -23,6 +23,7 @@ use crate::SignedEvaluationError;
 use crate::SignedEvaluationEvidenceV1;
 use crate::decide_independently_v2;
 use crate::evaluation_signing_payload_v2;
+use crate::paired_supervised_host_clock::PairedHostClockV1;
 
 /// This domain binds the distinct profile and original paired execution. Old
 /// temporal/OPE Evaluator signatures cannot be reused as paired signatures.
@@ -117,10 +118,30 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         execution: &ProductPairedEvaluationReceiptV1,
         context: &ProductQualificationContextV1,
         evidence: &SignedEvaluationEvidenceV1,
-        verifier: &LearningEvidenceVerifierV1,
+        trust: &ActivatedLearningTrustV1,
         sink: &mut E,
-        now: u64,
     ) -> Result<ProductPairedQualificationReceiptV1, PairedSupervisedErrorV1> {
+        self.qualify_paired_with_clock(
+            execution,
+            context,
+            evidence,
+            trust,
+            sink,
+            &mut PairedHostClockV1::system(),
+        )
+    }
+
+    pub(crate) fn qualify_paired_with_clock<E: ProductQualificationEvidenceSinkV1>(
+        &self,
+        execution: &ProductPairedEvaluationReceiptV1,
+        context: &ProductQualificationContextV1,
+        evidence: &SignedEvaluationEvidenceV1,
+        trust: &ActivatedLearningTrustV1,
+        sink: &mut E,
+        clock: &mut PairedHostClockV1,
+    ) -> Result<ProductPairedQualificationReceiptV1, PairedSupervisedErrorV1> {
+        let now = clock.sample_registered(trust, &execution.registration)?;
+        let verifier = trust.verifier();
         execution.verify_current(verifier, now)?;
         if evidence.generator_plan != execution.registration.generator_evidence
             || evidence.evaluator_bundle.issued_at
@@ -152,6 +173,18 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             .map_err(SignedEvaluationError::from)?;
         verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(SignedEvaluationError::from)?;
+        // Hashing and independent signature checks may cross an expiry. The
+        // sink is an actual effect, so sample the owner clock again and recheck
+        // all original execution/registration/Evaluator evidence before it.
+        let now = clock.sample_registered(trust, &execution.registration)?;
+        execution.verify_current(verifier, now)?;
+        let current_authentication =
+            crate::signed_evaluation::authenticate(&bundle, evidence, verifier, &payload, now)?;
+        if current_authentication != authentication_digest {
+            return Err(PairedSupervisedErrorV1::Binding(
+                "paired authentication changed before publication",
+            ));
+        }
         let decision = SignedEvaluationDecisionV1 {
             decision: decide_independently_v2(bundle, roles(execution), now)?,
             trust_digest: verifier.trust_digest(),

@@ -1,6 +1,7 @@
 //! Versioned full-information execution on the existing fenced custody owner.
 //! No behavior propensity is fabricated and no OpeRow is reinterpreted.
 
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
@@ -20,6 +21,7 @@ use crate::ProductProviderErrorV1;
 use crate::SignedEvaluationError;
 use crate::paired_observation_cut_signing_payload_v1;
 use crate::paired_supervised_estimate::estimate_paired_cut;
+use crate::paired_supervised_host_clock::PairedHostClockV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedPairedObservationCutV1 {
@@ -123,12 +125,26 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         &mut self,
         registration: &AuthenticatedPairedRegistrationV1,
         provider: &mut P,
-        verifier: &LearningEvidenceVerifierV1,
-        now: u64,
+        trust: &ActivatedLearningTrustV1,
+    ) -> Result<ProductPairedEvaluationReceiptV1, PairedSupervisedErrorV1> {
+        self.evaluate_paired_with_clock(
+            registration,
+            provider,
+            trust,
+            &mut PairedHostClockV1::system(),
+        )
+    }
+
+    pub(crate) fn evaluate_paired_with_clock<P: PairedFinalHoldoutProviderV1>(
+        &mut self,
+        registration: &AuthenticatedPairedRegistrationV1,
+        provider: &mut P,
+        trust: &ActivatedLearningTrustV1,
+        clock: &mut PairedHostClockV1,
     ) -> Result<ProductPairedEvaluationReceiptV1, PairedSupervisedErrorV1> {
         // No provider metadata access or CAS mutation precedes original G/O
         // signature, controller, epoch, revocation and expiration checks.
-        registration.verify_current(verifier, now)?;
+        clock.sample_registered(trust, registration)?;
         let manifest = provider
             .manifest_digest()
             .map_err(ProductEvaluationError::from)?;
@@ -137,6 +153,9 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 "paired final holdout manifest",
             ));
         }
+        // Provider metadata I/O cannot carry a formerly valid root across the
+        // actual CAS invocation. Recheck the original registration and clock.
+        clock.sample_registered(trust, registration)?;
         let holdout = self.consume_profile_holdout(&registration.plan.frozen)?;
         // The consumed obligation survives every later error. A failed attempt
         // cannot reopen gold or substitute a new observation on replay.
@@ -145,10 +164,12 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 "consumed paired holdout requires original receipt",
             ));
         }
+        clock.sample_registered(trust, registration)?;
         let observations = provider
             .release_after_consumption(&holdout)
             .map_err(ProductEvaluationError::from)?;
-        verify_cut(registration, &observations, verifier, now)?;
+        let now = clock.sample_registered(trust, registration)?;
+        verify_cut(registration, &observations, trust.verifier(), now)?;
         let estimate = estimate_paired_cut(&registration.plan, &observations.cut)?;
         let (support_digest, confidence_digest) = evidence_digests(registration, &estimate);
         let mut receipt = ProductPairedEvaluationReceiptV1 {
