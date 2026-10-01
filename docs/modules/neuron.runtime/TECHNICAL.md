@@ -138,7 +138,20 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Each registered Rust protocol DTO matches its canonical JSON representation. Internal owner configuration and resource records pass through explicit projections; round-trip guarantees cover the registered DTO fields. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+
+Runtime-config expiry accepts `YYYY-MM-DDTHH:MM:SS[.digits]Z`: a four-digit
+proleptic Gregorian year and valid date/time, seconds `0..=59`, within 64 ASCII bytes.
+The adapter checks syntax and calendar validity; the composing host enforces
+current freshness, expiry and revocation. Tick/checkpoint activation indices
+are globally bounded to `0..=511`; parsing does not authenticate the owner or
+establish that indices fit the selected native width. Tick receipts require
+`predictionErrorQ24` in `0..=16 * 2^24` raw Q24 units and nonzero
+`checkpointBytes`.
+
+Native calibration rounds confidence penalties and OOD ratios upward and
+compares the activity ceiling using the exact active-count/width ratio. Updated admission semantics require qualification evidence
+bound to the updated source/profile version and repeated affected measurements.
 
 ## 6. Data authority, persistence and migrations
 
