@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -12,76 +11,42 @@ use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
+#[path = "../native_cli.rs"]
+mod cli;
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let mut socket = None;
-    let mut agent_id = None;
-    let mut generation = None;
-    let mut model = None;
-    let mut journal = None;
-    let mut request_id = None;
-    let mut maximum_in_flight = None;
-    let mut context_query = None;
-    let mut final_use_authority_config = None;
-    let mut intelligence_run_id = None;
-    let mut intelligence_revision = None;
-    let mut intelligence_context_digest = None;
-    let mut intelligence_envelope_digest = None;
-    let mut native_profile_selected = false;
-    let mut timeout_ms = 120_000_u64;
-    let mut args = std::env::args().skip(1);
-    while let Some(flag) = args.next() {
-        if flag == "--help" {
+    let options = match cli::parse(std::env::args().skip(1))? {
+        cli::Invocation::Help => {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch.\n--context-query and --intelligence-* are mutually exclusive until the owner provides a combined final-use port."
             );
             return Ok(());
         }
-        let value = args.next().ok_or("missing argument value")?;
-        match flag.as_str() {
-            "--profile" if value == "native-app-server" => native_profile_selected = true,
-            "--profile" => return Err(format!("unsupported worker profile: {value}").into()),
-            "--agentd-socket" => socket = Some(PathBuf::from(value)),
-            "--agent-id" => agent_id = Some(AgentId::parse(value)?),
-            "--generation" => generation = Some(value.parse()?),
-            "--model" => model = Some(value),
-            "--journal" => journal = Some(PathBuf::from(value)),
-            "--request-id" => request_id = Some(value),
-            "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
-            "--context-query" => context_query = Some(value),
-            "--final-use-authority-config" => {
-                final_use_authority_config = Some(PathBuf::from(value))
-            }
-            "--intelligence-run-id" => intelligence_run_id = Some(value),
-            "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
-            "--intelligence-context-digest" => intelligence_context_digest = Some(value),
-            "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
-            "--timeout-ms" => timeout_ms = value.parse()?,
-            _ => return Err(format!("unknown argument: {flag}").into()),
-        }
-    }
-    if !native_profile_selected {
-        return Err("--profile native-app-server must be selected explicitly".into());
-    }
-    let final_use_authorizer = UnixFinalUseAuthorizer::open(
-        &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
-    )?;
+        cli::Invocation::Run(options) => *options,
+    };
+    let intelligence = options
+        .intelligence
+        .map(|binding| NativeIntelligenceRunBinding {
+            run_id: binding.run_id,
+            expected_revision: binding.expected_revision,
+            context_digest: binding.context_digest,
+            envelope_digest: binding.envelope_digest,
+        });
+    let agent_id = AgentId::parse(options.agent_id)?;
+    let final_use_authorizer = UnixFinalUseAuthorizer::open(&options.final_use_authority_config)?;
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
-        agentd_socket: socket.ok_or("--agentd-socket is required")?,
-        agent_id: agent_id.ok_or("--agent-id is required")?,
-        generation: generation.ok_or("--generation is required")?,
-        model: model.ok_or("--model is required")?,
-        timeout: Duration::from_millis(timeout_ms),
+        agentd_socket: options.agentd_socket,
+        agent_id,
+        generation: options.generation,
+        model: options.model,
+        timeout: Duration::from_millis(options.timeout_ms),
     })?
     .with_turn_start_authorizer(Arc::new(final_use_authorizer));
-    let journal = journal.ok_or("--journal is required")?;
-    if !journal.is_absolute() {
-        return Err("--journal must be absolute".into());
-    }
-    let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
+    let mut control = DurableInferenceControl::open(options.journal, /*capacity*/ 16_384)?;
     let admission = NativeAdmission {
-        request_id: request_id.ok_or("--request-id is required")?,
-        maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
+        request_id: options.request_id,
+        maximum_in_flight: options.maximum_in_flight,
     };
     let mut prompt = String::new();
     tokio::io::stdin()
@@ -95,25 +60,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             signal.cancel();
         }
     });
-    let intelligence = match (
-        intelligence_run_id,
-        intelligence_revision,
-        intelligence_context_digest,
-        intelligence_envelope_digest,
-    ) {
-        (None, None, None, None) => None,
-        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
-            Some(NativeIntelligenceRunBinding {
-                run_id,
-                expected_revision,
-                context_digest,
-                envelope_digest,
-            })
-        }
-        _ => {
-            return Err("all four --intelligence-* arguments must be supplied together".into());
-        }
-    };
     let result = match intelligence {
         Some(binding) => {
             driver
@@ -121,7 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     &mut control,
                     admission,
                     prompt,
-                    context_query,
+                    options.context_query,
                     binding,
                     &cancellation,
                 )
@@ -133,7 +79,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     &mut control,
                     admission,
                     prompt,
-                    context_query,
+                    options.context_query,
                     &cancellation,
                 )
                 .await
