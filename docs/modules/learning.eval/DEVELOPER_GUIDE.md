@@ -237,7 +237,9 @@ PR status is a separate trust boundary. The trusted default-branch
 `workflow_run` reporter downloads `qualification-summary.json` or
 `exact-summary.json` as **untrusted data**, then verifies:
 
-- the exact artifact name and one regular, bounded summary file;
+- the exact artifact name and regular, bounded files: source qualification requires
+  exactly `qualification-summary.json` and its consistent `CURRENT_STATUS.run.json`;
+  exact-tree qualification requires exactly `exact-summary.json`;
 - schema and canonical SHA-256;
 - producer repository, workflow run ID, and run attempt;
 - candidate commit and tree;
