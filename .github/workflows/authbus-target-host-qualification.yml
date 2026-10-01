@@ -1,0 +1,245 @@
+name: AuthBus target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact immutable candidate SHA already merged into main
+        required: true
+        type: string
+      target_profile:
+        description: Registered target profile name
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authbus-target-host-${{ inputs.target_profile }}
+  cancel-in-progress: false
+
+jobs:
+  target-host:
+    name: AuthBus protected target-host fault matrix
+    if: github.ref == 'refs/heads/main'
+    environment: authbus-target-host-qualification
+    runs-on: [self-hosted, linux, authbus-target]
+    timeout-minutes: 360
+    env:
+      CONTROL_SHA: ${{ github.sha }}
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      TARGET_PROFILE: ${{ inputs.target_profile }}
+    steps:
+      - name: Checkout trusted qualification controller
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.CONTROL_SHA }}
+
+      - name: Verify trusted controller and immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
+          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_PROFILE" =~ ^[A-Za-z0-9._-]{1,128}$ ]]
+          git cat-file -e "$CANDIDATE_SHA^{commit}"
+          git merge-base --is-ancestor "$CANDIDATE_SHA" "$CONTROL_SHA"
+          control_paths=(
+            .github/workflows/authbus-target-host-qualification.yml
+            docs/modules/auth.authbus/CRASH_CONSISTENCY_MATRIX.json
+            docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json
+            docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json
+            scripts/authbus-target-host-evidence.py
+            scripts/authbus-performance-evidence.py
+          )
+          for path in "${control_paths[@]}"; do
+            test "$(git rev-parse "$CANDIDATE_SHA:$path")" = "$(git rev-parse "$CONTROL_SHA:$path")"
+          done
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Verify root-owned isolated target harnesses
+        shell: bash
+        run: |
+          set -euo pipefail
+          scenarios=(
+            enospc
+            power-loss
+            permission-loss
+            restore-old-snapshot
+            owner-collision
+            wal-corruption
+            backup-race
+            trust-generation-mismatch
+            fsync-failure
+            rename-failure
+            checkpoint-corruption
+            performance
+            kms-hsm
+            key-rotation-revocation
+            backup-restore
+            owner-mount
+            activation-plan
+            rollback-plan
+          )
+          for scenario in "${scenarios[@]}"; do
+            harness="/opt/hepta/authbus-qualification/$scenario"
+            test -f "$harness"
+            test -x "$harness"
+            test "$(stat -c %u "$harness")" = 0
+            mode="$(stat -c %a "$harness")"
+            (( (8#$mode & 8#022) == 0 ))
+          done
+
+      - name: Capture immutable target identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          mkdir -p "$evidence/receipts"
+          python3 - "$evidence/target-fingerprint.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import platform
+          import subprocess
+          import sys
+
+          def command(*args):
+              return subprocess.check_output(args, text=True).strip()
+
+          os_release = pathlib.Path("/etc/os-release")
+          boot_id = pathlib.Path("/proc/sys/kernel/random/boot_id")
+          payload = {
+              "schema": "hepta.authbus.target-fingerprint.v2",
+              "runnerName": os.environ.get("RUNNER_NAME"),
+              "targetProfile": os.environ["TARGET_PROFILE"],
+              "kernelRelease": platform.release(),
+              "machine": platform.machine(),
+              "bootId": boot_id.read_text().strip(),
+              "osReleaseSha256": hashlib.sha256(os_release.read_bytes()).hexdigest(),
+              "rootFilesystem": command("findmnt", "-n", "-o", "FSTYPE,SOURCE,OPTIONS", "/"),
+              "controlSha": os.environ["CONTROL_SHA"],
+              "candidateSha": os.environ["CANDIDATE_SHA"],
+          }
+          pathlib.Path(sys.argv[1]).write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Execute isolated real fault matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          scenarios=(
+            enospc
+            power-loss
+            permission-loss
+            restore-old-snapshot
+            owner-collision
+            wal-corruption
+            backup-race
+            trust-generation-mismatch
+            fsync-failure
+            rename-failure
+            checkpoint-corruption
+          )
+          for scenario in "${scenarios[@]}"; do
+            sudo --non-interactive "/opt/hepta/authbus-qualification/$scenario" \
+              --candidate-sha "$CANDIDATE_SHA" \
+              --control-sha "$CONTROL_SHA" \
+              --target-profile "$TARGET_PROFILE" \
+              --output-dir "$evidence/receipts"
+            test -s "$evidence/receipts/$scenario.json"
+          done
+
+      - name: Validate and bind target-host receipts with trusted controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          python3 scripts/authbus-target-host-evidence.py \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --receipt-dir "$evidence/receipts" \
+            --output "$evidence/qualification-manifest.json"
+
+      - name: Execute isolated full end-to-end performance matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          sudo --non-interactive "/opt/hepta/authbus-qualification/performance" \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --contract "$GITHUB_WORKSPACE/docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json" \
+            --output "$evidence/performance-receipt.json"
+          test -s "$evidence/performance-receipt.json"
+          target_identity="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["targetIdentity"])' "$evidence/qualification-manifest.json")"
+          python3 scripts/authbus-performance-evidence.py \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --expected-target-identity "$target_identity" \
+            --receipt "$evidence/performance-receipt.json" \
+            --output "$evidence/performance-manifest.json"
+
+      - name: Execute isolated production security and operations drills
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          mkdir -p "$evidence/production"
+          declare -A drills=(
+            [kms-hsm]=kms-hsm.json
+            [key-rotation-revocation]=key-rotation-revocation.json
+            [backup-restore]=backup-restore.json
+            [owner-mount]=owner-mount.json
+          )
+          for drill in "${!drills[@]}"; do
+            output="$evidence/production/${drills[$drill]}"
+            sudo --non-interactive "/opt/hepta/authbus-qualification/$drill" \
+              --candidate-sha "$CANDIDATE_SHA" \
+              --control-sha "$CONTROL_SHA" \
+              --target-profile "$TARGET_PROFILE" \
+              --output "$output"
+            test -s "$output"
+          done
+          sudo --non-interactive "/opt/hepta/authbus-qualification/activation-plan" \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --output "$evidence/production/activation-plan.json"
+          sudo --non-interactive "/opt/hepta/authbus-qualification/rollback-plan" \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --output "$evidence/production/rollback-plan.json"
+          test -s "$evidence/production/activation-plan.json"
+          test -s "$evidence/production/rollback-plan.json"
+
+      - name: Verify qualification controller remained read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
+
+      - name: Upload immutable target-host evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-target-${{ inputs.target_profile }}-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/authbus-target-evidence
+          if-no-files-found: error
+          retention-days: 90

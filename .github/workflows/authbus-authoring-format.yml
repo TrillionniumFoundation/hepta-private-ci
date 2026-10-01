@@ -1,0 +1,57 @@
+name: AuthBus formatting check
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-authbus/**"
+      - "codex-rs/hepta-authbus-p1-3-qualification/**"
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-operations/**"
+      - ".github/workflows/authbus-authoring-format.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-authbus/**"
+      - "codex-rs/hepta-authbus-p1-3-qualification/**"
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-operations/**"
+      - ".github/workflows/authbus-authoring-format.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authbus-format-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_TOOLCHAIN: "1.95.0"
+
+jobs:
+  formatting:
+    name: Read-only rustfmt
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact workflow candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: rustfmt
+
+      - name: Check canonical formatting without mutating source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml -- --check
+          test -z "$(git status --porcelain)"

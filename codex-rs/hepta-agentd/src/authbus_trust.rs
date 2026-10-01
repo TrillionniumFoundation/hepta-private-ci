@@ -7,9 +7,9 @@ use std::io::Read;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::PrivateIssuerRegistryDocument;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 
 use crate::AgentdError;
@@ -17,7 +17,7 @@ use crate::AgentdIdentity;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct TextTrust {
+struct TextTrustDocument {
     schema_version: u32,
     agent_id: String,
     issuer_id: String,
@@ -27,42 +27,60 @@ pub(crate) struct TextTrust {
     thread_ids: Vec<String>,
 }
 
+pub(crate) struct TextTrust {
+    agent_id: String,
+    issuer: IssuerRegistration,
+    revoked: bool,
+    thread_ids: Vec<String>,
+}
+
 impl TextTrust {
     /// Reload the owner-controlled file for each admission and dispatch stage.
-    /// Updating the public key does not synthesize a signature or a grant.
+    /// The opaque registration is constructed only by the private-file registry
+    /// loader after ownership, mode, link and replacement checks succeed.
     pub fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
-        let bytes = read_private_owner_file(path, identity, 16_384)?;
-        let trust: Self = serde_json::from_slice(&bytes)?;
-        if trust.schema_version != 1
-            || trust.agent_id != identity.agent_id.as_str()
-            || trust.thread_ids.len() > 16
-            || trust
+        let registry = PrivateIssuerRegistryDocument::load(path, &identity.home_root, 16_384)
+            .map_err(|error| invalid(&error.to_string()))?;
+        let document: TextTrustDocument = serde_json::from_slice(registry.bytes())?;
+        if document.schema_version != 1
+            || document.agent_id != identity.agent_id.as_str()
+            || document.thread_ids.len() > 16
+            || document
                 .thread_ids
                 .iter()
                 .any(|id| id.is_empty() || id.len() > 128)
+            || document.public_key_hex.len() != 64
         {
             return Err(invalid(
                 "trust registry owner, schema or thread bound is invalid",
             ));
         }
-        trust.issuer()?;
-        Ok(trust)
-    }
-
-    pub fn issuer(&self) -> Result<IssuerRegistration, AgentdError> {
-        Ok(IssuerRegistration {
-            issuer_id: StableId::new(&self.issuer_id)
-                .map_err(|error| invalid(&error.to_string()))?,
-            key_epoch: Generation::new(self.key_epoch)
-                .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
-            revoked: self.revoked,
+        let issuer_id =
+            StableId::new(&document.issuer_id).map_err(|error| invalid(&error.to_string()))?;
+        let key_epoch =
+            Generation::new(document.key_epoch).map_err(|error| invalid(&error.to_string()))?;
+        let issuer = registry
+            .message_issuer(&issuer_id, key_epoch)
+            .map_err(|error| invalid(&error.to_string()))?;
+        if issuer.revoked != document.revoked {
+            return Err(invalid("registry revocation state is inconsistent"));
+        }
+        Ok(Self {
+            agent_id: document.agent_id,
+            issuer,
+            revoked: document.revoked,
+            thread_ids: document.thread_ids,
         })
     }
 
+    pub fn issuer(&self) -> Result<IssuerRegistration, AgentdError> {
+        Ok(self.issuer.clone())
+    }
+
     pub fn permits(&self, thread_id: &str) -> bool {
-        !self.revoked && self.thread_ids.iter().any(|id| id == thread_id)
+        !self.revoked
+            && !self.agent_id.is_empty()
+            && self.thread_ids.iter().any(|id| id == thread_id)
     }
 }
 

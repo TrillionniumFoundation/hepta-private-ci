@@ -16,3 +16,9 @@ workspace = true
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-authbus = { path = "../hepta-authbus" }
+serde_json = { workspace = true }
+tempfile = { workspace = true }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

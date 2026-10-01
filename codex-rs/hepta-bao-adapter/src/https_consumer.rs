@@ -6,7 +6,7 @@ use std::fmt;
 use std::time::Duration;
 
 use codex_hepta_authbus::AuthBusAuthorityError;
-use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::AuthBusExecutionPort;
 use codex_hepta_authbus::QuotaReservation;
 use codex_hepta_authbus::ReservationRequest;
 use codex_hepta_authbus::SettlementStatus;
@@ -232,7 +232,7 @@ impl BaoClient {
     /// kernel final-use claim -> provider observation -> signed settlement.
     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
         &self,
-        authbus: &AuthBusAuthorityHost,
+        authbus: AuthBusExecutionPort<'_>,
         admission: &BaoAuthBusAdmission,
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
@@ -507,7 +507,7 @@ fn segmented(value: &str) -> bool {
     value.len() <= 1024 && value.split('/').all(component)
 }
 async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
-    authbus: &AuthBusAuthorityHost,
+    authbus: AuthBusExecutionPort<'_>,
     evidence: &mut E,
     reservation: &QuotaReservation,
     status: SettlementStatus,
@@ -535,20 +535,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
         terminal_evidence_digest,
         time.wall_time_ms(),
     )?;
-    let issuer = match authbus
-        .settlement_issuer(&signed.claims.issuer_id, signed.claims.key_epoch)
-        .await
-    {
-        Ok(issuer) => issuer,
-        Err(error) => {
-            return Err(BaoAuthBusError::SettlementPending {
-                reservation_id: reservation.reservation_id.clone(),
-                receipt,
-                control_error: error.to_string(),
-            });
-        }
-    };
-    if let Err(error) = authbus.settle(&issuer, &signed, time).await {
+    if let Err(error) = authbus.settle(&signed, time).await {
         return Err(BaoAuthBusError::SettlementPending {
             reservation_id: reservation.reservation_id.clone(),
             receipt,

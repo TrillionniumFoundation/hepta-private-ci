@@ -35,6 +35,18 @@ async fn configured() -> (
     let store = AuthBusAuthorityStore::open(&root.path().join("authbus.sqlite"))
         .await
         .expect("open authority store");
+    let settlement_key = SigningKey::from_bytes(&[9; 32]);
+    store
+        .enroll_issuer(
+            crate::IssuerPurpose::Settlement,
+            crate::IssuerSpec {
+                issuer_id: id("issuer:settlement"),
+                key_epoch: Generation::new(1).expect("generation"),
+                verifying_key: settlement_key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll settlement issuer");
     let scope = Digest32::of_bytes(b"provider-scope");
     let policy = store
         .create_policy(
@@ -91,15 +103,6 @@ async fn configured() -> (
         .await
         .expect("reserve");
     (root, store, decision, reservation)
-}
-
-fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
-    SettlementIssuerRegistration {
-        issuer_id: id("issuer:settlement"),
-        key_epoch: Generation::new(1).expect("generation"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
 }
 
 fn evidence(
@@ -161,7 +164,7 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     let settled = store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(settled.state, ReservationState::Settled);
@@ -187,16 +190,14 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     assert_eq!(
         store
-            .settle(&issuer(&key), &signed, sample(7, 1_700))
+            .settle(&signed, sample(7, 1_700))
             .await
             .expect("exact settlement retry"),
         settled
     );
     let changed = evidence(&key, &dispatched, SettlementStatus::Completed, 4, 1_600);
     assert!(matches!(
-        store
-            .settle(&issuer(&key), &changed, sample(8, 1_800))
-            .await,
+        store.settle(&changed, sample(8, 1_800)).await,
         Err(AuthBusAuthorityError::IdempotencyConflict)
     ));
 }
@@ -228,10 +229,10 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
         .expect("quota snapshot");
     assert_eq!((held.available, held.reserved, held.consumed), (3, 7, 0));
 
-    let key = SigningKey::from_bytes(&[10; 32]);
+    let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
     store
-        .settle(&issuer(&key), &signed, sample(7, 5_200))
+        .settle(&signed, sample(7, 5_200))
         .await
         .expect("late terminal settlement");
     let closed = store
@@ -349,10 +350,10 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         )
         .await
         .expect("mark dispatch");
-    let key = SigningKey::from_bytes(&[33; 32]);
+    let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(
@@ -378,6 +379,25 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .await
         .expect("archived exact retry");
     assert_eq!(retry.state, ReservationState::Settled);
+    assert!(
+        sqlx::query(
+            "UPDATE authbus_quota_reservation_archive SET archived_at_ms = archived_at_ms
+             WHERE reservation_id = ?",
+        )
+        .bind(reservation.reservation_id.as_str())
+        .execute(&store.pool)
+        .await
+        .is_err(),
+        "archived reservation update was accepted",
+    );
+    assert!(
+        sqlx::query("DELETE FROM authbus_quota_reservation_archive WHERE reservation_id = ?")
+            .bind(reservation.reservation_id.as_str())
+            .execute(&store.pool)
+            .await
+            .is_err(),
+        "archived reservation deletion was accepted",
+    );
     let quota = store
         .quota_snapshot(&reservation.quota_key)
         .await

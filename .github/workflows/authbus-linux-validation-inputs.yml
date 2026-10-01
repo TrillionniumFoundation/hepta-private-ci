@@ -1,0 +1,67 @@
+name: AuthBus pinned Linux validation inputs
+on:
+  push:
+    branches: [auth-authbus-hardening-20260927]
+    paths: [.github/workflows/authbus-linux-validation-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt, clippy
+      - name: Download pinned Linux toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --profile minimal --component rustfmt --component clippy --force-non-host
+          tar -C "$HOME/.rustup/toolchains" -czf "$RUNNER_TEMP/authbus-linux-toolchain.tar.gz" 1.95.0-x86_64-unknown-linux-gnu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: authbus-linux-toolchain-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-linux-toolchain.tar.gz
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+      - name: Prepare dependency resolution for review, not qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fetch --manifest-path codex-rs/Cargo.toml --target x86_64-unknown-linux-gnu
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/authbus-resolved-Cargo.lock"
+          git diff -- codex-rs/Cargo.lock > "$RUNNER_TEMP/authbus-lock-drift.patch"
+          cargo fetch --manifest-path codex-rs/Cargo.toml --locked --target x86_64-unknown-linux-gnu
+      - name: Export dependency caches without credential/configuration files
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$HOME/.cargo"
+          paths=()
+          for path in registry/cache registry/src registry/index git/db git/checkouts; do
+            if test -d "$path"; then paths+=("$path"); fi
+          done
+          tar -czf "$RUNNER_TEMP/authbus-cargo-cache.tar.gz" "${paths[@]}"
+          cd "$GITHUB_WORKSPACE"
+          shasum -a 256 codex-rs/Cargo.lock > "$RUNNER_TEMP/authbus-inputs-manifest.txt"
+          git rev-parse HEAD >> "$RUNNER_TEMP/authbus-inputs-manifest.txt"
+          shasum -a 256 "$RUNNER_TEMP/authbus-linux-toolchain.tar.gz" "$RUNNER_TEMP/authbus-cargo-cache.tar.gz" >> "$RUNNER_TEMP/authbus-inputs-manifest.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: authbus-linux-dependencies-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/authbus-cargo-cache.tar.gz
+            ${{ runner.temp }}/authbus-inputs-manifest.txt
+            ${{ runner.temp }}/authbus-resolved-Cargo.lock
+            ${{ runner.temp }}/authbus-lock-drift.patch
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error

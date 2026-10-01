@@ -1,0 +1,277 @@
+{
+  "schema": "hepta.authbus.crash-consistency-matrix.v2",
+  "module": "auth.authbus",
+  "activation": false,
+  "requiredScenarioIds": [
+    "sqlite-before-commit-sigkill",
+    "sqlite-after-commit-sigkill",
+    "checkpoint-temp-written-sigkill",
+    "checkpoint-file-fsync-failure",
+    "checkpoint-rename-failure",
+    "checkpoint-directory-fsync-failure",
+    "disk-full",
+    "checkpoint-content-corruption",
+    "checkpoint-generation-regression",
+    "active-mutation-leftover",
+    "wal-corruption",
+    "owner-lease-missing-or-replaced",
+    "paused-owner-second-owner",
+    "trusted-time-rollback",
+    "backup-concurrent-with-mutation",
+    "restore-old-database-with-new-checkpoint",
+    "trust-material-generation-mismatch"
+  ],
+  "semantics": {
+    "success": "SQLite mutation and independently retained checkpoint are durable.",
+    "notCommitted": "The requested domain mutation did not commit; separately authenticated trusted time may have advanced.",
+    "committedNeedsReconciliation": "The domain mutation committed and must not be blindly replayed.",
+    "unknown": "Stable identity lookup and checkpoint reconciliation are mandatory before any retry."
+  },
+  "scenarios": [
+    {
+      "id": "sqlite-before-commit-sigkill",
+      "faultClass": "process-kill",
+      "boundary": "before SQLite COMMIT is acknowledged",
+      "commitState": "not_committed",
+      "retryRule": "retry only with the same stable request identity after authoritative lookup confirms absence",
+      "startupDetection": "normal WAL recovery; stable identity lookup returns absent",
+      "recoveryAction": "automatic",
+      "readService": "allowed only when checkpoint preflight is clean",
+      "evidenceTier": "repository_process_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs"
+      ]
+    },
+    {
+      "id": "sqlite-after-commit-sigkill",
+      "faultClass": "process-kill",
+      "boundary": "after SQLite COMMIT and before checkpoint publication completes",
+      "commitState": "committed_needs_reconciliation",
+      "retryRule": "never blind retry; lookup by stable identity and reconcile checkpoint",
+      "startupDetection": "dirty frontier or pending checkpoint generation",
+      "recoveryAction": "automatic_then_operator_if_reconciliation_fails",
+      "readService": "authority-bearing reads blocked until reconciliation",
+      "evidenceTier": "repository_process_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs",
+        "codex-rs/hepta-authbus/tests/mutation_contract.rs"
+      ]
+    },
+    {
+      "id": "checkpoint-temp-written-sigkill",
+      "faultClass": "process-kill",
+      "boundary": "temporary checkpoint written before atomic rename",
+      "commitState": "committed_needs_reconciliation",
+      "retryRule": "never blind retry",
+      "startupDetection": "database frontier exceeds retained checkpoint; temporary file is non-authoritative",
+      "recoveryAction": "automatic_republish",
+      "readService": "blocked until exact successor checkpoint is published",
+      "evidenceTier": "repository_process_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs"
+      ]
+    },
+    {
+      "id": "checkpoint-file-fsync-failure",
+      "faultClass": "filesystem",
+      "boundary": "checkpoint file fsync",
+      "commitState": "committed_needs_reconciliation",
+      "retryRule": "reconcile; do not replay domain mutation",
+      "startupDetection": "dirty frontier and unchanged external generation",
+      "recoveryAction": "automatic_republish_or_operator_on_persistent_storage_failure",
+      "readService": "blocked for authority-bearing reads",
+      "evidenceTier": "repository_failpoint",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs"
+      ]
+    },
+    {
+      "id": "checkpoint-rename-failure",
+      "faultClass": "filesystem",
+      "boundary": "atomic checkpoint rename",
+      "commitState": "committed_needs_reconciliation",
+      "retryRule": "reconcile; do not replay domain mutation",
+      "startupDetection": "dirty frontier and old authoritative pathname",
+      "recoveryAction": "automatic_republish_or_operator_on_persistent_storage_failure",
+      "readService": "blocked for authority-bearing reads",
+      "evidenceTier": "repository_failpoint",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs"
+      ]
+    },
+    {
+      "id": "checkpoint-directory-fsync-failure",
+      "faultClass": "filesystem",
+      "boundary": "checkpoint parent directory fsync",
+      "commitState": "outcome_unknown_for_external_publication_domain_mutation_committed",
+      "retryRule": "lookup by stable identity and reconcile; never assume pathname persistence",
+      "startupDetection": "compare durable database frontier with independently retained checkpoint",
+      "recoveryAction": "automatic_when_exact_successor_can_be_republished_else_operator",
+      "readService": "blocked for authority-bearing reads",
+      "evidenceTier": "repository_failpoint_and_target_host",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs",
+        "/opt/hepta/authbus-qualification/power-loss"
+      ]
+    },
+    {
+      "id": "disk-full",
+      "faultClass": "capacity",
+      "boundary": "SQLite WAL or checkpoint filesystem reaches ENOSPC",
+      "commitState": "phase_dependent_not_committed_committed_needs_reconciliation_or_unknown",
+      "retryRule": "classify by stable identity and checkpoint state after capacity restoration",
+      "startupDetection": "SQLite error plus dirty frontier/checkpoint comparison",
+      "recoveryAction": "operator_restore_capacity_then_automatic_reconciliation",
+      "readService": "non-authority diagnostics only until consistency is restored",
+      "evidenceTier": "target_host",
+      "evidence": [
+        "/opt/hepta/authbus-qualification/enospc"
+      ]
+    },
+    {
+      "id": "checkpoint-content-corruption",
+      "faultClass": "integrity",
+      "boundary": "checkpoint document parse, digest, owner or generation validation",
+      "commitState": "database_state_not_inferred_from_corrupt_witness",
+      "retryRule": "no mutation retry",
+      "startupDetection": "strict checkpoint validation fails",
+      "recoveryAction": "operator_restore_authenticated_checkpoint_or_independent_witness",
+      "readService": "fail_closed",
+      "evidenceTier": "repository_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs",
+        "codex-rs/hepta-authbus/tests/frontier_integrity.rs"
+      ]
+    },
+    {
+      "id": "checkpoint-generation-regression",
+      "faultClass": "rollback",
+      "boundary": "external checkpoint generation lower than durable database generation",
+      "commitState": "existing_database_may_be_newer",
+      "retryRule": "no mutation retry",
+      "startupDetection": "generation and digest comparison",
+      "recoveryAction": "operator_investigation_or_authenticated_newer_witness_restore",
+      "readService": "fail_closed",
+      "evidenceTier": "repository_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/recovery_tests.rs"
+      ]
+    },
+    {
+      "id": "active-mutation-leftover",
+      "faultClass": "recovery",
+      "boundary": "restart observes unfinished mutation bookkeeping or dirty frontier",
+      "commitState": "lookup_required",
+      "retryRule": "never blind retry",
+      "startupDetection": "active mutation record, dirty frontier, reservation identity or pending generation",
+      "recoveryAction": "bounded_automatic_reconciliation_then_worker_continuation",
+      "readService": "blocked when authority state is ambiguous",
+      "evidenceTier": "repository_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/host_tests.rs",
+        "codex-rs/hepta-authbus/src/recovery_tests.rs"
+      ]
+    },
+    {
+      "id": "wal-corruption",
+      "faultClass": "storage-corruption",
+      "boundary": "SQLite open, quick_check, foreign-key or schema verification",
+      "commitState": "unknown",
+      "retryRule": "no mutation retry",
+      "startupDetection": "SQLite integrity and exact-schema checks fail",
+      "recoveryAction": "operator_restore_from_matched_backup_and_witness",
+      "readService": "fail_closed",
+      "evidenceTier": "repository_test_and_operator_drill",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+        "docs/modules/auth.authbus/RECOVERY.md"
+      ]
+    },
+    {
+      "id": "owner-lease-missing-or-replaced",
+      "faultClass": "ownership",
+      "boundary": "owner lock inode/path identity validation",
+      "commitState": "no_new_mutation_admitted",
+      "retryRule": "repair ownership path; do not bypass fence",
+      "startupDetection": "O_NOFOLLOW, inode, link-count, ownership and pathname stability checks",
+      "recoveryAction": "operator_repair_then_reacquire",
+      "readService": "no authority host is exposed",
+      "evidenceTier": "repository_process_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/tests/owner_lock_compat.rs"
+      ]
+    },
+    {
+      "id": "paused-owner-second-owner",
+      "faultClass": "split-brain",
+      "boundary": "second process attempts owner acquisition while first retains OFD/POSIX-compatible fence",
+      "commitState": "second_owner_not_admitted",
+      "retryRule": "wait for explicit handoff; never steal on timeout alone",
+      "startupDetection": "non-blocking owner lock acquisition fails",
+      "recoveryAction": "operator_confirm_first_owner_exit_then_reacquire",
+      "readService": "existing owner may continue; rejected owner exposes no authority",
+      "evidenceTier": "repository_process_test_and_target_host",
+      "evidence": [
+        "codex-rs/hepta-authbus/tests/owner_lock_compat.rs",
+        "/opt/hepta/authbus-qualification/owner-collision"
+      ]
+    },
+    {
+      "id": "trusted-time-rollback",
+      "faultClass": "time",
+      "boundary": "signed trusted-time frontier moves backwards or reuses an invalid epoch",
+      "commitState": "requested_time_observation_not_committed",
+      "retryRule": "obtain a current authenticated attestation",
+      "startupDetection": "durable trusted-time floor comparison",
+      "recoveryAction": "automatic_rejection_operator_investigation_if_persistent",
+      "readService": "reads may continue at the durable trusted-time floor; new authority use requiring time is blocked",
+      "evidenceTier": "repository_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/trust_store_tests.rs"
+      ]
+    },
+    {
+      "id": "backup-concurrent-with-mutation",
+      "faultClass": "backup",
+      "boundary": "backup begins while mutation/checkpoint gate is active",
+      "commitState": "backup_must_not_capture_mismatched_database_and_witness",
+      "retryRule": "retry backup after acquiring backup gate",
+      "startupDetection": "backup manifest digest/generation mismatch",
+      "recoveryAction": "discard_unmatched_backup",
+      "readService": "normal service may continue; backup waits or fails boundedly",
+      "evidenceTier": "repository_admin_test",
+      "evidence": [
+        "codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs"
+      ]
+    },
+    {
+      "id": "restore-old-database-with-new-checkpoint",
+      "faultClass": "rollback",
+      "boundary": "restored database is older than independently retained checkpoint",
+      "commitState": "restored_state_rejected",
+      "retryRule": "no mutation retry",
+      "startupDetection": "generation/digest rollback comparison",
+      "recoveryAction": "operator_restore_matched_database_and_witness_pair",
+      "readService": "fail_closed",
+      "evidenceTier": "target_host",
+      "evidence": [
+        "/opt/hepta/authbus-qualification/restore-old-snapshot"
+      ]
+    },
+    {
+      "id": "trust-material-generation-mismatch",
+      "faultClass": "trust",
+      "boundary": "database/checkpoint backup and issuer or trusted-time material are from different generations",
+      "commitState": "authority_validation_blocked",
+      "retryRule": "no domain mutation retry",
+      "startupDetection": "issuer epoch, revocation and configured trust manifest mismatch",
+      "recoveryAction": "operator_restore_matched_trust_bundle_or_complete_rotation_recovery",
+      "readService": "non-secret diagnostics only",
+      "evidenceTier": "operator_drill_and_external_acceptance",
+      "evidence": [
+        "docs/modules/auth.authbus/KEY_ROTATION.md",
+        "docs/modules/auth.authbus/SECURITY_REVIEW.md"
+      ]
+    }
+  ]
+}

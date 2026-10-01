@@ -1,0 +1,121 @@
+name: AuthBus public API boundary
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-authbus/**"
+      - "scripts/check-authbus-composition-root.py"
+      - ".github/workflows/authbus-public-api-boundary.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-authbus/**"
+      - "scripts/check-authbus-composition-root.py"
+      - ".github/workflows/authbus-public-api-boundary.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authbus-public-api-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_TOOLCHAIN: "1.95.0"
+
+jobs:
+  public-api:
+    name: Default-safe and explicit-legacy API
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact workflow candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Check composition-root source contract
+        shell: bash
+        run: python3 scripts/check-authbus-composition-root.py
+
+      - name: Check default and explicit compatibility builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-authbus --all-targets --locked
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-authbus --all-targets --all-features --locked
+
+      - name: Prove legacy replay is absent from default external API
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$PWD/codex-rs/hepta-authbus"
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          cat > "$tmp/Cargo.toml" <<TOML
+          [package]
+          name = "authbus-default-api-negative"
+          version = "0.0.0"
+          edition = "2024"
+
+          [dependencies]
+          codex-hepta-authbus = { path = "$root" }
+          TOML
+          mkdir -p "$tmp/src"
+          cat > "$tmp/src/main.rs" <<'RS'
+          use codex_hepta_authbus::PreverifiedAuthEnvelope;
+          use codex_hepta_authbus::ReplayWindow;
+          use codex_hepta_authbus::TrustedReplayContext;
+
+          fn main() {
+              let _ = core::mem::size_of::<Option<PreverifiedAuthEnvelope>>();
+              let _ = core::mem::size_of::<Option<ReplayWindow>>();
+              let _ = core::mem::size_of::<Option<TrustedReplayContext>>();
+          }
+          RS
+          if cargo check --manifest-path "$tmp/Cargo.toml" >"$tmp/default.log" 2>&1; then
+            cat "$tmp/default.log"
+            echo "legacy structural replay API unexpectedly compiled in the default feature set" >&2
+            exit 1
+          fi
+          grep -Eq 'unresolved import|no `ReplayWindow`|no `PreverifiedAuthEnvelope`' "$tmp/default.log"
+
+      - name: Prove explicit compatibility feature remains buildable
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$PWD/codex-rs/hepta-authbus"
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          cat > "$tmp/Cargo.toml" <<TOML
+          [package]
+          name = "authbus-explicit-legacy-api"
+          version = "0.0.0"
+          edition = "2024"
+
+          [dependencies]
+          codex-hepta-authbus = { path = "$root", features = ["legacy-preverified-replay"] }
+          TOML
+          mkdir -p "$tmp/src"
+          cat > "$tmp/src/main.rs" <<'RS'
+          #![allow(deprecated)]
+          use codex_hepta_authbus::PreverifiedAuthEnvelope;
+          use codex_hepta_authbus::ReplayWindow;
+          use codex_hepta_authbus::TrustedReplayContext;
+
+          fn main() {
+              let _ = core::mem::size_of::<Option<PreverifiedAuthEnvelope>>();
+              let _ = core::mem::size_of::<Option<ReplayWindow>>();
+              let _ = core::mem::size_of::<Option<TrustedReplayContext>>();
+          }
+          RS
+          cargo check --manifest-path "$tmp/Cargo.toml"
+          test -z "$(git status --porcelain)"

@@ -1,146 +1,151 @@
 # `auth.authbus` current implementation
 
-## Current executable contract
+## Candidate status
 
-The current candidate contains two deliberately separate AuthBus surfaces.
+The current branch is a source candidate under exact-head and synthetic-merge qualification. It is not activated and does not claim release evidence. The normative activation state remains in `docs/modules/auth.authbus/ACTIVATION_DECISION.md`.
 
-Signed message ingress verifies issuer-bound Ed25519 claims and consumes replay
-state in the existing evidence SQLite owner. `SignedMessage::authenticate`
-binds issuer/key epoch, message, subject, scope, payload, sequence and expiry.
-`HeptaEvidenceStore::enqueue_authbus_message` atomically advances replay and
-inserts the immutable delivery. Agentd's signed-text ingress is a named product
-caller: it binds the Agent subject/thread scope, uses the durable outbox, and
-delivers through the existing App Server queue.
+The candidate contains two deliberately separate durable owners:
 
-Production-configured signed ingress also requires an independently retained
-replay checkpoint outside the Agent home. Agentd opens and reconciles that
-witness before attaching the ingress. Every successful replay mutation is
-published as local-pending -> external fsync/rename/directory-sync -> local
-promotion before admission success is reported. An older restored evidence
-database therefore fails closed against the newer external witness.
+1. signed-message replay and outbox state in the Evidence SQLite owner;
+2. policy, issuer, trusted-time, quota, reservation, settlement and anti-rollback state in `AuthBusAuthorityHost`.
 
-The policy/quota owner is `AuthBusAuthorityHost`, backed by
-`AuthBusAuthorityStore`. It owns durable policy revisions, issuer lifecycle,
-trusted-time floor, quota registry, reservation state and settlement. The host
-requires its own independently retained authority checkpoint outside the
-authority database directory. Every authoritative table mutation marks the
-semantic frontier dirty in the same SQLite commit; the host publishes the exact
-successor frontier before returning from mutating owner operations.
+Authentication, policy evaluation and queue acceptance do not grant provider authority. Final-use authority remains payload-bound, operation-bound and verified immediately before the registered effect boundary.
 
-Trusted time can no longer be fabricated by external callers:
-`TrustedTimeSample` is opaque outside the crate and is produced by verification
-of a signed `SignedTrustedTimeAttestation` from an active registered
-`TrustedTime` issuer. Policy decisions remain `AuthorityPosture::DENY_ALL`;
-they permit reservation decisions but do not mint final-use authority.
+## Closed public boundary
 
-Quota accounting uses checked integer
-`available + reserved + consumed == limit` semantics. A reservation binds the
-stable operation ID, quota, amount, effect digest, policy identity/revision and
-decision digest. The lifecycle is
-`Held -> DispatchAttempted -> {Indeterminate, Settled, Released}` with
-`Held -> {Cancelled, Expired}` for proven pre-dispatch terminal outcomes.
-Restart detects pre-crash `DispatchAttempted` rows, blocks new reservation
-issuance, and converts them to `Indeterminate`; their quota remains held until
-authenticated terminal evidence arrives. Terminal rows may be moved to an
-immutable archive without freeing their operation identity for reuse.
+`IssuerRegistration` and `SettlementIssuerRegistration` are sealed handles. External callers cannot mutate issuer identity, purpose, epoch, verification key or revocation state. Settlement reloads the exact durable issuer row inside the settlement transaction and applies current revocation state before signature verification.
 
-`BaoClient::consume_kv_v2_with_authbus` is the current source-composed external
-effect path. It combines the caller-supplied durable operation identity,
-AuthBus policy/quota reservation, the exact `FinalUseBinding`, a durable
-dispatch fence immediately before the existing final-use protected HTTPS call,
-and independently signed settlement evidence. Timeout, transport loss,
-consumer-indeterminate or ambiguous final-use failure preserves the reservation
-as indeterminate instead of refunding it.
+`AuthBusAuthorityStore` is crate-private. The public durable mutation boundary is `AuthBusAuthorityHost`; the raw SQLite writer is not exported. The generated closed-world inventory is `docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json`, enforced by `scripts/check-authbus-closed-world.py` and exact-head CI.
 
-The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API remains an
-in-process compatibility surface. It does not authenticate signatures, survive
-restart, reserve quota or grant effect authority.
+## Owner and capability lifetime
 
-## Public symbols and source bindings
+`AuthBusAuthorityHost` owns all of the following as one capability:
 
-- signed authentication: `IssuerRegistration`, `SignedMessageClaims`,
-  `SignedMessage::authenticate`, `AuthenticatedMessage` in
-  `codex-rs/hepta-authbus/src/signed.rs`;
-- durable authority owner: `AuthBusAuthorityHost`,
-  `AuthBusAuthorityStore`, `PolicyDecision`, `QuotaReservation`,
-  `Settlement` in `codex-rs/hepta-authbus/src/{host,authority_store,quota_store,settlement_store}.rs`;
-- issuer/trusted-time lifecycle in
-  `codex-rs/hepta-authbus/src/{trust,trust_store}.rs`;
-- authority rollback/restart reconciliation in
-  `codex-rs/hepta-authbus/src/recovery.rs` and migration
-  `0004_recovery_retention.sql`;
-- durable signed ingress/replay/outbox in
-  `codex-rs/hepta-evidence/src/authbus_{store,outbox,outbox_worker,recovery}.rs`;
-- Agentd source composition in
-  `codex-rs/hepta-agentd/src/{authbus_ingress,authbus_checkpoint,runtime}.rs`;
-- final-use/quota provider composition in
-  `codex-rs/hepta-bao-adapter/src/https_consumer.rs`.
+- the crate-private SQLite store;
+- the independently retained checkpoint handle;
+- the process-local and cross-process owner fence;
+- the mutation/checkpoint serialization gate;
+- bounded runtime diagnostics.
 
-## Durability and activation
+`AuthBusAuthorityWorker` holds `Arc<AuthBusAuthorityHost>`. Therefore a worker cannot outlive the owner fence while retaining store capability. Releasing the caller's original `Arc` does not permit a replacement owner until the worker is also dropped.
 
-Policy, quota, reservation, issuer and trusted-time state use WAL SQLite with
-FULL synchronous writes and `BEGIN IMMEDIATE` serialization. Policy revisions
-are retained in an append-only history; revoked policy heads can be retired only
-after live reservation references are gone. Retired issuer epochs remain
-tombstones while no longer consuming active-lifecycle capacity.
+On qualified Linux hosts, owner acquisition proceeds in this order:
 
-Both replay state and the policy/quota/trust state have separate external
-anti-rollback witnesses. These are source-implemented host protocols, not proof
-that a production operator has provisioned independent checkpoint storage or
-trust roots. Product source composition exists for Agentd signed text and the
-Bao read boundary; activation, target-host qualification and operator acceptance
-remain separate gates.
+1. validate the immutable absolute database path and private parent directory;
+2. reserve the lock path in a process-local RAII registry **before opening the lock inode**;
+3. open the deployed lock pathname with `O_NOFOLLOW`, private mode and close-on-exec;
+4. validate regular-file identity, ownership, link count and pathname/inode stability;
+5. acquire a non-blocking exclusive Linux open-file-description record lock with `F_OFD_SETLK`;
+6. revalidate the locked inode before exposing the host.
 
-## Target-only design
+The pre-open reservation keeps same-process uniqueness explicit and ensures a rejected duplicate initialization never opens the live lock inode. The OFD lock is attached to the open file description, so closing an unrelated descriptor for the same inode cannot release the owner fence. It is deliberately taken on the existing lock pathname and conflicts with the process-associated POSIX record lock used by the preceding AuthBus implementation, preserving exclusion during a rolling replacement. Tests cover both lock directions, an unrelated-descriptor close and a third-process probe. Targets without the qualified Linux OFD-lock contract fail closed rather than silently falling back to a second or weaker lock domain.
 
-The following are not established by this candidate:
+## One authority-use and transaction boundary
 
-- a production deployment of independently governed trusted-time/checkpoint and
-  issuer-key services;
-- a production-durable `kernel.operations` transaction owner. AuthBus binds the
-  supplied stable operation ID but does not replace that owner;
-- generic provider/effect coverage beyond the registered Agentd signed-text and
-  Bao KV-v2 read paths;
-- distributed multi-host AuthBus ownership or consensus;
-- independent security acceptance, canary/promotion or release.
+All durable mutations, bounded recovery maintenance, checkpoint publication and authority-bearing reads pass through one host-owned async gate. The gate is held from checkpoint preflight through SQLite work and independent checkpoint publication. A caller cannot begin a second operation against a dirty or divergent frontier.
 
-## Known limits and non-claims
+The SQLite store uses WAL, `synchronous=FULL`, foreign keys, ordered checksum-bound migrations, schema comparison, `quick_check` and foreign-key validation. Authoritative mutations mark the semantic frontier dirty in the same database commit. The host then publishes exactly one successor checkpoint using write, file fsync, atomic rename and directory fsync before locally promoting the checkpoint.
 
-`AuthBusAuthorityStore` remains a lower-level source API for focused tests and
-owner construction; production mutation is expected to pass through
-`AuthBusAuthorityHost` so external checkpoint publication cannot be skipped.
-The external checkpoint file hardening currently relies on Unix ownership,
-single-link, private-directory and fsync semantics.
+Some logical APIs may internally advance trusted time before their main domain row; a storage error at such a boundary is deliberately classified as outcome-unknown. A deterministic domain rejection means the requested domain mutation did not commit, but it does not claim that a separately authenticated trusted-time observation was rolled back. The public contract does not pretend every failure occurred before all durable work.
 
-The Bao path consumes a caller-provided stable operation identity because the
-repository's current `kernel.operations` implementation is still a bounded
-in-memory reference model. This candidate therefore proves AuthBus binding to
-that identity, not durable cross-owner operation-ledger closure.
+## Mutation result contract
 
-Queue acceptance is not provider/model terminality. AuthBus receipts and policy
-decisions do not grant final-use authority. An indeterminate reservation is not
-automatically retried or refunded.
+`AuthBusAuthorityError::mutation_disposition()` gives callers a stable failure interpretation:
 
-## Verification
+| Result | Durable meaning | Caller rule |
+| --- | --- | --- |
+| `Ok(value)` | SQLite mutation and independent checkpoint are durable. | Continue. |
+| deterministic domain error | Requested domain mutation did not commit; a separately authenticated trusted-time observation may already be durable. | Correct or stop; disposition is `NotCommitted` for the requested mutation. |
+| `AuthorityUseBlocked` | Checkpoint/recovery admission failed before the requested operation was polled. | Stop authority use and reconcile. |
+| `CheckpointReconciliationRequired` | SQLite mutation committed but checkpoint publication/promotion did not complete. | Query by stable identity and reconcile before retry; disposition is `CommittedNeedsReconciliation`. |
+| `MutationOutcomeUnknown` | Commit status cannot be inferred safely after a storage failure. | Never blindly retry; query/reconcile by stable identity. |
 
-Focused native tests cover signed-field substitution, replay contention and
-reopen, outbox crash-after-send-before-ack, last-unit reservation races,
-idempotent settlement, explicit cancellation, database-level illegal
-state/deletion rejection, terminal compaction, real old-database rollback
-detection and restart reconciliation. Bao product tests exercise real local TLS
-through policy -> reserve -> dispatch fence -> final-use -> signed settlement,
-plus timeout/indeterminate quota holding. Agentd product tests exercise the real
-daemon/App Server signed-text queue with the external replay witness.
+This contract is uniform for issuer enrollment, rotation, revocation and retirement, and is used by the other host mutations. A failed checkpoint publication is not collapsed into a generic immediately-retryable storage error.
 
-These are source test identities until the exact source-head and deterministic
-synthetic-merge workflows for this unchanged candidate reach terminal success.
+## Signed ingress and durable replay
 
-## Integration prerequisites
+`SignedMessage::authenticate` binds issuer/key epoch, message, subject, scope, payload, sequence and expiry with Ed25519. Authentication alone consumes no durable replay state. Evidence-owned `admit_authbus_message` and `enqueue_authbus_message` advance durable replay state and insert immutable outbox records under the Evidence SQLite owner.
 
-Production enrollment must provide independently governed issuer keys,
-revocation feeds, trusted-time attestations and both external checkpoint stores.
-A provider host must supply the canonical operation identity and current
-`FinalUseAuthority`; the same final payload/effect binding must be used for the
-reservation and final-use grant. Operators must complete target-host
-crash/power-loss, capacity, backup/restore and independent security
-qualification before activation.
+Agentd reloads its protected issuer registry at admission and delivery boundaries. Production-configured ingress uses a separately retained replay witness. A restored old Evidence database with a newer witness fails closed. The legacy in-process `PreverifiedAuthEnvelope`/`ReplayWindow` surface remains compatibility-only; it does not authenticate a signature, survive restart, reserve quota or grant effect authority.
+
+## Trusted time, policy, quota and settlement
+
+`TrustedTimeSample` is opaque outside the crate and is produced by verification of a signed attestation from an active `TrustedTime` issuer. Policy decisions bind policy identity/revision, principal, action, scope and trusted time while retaining `AuthorityPosture::DENY_ALL`.
+
+Quota accounting preserves checked `available + reserved + consumed == limit` semantics. A reservation binds stable operation identity, quota, amount, effect digest, policy identity/revision and decision digest. The lifecycle is:
+
+```text
+Held -> DispatchAttempted -> {Indeterminate, Settled, Released}
+Held -> {Cancelled, Expired}
+```
+
+`DispatchAttempted` is durable immediately before the external effect boundary. Timeout, response loss or crash after that fence never proves `NotApplied`; restart converts unresolved attempts to `Indeterminate`, and quota remains held until authenticated terminal evidence arrives.
+
+## Bounded recovery and maintenance
+
+Startup executes one bounded restart-reconciliation batch and one bounded expiration batch. If work remains, durable `recovery_required` keeps write admission fail-closed. The periodic `AuthBusAuthorityWorker` is the named maintenance owner. Each tick obtains freshly verified trusted time, runs bounded recovery and expiry reconciliation through the same host gate, publishes the checkpoint, then emits a snapshot and SLO evaluation. Missed intervals are skipped rather than accumulated; observer/export failure terminates the loop.
+
+## Actionable diagnostics
+
+`AuthBusOperationalSnapshot` includes durable authority state plus process-lifetime cumulative runtime diagnostics:
+
+- owner acquisition failures grouped into active-owner, unsafe-path and storage classes;
+- checkpoint synchronization failures split into rollback conflicts and storage failures;
+- blocked authority use;
+- deterministic mutation rejection, committed-but-reconcile and unknown-outcome counts;
+- replay rejection count;
+- maintenance failures and incomplete bounded-recovery ticks;
+- complete mutation and maintenance latency summaries (`count`, `p50`, `p95`, `p99`, `max`).
+
+Mutation latency is measured from request entry across gate wait, checkpoint preflight, SQLite work and checkpoint publication. `blocking_reasons()` reports whether the owner is blocked on checkpoint reconciliation, restart recovery, expired reservation reconciliation, indeterminate settlement, reservation capacity, quota capacity or oldest-active age. Exporters compute rates/deltas from cumulative counters and use bounded non-secret labels.
+
+The Evidence SQLite owner exposes `HeptaEvidenceStore::authbus_outbox_operational_snapshot()`. Its bounded, read-only projection reports queued, leased and terminal counts; active depth; oldest unsettled age; retained claim attempts and retries; active rows that exhausted the claim limit; and retained enqueue-to-ack latency percentiles. These are retained-window values because terminal history may be pruned; they are not represented as process-lifetime counters. The query neither claims nor renews a lease, acknowledges an effect, nor advances replay state.
+
+Bao/provider request latency remains owned by the Bao adapter and HTTP client, which are the only components that can observe it faithfully. AuthBus does not fabricate downstream observations; the qualification workflow executes Evidence, Agentd and Bao owner tests alongside the AuthBus crate.
+
+## Product composition
+
+`BaoClient::consume_kv_v2_with_authbus` is the current source-composed external-effect path. It combines durable operation identity, policy/quota reservation, exact final-use binding, durable dispatch fencing, final-use-protected HTTPS execution and independently signed settlement evidence. Ambiguous provider outcomes preserve the reservation as indeterminate.
+
+Agentd is the named signed-ingress/outbox caller. Evidence outbox quarantine, claim, renew, retry and acknowledgement require a current sealed issuer handle. Wrong epoch and revoked registrations preserve queue state and cannot manufacture quarantine authority.
+
+## Source bindings
+
+- signed ingress and sealed message handles: `codex-rs/hepta-authbus/src/{signed,issuer_registry}.rs`;
+- durable issuer and trusted-time registry: `codex-rs/hepta-authbus/src/{trust,trust_store}.rs`;
+- owner, gate and checkpoint boundary: `codex-rs/hepta-authbus/src/{host,owner_fence}.rs`;
+- policy/quota/reservation/settlement: `codex-rs/hepta-authbus/src/{authority_store,quota_store,settlement_store}.rs`;
+- recovery/checkpoint/schema: `codex-rs/hepta-authbus/src/{recovery,authority_schema}.rs`;
+- diagnostics and worker: `codex-rs/hepta-authbus/src/{operations,worker}.rs`;
+- Evidence replay/outbox and delivery diagnostics: `codex-rs/hepta-evidence/src/authbus_{store,outbox,outbox_worker,recovery,operations}.rs`;
+- Agentd composition: `codex-rs/hepta-agentd/src/{authbus_ingress,authbus_dispatch,authbus_trust,evidence_trust}.rs`;
+- Bao composition: `codex-rs/hepta-bao-adapter/src/https_consumer.rs`.
+
+## Failure-focused validation
+
+The host and integration test suites prove, rather than merely assert in documentation, that:
+
+- a failed same-process duplicate initialization does not release the live cross-process fence;
+- closing an unrelated descriptor for the lock inode does not release the live OFD fence;
+- a new OFD owner blocks a legacy POSIX-lock owner, and a legacy POSIX-lock owner blocks a new OFD owner during rolling replacement;
+- a worker retains the host and fence until the worker is dropped;
+- `SIGKILL` releases the operating-system fence while restart recovery preserves ambiguous effects;
+- checkpoint failures at write, file-sync, rename and directory-sync stages are classified as committed-needs-reconciliation and recover successfully;
+- enrollment, rotation, revocation and retirement share the same checkpoint-failure contract;
+- deterministic revision rejection is classified as not committed for the requested mutation while separately observed trusted time remains authoritative.
+
+Evidence tests cover restart replay, outbox identity/lease behavior, retained claim/retry projection, oldest active delivery age, enqueue-to-ack latency and snapshot side-effect freedom. Bao tests retain ownership of dispatch/settlement ambiguity and provider-boundary behavior.
+
+## Exact-candidate qualification
+
+The detailed claim-to-source-to-test mapping is `docs/modules/auth.authbus/VERIFICATION_MATRIX.md`.
+
+`.github/workflows/authbus-authority-qualification.yml` is read-only and validates both the exact PR head and deterministic synthetic merge candidate. It checks checkout identity, generated public API inventory, formatting, AuthBus/qualification/Evidence/Agentd/Bao tests, full workspace all-target regression, strict all-feature Clippy, clean tracked state and a receipt binding commit, tree, schema/migration digest, Cargo lock digest, test-log digests and build-artifact digest.
+
+A skipped/cancelled/queued job, a run for another SHA, or a source-mutating workflow is not qualification evidence. Any source or documentation change invalidates prior receipts and requires a new terminal-success run for the final PR head.
+
+## Remaining external gates and non-claims
+
+The repository candidate does not prove production provisioning of independent checkpoint storage, non-exportable KMS/HSM keys, trusted-time service, target-host disk semantics or an external durable `kernel.operations` owner. Distributed multi-host consensus is not implemented; the supported model is one active authority owner per database on a qualified Linux target with OFD record-lock support.
+
+Production activation remains blocked until one unchanged candidate obtains terminal-success exact-head and synthetic-merge receipts, target-host ENOSPC and power-loss evidence, KMS/operator acceptance and independent release approval. An indeterminate reservation is never automatically refunded merely to restore availability.

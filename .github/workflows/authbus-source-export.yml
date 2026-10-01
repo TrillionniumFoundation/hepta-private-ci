@@ -1,0 +1,32 @@
+name: AuthBus pinned remediation source
+on:
+  push:
+    branches: [auth-authbus-boundary-convergence-20260928]
+    paths: [.github/workflows/authbus-source-export.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export exact source without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/authbus-source.tar.gz"
+          git rev-parse HEAD > "$RUNNER_TEMP/authbus-source-sha.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: authbus-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/authbus-source.tar.gz
+            ${{ runner.temp }}/authbus-source-sha.txt
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 6

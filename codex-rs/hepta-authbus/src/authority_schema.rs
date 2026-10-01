@@ -38,6 +38,25 @@ pub(crate) async fn verify_schema(
                 "live authority schema differs from compiled migrations",
             ));
         }
+        let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
+            .fetch_one(pool)
+            .await
+            .map_err(storage)?;
+        if quick_check != "ok" {
+            return Err(AuthBusAuthorityError::CorruptState(
+                "post-migration SQLite quick_check failed",
+            ));
+        }
+        let foreign_key_violations: i64 =
+            sqlx::query_scalar("SELECT COUNT(*) FROM pragma_foreign_key_check")
+                .fetch_one(pool)
+                .await
+                .map_err(storage)?;
+        if foreign_key_violations != 0 {
+            return Err(AuthBusAuthorityError::CorruptState(
+                "post-migration SQLite foreign_key_check failed",
+            ));
+        }
         Ok(())
     }
     .await;

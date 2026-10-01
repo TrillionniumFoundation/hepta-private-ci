@@ -1,0 +1,224 @@
+name: AuthBus production acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: Build security payload, build operator payload, or verify both signatures
+        required: true
+        type: choice
+        options:
+          - security-payload
+          - operator-payload
+          - verify
+      candidate_sha:
+        description: Exact immutable AuthBus candidate SHA already merged into main
+        required: true
+        type: string
+      target_profile:
+        description: Registered target profile used by target-host qualification
+        required: true
+        type: string
+      authority_run_id:
+        description: Successful AuthBus authority qualification run ID
+        required: true
+        type: string
+      target_run_id:
+        description: Successful AuthBus target-host qualification run ID
+        required: true
+        type: string
+      security_reviewer_id:
+        description: Independent security reviewer principal
+        required: false
+        type: string
+      operator_id:
+        description: Activation operator principal
+        required: false
+        type: string
+      security_signature_b64:
+        description: Base64 Ed25519 signature over generated security payload
+        required: false
+        type: string
+      operator_signature_b64:
+        description: Base64 Ed25519 signature over generated operator payload
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: authbus-production-acceptance-${{ inputs.candidate_sha }}-${{ inputs.phase }}
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    name: AuthBus signed production acceptance
+    if: github.ref == 'refs/heads/main'
+    environment: authbus-production-acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CONTROL_SHA: ${{ github.sha }}
+      PHASE: ${{ inputs.phase }}
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      TARGET_PROFILE: ${{ inputs.target_profile }}
+      AUTHORITY_RUN_ID: ${{ inputs.authority_run_id }}
+      TARGET_RUN_ID: ${{ inputs.target_run_id }}
+      SECURITY_REVIEWER_ID: ${{ inputs.security_reviewer_id }}
+      OPERATOR_ID: ${{ inputs.operator_id }}
+      SECURITY_SIGNATURE_B64: ${{ inputs.security_signature_b64 }}
+      OPERATOR_SIGNATURE_B64: ${{ inputs.operator_signature_b64 }}
+      SECURITY_PUBKEY_B64: ${{ secrets.AUTHBUS_SECURITY_REVIEWER_PUBKEY_PEM_B64 }}
+      OPERATOR_PUBKEY_B64: ${{ secrets.AUTHBUS_OPERATOR_PUBKEY_PEM_B64 }}
+    steps:
+      - name: Checkout trusted acceptance controller
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.CONTROL_SHA }}
+
+      - name: Verify trusted controller and accepted candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
+          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_PROFILE" =~ ^[A-Za-z0-9._-]{1,128}$ ]]
+          [[ "$AUTHORITY_RUN_ID" =~ ^[0-9]{1,20}$ ]]
+          [[ "$TARGET_RUN_ID" =~ ^[0-9]{1,20}$ ]]
+          git cat-file -e "$CANDIDATE_SHA^{commit}"
+          git merge-base --is-ancestor "$CANDIDATE_SHA" "$CONTROL_SHA"
+          control_paths=(
+            .github/workflows/authbus-production-acceptance.yml
+            docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json
+            scripts/authbus-production-acceptance.py
+          )
+          for path in "${control_paths[@]}"; do
+            test "$(git rev-parse "$CANDIDATE_SHA:$path")" = "$(git rev-parse "$CONTROL_SHA:$path")"
+          done
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Download exact-head evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: authbus-source-head-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/authbus-acceptance/source
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.authority_run_id }}
+
+      - name: Download synthetic-merge evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: authbus-merge-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/authbus-acceptance/merge
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.authority_run_id }}
+
+      - name: Download target-host evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: authbus-target-${{ inputs.target_profile }}-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/authbus-acceptance/target
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.target_run_id }}
+
+      - name: Build or verify signed acceptance payload with trusted controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/authbus-acceptance"
+          output="$root/output"
+          mkdir -p "$output"
+          common=(
+            --candidate-sha "$CANDIDATE_SHA"
+            --control-sha "$CONTROL_SHA"
+            --exact-receipt "$root/source/receipt.json"
+            --merge-receipt "$root/merge/receipt.json"
+            --target-manifest "$root/target/qualification-manifest.json"
+            --performance-manifest "$root/target/performance-manifest.json"
+            --kms-hsm "$root/target/production/kms-hsm.json"
+            --rotation "$root/target/production/key-rotation-revocation.json"
+            --backup-restore "$root/target/production/backup-restore.json"
+            --owner-mount "$root/target/production/owner-mount.json"
+            --activation-plan "$root/target/production/activation-plan.json"
+            --rollback-plan "$root/target/production/rollback-plan.json"
+          )
+          case "$PHASE" in
+            security-payload)
+              python3 scripts/authbus-production-acceptance.py \
+                --phase security-payload \
+                "${common[@]}" \
+                --output "$output/security-payload.json"
+              ;;
+            operator-payload)
+              test -n "$SECURITY_REVIEWER_ID"
+              test -n "$SECURITY_SIGNATURE_B64"
+              test -n "$SECURITY_PUBKEY_B64"
+              printf '%s' "$SECURITY_SIGNATURE_B64" | base64 --decode > "$output/security.sig"
+              printf '%s' "$SECURITY_PUBKEY_B64" | base64 --decode > "$output/security.pem"
+              python3 scripts/authbus-production-acceptance.py \
+                --phase operator-payload \
+                "${common[@]}" \
+                --security-reviewer-id "$SECURITY_REVIEWER_ID" \
+                --security-public-key "$output/security.pem" \
+                --security-signature "$output/security.sig" \
+                --output "$output/operator-payload.json"
+              ;;
+            verify)
+              test -n "$SECURITY_REVIEWER_ID"
+              test -n "$OPERATOR_ID"
+              test -n "$SECURITY_SIGNATURE_B64"
+              test -n "$OPERATOR_SIGNATURE_B64"
+              test -n "$SECURITY_PUBKEY_B64"
+              test -n "$OPERATOR_PUBKEY_B64"
+              printf '%s' "$SECURITY_SIGNATURE_B64" | base64 --decode > "$output/security.sig"
+              printf '%s' "$OPERATOR_SIGNATURE_B64" | base64 --decode > "$output/operator.sig"
+              printf '%s' "$SECURITY_PUBKEY_B64" | base64 --decode > "$output/security.pem"
+              printf '%s' "$OPERATOR_PUBKEY_B64" | base64 --decode > "$output/operator.pem"
+              python3 scripts/authbus-production-acceptance.py \
+                --phase verify \
+                "${common[@]}" \
+                --security-reviewer-id "$SECURITY_REVIEWER_ID" \
+                --operator-id "$OPERATOR_ID" \
+                --security-public-key "$output/security.pem" \
+                --operator-public-key "$output/operator.pem" \
+                --security-signature "$output/security.sig" \
+                --operator-signature "$output/operator.sig" \
+                --output "$output/production-acceptance.json"
+              ;;
+            *)
+              exit 64
+              ;;
+          esac
+
+      - name: Verify acceptance controller remained read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Remove public-key material from artifact
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/authbus-acceptance/output/security.pem"
+          rm -f "$RUNNER_TEMP/authbus-acceptance/output/operator.pem"
+
+      - name: Upload signed acceptance material
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-production-${{ inputs.phase }}-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/authbus-acceptance/output
+          if-no-files-found: error
+          retention-days: 90

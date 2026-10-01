@@ -14,11 +14,16 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod durable_authbus;
 mod final_use_host;
 mod https_consumer;
 mod lease_lifecycle;
 mod secret_boundary_v1;
 
+pub use durable_authbus::BAO_DURABLE_OPERATION_DESTINATION;
+pub use durable_authbus::BaoDurableAuthBusAdmission;
+pub use durable_authbus::BaoDurableAuthBusError;
+pub use durable_authbus::BaoDurableAuthBusReceipt;
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;

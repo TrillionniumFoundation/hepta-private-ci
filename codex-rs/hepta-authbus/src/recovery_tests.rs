@@ -35,6 +35,134 @@ fn policy(scope: Digest32) -> PolicySpec {
 }
 
 #[tokio::test]
+async fn incremental_frontier_seeds_once_then_folds_and_prunes_changes() {
+    let root = TempDir::new().unwrap();
+    let path = root.path().join("authbus.sqlite");
+    let store = AuthBusAuthorityStore::open(&path).await.unwrap();
+
+    let seeded = store.authority_frontier_digest().await.unwrap();
+    let initial: (Option<Vec<u8>>, i64) = sqlx::query_as(
+        "SELECT root_digest, applied_change_id
+         FROM authbus_frontier_accumulator WHERE singleton = 1",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(initial.0.as_deref(), Some(seeded.as_array().as_slice()));
+    assert_eq!(initial.1, 0);
+
+    store
+        .create_policy(
+            policy(Digest32::of_bytes(b"incremental-scope")),
+            sample(1, 2_000),
+        )
+        .await
+        .unwrap();
+    let pending: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_frontier_change")
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
+    assert!(
+        pending >= 3,
+        "time, policy head and history must be journaled"
+    );
+
+    let folded = store.authority_frontier_digest().await.unwrap();
+    assert_ne!(folded, seeded);
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM authbus_frontier_change")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap(),
+        0
+    );
+    let applied: (Vec<u8>, i64) = sqlx::query_as(
+        "SELECT root_digest, applied_change_id
+         FROM authbus_frontier_accumulator WHERE singleton = 1",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(applied.0.as_slice(), folded.as_array().as_slice());
+    assert!(applied.1 >= pending);
+
+    let mut tx = begin(&store.pool).await.unwrap();
+    let complete_snapshot = full_authority_frontier_digest_tx(&mut tx).await.unwrap();
+    tx.rollback().await.unwrap();
+    assert_ne!(
+        folded, complete_snapshot,
+        "post-seed checkpoints must use the incremental chain, not reseed the full snapshot"
+    );
+    assert_eq!(store.authority_frontier_digest().await.unwrap(), folded);
+}
+
+#[tokio::test]
+async fn pending_frontier_changes_survive_reopen_and_fold_idempotently() {
+    let root = TempDir::new().unwrap();
+    let path = root.path().join("authbus.sqlite");
+
+    let store = AuthBusAuthorityStore::open(&path).await.unwrap();
+    let seeded = store.authority_frontier_digest().await.unwrap();
+    store
+        .create_policy(
+            policy(Digest32::of_bytes(b"pending-scope")),
+            sample(1, 2_000),
+        )
+        .await
+        .unwrap();
+    assert!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM authbus_frontier_change")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap()
+            > 0
+    );
+    store.pool.close().await;
+
+    let reopened = AuthBusAuthorityStore::open(&path).await.unwrap();
+    let folded = reopened.authority_frontier_digest().await.unwrap();
+    assert_ne!(folded, seeded);
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM authbus_frontier_change")
+            .fetch_one(&reopened.pool)
+            .await
+            .unwrap(),
+        0
+    );
+    assert_eq!(reopened.authority_frontier_digest().await.unwrap(), folded);
+}
+
+#[tokio::test]
+async fn pending_frontier_changes_cannot_be_deleted_before_accumulation() {
+    let root = TempDir::new().unwrap();
+    let path = root.path().join("authbus.sqlite");
+    let store = AuthBusAuthorityStore::open(&path).await.unwrap();
+    store.authority_frontier_digest().await.unwrap();
+    store
+        .create_policy(
+            policy(Digest32::of_bytes(b"protected-pending-scope")),
+            sample(1, 2_000),
+        )
+        .await
+        .unwrap();
+
+    assert!(
+        sqlx::query("DELETE FROM authbus_frontier_change")
+            .execute(&store.pool)
+            .await
+            .is_err()
+    );
+    store.authority_frontier_digest().await.unwrap();
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM authbus_frontier_change")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap(),
+        0
+    );
+}
+
+#[tokio::test]
 async fn advanced_external_checkpoint_rejects_real_old_database_restore() {
     let root = TempDir::new().unwrap();
     let path = root.path().join("authbus.sqlite");

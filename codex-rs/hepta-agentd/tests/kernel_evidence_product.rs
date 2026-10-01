@@ -17,7 +17,7 @@ use codex_hepta_agentd::KernelEvidenceQueryV1;
 use codex_hepta_agentd::KernelEvidenceVerifyV1;
 use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_agentd::kernel_evidence_claims;
-use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::PrivateIssuerRegistryDocument;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::EvidenceCandidateV1;
@@ -33,8 +33,6 @@ use codex_hepta_evidence::IndependentDecisionV1;
 use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
 use codex_hepta_evidence::evidence_set_digest;
 use codex_hepta_evidence::qualification_envelope_bytes;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
@@ -779,15 +777,24 @@ async fn append_direct_evidence(
         now_ms()?.saturating_add(120_000),
         envelope,
     )?;
+    let registry_root = tempfile::tempdir()?;
+    std::fs::set_permissions(registry_root.path(), std::fs::Permissions::from_mode(0o700))?;
+    let registry_path = registry_root.path().join("message-issuer-registry.json");
+    write_private_json(
+        &registry_path,
+        &json!({
+            "issuer_id": issuer_id,
+            "key_epoch": 1,
+            "public_key_hex": hex(key.verifying_key().as_bytes()),
+            "revoked": false,
+        }),
+    )?;
+    let registry =
+        PrivateIssuerRegistryDocument::load(&registry_path, registry_root.path(), 16 * 1024)?;
+    let issuer = registry.message_issuer(&claims.issuer_id, claims.key_epoch)?;
     let message = SignedMessage {
         signature: key.sign(&claims.signing_bytes()).to_bytes(),
         claims,
-    };
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new(issuer_id.to_string()).map_err(anyhow::Error::msg)?,
-        key_epoch: Generation::new(1).map_err(anyhow::Error::msg)?,
-        verifying_key: key.verifying_key(),
-        revoked: false,
     };
     store
         .qualification()

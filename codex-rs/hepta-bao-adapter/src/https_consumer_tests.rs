@@ -5,7 +5,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::AuthBusAuthorityHost;
-use codex_hepta_authbus::AuthBusAuthorityStore;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::PolicyEffect;
@@ -571,9 +570,6 @@ async fn authbus_host(
     ),
     TestError,
 > {
-    use std::io::Write;
-    use std::os::unix::fs::OpenOptionsExt;
-
     let database_root = tempfile::tempdir()?;
     let checkpoint_root = tempfile::tempdir()?;
     std::fs::set_permissions(database_root.path(), std::fs::Permissions::from_mode(0o700))?;
@@ -586,37 +582,23 @@ async fn authbus_host(
         .path()
         .join("authbus-authority-checkpoint.json");
 
-    let raw = AuthBusAuthorityStore::open(&database).await?;
-    let frontier = raw.authority_frontier_digest().await?;
-    drop(raw);
-    let document = serde_json::json!({
-        "schema_version": 1,
-        "owner_id": "bao-product-owner",
-        "generation": 1,
-        "digest": frontier.to_string(),
-    });
-    let mut file = std::fs::OpenOptions::new()
-        .create_new(true)
-        .write(true)
-        .mode(0o600)
-        .open(&checkpoint)?;
-    serde_json::to_writer(&mut file, &document)?;
-    file.flush()?;
-    file.sync_all()?;
-
-    let host = AuthBusAuthorityHost::open(&database, checkpoint, "bao-product-owner").await?;
+    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
-    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
+    host.admin()
+        .enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
         .await?;
-    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
+    host.admin()
+        .enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
         .await?;
 
     let binding = client.binding(request)?;
     let scope = Digest32::from_array(binding.scope_sha256);
     let time = host
+        .execution()
         .observe_trusted_time_attestation(&evidence.trusted_time()?)
         .await?;
     let policy = host
+        .admin()
         .create_policy(
             PolicySpec {
                 policy_id: StableId::new("policy:bao-read")?,
@@ -631,9 +613,11 @@ async fn authbus_host(
         )
         .await?;
     let time = host
+        .execution()
         .observe_trusted_time_attestation(&evidence.trusted_time()?)
         .await?;
     let quota = host
+        .admin()
         .create_quota(
             QuotaSpec {
                 quota_key: StableId::new("quota:bao-read")?,
@@ -678,7 +662,7 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
 
     let receipt = client
         .consume_kv_v2_with_authbus(
-            &authbus,
+            authbus.execution(),
             &admission,
             &authority,
             &grant,
@@ -692,7 +676,11 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .await
         .unwrap();
     assert_eq!(receipt.secret_sha256, request.expected_secret_sha256);
-    let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 0, 1));
     task.await.unwrap().unwrap();
 }
@@ -722,7 +710,7 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
 
     let result = client
         .consume_kv_v2_with_authbus(
-            &authbus,
+            authbus.execution(),
             &admission,
             &authority,
             &grant,
@@ -738,7 +726,11 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
             ..
         })
     ));
-    let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
     task.abort();
     let _ = task.await;

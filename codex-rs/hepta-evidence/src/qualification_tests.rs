@@ -5,7 +5,6 @@ use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -28,6 +27,7 @@ use crate::IndependentDecisionRoleV1;
 use crate::IndependentDecisionV1;
 use crate::QualificationEvidenceEnvelopeV1;
 use crate::VerifyChainRequestV1;
+use crate::authbus_test_support::issuer_registration;
 use crate::evidence_set_digest;
 use crate::qualification_append_scope_digest;
 use crate::qualification_subject;
@@ -58,24 +58,12 @@ fn candidate(tree: char) -> EvidenceCandidateV1 {
 
 fn issuer(principal: &str, seed: u8) -> (IssuerRegistration, SigningKey) {
     let key = SigningKey::from_bytes(&[seed; 32]);
-    (
-        IssuerRegistration {
-            issuer_id: StableId::new(principal).expect("principal"),
-            key_epoch: Generation::new(1).expect("epoch"),
-            verifying_key: key.verifying_key(),
-            revoked: false,
-        },
-        key,
-    )
+    let issuer = issuer_registration(principal, 1, &key, false);
+    (issuer, key)
 }
 
 fn issuer_with_key(principal: &str, key: &SigningKey) -> IssuerRegistration {
-    IssuerRegistration {
-        issuer_id: StableId::new(principal).expect("principal"),
-        key_epoch: Generation::new(1).expect("epoch"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+    issuer_registration(principal, 1, key, false)
 }
 
 fn trust_binding(

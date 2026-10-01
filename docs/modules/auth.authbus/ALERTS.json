@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.authbus.alerts.v1",
+  "module": "auth.authbus",
+  "rules": [
+    {"id": "checkpoint-dirty", "severity": "critical", "expression": "authbus_checkpoint_dirty != 0", "forSeconds": 0, "runbook": "RECOVERY.md#checkpoint-publication-failure"},
+    {"id": "recovery-required", "severity": "critical", "expression": "authbus_recovery_required != 0", "forSeconds": 60, "runbook": "RECOVERY.md#standard-restart"},
+    {"id": "expired-active", "severity": "critical", "expression": "authbus_expired_active_reservations > 0", "forSeconds": 60, "runbook": "OPERATIONS.md#incident-classes"},
+    {"id": "indeterminate-growth", "severity": "warning", "expression": "authbus_indeterminate_reservations > 0", "forSeconds": 300, "runbook": "RECOVERY.md#indeterminate-provider-effects"},
+    {"id": "reservation-capacity", "severity": "warning", "expression": "authbus_active_reservations >= 13107", "forSeconds": 60, "runbook": "OPERATIONS.md#incident-classes"},
+    {"id": "quota-utilization", "severity": "warning", "expression": "authbus_quota_utilization_basis_points >= 9000", "forSeconds": 300, "runbook": "OPERATIONS.md#incident-classes"},
+    {"id": "owner-collision", "severity": "critical", "expression": "increase(authbus_owner_collisions_total[5m]) > 0", "forSeconds": 0, "runbook": "OPERATIONS.md#incident-classes"},
+    {"id": "maintenance-stalled", "severity": "critical", "expression": "time() - authbus_last_successful_maintenance_unix_seconds > 120", "forSeconds": 0, "runbook": "OPERATIONS.md#authority-worker"},
+    {"id": "issuer-verification-spike", "severity": "warning", "expression": "rate(authbus_verification_failures_total[5m]) > 1", "forSeconds": 300, "runbook": "KEY_ROTATION.md#emergency-revocation"}
+  ]
+}

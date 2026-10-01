@@ -11,6 +11,9 @@ use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
 use crate::quota_store::load_reservation;
 
+const MAX_PENDING_FRONTIER_CHANGES: i64 = 32_768;
+const MAX_FRONTIER_CHANGE_BYTES: usize = 64 * 1024;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct AuthorityCheckpoint {
     pub generation: u64,
@@ -18,14 +21,16 @@ pub struct AuthorityCheckpoint {
 }
 
 impl AuthBusAuthorityStore {
-    pub async fn authority_frontier_digest(&self) -> Result<Digest32, AuthBusAuthorityError> {
+    pub(crate) async fn authority_frontier_digest(
+        &self,
+    ) -> Result<Digest32, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let digest = authority_frontier_digest_tx(&mut tx).await?;
         tx.commit().await.map_err(storage)?;
         Ok(digest)
     }
 
-    pub async fn authority_checkpoint(
+    pub(crate) async fn authority_checkpoint(
         &self,
     ) -> Result<Option<AuthorityCheckpoint>, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
@@ -34,7 +39,7 @@ impl AuthBusAuthorityStore {
         Ok(checkpoint)
     }
 
-    pub async fn initialize_authority_checkpoint(
+    pub(crate) async fn initialize_authority_checkpoint(
         &self,
         checkpoint: AuthorityCheckpoint,
     ) -> Result<(), AuthBusAuthorityError> {
@@ -72,8 +77,8 @@ impl AuthBusAuthorityStore {
     /// checkpoint. A dirty local frontier means a SQLite mutation committed
     /// after the last external publication. The host may publish exactly the
     /// returned successor. If the external witness already names that successor,
-    /// this method promotes it locally after recomputing the complete frontier.
-    pub async fn reconcile_authority_checkpoint(
+    /// this method promotes it locally after replaying the bounded change journal.
+    pub(crate) async fn reconcile_authority_checkpoint(
         &self,
         external: AuthorityCheckpoint,
     ) -> Result<Option<AuthorityCheckpoint>, AuthBusAuthorityError> {
@@ -113,7 +118,7 @@ impl AuthBusAuthorityStore {
         Err(AuthBusAuthorityError::RollbackDetected)
     }
 
-    pub async fn advance_authority_checkpoint(
+    pub(crate) async fn advance_authority_checkpoint(
         &self,
         expected_generation: u64,
         external: AuthorityCheckpoint,
@@ -137,7 +142,7 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)
     }
 
-    pub async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
+    pub(crate) async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
         let value: i64 = sqlx::query_scalar(
             "SELECT recovery_required FROM authbus_recovery_state WHERE singleton = 1",
         )
@@ -150,7 +155,10 @@ impl AuthBusAuthorityStore {
     /// Classify pre-crash dispatch attempts as indeterminate before new quota
     /// issuance. Held reservations remain safe and indeterminate reservations
     /// retain their quota until authenticated terminal evidence arrives.
-    pub async fn reconcile_after_restart(&self, limit: u32) -> Result<bool, AuthBusAuthorityError> {
+    pub(crate) async fn reconcile_after_restart(
+        &self,
+        limit: u32,
+    ) -> Result<bool, AuthBusAuthorityError> {
         if limit == 0 || limit > 1024 {
             return Err(AuthBusAuthorityError::InvalidInput(
                 "recovery batch must be in 1..=1024",
@@ -273,7 +281,154 @@ async fn set_dirty(
     Ok(())
 }
 
+/// Return the current semantic frontier. An upgraded database is seeded once
+/// with the legacy complete ordered snapshot, preserving the exact checkpoint
+/// digest already retained outside SQLite. Every later authoritative mutation
+/// is folded from the same-transaction change journal in O(changes) time.
 async fn authority_frontier_digest_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+) -> Result<Digest32, AuthBusAuthorityError> {
+    let (encoded_root, applied_change_id): (Option<Vec<u8>>, i64) = sqlx::query_as(
+        "SELECT root_digest, applied_change_id
+         FROM authbus_frontier_accumulator WHERE singleton = 1",
+    )
+    .fetch_one(&mut **tx)
+    .await
+    .map_err(storage)?;
+    if applied_change_id < 0 {
+        return Err(AuthBusAuthorityError::CorruptState(
+            "negative frontier change identity",
+        ));
+    }
+
+    let Some(encoded_root) = encoded_root else {
+        if applied_change_id != 0 {
+            return Err(AuthBusAuthorityError::CorruptState(
+                "unseeded frontier has applied changes",
+            ));
+        }
+        return seed_incremental_frontier(tx).await;
+    };
+    let root: [u8; 32] = encoded_root
+        .try_into()
+        .map_err(|_| AuthBusAuthorityError::CorruptState("invalid frontier root"))?;
+    let mut digest = Digest32::from_array(root);
+    if digest.is_zero() {
+        return Err(AuthBusAuthorityError::CorruptState("empty frontier root"));
+    }
+
+    let changes: Vec<(i64, String, String, String, String)> = sqlx::query_as(
+        "SELECT change_id, domain, operation, record_key, canonical_record
+         FROM authbus_frontier_change
+         WHERE change_id > ?
+         ORDER BY change_id
+         LIMIT ?",
+    )
+    .bind(applied_change_id)
+    .bind(MAX_PENDING_FRONTIER_CHANGES + 1)
+    .fetch_all(&mut **tx)
+    .await
+    .map_err(storage)?;
+    if i64::try_from(changes.len()).map_err(|_| AuthBusAuthorityError::CapacityExceeded)?
+        > MAX_PENDING_FRONTIER_CHANGES
+    {
+        return Err(AuthBusAuthorityError::CapacityExceeded);
+    }
+
+    let mut last_change_id = applied_change_id;
+    for (change_id, domain, operation, record_key, canonical_record) in changes {
+        if change_id <= last_change_id
+            || domain.is_empty()
+            || record_key.is_empty()
+            || !matches!(operation.as_str(), "upsert" | "delete")
+            || domain.len() + operation.len() + record_key.len() + canonical_record.len()
+                > MAX_FRONTIER_CHANGE_BYTES
+        {
+            return Err(AuthBusAuthorityError::CorruptState(
+                "invalid incremental frontier change",
+            ));
+        }
+        let sequence = u64::try_from(change_id)
+            .map_err(|_| AuthBusAuthorityError::CorruptState("invalid frontier sequence"))?;
+        let mut bytes = b"hepta.authbus.authority-frontier.change.v2\0".to_vec();
+        bytes.extend_from_slice(digest.as_array());
+        bytes.extend_from_slice(&sequence.to_be_bytes());
+        push(&mut bytes, domain.as_bytes());
+        push(&mut bytes, operation.as_bytes());
+        push(&mut bytes, record_key.as_bytes());
+        push(&mut bytes, canonical_record.as_bytes());
+        digest = Digest32::of_bytes(&bytes);
+        if digest.is_zero() {
+            return Err(AuthBusAuthorityError::CorruptState(
+                "empty incremental frontier digest",
+            ));
+        }
+        last_change_id = change_id;
+    }
+
+    if last_change_id != applied_change_id {
+        sqlx::query(
+            "UPDATE authbus_frontier_accumulator
+             SET root_digest = ?, applied_change_id = ?
+             WHERE singleton = 1",
+        )
+        .bind(digest.as_array().as_slice())
+        .bind(last_change_id)
+        .execute(&mut **tx)
+        .await
+        .map_err(storage)?;
+        sqlx::query("DELETE FROM authbus_frontier_change WHERE change_id <= ?")
+            .bind(last_change_id)
+            .execute(&mut **tx)
+            .await
+            .map_err(storage)?;
+    }
+    Ok(digest)
+}
+
+async fn seed_incremental_frontier(
+    tx: &mut Transaction<'_, Sqlite>,
+) -> Result<Digest32, AuthBusAuthorityError> {
+    let pending: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_frontier_change")
+        .fetch_one(&mut **tx)
+        .await
+        .map_err(storage)?;
+    if !(0..=MAX_PENDING_FRONTIER_CHANGES).contains(&pending) {
+        return Err(AuthBusAuthorityError::CapacityExceeded);
+    }
+    let last_change_id: i64 =
+        sqlx::query_scalar("SELECT COALESCE(MAX(change_id), 0) FROM authbus_frontier_change")
+            .fetch_one(&mut **tx)
+            .await
+            .map_err(storage)?;
+    if last_change_id < 0 {
+        return Err(AuthBusAuthorityError::CorruptState(
+            "invalid frontier seed sequence",
+        ));
+    }
+
+    let digest = full_authority_frontier_digest_tx(tx).await?;
+    sqlx::query(
+        "UPDATE authbus_frontier_accumulator
+         SET root_digest = ?, applied_change_id = ?
+         WHERE singleton = 1 AND root_digest IS NULL AND applied_change_id = 0",
+    )
+    .bind(digest.as_array().as_slice())
+    .bind(last_change_id)
+    .execute(&mut **tx)
+    .await
+    .map_err(storage)?;
+    if last_change_id != 0 {
+        sqlx::query("DELETE FROM authbus_frontier_change WHERE change_id <= ?")
+            .bind(last_change_id)
+            .execute(&mut **tx)
+            .await
+            .map_err(storage)?;
+    }
+    Ok(digest)
+}
+
+async fn full_authority_frontier_digest_tx(
     tx: &mut Transaction<'_, Sqlite>,
 ) -> Result<Digest32, AuthBusAuthorityError> {
     let mut bytes = b"hepta.authbus.authority-frontier.v1\0".to_vec();

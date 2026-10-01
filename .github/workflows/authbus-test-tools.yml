@@ -1,0 +1,29 @@
+name: AuthBus repository test tools
+on:
+  push:
+    branches: [auth-authbus-hardening-20260927]
+    paths: [.github/workflows/authbus-test-tools.yml]
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch official Linux binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/tools"
+          curl -fLsS --retry 3 https://get.nexte.st/0.9/linux-musl -o "$RUNNER_TEMP/nextest.tar.gz"
+          tar -xzf "$RUNNER_TEMP/nextest.tar.gz" -C "$RUNNER_TEMP/tools"
+          curl -fLsS --retry 3 https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-unknown-linux-musl.tar.gz -o "$RUNNER_TEMP/just.tar.gz"
+          tar -xzf "$RUNNER_TEMP/just.tar.gz" -C "$RUNNER_TEMP/tools" just
+          shasum -a 256 "$RUNNER_TEMP/tools/just" "$RUNNER_TEMP/tools/cargo-nextest" > "$RUNNER_TEMP/tools/SHA256SUMS"
+          tar -C "$RUNNER_TEMP/tools" -czf "$RUNNER_TEMP/authbus-test-tools.tar.gz" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: authbus-test-tools-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-test-tools.tar.gz
+          retention-days: 1
+          if-no-files-found: error

@@ -1,7 +1,11 @@
+#![cfg(unix)]
+
+use std::os::unix::fs::PermissionsExt;
 use std::time::Duration;
 
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::PrivateIssuerRegistryDocument;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_types::Digest32;
@@ -19,17 +23,47 @@ fn config(path: &std::path::Path) -> SqliteConfig {
     SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(path.to_path_buf()).unwrap())
 }
 
+fn issuer_registration(key: &SigningKey, epoch: u64, revoked: bool) -> IssuerRegistration {
+    let root = TempDir::new().unwrap();
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let path = root.path().join("issuer-registry.json");
+    let mut temporary = tempfile::NamedTempFile::new_in(root.path()).unwrap();
+    temporary
+        .as_file()
+        .set_permissions(std::fs::Permissions::from_mode(0o600))
+        .unwrap();
+    serde_json::to_writer(
+        temporary.as_file_mut(),
+        &serde_json::json!({
+            "issuer_id": "issuer:relay",
+            "key_epoch": epoch,
+            "public_key_hex": key
+                .verifying_key()
+                .as_bytes()
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>(),
+            "revoked": revoked,
+        }),
+    )
+    .unwrap();
+    temporary.as_file().sync_all().unwrap();
+    temporary.persist(&path).unwrap();
+    PrivateIssuerRegistryDocument::load(&path, root.path(), 16 * 1024)
+        .unwrap()
+        .message_issuer(
+            &StableId::new("issuer:relay").unwrap(),
+            Generation::new(epoch).unwrap(),
+        )
+        .unwrap()
+}
+
 async fn enqueue(
     store: &HeptaEvidenceStore,
     sequence: u64,
 ) -> (IssuerRegistration, AuthBusDeliveryStatus) {
     let key = SigningKey::from_bytes(&[43; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:relay").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = issuer_registration(&key, 1, false);
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -224,7 +258,7 @@ async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
     let store = HeptaEvidenceStore::open(&config(temp.path()))
         .await
         .unwrap();
-    let (mut issuer, queued) = enqueue(&store, /*sequence*/ 1).await;
+    let (issuer, queued) = enqueue(&store, /*sequence*/ 1).await;
     let (_, other) = enqueue(&store, /*sequence*/ 2).await;
     let delivery = claim(
         &store,
@@ -238,10 +272,11 @@ async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
         .authbus_delivery_status(queued.delivery_id)
         .await
         .unwrap();
-    issuer.key_epoch = Generation::new(2).unwrap();
+    let key = SigningKey::from_bytes(&[43; 32]);
+    let wrong_epoch = issuer_registration(&key, 2, false);
     assert!(matches!(
         store
-            .quarantine_authbus_delivery(&issuer, &delivery.lease)
+            .quarantine_authbus_delivery(&wrong_epoch, &delivery.lease)
             .await,
         Err(AuthBusOutboxError::Admission(
             AuthBusAdmissionError::Authentication(Error::IssuerMismatch)
@@ -254,11 +289,10 @@ async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
             .unwrap(),
         expected
     );
-    issuer.key_epoch = queued.key_epoch;
-    issuer.revoked = true;
+    let revoked = issuer_registration(&key, queued.key_epoch.get(), true);
     assert!(matches!(
         store
-            .quarantine_authbus_delivery(&issuer, &delivery.lease)
+            .quarantine_authbus_delivery(&revoked, &delivery.lease)
             .await,
         Err(AuthBusOutboxError::Admission(
             AuthBusAdmissionError::Authentication(Error::Revoked)

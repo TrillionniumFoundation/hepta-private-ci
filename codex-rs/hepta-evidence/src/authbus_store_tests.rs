@@ -1,6 +1,6 @@
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_types::Generation;
+use codex_hepta_authbus_p1_3_qualification::persisted_message_issuer;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -12,12 +12,9 @@ use super::*;
 
 fn fixture(sequence: u64) -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[19; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:durable").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer =
+        persisted_message_issuer("issuer:durable", 1, key.verifying_key().to_bytes(), false)
+            .unwrap();
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,

@@ -10,6 +10,10 @@ name = "codex_hepta_authbus"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+legacy-preverified-replay = []
+
 [lints]
 workspace = true
 
@@ -18,10 +22,18 @@ codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 sqlx = { workspace = true }
 thiserror = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+nix = { version = "0.30.1", features = ["fs"] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
