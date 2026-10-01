@@ -152,3 +152,71 @@ fn tick_projection_refresh_is_coalesced_at_the_fixed_interval() {
     assert!(!execution.view_refresh_due(started + Duration::from_millis(219)));
     assert!(execution.view_refresh_due(started + Duration::from_millis(220)));
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn live_allow_read_lane_is_bounded_and_never_retains_the_writer_lock()
+-> Result<(), Box<dyn std::error::Error>> {
+    let Fixture {
+        temp,
+        state,
+        cancellation,
+    } = Fixture::new()?;
+    let lock_path = state.registry.layout().supervisor_lock().to_path_buf();
+    let reader = state.execution.release_reads.get_or_init(|| {
+        super::super::release_reads::ReleaseReads::new(state.registry.clone(), cancellation.clone())
+            .map_err(|error| error.to_string())
+    });
+    let reader = reader.as_ref().map_err(|_| "reader startup")?;
+    // A deterministic scheduling barrier holds only the actual native reader.
+    // File/custody/content behavior is qualified separately on real root files.
+    let resume = reader.pause().await?;
+    let fence = crate::SupervisordControlFence {
+        agent_id: codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
+        supervisor_epoch: state.supervisor_epoch.clone(),
+        lifecycle: codex_hepta_fleet::AgentLifecycle::Stopped,
+        lifecycle_generation: 1,
+        spawn_generation: None,
+        runtime_generation: None,
+        current_release: None,
+        previous_release: None,
+        release_change_pending: false,
+        state_digest: crate::ControlStateDigest::parse("0".repeat(64))?,
+    };
+    let method = SupervisordMethod::AllowInstalledRelease {
+        fence,
+        release_id: "cold-release".parse()?,
+    };
+    for _ in 0..2 {
+        let reply = timeout(
+            Duration::from_secs(1),
+            handle(Arc::clone(&state), method.clone()),
+        )
+        .await?;
+        assert!(
+            matches!(reply, SupervisordPayload::Error { ref code, .. } if code == "not_admitted_busy")
+        );
+        assert_eq!(state.execution.slots.available_permits(), 1);
+        assert_eq!(state.execution.completed.load(Ordering::Relaxed), 0);
+    }
+    assert!(matches!(
+        timeout(
+            Duration::from_millis(250),
+            handle(Arc::clone(&state), SupervisordMethod::Health)
+        )
+        .await?,
+        SupervisordPayload::Health(_)
+    ));
+    timeout(
+        Duration::from_secs(1),
+        tick(Arc::clone(&state), Instant::now()),
+    )
+    .await?;
+    assert_eq!(state.execution.completed.load(Ordering::Relaxed), 1);
+    cancellation.cancel();
+    drop(state);
+    // The still-paused read thread owns no DaemonState/single-instance guard.
+    SingleInstanceLock::acquire(&lock_path)?;
+    resume.send(())?;
+    drop(temp);
+    Ok(())
+}

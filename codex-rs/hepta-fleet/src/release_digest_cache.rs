@@ -34,7 +34,6 @@ pub(crate) struct ReleaseDigestCache {
 /// No request can construct this private native identity proof.
 pub(crate) struct ManifestRead {
     pub(crate) bytes: Vec<u8>,
-    #[cfg(unix)]
     pub(crate) sha256: String,
     #[cfg(unix)]
     path: PathBuf,
@@ -44,7 +43,7 @@ pub(crate) struct ManifestRead {
 
 impl ManifestRead {
     #[cfg(unix)]
-    fn verify_current(&self) -> Result<(), FleetRegistryError> {
+    pub(crate) fn verify_current(&self) -> Result<(), FleetRegistryError> {
         let file = File::options()
             .read(true)
             .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
@@ -80,7 +79,6 @@ impl ReleaseDigestCache {
             return Err(changed("release manifest grew beyond its read bound"));
         }
         let manifest = ManifestRead {
-            #[cfg(unix)]
             sha256: format!("{:x}", Sha256::digest(&bytes)),
             bytes,
             #[cfg(unix)]
@@ -98,17 +96,34 @@ impl ReleaseDigestCache {
         path: &Path,
         manifest: &ManifestRead,
     ) -> Result<String, FleetRegistryError> {
+        self.digest(path, manifest, /*defer_cold_read*/ false)
+    }
+
+    pub(crate) fn sha256_prevalidated(
+        &self,
+        path: &Path,
+        manifest: &ManifestRead,
+    ) -> Result<String, FleetRegistryError> {
+        self.digest(path, manifest, /*defer_cold_read*/ true)
+    }
+
+    fn digest(
+        &self,
+        path: &Path,
+        manifest: &ManifestRead,
+        defer_cold_read: bool,
+    ) -> Result<String, FleetRegistryError> {
         #[cfg(unix)]
         {
             let file = File::options()
                 .read(true)
                 .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
                 .open(path)?;
-            self.opened_sha256(path, manifest, file)
+            self.opened_digest(path, manifest, file, defer_cold_read)
         }
         #[cfg(not(unix))]
         {
-            let _ = manifest;
+            let _ = (manifest, defer_cold_read);
             let mut file = File::open(path)?;
             let length = file.metadata()?.len();
             hash_file(&mut file, length)
@@ -116,11 +131,12 @@ impl ReleaseDigestCache {
     }
 
     #[cfg(unix)]
-    fn opened_sha256(
+    fn opened_digest(
         &self,
         path: &Path,
         manifest: &ManifestRead,
         mut file: File,
+        defer_cold_read: bool,
     ) -> Result<String, FleetRegistryError> {
         manifest.verify_current()?;
         let before = Snapshot::capture(path, &file)?;
@@ -143,6 +159,9 @@ impl ReleaseDigestCache {
                 }
                 manifest.verify_current()?;
                 return Ok(sha256);
+            }
+            if defer_cold_read {
+                return Err(FleetRegistryError::ReleasePrevalidationRequired);
             }
         }
         // The file descriptor and visible path must still name the exact file
@@ -171,6 +190,16 @@ impl ReleaseDigestCache {
             );
         }
         Ok(sha256)
+    }
+
+    #[cfg(all(test, unix))]
+    fn opened_sha256(
+        &self,
+        path: &Path,
+        manifest: &ManifestRead,
+        file: File,
+    ) -> Result<String, FleetRegistryError> {
+        self.opened_digest(path, manifest, file, /*defer_cold_read*/ false)
     }
 }
 

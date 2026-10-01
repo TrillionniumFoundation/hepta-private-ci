@@ -13,6 +13,8 @@ pub enum FleetRegistryError {
     AlreadyRegistered(AgentId),
     #[error("unknown fleet release {0}")]
     UnknownRelease(String),
+    #[error("immutable release requires read-only prevalidation")]
+    ReleasePrevalidationRequired,
     #[error("release {release_id} is not allowed for agent {agent_id}")]
     ReleaseNotAllowed {
         agent_id: AgentId,

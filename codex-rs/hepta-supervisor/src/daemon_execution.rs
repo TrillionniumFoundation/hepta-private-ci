@@ -3,6 +3,7 @@
 //! ownership is independently qualified. Read observations do not enter this lane.
 
 use std::sync::Arc;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -43,6 +44,7 @@ pub(super) struct Execution {
     last_view_refresh_us: AtomicU64,
     started: Instant,
     last_log_second: AtomicU64,
+    release_reads: OnceLock<Result<super::release_reads::ReleaseReads, String>>,
 }
 
 impl Execution {
@@ -61,6 +63,7 @@ impl Execution {
             last_view_refresh_us: AtomicU64::new(0),
             started: Instant::now(),
             last_log_second: AtomicU64::new(0),
+            release_reads: OnceLock::new(),
         }
     }
 
@@ -157,6 +160,45 @@ pub(super) async fn handle_with_request_id(
         state.observed_faults.load(Ordering::Relaxed),
     ) {
         return reply;
+    }
+    // Live allow is the configuration path that formerly read a complete cold
+    // ELF under the lifecycle permit. This reader has no Agent allowance or
+    // durable operation authority; the owner still verifies the original fence
+    // and actual catalog identity before publishing the allowance.
+    if let SupervisordMethod::AllowInstalledRelease { release_id, .. } = &method {
+        let reader = state.execution.release_reads.get_or_init(|| {
+            super::release_reads::ReleaseReads::new(
+                state.registry.clone(),
+                state.execution.cancellation.clone(),
+            )
+            .map_err(|error| error.to_string())
+        });
+        let reader = match reader {
+            Ok(reader) => reader,
+            Err(_) => return unavailable(),
+        };
+        match reader
+            .prevalidate(release_id.clone(), &state.execution.cancellation)
+            .await
+        {
+            super::release_reads::ReadResult::Validated => {}
+            super::release_reads::ReadResult::Busy => {
+                state.execution.rejected.fetch_add(1, Ordering::Relaxed);
+                return error_payload(
+                    "not_admitted_busy",
+                    "catalog reader is busy; configuration was not admitted; refresh before retry",
+                    /*actual*/ None,
+                );
+            }
+            super::release_reads::ReadResult::Stopped => return unavailable(),
+            super::release_reads::ReadResult::Rejected(error) => {
+                return super::safe_rejection(
+                    error.into(),
+                    /*actual*/ None,
+                    /*mutation_started*/ false,
+                );
+            }
+        }
     }
     // Wait on the FIFO semaphore, not in the blocking pool. Connection capacity
     // bounds the number of waiters; timeout drops only the unadmitted acquisition.

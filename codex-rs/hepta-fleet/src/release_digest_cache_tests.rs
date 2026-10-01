@@ -224,3 +224,40 @@ fn many_independent_actual_programs_keep_digest_memory_bounded()
     );
     Ok(())
 }
+
+#[test]
+#[ignore = "requires root and protected native filesystem"]
+fn deferred_cold_or_changed_identity_reads_no_program_bytes()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = root_fixture()?;
+    let path = readonly_program(directory.path(), "program", b"original bytes")?;
+    let cache = ReleaseDigestCache::default();
+    let manifest = read_manifest(&cache, directory.path(), "manifest", MANIFEST.as_bytes())?;
+    let mut cold = File::open(&path)?;
+    assert!(matches!(
+        cache.opened_digest(
+            &path,
+            &manifest,
+            cold.try_clone()?,
+            /*defer_cold_read*/ true
+        ),
+        Err(FleetRegistryError::ReleasePrevalidationRequired)
+    ));
+    assert_eq!(cold.stream_position()?, 0);
+    let expected = cache.sha256(&path, &manifest)?;
+    assert_eq!(cache.sha256_prevalidated(&path, &manifest)?, expected);
+    let replacement = readonly_program(directory.path(), "replacement", b"different data")?;
+    std::fs::rename(replacement, &path)?;
+    let mut changed = File::open(&path)?;
+    assert!(matches!(
+        cache.opened_digest(
+            &path,
+            &manifest,
+            changed.try_clone()?,
+            /*defer_cold_read*/ true
+        ),
+        Err(FleetRegistryError::ReleasePrevalidationRequired)
+    ));
+    assert_eq!(changed.stream_position()?, 0);
+    Ok(())
+}

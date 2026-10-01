@@ -121,6 +121,10 @@ use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 mod execution;
 
 #[cfg(unix)]
+#[path = "daemon_release_reads.rs"]
+mod release_reads;
+
+#[cfg(unix)]
 #[path = "daemon_mutation.rs"]
 mod mutation;
 #[cfg(unix)]

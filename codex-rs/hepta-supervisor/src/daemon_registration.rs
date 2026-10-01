@@ -56,11 +56,19 @@ pub(super) async fn allow<D: ProcessDriver>(
     if let Err(error) = supervisor.ensure_configuration_ready(&fence.agent_id) {
         return configuration_rejection(error, Some(actual));
     }
-    match state.registry.allow_release(&fence.agent_id, &release_id) {
+    match state
+        .registry
+        .allow_prevalidated_release(&fence.agent_id, &release_id)
+    {
         Ok(()) => match agent_status_locked(&state, &supervisor, &fence.agent_id) {
             Ok(agent) => SupervisordPayload::InstalledReleaseAllowed { agent },
             Err(error) => safe_rejection(error, Some(actual), /*mutation_started*/ true),
         },
+        Err(codex_hepta_fleet::FleetRegistryError::ReleasePrevalidationRequired) => error_payload(
+            "not_admitted_busy",
+            "catalog identity requires fresh prevalidation; configuration was not admitted; refresh before retry",
+            Some(actual),
+        ),
         Err(error) => configuration_rejection(error.into(), Some(actual)),
     }
 }

@@ -15,6 +15,7 @@ use codex_utils_cargo_bin::cargo_bin;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
+use tokio::time::timeout;
 
 const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const OTHER_AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13";
@@ -459,5 +460,95 @@ async fn diagnostics_command_reaches_the_running_owner() -> Result<(), Box<dyn s
         success(&root, &["diagnostics", AGENT]),
         json!({"agentId": AGENT, "entries": entries})
     );
+    Ok(())
+}
+
+#[tokio::test]
+#[ignore = "requires root and protected native filesystem"]
+async fn root_catalog_allow_cli_keeps_health_and_fences_observable()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    use std::io::Write;
+    use std::os::unix::fs::MetadataExt;
+
+    let directory = tempfile::Builder::new()
+        .prefix("h7-read-")
+        .tempdir_in("/var/lib")?;
+    assert_eq!(std::fs::metadata(directory.path())?.uid(), 0);
+    let root = directory.path().join("fleet");
+    let workspace = directory.path().join("workspace");
+    std::fs::create_dir(&workspace)?;
+    success(&root, &["init"]);
+    success(
+        &root,
+        &["register", AGENT, workspace.to_str().ok_or("path")?],
+    );
+    let source = directory.path().join("catalog-program");
+    let mut file = std::fs::File::create(&source)?;
+    let buffer = [b'p'; 64 * 1024];
+    for _ in 0..512 {
+        file.write_all(&buffer)?;
+    }
+    file.sync_all()?;
+    // Only catalog configuration is exercised: these actual 32 MiB bytes are
+    // never spawned or treated as a readiness/model qualification fixture.
+    success(
+        &root,
+        &["install-release", "read-v1", source.to_str().ok_or("path")?],
+    );
+    let root_type = HeptaFleetRoot::parse(root.clone())?;
+    let registry = FleetRegistry::open_existing(root_type.clone())?;
+    let agent_id = AgentId::parse(AGENT)?;
+    assert!(registry.allowed_releases(&agent_id)?.is_empty());
+    let mut daemon = Daemon(
+        Command::new(cargo_bin("hepta-supervisord")?)
+            .arg("--fleet-root")
+            .arg(&root)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::inherit())
+            .spawn()?,
+    );
+    let client = SupervisordClient::new(root_type.layout().supervisor_socket().to_path_buf())?;
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while client.health().await.is_err() {
+        assert!(Instant::now() < deadline && daemon.0.try_wait()?.is_none());
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    let before = client.snapshot(agent_id.clone()).await?;
+    let cli_root = root.clone();
+    let allow = tokio::task::spawn_blocking(move || {
+        cli(&cli_root, &["allow-release-live", AGENT, "read-v1"])
+    });
+    // The new process starts with no volatile digest facts. Probe real owner
+    // health while the actual CLI waits for full catalog read/prevalidation.
+    let mut observations = 0;
+    while !allow.is_finished() {
+        let health = timeout(Duration::from_secs(1), client.health()).await??;
+        assert!(health.ready);
+        observations += 1;
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    let output = allow.await?;
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(observations > 0);
+    let after = client.snapshot(agent_id.clone()).await?;
+    assert_eq!(
+        after.control_fence.lifecycle_generation,
+        before.control_fence.lifecycle_generation
+    );
+    assert_eq!(
+        after.control_fence.supervisor_epoch,
+        before.control_fence.supervisor_epoch
+    );
+    assert_eq!(after.process_id, None);
+    assert_eq!(
+        after.control_fence.state_digest,
+        before.control_fence.state_digest
+    );
+    registry.resolve_release(&agent_id, &"read-v1".parse()?)?;
     Ok(())
 }
