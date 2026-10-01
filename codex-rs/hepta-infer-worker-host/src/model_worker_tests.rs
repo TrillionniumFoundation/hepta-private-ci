@@ -271,3 +271,31 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
+
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+#[test]
+fn explicit_model_generation_preserves_legacy_worker_receipt_preimage()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut worker = InferenceWorker::new(100, "worker.3".into(), 3, grant(), Driver::default())?;
+    worker.load_model(100, manifest())?;
+    let physical = worker.run_neuron_features(100, "model.1", neuron_feature_request())?;
+    let expected_legacy = build_feature_receipt(
+        neuron_feature_request(),
+        physical.clone(),
+        Generation::new(3)?,
+    )?;
+    let legacy = worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request())?;
+    assert_eq!(legacy, expected_legacy);
+    let expected_model =
+        build_feature_receipt(neuron_feature_request(), physical, Generation::new(1)?)?;
+    let model = worker.run_neuron_features_receipt_for_model_v2(
+        100,
+        "model.1",
+        Generation::new(1)?,
+        neuron_feature_request(),
+    )?;
+    assert_eq!(model, expected_model);
+    assert_ne!(model.request_digest, legacy.request_digest);
+    assert!(!model.authority.grants_any());
+    Ok(())
+}

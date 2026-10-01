@@ -10,6 +10,15 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+mod fleet_worker_resource_port_v2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use fleet_worker_resource_port_v2::CurrentFleetWorkerResourcesV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use fleet_worker_resource_port_v2::FleetWorkerProcessBindingV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use fleet_worker_resource_port_v2::FleetWorkerResourcePortV2;
+
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub mod initial_cpu_anchor;
 

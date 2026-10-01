@@ -15,6 +15,16 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[path = "model_worker_resources.rs"]
+mod resources;
+use resources::WorkerResources;
+#[path = "model_worker_receipt.rs"]
+mod receipt;
+use receipt::build_feature_receipt;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+#[path = "model_worker_v2.rs"]
+mod v2;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -168,7 +178,7 @@ struct LoadedModel {
 pub struct InferenceWorker<D: ModelDriver> {
     worker_id: String,
     generation: u64,
-    grant: ResourceGrant,
+    grant: WorkerResources,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
@@ -190,7 +200,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         Ok(Self {
             worker_id,
             generation,
-            grant,
+            grant: WorkerResources::Legacy(grant),
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
@@ -206,18 +216,20 @@ impl<D: ModelDriver> InferenceWorker<D> {
         now_ms: u64,
         manifest: ModelManifest,
     ) -> Result<ModelLoadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        let limits = self
+            .grant
+            .current_limits(now_ms, &self.worker_id, self.generation)?;
         validate_manifest(&manifest)?;
         if self.models.contains_key(&manifest.model_id) {
             return Err(Error::ModelAlreadyLoaded);
         }
-        let model_limit = self.grant.maximum_models.min(MAX_MODELS);
+        let model_limit = limits.maximum_models.min(MAX_MODELS);
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
         let handle = self.driver.load(&manifest)?;
         validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if handle.observed_memory_bytes > limits.maximum_memory_bytes {
             self.driver.unload(handle)?;
             return Err(Error::ModelCapacity);
         }
@@ -245,13 +257,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         model_id: &str,
         request: WorkerRequest,
     ) -> Result<InferenceExecutionObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        let limits = self
+            .grant
+            .current_limits(now_ms, &self.worker_id, self.generation)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request)?;
         if self.active_requests.contains_key(&request.request_id) {
             return Err(Error::RequestCapacity);
         }
-        let request_limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
+        let request_limit = limits.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
@@ -299,7 +313,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         {
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if observed.observed_memory_bytes > limits.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
@@ -336,7 +350,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        self.grant
+            .current_limits(now_ms, &self.worker_id, self.generation)?;
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
@@ -349,10 +364,6 @@ impl<D: ModelDriver> InferenceWorker<D> {
             worker_generation: self.generation,
             terminal_observed: true,
         })
-    }
-
-    fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
-        validate_grant(now_ms, &self.grant)
     }
 }
 
@@ -501,7 +512,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        let limits = self
+            .grant
+            .current_limits(now_ms, &self.worker_id, self.generation)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
         validate_neuron_feature_request(&request)?;
@@ -511,7 +524,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::RequestCapacity);
         }
-        let request_limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
+        let request_limit = limits.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
@@ -561,7 +574,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if observed.observed_memory_bytes > limits.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
@@ -605,51 +618,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
         let generation =
             Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
+        build_feature_receipt(request_copy, observed, generation)
     }
 }
 

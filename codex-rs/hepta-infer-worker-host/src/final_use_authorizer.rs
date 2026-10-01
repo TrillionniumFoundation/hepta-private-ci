@@ -551,7 +551,7 @@ fn sha256_bytes(value: &[u8]) -> String {
 }
 
 #[cfg(unix)]
-fn read_private_config(path: &Path) -> Result<Vec<u8>> {
+pub(crate) fn read_private_config(path: &Path) -> Result<Vec<u8>> {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::OpenOptionsExt;
 
@@ -584,7 +584,7 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>> {
 }
 
 #[cfg(not(unix))]
-fn read_private_config(_path: &Path) -> Result<Vec<u8>> {
+pub(crate) fn read_private_config(_path: &Path) -> Result<Vec<u8>> {
     Err("runtime.codex final-use authority configuration requires Unix".into())
 }
 
