@@ -58,6 +58,8 @@ fn open_staged_file(root: &PrivateStateRoot, path: &Path) -> Result<File, ShellE
                 "staged package is not a current-principal regular file".into(),
             ));
         }
+        #[cfg(target_os = "macos")]
+        codex_utils_private_state::verify_private_permissions(&file)?;
         if metadata.permissions().mode() & 0o777 != 0o600 {
             if metadata.nlink() != 1 {
                 return Err(ShellError::Security(
@@ -184,6 +186,10 @@ fn copy_at_boundaries(
         std::fs::create_dir_all(parent)?;
     }
     observe(CopyBoundary::ParentVerified)?;
+    #[cfg(target_os = "macos")]
+    if let Some(root) = private_root {
+        crate::journal_storage::verify_private_destination(root, destination)?;
+    }
     let source_file = if let Some(root) = source_root {
         open_staged_file(root, source)?
     } else {
@@ -208,8 +214,26 @@ fn copy_at_boundaries(
                 "staged update parent identity changed".into(),
             ));
         }
+        #[cfg(target_os = "macos")]
+        {
+            use std::os::unix::fs::PermissionsExt as _;
+            codex_utils_private_state::verify_private_permissions(destination_file.as_file())?;
+            destination_file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+        }
     }
     observe(CopyBoundary::Opened)?;
+    #[cfg(target_os = "macos")]
+    {
+        if let Some(root) = private_root {
+            root.verify()?;
+            codex_utils_private_state::verify_private_permissions(destination_file.as_file())?;
+            crate::journal_storage::verify_private_destination(root, destination)?;
+        }
+        if let Some(root) = source_root {
+            root.verify()?;
+            codex_utils_private_state::verify_private_permissions(&source_file)?;
+        }
+    }
     let mut incoming = source_file.take(MAX_PACKAGE_BYTES + 1);
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
@@ -264,9 +288,16 @@ fn copy_at_boundaries(
     observe(CopyBoundary::FileSynced)?;
     if let Some(root) = private_root {
         root.verify()?;
+        #[cfg(target_os = "macos")]
+        {
+            codex_utils_private_state::verify_private_permissions(destination_file.as_file())?;
+            crate::journal_storage::verify_private_destination(root, destination)?;
+        }
     }
     if let Some(root) = source_root {
         root.verify()?;
+        #[cfg(target_os = "macos")]
+        codex_utils_private_state::verify_private_permissions(incoming.get_ref())?;
     }
     destination_file.commit()?;
     if let Some(root) = private_root {
@@ -428,3 +459,7 @@ mod tests;
 #[cfg(test)]
 #[path = "update_root_storage_tests.rs"]
 mod root_tests;
+
+#[cfg(all(test, target_os = "macos"))]
+#[path = "update_storage_macos_tests.rs"]
+mod macos_tests;

@@ -74,6 +74,8 @@ fn write_at_boundaries(
     root.verify()?;
     private_child_name(root, path)?;
     observe(Boundary::ParentVerified)?;
+    #[cfg(target_os = "macos")]
+    verify_private_destination(root, path)?;
     let mut file = AtomicWriteFile::open(path)?;
     #[cfg(unix)]
     {
@@ -88,13 +90,27 @@ fn write_at_boundaries(
                 "atomic native state parent identity changed".to_owned(),
             ));
         }
+        #[cfg(target_os = "macos")]
+        codex_utils_private_state::verify_private_permissions(file.as_file())?;
         file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
     }
     observe(Boundary::Opened)?;
+    #[cfg(target_os = "macos")]
+    {
+        root.verify()?;
+        codex_utils_private_state::verify_private_permissions(file.as_file())?;
+        verify_private_destination(root, path)?;
+    }
     file.write_all(bytes)?;
     observe(Boundary::Written)?;
     file.sync_all()?;
     observe(Boundary::FileSynced)?;
+    #[cfg(target_os = "macos")]
+    {
+        root.verify()?;
+        codex_utils_private_state::verify_private_permissions(file.as_file())?;
+        verify_private_destination(root, path)?;
+    }
     file.commit()?;
     observe(Boundary::Replaced)?;
     sync_private_root(root)?;
@@ -359,6 +375,18 @@ pub(crate) fn open_private_file_in(
     Ok(file)
 }
 
+#[cfg(target_os = "macos")]
+pub(crate) fn verify_private_destination(
+    root: &PrivateStateRoot,
+    path: &Path,
+) -> Result<(), ShellError> {
+    match open_private_file_in(root, path, FileAccess::Read, /*preexisting*/ true) {
+        Ok(_) => Ok(()),
+        Err(ShellError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => root.verify(),
+        Err(error) => Err(error),
+    }
+}
+
 /// Unlink an exact temporary child from the original pinned directory. Unix
 /// cleanup remains anchored even if the directory's public path was replaced.
 pub(crate) fn remove_private_file_in(
@@ -413,6 +441,8 @@ fn validate_private_file(file: &File, path: &Path, preexisting: bool) -> Result<
             path.display()
         )));
     }
+    #[cfg(target_os = "macos")]
+    codex_utils_private_state::verify_private_permissions(file)?;
     #[cfg(windows)]
     {
         use std::os::windows::fs::MetadataExt as _;
@@ -440,6 +470,10 @@ fn validate_private_file(file: &File, path: &Path, preexisting: bool) -> Result<
 #[cfg(test)]
 #[path = "journal_storage_tests.rs"]
 mod tests;
+
+#[cfg(all(test, target_os = "macos"))]
+#[path = "journal_macos_tests.rs"]
+mod macos_tests;
 
 #[cfg(all(test, windows))]
 #[path = "journal_windows_tests.rs"]

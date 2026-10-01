@@ -129,8 +129,12 @@ impl PrivateStateRoot {
                         "private-state child is not a current-principal directory".to_owned(),
                     ));
                 }
+                #[cfg(target_os = "macos")]
+                codex_utils_private_state::verify_private_permissions(&directory)?;
                 directory.set_permissions(std::fs::Permissions::from_mode(0o700))?;
             }
+            #[cfg(target_os = "macos")]
+            codex_utils_private_state::verify_private_permissions(&directory)?;
             verify_directory_metadata(&directory.metadata()?, &path)?;
             Self {
                 path,
@@ -171,6 +175,8 @@ impl PrivateStateRoot {
         {
             use std::os::unix::fs::MetadataExt as _;
             let current = open_verified_directory(&self.path)?.metadata()?;
+            #[cfg(target_os = "macos")]
+            codex_utils_private_state::verify_private_permissions(&self.directory)?;
             let original = self.directory.metadata()?;
             if current.dev() != original.dev() || current.ino() != original.ino() {
                 return Err(ShellError::Security(format!(
@@ -249,6 +255,8 @@ fn open_verified_directory(path: &Path) -> Result<std::fs::File, ShellError> {
         ))
     })?
     .into();
+    #[cfg(target_os = "macos")]
+    codex_utils_private_state::verify_private_permissions(&directory)?;
     verify_directory_metadata(&directory.metadata()?, path)?;
     Ok(directory)
 }
@@ -298,3 +306,7 @@ fn verify_existing(_path: &Path) -> Result<(), ShellError> {
 #[cfg(test)]
 #[path = "private_state_child_tests.rs"]
 mod child_tests;
+
+#[cfg(all(test, target_os = "macos"))]
+#[path = "private_state_macos_tests.rs"]
+mod macos_tests;
