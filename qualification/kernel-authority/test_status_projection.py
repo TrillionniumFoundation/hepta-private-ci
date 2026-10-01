@@ -99,6 +99,27 @@ class SourceAnchorTests(unittest.TestCase):
         with self.assertRaises(STATUS.StatusError):
             STATUS.validate_manifest(self.manifest)
 
+    def test_projection_retains_exact_git_objects_without_execution_claims(self):
+        (self.root / 'tests').mkdir()
+        (self.root / 'tests/recovery.rs').write_text('// separate recovery evidence\n')
+        self.git('add', '.')
+        self.git('commit', '-q', '-m', 'add separately mapped recovery source')
+        self.manifest['operations'][0]['tests'] = ['tests/recovery.rs']
+        self.manifest['sourceAnchor'] = {
+            'commit': self.git('rev-parse', 'HEAD'),
+            'tree': self.git('rev-parse', 'HEAD^{tree}'),
+        }
+        anchor, _ = STATUS.validate_manifest(self.manifest)
+        rendered = STATUS.render_projections(self.manifest, anchor)
+        value = json.loads(rendered[STATUS.OUTPUTS['implementationMap']])
+        expected_paths = ['TECHNICAL.md', 'src', 'src/owner.rs', 'tests/recovery.rs']
+        self.assertEqual(value['sourceObjects'], [
+            {'path': path, 'object': self.git('rev-parse', f'HEAD:{path}')}
+            for path in expected_paths
+        ])
+        self.assertFalse(value['productionImplementation'])
+        self.assertTrue(all(value['claimBoundary'][field] is False for field in STATUS.EXECUTION_CLAIMS))
+
     def test_committed_source_after_anchor_requires_rebinding(self):
         (self.root / 'src/owner.rs').write_text('// a new source revision\n')
         self.git('add', '.')

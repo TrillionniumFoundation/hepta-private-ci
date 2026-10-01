@@ -9,6 +9,7 @@ are separate facts. No projection grants production or release authority.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -17,6 +18,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = Path(__file__).resolve().parents[2] / 'scripts'
 MANIFEST = ROOT / 'qualification/kernel-authority/status_manifest.json'
 DOCS = ROOT / 'docs/modules/kernel.authority'
 OUTPUTS = {
@@ -220,7 +222,7 @@ def validate_manifest(manifest):
 
 def implementation_map(manifest, anchor):
     operations = [dict(row, sourcePathExists=True, delegatedCallees=row.get('delegatedCallees', [])) for row in manifest['operations']]
-    return {
+    result = {
         'schema': 'hepta.module-implementation-map.v3', 'schemaVersion': 3, 'sourceBase': anchor,
         'mappingSourceIdentityMode': 'path_only', 'exactSourceEvidenceMode': 'lane_a_runtime_wiring_only_no_product_execution_claim',
         **{key: manifest[key] for key in ('laneId', 'module', 'owner', 'deputy', 'technicalGuide', 'declaredRoots')},
@@ -239,6 +241,20 @@ def implementation_map(manifest, anchor):
         'statusGenerator': 'qualification/kernel-authority/generate_status.py',
         'productCallers': manifest['productCallers'], 'evidencePrograms': manifest['evidencePrograms'],
     }
+    # Share the verifier's evidence inventory; a projection must not erase exact
+    # tree/blob bindings added by map migration. Load with this invocation's
+    # root so temporary-Git regressions exercise real objects too.
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    spec = importlib.util.spec_from_file_location('authority_source_maps', SCRIPTS / 'hepta-implementation-maps.py')
+    maps = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(maps)
+    maps.ROOT = ROOT
+    try:
+        result['sourceObjects'] = maps.current_source_objects(result)
+    except ValueError as error:
+        raise StatusError(f'invalid implementation-map source binding: {error}') from error
+    return result
 
 
 def current_state(manifest, anchor):
