@@ -2,20 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "d50ecc90a949bf3498ae69b23d82d8b7c9a732f4",
+    "tree": "767ab6fd866799a3b582a1c0775b82505354d80b"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
+  "sourceMaturity": "durable_authorized_hosted_profile_and_local_driver_component",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
+  "stateOwnerDisposition": "Owns live hosted client handles and local driver resource/cleanup state. Persistent request, slot, dispatch and observation facts remain in the inference.control journal; final-use nonce/revocation state remains kernel.authority-owned. App Server owns ephemeral thread execution and artifact/cache owners retain model bytes.",
+  "terminalObserverDisposition": "The hosted native-app-server profile observes matching typed turn events or exact retained thread/read history. It preserves prior usage, owner loss and denied local boundaries. The local manifest driver remains injected; its observations do not prove physical weights/device/memory behavior.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -34,7 +34,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility.",
+      "sourceSemantics": "Validates supplied manifest and resource-grant bindings, rejects cleanup-fenced execution, and checks aggregate driver-reported resident allocation. Invalid post-load handles trigger cleanup; failed cleanup retains resource ownership. Physical artifact/device loading and enforcement remain the injected driver owner responsibility.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -59,6 +59,27 @@
         },
         {
           "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "symbol": "pub(super) async fn reconcile_existing(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "symbol": "impl TurnStartAuthorizer for UnixFinalUseAuthorizer",
+          "buildTarget": "codex-hepta-infer-worker-host::final_use_authorizer",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence.rs",
+          "symbol": "pub(super) async fn reconcile_intelligence_terminal(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
           "path": "codex-rs/hepta-infer-core/src/native_control.rs",
           "symbol": "pub fn settle_native(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
@@ -75,9 +96,24 @@
           "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
           "kind": "matching_native_events_and_usage",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+          "kind": "signed_exact_binding_denial_peer_identity_and_revocation",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_observation_tests.rs",
+          "kind": "monotonic_recovery_boundary_and_missing_frontier",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_tests.rs",
+          "kind": "exact_owner_cancellation_and_terminal_revision_recovery",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "sourceSemantics": "Reserves through durable inference.control, freezes exact App Server request/correlation, requires independently signed final-use authority and commits dispatch before the effect. New requests enter turn/start once. Completed duplicates return stored historical observations; uncertain reopen attempts use exact thread/read history without a new turn/start. Recovered observations retain prior usage, owner loss and cancelled/timed-out/quarantined local boundary; missing history or usage remains unknown. Intelligence-bound recovered terminals reconcile the exact existing Agentd target through observed-current-revision CAS; existing exact terminal receipts remain historical truth and conflicts deny local success. Historical missing authority frontiers quarantine before owner publication.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -100,7 +136,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources.",
+      "sourceSemantics": "Unloads only an owned admitted generation after the injected driver confirms drain and resource release. Expired/revoked grants do not prohibit cleanup. A failed unload retains the handle and cleanup fence, preventing new execution until confirmed release.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -108,13 +144,18 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
-    "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
+    "Compose a versioned independently issued local-model authorization/control contract; current public component records validate fields and equality but do not prove issuer signatures or bind all feature authorization IDs/token/deadline terms.",
+    "Implement a local model driver that acquires and proves actual weights, tokenizer/runtime/device identity and physical memory grants before claiming isolated local inference.",
+    "Compose trusted later missing-usage reconciliation and authenticated journal archival/retention; exact thread/read terminal recovery already exists but cannot manufacture unavailable ephemeral history or usage.",
+    "Compose owner-side no-effect reconciliation after a live pre-effect abort when Agentd already recorded Dispatched; local slot release does not fabricate an owner/provider terminal receipt."
   ],
   "externalEvidenceGates": [
-    "identified real weights/tokenizer/runtime/device",
-    "isolated deployed worker process and authenticated control channel",
-    "OOM/device-reset/load-kill target qualification"
+    "identified real weights/tokenizer/runtime/device and physical resource observations",
+    "independently operated final-use issuer, signing-key custody, trusted time/revocation distribution, protected socket/connected peer identity and external anti-rollback recovery",
+    "authenticated target-host Agentd/App Server generation and real provider terminal stream",
+    "isolated deployed worker process, physical memory enforcement and OOM/device-reset/load-kill qualification",
+    "independent resolution/quarantine policy when ephemeral App Server history is unavailable; no replay or inferred zero usage",
+    "independent acceptance, activation/canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -134,12 +175,104 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_hosted_profile_not_activated",
+  "productionWriterState": "inference_control_journal_and_existing_app_server_owner",
   "owner": "inference-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-infer-worker-host"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "nativeSymbol": "async fn main(",
+      "state": "explicit_native_app_server_profile_requires_independent_final_use_authority"
+    }
+  ],
+  "compositionTests": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "command": "just test -p codex-hepta-agentd --test runtime_codex_product_e2e",
+      "covers": [
+        "real Agentd and App Server process composition",
+        "named AppServerModelDriver hosted caller",
+        "independently signed test final-use grant",
+        "single controlled Responses provider dispatch",
+        "durable terminal correlation and authority witness"
+      ],
+      "evidenceBoundary": "controlled mock Responses provider only; not a pass receipt, real-provider or target-host qualification"
+    }
+  ],
+  "sourceBaseSemantics": "historical_provenance_only",
+  "exactCandidateProvenance": {
+    "mode": "verification_derived_from_checkout",
+    "commitCommand": "git rev-parse HEAD",
+    "treeCommand": "git rev-parse HEAD^{tree}",
+    "verifier": "scripts/hepta-implementation-maps.py verify --profile development",
+    "hardCodedInMap": false,
+    "rationale": "sourceBase remains integration provenance; current source identity is derived from the candidate checkout, not a self-referential committed map."
+  },
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host",
+      "object": "7800a968c01d7ce6396906ba7d8039d36f39afec"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "object": "eda16d16177b6ba90d2984265e9e34b1602b01bd"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "object": "bf314bf3a8681df3f5e3c433bf5602064bf21e73"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "object": "fc4fd0c857275caa0579dcc2fcdbd796650f363f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "object": "5d7da7d60df77ade70822ae4228c47d494fcf2a5"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "object": "15eaec7a0bbb1f723c5a0a76566046302c8196c1"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "c46ab7895e79aef33df17640f16eb840aedda58c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "2207655ed74159eff4e6821f8c4f16a3abb89dd1"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence.rs",
+      "object": "84649bb1188cadf32b175572cb719e64add76670"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_tests.rs",
+      "object": "089b7c168bebb84e159bc9f9704d6f45563be0cf"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_observation_tests.rs",
+      "object": "e653a85c797e0cb6a84b3bf96f6fd9de7411a142"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "2b429564f359dded9559c14216a96af4e54e74dd"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"
+    },
+    {
+      "path": "docs/modules/inference.worker/TECHNICAL.md",
+      "object": "8e73735dcfaad511113415f2845ede8b42c31713"
+    }
   ]
 }
