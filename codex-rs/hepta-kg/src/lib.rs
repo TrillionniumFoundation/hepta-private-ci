@@ -29,6 +29,7 @@ pub use generation::KnowledgeRelationResultV2;
 pub use generation::KnowledgeSupportV2;
 pub use generation::MAX_KNOWLEDGE_EDGES_V2;
 pub use generation::MAX_KNOWLEDGE_NODES_V2;
+pub use generation::MAX_KNOWLEDGE_SUPPORTS_V2;
 pub use generation::MAX_SUPPORTS_PER_RELATION_V2;
 pub use generation::apply_incremental_delta;
 pub use generation::build_complete_generation;
