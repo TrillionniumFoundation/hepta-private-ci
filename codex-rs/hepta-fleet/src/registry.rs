@@ -27,6 +27,9 @@ use crate::release::load_release_state;
 #[path = "registry_owner.rs"]
 mod owner;
 
+#[path = "registry_read.rs"]
+mod scoped_read;
+
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -93,7 +96,7 @@ impl FleetRegistry {
         })
     }
 
-    pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
+    fn existing_layout(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
         let registry = Self {
             layout: fleet_root.layout(),
             release_digests: Arc::default(),
@@ -107,6 +110,11 @@ impl FleetRegistry {
         ] {
             validate_physical_directory(directory)?;
         }
+        Ok(registry)
+    }
+
+    pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
+        let registry = Self::existing_layout(fleet_root)?;
         registry.migrate_legacy_matrix_roots()?;
         registry.load()?;
         Ok(registry)
@@ -330,17 +338,7 @@ impl FleetRegistry {
         }
         validate_private_directory(layout.matrix_root())?;
         validate_private_directory(layout.matrix_secrets_root())?;
-        let manifest: AgentManifest = toml::from_str(&read_regular_file(layout.agent_config())?)
-            .map_err(|error| {
-                FleetRegistryError::Corrupt(format!("invalid agent manifest: {error}"))
-            })?;
-        manifest.validate(self.layout.fleet_root())?;
-        if &manifest.agent_id != agent_id {
-            return Err(FleetRegistryError::Corrupt(format!(
-                "manifest identity {} differs from directory {agent_id}",
-                manifest.agent_id
-            )));
-        }
+        let manifest = self.load_agent_manifest(agent_id)?;
         let lifecycle = load_lifecycle(layout.owner_run_root(), agent_id)?;
         let release_state = load_release_state(layout.releases_root(), agent_id)?;
         Ok(AgentRecord {

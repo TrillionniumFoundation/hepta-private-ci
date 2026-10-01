@@ -893,14 +893,9 @@ impl AgentdState {
                         "memory federation consumer must be another registered AgentId".to_string(),
                     ));
                 }
-                let snapshot = self.registry.load()?;
-                let consumer = snapshot.agent(&consumer_agent_id).ok_or_else(|| {
-                    AgentdError::Invalid(format!(
-                        "memory federation consumer {consumer_agent_id} is not registered"
-                    ))
-                })?;
+                let consumer = self.registry.load_agent_manifest(&consumer_agent_id)?;
                 let consumer_workspace_sha256 =
-                    workspace_binding_digest(consumer.manifest.workspace.as_path());
+                    workspace_binding_digest(consumer.workspace.as_path());
                 let (owner_access, owner_scope) = match owner_scope {
                     crate::MemoryFederationScopeKind::AgentPrivate => (
                         CognitiveAccess::agent_private(self.identity.agent_id.clone()),

@@ -167,12 +167,8 @@ impl AgentdConfig {
         let typed_fleet_root = HeptaFleetRoot::parse(fleet_root.clone())
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         require_canonical(&fleet_root, "fleet root")?;
-        let registry = FleetRegistry::open_existing(typed_fleet_root)?;
-        let record = registry
-            .load()?
-            .agent(&agent_id)
-            .cloned()
-            .ok_or_else(|| AgentdError::Invalid(format!("unknown fleet agent {agent_id}")))?;
+        let registry = FleetRegistry::open_existing_for_agent(typed_fleet_root, &agent_id)?;
+        let record = registry.load_agent(&agent_id)?;
 
         if record.lifecycle.lifecycle != AgentLifecycle::Starting
             || record.lifecycle.generation != spawn_generation

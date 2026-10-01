@@ -120,11 +120,9 @@ pub async fn run(
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
-        .load()?
-        .agents
-        .into_values()
-        .filter(|record| record.manifest.agent_id != identity.agent_id)
-        .map(|record| record.layout)
+        .registered_agent_layouts()?
+        .into_iter()
+        .filter(|layout| layout.agent_id() != &identity.agent_id)
         .collect::<Vec<_>>();
     let state = Arc::new(AgentdState::new_with_verified_restart(
         identity.clone(),
