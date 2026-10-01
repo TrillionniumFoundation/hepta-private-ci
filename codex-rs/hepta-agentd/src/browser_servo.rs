@@ -42,6 +42,10 @@ mod config;
 mod replay;
 pub use config::BrowserServoProcessConfig;
 
+#[cfg(all(test, target_os = "linux"))]
+#[path = "browser_servo_node_fixture_tests.rs"]
+mod node_fixture_tests;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BrowserServoMethod {
     OpenProfile,
