@@ -1,8 +1,4 @@
-use std::io::BufRead;
-use std::io::BufReader;
 use std::io::Read;
-use std::io::Write;
-use std::net::Shutdown;
 use std::path::PathBuf;
 use std::process::Child;
 use std::process::Command;
@@ -53,6 +49,9 @@ use process_ref::ProcessRef;
 
 #[path = "unix_peer_identity.rs"]
 mod peer_identity;
+
+#[path = "unix_control_io.rs"]
+mod control_io;
 
 #[path = "unix_initialization.rs"]
 mod initialization;
@@ -529,16 +528,14 @@ fn query_agent_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    peer_identity::ensure_process_peer(&stream, identity.process_id)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    let response_bytes = control_io::exchange_frame(
+        &identity.control_socket,
+        identity.process_id,
+        &bytes,
+        MAX_CONTROL_FRAME_BYTES,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )?;
+    let count = response_bytes.len();
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
         return Ok(HealthProbeObservation {
             exact_identity: false,
@@ -586,22 +583,6 @@ fn query_agent_health_once(
     })
 }
 
-fn read_agent_drain_frame(
-    identity: &AgentHealthProbeIdentity,
-    request: &[u8],
-) -> std::io::Result<Vec<u8>> {
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    peer_identity::ensure_process_peer(&stream, identity.process_id)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(request)?;
-    stream.shutdown(Shutdown::Write)?;
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response = Vec::new();
-    reader.read_until(b'\n', &mut response)?;
-    Ok(response)
-}
-
 fn query_agent_drain_once(
     identity: &AgentHealthProbeIdentity,
     request_id: u64,
@@ -614,7 +595,13 @@ fn query_agent_drain_once(
             "Agentd drain request exceeded the bounded control frame",
         ));
     }
-    let response_bytes = match read_agent_drain_frame(identity, &bytes) {
+    let response_bytes = match control_io::exchange_frame(
+        &identity.control_socket,
+        identity.process_id,
+        &bytes,
+        MAX_CONTROL_FRAME_BYTES,
+        HEALTH_PROBE_IO_TIMEOUT,
+    ) {
         Ok(response) => response,
         Err(error)
             if matches!(
@@ -691,16 +678,14 @@ fn query_matrix_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    peer_identity::ensure_process_peer(&stream, identity.process_id)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-
-    let mut reader = BufReader::new(stream).take(MAX_MATRIXD_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    let response_bytes = control_io::exchange_frame(
+        &identity.control_socket,
+        identity.process_id,
+        &bytes,
+        MAX_MATRIXD_CONTROL_FRAME_BYTES,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )?;
+    let count = response_bytes.len();
     if count == 0
         || count as u64 > MAX_MATRIXD_CONTROL_FRAME_BYTES
         || !response_bytes.ends_with(b"\n")
