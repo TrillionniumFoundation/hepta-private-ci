@@ -89,11 +89,13 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 
 ## 7. 验证记录与候选区分
 
+本节表格记录上一轮 `audit/runtime-agentd-20261001` 在 `a126987` 基线后的实际历史检查；不自动覆盖最新主线整合候选。第 8 节单独记录远端完成结果、round3 修复与当前验证。
+
 此前候选 `37bbd8c418b4f1356b0dbe0e1110de99dc2c9f8a` 的本地 Protocol 13/13 和 scoped production/tests Clippy 成功仍是历史证据。本地 Agentd codegen 的 SIGKILL/磁盘不足也保留为失败，不能视为测试通过。
 
 该候选随后获得真实 macOS 原生结果：[source-head job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36784424472/job/110127794842) 执行了五个 package 的 448 项测试，372 passed、76 failed、0 skipped。失败包括 Prompt 目录身份检查、release 重命名权限，以及旧 macOS fixture/源文本断言。它们已经成为本轮实际整改输入。merge-candidate macOS job 因共享等价树而跳过原生步骤，其 success 不计为另一次原生通过。Linux jobs 当时仍 queued。
 
-| 本轮检查 | 已观察结果 | 证据边界 |
+| 上一轮历史检查 | 已观察结果 | 证据边界 |
 |---|---|---|
 | Objective scoped nextest | 61 passed，2 个原有 ignored 未执行，退出 0 | 修正 JSON fixture 与 owner 的空 legal action set 合约矛盾；没有放宽 validator |
 | 全部 `scripts/test_hepta_*.py` | 最终绑定检出全量 710/710 passed，33.878s，退出 0；先前 timeout 和共享磁盘满的失败记录保留 | 全量命令真实完成；相关子集成功没有替代全量；不等于原生或产品验收 |
@@ -126,6 +128,8 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | [Lane B exact-source job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36802967082/job/110181164059) | path guard 与 self-tests 通过，11 modules / 62 operations / 20 delegates / 87 bindings；verify 拒绝 `qualification/lane-b/TEST_TRACEABILITY.json` projection drift，需用官方 generator 重新绑定 |
 | [Lane E exact-source job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36802967138/job/110181165793) | 353 run、352 passed、1 failed、2 skipped；Artifacts test adapter 未在 current registry 读取损坏后 latch unavailable，错误允许旧 snapshot retry。Eval 116 项实际通过；后续步骤 skipped |
 
+最新主线首次整合候选 `16d44a61a55c32d1edfff29f6ccd06892ccd3cd5` 的 [Architecture source job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36873205628/job/110405926259) 真实执行了 infer-core/types 的82项普通测试和1项显式 ignored single-writer scale 测试，均通过。随后的 Operations 编译因 `fault_tests.rs` 将 `#[expect]` 放在赋值表达式上而触发 stable Rust `E0658`，退出101、0项 Operations 测试执行；后续边界 skipped，aggregate 正确失败。已把该 test-only 例外放到合法 `let reopened_pool` 语句，再赋回原 pool，保留每连接 disk-full hook 和生产 SQLite shim。base-merge job 因等价树跳过 native，其 success 不代替 source 成功。该历史候选不含随后追加的有限打开修复。
+
 上述失败均保留原始语义并作具体修复：TaskFlow 核对完整历史前缀及 claim/quarantine/reconcile 事件、revision、时间戳和完整原 fence，最终五个 lease 字段必须清空；Prompt 使用真实合法 staged mutation，同时验证拒绝时内存、磁盘、权限和目标文件不变；checkpoint fixture 解析真实 canonical parent；infer-worker 使用 Cargo/Bazel 解析的真实 `codex-hepta-agentd` helper，显式完成实际 store/lifecycle/readiness 前提，deep workflow 在 library 测试前构建和执行 helper dispatch。未修改生产 authority、跳过实际测试或放宽 validator。
 
 Artifacts 修复限定 test adapter 的损坏锁定，生产 Agentd ranker 原有 `cache.take()` 保持不变。新增真实 ranker 回归先证明可排序，再损坏 CURRENT、验证精确 `Storage(Corrupt)` 与输入顺序不变，恢复合法磁盘快照后仍要求显式 reload；不允许使用旧 pin 冒充恢复。
@@ -138,8 +142,14 @@ Artifacts 修复限定 test adapter 的损坏锁定，生产 Agentd ranker 原�
 | workspace lock / 格式 | 完整真实 Cargo metadata 与官方 `just bazel-lock-update` 退出 0；`just fmt --base 997e7beef8151160065df36b024bc8da5c989e93` 退出 0；未手写 dependency lock |
 | Agentd CI wiring | 最新整合的 15 项 Python 回归全部通过；不替代原生执行 |
 | 新 Agentd / infer-worker 原生执行 | 当前尚无通过回执；上表远端结果属于旧 `64e38ca`，不得移用于新候选。共享本地磁盘与内存不足仍限制大依赖 codegen |
+| latest-main dependency routing | `scripts.tests.test_hepta_ci_dependencies` 与 `test_hepta_ci_scope` 共46项实际通过；不替代原生执行 |
+| Operations 修复后的本地 scoped nextest | 首次因未配置 OpenSSL 构建前提退出101；使用已安装的 OpenSSL 路径后再次构建，在 `rama-dns` dependency codegen 遭 `No space left on device`、退出101、0项测试执行。仅清理本任务已退出的失败 build cache，未删除其它工作缓存 |
 
 27 个受影响 module map 的 latest-main 与 prior-audit 原始 JSON 分别按真实 commit/tree/blob 和摘要归档至 `qualification/module-source-origins/20261001-round3/`。当前源码观测须在真实新候选提交后通过正式 migration 更新；历史引用不转为当前执行资格。source map、Lane B projection 与所有资格检查有各自失败和通过记录。
+
+当前整合候选已通过 development profile 的40份实施映射导航检查。该检查先真实拒绝 learning.plasticity 中已重命名的 controller-collision 回归引用；引用已改为实际 sealed product owner 拒绝资格的函数，并通过官方命令同步塑性派生状态。54份新历史快照已逐份与真实 Git commit/tree/map blob 核对，原始历史 JSON 保持不变。
+
+本轮独立复审继续发现 Unix 文件预检与普通 read-open 之间的 FIFO 替换窗口。它发生在可信 same-UID/root 的并发发布范围，属于打开操作的可用性缺口，不是非 owner 权限绕过。Prompt、authority/checkpoint、AuthBus/Evidence trust 与 frontier、effect/bootstrap/browser 的实际打开路径统一使用 `O_NOFOLLOW | O_NONBLOCK`，目录 handle 另加 `O_DIRECTORY`；所有原有 same-descriptor、regular、权限/link、namespace 和 EOF/currentness 检查继续保留。完整扫尾还发现并修复了 Objective 私有目录 open/fsync 和 Browser 宿主配置读取的同类开口；配置保留 relative/初始 leaf alias/hardlink/只读输入，不新增 UID/mode 授权规则。Objective 目录 IO 提取为私有组件；Browser binary 的测试移入 owner 子目录以避免被 Cargo 误发现为额外 binary，并显式启用其测试目标、加入 deep qualification 和15项接线检查。独立复审发现的未声明 `pretty_assertions` 导入已改用标准 `assert_eq!`。这些 flag 仅避免特殊文件的打开等待和最终分量 symlink 跟随，不承诺强制取消任意 kernel/network-filesystem I/O。新增确定性竞态回归的执行结果须单独记录。
 
 | 确证问题 | 本轮修复及兼容边界 |
 |---|---|

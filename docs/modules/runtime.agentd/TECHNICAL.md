@@ -482,6 +482,24 @@ buffer and a size-limited handle, then launches the verified canonical paths.
 These checks reject unsafe writable ancestors; trusted sticky ancestors remain
 compatible. They do not attest a child process's loaded image.
 
+On Unix, existing Prompt, intelligence-authority, AuthBus-checkpoint,
+AuthBus/Evidence trust, recovery-frontier, effect-configuration,
+plasticity-bootstrap and Browser-artifact opens reuse
+[`configure_protected_open`](../../../codex-rs/hepta-agentd/src/operator_namespace.rs)
+with `O_NOFOLLOW | O_NONBLOCK`. Retained Prompt/Objective directory handles and
+checkpoint/Objective parent-sync opens also require `O_DIRECTORY`. These flags reject an inspected
+entry's FIFO/symlink replacement without waiting for a FIFO writer. The fix
+addresses availability during trusted same-UID/root publisher races; it does not
+expand that trust boundary or force cancellation of kernel/network-filesystem I/O.
+Existing descriptor, private-mode/link, namespace, version and complete-read
+checks remain in force at their owning boundaries. Stable parent-alias
+compatibility and the original non-Unix profile are unchanged.
+
+The Browser host binary applies equivalent Unix flags to its bounded configuration
+read after capturing the selected canonical destination. It validates a regular
+descriptor and stable file version, retaining relative paths, initial leaf aliases,
+hard links and read-only inputs without adding owner/mode authorization rules.
+
 Fleet's owner now checks every registered peer subtree before legacy migration
 or control-file reads. Its private `control_file.rs` binds custody to the Fleet
 root owner (and root on Unix), rather than the reader's effective UID or the
@@ -609,6 +627,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-agentd/src/control_tests.rs](../../../codex-rs/hepta-agentd/src/control_tests.rs) covers receiver target rejection, owner-generation errors, connection retirement and backpressure; endpoint identity remains subject to the stated OS-user trust boundary.
 - [codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs) covers bounded same-handle reads, namespace/version drift and weak-key/signature rejection.
 - [codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs) covers permission/link/directory drift, exact predecessor replacement and conflicting temporary-file ownership.
+- Inspected-phase FIFO/symlink source regressions are in [Prompt tests](../../../codex-rs/hepta-agentd/src/prompt_runtime_file_tests.rs), [authority tests](../../../codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs), [checkpoint tests](../../../codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs), [effect-file tests](../../../codex-rs/hepta-agentd/src/automation_effect_file_tests.rs), [bootstrap tests](../../../codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs) and [Browser-artifact tests](../../../codex-rs/hepta-agentd/src/browser_artifact_tests.rs). They exercise replacement after successful inspection, including retained-directory/parent-sync rejection and unchanged replacement targets. These are source identities, not native pass receipts or general filesystem I/O deadlines.
+- The final file-open sweep adds [AuthBus trust tests](../../../codex-rs/hepta-agentd/src/authbus_trust_file_tests.rs), [Evidence trust tests](../../../codex-rs/hepta-agentd/src/evidence_trust_file_tests.rs), [frontier tests](../../../codex-rs/hepta-agentd/src/evidence_frontier_file_tests.rs), [Objective directory tests](../../../codex-rs/hepta-agentd/src/objective_runtime_directory_tests.rs) and [Browser host configuration tests](../../../codex-rs/hepta-agentd/src/bin/hepta-agentd-browser/hepta-agentd-browser_tests.rs). The Browser cases run as binary unit tests, explicitly included by the command below and enabled in the aggregate's default target selection.
 - [codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs](../../../codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs) covers unsafe ancestor/parent rejection, native snapshot substitution and namespace rechecks, plus `mutable_bootstrap_files_reject_group_or_world_write_before_owner_callback` and `hardlinked_mutable_bootstrap_file_is_rejected_before_owner_callback`. Mutable owner callbacks are rejected before unsafe input reaches them; read-only permission/link compatibility remains covered. Source cases require exact-candidate execution.
 - [codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs](../../../codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs) includes `effect_reservation_is_visible_before_durable_admission_and_drain_closes_the_gate`, exercising the actual Fleet/Agentd/Cognitive readiness gate, pre-durable worker visibility, rejected admission during drain and retained old reservation. It never fabricates a physical App Server drain acknowledgement.
 - [codex-rs/hepta-agentd/src/automation_drain_recovery_tests.rs](../../../codex-rs/hepta-agentd/src/automation_drain_recovery_tests.rs), [App Server owner tests](../../../codex-rs/app-server/src/historical_observation_tests.rs), [queue history tests](../../../codex-rs/ext/queue/src/historical_observation_tests.rs) and [StateRuntime read-only binding tests](../../../codex-rs/state/src/runtime/queued_client_binding_observation_tests.rs) cover exact historical settlement, incomplete-history uncertainty, original-owner custody, no metadata repair, and progress past indeterminate history. They are owner/DB/history cases rather than a complete socket/daemon drain receipt.
@@ -620,6 +640,7 @@ In `codex-rs`, the focused Agentd/infer-worker library invocation first builds a
 
 ```sh
 just test --locked -p codex-hepta-agentd --test helper_dispatch --test-threads=1
+just test --locked -p codex-hepta-agentd --bin hepta-agentd-browser --test-threads=1
 just test --locked --lib -p codex-hepta-agentd -p codex-hepta-infer-worker-host --test-threads=1
 ```
 
