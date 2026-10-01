@@ -63,6 +63,8 @@ const CURRENT_HEAD_MAGIC: &str = "HEPTA-ARTIFACT-CURRENT-HEAD-V1";
 #[path = "owner_records.rs"]
 mod records;
 
+#[path = "owner_publication_ancestor.rs"]
+mod publication_ancestor;
 #[path = "owner_read_context.rs"]
 mod read_context;
 use read_context::ArtifactOwnerReadContext;
@@ -394,6 +396,7 @@ pub struct LearningArtifactOwnerHost {
     lease: SignedArtifactWriterLeaseV1,
     verified_lease: VerifiedArtifactWriterLeaseV1,
     required_current_head: Option<SignedCurrentArtifactHeadV1>,
+    publication_ancestor_enabled: bool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerHost {
@@ -501,6 +504,7 @@ impl LearningArtifactOwnerHost {
             lease,
             verified_lease,
             required_current_head,
+            publication_ancestor_enabled: false,
         })
     }
 
@@ -548,7 +552,7 @@ impl LearningArtifactOwnerHost {
         }
         let existing = self.recover_publication(&operation_id)?;
         if existing.is_none() {
-            let current_predecessor = match self.discover_current_head(now)? {
+            let current_predecessor = match self.discover_publication_predecessor(now)? {
                 Some(current) => {
                     current
                         .signed
@@ -734,7 +738,7 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
         self.require_current_transaction(transaction, now)?;
-        let current = self.discover_current_head(now)?;
+        let current = self.discover_publication_predecessor(now)?;
         if current.as_ref().is_some_and(|current| {
             signed.witness.head_digest == current.signed.witness.head_digest
                 && signed != &current.signed
@@ -958,7 +962,7 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<Option<SignedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
-        self.discover_current_head(now)?;
+        self.discover_publication_predecessor(now)?;
         let mut matched = None;
         for (index, entry) in fs::read_dir(self.root.join("heads"))?.enumerate() {
             if index >= MAX_HEAD_RECORDS * 2 {
@@ -983,7 +987,7 @@ impl LearningArtifactOwnerHost {
                 matched = Some(head);
             }
         }
-        self.discover_current_head(now)?;
+        self.discover_publication_predecessor(now)?;
         Ok(matched)
     }
 

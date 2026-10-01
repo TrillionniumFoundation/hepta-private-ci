@@ -114,6 +114,25 @@ impl ArtifactOwnerReadContext<'_> {
         &self,
         now: u64,
     ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
+        self.discover_chain_tip(now, HeadUse::Current)
+    }
+    pub(super) fn discover_publication_ancestor(
+        &self,
+        now: u64,
+    ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
+        let anchor = self
+            .required_current_head
+            .as_ref()
+            .ok_or(ArtifactOwnerHostError::CurrentHeadRollback)?;
+        let latest = self.discover_chain_tip(now, HeadUse::PublicationAncestor)?;
+        self.enforce_required_current_head(anchor, latest.as_ref())?;
+        Ok(latest)
+    }
+    fn discover_chain_tip(
+        &self,
+        now: u64,
+        purpose: HeadUse,
+    ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
         let mut records = Vec::new();
         for (index, entry) in fs::read_dir(self.root.join("heads"))?.enumerate() {
             if index >= MAX_HEAD_RECORDS * 2 {
@@ -208,16 +227,18 @@ impl ArtifactOwnerReadContext<'_> {
             .head_signers
             .get(&latest.signed.witness.signer_id)
             .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
-        verify_signer_context(
-            signer,
-            latest.signed.witness.signing_key_digest,
-            latest.signed.witness.authority_epoch,
-            latest.signed.witness.issued_at,
-            now,
-            true,
-        )?;
-        if now > latest.signed.witness.expires_at {
-            return Err(ArtifactOwnerHostError::CurrentHeadExpired);
+        if purpose == HeadUse::Current {
+            verify_signer_context(
+                signer,
+                latest.signed.witness.signing_key_digest,
+                latest.signed.witness.authority_epoch,
+                latest.signed.witness.issued_at,
+                now,
+                true,
+            )?;
+            if now > latest.signed.witness.expires_at {
+                return Err(ArtifactOwnerHostError::CurrentHeadExpired);
+            }
         }
         Ok(Some(latest))
     }
@@ -269,4 +290,11 @@ impl ArtifactOwnerReadContext<'_> {
         }
         Ok(())
     }
+}
+
+/// Historical predecessor authentication never creates a current-use window.
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum HeadUse {
+    Current,
+    PublicationAncestor,
 }

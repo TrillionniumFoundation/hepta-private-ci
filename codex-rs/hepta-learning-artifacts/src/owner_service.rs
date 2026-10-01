@@ -60,6 +60,8 @@ pub struct ArtifactPublicationHeadPreviewV1 {
     pub original_signed_head: Option<SignedCurrentArtifactHeadV1>,
 }
 
+#[path = "owner_service_operational_renewal.rs"]
+mod operational_renewal;
 #[path = "owner_service_suffix.rs"]
 mod suffix;
 
@@ -606,6 +608,9 @@ mod adversarial_tests;
 mod status;
 pub use status::LearningArtifactPublicationStatusV1;
 
+#[cfg(test)]
+#[path = "owner_service_operational_renewal_tests.rs"]
+mod operational_renewal_tests;
 #[cfg(test)]
 #[path = "owner_service_status_tests.rs"]
 mod status_tests;

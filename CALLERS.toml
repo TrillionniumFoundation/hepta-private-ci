@@ -19,6 +19,7 @@ required_boundary_ids = [
   "agentd_production_operation_runtime",
   "learning_artifact_owner_bootstrap",
   "learning_artifact_owner_restart",
+  "learning_artifact_owner_renewal",
   "learning_artifact_verified_current_view",
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
@@ -143,6 +144,14 @@ definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
 product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-agentd/src/cognitive_ranker_admission_v2.rs", "codex-rs/hepta-agentd/src/learning_operator_shadow_loader.rs", "codex-rs/hepta-agentd/src/neuron_artifact_admission.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"]
 caller_markers = []
+
+[[boundary]]
+id = "learning_artifact_owner_renewal"
+symbol = "LearningArtifactOwnerHost::open_for_fresh_evidence_publication"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_publication_ancestor.rs"
+definition_markers = ["pub(crate) fn open_for_fresh_evidence_publication", "Self::open_internal", "host.discover_publication_predecessor"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service_operational_renewal.rs"]
+caller_markers = ["LearningArtifactOwnerService", ".required_current_head", "recover_publication_registry"]
 
 [[boundary]]
 id = "provider_effect_coordinator"

@@ -55,5 +55,34 @@ class ArtifactCurrentCallerClosureTests(unittest.TestCase):
         self.assertEqual(result["productCallers"], ["known.rs"])
 
 
+class ArtifactRenewalCallerClosureTests(unittest.TestCase):
+    def test_new_raw_renewal_constructor_is_limited_to_the_sole_writer_service(self):
+        row = next(
+            row
+            for row in proof._boundary_rows(proof._load_manifest(proof.MANIFEST))
+            if row.identifier == "learning_artifact_owner_renewal"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for name in (row.definition_path, *row.product_callers):
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes((proof.ROOT / name).read_bytes())
+            index = {
+                name: proof._strip_cfg_test_items(
+                    proof._strip_rust_non_code((root / name).read_text())
+                )
+                for name in row.product_callers
+            }
+            index["new.rs"] = (
+                "fn unauthorized() { LearningArtifactOwnerHost::"
+                "open_for_fresh_evidence_publication(config); }"
+            )
+            with self.assertRaisesRegex(
+                proof.VerificationFailure, r"unexpected=\['new.rs'\]"
+            ):
+                proof._verify_boundary(root, row, index, ("_tests.rs",))
+
+
 if __name__ == "__main__":
     unittest.main()
