@@ -168,7 +168,7 @@ async fn live_owner_checks_pin_lifecycle_separately_from_transport_spawn() -> Re
 
 #[cfg(unix)]
 #[tokio::test]
-async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revision() -> Result<()> {
+async fn recovered_terminal_denies_concurrent_revision_or_owner_epoch_drift() -> Result<()> {
     use codex_hepta_agentd::AGENTD_CONTROL_SCHEMA_VERSION;
     use codex_hepta_agentd::AgentdMethod;
     use codex_hepta_agentd::AgentdPayload;
@@ -180,25 +180,53 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
     use tokio::io::BufReader;
     use tokio::net::UnixListener;
 
-    for reject_cas in [false, true] {
+    for (reject_cas, terminal_epoch, qualified_epoch) in
+        [(false, 2, 2), (true, 2, 2), (false, 3, 3), (false, 2, 3)]
+    {
+        let drain_during_commit = qualified_epoch == 3;
         let directory = tempfile::tempdir()?;
         let socket = directory.path().join("owner.sock");
         let listener = UnixListener::bind(&socket)?;
         let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000001")?;
-        let client = AgentdClient::new(socket, agent_id.clone(), 7)?;
+        let client = AgentdClient::new(socket, agent_id.clone(), 1)?;
+        let recovery_run = AgentRunReceipt {
+            generation: 2,
+            ..dispatched()
+        };
+        let expected_terminal = AgentRunReceipt {
+            revision: 4,
+            phase: AgentRunPhase::Succeeded,
+            terminal_observed: true,
+            idempotent: false,
+            ..recovery_run.clone()
+        };
         let server = tokio::spawn(async move {
-            for index in 0..2 {
+            let mut owner_terminal = None;
+            let requests = if !reject_cas && terminal_epoch == 2 {
+                3
+            } else {
+                2
+            };
+            for index in 0..requests {
                 let (stream, _) = listener.accept().await?;
                 let (reader, mut writer) = tokio::io::split(stream);
                 let mut reader = BufReader::new(reader);
                 let mut bytes = Vec::new();
                 reader.read_until(b'\n', &mut bytes).await?;
                 let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+                assert_eq!(request.spawn_generation, 1);
                 let payload = match request.method {
                     AgentdMethod::RunStatus { run_id } if index == 0 => {
                         assert_eq!(run_id, "run-a");
                         AgentdPayload::RunStatus {
-                            run: Some(dispatched()),
+                            run: Some(AgentRunReceipt {
+                                phase: if drain_during_commit {
+                                    AgentRunPhase::Indeterminate
+                                } else {
+                                    AgentRunPhase::Dispatched
+                                },
+                                ..recovery_run.clone()
+                            }),
                         }
                     }
                     AgentdMethod::RunObserveTerminal {
@@ -217,13 +245,24 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
                                 message: "owner cancellation advanced to revision 4".to_string(),
                             }
                         } else {
-                            AgentdPayload::RunReceipt(AgentRunReceipt {
+                            let receipt = AgentRunReceipt {
                                 revision: 4,
                                 phase: AgentRunPhase::Succeeded,
                                 terminal_observed: true,
                                 idempotent: false,
-                                ..dispatched()
-                            })
+                                ..recovery_run.clone()
+                            };
+                            owner_terminal = Some(receipt.clone());
+                            AgentdPayload::RunReceipt(receipt)
+                        }
+                    }
+                    AgentdMethod::RunStatus { run_id } if index == 2 => {
+                        assert_eq!(run_id, "run-a");
+                        AgentdPayload::RunStatus {
+                            run: Some(AgentRunReceipt {
+                                idempotent: true,
+                                ..owner_terminal.clone().ok_or("terminal was not committed")?
+                            }),
                         }
                     }
                     _ => return Err("unexpected recovery owner request".into()),
@@ -232,15 +271,19 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
                     schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                     request_id: request.request_id,
                     agent_id: agent_id.clone(),
-                    spawn_generation: 7,
-                    current_generation: 8,
+                    spawn_generation: 1,
+                    current_generation: match index {
+                        0 => 2,
+                        1 => terminal_epoch,
+                        _ => qualified_epoch,
+                    },
                     payload,
                 };
                 let mut bytes = serde_json::to_vec(&response)?;
                 bytes.push(b'\n');
                 writer.write_all(&bytes).await?;
             }
-            Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
+            Ok::<_, Box<dyn std::error::Error + Send + Sync>>(owner_terminal)
         });
         let mut output = completed();
         let result = reconcile_intelligence_terminal(
@@ -254,9 +297,19 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
         if let Err(reason) = result {
             apply_intelligence_failure(&mut output, reason);
         }
-        assert_eq!(output.succeeded(), !reject_cas);
+        assert_eq!(output.succeeded(), !reject_cas && !drain_during_commit);
         let server_result = tokio::time::timeout(RPC_TIMEOUT, server).await?;
-        server_result??;
+        let owner_terminal = server_result??;
+        if drain_during_commit {
+            // Agentd may commit truthful physical completion during drain. The
+            // worker denies current local success without rolling it back.
+            assert_eq!(owner_terminal, Some(expected_terminal));
+            assert_eq!(output, NativeRunOutput {
+                boundary_status: NativeBoundaryStatus::Quarantined,
+                stop_reason: Some("Agentd recovered terminal reconciliation required: Agentd committed intelligence terminal Succeeded at generation 2 revision 4; current owner qualification failed: owning intelligence lifecycle generation is stale or mixed".to_string()),
+                ..completed()
+            });
+        }
     }
     Ok(())
 }

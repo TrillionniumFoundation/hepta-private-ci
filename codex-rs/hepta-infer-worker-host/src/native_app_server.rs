@@ -1076,14 +1076,15 @@ impl AppServerModelDriver {
                 && let Err(error) =
                     commit_intelligence_terminal(&owner, binding, cursor, &output).await
             {
-                output.stop_reason = Some(match output.stop_reason.take() {
+                let reason = match output.stop_reason.take() {
                     Some(existing) => bounded_diagnostic(format_args!(
                         "{existing}; Agentd terminal reconciliation required: {error}"
                     )),
                     None => bounded_diagnostic(format_args!(
                         "Agentd terminal reconciliation required: {error}"
                     )),
-                });
+                };
+                apply_intelligence_failure(&mut output, reason);
             }
         }
         Ok(output)

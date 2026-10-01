@@ -249,16 +249,23 @@ pub(super) async fn commit_intelligence_terminal(
         return Err("intelligence terminal publication requires exact observed correlation and current owner authority".into());
     }
     let phase = intelligence_terminal_phase(output)?;
-    let receipt = owner
-        .run_observe_terminal(
+    let observed = owner
+        .run_observe_terminal_observed(
             binding.run_id.clone(),
             cursor.revision,
             phase,
             /*terminal_observed*/ true,
         )
         .await?;
+    let receipt = observed.run;
+    let revision_matches = if receipt.idempotent {
+        receipt.revision >= cursor.revision
+    } else {
+        Some(receipt.revision) == cursor.revision.checked_add(1)
+    };
     if receipt.run_id != binding.run_id
         || receipt.generation != cursor.generation
+        || !revision_matches
         || receipt.phase != phase
         || !receipt.terminal_observed
         || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
@@ -266,7 +273,34 @@ pub(super) async fn commit_intelligence_terminal(
     {
         return Err("Agentd terminal receipt lost the intelligence handoff binding".into());
     }
-    Ok(())
+    // Control responses sample the epoch at request entry. Qualify the exact
+    // committed fact again after mutation; draining may preserve Indeterminate
+    // revisions and permit truthful historical terminal settlement.
+    let qualified: std::result::Result<(), String> = async {
+        validate_intelligence_owner_generation(
+            cursor.generation,
+            observed.current_generation,
+            &receipt,
+        )?;
+        let (generation, mut current) =
+            read_intelligence_run(owner, binding, Instant::now() + RPC_TIMEOUT).await?;
+        validate_intelligence_owner_generation(cursor.generation, generation, &current)?;
+        // Idempotence describes the individual RPC, not the durable run fact.
+        current.idempotent = receipt.idempotent;
+        if current != receipt {
+            return Err(
+                "published intelligence terminal changed during owner qualification".to_string(),
+            );
+        }
+        Ok(())
+    }
+    .await;
+    qualified.map_err(|reason| {
+        bounded_diagnostic(format_args!(
+            "Agentd committed intelligence terminal {phase:?} at generation {} revision {}; current owner qualification failed: {reason}",
+            receipt.generation, receipt.revision,
+        )).into()
+    })
 }
 
 #[cfg(test)]
