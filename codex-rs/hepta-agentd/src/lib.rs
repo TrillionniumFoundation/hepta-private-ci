@@ -256,6 +256,7 @@ pub use plasticity_runtime::plasticity_runtime_channel_v1;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use prompt_runtime::AgentdExactContextDeliveryError;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;
