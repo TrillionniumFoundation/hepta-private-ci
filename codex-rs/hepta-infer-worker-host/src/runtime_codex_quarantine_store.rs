@@ -671,7 +671,8 @@ mod durable_store_tests {
     }
 
     #[tokio::test]
-    async fn durable_record_and_resolution_survive_reopen() -> anyhow::Result<()> {
+    async fn durable_record_and_resolution_survive_reopen() -> Result<(), Box<dyn std::error::Error>>
+    {
         let directory = tempfile::tempdir()?;
         let path = directory.path().join("quarantine.sqlite3");
         let store = DurableQuarantineStore::open(&path, "agent:test".to_string(), 3).await?;
