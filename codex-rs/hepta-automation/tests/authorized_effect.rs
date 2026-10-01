@@ -172,6 +172,23 @@ fn binding(intent: &AuthorizedEffectIntent) -> FinalUseBinding {
     }
 }
 
+fn provider_key(effect: &AuthorizedEffectIntent) -> ProviderEffectKey {
+    let mut bytes = b"hepta.automation.provider-identity.v2\0".to_vec();
+    for part in [AGENT_ID, &effect.run_id, &effect.step_id] {
+        bytes.extend_from_slice(
+            &u32::try_from(part.len())
+                .expect("identity length")
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(part.as_bytes());
+    }
+    ProviderEffectKey::for_logical_effect(
+        &effect.destination_id,
+        &format!("taskflow:v2:{}", Sha256Digest::for_bytes(&bytes).as_str()),
+    )
+    .expect("provider effect key")
+}
+
 fn final_use(
     binding: FinalUseBinding,
     grant_id: &str,
@@ -445,8 +462,9 @@ impl ProviderEffectAdapter for RecordingProviderEffectAdapter {
 
     fn lookup_for_intent<'a>(
         &'a self,
-        _intent: &'a ProviderEffectIntent,
+        intent: &'a ProviderEffectIntent,
     ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        *self.seen_key.lock().expect("seen key lock") = Some(intent.key.as_str().to_string());
         let result = self.lookup_result.clone();
         Box::pin(async move { result })
     }
@@ -599,9 +617,7 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-wire-binding");
-    let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
-    let key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
-        .expect("provider effect key");
+    let key = provider_key(&effect);
     let ack = ProviderEffectAck::new(
         key.clone(),
         effect.payload_digest.clone(),
@@ -672,9 +688,6 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
-    let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
-    let _key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
-        .expect("provider effect key");
     let adapter = RecordingProviderEffectAdapter::new(
         ProviderEffectDispatch::Unknown,
         ProviderEffectLookup::NotFound,
@@ -719,6 +732,228 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
         driver.lookup(&pending[0]).await,
         AuthorizedProviderEffectLookup::ProvenAbsent { .. }
     ));
+}
+
+#[tokio::test]
+async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "provider-identity");
+    let adapter = RecordingProviderEffectAdapter::new(
+        ProviderEffectDispatch::Unknown,
+        ProviderEffectLookup::NotFound,
+    );
+    let mut driver =
+        ProviderEffectTaskFlowDriver::new(effect.destination_id.clone(), adapter).expect("driver");
+    store
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "identity-dispatch",
+            30,
+        )
+        .await
+        .expect("dispatch");
+    let dispatched_key = driver.adapter().seen_key.lock().expect("key").clone();
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    let pending = reopened
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 1)
+        .await
+        .expect("attempt")
+        .expect("durable attempt");
+    assert_eq!(pending.owner_agent_id.as_str(), AGENT_ID);
+    assert_eq!(pending.provider_key_version, 2);
+    driver.lookup(&pending).await;
+    assert_eq!(
+        driver.adapter().seen_key.lock().expect("key").clone(),
+        dispatched_key
+    );
+
+    let mut first = pending.clone();
+    first.run_id = "a:b".to_string();
+    first.step_id = "c".to_string();
+    driver.lookup(&first).await;
+    let first_key = driver.adapter().seen_key.lock().expect("key").clone();
+    let mut second = first.clone();
+    second.run_id = "a".to_string();
+    second.step_id = "b:c".to_string();
+    driver.lookup(&second).await;
+    assert_ne!(
+        driver.adapter().seen_key.lock().expect("key").clone(),
+        first_key
+    );
+    let mut other_owner = first.clone();
+    other_owner.owner_agent_id =
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other owner");
+    driver.lookup(&other_owner).await;
+    assert_ne!(
+        driver.adapter().seen_key.lock().expect("key").clone(),
+        first_key
+    );
+
+    first.provider_key_version = 1;
+    driver.lookup(&first).await;
+    let legacy = ProviderEffectKey::for_logical_effect(&effect.destination_id, "taskflow:a:b:c")
+        .expect("legacy key");
+    assert_eq!(
+        driver.adapter().seen_key.lock().expect("key").as_deref(),
+        Some(legacy.as_str())
+    );
+    first.provider_key_version = 3;
+    assert_eq!(
+        driver.lookup(&first).await,
+        AuthorizedProviderEffectLookup::Unresolved
+    );
+}
+
+#[tokio::test]
+async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "expired-effect-lease");
+    let mut driver = RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"success");
+    assert!(matches!(
+        store
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut driver,
+                &effect,
+                EFFECT_PAYLOAD,
+                &owner,
+                &signed,
+                &expected,
+                "invalid\ncommand",
+                30
+            )
+            .await,
+        Err(AuthorizedEffectError::TaskFlow(
+            codex_hepta_automation::TaskFlowError::Invalid(_)
+        ))
+    ));
+    assert!(matches!(
+        store
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut driver,
+                &effect,
+                EFFECT_PAYLOAD,
+                &owner,
+                &signed,
+                &expected,
+                "lease-dispatch",
+                1_020
+            )
+            .await,
+        Err(AuthorizedEffectError::TaskFlow(
+            codex_hepta_automation::TaskFlowError::StaleFence
+        ))
+    ));
+    assert_eq!(driver.calls, 0);
+    let mut async_driver = ProviderEffectTaskFlowDriver::new(
+        effect.destination_id.clone(),
+        RecordingProviderEffectAdapter::new(
+            ProviderEffectDispatch::Unknown,
+            ProviderEffectLookup::Unknown,
+        ),
+    )
+    .expect("async driver");
+    assert!(matches!(
+        store
+            .execute_authorized_taskflow_effect_async(
+                &authority,
+                &mut async_driver,
+                &effect,
+                EFFECT_PAYLOAD,
+                &owner,
+                &signed,
+                &expected,
+                "lease-dispatch",
+                1_020
+            )
+            .await,
+        Err(AuthorizedEffectError::TaskFlow(
+            codex_hepta_automation::TaskFlowError::StaleFence
+        ))
+    ));
+    assert_eq!(
+        async_driver
+            .adapter()
+            .dispatch_calls
+            .load(Ordering::Relaxed),
+        0
+    );
+    assert!(
+        store
+            .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 1)
+            .await
+            .expect("attempt read")
+            .is_none()
+    );
+    authority
+        .claim(&signed, &expected)
+        .expect("local expiry rejection did not burn grant");
+}
+
+#[tokio::test]
+async fn stale_recovery_fence_cannot_append_terminal_provider_evidence() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "recovery-fence");
+    let mut driver = RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"unknown");
+    store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "recovery-dispatch",
+            30,
+        )
+        .await
+        .expect("dispatch");
+    let mut stale = owner.clone();
+    stale.generation += 1;
+    let recovery = AuthorizedEffectRecovery::Observed(AuthorizedEffectProviderReceipt {
+        outcome: AuthorizedEffectOutcome::Succeeded,
+        receipt_digest: Sha256Digest::for_bytes(b"stale-terminal"),
+    });
+    assert!(matches!(
+        store
+            .recover_authorized_taskflow_effect(
+                &effect.run_id,
+                &effect.step_id,
+                effect.attempt,
+                &stale,
+                recovery,
+                31
+            )
+            .await,
+        Err(AuthorizedEffectError::TaskFlow(
+            codex_hepta_automation::TaskFlowError::StaleFence
+        ))
+    ));
+    let terminal = AuthorizedEffectRecovery::Observed(AuthorizedEffectProviderReceipt {
+        outcome: AuthorizedEffectOutcome::Failed,
+        receipt_digest: Sha256Digest::for_bytes(b"current-owner-terminal"),
+    });
+    assert!(
+        matches!(store.recover_authorized_taskflow_effect(&effect.run_id, &effect.step_id,
+        effect.attempt, &owner, terminal, 32).await.expect("current owner can still recover"),
+        AuthorizedEffectRecoveryResult::Observed(receipt)
+            if receipt.final_outcome == Some(TaskFlowReconcileOutcome::Failed))
+    );
+    assert_eq!(driver.calls, 1);
 }
 
 #[tokio::test]

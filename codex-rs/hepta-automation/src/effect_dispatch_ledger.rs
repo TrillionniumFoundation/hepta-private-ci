@@ -6,11 +6,13 @@
 //! fact. Keeping both immutable lets recovery repair the TaskFlow step without
 //! ever inferring terminality from process-local control flow.
 
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
 use crate::AutomationStore;
 use crate::TaskFlowError;
+use crate::TaskFlowFence;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum EffectDispatchObservationKind {
@@ -52,6 +54,8 @@ pub(crate) struct EffectDispatchObservation {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct EffectDispatchAttempt {
+    pub(crate) owner_agent_id: AgentId,
+    pub(crate) provider_key_version: u32,
     pub(crate) run_id: String,
     pub(crate) step_id: String,
     pub(crate) attempt: u32,
@@ -89,13 +93,35 @@ impl AutomationStore {
         grant_nonce_digest: &Sha256Digest,
         record_command_id: &str,
         started_at_ms: u64,
+        fence: &TaskFlowFence,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
+        if fence.owner_agent_id != *self.taskflow_owner_agent_id() {
+            return Err(TaskFlowError::StaleFence);
+        }
         let inserted = sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_attempts (
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, binding_digest, destination_id, authority_epoch,
-                grant_id, grant_nonce_digest, record_command_id, started_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                grant_id, grant_nonce_digest, record_command_id, started_at_ms,
+                provider_key_version
+             ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 2
+               WHERE EXISTS (
+                 SELECT 1 FROM taskflow_runs
+                 WHERE owner_agent_id = ? AND run_id = ? AND state = 'running'
+                   AND owner_id = ? AND owner_epoch = ? AND generation = ?
+                   AND fencing_token = ? AND lease_expires_at_ms > ?
+               ) AND EXISTS (
+                 SELECT 1 FROM taskflow_step_outbox s
+                 WHERE s.owner_agent_id = ? AND s.run_id = ? AND s.step_id = ?
+                   AND s.attempt = ? AND s.event_kind = 'claimed'
+                   AND s.intent_digest = ? AND s.payload_digest = ?
+                   AND NOT EXISTS (
+                     SELECT 1 FROM taskflow_step_outbox n
+                     WHERE n.owner_agent_id = s.owner_agent_id AND n.run_id = s.run_id
+                       AND n.step_id = s.step_id AND n.attempt = s.attempt
+                       AND n.event_seq > s.event_seq
+                   )
+               )",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
@@ -110,11 +136,27 @@ impl AutomationStore {
         .bind(grant_nonce_digest.as_str())
         .bind(record_command_id)
         .bind(to_i64(started_at_ms)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(&fence.owner_id)
+        .bind(to_i64(fence.owner_epoch)?)
+        .bind(to_i64(fence.generation)?)
+        .bind(&fence.fencing_token)
+        .bind(to_i64(started_at_ms)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .bind(intent_digest.as_str())
+        .bind(payload_digest.as_str())
         .execute(self.taskflow_pool())
         .await;
 
         match inserted {
-            Ok(_) => {
+            Ok(result) => {
+                if result.rows_affected() == 0 {
+                    return Err(TaskFlowError::StaleFence);
+                }
                 let attempt = self
                     .effect_dispatch_attempt(run_id, step_id, attempt)
                     .await?
@@ -370,6 +412,16 @@ fn effect_attempt_from_row(
         }
     };
     Ok(EffectDispatchAttempt {
+        owner_agent_id: AgentId::parse(
+            row.try_get::<String, _>("owner_agent_id")
+                .map_err(|_| TaskFlowError::Corrupt("effect owner agent id".to_string()))?,
+        )
+        .map_err(|_| TaskFlowError::Corrupt("effect owner agent id".to_string()))?,
+        provider_key_version: u32::try_from(
+            row.try_get::<i64, _>("provider_key_version")
+                .map_err(|_| TaskFlowError::Corrupt("effect provider key version".to_string()))?,
+        )
+        .map_err(|_| TaskFlowError::Corrupt("effect provider key version".to_string()))?,
         run_id: row
             .try_get("run_id")
             .map_err(|_| TaskFlowError::Corrupt("effect run id".to_string()))?,
@@ -519,16 +571,58 @@ mod tests {
             )
             .await
             .expect("create run");
-        store
+        let claimed = store
             .claim_taskflow_run("effect-run", &fence, 20, 10_000)
             .await
             .expect("claim run");
+        store
+            .apply_taskflow_command(
+                &crate::TaskFlowCommand::new(
+                    "effect-run",
+                    "start-effect",
+                    fence.clone(),
+                    claimed.revision,
+                    crate::TaskFlowTransition::Start,
+                    20,
+                )
+                .expect("start command"),
+            )
+            .await
+            .expect("start run");
+        let intent = Sha256Digest::for_bytes(b"effect-intent");
+        let payload = Sha256Digest::for_bytes(b"effect-payload");
+        store
+            .prepare_taskflow_step(
+                "effect-run",
+                "work",
+                1,
+                &fence,
+                &intent,
+                &payload,
+                "prepare-effect",
+                20,
+            )
+            .await
+            .expect("prepare step");
+        store
+            .claim_taskflow_step(
+                "effect-run",
+                "work",
+                1,
+                &fence,
+                &intent,
+                &payload,
+                "claim-effect",
+                20,
+            )
+            .await
+            .expect("claim step");
         (temp, layout, store, fence)
     }
 
     #[tokio::test]
     async fn indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch() {
-        let (_temp, layout, store, _fence) = prepared_store().await;
+        let (_temp, layout, store, fence) = prepared_store().await;
         let intent = Sha256Digest::for_bytes(b"effect-intent");
         let payload = Sha256Digest::for_bytes(b"effect-payload");
         let binding = Sha256Digest::for_bytes(b"effect-binding");
@@ -547,6 +641,7 @@ mod tests {
                 &nonce,
                 "record-effect",
                 21,
+                &fence,
             )
             .await
             .expect("begin attempt");
