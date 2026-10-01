@@ -150,6 +150,7 @@ pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 #[cfg(feature = "server")]
 pub use canonical_abstain_provider::AgentdDurableAbstainInvocationProviderV1;
+pub use canonical_abstain_provider::AgentdDurableCpuAbstainInvocationProviderV2;
 #[cfg(feature = "server")]
 pub use canonical_abstain_provider::CanonicalIntelligenceProviderProfileV1;
 #[cfg(feature = "server")]

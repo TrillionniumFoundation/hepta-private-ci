@@ -31,7 +31,6 @@ use codex_hepta_agent_components::prompt_optimizer::OptimizationRequest;
 use codex_hepta_agent_components::prompt_optimizer::PromptCandidate;
 use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agent_components::types::FixedQ32;
-use codex_hepta_agent_components::types::Generation;
 use codex_hepta_agent_components::types::ProbabilityQ32;
 use codex_hepta_agent_components::types::StableId;
 
@@ -49,8 +48,7 @@ pub(super) fn owner_inputs(
     candidate_support: Digest32,
     now_micros: u64,
 ) -> Result<AgentdIntelligenceOwnerInputsV1, AgentdError> {
-    let generation = Generation::new(record.snapshot.generation)
-        .map_err(|error| invalid(&format!("RunStart generation: {error}")))?;
+    let generation = snapshot.body_generation();
     let utility_axis = id("utility.safe-abstain")?;
     let organ_id = id("intelligence.control")?;
     let utility_contributions = ContributionSet {
