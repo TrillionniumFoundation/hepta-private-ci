@@ -14,6 +14,7 @@ pub(super) async fn verify_ledger_contents(pool: &SqlitePool) -> Result<(), Cogn
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(unavailable)?;
+    super::verify_schema_snapshot(&mut transaction).await?;
     // Table names are compiled identifiers. Bound each row before fetching its
     // content. Eight source rows use at most 8 MiB; 64 memory rows use at most
     // 4 MiB and reduce query overhead for large histories of 64-KiB memories.

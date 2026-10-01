@@ -39,9 +39,28 @@ pub(in super::super) async fn admit_before_migration(
         // ledger; a genuinely new database has no schema objects at all.
         compare_schema(&actual, &[])?;
     }
+    // Names and columns now match the compiled historical schema. Exclude
+    // physical FTS shadow rows, including the defaults for an empty index.
+    // Admit this same locked snapshot before ownership scans or migrations.
+    let tables: Vec<String> = sqlx::query_scalar(
+        "SELECT name FROM pragma_table_list
+         WHERE schema = 'main' AND type IN ('table', 'virtual')
+           AND name <> 'sqlite_schema' ORDER BY name LIMIT 1025",
+    )
+    .fetch_all(&mut *connection)
+    .await
+    .map_err(unavailable)?;
+    if tables.len() > MAX_SCHEMA_OBJECTS as usize {
+        return Err(CognitiveStoreError::Invalid(
+            "cognitive logical table inventory exceeds bounds".to_string(),
+        ));
+    }
+    let table_names = tables.iter().map(String::as_str).collect::<Vec<_>>();
+    super::super::budget::verify(connection, &table_names).await?;
     // Authenticate existing ownership before pending migrations can revoke or
-    // replace old projections. Schema 0 has no metadata table, and an empty
-    // admitted table may be an interrupted initialization awaiting owner bind.
+    // replace old projections. Schema 0 has no metadata table; an empty
+    // admitted table is an interrupted initialization only if all application
+    // logical state is empty, rather than an invitation to adopt orphan facts.
     if actual.iter().any(|object| object.0 == "cognitive_meta") {
         // Keep identity and storage checks inside SQLite: no unbounded owner
         // string is materialized, even if an attacker bypassed row CHECKs.
@@ -70,6 +89,67 @@ pub(in super::super) async fn admit_before_migration(
             return Err(CognitiveStoreError::AccessDenied(
                 "cognitive database belongs to a different agent".to_string(),
             ));
+        }
+        for table in tables {
+            if table == "_sqlx_migrations" {
+                continue;
+            }
+            let identifier = format!("\"{}\"", table.replace('"', "\"\""));
+            if count == 0 {
+                let mut query =
+                    sqlx::QueryBuilder::<sqlx::Sqlite>::new("SELECT EXISTS(SELECT 1 FROM ");
+                query.push(&identifier).push(" LIMIT 1)");
+                let has_state: bool = query
+                    .build_query_scalar()
+                    .fetch_one(&mut *connection)
+                    .await
+                    .map_err(unavailable)?;
+                if has_state {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "cognitive owner metadata is missing while application state remains"
+                            .to_string(),
+                    ));
+                }
+                continue;
+            }
+            // owner_agent_id consistently identifies the local producer/owner.
+            // Federation consumer IDs intentionally remain external identities.
+            let has_owner: bool = sqlx::query_scalar(
+                "SELECT EXISTS(SELECT 1 FROM pragma_table_info(?)
+                 WHERE name = 'owner_agent_id')",
+            )
+            .bind(&table)
+            .fetch_one(&mut *connection)
+            .await
+            .map_err(unavailable)?;
+            if !has_owner {
+                continue;
+            }
+            let mut query = sqlx::QueryBuilder::<sqlx::Sqlite>::new("SELECT EXISTS(SELECT 1 FROM ");
+            query
+                .push(&identifier)
+                .push(" WHERE typeof(owner_agent_id) != 'text' OR owner_agent_id IS NOT ")
+                .push_bind(owner.as_str());
+            if table == "cognitive_operation_ledger" {
+                query
+                    .push(" OR typeof(subject_id) != 'text' OR subject_id IS NOT ")
+                    .push_bind(owner.as_str());
+            }
+            query.push(" LIMIT 1)");
+            let foreign_owner: bool = query
+                .build_query_scalar()
+                .fetch_one(&mut *connection)
+                .await
+                .map_err(unavailable)?;
+            if foreign_owner {
+                let message = if table == "source_ledger" || table == "memory_revisions" {
+                    "agent-local cognitive store contains foreign-owned source or memory rows"
+                        .to_string()
+                } else {
+                    format!("agent-local cognitive store contains foreign-owned {table} rows")
+                };
+                return Err(CognitiveStoreError::Corrupt(message));
+            }
         }
     }
     Ok(())
@@ -261,3 +341,7 @@ async fn references() -> Result<&'static Vec<Vec<SchemaObject>>, CognitiveStoreE
 #[cfg(test)]
 #[path = "cognitive_store_schema_admission_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cognitive_store_schema_ownership_tests.rs"]
+mod ownership_tests;

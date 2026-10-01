@@ -29,6 +29,9 @@ use super::CognitiveStore;
 use super::CognitiveStoreError;
 use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
+use super::budget::MAX_BYTES;
+use super::budget::MAX_ROW_BYTES;
+use super::budget::MAX_ROWS;
 use super::protect_database_file;
 use super::publish_active_database;
 use super::recovered_database_filename;
@@ -45,9 +48,6 @@ mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
 
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
-const MAX_ROWS: i64 = 262_144;
-const MAX_BYTES: i64 = 128 * 1024 * 1024;
-const MAX_ROW_BYTES: i64 = 2 * 1024 * 1024;
 const MAX_SCHEMA_BYTES: i64 = 1024 * 1024;
 
 /// An exact logical state cut, including all registered owner tables and their

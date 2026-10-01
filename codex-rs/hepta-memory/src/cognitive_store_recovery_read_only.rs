@@ -59,9 +59,11 @@ impl CognitiveStore {
         requirement: CognitiveRecoveryRequirement<'_>,
     ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
         let expected = validate_requirement(layout, requirement)?;
-        let path = layout
-            .cognitive_root()
-            .join(super::super::COGNITIVE_DB_FILENAME);
+        // Writable recovery publishes an active generation; the original
+        // basename is then a historical cut. Use the same validated pointer
+        // resolution as the owner, before descriptor-binding the cold copy.
+        let path = resolve_active_database_path(layout.cognitive_root())
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         let home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(home);

@@ -1825,6 +1825,7 @@ pub(crate) async fn verify_logical_turn_registry(
         .begin()
         .await
         .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::verify_journal_snapshot(&mut transaction).await?;
     let foreign_identity_rows: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM cognitive_logical_turns WHERE owner_agent_id != ?",
     )

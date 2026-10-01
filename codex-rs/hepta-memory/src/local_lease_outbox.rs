@@ -33,6 +33,9 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::framing::frame_part;
 
+#[path = "local_lease_outbox_dispatch_settlement.rs"]
+mod dispatch_settlement;
+
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
 pub const LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS: bool = false;
@@ -2337,7 +2340,9 @@ impl LocalLeaseOutbox {
     /// `StillIndeterminate` remains an idempotent observation. If an earlier
     /// generation already recorded that observation, a successor may return
     /// the existing receipt and later record the terminal observation under
-    /// its current fence.
+    /// its current fence. A same-result terminal observation, or an unknown
+    /// observation overtaken by a terminal ACK, also reuses the verified
+    /// terminal receipt. Opposite terminal results remain an error.
     pub async fn reconcile(
         &self,
         occurrence_key: impl Into<String>,
@@ -2408,13 +2413,6 @@ impl LocalLeaseOutbox {
             &self.owner_agent_id,
         )
         .await?;
-        if current != LocalOutcomeState::Indeterminate {
-            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
-                "occurrence is already in {} state",
-                current.as_str()
-            )));
-        }
-
         let latest = latest_occurrence_event(
             &mut transaction,
             &self.lease_id,
@@ -2444,6 +2442,34 @@ impl LocalLeaseOutbox {
                     "indeterminate occurrence source fence is not terminal for successor reconciliation"
                         .to_string(),
                 ));
+        }
+
+        // A normal target ACK may have settled this occurrence after observer
+        // discovery. Reuse only the same terminal result, or a terminal result
+        // that supersedes an unknown observation, after checking its fence.
+        if current != LocalOutcomeState::Indeterminate {
+            if matches!(
+                current,
+                LocalOutcomeState::Committed | LocalOutcomeState::Rejected
+            ) && (current == resulting_state
+                || outcome == LocalReconcileOutcome::StillIndeterminate)
+            {
+                transaction
+                    .commit()
+                    .await
+                    .map_err(crate::cognitive_store::unavailable)?;
+                return Ok(LocalOutcomeReceipt {
+                    lease_id: self.lease_id.clone(),
+                    occurrence_key,
+                    state: current,
+                    event_id: latest.event_id,
+                    external_effect: false,
+                });
+            }
+            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
+                "occurrence is already in {} state",
+                current.as_str()
+            )));
         }
 
         if let Some(existing) = find_transition(
@@ -5398,6 +5424,7 @@ pub(crate) async fn verify_local_lease_outbox(
         .begin()
         .await
         .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::verify_journal_snapshot(&mut transaction).await?;
     let lease_ids: Vec<String> = sqlx::query_scalar(
         "SELECT DISTINCT lease_id FROM cognitive_local_leases ORDER BY lease_id",
     )

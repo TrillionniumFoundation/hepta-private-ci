@@ -2,6 +2,95 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
+async fn cold_recovery_follows_the_activated_generation_after_later_writes() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(104);
+    let owner_layout = layout(&temp, &owner);
+    let (store, access, _) = seeded(&temp, &owner).await;
+    let original = store.path().to_path_buf();
+    let first = store.recovery_anchor().await.expect("independent S1");
+    store.pool.close().await;
+    drop(store);
+    let active = CognitiveStore::open_with_recovery(
+        &owner_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&first),
+        &recovery_authority(&owner),
+        &RecoveryVerifier,
+    )
+    .await
+    .expect("activate descriptor-bound S1 generation");
+    assert_ne!(active.path(), original.as_path());
+    active
+        .append_source(
+            &access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "active-S2",
+                "later active write",
+            ),
+        )
+        .await
+        .expect("advance only the active generation");
+    let second = active.recovery_anchor().await.expect("independent S2");
+    assert_ne!(second, first);
+    active.pool.close().await;
+    drop(active);
+    let before = capture_recovery_tree(owner_layout.cognitive_root());
+    let recovered = CognitiveStore::open_read_only_recovery(
+        &owner_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&second),
+    )
+    .await
+    .expect("cold active S2 is admitted");
+    assert_eq!(recovered.anchor(), &second);
+    assert!(matches!(
+        CognitiveStore::open_read_only_recovery(
+            &owner_layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&first)
+        )
+        .await,
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
+    assert_eq!(capture_recovery_tree(owner_layout.cognitive_root()), before);
+}
+
+#[tokio::test]
+async fn cold_recovery_rejects_a_fifo_active_pointer_without_waiting_for_a_writer() {
+    use std::os::unix::ffi::OsStrExt;
+    use std::os::unix::fs::FileTypeExt;
+
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(105);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("independent cut");
+    store.pool.close().await;
+    drop(store);
+    let owner_layout = layout(&temp, &owner);
+    let pointer = owner_layout
+        .cognitive_root()
+        .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER);
+    let encoded = std::ffi::CString::new(pointer.as_os_str().as_bytes()).expect("FIFO path");
+    // There is deliberately no writer: a blocking read open would hang before
+    // the regular-file check. O_NONBLOCK must reach that rejection immediately.
+    assert_eq!(unsafe { libc::mkfifo(encoded.as_ptr(), 0o600) }, 0);
+    assert!(matches!(
+        CognitiveStore::open_read_only_recovery(
+            &owner_layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor)
+        )
+        .await,
+        Err(CognitiveRecoveryError::Indeterminate(message))
+            if message.contains("active database pointer is not one private regular file")
+    ));
+    assert!(
+        std::fs::symlink_metadata(pointer)
+            .expect("original FIFO remains")
+            .file_type()
+            .is_fifo()
+    );
+}
+
+#[tokio::test]
 async fn cold_reopen_reads_canonical_snapshot_without_mutating_source() {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(94);

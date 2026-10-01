@@ -1020,6 +1020,7 @@ pub(crate) async fn verify_local_compact_events(
         .begin()
         .await
         .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::verify_journal_snapshot(&mut transaction).await?;
     let journal_ids: Vec<String> = sqlx::query_scalar(
         "SELECT DISTINCT journal_id FROM cognitive_compact_events ORDER BY journal_id",
     )
