@@ -15,6 +15,16 @@ elsewhere. `File::try_lock` fences cooperating independent writers; it is
 advisory, not a hostile-writer sandbox. Only the neuron checkpoint owner writes
 this journal. New-file directory synchronization remains the host's obligation.
 
+The quota is host-declared segment geometry, not part of the V1 header or
+checkpoint digest. Before creating each segment, the host must freeze and
+independently retain its quota together with that segment's identity and chain
+order. Every reopen must supply that segment's original quota. Successor
+segments may have different quotas, each retained separately. Changing the
+quota on reopen can redefine when a retained prefix appears full; the journal
+cannot authenticate the original quota or reject every such reinterpretation.
+The host must authenticate that retained geometry before canonical chain
+recovery; the witness binds checkpoint history, not the original quota.
+
 ## Persistent format and transaction
 
 A 136-byte versioned header binds config, principal/run scope, objective and

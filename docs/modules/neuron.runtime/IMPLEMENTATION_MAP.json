@@ -75,7 +75,8 @@
       "state": "source_implemented_authenticated_owner_adapter",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/inference_control_tests.rs"
+        "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "inference_control_model_port",
@@ -84,6 +85,11 @@
         {
           "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
           "symbol": "inference.control::NeuronFeatureReceiptV1",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+          "symbol": "InferenceWorker::run_neuron_features_receipt",
           "role": "source_declaration"
         }
       ]
@@ -176,6 +182,11 @@
           "path": "codex-rs/hepta-neuron/src/protocol_timestamp.rs",
           "symbol": "valid_utc_timestamp",
           "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/protocol_receipt_validation.rs",
+          "symbol": "validate_tick_receipt_fields",
+          "role": "source_declaration"
         }
       ]
     },
@@ -228,6 +239,11 @@
       "state": "typed_intelligence_caller_source_implemented",
       "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
       "nativeSymbol": "run_neuron_tick_v1"
+    },
+    {
+      "state": "read_only_plasticity_owner_evidence_consumer_source_not_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "nativeSymbol": "PlasticityDynamicOwnerEvidenceResolverV1"
     }
   ],
   "sourceObjects": [

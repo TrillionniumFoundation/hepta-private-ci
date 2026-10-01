@@ -140,6 +140,13 @@ Every producer validates output before publication and binds semantic fields int
 
 Each registered Rust protocol DTO matches its canonical JSON representation. Internal owner configuration and resource records pass through explicit projections; round-trip guarantees cover the registered DTO fields. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+Canonical tick input admits an absent `bodyGeneration`, or a supplied positive
+`u64` generation. An explicit zero is rejected before model execution and by
+the JSON input adapters. This is an explicit source admission rule: the
+registered optional integer type alone does not enforce positivity. Zero
+remains the absent-body sentinel in the existing V1 body digest; its encoding,
+checkpoint digests and historical journal replay are unchanged.
+
 Runtime-config expiry accepts `YYYY-MM-DDTHH:MM:SS[.digits]Z`: a four-digit
 proleptic Gregorian year and valid date/time, seconds `0..=59`, within 64 ASCII bytes.
 The adapter checks syntax and calendar validity; the composing host enforces
@@ -147,7 +154,10 @@ current freshness, expiry and revocation. Tick/checkpoint activation indices
 are globally bounded to `0..=511`; parsing does not authenticate the owner or
 establish that indices fit the selected native width. Tick receipts require
 `predictionErrorQ24` in `0..=16 * 2^24` raw Q24 units and nonzero
-`checkpointBytes`.
+`checkpointBytes`. Tick and checkpoint activation summaries require empty
+`activeIndices` exactly when `sparsityPpm` is zero. This representation check
+does not establish the exact ratio for the selected native width. Canonical
+tick projection checks borrowed fields before copying the indices.
 
 Native calibration rounds confidence penalties and OOD ratios upward and
 compares the activity ceiling using the exact active-count/width ratio. Updated admission semantics require qualification evidence
@@ -174,9 +184,22 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+The Agentd read-only plasticity resolver checks the neuron journal's objective
+and exact host-supplied, independently acknowledged `JournalAnchor`. A retained
+acknowledged prefix cannot authorize a later suffix. After the journal advances,
+the host independently confirms the new frontier and constructs a new resolver;
+the resolver itself does not read the independent witness.
+
 ## 7. Runtime, concurrency and transaction model
 
 The current owner source is `NeuronRuntime` in [codex-rs/hepta-neuron/src/runtime.rs](../../../codex-rs/hepta-neuron/src/runtime.rs). One tick verifies the canonical owner input, obtains an exact inference-control feature receipt through `InferenceControlModelPort`, computes the deterministic sparse successor, commits the journal before publication, evaluates calibrated/OOD/resource disposition, and advances an independently retained `AnchorWitnessStore`. Journal and witness uncertainty are fail-closed and poison the affected handle instead of fabricating acknowledgement. [codex-rs/hepta-agentd/src/neuron_runtime.rs](../../../codex-rs/hepta-agentd/src/neuron_runtime.rs) now provides the compiled Agentd-owned long-lived source boundary and [codex-rs/hepta-intelligence/src/neuron_runtime.rs](../../../codex-rs/hepta-intelligence/src/neuron_runtime.rs) remains a typed caller. The Agentd daemon startup/run-lifecycle owner is still composed on the separate `runtime.agentd` convergence line; source presence here is not daemon activation or product-execution evidence.
+
+The [worker receipt producer](../../../codex-rs/hepta-infer-worker-host/src/model_worker.rs)
+validates bounded borrowed requests before copying or dispatching. It preserves
+`Succeeded`, `Failed`, `Cancelled` and `Indeterminate`; only success publishes
+drive/prediction vectors. Other outcomes discard partial tensors while retaining
+identity and resource observations. This producer's source is not proof that a
+concrete inference-control port has been composed into the daemon.
 
 [codex-rs/hepta-neuron/src/runtime_recovery.rs](../../../codex-rs/hepta-neuron/src/runtime_recovery.rs)
 owns root/segment recovery and the pre-first-acknowledgement reopen path.
@@ -190,6 +213,14 @@ complete sealed predecessor segments before replay can repair any tail.
 only a fresh successor; an existing successor goes through recovery instead.
 Fresh/existing file admission is checked while holding the cooperating-writer
 lock. This is not a guarantee against writers that ignore that advisory lock.
+
+Segment quotas are retained host geometry. V1 headers and the runtime/witness
+configuration binding do not encode them. The host freezes each segment's quota
+before creation and independently retains its identity, chain order and quota;
+recovery supplies those original values. Different successors may have different
+quotas. Changing a quota on reopen can reinterpret when a prefix is sealed and
+is outside canonical recovery; a matching checkpoint witness does not
+authenticate the original segment geometry.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 

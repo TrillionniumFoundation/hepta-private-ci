@@ -48,6 +48,17 @@ acknowledged frame, or an extra partial tail rejects while preserving the bytes.
 The successor header still verifies the exact predecessor checkpoint, and state
 publication remains blocked until the chain reaches the independent witness.
 
+These sealed boundaries use the original quota for each segment. V1 root and
+successor headers do not encode the quota, and the runtime configuration/witness
+binding does not supply it. The host must freeze each quota before segment
+creation and independently retain the segment identities, chain order and
+original quotas. Recovery must use that retained geometry, including when
+successors have different quotas. A caller-supplied smaller quota can make a
+valid prefix appear full; a larger quota can make a sealed segment appear
+incomplete. Neither constitutes proof of the original boundary. Reopening with
+changed quotas is outside canonical recovery, even when the checkpoint witness
+still matches.
+
 ## Recovery before the first acknowledgement
 
 Successful bootstrap enrolls a root header before it acknowledges any tick. A
