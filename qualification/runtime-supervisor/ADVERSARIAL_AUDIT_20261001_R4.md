@@ -209,7 +209,7 @@ all-target strict Clippy 均通过；完整 fmt 后 46 个无关 formatter-only 
 两次独立源码复审未再发现具体实现缺陷；当前执行和验收状态保持 pending / false。
 
 首次补修源码与验证输入为 `74eda6dbe9a63c043c60e7c468fa353b64bb3854`，tree `2d2015f0c02ab6a2362ae5860a67ec0d34331ad7`。
-当前 source map 绑定该观察；首次修复源码、本地具名执行和 7c CI 的身份均保留。
+该次补修的源码身份保留；首次修复源码、本地具名执行和 7c CI 的身份均保留。
 
 在 d74cde5bf1262172086a05f381034ceb64438dd1 的实际 recovery scope 中，
 Fleet mandatory 已为三项，但 receipt validator 的有效样本仍只含两个 publication
@@ -221,3 +221,32 @@ Fleet mandatory 已为三项，但 receipt validator 的有效样本仍只含两
 收据样本补修源码观察为 `462adb4973c14c958cb696fdf5789ca34fed0a6e`，tree `a9edf57af51a27064e1e631154501789934205af`。
 独立复审确认三项正向样本、九种拒绝场景与现有计划一致，整个 codex-rs tree
 和 v3 生产门槛保持 d74 原字节；新原生执行仍须按最终 head 核对。
+
+## 整个控制交换的绝对截止时间
+
+后续独立全模块复审发现新的实际阻塞路径：旧 UnixStream::connect 没有连接
+超时，设置的 200 ms read timeout 也会被每次成功的部分读取重新开始。
+即使对端 PID 正确，满 accept queue 或持续发送没有换行的字节仍可能长期
+占用生命周期线程，推迟 Kill 升级；健康探针在查询返回后才更新标志，也可能
+无限保留此前的 ready=true。64 KiB 帧界限不能代替经过时间界限。
+
+Agentd health、typed Drain 和 Matrixd health 现在共用私有传输实现。一次交换
+从连接、内核 peer PID 核验、写入、半关闭到读取和返回共用原有 200 ms 绝对
+deadline；成功的部分读写和 Interrupted 不续期。Linux 满队列 EAGAIN 直接
+拒绝，EINPROGRESS 必须在剩余预算内确认 SO_ERROR 和实际 connectedness。
+PID 验证通过前不发送请求字节。macOS 设置非阻塞、close-on-exec 和 SIGPIPE
+保护。原有首行、maximum+1、nonce、generation、schema、目录绑定和 Drain
+确认检查保留；超时不构成 DrainAck、退出证明或释放所有权的依据。
+
+新增四项 Linux/macOS 共同真实 socket 回归，覆盖完整帧、持续部分读取、错误
+peer 的零请求字节，以及超限／不完整 EOF；另有 Linux 满队列回归，以外层
+watchdog 和失败后的 listener 释放确保测试不残留阻塞线程。共同四项进入 v3
+精确 mandatory identities；Linux 专有身份不会作为 macOS 的执行要求。
+独立只读复核未找到新的具体反例。本地只编译、scoped fix 和完整 fmt；实际
+执行须由新源码身份的原生 CI 建立，d016 及之前的结果不能替代本次修复验证。
+
+这修复可防止协议进展无限续期和通常的 Socket 队列等待，不是可抢占的内核／
+文件系统保证，也不是整个 Stop、adoption 或 256 Agent constructor 的 200 ms
+SLO。两秒只读投影新鲜度、已经开始的 owner callback、跨 daemon 清理见证、
+原子恢复观察和每 Agent 调度隔离缺口保持原状态。能力状态仍为 12 implemented、
+2 partial、2 not implemented；目标主机和独立验收、激活、发布均未建立。

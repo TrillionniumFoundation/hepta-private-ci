@@ -137,6 +137,7 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "supervisor::tests::constructor_absence_recovery_tests",
             ),
             ("unix_peer_identity_tests.rs", "unix::peer_identity_tests"),
+            ("unix_control_io_tests.rs", "unix::control_io::tests"),
             (
                 "constructor_hydration_tests.rs",
                 "supervisor::constructor_hydration::tests",

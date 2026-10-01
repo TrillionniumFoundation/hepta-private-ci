@@ -110,6 +110,16 @@ ownership recovery. If both fail, the main error remains primary and a bounded
 Matrix diagnostic is retained. These synchronous operations do not establish
 per-Agent latency isolation or a deadline guarantee under stuck kernel/filesystem calls.
 
+Agentd Health/Drain and Matrix Health exchanges now share one 200 ms monotonic
+transport deadline across nonblocking connect, exact kernel peer validation,
+partial write and bounded read. The peer is validated before request bytes;
+partial progress cannot renew the deadline. Probe failure clears the worker's
+health flag through its existing failure path. A missing, timed-out or
+incomplete Drain reply never proves drain completion or process exit and cannot
+release an owned handle. Durable Stop/cleanup semantics remain unchanged. This
+transport bound does not make kernel path lookup or filesystem calls
+preemptible, nor establish per-Agent latency isolation.
+
 ## Regression source
 
 `recovery::launch_tests` contains four filesystem-backed tests with an explicit

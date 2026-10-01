@@ -121,6 +121,24 @@ not per-Agent actor isolation, a short-only global commit coordinator, or proof
 of cross-Agent mutation latency. Those remain mandatory before claiming the
 complete concurrency stage. No new public crate API or Cargo feature is added.
 
+### Managed-process control exchanges
+
+The private Unix transport gives each Agentd Health/Drain and Matrix Health
+exchange one 200 ms monotonic budget covering nonblocking connect, kernel peer
+PID binding before request bytes, partial writes, write-side shutdown and
+bounded response reads. Every retry and successful partial transfer uses the
+original deadline. A slow peer cannot extend it by sending one byte per timeout
+interval. Linux accept-backlog EAGAIN returns a connection failure; pending
+connections require readiness, socket-error and connected-peer checks.
+
+The existing health worker sets its flag false on a failed or timed-out probe.
+Drain transport failure does not acknowledge drained work or process exit, and
+does not undo a request already delivered. Its original durable control deadline
+and containment path remain decisive. Daemon read projections retain their
+separate two-second freshness contract. This exchange budget neither cancels
+an owner callback nor preempts intrinsically stuck path lookup, kernel or disk
+calls; it does not establish per-Agent actors or a measured latency SLO.
+
 ### Telemetry
 
 At most once per five seconds of completed ticks, bounded diagnostic lines

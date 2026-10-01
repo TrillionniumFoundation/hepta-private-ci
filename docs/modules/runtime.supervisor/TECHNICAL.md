@@ -136,6 +136,24 @@ socket peer PID before sending a request: Linux uses `SO_PEERCRED`, macOS uses
 adopted; a JSON response's self-reported PID cannot substitute for that binding.
 This retains the lifetime reference and all generation, nonce and root checks.
 
+Agentd Health, Agentd Drain and Matrix Health use the private
+`unix_control_io.rs` transport with one monotonic 200 ms elapsed-time budget per
+exchange. Nonblocking connection, kernel peer validation before any request
+byte, partial writes, write-side shutdown and bounded first-line reads share
+the same deadline. Successful partial progress and interrupted I/O cannot renew
+it; a late complete response is rejected. Linux accept-backlog EAGAIN is a
+failed connection, not evidence that a writable descriptor is connected.
+Existing protocol byte limits, identity/generation validation and Drain
+acknowledgement checks remain in their callers.
+
+On probe error or timeout, the health worker publishes false rather than
+retaining its last true value indefinitely while a peer drips response bytes.
+A Drain timeout is neither a drain acknowledgement nor process-exit evidence;
+the existing durable deadline and escalation path continue. This is a socket
+exchange budget, not a total adoption/Stop deadline, an immediate daemon-view
+update, per-Agent isolation or a target-host latency result. Intrinsically stuck
+kernel/path lookup, filesystem I/O and scheduling are not made preemptible.
+
 Main and Matrix processes whose lease publication fails remain retained and
 fenced until exact exit is observed and same-owner cleanup is durable. A failed
 first signal does not discard the handle. Local failed-publication cleanup
@@ -600,6 +618,7 @@ The following is source navigation, not a pass receipt:
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
 | Local control client | request/reply association | `src/daemon_client.rs`, `src/daemon_client_validation.rs` | `src/daemon_client_validation_tests.rs` |
 | Durable file input | stable bounded descriptor read | `src/durable_publish.rs`, `src/lease.rs`, `src/restart_journal.rs` | `src/durable_read_tests.rs`, `src/lease_read_tests.rs`, `src/restart_journal_read_tests.rs` |
+| Managed-process control I/O | exact-peer exchange with one elapsed-time budget | `src/unix.rs`, `src/unix_control_io.rs` | `src/unix_control_io_tests.rs`, `src/unix_control_io_linux_tests.rs`, `src/unix_peer_identity_tests.rs` |
 
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance. The tested SHA is
 derived from Git and execution context, not hard-coded into a self-referential

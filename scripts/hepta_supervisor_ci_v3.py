@@ -10,6 +10,10 @@ else:
 
 
 CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
+    "unix::control_io::tests::same_peer_complete_frame_preserves_first_newline_and_request",
+    "unix::control_io::tests::successful_partial_reads_cannot_renew_the_whole_exchange_deadline",
+    "unix::control_io::tests::mismatched_peer_is_rejected_before_any_request_byte",
+    "unix::control_io::tests::reply_byte_bound_and_incomplete_eof_preserve_caller_validation",
     "daemon::read_view::projection_tests::epoch_and_invalidation_discard_all_reuse_preimages",
     "daemon::read_view::projection_tests::external_fleet_cas_and_removal_change_only_the_affected_projection",
     "daemon::read_view::projection_tests::failed_ownership_capture_invalidates_then_rebuilds_every_agent",
