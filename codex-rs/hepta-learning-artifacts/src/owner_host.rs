@@ -952,6 +952,45 @@ impl LearningArtifactOwnerHost {
         self.read_context().discover_current_head(now)
     }
 
+    pub(crate) fn original_head_for_registry(
+        &self,
+        head_digest: Digest32,
+        now: u64,
+    ) -> Result<Option<SignedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
+        self.require_current_writer(now)?;
+        self.discover_current_head(now)?;
+        let mut matched = None;
+        for (index, entry) in fs::read_dir(self.root.join("heads"))?.enumerate() {
+            if index >= MAX_HEAD_RECORDS * 2 {
+                return Err(ArtifactOwnerHostError::Capacity);
+            }
+            let path = entry?.path();
+            let metadata = fs::symlink_metadata(&path)?;
+            if metadata.file_type().is_symlink() || !metadata.is_file() {
+                return Err(ArtifactOwnerHostError::CurrentHeadContext);
+            }
+            if path.extension().and_then(|value| value.to_str()) != Some("head") {
+                continue;
+            }
+            let head = decode_signed_head(&read_small_record(&path, MAX_SMALL_RECORD_BYTES)?)?;
+            if path != self.signed_head_record_path(&head) {
+                return Err(ArtifactOwnerHostError::CurrentHeadContext);
+            }
+            if head.witness.head_digest == head_digest {
+                if matched.is_some() {
+                    return Err(ArtifactOwnerHostError::CurrentHeadFork);
+                }
+                matched = Some(head);
+            }
+        }
+        self.discover_current_head(now)?;
+        Ok(matched)
+    }
+
+    pub(crate) fn first_registry_generation(&self) -> Generation {
+        self.verifier.trust.minimum_registry_generation
+    }
+
     fn persist_checkpoint(
         &self,
         transaction: &ArtifactPublicationTransactionV1,

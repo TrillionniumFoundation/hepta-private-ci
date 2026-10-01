@@ -54,6 +54,8 @@ pub(super) struct Policy {
     pub(super) baseline_weights_digest: String,
     pub(super) source_training_digest: String,
     pub(super) preregistration_digest: String,
+    #[serde(default)]
+    pub(super) initial_product_profile_digest: Option<String>,
     pub(super) frozen_at_ms: u64,
     pub(super) expires_at_ms: u64,
     pub(super) calibration_rows: usize,
@@ -91,6 +93,10 @@ impl Policy {
                 );
             }
         }
+        if let Some(pin) = &self.initial_product_profile_digest
+            && pin.parse::<Digest32>()?.is_zero() {
+                return Err("initial product profile pin".into());
+            }
         self.gates.validate()
     }
 }
@@ -205,8 +211,7 @@ pub(super) fn measurement_body(
     let ood_dataset = ood.publication.cut.dataset.native()?;
     let calibration_metrics = measure(calibration, &policy.gates)?;
     let ood_metrics = measure(ood, &policy.gates)?;
-    Ok(
-        json!({"schema":"hepta.cpu-neuron.initial-operational-measurements.v1",
+    let mut body = json!({"schema":"hepta.cpu-neuron.initial-operational-measurements.v1",
         "generation":1,"qualified_predecessor":null,"claim_scope":policy.claim_scope,
         "policy_digest":config.policy.digest,"source_training_digest":policy.source_training_digest,
         "preregistration_digest":policy.preregistration_digest,"model_manifest_digest":manifest_digest.to_string(),
@@ -219,8 +224,12 @@ pub(super) fn measurement_body(
         "evaluator_program_digest":program.to_string(),"config_digest":config_digest.to_string(),
         "measured_at_ms":now,"original_calibration_read":false,"original_holdout_read":false,
         "historical_unseen_holdout_claim":false,"primary_superiority_claim":false,
-        "qualified":false,"authority_grants_any":false,"holdout_consumed":false,"production_activation":false}),
-    )
+        "qualified":false,"authority_grants_any":false,"holdout_consumed":false,"production_activation":false});
+    if let Some(pin) = &policy.initial_product_profile_digest {
+        body["initial_product_profile_digest"] = json!(pin);
+        body["initial_product_gates"] = serde_json::to_value(&policy.gates)?;
+    }
+    Ok(body)
 }
 
 /// Run only the protected fixed initial-install policy under the independent

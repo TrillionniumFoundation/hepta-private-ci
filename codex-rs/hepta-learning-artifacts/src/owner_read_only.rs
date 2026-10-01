@@ -12,6 +12,17 @@ pub struct ReadOnlyArtifactCurrentOwnerV1 {
     frontier_bytes: Vec<u8>,
 }
 impl ReadOnlyArtifactCurrentOwnerV1 {
+    /// Return the original public signed header only after revalidating this
+    /// exact Root-published frontier and its complete current snapshot.
+    pub fn protected_current_head(
+        &self,
+        now: u64,
+    ) -> Result<SignedCurrentArtifactHeadV1, ArtifactOwnerHostError> {
+        self.current_registry_view(now)?;
+        self.required
+            .clone()
+            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)
+    }
     /// Root's physically protected live frontier must match every supplied
     /// trust/withdrawal field. Raw DTOs alone do not admit a reader.
     pub fn open(

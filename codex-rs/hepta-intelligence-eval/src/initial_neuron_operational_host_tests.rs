@@ -23,6 +23,10 @@ fn initial_anchor_never_reinterprets_generation_or_primary_qualification() {
         ("claim_scope", json!("primary_superiority")),
         ("frozen_at_ms", json!(102)),
         ("expires_at_ms", json!(101)),
+        (
+            "initial_product_profile_digest",
+            json!(Digest32::ZERO.to_string()),
+        ),
     ] {
         let mut changed = original.clone();
         changed[field] = value;

@@ -193,30 +193,50 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
         20,
     )
     .fixture("admission for head calculation");
-    let mut staged = ArtifactRegistry::new();
-    let preview = ArtifactPublicationTransactionV1::begin(
-        id("operation"),
-        admission,
-        &withdrawals,
-        &staged,
-        predecessor,
-        20,
-    )
-    .fixture("preview");
-    service
-        .host
-        .stage_compatibility_registration(&preview, &mut staged, 20)
-        .fixture("preview registration");
-    let request = publish_request(
-        &key,
-        &withdrawals,
-        predecessor,
-        staged.snapshot().head_digest,
+    let preview = service
+        .preview_registered_head(id("operation"), admission, 20)
+        .fixture("actual fenced head preview");
+    assert_eq!(
+        (
+            preview.predecessor,
+            preview.generation,
+            preview.original_signed_head
+        ),
+        (
+            predecessor,
+            Generation::new(1).fixture("first generation"),
+            None
+        )
     );
+    assert_eq!(service.registry().head_digest(), predecessor);
+    assert!(
+        service
+            .host
+            .recover_publication(&id("operation"))
+            .fixture("no preview checkpoint")
+            .is_none()
+    );
+    let request = publish_request(&key, &withdrawals, predecessor, preview.head_digest);
 
     let receipt = service.publish(request.clone()).fixture("publish");
     let retry = service.publish(request.clone()).fixture("terminal retry");
     assert_eq!(retry, receipt);
+    let original = service
+        .preview_registered_head(request.operation_id.clone(), request.admission.clone(), 21)
+        .fixture("original acknowledged preview");
+    assert_eq!(
+        original.original_signed_head,
+        Some(request.signed_current_head.clone())
+    );
+    let mut changed = request.admission.validated_manifest.manifest.clone();
+    changed.objective_class_digest = digest("different objective");
+    let changed =
+        admit_manifest_at_withdrawal_head_v3(&withdrawals, withdrawals.head_digest(), changed, 21)
+            .fixture("different valid admission");
+    assert!(matches!(
+        service.preview_registered_head(request.operation_id.clone(), changed, 21),
+        Err(LearningArtifactOwnerServiceError::RequestMismatch)
+    ));
     let current_view = service
         .current_registry_view(20)
         .fixture("authenticated current registry view");

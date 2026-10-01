@@ -117,6 +117,7 @@ pub use owner_host::SignedArtifactWriterLeaseV1;
 pub use owner_host::SignedCurrentArtifactHeadV1;
 pub use owner_host::TrustedArtifactSignerV1;
 pub use owner_host::VerifiedCurrentArtifactHeadV1;
+pub use owner_service::ArtifactPublicationHeadPreviewV1;
 pub use owner_service::LearningArtifactOwnerService;
 pub use owner_service::LearningArtifactOwnerServiceConfigV1;
 pub use owner_service::LearningArtifactOwnerServiceError;

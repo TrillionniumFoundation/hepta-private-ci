@@ -51,6 +51,15 @@ pub struct LearningArtifactPublishRequestV1 {
     pub now: u64,
 }
 
+/// Exact registration proposal under this service's actual writer fence. It
+/// contains public state only and grants no signing or publication authority.
+pub struct ArtifactPublicationHeadPreviewV1 {
+    pub predecessor: Digest32,
+    pub head_digest: Digest32,
+    pub generation: codex_hepta_types::Generation,
+    pub original_signed_head: Option<SignedCurrentArtifactHeadV1>,
+}
+
 #[path = "owner_service_suffix.rs"]
 mod suffix;
 
@@ -76,6 +85,82 @@ impl fmt::Debug for LearningArtifactOwnerService {
 }
 
 impl LearningArtifactOwnerService {
+    /// Preview the complete original registration before the external admitted
+    /// head signer acts. Publication/recovery remains the existing `publish`.
+    pub fn preview_registered_head(
+        &self,
+        operation_id: StableId,
+        admission: WithdrawalBoundArtifactAdmissionV3,
+        now: u64,
+    ) -> Result<ArtifactPublicationHeadPreviewV1, LearningArtifactOwnerServiceError> {
+        if let Some(blocked) = &self.recovery_required
+            && blocked != &operation_id
+        {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                blocked.clone(),
+            ));
+        }
+        let existing = self.host.recover_publication(&operation_id)?;
+        let predecessor = existing
+            .as_ref()
+            .map_or(self.registry.head_digest(), |recovery| {
+                recovery.checkpoint.expected_registry_predecessor_head
+            });
+        let mut registry = self.host.recover_registry_by_head(predecessor)?;
+        let transaction = ArtifactPublicationTransactionV1::begin(
+            operation_id,
+            admission,
+            &self.withdrawal_registry,
+            &registry,
+            predecessor,
+            now,
+        )?;
+        if existing.is_some_and(|recovery| {
+            recovery.checkpoint.intent_digest != transaction.intent().intent_digest
+        }) {
+            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+        }
+        self.host
+            .stage_compatibility_registration(&transaction, &mut registry, now)?;
+        let original_signed_head = self
+            .host
+            .original_head_for_registry(registry.head_digest(), now)?;
+        let generation = if let Some(original) = &original_signed_head {
+            original.witness.generation
+        } else if predecessor.is_zero() {
+            self.host.first_registry_generation()
+        } else {
+            self.host
+                .original_head_for_registry(predecessor, now)?
+                .ok_or(LearningArtifactOwnerServiceError::RequestMismatch)?
+                .witness
+                .generation
+                .next()
+                .map_err(|_| LearningArtifactOwnerServiceError::InvalidConfiguration)?
+        };
+        Ok(ArtifactPublicationHeadPreviewV1 {
+            predecessor,
+            head_digest: registry.head_digest(),
+            generation,
+            original_signed_head,
+        })
+    }
+
+    /// Publish only the actual service's acknowledged Root-owned CURRENT.
+    #[cfg(target_os = "linux")]
+    pub fn publish_root_read_frontier(
+        &self,
+        now: u64,
+    ) -> Result<(), LearningArtifactOwnerServiceError> {
+        if let Some(blocked) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                blocked.clone(),
+            ));
+        }
+        Ok(self
+            .host
+            .publish_root_read_frontier(&self.withdrawal_registry, now)?)
+    }
     pub fn open(
         config: LearningArtifactOwnerServiceConfigV1,
     ) -> Result<Self, LearningArtifactOwnerServiceError> {

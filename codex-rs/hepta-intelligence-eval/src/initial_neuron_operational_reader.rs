@@ -72,6 +72,15 @@ impl VerifiedInitialOperationalEvidenceV1 {
     pub fn expires_at(&self) -> u64 {
         self.expires_at
     }
+    /// Present only for a Root-frozen complete CPU deployment profile that the
+    /// independent evaluator included in this exact signed measurement.
+    #[must_use]
+    pub fn initial_product_profile_digest(&self) -> Option<Digest32> {
+        self.body
+            .get("initial_product_profile_digest")
+            .and_then(Value::as_str)
+            .and_then(|pin| pin.parse().ok())
+    }
     /// Check the original current sources and protected inputs immediately at
     /// use. Expired source credentials cannot be refreshed by copying a report.
     pub fn revalidate_current(&self) -> HostResult<()> {
@@ -195,6 +204,19 @@ fn inspect(
     {
         return Err("initial protected inputs changed during current admission".into());
     }
+    let mut expires_at = signed.expires_at.min(inputs.policy.expires_at_ms);
+    for source in [&inputs.calibration, &inputs.ood] {
+        for actor in &source.actors {
+            expires_at = expires_at.min(actor.principal().expires_at);
+        }
+        for original in [
+            source.publication.cut.generator_evidence.native()?,
+            source.publication.cut.freeze_evidence.native()?,
+            source.publication.observer_evidence.native()?,
+        ] {
+            expires_at = expires_at.min(original.expires_at);
+        }
+    }
     Ok(VerifiedInitialOperationalEvidenceV1 {
         config: config_source.clone(),
         report: report_source.clone(),
@@ -205,6 +227,6 @@ fn inspect(
         weights: inputs.weights_digest,
         scope: inputs.policy.scope_digest.parse()?,
         objective: inputs.policy.objective_digest.parse()?,
-        expires_at: signed.expires_at,
+        expires_at,
     })
 }
