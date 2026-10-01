@@ -69,28 +69,16 @@ The module accepts registered, bounded, versioned inputs, freezes schedule/occur
 
 ## 4. Internal architecture and component decomposition
 
-The active implementation is one composed owner path, not parallel engines:
+The active implementation composes the existing owners:
 
-```text
-AutomationScheduler (existing wake-up owner)
-  -> AutomationStore timer lease
-  -> schedule revision + deterministic occurrence
-  -> existing TaskFlow run/event ledger
-  -> durable taskflow_step_outbox
-  -> Agentd App Server thread/queue/reconcile for Codex activity
-  -> persisted turn terminal observer
-  -> TaskFlow reconciliation
-  -> automation occurrence terminalization
-
-External TaskFlow effect
-  -> durable claimed step
-  -> kernel FinalUseAuthority exact intent/payload binding
-  -> synchronous driver OR async final-use/provider-effect bridge
-  -> exact wire bytes hashed inside automation before grant consumption
-  -> provider-stable logical key derived from destination + TaskFlow run/step
-  -> durable succeeded/failed/indeterminate observation
-  -> provider-specific status reconciliation when required
-```
+| Path stage | Responsible owner | Durable handoff and ordering |
+| --- | --- | --- |
+| Scheduled wake-up | `AutomationScheduler` / `AutomationStore` | Timer lease freezes the schedule revision and deterministic occurrence, then creates the TaskFlow run/event ledger and step outbox. |
+| Codex admission | Agentd / App Server | The prepared step precedes `thread/queue/reconcile`; stable queue identity binds later persisted-turn observation. |
+| Scheduled settlement | Agentd observer / TaskFlow owner | Trusted turn terminality reconciles the step/run before occurrence terminalization. |
+| External-effect preparation | TaskFlow owner | Claim the durable step and hash exact wire bytes before grant consumption. |
+| External-effect admission | Kernel `FinalUseAuthority` / registered driver | Exact intent/payload authority precedes synchronous or async driver contact. V2 logical keys isolate the owning Agent and run/step under the provider scope/destination; persisted V1 attempts retain their original recovery key. |
+| External-effect settlement | Registered provider observer / TaskFlow owner | Immutable succeeded/failed/indeterminate observations and provider-specific status reconciliation settle the exact attempt without blind redispatch. |
 
 The old `effect_executor.rs` is now compiled only under `cfg(test)` as a legacy reducer fixture; it is not a public/product surface and cannot become a second runtime owner.
 
@@ -183,18 +171,13 @@ wakeup/dedup owner and public contract; it does not create hidden polling worker
 
 ### 4.4 Durable choice, checkpoint and effect ordering
 
-The target causal chain is:
+The target causal ordering remains a design requirement:
 
-```text
-admitted event + frozen circuit/policy/parameter bundle
-  -> eligible activation + resource reservation
-  -> existing model/DecisionCell/organ call
-  -> exact result and state-owner receipt
-  -> durable chosen branch + referenced receipt + step outbox
-  -> downstream authorized operation
-  -> independent terminal observation/reconciliation
-  -> run advancement and idempotent learning-ledger handoff
-```
+| Stage | Required handoff |
+| --- | --- |
+| Admit and reserve | Bind the admitted event to a frozen circuit/policy/parameter bundle; reserve resources for an eligible activation. |
+| Decide and commit | Existing model/DecisionCell/organ owners return an exact result and state receipt; commit the chosen branch, referenced receipt and step outbox before any downstream effect. |
+| Execute and observe | The registered owner executes the authorized operation; independent terminal observation/reconciliation precedes run advancement and idempotent learning-ledger handoff. |
 
 An effect-relevant branch decision commits before its downstream dispatch. Record
 run/activation/round, causal events, circuit definition, legal candidate set/order,
@@ -301,7 +284,7 @@ The current external-effect source path uses automation-owned `AuthorizedEffectI
 
 The synchronous seam remains available. The additive async seam uses `FinalUseAuthority::with_verified_use_async` plus `ProviderEffectTaskFlowDriver`: automation hashes the exact wire bytes before consuming the grant and requires the durable payload digest to match. New provider-key version 2 includes the owning Agent and TaskFlow run/step; the local attempt is excluded so safe local retry retains one logical effect identity. A changed payload conflicts under that key. Historical version 1 attempts retain their original key on lookup; recovery derives identity from the durable pending record. Dependency/compensation descriptors are canonically signed, but this seam does not establish actual predecessor completion: the product owner must supply trusted predecessor facts. The general TaskFlow ledger is not a full DAG interpreter.
 
-Agentd's optional effect host loads the attested HTTP provider configuration and final-use verifier/revocation state from `--automation-effect-host-file`. It advertises `automation.external_effect@1.0` only when configured; typed clients negotiate the capability before `AutomationExecuteEffect` or `AutomationReconcileEffect`. The host binds the Agent subject, destination and scope, rejects substituted wire bytes and derives the current TaskFlow fence from the durable run. Control callers cannot select trust, endpoints or fences. This source composition does not prove independent provisioning or product activation.
+Agentd's optional effect host loads the attested HTTP provider configuration and final-use verifier/revocation state from `--automation-effect-host-file`. It advertises `automation.external_effect@1.0` only when configured; typed clients negotiate the capability before `AutomationExecuteEffect` or `AutomationReconcileEffect`. The host binds the Agent subject, destination and scope and rejects substituted wire bytes. Execute requires the current live TaskFlow run fence; reconciliation first reads the exact owned durable attempt and obtains its verified authoring step fence through `authorized_taskflow_effect_fence`. Settled terminal/absence history remains readable after live run ownership clears, while unresolved work retains current fence checks. Control callers cannot select trust, endpoints or fences. This source composition does not prove independent provisioning or product activation.
 
 The host uses native async HTTP dispatch under the final-use active fence; it does not block an Agentd runtime thread with a worker join. New configured HTTP attempts persist an immutable `provider_contract_binding` before contact: a domain-separated SHA256 over the length-framed provider scope and exact attested HTTP contract digest, covering endpoints, lookup template, headers, timeout and contract ID. Recovery first settles an already durable terminal/proven-absence observation; before any remote lookup, a stored binding that differs from the configured host rejects. Explicit effect-reconcile control preserves stored key version. The scheduled observer handles Codex queue/turn occurrences, not arbitrary external-effect backlogs.
 
@@ -359,7 +342,9 @@ Crash boundaries are explicit:
 
 Rollback preserves schedule revision, deterministic occurrence identity, stable queue identity and provider reconciliation state.
 
-Materialization and step preparation revalidate the exact durable schedule instant/revision, live claim and canonical prompt/thread before creating run/outbox records; a caller-mutated lease cannot poison recovery identity. Terminal run recovery requires the step's already reconciled outcome and exact receipt, so a step-to-run crash cannot reinterpret the terminal result. Calendar resume selects the next authoritative instant and retains forbidden-overlap blocking; finite-calendar delayed coalescing resolves against its frozen end even after profile expiry, while open-ended out-of-profile requests reject.
+Materialization and step preparation revalidate the exact durable schedule instant/revision, live claim and canonical prompt/thread before creating run/outbox records; a caller-mutated lease cannot poison recovery identity. Scheduled occurrence terminal recovery requires the step's already reconciled outcome and exact receipt, so a step-to-run crash cannot reinterpret the terminal result. Calendar resume selects the next authoritative instant and retains forbidden-overlap blocking; finite-calendar delayed coalescing resolves against its frozen end even after profile expiry, while open-ended out-of-profile requests reject.
+
+Exact effect recovery starts with the owned immutable provider attempt and verifies the step's authoring fence, intent and payload. A settled terminal step supplies its historical fence after the run's live owner fields clear. For a settled `ProvenAbsent` attempt, verified run/definition/step history must contain both a `Reconciled`/`Cancelled` step receipt matching the effective durable proof and that exact attempt's immutable `requeued_proven_absent` event carrying the same proof. This read does not depend on the current run state: a queued run or a later successor owner/attempt can retain the historical result. Repeated settlement compares the old fence and immutable binding, then returns the old absence without mutating successor run/step state or authorizing dispatch. A crash before the matching requeue event commits retains the ordinary current-fence recovery gate. Retry admission uses effective reconciliation evidence, so an initial unknown refined to proven absence can admit a fresh fenced attempt; known acceptance still rejects absence.
 
 Timer handoff increments the durable writer epoch and leaves the compatible successor draining until the host installs and resumes it; predecessor handles cannot mutate the domain. Permanent retirement requires admitted/running/indeterminate occurrences to settle and the existing leased/uncertain drain to pass. Provider-proven-absent pending/claimed backlog may remain behind the permanent tombstone for audit, without new provider admission. A handoff can preserve admitted work for its successor; retirement cannot abandon its observer. Disabled/cancelled schedules and historical receipt identities survive recovery.
 
