@@ -245,7 +245,9 @@ enum Event {
     },
     Dispatch {
         request_id: String,
-        dispatch: NativeDispatch,
+        // Keep this private journal enum bounded as dispatch bindings grow.
+        // Box serializes transparently, preserving canonical historical bytes.
+        dispatch: Box<NativeDispatch>,
     },
     Started {
         request_id: String,
@@ -330,7 +332,7 @@ impl DurableInferenceControl {
             request_id,
             Event::Dispatch {
                 request_id: request_id.to_string(),
-                dispatch,
+                dispatch: Box::new(dispatch),
             },
         )
     }
@@ -683,7 +685,7 @@ impl NativeJournal {
                 if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
                     validate_digest(digest, "native codex authority witness")?;
                 }
-                record.dispatch = Some(dispatch);
+                record.dispatch = Some(*dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {
