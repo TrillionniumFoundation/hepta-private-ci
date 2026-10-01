@@ -37,7 +37,8 @@ SOURCE_EVIDENCE_FILES = (
     ROOT / "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
     ROOT / "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
-    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+    ROOT
+    / "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
@@ -157,10 +158,15 @@ def command_specs() -> list[dict[str, Any]]:
             "name": "legacy-context-compatibility-tests",
             "cwd": CODEX_RS,
             "argv": [
-                "cargo", "test", "--locked",
-                "-p", "codex-hepta-intelligence",
-                "-p", "codex-hepta-agentd",
-                "--features", "legacy-prompt-context-v1",
+                "cargo",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-intelligence",
+                "-p",
+                "codex-hepta-agentd",
+                "--features",
+                "legacy-prompt-context-v1",
             ],
         },
         {
@@ -373,7 +379,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--expected-head",
-        default=os.environ.get("QUALIFICATION_HEAD_SHA") or os.environ.get("GITHUB_SHA"),
+        default=os.environ.get("QUALIFICATION_HEAD_SHA")
+        or os.environ.get("GITHUB_SHA"),
     )
     args = parser.parse_args()
 
@@ -404,10 +411,7 @@ def main() -> int:
         result["succeeded"] or not result["required"] for result in command_results
     )
     succeeded = (
-        head_matches
-        and worktree_clean
-        and commands_succeeded
-        and not missing_evidence
+        head_matches and worktree_clean and commands_succeeded and not missing_evidence
     )
 
     receipt: dict[str, Any] = {

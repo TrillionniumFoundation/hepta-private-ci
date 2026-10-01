@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Local document/source-identity tests, not native execution qualification."""
+
 import copy
 import hashlib
 import json
@@ -22,7 +23,11 @@ class CurrentStateTests(unittest.TestCase):
         self.state = copy.deepcopy(docs.load_state())
         self.source = self.root / "source.rs"
         self.source.write_bytes(b"pub fn guarded() {}\n")
-        self.small = {"runtimeSourceFiles": [{"path": "source.rs", "blobSha": blob(self.source.read_bytes())}]}
+        self.small = {
+            "runtimeSourceFiles": [
+                {"path": "source.rs", "blobSha": blob(self.source.read_bytes())}
+            ]
+        }
 
     def write_state(self, state):
         path = self.root / docs.STATE_PATH
@@ -64,7 +69,12 @@ class CurrentStateTests(unittest.TestCase):
             docs.validate_runtime_sources(self.small, self.root)
 
     def test_source_cannot_self_grant_acceptance_or_execution(self):
-        for key in ("independentAcceptance", "activation", "release", "exactHeadExecution"):
+        for key in (
+            "independentAcceptance",
+            "activation",
+            "release",
+            "exactHeadExecution",
+        ):
             invalid = copy.deepcopy(self.state)
             invalid["maturity"][key] = "passed" if key == "exactHeadExecution" else True
             self.write_state(invalid)
@@ -85,7 +95,10 @@ class CurrentStateTests(unittest.TestCase):
 
     def test_duplicate_state_keys_are_rejected(self):
         with self.assertRaises(ValueError):
-            json.loads('{"module":"context.compiler","module":"other"}', object_pairs_hook=docs.unique_object)
+            json.loads(
+                '{"module":"context.compiler","module":"other"}',
+                object_pairs_hook=docs.unique_object,
+            )
 
     def test_five_projections_are_deterministic_and_share_state_digest(self):
         first = docs.render_all(self.state)
@@ -122,25 +135,53 @@ class CurrentStateTests(unittest.TestCase):
         for kind in ("technical", "product", "dossier"):
             self.assertIn(state["verificationNarrative"], rendered[docs.OUTPUTS[kind]])
             self.assertIn(state["productCallGraph"], rendered[docs.OUTPUTS[kind]])
-        for kind, filename in (("map", "IMPLEMENTATION_MAP.json"), ("manifest", "MODULE_MANIFEST.json")):
-            baseline = json.loads((docs.ROOT / "docs/modules/context.compiler/design-baseline" / filename).read_text())
+        for kind, filename in (
+            ("map", "IMPLEMENTATION_MAP.json"),
+            ("manifest", "MODULE_MANIFEST.json"),
+        ):
+            baseline = json.loads(
+                (
+                    docs.ROOT
+                    / "docs/modules/context.compiler/design-baseline"
+                    / filename
+                ).read_text()
+            )
             current = json.loads(rendered[docs.OUTPUTS[kind]])
-            for key in ("publicSurface", "proofObjects", "byteIdentities", "invariants", "testMatrix"):
+            for key in (
+                "publicSurface",
+                "proofObjects",
+                "byteIdentities",
+                "invariants",
+                "testMatrix",
+            ):
                 self.assertEqual(baseline[key], current[key])
             self.assertEqual(current["runtimeSourceFiles"], state["runtimeSourceFiles"])
-            self.assertEqual(current["contractStatus"] if kind == "map" else current["status"], state["status"])
+            self.assertEqual(
+                current["contractStatus"] if kind == "map" else current["status"],
+                state["status"],
+            )
 
     def test_generated_map_uses_repository_contract_without_granting_execution(self):
         current = json.loads(docs.render_all(self.state)[docs.OUTPUTS["map"]])
         self.assertEqual(current["schema"], "hepta.module-implementation-map.v3")
         self.assertEqual(current["schemaVersion"], 3)
-        self.assertEqual({row["operation"] for row in current["operations"]},
-                         {row["id"] for row in self.state["consumerExecution"]})
+        self.assertEqual(
+            {row["operation"] for row in current["operations"]},
+            {row["id"] for row in self.state["consumerExecution"]},
+        )
         self.assertTrue(current["status"]["composed"])
         self.assertFalse(current["status"]["qualified"])
-        for key in ("productionImplementation", "productExecutionProved", "independentAcceptance", "activation", "release"):
+        for key in (
+            "productionImplementation",
+            "productExecutionProved",
+            "independentAcceptance",
+            "activation",
+            "release",
+        ):
             self.assertIs(current["claimBoundary"][key], False)
-        self.assertEqual(current["sourceObjects"], self.state["implementationMapSourceObjects"])
+        self.assertEqual(
+            current["sourceObjects"], self.state["implementationMapSourceObjects"]
+        )
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ runner identity, the complete command/log record, the pinned toolchain, and a
 canonical digest of every evidence payload file produced before the signed
 receipt. The source checkout is revalidated before and after every command.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -54,7 +55,13 @@ def specs(legacy):
             "name": "typed-slot-regressions",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked", "-p", "codex-api", "--lib", "context_slot"
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-api",
+                "--lib",
+                "context_slot",
             ],
             "minimumTests": 11,
         },
@@ -62,8 +69,13 @@ def specs(legacy):
             "name": "exact-body-regressions",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked", "-p", "codex-hepta-prompt-extension",
-                "--lib", "exact_body"
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-prompt-extension",
+                "--lib",
+                "exact_body",
             ],
             "minimumTests": 8,
         },
@@ -71,7 +83,11 @@ def specs(legacy):
             "name": "v3-product-regressions",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked", "-p", "codex-hepta-intelligence",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-intelligence",
                 "prompt_product_v3",
             ],
             "minimumTests": 4,
@@ -80,7 +96,11 @@ def specs(legacy):
             "name": "crash-recovery-regressions",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked", "-p", "codex-hepta-agentd",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
                 "registry_race_tests",
             ],
             "minimumTests": 5,
@@ -89,11 +109,17 @@ def specs(legacy):
             "name": "v3-default-product-profile",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked",
-                "-p", "codex-hepta-prompt-registry",
-                "-p", "codex-hepta-context-compiler",
-                "-p", "codex-hepta-intelligence",
-                "-p", "codex-hepta-agentd",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-prompt-registry",
+                "-p",
+                "codex-hepta-context-compiler",
+                "-p",
+                "codex-hepta-intelligence",
+                "-p",
+                "codex-hepta-agentd",
             ],
             "minimumTests": 1,
         },
@@ -101,8 +127,13 @@ def specs(legacy):
             "name": "legacy-intelligence-profile",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked", "-p", "codex-hepta-intelligence",
-                "--features", "legacy-prompt-context-v1",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-intelligence",
+                "--features",
+                "legacy-prompt-context-v1",
             ],
             "minimumTests": 1,
         },
@@ -110,8 +141,13 @@ def specs(legacy):
             "name": "legacy-agentd-profile",
             "cwd": legacy.CODEX_RS,
             "argv": [
-                "just", "test", "--locked", "-p", "codex-hepta-agentd",
-                "--features", "legacy-prompt-context-v1",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--features",
+                "legacy-prompt-context-v1",
             ],
             "minimumTests": 1,
         },
@@ -119,72 +155,138 @@ def specs(legacy):
 
     commands[2:2] = [
         {
-            "name": 'owner-lifecycle-regressions',
+            "name": "owner-lifecycle-regressions",
             "cwd": legacy.CODEX_RS,
-            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
-                     'lifecycle_tests', "--status-level", "pass", "--success-output", "immediate"],
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "lifecycle_tests",
+                "--status-level",
+                "pass",
+                "--success-output",
+                "immediate",
+            ],
             "minimumTests": 10,
             "requiredNativeTests": [
-                'exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages',
-                'exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_stage_failure_does_not_publish_an_exact_stage',
-                'exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_capacity_failure_does_not_consume_exact_capacity',
-                'exact_context_delivery::registry_race_tests::lifecycle_tests::uncertain_runtime_publication_leaves_no_exact_authorization',
-                'exact_context_delivery::registry_race_tests::lifecycle_tests::preparation_reservation_blocks_clear_without_calling_runtime',
-                'exact_context_delivery::registry_race_tests::lifecycle_tests::tool_continuation_and_unknown_terminal_keep_the_stage',
-                'prompt_runtime::lifecycle_tests::explicit_retirement_survives_reopen_without_raw_context',
-                'prompt_runtime::lifecycle_tests::unresolved_attempt_cannot_be_retired',
-                'prompt_runtime::lifecycle_tests::schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans',
-                'prompt_runtime::lifecycle_tests::new_staging_cannot_spend_an_admitted_attempts_completion_reserve',
+                "exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages",
+                "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_stage_failure_does_not_publish_an_exact_stage",
+                "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_capacity_failure_does_not_consume_exact_capacity",
+                "exact_context_delivery::registry_race_tests::lifecycle_tests::uncertain_runtime_publication_leaves_no_exact_authorization",
+                "exact_context_delivery::registry_race_tests::lifecycle_tests::preparation_reservation_blocks_clear_without_calling_runtime",
+                "exact_context_delivery::registry_race_tests::lifecycle_tests::tool_continuation_and_unknown_terminal_keep_the_stage",
+                "prompt_runtime::lifecycle_tests::explicit_retirement_survives_reopen_without_raw_context",
+                "prompt_runtime::lifecycle_tests::unresolved_attempt_cannot_be_retired",
+                "prompt_runtime::lifecycle_tests::schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans",
+                "prompt_runtime::lifecycle_tests::new_staging_cannot_spend_an_admitted_attempts_completion_reserve",
             ],
             "requireFixtureProfile": True,
         },
         {
-            "name": 'owner-metrics-regressions',
+            "name": "owner-metrics-regressions",
             "cwd": legacy.CODEX_RS,
-            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
-                     'exact_context_delivery::metrics::tests', "--status-level", "pass", "--success-output", "immediate"],
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "exact_context_delivery::metrics::tests",
+                "--status-level",
+                "pass",
+                "--success-output",
+                "immediate",
+            ],
             "minimumTests": 4,
             "requiredNativeTests": [
-                'exact_context_delivery::metrics::tests::window_is_bounded_and_percentiles_are_nearest_rank',
-                'exact_context_delivery::metrics::tests::an_unobserved_phase_is_not_a_zero_latency_claim',
-                'exact_context_delivery::metrics::tests::leaving_a_failed_phase_still_records_attempted_time',
-                'exact_context_delivery::metrics::tests::diagnostics_do_not_hold_a_lock_across_measured_work',
+                "exact_context_delivery::metrics::tests::window_is_bounded_and_percentiles_are_nearest_rank",
+                "exact_context_delivery::metrics::tests::an_unobserved_phase_is_not_a_zero_latency_claim",
+                "exact_context_delivery::metrics::tests::leaving_a_failed_phase_still_records_attempted_time",
+                "exact_context_delivery::metrics::tests::diagnostics_do_not_hold_a_lock_across_measured_work",
             ],
         },
         {
-            "name": 'owner-capacity-regressions',
+            "name": "owner-capacity-regressions",
             "cwd": legacy.CODEX_RS,
-            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
-                     'exact_context_delivery::capacity_tests', "--status-level", "pass", "--success-output", "immediate"],
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "exact_context_delivery::capacity_tests",
+                "--status-level",
+                "pass",
+                "--success-output",
+                "immediate",
+            ],
             "minimumTests": 3,
             "requiredNativeTests": [
-                'exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation',
-                'exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison',
-                'exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound',
+                "exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation",
+                "exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison",
+                "exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound",
             ],
         },
         {
             "name": "owner-storage-regressions",
             "cwd": legacy.CODEX_RS,
-            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
-                     "exact_context_delivery::storage_hardening_tests", "--status-level", "pass"],
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "exact_context_delivery::storage_hardening_tests",
+                "--status-level",
+                "pass",
+            ],
             "minimumTests": 6,
-            "requiredNativeTests": ['exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock', 'exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity', 'exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected', 'exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration', 'exact_context_delivery::storage_hardening_tests::lock_links_and_symlink_ancestors_cannot_redirect_the_owner', 'exact_context_delivery::storage_hardening_tests::replacing_the_lock_fences_the_pinned_owner'],
+            "requiredNativeTests": [
+                "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock",
+                "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity",
+                "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected",
+                "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration",
+                "exact_context_delivery::storage_hardening_tests::lock_links_and_symlink_ancestors_cannot_redirect_the_owner",
+                "exact_context_delivery::storage_hardening_tests::replacing_the_lock_fences_the_pinned_owner",
+            ],
         },
         {
             "name": "owner-diagnostic-regressions",
             "cwd": legacy.CODEX_RS,
-            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
-                     "prompt_runtime::errors::tests", "--status-level", "pass"],
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "prompt_runtime::errors::tests",
+                "--status-level",
+                "pass",
+            ],
             "minimumTests": 2,
             "requiredNativeTests": [
                 "prompt_runtime::errors::tests::pipeline_diagnostics_redact_dynamic_owner_and_adapter_details",
                 "prompt_runtime::errors::tests::public_exact_diagnostic_preserves_recovery_action_without_exposing_internal_error",
             ],
         },
-        {"name": "named-evidence-parser-regressions", "cwd": legacy.ROOT,
-         "argv": ["python3", "-B", "-m", "unittest", "discover", "-s", "scripts",
-                  "-p", "test_context_compiler_named_evidence.py", "-v"]},
+        {
+            "name": "named-evidence-parser-regressions",
+            "cwd": legacy.ROOT,
+            "argv": [
+                "python3",
+                "-B",
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "scripts",
+                "-p",
+                "test_context_compiler_named_evidence.py",
+                "-v",
+            ],
+        },
     ]
     return commands
 
@@ -276,8 +378,12 @@ def main() -> int:
     if digest != expected:
         parser.error("candidate record digest mismatch")
 
-    source_tree = candidate.git(root, "rev-parse", f"{record_document['sourceHeadSha']}^{{tree}}")
-    base_tree = candidate.git(root, "rev-parse", f"{record_document['baseSha']}^{{tree}}")
+    source_tree = candidate.git(
+        root, "rev-parse", f"{record_document['sourceHeadSha']}^{{tree}}"
+    )
+    base_tree = candidate.git(
+        root, "rev-parse", f"{record_document['baseSha']}^{{tree}}"
+    )
     immutable_identity = {
         "sourceCommit": record_document["sourceHeadSha"],
         "sourceTree": source_tree,
@@ -315,18 +421,26 @@ def main() -> int:
                 # Native summaries are at the tail; do not load an unbounded log.
                 with log.open("rb") as stream:
                     stream.seek(max(0, log.stat().st_size - 1024 * 1024))
-                    count = observed_tests(stream.read().decode("utf-8", errors="replace"))
+                    count = observed_tests(
+                        stream.read().decode("utf-8", errors="replace")
+                    )
                 result.update({"minimumTests": minimum, "testsObserved": count})
                 result["succeeded"] = result["succeeded"] and count >= minimum
             if spec.get("requiredNativeTests"):
                 try:
-                    named = named_evidence.bind_named_tests(log, spec["requiredNativeTests"])
+                    named = named_evidence.bind_named_tests(
+                        log, spec["requiredNativeTests"]
+                    )
                     result.update(named)
-                    result["succeeded"] = result["succeeded"] and named["namedNativeTestsPassed"]
+                    result["succeeded"] = (
+                        result["succeeded"] and named["namedNativeTestsPassed"]
+                    )
                     if spec.get("requireFixtureProfile"):
                         profile = named_evidence.fixture_profile(log)
                         result["ownerFixtureProfile"] = profile
-                        result["succeeded"] = result["succeeded"] and profile is not None
+                        result["succeeded"] = (
+                            result["succeeded"] and profile is not None
+                        )
                 except (OSError, ValueError, TypeError, UnicodeError) as error:
                     result["namedEvidenceFailure"] = type(error).__name__
                     result["succeeded"] = False
@@ -340,11 +454,18 @@ def main() -> int:
 
     receipt.pop("receiptSha256", None)
     receipt["failureClass"] = failure
-    receipt["status"] = "passed" if (
-        failure is None
-        and len(receipt["commands"]) == len(command_specs)
-        and all(item["succeeded"] or not item["required"] for item in receipt["commands"])
-    ) else "failed"
+    receipt["status"] = (
+        "passed"
+        if (
+            failure is None
+            and len(receipt["commands"]) == len(command_specs)
+            and all(
+                item["succeeded"] or not item["required"]
+                for item in receipt["commands"]
+            )
+        )
+        else "failed"
+    )
     state = json.loads(legacy.MANIFEST.read_text(encoding="utf-8"))
     receipt["consumerExecution"] = named_evidence.consumer_projection(
         state.get("consumerExecution", []), receipt["commands"], immutable_identity
