@@ -19,8 +19,7 @@ together:
   validity boundaries, startup audit and selected ancestry limits.
 - `FINAL_USE_CLOSURE.md`: publication integrity and freshly reacquired final-use
   observations immediately before the native worker's physical `TurnStart`.
-- `DELIVERY_EVIDENCE.md`: preparation, dispatch, acceptance, unknown outcomes and
-  the persisted operation handoff still required by automatic learning.
+- `DELIVERY_EVIDENCE.md` and `PREPARATION_HANDOFF.md`: preparation, exact receipt handoff, dispatch, acceptance, unknown outcomes and the separate automatic training-admission boundary.
 - `CONSUMERS.md`, `CONSUMER_POLICY.json` and `CONSUMER_EXECUTION.json`: the seven
   consumers' distinct source, product and migration states.
 - `QUALIFICATION_CLOSURE.md` and `OPERATIONS.md`: exact execution gates,
@@ -34,13 +33,17 @@ together:
 | --- | --- |
 | Read port | Stateless, deny-all exact-ID projection; V1/V2 compatibility bytes retained. |
 | Construction | Borrowed current-head selection; result count and complete V2 frame budgets precede result cloning. Whole-snapshot integrity validation retains its separate bounded cost. |
-| SQLite owner | Exact-ID materialization uses the existing owner's scope witness and indexed validity boundaries. Reopen verifies witness schema and recomputed content. Derived witness identities and revisions cannot be replaced or regressed. |
+| SQLite owner | Exact-ID materialization uses the existing owner's scope witness and indexed validity boundaries. Reopen verifies witness schema and recomputed content. Derived witness identities and revisions cannot be replaced or regressed. Migration 0020 also guards canonical row replacement; recovery capture independently audits derived content in the same transaction. |
 | Ordinary retrieval | Agentd read, publication fence and the native worker's fresh final-use check are source composed. A check is an observation, not a future mutation lease. |
-| Learning preparation | Ordinary reads receive independent identities from the existing durable ledger. Historical explicit RPC replay remains separate; the ordinary client still needs a persisted preparation-to-native-attempt handoff. |
+| Learning preparation | Ordinary reads receive independent identities from the existing durable ledger. Prepared RPC metadata stays outside the unchanged snapshot and is persisted in the existing native dispatch journal. Exact witnessed lookup binds agent/generation/RPC namespace; automatic training admission remains separate. |
 | Compaction | The public owner API constructs an authority-free candidate. No non-test product caller or durable checkpoint publication is claimed. |
-| Context compiler | Legacy product composition exists; revision-bound V2 ingress is implemented locally and has no normal provider-bound product caller. |
+| Context compiler | Legacy composition exists; revision-bound V2 ingress has no normal provider-bound caller. Prompt adapters require an explicit exact tokenizer; absent backend returns a typed unavailable result. |
 | Qualification | Parser/source checks, focused package execution, complete source/merge qualification, target-host evidence and independent acceptance are distinct states. See the audit for the checks actually executed. |
 
 `productionImplementation`, `productExecutionProved`, `independentAcceptance`,
 `activation` and `release` remain false. Package tests and candidate APIs cannot
 elevate these independently governed states.
+
+Context-using workers require `cognitive.context.prepare@1`; older peers fail
+closed. Historical journal entries without preparation receipts remain readable,
+but cannot establish an owner-issued preparation join.

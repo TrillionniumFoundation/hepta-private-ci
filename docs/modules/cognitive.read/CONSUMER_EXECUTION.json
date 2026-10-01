@@ -22,11 +22,12 @@
       "required_gates": [
         "consumer-context-tests",
         "context-v2-ingress-tests",
-        "consumer-intelligence-product-e2e"
+        "consumer-intelligence-product-e2e",
+        "prompt-exact-tokenizer-tests"
       ],
       "normal_product_path_exercised": true,
       "final_use_owner": "existing compiler admission plus provider/model-use owner after revision-bound ingress",
-      "evidence_interpretation": "The dedicated V2 ingress gate proves complete revision-bound source verification and compilation through existing admission. The authenticated intelligence path remains the legacy product caller; named provider-bound V2 use and final-use execution are still required before migration is complete."
+      "evidence_interpretation": "The dedicated V2 ingress gate proves complete revision-bound source verification and compilation through existing admission. The authenticated intelligence path remains the legacy product caller; named provider-bound V2 use and final-use execution are still required before migration is complete. Prompt adapters require an explicit exact tokenizer; missing backend is unavailable and registry token upper bounds cannot mint exact serialization evidence."
     },
     {
       "module": "memory.federation",
@@ -47,11 +48,15 @@
         "product-read-replay",
         "owner-currentness-e2e",
         "stale-generation-e2e",
-        "native-final-use-e2e"
+        "native-final-use-e2e",
+        "delivery-preparation-tests",
+        "preparation-protocol-tests",
+        "native-preparation-handoff-tests",
+        "delivery-join-tests"
       ],
       "normal_product_path_exercised": true,
       "final_use_owner": "Agentd plus native worker immediately before physical TurnStart",
-      "evidence_interpretation": "These gates exercise the normal owner cut, replay, expiry/rollback, stale generation, and physical pre-TurnStart correction/tombstone rejection. They remain candidate evidence, not activation."
+      "evidence_interpretation": "These gates exercise the normal owner cut, replay, expiry/rollback, stale generation, and physical pre-TurnStart correction/tombstone rejection. They remain candidate evidence, not activation. Ordinary preparation identities are passed outside the unchanged context snapshot and persisted in the existing native journal; the named handoff gates require exact namespace, reopen and receipt-substitution checks. Automatic training ingestion remains separate."
     },
     {
       "module": "neuron.runtime",

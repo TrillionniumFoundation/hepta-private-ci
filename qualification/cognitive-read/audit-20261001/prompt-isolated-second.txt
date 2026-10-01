@@ -1,0 +1,24 @@
+
+running 19 tests
+test prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift ... ok
+test prompt_pipeline::tests::compatibility_entries_require_an_exact_tokenizer_capability ... ok
+test prompt_delivery::tests::registry_compatibility_bridge_without_backend_is_unavailable ... ok
+test prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery ... ok
+test prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry ... ok
+test prompt_runtime::tests::final_delivered_terminal_releases_staged_turn ... ok
+test prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically ... ok
+test prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry ... ok
+test prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement ... ok
+test prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization ... ok
+test prompt_runtime::tests::owner_remains_send_sync_with_fault_injection ... ok
+test prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation ... ok
+test prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn ... ok
+test prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent ... ok
+test prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation ... ok
+test prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input ... ok
+test prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed ... ok
+test prompt_runtime::tests::named_agentd_pipeline_without_tokenizer_rejects_exact_context_proofs ... ok
+test prompt_pipeline::tests::serialized_framing_is_counted_by_the_exact_backend ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+

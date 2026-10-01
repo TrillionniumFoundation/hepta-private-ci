@@ -14,7 +14,7 @@ The memory owner continues to own SQLite facts, corrections, tombstones and reco
 The existing learning `LedgerWriter` owns retrieval assignment preparation. The existing
 `DurableInferenceControl` journal owns native dispatch, observed turn acceptance and
 terminal observations. The read crate acquires no SQL connection, writer, durable
-cache or execution capability. No journal schema or wire format is changed here.
+cache or execution capability. The additive preparation RPC and optional native journal field are specified in [PREPARATION_HANDOFF.md](PREPARATION_HANDOFF.md); legacy snapshot and omitted-field journal bytes remain unchanged.
 
 `LedgerWriter::read_current_retrieval_assignment` resolves one exact ID/episode through
 its existing replay-built active index. It requires a current independent witness,
@@ -62,9 +62,7 @@ The explicit replay API retains its separate namespace and identity-conflict
 semantics; its inspection lookup cannot match an ordinary preparation by accident.
 
 This is an implemented local inspection surface, not automatic product learning ingestion.
-The current normal read client does not return or persist the owner-issued preparation
-identity alongside a native-attempt identity. That explicit product handoff, its revalidation
-at training admission and actual physical-worker evidence remain required. An inspection
+The normal prepared read client returns the owner-issued receipt separately from the unchanged snapshot; the native worker persists it in the existing dispatch journal. Exact inspection recomputes the authenticated agent/generation/RPC namespace and reads the current witnessed assignment. Training admission and actual physical-worker evidence remain required. An inspection
 fixture is not a replacement for a real model/provider boundary test.
 
 An ordinary read preparation is not an idempotent operation inferred from its RPC
@@ -86,30 +84,29 @@ exposure, or reinterpret server rejection as a proof of no transmission.
 
 ## Exact executable regression inventory
 
-`scripts/cognitive_read_delivery_gates.py` supplies four mandatory gates to the existing
+`scripts/cognitive_read_delivery_gates.py` supplies six mandatory gates to the existing
 read-only `cognitive_read_full_evidence.py` runner, on both source and merge candidates:
 
 - `native-delivery-tests`: seven native-journal identity, recovery, cancellation,
   terminality, pre-effect and server-refusal cases;
-- `delivery-preparation-tests`: two real-ledger index, witness-lag and revocation cases;
+- `delivery-preparation-tests`: four real-ledger identity, index, witness-lag and revocation cases;
 - `publication-fence-tests`: a real SQLite frontier mutation while the last retrieval
   dependency is blocked, using a bounded barrier rather than timing sleeps;
-- `delivery-join-tests`: external library integration across the existing learning and
-  native owners, including exact read RPC/context/generation rejection and journal reopen.
+- `delivery-join-tests`: legacy and ordinary owner-issued receipt integration across the existing learning and native owners, including exact namespace/context/generation rejection and journal reopen;
+- `preparation-protocol-tests`: separate receipt metadata with unchanged snapshot bytes;
+- `native-preparation-handoff-tests`: persisted receipt, unknown outcome after reopen, invalid receipt rejection, historical bytes and receipt substitution.
 
 Each gate requires the exact command, zero exit status, exact binary and fully qualified
 nextest PASS rows, and the exact positive case count. Source names, echoed PASS text,
 wrong binaries, missing cases or successful unrelated tests cannot satisfy these gates.
 The ten Python parser regressions test evidence validation only; they do not execute Rust.
-Rust compilation, formatting, strict lint and the eleven Rust cases require actual runner
+Rust compilation, formatting, strict lint and the twenty Rust cases require actual runner
 receipts. A source-preparation commit is ordinary authoring, not qualification.
 
 ## Capacity, migration and release boundary
 
 The selected-ID owner path already present in the source baseline avoids materializing
-unselected ancestry, but global owner counter/head metadata work is not eliminated. A
-transactionally maintained owner root requires a separately reviewed existing-owner
-schema/recovery migration and measurements; no authorization cache is introduced here.
+unselected ancestry, with indexed validity and scope witness metadata. Canonical counter maintenance and startup/recovery audits retain separate costs. Migrations 0018–0020 and scope indexes remain subject to exact Rust owner execution and target-host measurement; no authorization cache is introduced here.
 
 No consumer is promoted by these inspection APIs. `compact.engine` product composition,
 `context.compiler` verified V2 ingress, the other consumers' distinct lifecycle/host gaps,

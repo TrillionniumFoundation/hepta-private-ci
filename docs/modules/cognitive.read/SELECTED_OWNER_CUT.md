@@ -50,6 +50,8 @@ insert in the same SQLite statement transaction, preserving normal increments
 without admitting `INSERT OR REPLACE` through SQLite's default non-recursive
 trigger behavior. Head and validity-row memory identities are immutable as well, preventing a same-revision identity update from bypassing witness maintenance. Historical migrations remain unchanged.
 
+Migration 0020 rejects replacement of existing canonical source, memory, citation and KG identities, including projection/meta identities. The owner preserves legitimate source replay, meta reopen and KG initialization through atomic insert-if-absent. Recovery capture authenticates schema and independently audits witness contents inside its same transaction, including cold read-only recovery.
+
 Recovery anchors bind the schema oracle. An anchor from an older oracle is
 rejected; this revision does not silently rebind an old anchor to a newly opened
 cut. Re-establishing a current independent recovery witness belongs to the owner

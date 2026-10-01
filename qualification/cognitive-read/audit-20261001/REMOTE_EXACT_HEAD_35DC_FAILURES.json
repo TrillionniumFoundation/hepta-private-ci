@@ -1,0 +1,457 @@
+{
+  "activation": false,
+  "artifact": {
+    "bundle_sha256": "336657e8e587fa6b2e7354ecfb055340c39b5a69c91a7709c7ac513de96e1ab0",
+    "id": 11133025484,
+    "zip_sha256": "f712a67a58ce4076d2bef8659f706b5fa4d11e72d7fea6f7a51d9598cef4cf9d"
+  },
+  "artifact_file_manifest_verified": true,
+  "candidate": {
+    "commit": "35dc4e9c60e7332c7c0f69381d386516f019a9a5",
+    "tree": "f3c756c7e7489f4b8c97e879f7b32d6948af4caa"
+  },
+  "claim_boundary": "Historical exact-head evidence for 35dc only. This failure review does not rebind passing gates to a later commit or assert that proposed repairs passed. Logs were retrieved from the retained artifact and all SHA256SUMS entries were verified.",
+  "failed_gate_count": 16,
+  "failure_causes": [
+    {
+      "category": "qualification_environment_and_baseline",
+      "gates": [
+        "rust-format",
+        "strict-clippy",
+        "compatibility-clippy"
+      ],
+      "id": "mixed-rust-toolchains",
+      "observation": "Root cargo/rustc version capture was 1.98.1; just/nextest compiled with the committed 1.95.0. Clippy failures were map_or_identity in utils/stream-parser/src/inline_hidden_tag.rs:91 and chunks_exact_to_as_chunks in hepta-contracts/src/final_use_store.rs:322.",
+      "required_fix": "Apply committed rust-toolchain.toml pin to the shared environment of version capture and every gate. Retain relevant memory formatting fixes: 1.95 also reports formatting drift in cognitive_read_compact_product.rs, its tests and lane_c_scope_witness.rs."
+    },
+    {
+      "category": "audit_regression_compile_defect",
+      "gates": [
+        "all-target-check",
+        "owner-tests",
+        "witness-integrity-tests"
+      ],
+      "id": "witness-test-dynamic-sql",
+      "observation": "E0277 at lane_c_witness_integrity.rs lines259/265/355: dynamic SQL must implement the forked sqlx audited-string trait.",
+      "required_fix": "Use reviewed literal statements or explicitly audited SqlStr conversions for fixture-only catalog SQL; preserve the adversarial operation."
+    },
+    {
+      "category": "baseline_feature_compile_defect",
+      "gates": [
+        "agentd-tests",
+        "compatibility-check",
+        "stale-generation-e2e",
+        "publication-fence-tests"
+      ],
+      "id": "plasticity-qualification-surface",
+      "observation": "E0599 append_qualification unavailable at plasticity_runtime_lifetime_tests.rs:882 and tests/plasticity_process_e2e.rs:115 under the default product package build.",
+      "required_fix": "Constrain legacy qualification fixtures to their explicit existing feature or compose the current writer API. Do not enable a write-authority feature by default."
+    },
+    {
+      "category": "baseline_fixture_compile_defect",
+      "gates": [
+        "consumer-intelligence-product-e2e"
+      ],
+      "id": "intelligence-dispatch-arity",
+      "observation": "E0061 intelligence_product_tests.rs:696 still called mark_dispatched with two arguments after the owner API required three.",
+      "required_fix": "Bind the fixture to the actual current owner identity and generation in the three-argument dispatch API."
+    },
+    {
+      "category": "product_fixture_and_qualification_composition",
+      "gates": [
+        "native-worker-tests",
+        "native-final-use-e2e"
+      ],
+      "id": "native-real-codex-path",
+      "observation": "Agentd App Server failed before readiness: Codex executable path is not configured.",
+      "required_fix": "Build the real codex-cli/codex binary with a recorded locked gate, use the candidate target directory, and configure the native fixture with codex_utils_cargo_bin::cargo_bin(\"codex\")."
+    },
+    {
+      "category": "baseline_brittle_source_test",
+      "gates": [
+        "native-worker-tests"
+      ],
+      "id": "native-lexical-order-test",
+      "observation": "native_app_server_tests.rs:411 panicked finding a physical TurnStart source string that no longer matched formatting.",
+      "required_fix": "Replace brittle formatting-dependent source matching with actual dispatch/final-use/TurnStart observation or robust source-only inspection with its limited claim boundary."
+    },
+    {
+      "category": "real_product_behavior_failure",
+      "gates": [
+        "product-write-smoke"
+      ],
+      "id": "kg-projection-generation",
+      "observation": "Both attempts failed: current projection rows did not match their generation receipt.",
+      "required_fix": "Repair existing KG projection/receipt maintenance at the owner transition; retain the real remember/recall/correct/forget product test."
+    },
+    {
+      "category": "consumer_regression_failure",
+      "gates": [
+        "consumer-objective-tests"
+      ],
+      "id": "objective-json-error-classification",
+      "observation": "source_envelope_json_tests.rs:331 expected Structure for malformed/count-invalid decoded fields; the actual decoder returned another rejection category.",
+      "required_fix": "Determine each rejection boundary and align the test with the actual strict decoder contract while retaining all malformed inputs; do not accept the invalid envelope."
+    },
+    {
+      "category": "consumer_regression_failure",
+      "gates": [
+        "consumer-ndu-tests"
+      ],
+      "id": "ndu-maximum-residual-fixture",
+      "observation": "preference_tests.rs:71 expected maximum residual 3221225472; the owner returned4294967296.",
+      "required_fix": "Validate the maximum over the full observed residual history, including its initial state where contracted; retain terminal residual and convergence assertions."
+    }
+  ],
+  "gate_count": 43,
+  "gates": [
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "test-runner",
+      "historical_passed_command": true,
+      "log_sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "workspace-manifest",
+      "historical_passed_command": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "contract-limits",
+      "historical_passed_command": true,
+      "log_sha256": "47736adb39887ef32279f71e9eae4e00943c98a5a3ce4f25ccf22574e67e02c2"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "implementation-map",
+      "historical_passed_command": true,
+      "log_sha256": "ac7f022866bc478ec2ebd4c6d2381e26e5f39068459eec98be5a39ab0885dd15"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-audit",
+      "historical_passed_command": true,
+      "log_sha256": "b61daabaa9e7a15e064df667a61b13353cb7c12d85f9bad5d36689e753e63f57"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "python-regressions",
+      "historical_passed_command": true,
+      "log_sha256": "754175109a16a9874544c3d48fb663d2e8b43b0ad4a3db16b5570856c021070a"
+    },
+    {
+      "exit_code": 1,
+      "failure_causes": [
+        "mixed-rust-toolchains"
+      ],
+      "gate": "rust-format",
+      "historical_passed_command": false,
+      "log_sha256": "a19909a619e9dbef8e3d1ebcb65613e879e9e03d80569c08be49d694f63144c9"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "witness-test-dynamic-sql"
+      ],
+      "gate": "all-target-check",
+      "historical_passed_command": false,
+      "log_sha256": "d52b30566d3e89ec37f7a6fe57be2658322374d3597308c826289b95370bcdb8"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "mixed-rust-toolchains"
+      ],
+      "gate": "strict-clippy",
+      "historical_passed_command": false,
+      "log_sha256": "b361a74bf438a5aa6e1d8a65446e67b02ee87dee90bf910e3fb65ac19144ce37"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "core-tests",
+      "historical_passed_command": true,
+      "log_sha256": "b75048985a701aa50ed8adbfd2f02957328f61d42f2122f2009370ddd8107037"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "witness-test-dynamic-sql"
+      ],
+      "gate": "owner-tests",
+      "historical_passed_command": false,
+      "log_sha256": "b3fce3c460220a976404cdba66006fb245cd3fed8436503b5ccc702826945114"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "plasticity-qualification-surface"
+      ],
+      "gate": "agentd-tests",
+      "historical_passed_command": false,
+      "log_sha256": "ded7686892ceae7d2928fb7cdd576a2c8c5695ede1c4f9da6a2658e5c9328263"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "native-core-tests",
+      "historical_passed_command": true,
+      "log_sha256": "26288875160ea94656e30c1aed996db7919c6bb1422b9962a6c1cf6f8fb4adc1"
+    },
+    {
+      "exit_code": 100,
+      "failure_causes": [
+        "native-real-codex-path",
+        "native-lexical-order-test"
+      ],
+      "gate": "native-worker-tests",
+      "historical_passed_command": false,
+      "log_sha256": "12b5e9c0790f77c172d6a97e2c911195e0ca5292d1c27eead947c8f6f2c66a82"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "plasticity-qualification-surface"
+      ],
+      "gate": "compatibility-check",
+      "historical_passed_command": false,
+      "log_sha256": "9c604489bc161fcef1b5a9d0ac474d1e665e5c952fd6ca38dcf3bd087c90d9a7"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "mixed-rust-toolchains"
+      ],
+      "gate": "compatibility-clippy",
+      "historical_passed_command": false,
+      "log_sha256": "919a46b1e36332ab322cd546479a7692d6a2646c1c9eee0d396bf39e6def6cba"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "product-read-replay",
+      "historical_passed_command": true,
+      "log_sha256": "d8cb572b255aecdba229a38ecc561ed3dd20c3dc3f2c0696c21866203de52820"
+    },
+    {
+      "exit_code": 100,
+      "failure_causes": [
+        "kg-projection-generation"
+      ],
+      "gate": "product-write-smoke",
+      "historical_passed_command": false,
+      "log_sha256": "0b221f51b2853d9ba92e0420808ced48e4d0050ae7efcdf2392a3f37f2e93369"
+    },
+    {
+      "exit_code": 100,
+      "failure_causes": [
+        "native-real-codex-path"
+      ],
+      "gate": "native-final-use-e2e",
+      "historical_passed_command": false,
+      "log_sha256": "ffcf0ceab2a88c71e5d50eba8afd88a56e244df8d17bf2d4d521e105d214bbd3"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "benchmark",
+      "historical_passed_command": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "prepared-benchmark",
+      "historical_passed_command": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "fuzz-harness",
+      "historical_passed_command": true,
+      "log_sha256": "2d3265a1a29eb4e152109fcdf925462fbb00e0c691039e546faed81361fd623e"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "revision-shadow-tests",
+      "historical_passed_command": true,
+      "log_sha256": "8e38f35db9a5baac4fa5896904cfe48b471ccb22a948db34ee73403bc1c1487e"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "owner-currentness-e2e",
+      "historical_passed_command": true,
+      "log_sha256": "db2e8a15d6ad37649446de61f9e5dab665cb4961343c736e17420bba7d5e9ee6"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "plasticity-qualification-surface"
+      ],
+      "gate": "stale-generation-e2e",
+      "historical_passed_command": false,
+      "log_sha256": "7fbd31de6dcf5ef903a28034bd1f36f9f61ad03b333401efa1995ad9e009ce59"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "compact-product-e2e",
+      "historical_passed_command": true,
+      "log_sha256": "99a0ca80fa4627029673199e611c9242a8f5117f95b211c2bd76900cd390894b"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "context-v2-ingress-tests",
+      "historical_passed_command": true,
+      "log_sha256": "66a41143f3f3e38df8093d195b6de0a026d5945e1778ccb495c2cea401d493d0"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-compact-tests",
+      "historical_passed_command": true,
+      "log_sha256": "d0ab24ef7de496f2dc3e1109f3d6228c9ae7cf966e56bf300c97b19bd782dcb5"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-context-tests",
+      "historical_passed_command": true,
+      "log_sha256": "540d4195e9a5c6a437009ad0d55a8ee432f865d4ac1f86b736d27b255747fee9"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-federation-tests",
+      "historical_passed_command": true,
+      "log_sha256": "a2f17925951d96861b0f88581a3e2eec2976e6a5e78f70863450da9337ce2e4f"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-retrieval-tests",
+      "historical_passed_command": true,
+      "log_sha256": "6af70f28819b8fefdfd79e3b5557660b4ec337e9e3adb222433febebb582cf53"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-neuron-tests",
+      "historical_passed_command": true,
+      "log_sha256": "1fa74f8c0fb3340359f833c41f328977d57b0d7ea7ef0d5be7fba03bce5a64b5"
+    },
+    {
+      "exit_code": 100,
+      "failure_causes": [
+        "objective-json-error-classification"
+      ],
+      "gate": "consumer-objective-tests",
+      "historical_passed_command": false,
+      "log_sha256": "40a159569933161e58708761cad8707aef723b4b0c1fda9fffe644848e2ac8ca"
+    },
+    {
+      "exit_code": 100,
+      "failure_causes": [
+        "ndu-maximum-residual-fixture"
+      ],
+      "gate": "consumer-ndu-tests",
+      "historical_passed_command": false,
+      "log_sha256": "7315d175b71943b5958fcc3a239e77b56801a1dca45a7b6bcfb702273b909b76"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "consumer-federation-extension-tests",
+      "historical_passed_command": true,
+      "log_sha256": "1a07b09f1bd245d1392f9caa1bef62d113c2cf9375591ae2d45ebb5abd278c47"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "intelligence-dispatch-arity"
+      ],
+      "gate": "consumer-intelligence-product-e2e",
+      "historical_passed_command": false,
+      "log_sha256": "c48f317babb31acf36748dc81d5c944c7eba6c488a5fb3ad1569064abf357865"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "native-delivery-tests",
+      "historical_passed_command": true,
+      "log_sha256": "1a36007cec04222fc971fb8b3d76454db4b793d3e8c551c83d1763afda8dfbdd"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "delivery-preparation-tests",
+      "historical_passed_command": true,
+      "log_sha256": "f88e3e93e6ec1a760595004e30b27dc4b76e7c7a6d67213ebbedf666c6aded9e"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "plasticity-qualification-surface"
+      ],
+      "gate": "publication-fence-tests",
+      "historical_passed_command": false,
+      "log_sha256": "7fbd31de6dcf5ef903a28034bd1f36f9f61ad03b333401efa1995ad9e009ce59"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "delivery-join-tests",
+      "historical_passed_command": true,
+      "log_sha256": "68906613bc6d278874236796e38c2ba10556d618b446fbec72724a9429ed2e39"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "sqlite-capacity",
+      "historical_passed_command": true,
+      "log_sha256": "848912876367b924b6d33098a099031ee258c36e411ce656e22c16b3aa378237"
+    },
+    {
+      "exit_code": 101,
+      "failure_causes": [
+        "witness-test-dynamic-sql"
+      ],
+      "gate": "witness-integrity-tests",
+      "historical_passed_command": false,
+      "log_sha256": "f9864ba2e7df415962e94fd80d08922683453f42e9cb90cc5da92de54a196469"
+    },
+    {
+      "exit_code": 0,
+      "failure_causes": [],
+      "gate": "tracked-clean",
+      "historical_passed_command": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "independent_acceptance": false,
+  "job_id": 110123472220,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36784784538/job/110123472220",
+  "passed": false,
+  "product_execution_proved": false,
+  "recorded_toolchain": [
+    "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "just 1.51.0"
+  ],
+  "release": false,
+  "resource_failure_hits": [],
+  "run_id": 36784784538,
+  "schema": "hepta.cognitive.read.remote-failure-review.v1"
+}
