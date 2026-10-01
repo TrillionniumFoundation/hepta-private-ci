@@ -294,6 +294,50 @@ impl AgentdState {
                         runtime.fenced,
                     )?;
                 }
+                let result = match result {
+                    Ok(read) => {
+                        read.publish(
+                            &store,
+                            &self.identity.agent_id,
+                            self.identity.spawn_generation,
+                            &self.cognitive_context_issuer,
+                            self.cognitive_ranker.get(),
+                            self.cognitive_retrieval_context.get(),
+                        )
+                        .await
+                    }
+                    Err(error) => Err(error),
+                };
+                let final_fence = (|| {
+                    self.refresh_generation()?;
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.critical_stores_ready,
+                        runtime.revocation_ready,
+                        runtime.required_ports_ready,
+                        runtime.admission_open,
+                        runtime.fenced,
+                    )
+                })();
+                if let Err(error) = final_fence {
+                    if let Ok(snapshot) = &result {
+                        self.cognitive_context_issuer.retract(snapshot);
+                    }
+                    return Err(error);
+                }
+                let result = result.and_then(|snapshot| {
+                    if let Err(message) = self.cognitive_context_issuer.validate(
+                        self.identity.agent_id.as_str(),
+                        self.identity.spawn_generation,
+                        &snapshot,
+                    ) {
+                        self.cognitive_context_issuer.retract(&snapshot);
+                        return Err(CognitiveContextError::ReadUnavailable(message));
+                    }
+                    Ok(snapshot)
+                });
                 match result {
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
                     Err(CognitiveContextError::Store(error)) => {
@@ -349,17 +393,21 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                let snapshot = crate::CognitiveContextSnapshot {
+                    snapshot_digest,
+                    read_digest,
+                    omitted_records,
+                    items,
+                    plan,
+                };
+                let result = crate::cognitive_context::revalidate_issued_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
-                    plan.as_ref(),
-                    self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
+                    &snapshot,
+                    self.cognitive_ranker.get(),
                     self.cognitive_retrieval_context.get(),
+                    &self.cognitive_context_issuer,
                 )
                 .await;
                 self.refresh_generation()?;
@@ -375,6 +423,16 @@ impl AgentdState {
                         runtime.fenced,
                     )?;
                 }
+                let result = result.and_then(|revalidation| {
+                    self.cognitive_context_issuer
+                        .validate(
+                            self.identity.agent_id.as_str(),
+                            self.identity.spawn_generation,
+                            &snapshot,
+                        )
+                        .map_err(CognitiveContextError::ReadUnavailable)?;
+                    Ok(revalidation)
+                });
                 match result {
                     Ok(revalidation) => AgentdPayload::CognitiveContextRevalidated(revalidation),
                     Err(CognitiveContextError::Store(error)) => {
