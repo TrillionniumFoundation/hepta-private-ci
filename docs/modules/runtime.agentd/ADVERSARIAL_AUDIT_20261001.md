@@ -165,7 +165,22 @@ SDK formatter fixture 已对齐主线 changed-file 默认、`--base` 与显式 `
 
 官方 cargo-shear 1.11.2 报告的 Agentd 六个 orphan 在 `997e7be` 已存在，且确实不从任何模块入口编译。已退役 `objective_dispatch`、`objective_host`、旧 `objective_ingress`、`operations_host`、`runtime_executable`、`runtime_module_state` 和三个唯一局部测试，共1884行；原始内容保留于 Git 历史。当前 Objective 使用真实 RunStart/ObjectiveRuntimeHost 通路，TaskFlow 创建和 effect owner 各自保留原职责。没有把旧代码接入生产、增加忽略或把未执行测试算为覆盖。
 
+同一远端 cargo-shear job 还报告 Cognitive Store、Contracts、Control Plane、KG、Prompt Optimizer 的既有未联结文件和 Supervisor 无 doctest 的既有配置；这些源码/工具配置与整合基线相同，未因 Agentd 清理而宣称全仓 gate 已通过。其它 owner 的休眠实现需要各自核对实际组成，不能批量激活或加忽略来掩盖。
+
 `RUNTIME_EXTENSIONS.md` 同步纠正了“TaskFlow 已使用 ABI-bound API”、不存在的 `attach_runtime_module_with_interface` 和“内建 executable observation 已安装”的描述。当前 executable image observation/catalog adapter 没有已安装替代；Architecture workflow 的旧 `runtime_executable` filter 无法执行测试，`minimum-tests=1` 必须继续拒绝0项执行。发布 artifact SHA、PID 健康检查和其它 ABI 测试均不能代替已运行镜像的产品证明。这是明确的产品/资格缺口，未改为通过。
+
+最新已发布源码对象为 `e5111d405131b1b6fbbf3bd43f5c49ec5d9e57e9`，tree `eb8914eaf712f6fe640dc52ae86e7408fbc87375`；各修复按真实 parent 分成独立提交。最终集中验证使用其干净隔离检出，并按官方迁移器把4份变化的 host observation 重新绑定该对象；原有54份来源归档及执行资格保持不变。
+
+| round3 最后集中验证 | 实际结果与边界 |
+|---|---|
+| 全部 `scripts/test_hepta_*.py` | 789/789 passed、123.842s、退出0；包含新增对抗用例，先前768项失败完整保留。临时fixture使用 `TMPDIR=/dev/shm`，无sandbox开关变更 |
+| 独立 QA calling-boundary suites | 13/13 passed、9.488s、退出0；8个独特方法的跨文件alias/UFCS及真实receiver改名均被拒绝；通用claim/free-function仍按上文限定 |
+| Windows Bazel wrapper 回归 | 12/12 passed、1.829s、退出0；真实shell与记录型Bazel验证全部有效目标、顺序、原配置、退出码及cleanup；不是Windows原生执行资格 |
+| SDK artifact/formatter 对应完整测试文件 | 44/44 passed、退出0、0 skipped；使用真实锁定SDK环境，不宣称其它SDK suite通过 |
+| Cargo structural preflight | 193 local manifests、0 errors；无代码执行 |
+| 源码、文档与Lane验证 | 本地导航检查点 `eafb468acfa41078db43438e0efdead0fe47dd81` / tree `5f3fe38b364c04e3e75d1e1ca4fcf0a6a10d10fc`：40maps/40技术文档通过qualification profile，历史来源重新核对；Lane B 11modules/62operations/87bindings通过、Lane E strict 0findings；所有product/authority/acceptance资格仍false。最终发布对象再次单独核验 |
+
+上述 full Python、QA、wrapper与SDK检查不替代原生回归、process/drain/restart或目标部署验收。后续提交仅包含本段报告和正式源码观察绑定，不能把 `fd7104d` 的原生结果转给它们。
 
 本轮独立复审继续发现 Unix 文件预检与普通 read-open 之间的 FIFO 替换窗口。它发生在可信 same-UID/root 的并发发布范围，属于打开操作的可用性缺口，不是非 owner 权限绕过。Prompt、authority/checkpoint、AuthBus/Evidence trust 与 frontier、effect/bootstrap/browser 的实际打开路径统一使用 `O_NOFOLLOW | O_NONBLOCK`，目录 handle 另加 `O_DIRECTORY`；所有原有 same-descriptor、regular、权限/link、namespace 和 EOF/currentness 检查继续保留。完整扫尾还发现并修复了 Objective 私有目录 open/fsync 和 Browser 宿主配置读取的同类开口；配置保留 relative/初始 leaf alias/hardlink/只读输入，不新增 UID/mode 授权规则。Objective 目录 IO 提取为私有组件；Browser binary 的测试移入 owner 子目录以避免被 Cargo 误发现为额外 binary，并显式启用其测试目标、加入 deep qualification 和15项接线检查。独立复审发现的未声明 `pretty_assertions` 导入已改用标准 `assert_eq!`。这些 flag 仅避免特殊文件的打开等待和最终分量 symlink 跟随，不承诺强制取消任意 kernel/network-filesystem I/O。新增确定性竞态回归的执行结果须单独记录。
 
@@ -201,7 +216,7 @@ Fleet 全目录防护与正常 drain 历史观察的源代码 P1 已有实现及
 
 ## 10. 迭代停止标准
 
-本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换、实际 SQLite 冷连接写锁、压缩 fixture 冲突、zstd空frame encoded资源预算和编译接线错误。最后独立复审已核验 Agentd lint、Rollout fd/EOF、SQLite startup snapshot、真实 cold-reader fixture 与 zstd encoded 读取工作期限，未发现新的具体问题；其结论只覆盖静态审阅范围。最终源码绑定与实际执行结果仍按第 7 节分别记录；仍有确证问题则继续修复。
+本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换、实际 SQLite 冷连接写锁、压缩 fixture 冲突、zstd空frame encoded资源预算和编译接线错误。round3 又完成真实owner标签伪装、链接越界、Rust注释/局部声明伪证、动态注册fixture、独特方法alias和Windows长目标列表的独立复审与回归。在这些已明确范围内，最后复审未发现新的具体阻塞意见；这不是整个crate或Rust语义调用图的完备证明。第9节产品缺口及第8节P2词法覆盖限制仍保持开放，原生和最终源码结果分别记账。
 
 停止代表在已审边界与既定可信 operator/root 模型内，当前轮没有新的可独立修补发现。它不代表所有未来风险为零，也不能把第 9 节缺失的产品或部署证据改成已完成。
 
