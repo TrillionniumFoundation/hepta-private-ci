@@ -20,6 +20,10 @@ use crate::final_use_authorizer::IssuerProcessIdentityConfig;
 
 type Result<T> = std::result::Result<T, AuthorityTrustError>;
 
+#[cfg(target_os = "linux")]
+#[path = "final_use_startup.rs"]
+mod startup;
+
 /// Both trust interfaces use the independently operated root issuer. Neither
 /// local wall time nor a missing/uncertain response can manufacture a frontier.
 pub(crate) struct UnixFinalUseTrustPort {
@@ -69,7 +73,6 @@ impl UnixFinalUseTrustPort {
 
     #[cfg(target_os = "linux")]
     fn exchange(&self, request: ModelTrustRequest) -> Result<ModelTrustResponse> {
-        use std::io::Write;
         use std::os::unix::net::UnixStream;
         use std::time::Instant;
 
@@ -81,10 +84,6 @@ impl UnixFinalUseTrustPort {
             .ok_or(AuthorityTrustError::Invalid)?;
         validate_issuer_socket(&self.issuer_socket, self.issuer_uid)
             .map_err(|_| AuthorityTrustError::Invalid)?;
-        let bytes = serde_json::to_vec(&request).map_err(|_| AuthorityTrustError::Invalid)?;
-        if bytes.is_empty() || bytes.len() > MODEL_ISSUER_MAX_REQUEST_BYTES {
-            return Err(AuthorityTrustError::Invalid);
-        }
         let socket = rustix::net::socket_with(
             rustix::net::AddressFamily::UNIX,
             rustix::net::SocketType::STREAM,
@@ -109,7 +108,26 @@ impl UnixFinalUseTrustPort {
         )
         .map_err(|_| AuthorityTrustError::Invalid)?
         .ok_or(AuthorityTrustError::Invalid)?;
-        let mut stream = UnixStream::from(socket);
+        self.exchange_connected(request, UnixStream::from(socket), guard, deadline)
+    }
+
+    #[cfg(target_os = "linux")]
+    fn exchange_connected(
+        &self,
+        request: ModelTrustRequest,
+        mut stream: std::os::unix::net::UnixStream,
+        guard: crate::final_use_authorizer::IssuerProcessGuard,
+        deadline: std::time::Instant,
+    ) -> Result<ModelTrustResponse> {
+        use std::io::Write;
+
+        // Startup retains the same physical peer and absolute deadline. No
+        // transport readiness attempt has sent a request before this point.
+        remaining(deadline)?;
+        let bytes = serde_json::to_vec(&request).map_err(|_| AuthorityTrustError::Invalid)?;
+        if bytes.is_empty() || bytes.len() > MODEL_ISSUER_MAX_REQUEST_BYTES {
+            return Err(AuthorityTrustError::Invalid);
+        }
         stream
             .set_nonblocking(false)
             .map_err(|_| AuthorityTrustError::Unavailable)?;
@@ -148,6 +166,11 @@ impl UnixFinalUseTrustPort {
             serde_json::from_slice(&response).map_err(|_| AuthorityTrustError::Invalid)?;
         validate_response(&response)?;
         Ok(response)
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    pub(crate) fn load_startup_snapshot(&self) -> Result<ModelTrustResponse> {
+        Err(AuthorityTrustError::Unavailable)
     }
 
     #[cfg(not(target_os = "linux"))]

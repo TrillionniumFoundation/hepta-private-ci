@@ -272,7 +272,16 @@ The bootstrap source-location obligation for `runtime.codex` is implemented by w
 The designated source gate is `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. A workflow definition or prior run is not a pass receipt for this candidate; exact-head and merge-candidate evidence must match the reviewed head. This source evidence grants no deployment or release authority. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
 
 
-### Ordinary Root model-issuer publication
+### Ordinary model-owner startup readiness
+
+The installed evolving wrapper opens `UnixFinalUseAuthorizer` once. Before its
+first trust snapshot, `final_use_startup.rs` waits only for protected physical
+publication: a missing socket/parent, an old refused socket or a missing Root
+peer identity. Waiting and the first LOAD share the original `issuer_timeout_ms`
+absolute deadline. Existing paths with unsafe ownership/permissions, wrong
+kernel UID, mismatched live identity/pin or stale publication fail immediately.
+A missing or denied response after the first frame is not retried. Grant,
+frontier CAS, nonce claim and their deadlines retain their existing behavior.
 
 The actual Root model producer's `local_model_startup.rs` checks/refuses an old
 live socket, removes only a dead socket, publishes its protected process
@@ -284,3 +293,10 @@ the public socket exists. Bind failure closes startup without
 issuing a grant. This ordering removes the natural restart window in which a
 new connected peer would still expose the old dead process's identity. The
 client never treats that wrong existing identity as a readiness signal.
+
+Transport waiting sends no model/trust frame and does not open a local
+`FinalUseAuthority`. The subsequent first MODEL_TRUST_LOAD can enroll the
+original Root client frontier; existing trusted-clock floor observation and
+local authority initialization may also write their original durable state.
+These are real initialization effects, not a purely read-only startup probe.
+There is no retry of authority initialization or fallback to local time.

@@ -151,7 +151,7 @@ impl UnixFinalUseAuthorizer {
             let trust = Arc::new(
                 crate::final_use_trust_port::UnixFinalUseTrustPort::for_production(&config)?,
             );
-            let snapshot = trust.load_snapshot()?;
+            let snapshot = trust.load_startup_snapshot()?;
             FinalUseAuthority::open_state_dir_with_trust(
                 &config.authority_state_dir,
                 config.signer_id,

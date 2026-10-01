@@ -614,7 +614,7 @@ symbol = "UnixFinalUseTrustPort::for_production"
 definition_path = "codex-rs/hepta-infer-worker-host/src/final_use_trust_port.rs"
 definition_markers = ["pub(crate) fn for_production", "config.issuer_uid != 0", "process_attestation", "validate_connected_issuer_with_attestation", "impl AuthorityClock", "impl AuthorityFrontierStore"]
 product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
-caller_markers = ["UnixFinalUseTrustPort::for_production", "trust.load_snapshot()", "FinalUseAuthority::open_state_dir_with_trust"]
+caller_markers = ["UnixFinalUseTrustPort::for_production", "trust.load_startup_snapshot()", "FinalUseAuthority::open_state_dir_with_trust"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/local_model_authority.rs"
@@ -787,3 +787,8 @@ caller_markers = ["startup::publish_listener(&config)", "ProtectedFrontier::open
 path = "codex-rs/hepta-supervisor/src/local_model_startup.rs"
 required = ["protected_directory(parent)", "model issuer already active", "ModelIssuerProcessIdentity", "store::publish_identity", "UnixListener::bind(&temporary)", "std::fs::rename(&temporary, &config.issuer_socket)", "Some(0), Some(config.socket_gid)"]
 forbidden = ["SigningKey", "SignedFinalUseGrant", "MODEL_TRUST_CAS", "authority.claim"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_startup.rs"
+required = ["load_startup_snapshot", "remaining(deadline)", "socket_peercred", "validate_connected_issuer_with_attestation", "exchange_connected", "MODEL_TRUST_LOAD", "CONNREFUSED"]
+forbidden = ["MODEL_TRUST_CAS", "SignedFinalUseGrant", "SystemAuthorityClock"]
