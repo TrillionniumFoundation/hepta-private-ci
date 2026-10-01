@@ -112,6 +112,8 @@ pub use durable_model::MAX_DURABLE_EXPIRY_BATCH;
 pub use durable_model::MAX_DURABLE_HISTORY_ROWS;
 pub use durable_model::WorkspaceReservationV1;
 #[cfg(feature = "durable-store")]
+pub use durable_process_proof::FleetExecutionResourceObservationV1;
+#[cfg(feature = "durable-store")]
 pub use durable_process_proof::FleetExecutionVerifier;
 #[cfg(feature = "durable-store")]
 pub use durable_process_proof::FleetProcessBinding;

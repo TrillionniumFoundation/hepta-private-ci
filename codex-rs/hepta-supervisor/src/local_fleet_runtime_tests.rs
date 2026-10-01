@@ -27,7 +27,9 @@ use crate::SpawnSpec;
 async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
 -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     assert_eq!(unsafe { libc::geteuid() }, 0);
-    let fixture = tempfile::tempdir_in("/var/lib/hepta-private-ci")?;
+    // The generated fixture needs a root-protected traversable ancestor;
+    // the installed service parent deliberately admits only its workload GID.
+    let fixture = tempfile::tempdir_in("/var/lib")?;
     let cgroup = format!("hepta-runtime-native-{}", uuid::Uuid::new_v4().simple());
     let agent = AgentId::parse(uuid::Uuid::new_v4().to_string())?;
     let workspace = fixture.path().join("workspace");
@@ -189,12 +191,74 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
                 (bound.state.as_str(), bound.process_id),
                 ("running", Some(u64::from(child.id())))
             );
+            let reader = codex_hepta_fleet::FleetExecutionVerifier::open(
+                &owner
+                    .registry
+                    .layout()
+                    .state_root()
+                    .join("fleet-resources.sqlite3"),
+            )
+            .await?;
+            let observed = reader
+                .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                .await?;
+            let original_grant = owner.store.allocation_grant(&execution.id).await?;
+            assert_eq!(observed.allocation, original_grant);
+            assert_eq!(observed.context, bound.context);
+            assert_eq!(observed.process_id, child.id());
+            assert!(observed.process_start_ticks > 0);
+            assert!(
+                reader
+                    .observe_bound_local_resources("different-principal", child.id())
+                    .await
+                    .is_err()
+            );
+            assert!(
+                reader
+                    .observe_bound_local_resources(&spec.agent_id.to_string(), std::process::id())
+                    .await
+                    .is_err()
+            );
             drop(execution.launch);
-
+            // Real upkeep changes the original grant, not the immutable spawn
+            // context. The read-only observer must see that exact new grant.
+            owner.maintain().await?;
+            let renewed = reader
+                .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                .await?;
+            assert_eq!(renewed.context, observed.context);
+            assert_eq!(
+                renewed.allocation,
+                owner.store.allocation_grant(&execution.id).await?
+            );
+            assert!(
+                renewed
+                    .allocation
+                    .as_ref()
+                    .ok_or("missing renewed allocation")?
+                    .lease_generation
+                    > observed
+                        .allocation
+                        .as_ref()
+                        .ok_or("missing original allocation")?
+                        .lease_generation
+            );
             owner.request_stop(&execution.id)?;
+            assert!(
+                reader
+                    .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                    .await
+                    .is_err()
+            );
             owner.kill(&execution.id)?;
             assert!(!child.wait()?.success());
             assert!(owner.finish_exit(&execution.id)?);
+            assert!(
+                reader
+                    .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                    .await
+                    .is_err()
+            );
             owner.validate_retirement(&spec.agent_id)?;
             assert!(owner.prove_never_spawned(&spec.agent_id)?.is_none());
             assert_eq!(

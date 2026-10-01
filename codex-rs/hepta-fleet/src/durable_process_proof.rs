@@ -47,6 +47,19 @@ pub struct FleetExecutionVerifier {
     pool: SqlitePool,
 }
 
+/// One read-only observation of the original resource owner's live execution.
+/// This is metadata, never a grant issuer or an authorization token. A missing
+/// allocation remains missing after expiry or revocation; the reader cannot
+/// recover authority from the still-held execution context.
+#[derive(Clone, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FleetExecutionResourceObservationV1 {
+    pub context: FleetExecutionContextV1,
+    pub process_id: u32,
+    pub process_start_ticks: u64,
+    pub allocation: Option<crate::AllocationGrant>,
+}
+
 impl FleetExecutionVerifier {
     pub async fn open(database: &Path) -> Result<Self, DurableFleetError> {
         validate_database(database)?;
@@ -61,6 +74,69 @@ impl FleetExecutionVerifier {
             .await
             .map_err(sqlx_error)?;
         Ok(Self { pool })
+    }
+
+    /// Read the current allocation and native binding in the same SQLite
+    /// snapshot. Both kernel checks use the original persisted PID/start/boot/
+    /// cgroup witness; a replacement process or terminal hold is rejected.
+    pub async fn observe_bound_local_resources(
+        &self,
+        principal_id: &str,
+        peer_pid: u32,
+    ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
+        validate_identity(principal_id, "principal")?;
+        let mut tx = self.pool.begin().await.map_err(sqlx_error)?;
+        // The protected native cgroup supplies the original execution key.
+        // Reuse the existing PRIMARY KEY lookup instead of scanning retained
+        // historical holds for a PID or introducing a second index writer.
+        let membership = fs::read_to_string(format!("/proc/{peer_pid}/cgroup"))
+            .map_err(|error| DurableFleetError::Unavailable(error.to_string()))?;
+        let execution_id = membership
+            .trim_end_matches('\n')
+            .strip_prefix("0::/")
+            .and_then(|relative| relative.rsplit('/').next())
+            .and_then(|name| name.strip_prefix("main-"))
+            .ok_or(DurableFleetError::Stale)?;
+        validate_identity(execution_id, "execution")?;
+        let row = sqlx::query(PROCESS_PROOF_QUERY)
+            .bind(execution_id)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(sqlx_error)?
+            .ok_or_else(|| DurableFleetError::Missing(execution_id.into()))?;
+        let context = verify_record(&row, execution_id, peer_pid)?.bound_context()?;
+        let state: String = row.try_get("state").map_err(sqlx_error)?;
+        if context.principal_id != principal_id || state != "running" {
+            return Err(DurableFleetError::Stale);
+        }
+        let allocation =
+            crate::durable_grant_tx::select_grant_tx(&mut tx, &context.allocation_id).await?;
+        if let Some(grant) = &allocation
+            && (grant.principal_id != context.principal_id
+                || grant.host_id != context.host_id
+                || grant.host_generation != context.host_generation
+                || grant.lease_generation < context.lease_generation
+                || grant.resources != context.resources
+                || grant.semantic_digest != context.manifest_digest)
+        {
+            return Err(DurableFleetError::Corrupt(
+                "resource allocation differs from its execution witness".into(),
+            ));
+        }
+        let ticks: i64 = row.try_get("process_start_ticks").map_err(sqlx_error)?;
+        // SQLite provides one durable snapshot; procfs is observed twice and
+        // never represented as atomic with either SQL or a later consumer.
+        let after = verify_record(&row, execution_id, peer_pid)?.bound_context()?;
+        if after != context {
+            return Err(DurableFleetError::Stale);
+        }
+        tx.commit().await.map_err(sqlx_error)?;
+        Ok(FleetExecutionResourceObservationV1 {
+            context,
+            process_id: peer_pid,
+            process_start_ticks: to_u64(ticks)?,
+            allocation,
+        })
     }
 
     /// Verify a currently running main process against root-owned persisted
