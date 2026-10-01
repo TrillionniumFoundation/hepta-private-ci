@@ -406,7 +406,7 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn percentile(values: &[u128], percentile: usize) -> u128 {
-    let index = ((values.len() - 1) * percentile + 99) / 100;
+    let index = ((values.len() - 1) * percentile).div_ceil(100);
     values[index.min(values.len() - 1)]
 }
 
