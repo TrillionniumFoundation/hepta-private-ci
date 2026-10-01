@@ -242,6 +242,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id.clone(),
             ));
         }
+        let release = self.refresh_release_for_transition(agent_id, &release)?;
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));

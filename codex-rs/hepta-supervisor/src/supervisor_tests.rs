@@ -2346,3 +2346,6 @@ mod signed_restart_recovery_tests;
 
 #[path = "supervisor_metadata_tests.rs"]
 mod metadata_tests;
+
+#[path = "catalog_final_use_tests.rs"]
+mod catalog_final_use_tests;

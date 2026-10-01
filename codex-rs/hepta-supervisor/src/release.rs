@@ -19,10 +19,10 @@ use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
 
 impl<D: ProcessDriver> Supervisor<D> {
-    /// Re-admit a release at the final-use boundary. Product/catalog releases
-    /// must still exist, remain allowed, and not be revoked. Direct in-process
-    /// qualification fixtures historically use unregistered AgentRelease
-    /// values; only UnknownRelease falls back to that local value.
+    /// Re-admit immediately before every launch. Catalog descriptors retain
+    /// their admission origin even if the underlying entry disappears. Only
+    /// an explicitly catalog-free plant can use the direct qualification API;
+    /// it cannot bypass policy for an existing or revoked catalog identity.
     pub(crate) fn refresh_release_for_transition(
         &self,
         agent_id: &AgentId,
@@ -33,7 +33,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             .resolve_release(agent_id, release.release_id())
         {
             Ok(current) => AgentRelease::try_from(current),
-            Err(FleetRegistryError::UnknownRelease(_)) => Ok(release.clone()),
+            Err(
+                FleetRegistryError::UnknownRelease(_)
+                | FleetRegistryError::ReleaseNotAllowed { .. },
+            ) if release.is_catalog_free_qualification()
+                && matches!(std::fs::symlink_metadata(
+                        self.registry.layout().releases_root().join(release.identity())),
+                        Err(ref absent) if absent.kind() == std::io::ErrorKind::NotFound) =>
+            {
+                Ok(release.clone())
+            }
             Err(error) => Err(error.into()),
         }
     }
