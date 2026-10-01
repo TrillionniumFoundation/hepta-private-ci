@@ -177,7 +177,13 @@ jobs:
 
   qualification-result:
     if: ${{ always() }}
-    needs: [derived-projections, owner-formatting, catalog-admission, process-qualification]
+    needs:
+      [
+        derived-projections,
+        owner-formatting,
+        catalog-admission,
+        process-qualification,
+      ]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
