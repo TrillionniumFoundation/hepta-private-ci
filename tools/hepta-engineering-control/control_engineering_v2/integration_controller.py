@@ -247,6 +247,12 @@ def integration_context_binding(
     orchestration_digest = str(orchestration["semantic_digest"])
     if not isinstance(plan, dict) or semantic_digest(plan) != orchestration_digest:
         raise EngineeringError("orchestration_generation_invalid")
+    if (
+        not isinstance(plan.get("integrationOrder"), list)
+        or tuple(str(row["package_id"]) for row in queue_items)
+        != tuple(plan["integrationOrder"])
+    ):
+        raise EngineeringError("integration_queue_context_invalid")
 
     assignment = store.connection.execute(
         "SELECT envelope_id,semantic_digest FROM assignment_generations "
@@ -420,12 +426,39 @@ def publish_integration_queue(
     now = store._now(now_ns)
 
     persisted = store.connection.execute(
-        "SELECT semantic_digest FROM orchestration_generations WHERE generation_id=?",
+        "SELECT semantic_digest,plan_json FROM orchestration_generations WHERE generation_id=?",
         (plan.generation_id,),
     ).fetchone()
     if persisted is None:
         raise EngineeringError("orchestration_generation_unknown")
     if str(persisted["semantic_digest"]) != plan.base_schedule_digest:
+        raise EngineeringError("orchestration_generation_mismatch")
+    persisted_plan = _decode_stored_json(
+        persisted["plan_json"], "orchestration_generation_invalid"
+    )
+    if (
+        not isinstance(persisted_plan, dict)
+        or semantic_digest(persisted_plan) != str(persisted["semantic_digest"])
+    ):
+        raise EngineeringError("orchestration_generation_invalid")
+    projections = {
+        "envelopeId": plan.envelope_id,
+        "assignments": [asdict(row) for row in plan.assignments],
+        "blocked": plan.blocked,
+        "integrationOrder": plan.integration_order,
+        "mergeQueue": [asdict(row) for row in plan.merge_queue],
+        "completionFrontierDigest": plan.completion_frontier_digest,
+    }
+    if (
+        semantic_digest(projections)
+        != semantic_digest({name: persisted_plan.get(name) for name in projections})
+        or any(
+            value is not False
+            for value in (
+                plan.runtime_authority, plan.merge_authority, plan.release_authority
+            )
+        )
+    ):
         raise EngineeringError("orchestration_generation_mismatch")
 
     assignment_ids = tuple(row.package_id for row in plan.assignments)
@@ -569,8 +602,8 @@ def observe_integration_stage(
         raise EngineeringError("integration_stage_receipt_required")
     checked_id(queue_generation_id, "queue_generation_id")
     checked_id(package_id, "package_id")
-    now = store._now(now_ns)
     with store._transaction():
+        now = store._now(now_ns)
         binding = integration_context_binding(store, queue_generation_id, package_id)
         if (
             receipt.stage not in _STAGE_ISSUERS
@@ -654,9 +687,8 @@ def reconcile_integration_item(
         and terminal_outcome != terminal_receipt.outcome
     ):
         raise EngineeringError("integration_terminal_receipt_binding")
-    now = store._now(now_ns)
-
     with store._transaction():
+        now = store._now(now_ns)
         generation = store.connection.execute(
             "SELECT * FROM integration_queue_generations WHERE queue_generation_id=?",
             (queue_generation_id,),

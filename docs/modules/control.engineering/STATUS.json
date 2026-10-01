@@ -1,0 +1,36 @@
+{
+  "authority": {
+    "deployment": false,
+    "merge": false,
+    "release": false,
+    "runtime": false
+  },
+  "claims": {
+    "activation": false,
+    "independentAcceptance": false,
+    "productExecutionProved": false,
+    "productionImplementation": false,
+    "release": false
+  },
+  "generatedFrom": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+  "module": "control.engineering",
+  "requiredEvidence": {
+    "externalImmutableAudit": "missing",
+    "hardwareKeyCustody": "missing",
+    "independentSemanticReview": "missing",
+    "liveDistributedFence": "missing",
+    "operatorAcceptance": "missing",
+    "postMergeExactMain": "external_ci_artifact",
+    "pullRequestDualLane": "external_ci_artifact",
+    "rollbackRehearsal": "missing",
+    "targetDeployment": "missing"
+  },
+  "schema": "hepta.control-engineering-status.v1",
+  "schemaVersion": 1,
+  "source": {
+    "identityPolicy": "candidate_or_exact_manifest_v2",
+    "mappingMode": "exact_blob",
+    "namedProductCaller": true,
+    "sourceRootPresent": true
+  }
+}

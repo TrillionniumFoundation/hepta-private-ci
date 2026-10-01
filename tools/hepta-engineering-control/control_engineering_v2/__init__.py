@@ -1,5 +1,27 @@
 """Lane G engineering-control implementation exports."""
 
+from .audit_checkpoint import (
+    AuditCheckpoint,
+    AuditReadCut,
+    AuditSuffixPage,
+    AuditVerificationBudget,
+    create_audit_checkpoint,
+    verify_audit_suffix,
+    verify_audit_suffix_page,
+)
+from .capacity_policy import StoreCapacityPolicy, evaluate_store_capacity
+from .time_policy import (
+    Clock,
+    ClockSkewPolicy,
+    FixedClock,
+    SystemClock,
+    STRICT_CLOCK_SKEW_POLICY,
+    validate_signed_window,
+)
+from .worker_registration import (
+    WorkerRegistrationRenewalReceipt,
+    renew_worker_registration,
+)
 from .assimilation import (
     AssimilationProposal,
     DebianSandboxAdapter,
@@ -154,7 +176,7 @@ from .seal import (
     verify_sealed_candidate_evidence,
 )
 
-# Historical root sandbox name is preserved as a controlled alias.  The raw
+# Historical root sandbox name is preserved as a controlled alias. The raw
 # candidate executor remains internal to candidate.py so public callers cannot
 # bypass host admission or retry policy.
 sandbox_candidate = execute_candidate_sandbox
@@ -166,6 +188,23 @@ hardened_record_integration_decision = record_integration_decision
 hardened_request_independent_review = request_independent_review
 
 __all__ = [
+    "AuditCheckpoint",
+    "AuditReadCut",
+    "AuditSuffixPage",
+    "AuditVerificationBudget",
+    "Clock",
+    "ClockSkewPolicy",
+    "FixedClock",
+    "SystemClock",
+    "STRICT_CLOCK_SKEW_POLICY",
+    "StoreCapacityPolicy",
+    "WorkerRegistrationRenewalReceipt",
+    "create_audit_checkpoint",
+    "evaluate_store_capacity",
+    "renew_worker_registration",
+    "validate_signed_window",
+    "verify_audit_suffix",
+    "verify_audit_suffix_page",
     "AssimilationProposal",
     "DebianSandboxAdapter",
     "AttestedSandboxParity",

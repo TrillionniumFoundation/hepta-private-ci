@@ -30,3 +30,26 @@ independent acceptance or merge authority.
 measurements through the same complete candidate sandbox. Fixture mode is for local
 regression only; strong mode requires the real Bubblewrap profile. Neither mode grants
 operator acceptance.
+
+## Bounded owner supplement (2026-09-28)
+
+The [bounded owner contract](../../../docs/modules/control.engineering/BOUNDED_OWNER_CONTRACT.md)
+documents exact audit read cuts and pre-payload budgets, connection-local incremental
+capacity observations with external-writer invalidation and calibration, and authenticated
+revision-bound worker renewal with retained-outcome replay. These capabilities are
+composed through this same `EngineeringControlProduct`, not a parallel test executor.
+The audit-page continuation is trusted only as a retained verification chain; it does
+not certify a new owner-state snapshot. Capacity observations do not authorize writes.
+
+Run the fixed-source/fixed-base evidence collector from a clean final checkout:
+
+```sh
+python3 scripts/control_engineering_candidate_evidence.py \
+  --source-commit "$(git rev-parse HEAD)" \
+  --base-commit "$(git rev-parse origin/main)" \
+  --output /absolute/new/directory/outside/checkout
+```
+
+The collector retains each failed command and continues collecting later checks. It
+never edits source, refreshes maps to hide drift, or grants production acceptance.
+Source, merge, independent review and target-host acceptance remain separate gates.

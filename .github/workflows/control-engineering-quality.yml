@@ -1,0 +1,94 @@
+name: control.engineering Python quality
+
+on:
+  pull_request:
+    paths:
+      - "tools/hepta-engineering-control/**"
+      - "docs/modules/control.engineering/**"
+      - "scripts/control_engineering_*.py"
+      - "scripts/hepta-implementation-maps.py"
+      - "scripts/test_hepta_exact_blob_squash.py"
+      - ".github/workflows/control-engineering-*.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/hepta-engineering-control/**"
+      - "docs/modules/control.engineering/**"
+      - "scripts/control_engineering_*.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/control-engineering-*.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-engineering-quality-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: control.engineering coverage, type, lint and API
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tools/hepta-engineering-control/pyproject.toml
+      - name: Install pinned quality tools
+        run: python3 -m pip install coverage==7.10.7 mypy==1.18.2 ruff==0.13.2
+      - name: Check generated status and public API
+        run: |
+          set -euo pipefail
+          python3 scripts/control_engineering_status.py --check
+          python3 scripts/control_engineering_api.py --check
+          python3 -m unittest -v scripts/test_hepta_exact_blob_squash.py
+      - name: Strict lint for owner package and tests
+        run: |
+          ruff check \
+            tools/hepta-engineering-control/control_engineering_v2 \
+            tools/hepta-engineering-control/test_*.py \
+            scripts/control_engineering_status.py \
+            scripts/control_engineering_api.py \
+            scripts/test_hepta_exact_blob_squash.py
+      - name: Type-check new production boundaries
+        run: |
+          mypy --disallow-untyped-defs --check-untyped-defs \
+            --ignore-missing-imports --follow-imports=skip \
+            tools/hepta-engineering-control/control_engineering_v2/control_plane.py \
+            tools/hepta-engineering-control/control_engineering_v2/path_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/time_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py \
+            tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/worker_registration.py \
+            tools/hepta-engineering-control/control_engineering_v2/product_runtime.py \
+            tools/hepta-engineering-control/control_engineering_v2/production_adapters.py \
+            tools/hepta-engineering-control/control_engineering_v2/external_controls.py \
+            tools/hepta-engineering-control/control_engineering_v2/deployment_evidence.py \
+            tools/hepta-engineering-control/control_engineering_v2/stress_profile.py \
+            tools/hepta-engineering-control/control_engineering_v2/qualification_mutation.py \
+            tools/hepta-engineering-control/control_engineering_v2/product_gate.py \
+            tools/hepta-engineering-control/control_engineering_v2/readiness_manifest.py
+      - name: Branch coverage gate
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+        run: |
+          set -euo pipefail
+          coverage run --branch --source=control_engineering_v2 \
+            -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+          coverage report --show-missing --fail-under=80
+          coverage json -o "$RUNNER_TEMP/control-engineering-coverage.json"
+      - name: Retain coverage report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/control-engineering-coverage.json
+          if-no-files-found: error
+          retention-days: 30

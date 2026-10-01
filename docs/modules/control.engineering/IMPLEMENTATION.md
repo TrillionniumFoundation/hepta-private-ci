@@ -91,6 +91,33 @@ caller that can directly rewrite its connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
+When `now_ns` is omitted, expiry-sensitive admission samples the clock only after
+acquiring the owner write lock. Waiting for that lock or preparing bounded inputs
+cannot freeze a previously valid window. An explicit `now_ns` remains the caller
+provided logical observation time and is not replaced with wall-clock time.
+Ordinary nested failures roll back to the owner's savepoint. If SQLite itself
+aborts the whole transaction, as `SQLITE_FULL` or an I/O failure can do, catching
+the error does not permit another write or a successful commit inside that owner
+scope: subsequent nested work fails with `owner_transaction_aborted`. After that
+scope unwinds, a reusable connection may begin a fresh transaction. A failed
+rollback instead marks `owner_transaction_unrecoverable`, closes the connection
+and requires a fresh owner to reopen and validate the durable predecessor; close
+does not commit the uncertain state.
+Public owner times, envelope revisions, lease epochs and audit offsets that enter
+SQLite must be exact integers in its signed 64-bit range. Booleans and floats do
+not satisfy revision/epoch comparisons. Lease revision exhaustion rejects before
+any owner effects; other changes within the same operation roll back. Invalid
+UTF-8 identifiers/paths and non-iterable inputs fail with `EngineeringError`.
+A supplied generator's execution error still propagates without owner effects.
+Package priority remains an arbitrary canonical-JSON integer because it is not a
+SQLite integer column or parameter.
+
+Distributed leader terms and revocation sequences persisted by the fence owner
+also fit positive signed 64-bit integers. Persisted fence observation/expiry times
+have `0 <= observed < expires <= 2**63 - 1`; external JSON-only frontier expiry
+is not constrained by SQLite storage. Signatures and full owner binding remain
+required independently of scalar validation.
+
 `SCHEMA.sql` is the single schema source, currently version 10. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
@@ -118,7 +145,10 @@ An owner mutation, its binding/frontier and audit event either commit together o
 roll back together. Equal identity and semantics replay idempotently; different
 semantics conflict. Startup checks exact table/index definitions, schema-version
 agreement, SQLite integrity, foreign keys, capacity-reservation consistency and the
-audit chain. Additive v2 through v9 stores migrate transactionally to v10; active
+audit chain. Schema comparison normalizes SQL keyword case and token whitespace
+while preserving quoted literals and identifiers, so a changed case-sensitive
+`CHECK` literal cannot pass as the original declaration.
+Additive v2 through v9 stores migrate transactionally to v10; active
 legacy claims receive capacity reservations derived from their durable plan before
 the new version is published. Historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
@@ -156,15 +186,21 @@ semantic digest; verification also requires the package to have been assigned in
 that generation and the stored assignment frontier to match the same envelope and
 source identity. A signed arbitrary generation string cannot satisfy a predecessor.
 Completion observation cannot predate the referenced generation and its
-freshness window cannot outlive the owning work envelope. Encoded semantic records
-also have a 256 KiB bound; hitting a byte bound may reject input below the item-count
-limit. Graph validation is iterative, so valid deep DAGs do not depend on Python's
+freshness window cannot outlive the current persisted work envelope; a caller-made
+extended lifetime cannot replace that owner state. Planner preflight caps the
+cumulative normalized envelope, capacity, package, Worker and completion-receipt
+inputs at 256 KiB; hitting this byte bound may reject input below an item-count
+limit. This is a planner ingress limit, not a universal bound on `canonical_json`
+or every owner record. Graph validation is iterative, so valid deep DAGs do not depend on Python's
 recursion limit. Canonical resource-aware scheduling runs under one `BEGIN IMMEDIATE`
 owner transaction: it freezes the active-lease frontier, removes completed or
 dependency-blocked work, ranks ready packages by expected value minus architecture
 debt and rollback cost (priority is a deterministic tie-breaker), then admits only
 packages with an eligible worker, remaining worker/CI/reviewer capacity and no path
-conflict. Infeasible work does not consume the assignment limit. The exact final
+conflict. Worker matching deterministically preserves workers whose skills and
+path scope are useful for more remaining ready packages. This is a bounded greedy
+heuristic, not a guarantee of globally optimal assignment or freedom from
+starvation across future generations. Infeasible work does not consume the assignment limit. The exact final
 assigned/blocked set—not a coarser preliminary schedule—is written to
 `assignment_generations` in the same transaction as its frontier and audit event.
 The generation semantic digest binds normalized package/worker/capacity inputs, the
@@ -184,7 +220,12 @@ another owner context is rejected. Worker execution then uses `worker_registrati
 `worker_claims`, `worker_capacity_reservations` and `worker_completion_observations`:
 acknowledgement-loss replay is revision/audit-stable, accepted CI completion digests survive
 reopen, and a claim must match the scheduler-selected worker and an active fenced path
-lease. Startup reconciliation expires heartbeat claims, rechecks registration/lease/envelope
+lease. A capacity-only registration renewal may preserve the exact ACK of an
+already committed claim while its other profile bindings and current registration,
+envelope and lease constraints still match. This replay adds no reservation,
+revision or audit event. A fresh claim or retryable redispatch still requires the
+complete planned worker profile; the replay exception cannot allocate new work.
+Startup reconciliation expires heartbeat claims, rechecks registration/lease/envelope
 frontiers, releases capacity idempotently and preserves submitted results for the independent
 completion observer rather than redispatching them. The named product `claim()` fails closed
 with `product_startup_reconciliation_required` until that process generation has completed
@@ -197,7 +238,11 @@ a proposal; workers must acquire the exact local lease, and multi-host productio
 writes must additionally present a signed distributed fence matching epoch/token,
 paths, source and revocation frontier. Fence verification re-reads the current
 SQLite lease row and requires the same envelope, holder, revision, epoch, token,
-paths and expiry to still be active. Before production admission, the verified fence
+paths and expiry to still be active. External fence and audit-anchor admission also
+require the complete supplied envelope to match the live, checksum-consistent
+durable row, including source, owner, scope, revision and lifetime. Epochs, tokens
+and lease/envelope revisions require positive integers; booleans cannot impersonate
+those values. Before production admission, the verified fence
 advances two transactionally persisted high-water marks together with an audit
 event: a cluster-global leader-term/revocation frontier and a holder-local
 fence-token/revision frontier. Production control verification requires both to
@@ -208,6 +253,12 @@ cannot become valid again after process restart.
 A previously signed active receipt also fails immediately after local release or
 revocation. External fence and audit-anchor validity windows may not outlive their
 owning local lease/envelope.
+
+`verify_production_controls` checks the prefetched fence/revocation, audit-anchor
+and custody receipts at one observation time inside one owner transaction.
+Receipt-provider and remote HSM/KMS calls must finish before that transaction;
+the injected signature verifier must perform bounded local verification. The
+reference `HmacTrustStore` performs that verification without I/O.
 
 ## Candidate qualification
 
@@ -234,7 +285,11 @@ See [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md) for platform and mount policy.
 
 Checks use argument vectors without shell expansion, at most 64 checks, 256 arguments
 per check, 8192 characters per argument and 65536 characters per argument vector.
-One elapsed time budget covers all checks. `SandboxCoordinator` admits at most
+One monotonic deadline starts at executor entry and covers source preflight,
+exact Git-object materialization, manifests, Bubblewrap admission, every check,
+post-check verification, temporary-workspace cleanup and receipt construction.
+Expiration rejects the result even if every check exited zero; neither cleanup
+nor a slow identity/manifest read earns a fresh budget. `SandboxCoordinator` admits at most
 eight host-wide sandboxes across cooperating POSIX processes (with a process-local
 fallback on non-POSIX fixtures) and retries only explicitly classified infrastructure
 failures, at most twice; semantic rejection is never retried.

@@ -52,6 +52,19 @@ Before starting or qualifying a deployment candidate:
    ```
 
    A skipped or failed host-admission probe is not strong-sandbox evidence.
+
+   The read-only bootstrap workflow prepares its disposable Ubuntu runner with
+   the same user-namespace and AppArmor settings as the consolidated sandbox
+   workflow, then invokes the owner's real `_admit_bubblewrap` probe before the
+   collector. It sets `HEPTA_REQUIRE_STRONG_SANDBOX=1` for both qualification
+   lanes. A failed preflight stops qualification and retains the setup log,
+   admission JSON and admission log in the execution artifact. The JSON includes
+   the stable owner failure code and bounded raw namespace diagnostics when
+   available. A diagnostic namespace command succeeding does not override a
+   failed owner probe. These runner settings apply to disposable CI hosts;
+   prepare a deployment host under its own operator policy. Keep the collector's
+   no-skipped-tests requirement intact.
+
 5. Keep candidate sandboxes credential-free. Do not mount the caller checkout,
    caller `.git`, host home directories, runtime sockets, or credential stores.
 6. Store the SQLite owner database on a filesystem with the durability semantics

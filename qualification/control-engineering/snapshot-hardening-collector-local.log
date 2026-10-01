@@ -1,0 +1,50 @@
+test_failed_command_does_not_skip_later_commands (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_failed_command_does_not_skip_later_commands) ... fixture first-failure failed 3
+fixture later-success passed 0
+ok
+test_json_update_is_complete_and_has_no_temporary_tail (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_json_update_is_complete_and_has_no_temporary_tail) ... ok
+test_log_path_injection_is_rejected (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_log_path_injection_is_rejected) ... ok
+test_missing_executable_is_a_failure (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_missing_executable_is_a_failure) ... ok
+test_nonzero_exit_is_never_relabelled_as_success (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_nonzero_exit_is_never_relabelled_as_success) ... ok
+test_success_has_exact_log_digest (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_success_has_exact_log_digest) ... ok
+test_timeout_retains_failure (test_candidate_evidence_collector.CandidateEvidenceCollectorTests.test_timeout_retains_failure) ... ok
+test_absent_report_fails_closed (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_absent_report_fails_closed) ... source-head probe passed 0
+ok
+test_boolean_count_and_nonboolean_success_are_invalid (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_boolean_count_and_nonboolean_success_are_invalid) ... source-head probe passed 0
+source-head probe passed 0
+source-head probe passed 0
+ok
+test_clean_identity_and_consistent_report_pass_collector_only (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_clean_identity_and_consistent_report_pass_collector_only) ... source-head probe passed 0
+ok
+test_contradictory_success_with_errors_is_rejected (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_contradictory_success_with_errors_is_rejected) ... source-head probe passed 0
+ok
+test_empty_plan_cannot_qualify (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_empty_plan_cannot_qualify) ... ok
+test_failed_report_cannot_pass_with_zero_command_exit (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_failed_report_cannot_pass_with_zero_command_exit) ... source-head probe passed 0
+ok
+test_later_log_deletion_retains_failed_receipt (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_later_log_deletion_retains_failed_receipt) ... source-head first passed 0
+source-head delete-log passed 0
+ok
+test_later_log_replacement_invalidates_evidence (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_later_log_replacement_invalidates_evidence) ... source-head first passed 0
+source-head replace-log passed 0
+ok
+test_malformed_report_retains_diagnostic_instead_of_crashing (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_malformed_report_retains_diagnostic_instead_of_crashing) ... source-head probe passed 0
+ok
+test_new_commit_with_clean_worktree_is_not_the_tested_source (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_new_commit_with_clean_worktree_is_not_the_tested_source) ... source-head commit-drift passed 0
+ok
+test_oversized_report_is_rejected (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_oversized_report_is_rejected) ... source-head probe passed 0
+ok
+test_restoring_head_does_not_erase_earlier_identity_drift (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_restoring_head_does_not_erase_earlier_identity_drift) ... source-head empty-commit passed 0
+source-head restore-head passed 0
+ok
+test_same_tree_new_empty_commit_also_rejects (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_same_tree_new_empty_commit_also_rejects) ... source-head empty-commit passed 0
+ok
+test_skips_and_expected_failures_are_not_full_qualification (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_skips_and_expected_failures_are_not_full_qualification) ... source-head probe passed 0
+source-head probe passed 0
+source-head probe passed 0
+ok
+test_untracked_source_drift_rejects (test_candidate_evidence_integrity.CandidateEvidenceIntegrityTests.test_untracked_source_drift_rejects) ... source-head untracked passed 0
+ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 16.838s
+
+OK

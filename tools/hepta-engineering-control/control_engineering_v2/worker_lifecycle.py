@@ -15,12 +15,14 @@ import time
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
+    MAX_ACTIVE_LEASES,
     WorkEnvelope,
     canonical_json,
     canonical_paths,
     checked_id,
     checked_sha256,
     path_is_within,
+    path_sets_overlap,
     semantic_digest,
 )
 from .evidence import SignatureTrustStore
@@ -210,7 +212,6 @@ def register_worker(
     *,
     now_ns: int | None = None,
 ) -> str:
-    now = _now(now_ns)
     if not isinstance(receipt, WorkerRegistrationReceipt):
         raise EngineeringError("worker_registration_required")
     checked_id(receipt.worker_id, "worker_id")
@@ -222,6 +223,7 @@ def register_worker(
         or not 1 <= receipt.capacity_units <= 1_000_000
         or not isinstance(receipt.skills, tuple)
         or len(receipt.skills) > 64
+        or any(not isinstance(skill, str) for skill in receipt.skills)
         or len(set(receipt.skills)) != len(receipt.skills)
     ):
         raise EngineeringError("invalid_worker_profile")
@@ -231,7 +233,7 @@ def register_worker(
     if not (
         type(receipt.observed_unix_ns) is int
         and type(receipt.expires_unix_ns) is int
-        and receipt.observed_unix_ns <= now < receipt.expires_unix_ns
+        and 0 <= receipt.observed_unix_ns < receipt.expires_unix_ns <= 2**63 - 1
     ):
         raise EngineeringError("worker_registration_stale")
     if not trust_store.verify(
@@ -247,6 +249,9 @@ def register_worker(
     }
     digest = semantic_digest(profile)
     with store._transaction():
+        now = _now(now_ns)
+        if not receipt.observed_unix_ns <= now < receipt.expires_unix_ns:
+            raise EngineeringError("worker_registration_stale")
         current = store.connection.execute(
             "SELECT * FROM worker_registrations WHERE worker_id=?",
             (receipt.worker_id,),
@@ -363,7 +368,6 @@ def claim_assignment(
     heartbeat_ttl_ns: int,
     now_ns: int | None = None,
 ) -> WorkerClaim:
-    now = _now(now_ns)
     checked_id(package_id, "package_id")
     checked_id(worker_id, "worker_id")
     checked_id(lease_id, "lease_id")
@@ -373,6 +377,7 @@ def claim_assignment(
     ):
         raise EngineeringError("invalid_heartbeat_ttl")
     with store._transaction():
+        now = _now(now_ns)
         plan = _load_plan(store, generation_id)
         assignments = plan.get("assignments")
         packages = plan.get("packages")
@@ -426,12 +431,33 @@ def claim_assignment(
         expected_profile = {
             "workerId": worker_id,
             "workerSigningIdentity": str(registration["worker_signing_identity"]),
-            "skills": tuple(plan_worker.get("skills", ())),
+            "skills": tuple(sorted(plan_worker.get("skills", ()))),
             "capacityUnits": plan_worker.get("capacity_units"),
             "allowedPaths": tuple(plan_worker.get("allowed_paths", ())),
         }
+        previous = store.connection.execute(
+            "SELECT * FROM worker_claims WHERE generation_id=? AND package_id=? "
+            "ORDER BY attempt DESC LIMIT 1",
+            (generation_id, package_id),
+        ).fetchone()
         if semantic_digest(expected_profile) != str(registration["profile_digest"]):
-            raise EngineeringError("worker_profile_drift")
+            # Capacity can be renewed while execution remains reserved. A
+            # committed claim's acknowledgement does not allocate new work,
+            # so retain that exact result while requiring every other planned
+            # profile binding to still match the authenticated registration.
+            replay_profile = dict(expected_profile)
+            replay_profile["capacityUnits"] = int(registration["capacity_units"])
+            if (
+                previous is None
+                or str(previous["worker_id"]) != worker_id
+                or str(previous["lease_id"]) != lease_id
+                or str(previous["state"]) not in {
+                    "claimed", "running", "result_submitted", "completed_observed"
+                }
+                or semantic_digest(replay_profile) != str(registration["profile_digest"])
+            ):
+                raise EngineeringError("worker_profile_drift")
+            worker_capacity_usage(store, worker_id)
 
         generation = store.connection.execute(
             "SELECT envelope_id FROM assignment_generations WHERE generation_id=?",
@@ -459,11 +485,6 @@ def claim_assignment(
         ):
             raise EngineeringError("claim_lease_scope_mismatch")
 
-        previous = store.connection.execute(
-            "SELECT * FROM worker_claims WHERE generation_id=? AND package_id=? "
-            "ORDER BY attempt DESC LIMIT 1",
-            (generation_id, package_id),
-        ).fetchone()
         attempt = 1
         if previous is not None:
             previous_state = str(previous["state"])
@@ -480,6 +501,11 @@ def claim_assignment(
                     "result_submitted",
                     "completed_observed",
                 }:
+                    if (
+                        previous_state in {"claimed", "running"}
+                        and int(previous["heartbeat_deadline_unix_ns"]) <= now
+                    ):
+                        raise EngineeringError("claim_heartbeat_expired")
                     # Claim identity is immutable once committed. Heartbeats may
                     # legitimately advance the persisted heartbeat deadline, so
                     # an acknowledgement-loss replay must not compare the
@@ -489,6 +515,35 @@ def claim_assignment(
             attempt = int(previous["attempt"]) + 1
         if attempt > MAX_CLAIM_ATTEMPTS:
             raise EngineeringError("claim_attempts_exhausted")
+        active_claims = store.connection.execute(
+            "SELECT c.generation_id,c.package_id FROM worker_claims c "
+            "JOIN path_leases l ON l.lease_id=c.lease_id "
+            "JOIN assignment_generations a ON a.generation_id=c.generation_id "
+            "JOIN work_envelopes e ON e.envelope_id=a.envelope_id "
+            "WHERE c.worker_id=? AND c.state IN ('claimed','running') "
+            "AND c.heartbeat_deadline_unix_ns>? AND l.state='active' "
+            "AND l.expires_unix_ns>? AND e.expires_unix_ns>? LIMIT ?",
+            (worker_id, now, now, now, MAX_ACTIVE_LEASES + 1),
+        ).fetchall()
+        if len(active_claims) > MAX_ACTIVE_LEASES:
+            raise EngineeringError("active_claim_path_limit_exceeded")
+        for active in active_claims:
+            active_plan = _load_plan(store, str(active["generation_id"]))
+            active_packages = active_plan.get("packages")
+            if not isinstance(active_packages, list):
+                raise EngineeringError("orchestration_generation_invalid")
+            active_package = next(
+                (
+                    row for row in active_packages
+                    if isinstance(row, dict) and row.get("package_id") == active["package_id"]
+                ),
+                None,
+            )
+            if active_package is None:
+                raise EngineeringError("orchestration_generation_invalid")
+            active_paths = canonical_paths(active_package.get("write_paths", ()))
+            if path_sets_overlap(package_paths, active_paths):
+                raise EngineeringError("active_claim_path_conflict")
         usage = worker_capacity_usage(store, worker_id)
         if usage.reserved_units + reservation_units > usage.capacity_units:
             raise EngineeringError("worker_capacity_exhausted")
@@ -625,7 +680,6 @@ def heartbeat_claim(
     heartbeat_ttl_ns: int,
     now_ns: int | None = None,
 ) -> WorkerClaim:
-    now = _now(now_ns)
     if not isinstance(receipt, WorkerHeartbeatReceipt):
         raise EngineeringError("worker_heartbeat_required")
     if (
@@ -634,6 +688,7 @@ def heartbeat_claim(
     ):
         raise EngineeringError("invalid_heartbeat_ttl")
     with store._transaction():
+        now = _now(now_ns)
         claim, registration, lease = _active_worker_and_claim(store, receipt.claim_id, now)
         if (
             receipt.worker_id != str(claim["worker_id"])
@@ -741,23 +796,19 @@ def submit_worker_result(
     *,
     now_ns: int | None = None,
 ) -> WorkerClaim:
-    now = _now(now_ns)
     if not isinstance(receipt, WorkerResultReceipt):
         raise EngineeringError("worker_result_required")
     checked_sha256(receipt.result_digest, "result_digest")
     if receipt.outcome not in {"success", "infra_failure", "semantic_failure"}:
         raise EngineeringError("invalid_worker_outcome")
     with store._transaction():
+        now = _now(now_ns)
         persisted = store.connection.execute(
             "SELECT * FROM worker_claims WHERE claim_id=?",
             (receipt.claim_id,),
         ).fetchone()
         if persisted is None:
             raise EngineeringError("unknown_worker_claim")
-        persisted_registration = store.connection.execute(
-            "SELECT * FROM worker_registrations WHERE worker_id=?",
-            (persisted["worker_id"],),
-        ).fetchone()
         persisted_state = str(persisted["state"])
         receipt_digest = semantic_digest(asdict(receipt))
         if persisted_state in {"result_submitted", "retryable", "failed", "completed_observed"}:
@@ -862,9 +913,9 @@ def expire_stale_claims(
     *,
     now_ns: int | None = None,
 ) -> tuple[str, ...]:
-    now = _now(now_ns)
     expired: list[str] = []
     with store._transaction():
+        now = _now(now_ns)
         rows = store.connection.execute(
             "SELECT * FROM worker_claims WHERE state IN ('claimed','running') "
             "AND heartbeat_deadline_unix_ns<=? ORDER BY claim_fence",
@@ -910,9 +961,9 @@ def recover_worker_lifecycle(
     """Reconcile persisted claims at product startup without redispatching effects."""
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("invalid_engineering_store")
-    now = _now(now_ns)
     reconciled: list[tuple[str, str, str]] = []
     with store._transaction():
+        now = _now(now_ns)
         store._expire_leases(now)
         heartbeat_expired = expire_stale_claims(store, now_ns=now)
         rows = store.connection.execute(
@@ -1031,8 +1082,8 @@ def observe_claim_completion(
     *,
     now_ns: int | None = None,
 ) -> WorkerClaim:
-    now = _now(now_ns)
     with store._transaction():
+        now = _now(now_ns)
         claim = store.connection.execute(
             "SELECT * FROM worker_claims WHERE claim_id=?",
             (claim_id,),

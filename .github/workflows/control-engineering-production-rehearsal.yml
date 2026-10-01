@@ -1,0 +1,113 @@
+name: control.engineering target-host production rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact 40-character commit to rehearse
+        required: true
+        type: string
+      environment:
+        description: Protected GitHub environment containing target-host policy
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-engineering-target-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  target-rehearsal:
+    name: control.engineering external target rehearsal
+    environment: ${{ inputs.environment }}
+    runs-on: [self-hosted, linux, control-engineering-target]
+    timeout-minutes: 60
+    env:
+      EXPECTED_SOURCE_SHA: ${{ inputs.source_sha }}
+      HEPTA_EXTERNAL_VERIFIER: ${{ secrets.HEPTA_CONTROL_ENGINEERING_EXTERNAL_VERIFIER }}
+      HEPTA_EVIDENCE_BUNDLE: ${{ secrets.HEPTA_CONTROL_ENGINEERING_EVIDENCE_BUNDLE }}
+      HEPTA_REQUIRE_STRONG_SANDBOX: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact immutable target candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Require externally governed provider verifier and evidence mount
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$HEPTA_EXTERNAL_VERIFIER"
+          test -x "$HEPTA_EXTERNAL_VERIFIER"
+          test -n "$HEPTA_EVIDENCE_BUNDLE"
+          test -f "$HEPTA_EVIDENCE_BUNDLE"
+      - name: Requalify exact source and strong owner boundary
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+          python3 -m control_engineering_v2.qualification_profile \
+            --repository "$GITHUB_WORKSPACE" \
+            --iterations 15 --sandbox-mode strong \
+            --output "$RUNNER_TEMP/control-engineering-target-profile.json"
+          python3 -m control_engineering_v2.stress_profile \
+            --records 4096 --writers 8 --reopen-cycles 64 \
+            --output "$RUNNER_TEMP/control-engineering-target-stress.json"
+      - name: Verify external fence, immutable audit, HSM custody, deployment, recovery, rollback and operator evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HEPTA_EXTERNAL_VERIFIER" \
+            --bundle "$HEPTA_EVIDENCE_BUNDLE" \
+            --source-sha "$EXPECTED_SOURCE_SHA" \
+            --environment "${{ inputs.environment }}" \
+            --output "$RUNNER_TEMP/control-engineering-external-acceptance.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RUNNER_TEMP"]) / "control-engineering-external-acceptance.json"
+          value = json.loads(path.read_text(encoding="utf-8"))
+          required = {
+              "schema": "hepta.control-engineering-external-acceptance.v1",
+              "sourceCommit": os.environ["EXPECTED_SOURCE_SHA"],
+              "deploymentAccepted": True,
+              "backupRecoveryVerified": True,
+              "rollbackRehearsalVerified": True,
+              "operatorAccepted": True,
+              "runtimeAuthority": False,
+              "mergeAuthority": False,
+              "releaseAuthority": False,
+          }
+          for key, expected in required.items():
+              if value.get(key) != expected:
+                  raise SystemExit(f"external acceptance mismatch: {key}")
+          PY
+      - name: Retain target-host and external acceptance evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-target-rehearsal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-target-profile.json
+            ${{ runner.temp }}/control-engineering-target-stress.json
+            ${{ runner.temp }}/control-engineering-external-acceptance.json
+          if-no-files-found: error
+          retention-days: 90

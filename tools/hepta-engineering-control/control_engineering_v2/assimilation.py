@@ -21,6 +21,11 @@ from .control_plane import (
 )
 
 READ_ONLY_OPERATIONS = frozenset({"query_version", "query_health", "read_status"})
+_MAX_CONSENT_OPERATIONS = 16
+_MAX_CONSENT_ROOTS = 64
+_MAX_UNIX_NS = 2**63 - 1
+_MAX_OPERATION_DEADLINE_MILLIS = 5_000
+_MAX_OPERATION_OUTPUT_BYTES = 65_536
 DENIED_OPERATIONS = frozenset(
     {
         "install_package",
@@ -183,6 +188,11 @@ class DebianSandboxAdapter:
             relative.startswith("etc/systemd/system/") and self._SERVICE.fullmatch(parts[-1])
         ):
             raise EngineeringError("sandbox_path_outside_adapter")
+        operation = {
+            "etc/os-release": "query_version",
+            "var/lib/dpkg/status": "read_status",
+        }.get(relative, "query_health")
+        self._check(operation)
         descriptors: list[int] = []
         links: list[tuple[int, str, int]] = []
 
@@ -234,6 +244,7 @@ class DebianSandboxAdapter:
                 raise EngineeringError("sandbox_file_drift")
             check_root()
             check_links()
+            self._check(operation)
             return value
         except EngineeringError:
             raise
@@ -245,6 +256,7 @@ class DebianSandboxAdapter:
 
     def _observation(self, operation: str, payload: object) -> SandboxObservation:
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode()
+        self._check(operation)
         return SandboxObservation(operation, self.target_identity_digest, encoded, hashlib.sha256(encoded).hexdigest())
 
     def query_version(self) -> SandboxObservation:
@@ -281,31 +293,33 @@ def validate_consent(
     now_ns: int | None = None,
 ) -> OwnerConsentReceipt:
     now = time.time_ns() if now_ns is None else now_ns
+    if type(now) is not int or not 0 <= now <= _MAX_UNIX_NS:
+        raise EngineeringError("invalid_time")
+    if not isinstance(receipt, OwnerConsentReceipt):
+        raise EngineeringError("invalid_consent_receipt")
     if (
         type(receipt.observed_unix_ns) is not int
         or type(receipt.expires_unix_ns) is not int
+        or not 0 <= receipt.observed_unix_ns <= _MAX_UNIX_NS
+        or not 0 <= receipt.expires_unix_ns <= _MAX_UNIX_NS
         or not receipt.observed_unix_ns <= now < receipt.expires_unix_ns
     ):
         raise EngineeringError("consent_expired")
-    operations = tuple(
-        sorted(
-            {
-                checked_id(value, "invalid_operation")
-                for value in receipt.allowed_operations
-            }
-        )
+    operations = _bounded_ids(
+        receipt.allowed_operations,
+        _MAX_CONSENT_OPERATIONS,
+        "consent_operation_limit",
+        "operation",
     )
     if not operations or not set(operations).issubset(READ_ONLY_OPERATIONS):
         raise EngineeringError("consent_scope_widens_authority")
     if set(operations) & DENIED_OPERATIONS:
         raise EngineeringError("denied_assimilation_operation")
-    roots = tuple(
-        sorted(
-            {
-                checked_id(value, "invalid_root_reference")
-                for value in receipt.allowed_roots
-            }
-        )
+    roots = _bounded_ids(
+        receipt.allowed_roots,
+        _MAX_CONSENT_ROOTS,
+        "consent_root_limit",
+        "root_reference",
     )
     if not roots:
         raise EngineeringError("empty_consent_scope")
@@ -320,6 +334,39 @@ def validate_consent(
         receipt.expires_unix_ns,
         receipt.receipt_digest,
     )
+
+
+def _bounded_ids(
+    values: Iterable[str], limit: int, code: str, label: str
+) -> tuple[str, ...]:
+    if isinstance(values, (str, bytes, Mapping)):
+        raise EngineeringError("invalid_" + label)
+    try:
+        bounded = bounded_tuple(values, limit, code)
+    except TypeError:
+        raise EngineeringError("invalid_" + label) from None
+    return tuple(sorted({checked_id(value, label) for value in bounded}))
+
+
+def _validate_manifest_candidate(manifest: ExternalManifestCandidate) -> None:
+    if not isinstance(manifest, ExternalManifestCandidate):
+        raise EngineeringError("invalid_manifest_candidate")
+    if manifest.raw_secrets_copied is not False or manifest.authority_granted is not False:
+        raise EngineeringError("manifest_boundary_violation")
+    checked_sha256(manifest.target_identity_digest, "target_identity")
+    for digest in (
+        manifest.package_inventory_digest,
+        manifest.service_graph_digest,
+        manifest.mutable_state_digest,
+        manifest.provenance_digest,
+    ):
+        checked_sha256(digest, "manifest_digest")
+    if manifest.os_id != "debian":
+        raise EngineeringError("unsupported_initial_target")
+    checked_id(manifest.os_version, "os_version")
+    if not isinstance(manifest.omissions, (tuple, list)):
+        raise EngineeringError("invalid_omission")
+    _bounded_ids(manifest.omissions, 64, "omission_limit_exceeded", "omission")
 
 
 def build_manifest_candidate(
@@ -338,19 +385,19 @@ def build_manifest_candidate(
         "mutable_state_digest",
         "provenance_digest",
     }
-    if set(observations) != required:
+    if (
+        not isinstance(observations, Mapping)
+        or len(observations) != len(required)
+        or set(observations) != required
+    ):
         raise EngineeringError("manifest_observation_shape")
     for field in required - {"os_id", "os_version"}:
         checked_sha256(observations[field], "invalid_manifest_digest")
     if observations["os_id"] != "debian" or not observations["os_version"]:
         raise EngineeringError("unsupported_initial_target")
-    omission_values = tuple(
-        sorted(
-            {
-                checked_id(str(item), "invalid_omission")
-                for item in bounded_tuple(omissions, 64, "omission_limit_exceeded")
-            }
-        )
+    checked_id(observations["os_version"], "os_version")
+    omission_values = _bounded_ids(
+        omissions, 64, "omission_limit_exceeded", "omission"
     )
     return ExternalManifestCandidate(
         value.target_identity_digest,
@@ -371,6 +418,7 @@ def synthesize_read_only_contracts(
     now_ns: int | None = None,
 ) -> tuple[TypedOperation, ...]:
     value = validate_consent(consent, now_ns=now_ns)
+    _validate_manifest_candidate(manifest)
     if manifest.target_identity_digest != value.target_identity_digest:
         raise EngineeringError("target_identity_drift")
     manifest_digest = semantic_digest(asdict(manifest))
@@ -391,8 +439,8 @@ def synthesize_read_only_contracts(
                 semantic_digest(
                     {"operation": name, "direction": "output", "version": 1}
                 ),
-                5_000,
-                65_536,
+                _MAX_OPERATION_DEADLINE_MILLIS,
+                _MAX_OPERATION_OUTPUT_BYTES,
                 "explicit_target_adapter",
                 "read_only_repeatable",
             )
@@ -409,12 +457,50 @@ def propose_dormant_assimilation(
     now_ns: int | None = None,
 ) -> AssimilationProposal:
     value = validate_consent(consent, now_ns=now_ns)
-    raw_operations = bounded_tuple(operations, 16, "operation_limit_exceeded")
+    _validate_manifest_candidate(manifest)
+    if not isinstance(sandbox, SandboxParityReceipt):
+        raise EngineeringError("invalid_sandbox_receipt")
+    try:
+        raw_operations = bounded_tuple(
+            operations, _MAX_CONSENT_OPERATIONS, "operation_limit_exceeded"
+        )
+    except TypeError:
+        raise EngineeringError("invalid_operation_set") from None
     if not raw_operations or any(
         not isinstance(item, TypedOperation) for item in raw_operations
     ):
         raise EngineeringError("invalid_operation_set")
     operation_values = tuple(raw_operations)
+    operation_ids: set[str] = set()
+    operation_classes: set[str] = set()
+    for item in operation_values:
+        checked_id(item.operation_class, "operation_class")
+        if (
+            item.external_effect is not False
+            or item.operation_class not in READ_ONLY_OPERATIONS
+        ):
+            raise EngineeringError("operation_widens_authority")
+        if item.operation_class not in value.allowed_operations:
+            raise EngineeringError("operation_not_consented")
+        checked_id(item.operation_id, "operation_id")
+        checked_sha256(item.input_schema_digest, "input_schema_digest")
+        checked_sha256(item.output_schema_digest, "output_schema_digest")
+        checked_id(item.terminal_observer, "terminal_observer")
+        if (
+            type(item.deadline_millis) is not int
+            or not 0 < item.deadline_millis <= _MAX_OPERATION_DEADLINE_MILLIS
+            or type(item.maximum_output_bytes) is not int
+            or not 0 < item.maximum_output_bytes <= _MAX_OPERATION_OUTPUT_BYTES
+            or item.idempotency != "read_only_repeatable"
+        ):
+            raise EngineeringError("invalid_read_only_operation")
+        if (
+            item.operation_id in operation_ids
+            or item.operation_class in operation_classes
+        ):
+            raise EngineeringError("duplicate_operation")
+        operation_ids.add(item.operation_id)
+        operation_classes.add(item.operation_class)
     if (
         manifest.target_identity_digest != value.target_identity_digest
         or sandbox.target_identity_digest != value.target_identity_digest
@@ -427,21 +513,18 @@ def propose_dormant_assimilation(
         or sandbox.operations_digest != operations_digest
     ):
         raise EngineeringError("sandbox_input_drift")
+    checked_id(sandbox.evaluator_principal, "evaluator_principal")
+    checked_id(sandbox.generator_principal, "generator_principal")
     if sandbox.evaluator_principal == sandbox.generator_principal:
         raise EngineeringError("evaluator_identity_collision")
     if sandbox.passed is not True:
         raise EngineeringError("sandbox_parity_failed")
     if (
-        sandbox.network_unrestricted
-        or sandbox.production_credentials_exposed
-        or sandbox.authority_delta
+        sandbox.network_unrestricted is not False
+        or sandbox.production_credentials_exposed is not False
+        or sandbox.authority_delta is not False
     ):
         raise EngineeringError("sandbox_boundary_violation")
-    if any(
-        item.external_effect or item.operation_class not in READ_ONLY_OPERATIONS
-        for item in operation_values
-    ):
-        raise EngineeringError("operation_widens_authority")
     for digest in (
         sandbox.exact_fixture_digest,
         sandbox.fault_results_digest,

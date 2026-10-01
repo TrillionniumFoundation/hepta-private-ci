@@ -1,0 +1,81 @@
+{
+  "baselineCommit": "54a20e3f03230fc28fd8a54df74f7b5fc82a9494",
+  "baselineTree": "873841f0b49a0bac5990223eafa0d9724a102a2d",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools/hepta-engineering-control python3 -m unittest -v test_candidate_evidence_collector test_candidate_evidence_integrity",
+      "exitCode": 0,
+      "log": "snapshot-hardening-collector-local.log",
+      "logSha256": "95246882c85439c9a7a2efe2177ed8c7156e125867666f084a464be810a164a4",
+      "name": "collector-regressions",
+      "scope": "collector_only_real_subprocesses_and_git_fixture_repositories",
+      "testsRun": 22
+    },
+    {
+      "command": "python3 sqlite_probe.py work",
+      "exitCode": 0,
+      "log": "sqlite-after.log",
+      "logSha256": "5cde8de360c5eed52bbac30fc0c05525ce4f0935243356335e9ad375a23e4dfe",
+      "logStorage": "conversation_diagnostic_bundle",
+      "name": "sqlite-boundary-probes",
+      "scope": "isolated_fixture_owner_real_sqlite_not_product_or_authorization",
+      "testsRun": 19
+    },
+    {
+      "errors": 6,
+      "exitCode": 1,
+      "failures": 9,
+      "log": "collector-before.log",
+      "logSha256": "5874a4917fe26d6c314daaa044c7bebd4633cf31bc9f8d3b139bfb551c29fb56",
+      "logStorage": "conversation_diagnostic_bundle",
+      "name": "new-collector-tests-on-baseline",
+      "scope": "negative_control_original_collector_new_tests_including_new_field_assertions",
+      "testsRun": 15
+    }
+  ],
+  "claims": {
+    "activation": false,
+    "fullSourceQualified": false,
+    "independentAcceptance": false,
+    "productionAccepted": false,
+    "releaseAuthority": false,
+    "syntheticMergeQualified": false
+  },
+  "files": {
+    "scripts/control_engineering_candidate_evidence.py": {
+      "gitBlob": "ea969a672e1acb3579a050e9a791b9e3df255f74",
+      "sha256": "7fd192644ccfb23002709ccee6cfa86eedf1bec64fa1c2496f706f2bdcf4a953"
+    },
+    "tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py": {
+      "gitBlob": "917b2f1e2c7cb83f30812d71a903df9777a42882",
+      "sha256": "c8e168c7cf58fdfb2bb57695f28d6a998bbb7746baf0f84d8939e77af5c8536f"
+    },
+    "tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py": {
+      "gitBlob": "ff23953b5867f0becc16e19b67e8fb20c7fc8c61",
+      "sha256": "46ef5eaab2ebc8331c52a6a5f7a9339d9ae671a8f827113433410920041039cd"
+    },
+    "tools/hepta-engineering-control/test_candidate_evidence_integrity.py": {
+      "gitBlob": "1d7cb7b935b1cd869d46589cf5f8f1cc67818b7d",
+      "sha256": "f22923ffae3aa6a1447a64b06f57cd1c1e8a57b088f604273b473dbe97ab0d4c"
+    },
+    "tools/hepta-engineering-control/test_owner_snapshot_regressions.py": {
+      "gitBlob": "7de22390fb9134984b799209f3f64907257e4342",
+      "sha256": "cf6852968d631d36c10fc2940b5d935ee2c4193bd8bd2cf3402e5191bfc2c0ed"
+    }
+  },
+  "identityScope": "exact_changed_blobs_not_complete_repository_checkout",
+  "notExecuted": [
+    "12 new real product/owner regressions",
+    "existing 25 bounded-owner regressions",
+    "complete module suite",
+    "strict lint and type checks",
+    "coverage threshold",
+    "complete repository source-head qualification",
+    "fixed-base synthetic merge qualification",
+    "target-host and external acceptance"
+  ],
+  "platform": "Linux",
+  "python": "3.13.5",
+  "schema": "hepta.control-engineering-local-diagnostic.v1",
+  "sqlite": "3.46.1"
+}

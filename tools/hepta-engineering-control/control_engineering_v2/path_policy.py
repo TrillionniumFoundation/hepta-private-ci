@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from pathlib import PurePosixPath
+from typing import NoReturn
 import unicodedata
 
 MAX_PATH_BYTES = 1024
@@ -21,7 +22,7 @@ _WINDOWS_RESERVED = frozenset(
 _GIT_ADMIN_ALIASES = frozenset({".git", "git~1"})
 
 
-def _error(code: str) -> None:
+def _error(code: str) -> NoReturn:
     from .control_plane import EngineeringError
 
     raise EngineeringError(code)
@@ -30,7 +31,10 @@ def _error(code: str) -> None:
 def _bounded_tuple(values: Iterable[str], limit: int, code: str) -> tuple[str, ...]:
     if type(limit) is not int or limit < 0:
         _error("invalid_bound")
-    iterator = iter(values)
+    try:
+        iterator = iter(values)
+    except TypeError:
+        _error("invalid_paths")
     result: list[str] = []
     for _ in range(limit + 1):
         try:
@@ -50,19 +54,34 @@ def canonical_repo_path(raw: str) -> str:
         _error("invalid_path")
     if any(ord(character) < 32 or ord(character) == 127 for character in raw):
         _error("invalid_path")
-    if len(raw.encode("utf-8")) > MAX_PATH_BYTES:
+    try:
+        encoded = raw.encode("utf-8")
+    except UnicodeEncodeError:
+        _error("invalid_path")
+    if len(encoded) > MAX_PATH_BYTES:
         _error("path_limit_exceeded")
     parts = PurePosixPath(raw).parts
     if not parts or any(part in {"", ".", ".."} for part in parts):
         _error("invalid_path")
     for part in parts:
-        if part != part.strip() or part.endswith((".", " ")) or ":" in part:
+        if (
+            part != part.strip()
+            or part.endswith((".", " "))
+            or any(character in part for character in ':<>"|')
+        ):
             _error("invalid_path")
         if any(token in part for token in ("*", "?", "[", "]")):
             _error("unsupported_glob")
         folded = unicodedata.normalize("NFC", part).casefold()
         device = folded.split(".", 1)[0]
-        if device in _WINDOWS_RESERVED or folded in _GIT_ADMIN_ALIASES:
+        # Git's HFS protection treats ignored Unicode format characters
+        # inside or after .git as aliases of the administrative directory.
+        # Keep ordinary Unicode names while rejecting those reserved aliases
+        # before a Linux-created candidate can be materialized on macOS.
+        admin_key = "".join(
+            character for character in folded if unicodedata.category(character) != "Cf"
+        )
+        if device in _WINDOWS_RESERVED or admin_key in _GIT_ADMIN_ALIASES:
             _error("invalid_path")
     value = "/".join(parts)
     if value != raw:

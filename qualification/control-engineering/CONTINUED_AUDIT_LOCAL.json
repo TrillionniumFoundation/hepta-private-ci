@@ -1,0 +1,132 @@
+{
+  "authorityGranted": false,
+  "coverageJsonSha256": "d3b6f8c60daadc1bc696aef9168ff5d47519f49df07e7b7e1e5bfdd62bdb3ef8",
+  "coverageTotals": {
+    "covered_branches": 1824,
+    "covered_lines": 5704,
+    "excluded_lines": 41,
+    "missing_branches": 734,
+    "missing_lines": 987,
+    "num_branches": 2558,
+    "num_partial_branches": 674,
+    "num_statements": 6691,
+    "percent_covered": 81.39258298194399,
+    "percent_covered_display": "81"
+  },
+  "evidenceKind": "repository-controlled-local-diagnostic",
+  "exactCurrentMapsPassed": 40,
+  "excludedHostProfileTests": 31,
+  "formatter": {
+    "exitCode": 127,
+    "limitation": "just is unavailable; no Rust changes",
+    "requiredCommand": "just fmt"
+  },
+  "fullDiscoveryCount": 511,
+  "fullOwnerSuiteQualified": false,
+  "gitProvenance": {
+    "directSideRootCommitObjects": 1475,
+    "graphKind": "SHA-verified partial Git history",
+    "legacyBase": "b621768b70a09d56626bb8a2c331e3dc424e6a4d",
+    "legacyBaseIsAncestorOfMainAndSource": true,
+    "mainFirstParentCommitObjects": 537,
+    "newRestoredMainCommitObjects": 396,
+    "newRestoredSideRootCommitObjects": 1150
+  },
+  "globalDocsPassed": true,
+  "globalDocsReportedGaps": {
+    "cnsReference": 22,
+    "hnmfReference": 18,
+    "readinessDocumentation": 54
+  },
+  "globalGapInventoryPassed": true,
+  "independentAcceptance": false,
+  "logs": {
+    "docs": {
+      "bytes": 570,
+      "path": "qualification/control-engineering/continued-local-docs.txt",
+      "sha256": "f552419b5e148d352feb31e31300c2564e4d74b57fb617e6c7dd201f1981d3b5"
+    },
+    "formatter": {
+      "bytes": 38,
+      "path": "qualification/control-engineering/continued-local-formatter.txt",
+      "sha256": "ad0b259af7d919755b296680a15fc2574d1a599f20455b4a6de9ee8348ca1ce4"
+    },
+    "gap-inventory": {
+      "bytes": 434,
+      "path": "qualification/control-engineering/continued-local-gap-inventory.txt",
+      "sha256": "c8af3ef8d1cc9d611fcc01e5a56ec2eb5c2ef9e4fe95aa6b6ef7ce16f6af0c2e"
+    },
+    "global-docs": {
+      "bytes": 570,
+      "path": "qualification/control-engineering/continued-local-global-docs.txt",
+      "sha256": "f552419b5e148d352feb31e31300c2564e4d74b57fb617e6c7dd201f1981d3b5"
+    },
+    "mapping-tests": {
+      "bytes": 27212,
+      "path": "qualification/control-engineering/continued-local-mapping-tests.txt",
+      "sha256": "7a31bd56fa31c53f9d77d457cbc3b8460e6fa7b2685022bfa68284b77a90d2c4"
+    },
+    "maps": {
+      "bytes": 611,
+      "path": "qualification/control-engineering/continued-local-maps.txt",
+      "sha256": "4609ad8a0a0d48d335febb7894d82eb287d57c1ac95c373282a65b21070315d6"
+    },
+    "module-docs": {
+      "bytes": 244,
+      "path": "qualification/control-engineering/continued-local-module-docs.txt",
+      "sha256": "ed996ced728aa5a38282c942a8f878db3873a651ddcf5d9a4e502b6d96b81828"
+    },
+    "mypy": {
+      "bytes": 44,
+      "path": "qualification/control-engineering/continued-local-mypy.txt",
+      "sha256": "fe22d95914d7fdd98483ace256b7f2708db4be1255737e5d7cca4d16703ca242"
+    },
+    "public-api": {
+      "bytes": 0,
+      "path": "qualification/control-engineering/continued-local-public-api.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "report": {
+      "bytes": 8631,
+      "path": "qualification/control-engineering/continued-local-report.txt",
+      "sha256": "7582b60eaa4cea720e3edbd54c164508320547979fa6e4dc09bcb9f90b3a1deb"
+    },
+    "ruff": {
+      "bytes": 19,
+      "path": "qualification/control-engineering/continued-local-ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "status": {
+      "bytes": 0,
+      "path": "qualification/control-engineering/continued-local-status.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "suite": {
+      "bytes": 1317,
+      "path": "qualification/control-engineering/continued-local-suite.txt",
+      "sha256": "cbb95caa89c02262216eda90f279b8bafab2b84ba5157c3919e029988655406f"
+    }
+  },
+  "mappingRegressionTestsPassed": 160,
+  "moduleDocsPassed": 40,
+  "newRegressionMethods": 58,
+  "observedUnixNs": 1790814822976972560,
+  "ownerSourceTree": "2b1a3f9fc82b2d563d6764ac3509b593386a0440",
+  "productionAcceptance": false,
+  "qualificationScope": "portable supported suite and exact source/document verification",
+  "ruffPassed": true,
+  "schema": "hepta.control-engineering-adversarial-local.v2",
+  "scopeLimitation": "Only the exact recorded owner source tree is locally exercised. The later final whole-candidate source and synthetic merge require their own hosted evidence.",
+  "sourceCommit": "ea5ba04f69dbe91f6356e380ce9b853c7effe708",
+  "sourceTree": "435c4d58b7cc45342065d30dfb549bc2a5aaa47e",
+  "strictMypyFiles": 14,
+  "strongSandboxExecuted": false,
+  "supportedRunner": {
+    "path": "qualification/control-engineering/continued-supported-suite.py",
+    "sha256": "3feecfc7a06db79e5848f82a9d3c5c4b3be1ab9f8e09c5c448fd3fd57a7ba50d"
+  },
+  "testSeconds": 18.804,
+  "testsPassed": 478,
+  "testsRun": 480,
+  "testsSkipped": 2
+}

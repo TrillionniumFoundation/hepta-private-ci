@@ -22,7 +22,6 @@ from control_engineering_v2 import (
     observe_claim_completion,
     plan_engineering_work,
     register_worker,
-    semantic_digest,
     submit_worker_result,
     worker_capacity_usage,
 )
@@ -362,6 +361,70 @@ class WorkerLifecycleTests(unittest.TestCase):
                         self.trust,
                         now_ns=self.now + 13,
                     )
+
+    def test_expired_claim_acknowledgement_does_not_redispatch_stale_fence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.register(store)
+                self.plan_and_lease(store)
+                claim = claim_assignment(
+                    store, "generation-a", "package-a", "worker-a", "lease-a",
+                    heartbeat_ttl_ns=10, now_ns=self.now + 2,
+                )
+                anchor = store.audit_anchor()
+                with self.assertRaisesRegex(ValueError, "claim_heartbeat_expired"):
+                    claim_assignment(
+                        store, "generation-a", "package-a", "worker-a", "lease-a",
+                        heartbeat_ttl_ns=10, now_ns=self.now + 12,
+                    )
+                self.assertEqual(store.audit_anchor(), anchor)
+                self.assertEqual(worker_capacity_usage(store, "worker-a").reserved_units, 1)
+                self.assertEqual(expire_stale_claims(store, now_ns=self.now + 12), (claim.claim_id,))
+                retry = claim_assignment(
+                    store, "generation-a", "package-a", "worker-a", "lease-a",
+                    heartbeat_ttl_ns=10, now_ns=self.now + 13,
+                )
+                self.assertEqual((retry.attempt, retry.claim_fence), (2, claim.claim_fence + 1))
+
+    def test_completion_cannot_extend_persisted_envelope_window(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.register(store)
+                self.plan_and_lease(store)
+                claim = claim_assignment(
+                    store, "generation-a", "package-a", "worker-a", "lease-a",
+                    heartbeat_ttl_ns=1_000_000_000, now_ns=self.now + 2,
+                )
+                running = heartbeat_claim(
+                    store, self.heartbeat(claim, self.now + 3), self.trust,
+                    heartbeat_ttl_ns=1_000_000_000, now_ns=self.now + 3,
+                )
+                submitted = submit_worker_result(
+                    store, self.result(running, self.now + 4, "success"), self.trust,
+                    now_ns=self.now + 4,
+                )
+                forged = replace(self.envelope, expires_unix_ns=self.now + 20_000_000_000)
+                anchor = store.audit_anchor()
+                with self.assertRaisesRegex(ValueError, "orchestration_envelope_binding_mismatch"):
+                    observe_claim_completion(
+                        store, submitted.claim_id, forged,
+                        self.completion(store, submitted, self.now + 5), self.trust,
+                        now_ns=self.now + 5,
+                    )
+                observed = self.now + 11_000_000_000
+                with self.assertRaisesRegex(ValueError, "expired_envelope"):
+                    observe_claim_completion(
+                        store, submitted.claim_id, forged,
+                        self.completion(store, submitted, observed), self.trust,
+                        now_ns=observed,
+                    )
+                self.assertEqual(store.audit_anchor(), anchor)
+                self.assertEqual(store.connection.execute(
+                    "SELECT state,result_digest FROM worker_claims WHERE claim_id=?", (claim.claim_id,),
+                ).fetchone()[:], (submitted.state, submitted.result_digest))
+                self.assertEqual(store.connection.execute(
+                    "SELECT COUNT(*) FROM worker_completion_observations"
+                ).fetchone()[0], 0)
 
     def test_timeout_requeues_but_semantic_failure_never_retries(self):
         with tempfile.TemporaryDirectory() as temporary:

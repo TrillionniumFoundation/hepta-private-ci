@@ -15,12 +15,14 @@ import hashlib
 import math
 import os
 from pathlib import Path
+import re
 import shutil
 import signal
 import stat
 import subprocess
 import sys
 import tempfile
+from threading import Timer
 import time
 import unicodedata
 
@@ -37,6 +39,7 @@ from .control_plane import (
     path_is_within,
     semantic_digest,
 )
+from .git_security import git_environment, run_git_bytes
 
 MAX_CANDIDATES = 32
 MAX_CHANGED_FILES = 100
@@ -97,6 +100,8 @@ _ORACLE_EXACT_FILES = frozenset(
         "pytest.ini",
         "tox.ini",
         "noxfile.py",
+        "conftest.py",
+        "setup.cfg",
         "package.json",
         "package-lock.json",
         "pnpm-lock.yaml",
@@ -140,22 +145,18 @@ _ORACLE_FILE_SUFFIXES = (
     ".golden",
 )
 _INLINE_ORACLE_MARKERS = (
-    "#[test]",
-    "#[cfg(test)]",
-    "#[tokio::test]",
-    "#[async_std::test]",
     "import unittest",
     "from unittest",
     "pytest.",
     "def test_",
     "class Test",
-    "describe(",
-    "it(",
-    "test(",
     "@Test",
     "func Test",
-    "TEST(",
-    "TEST_F(",
+)
+_INLINE_ORACLE_PATTERN = re.compile(
+    r"#\s*\[\s*(?:test\b|cfg\s*\(\s*test\b|(?:tokio|async_std)\s*::\s*test\b)"
+    r"|\b(?:describe|it|test|TEST_F)\s*\(",
+    re.IGNORECASE,
 )
 
 
@@ -163,6 +164,8 @@ def is_candidate_oracle_path(value: str) -> bool:
     path = canonical_repo_path(value)
     parts = path.split("/")
     name = parts[-1].casefold()
+    if any(part.casefold() == ".cargo" for part in parts[:-1]):
+        return True
     if any(part.casefold() in _ORACLE_SEGMENTS for part in parts[:-1]):
         return True
     if name in _ORACLE_EXACT_FILES or name.startswith(_ORACLE_CONFIG_PREFIXES):
@@ -417,17 +420,16 @@ def _run_bounded(
 
 
 def _git_environment() -> dict[str, str]:
-    environment = dict(os.environ)
-    environment.update(
-        {
-            "GIT_CONFIG_NOSYSTEM": "1",
-            "GIT_CONFIG_GLOBAL": os.devnull,
-            "GIT_NO_REPLACE_OBJECTS": "1",
-            "GIT_TERMINAL_PROMPT": "0",
-            "LC_ALL": "C",
-        }
-    )
-    return environment
+    return git_environment()
+
+
+def _remaining_seconds(deadline_ns: int | None) -> float:
+    if deadline_ns is None:
+        return math.inf
+    remaining = (deadline_ns - time.monotonic_ns()) / 1_000_000_000
+    if remaining <= 0:
+        raise EngineeringError("sandbox_time_budget_exceeded")
+    return remaining
 
 
 def _git_bytes(
@@ -435,38 +437,30 @@ def _git_bytes(
     *args: str,
     allow_failure: bool = False,
     maximum_output: int = MAX_GIT_OUTPUT_BYTES,
+    deadline_ns: int | None = None,
 ) -> bytes:
     try:
-        result = subprocess.run(
-            [
-                "git",
-                "-c",
-                "core.fsmonitor=false",
-                "-c",
-                "core.untrackedCache=false",
-                "-C",
-                str(root),
-                *args,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=_git_environment(),
-            timeout=60,
-            check=False,
+        result = run_git_bytes(
+            root,
+            *args,
+            maximum_output_bytes=maximum_output,
+            timeout_seconds=min(60, _remaining_seconds(deadline_ns)),
+            allow_failure=allow_failure,
         )
-    except (OSError, subprocess.TimeoutExpired):
+    except EngineeringError:
+        _remaining_seconds(deadline_ns)
         raise EngineeringError("git_operation_failed") from None
-    if len(result.stdout) > maximum_output or len(result.stderr) > maximum_output:
-        raise EngineeringError("git_operation_failed")
-    if result.returncode != 0 and not allow_failure:
-        raise EngineeringError("git_operation_failed")
-    return result.stdout
+    _remaining_seconds(deadline_ns)
+    return result
 
 
-def _git(root: Path, *args: str, allow_failure: bool = False) -> str:
+def _git(
+    root: Path, *args: str, allow_failure: bool = False,
+    deadline_ns: int | None = None,
+) -> str:
     try:
         return (
-            _git_bytes(root, *args, allow_failure=allow_failure)
+            _git_bytes(root, *args, allow_failure=allow_failure, deadline_ns=deadline_ns)
             .decode("utf-8")
             .rstrip("\r\n")
         )
@@ -587,7 +581,22 @@ def _normalize_candidate_mutation(value: Mutation | MutationSet) -> Mutation | M
 
 def _contains_inline_oracle(value: str) -> bool:
     folded = value.casefold()
-    return any(marker.casefold() in folded for marker in _INLINE_ORACLE_MARKERS)
+    return _INLINE_ORACLE_PATTERN.search(value) is not None or any(
+        marker.casefold() in folded for marker in _INLINE_ORACLE_MARKERS
+    )
+
+
+def _read_mutation_text(target: Path) -> str:
+    try:
+        if target.stat().st_size > MAX_TEXT_DIFF_BYTES:
+            raise EngineeringError("diff_limit_exceeded")
+        with target.open("rb") as source:
+            encoded = source.read(MAX_TEXT_DIFF_BYTES + 1)
+    except OSError:
+        raise EngineeringError("mutation_target_invalid") from None
+    if len(encoded) > MAX_TEXT_DIFF_BYTES:
+        raise EngineeringError("diff_limit_exceeded")
+    return encoded.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
 
 def _reject_inline_oracle_mutation(
@@ -601,7 +610,7 @@ def _reject_inline_oracle_mutation(
         target = _safe_target(worktree, item.path)
         if target.is_file() and not target.is_symlink():
             try:
-                existing = target.read_text(encoding="utf-8")
+                existing = _read_mutation_text(target)
             except UnicodeDecodeError:
                 existing = ""
             except OSError:
@@ -714,7 +723,7 @@ def _apply_mutation(worktree: Path, mutation: Mutation) -> None:
             raise EngineeringError("mutation_target_invalid") from None
         return
     try:
-        text = target.read_text(encoding="utf-8")
+        text = _read_mutation_text(target)
     except UnicodeDecodeError:
         raise EngineeringError("binary_change_rejected") from None
     except OSError:
@@ -753,17 +762,21 @@ def _apply_candidate_mutation(
     _apply_mutation(worktree, mutation)
 
 
-def _git_tree_entries(root: Path, base_commit: str) -> tuple[GitTreeEntry, ...]:
+def _git_tree_entries(
+    root: Path, base_commit: str, *, deadline_ns: int | None = None,
+) -> tuple[GitTreeEntry, ...]:
     output = _git_bytes(
         root,
         "ls-tree",
         "-rz",
         "--full-tree",
         base_commit,
+        deadline_ns=deadline_ns,
     )
     entries: list[GitTreeEntry] = []
     aliases: dict[str, str] = {}
     for record in output.split(b"\x00"):
+        _remaining_seconds(deadline_ns)
         if not record:
             continue
         if len(entries) >= MAX_TREE_ENTRIES:
@@ -829,8 +842,12 @@ def _materialize_exact_tree(
     root: Path,
     base_commit: str,
     destination: Path,
+    *,
+    timeout_seconds: float = 60,
+    deadline_ns: int | None = None,
 ) -> None:
-    entries = _git_tree_entries(root, base_commit)
+    entries = _git_tree_entries(root, base_commit, deadline_ns=deadline_ns)
+    _remaining_seconds(deadline_ns)
     try:
         destination.mkdir(parents=True, exist_ok=False)
     except OSError:
@@ -859,8 +876,15 @@ def _materialize_exact_tree(
             _terminate_process(process)
             raise EngineeringError("git_operation_failed")
         total_bytes = 0
+        # The timeout on wait() alone cannot bound blocking pipe reads. A Git
+        # helper that stalls before emitting its header must also be terminated.
+        watchdog = Timer(timeout_seconds, _terminate_process, args=(process,))
+        watchdog.daemon = True
         try:
+            watchdog.interval = min(timeout_seconds, _remaining_seconds(deadline_ns))
+            watchdog.start()
             for mode, _object_type, oid, relative in entries:
+                _remaining_seconds(deadline_ns)
                 process.stdin.write(oid.encode("ascii") + b"\n")
                 process.stdin.flush()
                 header = process.stdout.readline(MAX_GIT_OUTPUT_BYTES + 1)
@@ -886,6 +910,8 @@ def _materialize_exact_tree(
                 except OSError:
                     raise EngineeringError("unsupported_changed_entry") from None
                 if mode == "120000":
+                    if size > 4096:
+                        raise EngineeringError("sandbox_path_escape")
                     content = _read_exact(process.stdout, size)
                     try:
                         link = content.decode("utf-8")
@@ -914,28 +940,38 @@ def _materialize_exact_tree(
                 total_bytes += size
             process.stdin.close()
             try:
-                return_code = process.wait(timeout=60)
+                return_code = process.wait(
+                    timeout=min(timeout_seconds, _remaining_seconds(deadline_ns))
+                )
             except subprocess.TimeoutExpired:
                 _terminate_process(process)
                 raise EngineeringError("git_operation_failed") from None
             if return_code != 0:
                 raise EngineeringError("git_operation_failed")
+            _remaining_seconds(deadline_ns)
         except Exception:
             if process.poll() is None:
                 _terminate_process(process)
+            _remaining_seconds(deadline_ns)
             raise
         finally:
+            watchdog.cancel()
+            try:
+                process.stdin.close()
+            except OSError:
+                pass
             try:
                 process.stdout.close()
             except OSError:
                 pass
 
 
-def _hash_file(path: Path) -> str:
+def _hash_file(path: Path, *, deadline_ns: int | None = None) -> str:
     digest = hashlib.sha256()
     try:
         with path.open("rb") as source:
             while True:
+                _remaining_seconds(deadline_ns)
                 chunk = source.read(1024 * 1024)
                 if not chunk:
                     break
@@ -945,7 +981,7 @@ def _hash_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _tree_manifest(root: Path) -> TreeManifest:
+def _tree_manifest(root: Path, *, deadline_ns: int | None = None) -> TreeManifest:
     manifest: TreeManifest = {}
     stack = [root]
     total_bytes = 0
@@ -957,6 +993,7 @@ def _tree_manifest(root: Path) -> TreeManifest:
         except OSError:
             raise EngineeringError("unsupported_changed_entry") from None
         for entry in entries:
+            _remaining_seconds(deadline_ns)
             path = Path(entry.path)
             try:
                 relative = path.relative_to(root).as_posix()
@@ -995,7 +1032,7 @@ def _tree_manifest(root: Path) -> TreeManifest:
                     "file",
                     mode,
                     metadata.st_size,
-                    _hash_file(path),
+                    _hash_file(path, deadline_ns=deadline_ns),
                 )
             else:
                 raise EngineeringError("unsupported_changed_entry")
@@ -1004,9 +1041,12 @@ def _tree_manifest(root: Path) -> TreeManifest:
     return manifest
 
 
-def _manifest_digest(manifest: Mapping[str, ManifestEntry]) -> str:
+def _manifest_digest(
+    manifest: Mapping[str, ManifestEntry], *, deadline_ns: int | None = None,
+) -> str:
     digest = hashlib.sha256()
     for path in sorted(manifest):
+        _remaining_seconds(deadline_ns)
         kind, mode, size, content_digest = manifest[path]
         digest.update(
             canonical_json(
@@ -1090,7 +1130,7 @@ def _changed_byte_budget(
     return total
 
 
-def _source_boundary_digest(root: Path) -> str:
+def _source_boundary_digest(root: Path, *, deadline_ns: int | None = None) -> str:
     status = _git_bytes(
         root,
         "status",
@@ -1098,11 +1138,14 @@ def _source_boundary_digest(root: Path) -> str:
         "-z",
         "--untracked-files=all",
         "--ignored=matching",
+        deadline_ns=deadline_ns,
     )
     if status:
         raise EngineeringError("source_tree_mutated")
-    identity = _git_bytes(root, "rev-parse", "HEAD", "HEAD^{tree}")
-    refs = _git_bytes(root, "for-each-ref", "--format=%(refname) %(objectname)")
+    identity = _git_bytes(root, "rev-parse", "HEAD", "HEAD^{tree}", deadline_ns=deadline_ns)
+    refs = _git_bytes(
+        root, "for-each-ref", "--format=%(refname) %(objectname)", deadline_ns=deadline_ns,
+    )
     return hashlib.sha256(identity + b"\x00" + status + b"\x00" + refs).hexdigest()
 
 
@@ -1200,7 +1243,9 @@ def _bubblewrap_command(
     ]
 
 
-def _admit_bubblewrap(workspace: Path, envelope: CandidateEnvelope) -> str:
+def _admit_bubblewrap(
+    workspace: Path, envelope: CandidateEnvelope, *, deadline_ns: int | None = None,
+) -> str:
     if not sys.platform.startswith("linux") or os.name != "posix":
         raise EngineeringError("network_isolation_unavailable")
     bubblewrap = shutil.which("bwrap")
@@ -1223,13 +1268,41 @@ def _admit_bubblewrap(workspace: Path, envelope: CandidateEnvelope) -> str:
         _bubblewrap_command(bubblewrap, workspace, probe),
         cwd=None,
         environment=None,
-        timeout=min(30, envelope.wall_time_seconds),
+        timeout=min(30, envelope.wall_time_seconds, _remaining_seconds(deadline_ns)),
         memory_bytes=envelope.memory_bytes,
         processes=envelope.processes,
     )
     if code != 0:
+        _remaining_seconds(deadline_ns)
         raise EngineeringError("network_isolation_unavailable")
+    _remaining_seconds(deadline_ns)
     return bubblewrap
+
+
+def _normalize_checks(checks: Iterable[Sequence[str]]) -> tuple[tuple[str, ...], ...]:
+    raw_checks = bounded_tuple(checks, MAX_CHECKS, "check_limit_exceeded")
+    if not raw_checks:
+        raise EngineeringError("invalid_check")
+    values: list[tuple[str, ...]] = []
+    for check in raw_checks:
+        if (
+            isinstance(check, (str, bytes))
+            or not isinstance(check, Sequence)
+            or not check
+            or len(check) > MAX_COMMAND_ARGUMENTS
+            or any(
+                not isinstance(item, str)
+                or not item
+                or "\x00" in item
+                or len(item.encode("utf-8")) > MAX_COMMAND_ARGUMENT_BYTES
+                for item in check
+            )
+        ):
+            raise EngineeringError("invalid_check")
+        if sum(len(item.encode("utf-8")) for item in check) > MAX_COMMAND_BYTES:
+            raise EngineeringError("invalid_check")
+        values.append(tuple(check))
+    return tuple(values)
 
 
 def sandbox_candidate(
@@ -1238,7 +1311,9 @@ def sandbox_candidate(
     candidate: Candidate,
     checks: Iterable[Sequence[str]],
 ) -> tuple[Candidate, SandboxReceipt]:
+    start = time.monotonic_ns()
     roots, protected = _validate_envelope(envelope)
+    deadline_ns = start + envelope.wall_time_seconds * 1_000_000_000
     if (
         candidate.envelope_id != envelope.envelope_id
         or candidate.base_commit != envelope.base_commit
@@ -1267,50 +1342,35 @@ def sandbox_candidate(
         )
     ):
         raise EngineeringError("candidate_envelope_mismatch")
-    raw_checks = bounded_tuple(checks, MAX_CHECKS, "check_limit_exceeded")
-    if not raw_checks:
-        raise EngineeringError("invalid_check")
-    check_values: list[tuple[str, ...]] = []
-    for check in raw_checks:
-        if (
-            isinstance(check, (str, bytes))
-            or not isinstance(check, Sequence)
-            or not check
-            or len(check) > MAX_COMMAND_ARGUMENTS
-            or any(
-                not isinstance(item, str)
-                or not item
-                or "\x00" in item
-                or len(item.encode("utf-8")) > MAX_COMMAND_ARGUMENT_BYTES
-                for item in check
-            )
-        ):
-            raise EngineeringError("invalid_check")
-        if sum(len(item.encode("utf-8")) for item in check) > MAX_COMMAND_BYTES:
-            raise EngineeringError("invalid_check")
-        check_values.append(tuple(check))
+    check_values = _normalize_checks(checks)
     check_set_digest = semantic_digest(check_values)
     try:
+        _remaining_seconds(deadline_ns)
         root = Path(repository).resolve(strict=True)
     except OSError:
         raise EngineeringError("git_operation_failed") from None
-    if _git(root, "rev-parse", "HEAD") != envelope.base_commit:
+    if _git(root, "rev-parse", "HEAD", deadline_ns=deadline_ns) != envelope.base_commit:
         raise EngineeringError("source_head_drift")
-    source_tree = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}")
+    source_tree = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}", deadline_ns=deadline_ns)
     if not _valid_sha1(source_tree):
         raise EngineeringError("invalid_git_identity")
-    source_boundary_before = _source_boundary_digest(root)
-    start = time.monotonic_ns()
+    source_boundary_before = _source_boundary_digest(root, deadline_ns=deadline_ns)
     with tempfile.TemporaryDirectory(prefix="hepta-lane-g-") as temporary_name:
         temporary = Path(temporary_name)
         workspace = temporary / "candidate"
-        _materialize_exact_tree(root, envelope.base_commit, workspace)
+        _materialize_exact_tree(
+            root,
+            envelope.base_commit,
+            workspace,
+            timeout_seconds=min(60, envelope.wall_time_seconds),
+            deadline_ns=deadline_ns,
+        )
         if (workspace / ".git").exists() or (workspace / ".git").is_symlink():
             raise EngineeringError("source_tree_mutated")
-        base_manifest = _tree_manifest(workspace)
+        base_manifest = _tree_manifest(workspace, deadline_ns=deadline_ns)
         _reject_inline_oracle_mutation(workspace, mutation)
         _apply_candidate_mutation(workspace, mutation)
-        candidate_manifest = _tree_manifest(workspace)
+        candidate_manifest = _tree_manifest(workspace, deadline_ns=deadline_ns)
         changed = _validate_realized_candidate_footprint(
             base_manifest,
             candidate_manifest,
@@ -1329,7 +1389,7 @@ def sandbox_candidate(
             > envelope.maximum_diff_bytes
         ):
             raise EngineeringError("diff_limit_exceeded")
-        state_before = _manifest_digest(candidate_manifest)
+        state_before = _manifest_digest(candidate_manifest, deadline_ns=deadline_ns)
         sandbox_home = temporary / "home"
         sandbox_tmp = temporary / "tmp"
         sandbox_home.mkdir()
@@ -1339,7 +1399,7 @@ def sandbox_candidate(
         network_isolated = False
         adapter = "fixture-only"
         if envelope.require_network_isolation:
-            bubblewrap = _admit_bubblewrap(workspace, envelope)
+            bubblewrap = _admit_bubblewrap(workspace, envelope, deadline_ns=deadline_ns)
             filesystem_isolated = True
             network_isolated = True
             adapter = "bubblewrap-unshare-all-ro-workspace-v2"
@@ -1354,10 +1414,7 @@ def sandbox_candidate(
         )
         results: list[tuple[str, int]] = []
         for check in check_values:
-            elapsed = (time.monotonic_ns() - start) / 1_000_000_000
-            remaining = envelope.wall_time_seconds - elapsed
-            if remaining <= 0:
-                raise EngineeringError("sandbox_time_budget_exceeded")
+            remaining = _remaining_seconds(deadline_ns)
             label = hashlib.sha256(canonical_json(check)).hexdigest()[:16]
             argv = (
                 _bubblewrap_command(bubblewrap, workspace, check)
@@ -1373,17 +1430,17 @@ def sandbox_candidate(
                 processes=envelope.processes,
             )
             results.append((label, code))
-            if _source_boundary_digest(root) != source_boundary_before:
+            if _source_boundary_digest(root, deadline_ns=deadline_ns) != source_boundary_before:
                 raise EngineeringError("source_tree_mutated")
-            if _tree_manifest(workspace) != candidate_manifest:
+            if _tree_manifest(workspace, deadline_ns=deadline_ns) != candidate_manifest:
                 raise EngineeringError("source_tree_mutated")
             if code != 0:
                 break
-        source_boundary_after = _source_boundary_digest(root)
+        source_boundary_after = _source_boundary_digest(root, deadline_ns=deadline_ns)
         if source_boundary_after != source_boundary_before:
             raise EngineeringError("source_tree_mutated")
-        post_manifest = _tree_manifest(workspace)
-        state_after = _manifest_digest(post_manifest)
+        post_manifest = _tree_manifest(workspace, deadline_ns=deadline_ns)
+        state_after = _manifest_digest(post_manifest, deadline_ns=deadline_ns)
         if post_manifest != candidate_manifest or state_after != state_before:
             raise EngineeringError("source_tree_mutated")
         post_changed = _validate_realized_candidate_footprint(
@@ -1399,48 +1456,51 @@ def sandbox_candidate(
             raise EngineeringError("protected_path")
         if any(is_candidate_oracle_path(path) for path in post_changed):
             raise EngineeringError("candidate_oracle_path")
-        source_after = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}")
+        source_after = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}", deadline_ns=deadline_ns)
         if source_after != source_tree:
             raise EngineeringError("source_tree_mutated")
-        passed = len(results) == len(check_values) and all(
-            code == 0 for _, code in results
-        )
-        receipt = SandboxReceipt(
-            candidate.candidate_id,
-            envelope.base_commit,
-            source_tree,
-            source_after,
-            tuple(results),
-            credential_count,
-            network_isolated,
-            (time.monotonic_ns() - start) // 1_000_000,
-            passed,
-            False,
-            filesystem_isolated,
-            adapter,
-            check_set_digest,
-            state_before,
-            state_after,
-            source_boundary_before,
-            source_boundary_after,
-        )
-        receipt_digest = semantic_digest(asdict(receipt))
-        if passed and filesystem_isolated and network_isolated:
-            state = "sandbox_tested"
-        elif passed:
-            state = "fixture_tested"
-        else:
-            state = "rejected"
-        return (
-            Candidate(
-                candidate.candidate_id,
-                envelope.envelope_id,
-                envelope.base_commit,
-                mutation,
-                candidate.semantic_digest,
-                state,
-                changed,
-                receipt_digest,
-            ),
-            receipt,
-        )
+        _remaining_seconds(deadline_ns)
+    # TemporaryDirectory cleanup is part of the admitted boundary: it must
+    # finish before elapsed duration, receipt provenance or success is returned.
+    _remaining_seconds(deadline_ns)
+    passed = len(results) == len(check_values) and all(
+        code == 0 for _, code in results
+    )
+    receipt = SandboxReceipt(
+        candidate.candidate_id,
+        envelope.base_commit,
+        source_tree,
+        source_after,
+        tuple(results),
+        credential_count,
+        network_isolated,
+        (time.monotonic_ns() - start) // 1_000_000,
+        passed,
+        False,
+        filesystem_isolated,
+        adapter,
+        check_set_digest,
+        state_before,
+        state_after,
+        source_boundary_before,
+        source_boundary_after,
+    )
+    receipt_digest = semantic_digest(asdict(receipt))
+    if passed and filesystem_isolated and network_isolated:
+        state = "sandbox_tested"
+    elif passed:
+        state = "fixture_tested"
+    else:
+        state = "rejected"
+    tested = Candidate(
+        candidate.candidate_id,
+        envelope.envelope_id,
+        envelope.base_commit,
+        mutation,
+        candidate.semantic_digest,
+        state,
+        changed,
+        receipt_digest,
+    )
+    _remaining_seconds(deadline_ns)
+    return tested, receipt

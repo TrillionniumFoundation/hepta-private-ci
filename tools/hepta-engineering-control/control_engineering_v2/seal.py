@@ -306,13 +306,11 @@ def record_integration_decision(
     trust_store: HmacTrustStore | None = None,
     now_ns: int | None = None,
 ) -> None:
-    now = store._now(now_ns)
     if getattr(evidence, "eligible_for_independent_review", False) is not True:
-        _BASE_INELIGIBLE_RECORD(store, decision_id, evidence, now_ns=now)
+        _BASE_INELIGIBLE_RECORD(store, decision_id, evidence, now_ns=now_ns)
         return
     if not isinstance(evidence, SealedCandidateEvidence) or trust_store is None:
         raise _control.EngineeringError("sealed_evidence_required")
-    verify_sealed_candidate_evidence(evidence, trust_store, now_ns=now)
     _control.checked_id(decision_id, "decision_id")
     seal_digest = _control.semantic_digest(asdict(evidence))
     binding_semantic_digest = _control.semantic_digest(
@@ -322,6 +320,8 @@ def record_integration_decision(
     seal_semantic_digest = _control.semantic_digest(seal_payload)
 
     def operation() -> None:
+        now = store._now(now_ns)
+        verify_sealed_candidate_evidence(evidence, trust_store, now_ns=now)
         binding = store.connection.execute(
             "SELECT candidate_id,candidate_digest,sandbox_receipt_digest,"
             "binding_receipt_digest,bound_evidence_digest,semantic_digest "

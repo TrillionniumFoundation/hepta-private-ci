@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 import tempfile
 import time
+from typing import TypedDict, TypeVar
 
 from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
 from .evidence import HmacTrustStore
@@ -55,6 +56,25 @@ MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
 MAX_REVIEW_OBSERVATIONS = 256
 PRODUCT_EXECUTION_SCHEMA = "hepta.control-engineering-product-execution.v5"
 PRODUCT_RECEIPT_PAIR_SCHEMA = "hepta.control-engineering-product-receipt-pair.v3"
+_FixtureReceipt = TypeVar(
+    "_FixtureReceipt",
+    WorkerRegistrationReceipt,
+    WorkerHeartbeatReceipt,
+    WorkerResultReceipt,
+    CompletionReceipt,
+    IntegrationStageReceipt,
+    IntegrationTerminalReceipt,
+)
+
+
+class _ReviewObservation(TypedDict):
+    reviewId: int
+    reviewerLogin: str
+    reviewerUserId: int
+    state: str
+    commitId: str
+    submittedAt: str
+    currentHead: bool
 
 
 class _RejectingTrustStore:
@@ -73,7 +93,9 @@ class _RejectingTrustStore:
         return False
 
 
-def _signed_fixture(value, trust: HmacTrustStore, issuer: str, identity: str):
+def _signed_fixture(
+    value: _FixtureReceipt, trust: HmacTrustStore, issuer: str, identity: str
+) -> _FixtureReceipt:
     """Sign only the bounded CI lifecycle fixture; never CI/review/merge authority."""
     return replace(value, signature=trust.sign(value, issuer, identity))
 
@@ -94,6 +116,13 @@ def _sha(value: str, label: str) -> str:
     if not isinstance(value, str) or _SHA1.fullmatch(value) is None or value == "0" * 40:
         raise ValueError("invalid_" + label)
     return value
+
+
+def _workflow_identity(value: object, repository: str) -> bool:
+    return isinstance(value, str) and re.fullmatch(
+        re.escape(repository + EXPECTED_WORKFLOW_SUFFIX)
+        + r"@refs/(?:heads/[A-Za-z0-9._/-]+|pull/[1-9][0-9]*/merge)", value
+    ) is not None
 
 
 def _canonical_engineering_package(root: Path) -> dict[str, object]:
@@ -190,10 +219,7 @@ def build_product_receipt(
         raise ValueError("repository_identity_mismatch")
     if type(repository_id) is not int or repository_id != EXPECTED_REPOSITORY_ID:
         raise ValueError("repository_id_mismatch")
-    if (
-        not isinstance(workflow_ref, str)
-        or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
-    ):
+    if not _workflow_identity(workflow_ref, repository_full_name):
         raise ValueError("workflow_identity_mismatch")
     if job_name != EXPECTED_JOB:
         raise ValueError("job_identity_mismatch")
@@ -917,7 +943,7 @@ def bind_github_review_observations(
     expected_head_sha = _sha(expected_head_sha, "review_head_sha")
     if not isinstance(reviews, list) or len(reviews) > MAX_REVIEW_OBSERVATIONS:
         raise ValueError("github_review_observation_shape")
-    observations: list[dict[str, object]] = []
+    observations: list[_ReviewObservation] = []
     seen: set[int] = set()
     for row in reviews:
         if not isinstance(row, Mapping):
@@ -1009,6 +1035,11 @@ def verify_product_receipt_pair(
     """Verify the two independently executed PR product-caller lanes."""
     expected_source_sha = _sha(expected_source_sha, "source_sha")
     expected_base_sha = _sha(expected_base_sha, "base_sha")
+    if any(type(value) is not int or value <= 0 for value in (
+        expected_repository_id, expected_run_id, expected_run_attempt,
+        expected_pull_request_number,
+    )):
+        raise ValueError("product_receipt_pair_ci_identity")
     source_digest = _verify_product_receipt(
         source_head,
         expected_lane="source-head",
@@ -1027,6 +1058,9 @@ def verify_product_receipt_pair(
     for identity in (source_identity, merge_identity):
         if (
             identity.get("repository") != expected_repository
+            or any(type(identity.get(field)) is not int for field in (
+                "repositoryId", "runId", "runAttempt", "pullRequestNumber"
+            ))
             or identity.get("repositoryId") != expected_repository_id
             or identity.get("runId") != expected_run_id
             or identity.get("runAttempt") != expected_run_attempt
@@ -1037,10 +1071,18 @@ def verify_product_receipt_pair(
             raise ValueError("product_receipt_pair_ci_identity")
         workflow_ref = identity.get("workflowRef")
         if (
-            not isinstance(workflow_ref, str)
-            or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
+            not _workflow_identity(workflow_ref, expected_repository)
+            or (
+                isinstance(workflow_ref, str)
+                and "@refs/pull/" in workflow_ref
+                and not workflow_ref.endswith(
+                    f"@refs/pull/{expected_pull_request_number}/merge"
+                )
+            )
         ):
             raise ValueError("product_receipt_pair_workflow_identity")
+    if source_identity.get("workflowRef") != merge_identity.get("workflowRef"):
+        raise ValueError("product_receipt_pair_workflow_identity")
 
     if (
         source_head.get("sourceSha") != expected_source_sha
@@ -1069,8 +1111,11 @@ def verify_product_receipt_pair(
     ):
         raise ValueError("product_receipt_pair_merge_identity")
 
-    for receipt in (source_head, base_merge):
-        integration = receipt.get("integrationReconciliation")
+    source_integration = source_head.get("integrationReconciliation")
+    merge_integration = base_merge.get("integrationReconciliation")
+    if not isinstance(source_integration, Mapping) or not isinstance(merge_integration, Mapping):
+        raise ValueError("product_receipt_pair_integration_base")
+    for integration in (source_integration, merge_integration):
         if (
             not isinstance(integration, Mapping)
             or integration.get("baseCommit") != expected_base_sha
@@ -1079,8 +1124,8 @@ def verify_product_receipt_pair(
         ):
             raise ValueError("product_receipt_pair_integration_base")
     if (
-        source_head["integrationReconciliation"].get("baseTree")
-        != base_merge["integrationReconciliation"].get("baseTree")
+        source_integration.get("baseTree")
+        != merge_integration.get("baseTree")
     ):
         raise ValueError("product_receipt_pair_integration_base")
 

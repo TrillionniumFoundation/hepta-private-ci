@@ -30,6 +30,18 @@ resource limits, failure recovery and behavioral verification are documented in
 [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md). These implementation companions replace
 historical package-local maturity/closure assertion registries.
 
+The source is a detailed engineering-coordination implementation, not a completed
+production deployment. The inherited baseline `a126987` contains the SQLite v10
+owner and repository fixture caller. The existing PR #1175 source at `f920179`
+adds bounded audit paging, capacity observations, registration renewal and a
+read-only evidence collector; the September 30 readiness source at `3686369`
+adds product startup construction and external custody-continuity contracts.
+These are integration provenance, not passing execution or acceptance receipts.
+The current candidate must still qualify its exact source and merge identities.
+See [BOUNDED_OWNER_CONTRACT.md](BOUNDED_OWNER_CONTRACT.md),
+[SNAPSHOT_HARDENING.md](SNAPSHOT_HARDENING.md) and
+[EXTERNAL_ACCEPTANCE.md](EXTERNAL_ACCEPTANCE.md) for those boundaries.
+
 The v10 owner persists worker-capacity reservations across orchestration generations,
 recomputes complete source/base/queue/owner context before accepting integration
 observations, validates the exact schema object set before opening current state and
@@ -56,7 +68,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `control.engineering`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` records that the declared roots resolve to materialized source. The current owner is the Python `control_engineering_v2` package; its source inventory and exact Git blobs are checked by `scripts/hepta-implementation-maps.py`. Candidate tests, lint, type checks, coverage and strong-sandbox qualification require recorded results for the exact candidate. Source location alone does not establish that those checks passed. This status does not activate `control.engineering`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -64,10 +76,16 @@ Direct dependencies:
 
 - `kernel.evidence`
 
-Authoritative write domains:
+Current native coordination write domains:
 
 - `work_assignment_projection`
 - `integration_decision`
+
+The data registry also assigns `iteration_envelope_v1` and
+`golden_fixture_manifest_v1` to this owner as integration targets. Their registered
+ownership does not establish a native producer, persistent schema or product
+caller. Do not route those records through the SQLite coordination tables merely
+because the module names match.
 
 Explicitly denied capabilities:
 
@@ -127,35 +145,74 @@ retain current source, wire and capability states.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Registered produced contracts:
 
 - `DomainRead::integration_decisionV1`
 - `DomainRead::work_assignment_projectionV1`
+- `GoldenFixtureManifestV1`
+- `IterationEnvelopeV1`
 
-Consumed contracts:
+Registered consumed contracts:
 
+- `CandidateEvaluationReceiptV1`
 - `DomainRead::qualification_evidenceV1`
+- `IndependentDecisionReceiptV1`
+- `IterationCandidateV1`
 - `ModulePort::kernel.evidence::control.engineering`
+- `PlasticityProposalV1`
 - `TopologyProposalV1`
 
-Critical protocol schemas:
+Registered typed protocol schemas:
 
+- `CandidateEvaluationReceiptV1`
+- `GoldenFixtureManifestV1`
+- `IndependentDecisionReceiptV1`
+- `IterationCandidateV1`
+- `IterationEnvelopeV1`
+- `PlasticityProposalV1`
 - `TopologyProposalV1`
+
+This inventory is the contract-registry scope. Current executable operations and
+receipt types are mapped separately in `IMPLEMENTATION_MAP.json` and
+`IMPLEMENTATION.md`; registration alone is not an implementation claim. In
+particular, iteration-envelope and golden-fixture production, adaptive proposal
+consumption and their cross-owner recovery paths remain integration targets until
+their native callers and tests are mapped.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The current Python owner uses typed dataclasses and canonical JSON. A Rust or wire
+adapter must prove equivalent semantics before composition; the registered
+protocol names alone do not establish that adapter. Tests cover the implemented
+types' bounds, missing or unknown fields, invalid enums, canonical ordering and
+digest stability. Error mapping preserves rejected, unavailable, timed out,
+indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Implemented authoritative or rebuildable coordination domains:
 
 - `integration_decision`
 - `work_assignment_projection`
 
-Read-only data dependencies:
+Additional registered owner targets:
 
+- `golden_fixture_manifest_v1`
+- `iteration_envelope_v1`
+
+Registered read-only data dependencies:
+
+- `candidate_evaluation_receipt_v1`
+- `independent_decision_receipt_v1`
+- `iteration_candidate_v1`
+- `plasticity_proposal_v1`
 - `qualification_evidence`
+- `topology_proposal_v1`
+
+The additional target domains are not tables in the current SQLite v10 owner.
+Implementing them requires their declared immutable records, native producer and
+consumer paths, lineage and recovery behavior; existing scheduling fixtures do
+not satisfy those obligations.
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
@@ -190,6 +247,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies the resource-aware algorithm and qualification ceilings. Current native enforcement belongs to `control_engineering_v2`: candidate count/file/diff bounds in `candidate.py`; <=8 host-wide POSIX sandbox concurrency (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries in `sandbox_control.py`; worker/CI/reviewer capacity in `orchestration.py`; cross-generation worker-capacity reservation at the atomic claim boundary in `worker_lifecycle.py`; and mutation-test cardinality in `mutation_testing.py`. `qualification_profile.py` measures store-open, planning, claim, heartbeat, recovery, SQLite-lock, WAL, audit, backup/restore, disk-full rollback and sandbox costs on one exact host profile. Measurements are observations, not universal budgets or acceptance. Multi-host capacity and failover require the separately authenticated distributed-fence boundary.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+
+Planner ingress also limits cumulative normalized envelope, capacity, package,
+Worker and completion-receipt inputs to 256 KiB. Worker matching uses remaining
+skill/path demand to preserve scarce eligible workers; the deterministic greedy
+schedule carries no global-optimality or cross-generation fairness guarantee.
+Completion verification binds the exact persisted envelope fields and lifetime,
+so extending a caller's envelope cannot extend accepted completion evidence.
 
 ## 11. Observability and operations
 
@@ -603,4 +667,4 @@ The bootstrap source-location obligation for `control.engineering` is implemente
 
 - `tools/hepta-engineering-control`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+This section identifies the bootstrap source location; execution results belong to exact-candidate qualification receipts. `.github/workflows/control-engineering-quality.yml` defines generated STATUS/API checks, source-identity regressions, Python lint, type checks and branch coverage. `.github/workflows/hepta-consolidated-source.yml` defines strong-sandbox tests for source-head and, on pull requests, a fixed base-merge candidate. `.github/workflows/control-engineering-bootstrap.yml` retains source identity and invokes the read-only candidate evidence collector. Inspect the retained command results, failures, skips and exclusions for the candidate being assessed. Workflow definitions and source-location facts grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

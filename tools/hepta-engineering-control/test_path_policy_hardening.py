@@ -22,11 +22,18 @@ class CanonicalRepositoryPathHardening(unittest.TestCase):
             "src/file ",
             " src/file",
             "src/name:stream",
+            'src/name"quoted',
+            "src/name<value",
+            "src/name>value",
+            "src/name|value",
             "CON",
             "aux.txt",
             "src/COM1.log",
             ".git/config",
             "GIT~1/config",
+            ".git\u200c/config",
+            ".g\u200cit/config",
+            ".\ufeffgit/config",
             unicodedata.normalize("NFD", "src/café"),
         )
         for value in invalid:

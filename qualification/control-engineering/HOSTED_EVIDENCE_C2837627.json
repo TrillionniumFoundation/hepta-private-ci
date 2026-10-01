@@ -1,0 +1,291 @@
+{
+  "acceptance": {
+    "authorityGranted": false,
+    "completeModuleQualificationClaimed": false,
+    "deploymentAccepted": false,
+    "dualLaneProductReceiptVerified": false,
+    "historicalDualLaneDocsPassed": true,
+    "historicalDualLaneStrongSandboxPassed": true,
+    "historicalQualityPassed": true,
+    "newCandidateQualified": false
+  },
+  "artifacts": [
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11131210747/zip",
+      "digest": "sha256:71692b2e3fca86d0c7f2c5677ce3fc8f1bd03a6e346850b225c9d7e93d5818ea",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11131210747,
+      "members": [
+        "engineering-base-merge.json",
+        "engineering-base-merge.json.1a912bd770554c0f8f22ed937dc840c9.log"
+      ],
+      "name": "hepta-commands-36783235658-1-engineering-base-merge",
+      "sha256Verified": true
+    },
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11131080956/zip",
+      "digest": "sha256:3a1fdfcd09fce748691a361b862d1905f22940f17048ff636a38ec4eb725c095",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11131080956,
+      "members": [
+        "control-engineering-host-profile.json"
+      ],
+      "name": "control-engineering-host-profile-36783235658-1-base-merge",
+      "sha256Verified": true
+    },
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11130449318/zip",
+      "digest": "sha256:46b19d5b03b9b808c450fcd78918c2a021c96e9ff4d556724c6694cd73e86d8e",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11130449318,
+      "members": [
+        "engineering-source-head.json",
+        "engineering-source-head.json.601fe9dafbc5426483ff7e30a0029bcb.log"
+      ],
+      "name": "hepta-commands-36783235658-1-engineering-source-head",
+      "sha256Verified": true
+    },
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11130284945/zip",
+      "digest": "sha256:af16d88af576535bb855996cb9261d4b969410ba812becd989af3a11ddb8de38",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11130284945,
+      "members": [
+        "control-engineering-host-profile.json"
+      ],
+      "name": "control-engineering-host-profile-36783235658-1-source-head",
+      "sha256Verified": true
+    },
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11130907753/zip",
+      "digest": "sha256:56ec5b959339bab5f0cac17ea1af0a2a5be6046e8fda820c1a8b97fe4b620840",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11130907753,
+      "members": [
+        "control-engineering-coverage.json"
+      ],
+      "name": "control-engineering-coverage-36783235583-1",
+      "sha256Verified": true
+    },
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11130703035/zip",
+      "digest": "sha256:146f6bc0eae2727ff3c307e6383c39d7a3179647ae2da47f179441e6787c69c9",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11130703035,
+      "members": [
+        "merge-candidate.json"
+      ],
+      "name": "hepta-v8-merge-18d707ed825507e0cf3969844f280f6ebafd9441",
+      "sha256Verified": true
+    },
+    {
+      "archiveUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11130034919/zip",
+      "digest": "sha256:4d9f62b4bd6628a6a1fc9d6aeda4b3b09010e29df66d397b49ef7e92561a1c8c",
+      "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "id": 11130034919,
+      "members": [
+        "cleanup-source-head.json",
+        "source-head.json"
+      ],
+      "name": "hepta-v8-source-c2837627d18979c0f28921a3134d8de358b8531c",
+      "sha256Verified": true
+    }
+  ],
+  "consolidated": {
+    "engineeringStrongSandbox": {
+      "base-merge": {
+        "authorityGranted": false,
+        "backupSnapshotMatched": true,
+        "beforeAfterCleanAndEqual": true,
+        "commandArtifactId": 11131210747,
+        "deploymentAccepted": false,
+        "diskFullRollbackObserved": true,
+        "jobId": 110118401707,
+        "logSha256": "aba20b0704304d4cf516c2611aece8084ca4cdf54dc37dfd8b262c4961bc349a",
+        "logSha256Verified": true,
+        "profileArtifactId": 11131080956,
+        "profileDigest": "92e5c9d5260cdf6bdedaf4b84f0d19767052e6ea1475cf0693f0611012f5d19f",
+        "profileDigestVerified": true,
+        "sandboxIsolationAdapter": "bubblewrap-unshare-all-ro-workspace-v2",
+        "sandboxState": "sandbox_tested",
+        "status": "success",
+        "testSeconds": 18.196,
+        "testedCommit": "18d707ed825507e0cf3969844f280f6ebafd9441",
+        "testedTree": "9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8",
+        "testsPassed": 453,
+        "testsRun": 453,
+        "testsSkipped": 0
+      },
+      "source-head": {
+        "authorityGranted": false,
+        "backupSnapshotMatched": true,
+        "beforeAfterCleanAndEqual": true,
+        "commandArtifactId": 11130449318,
+        "deploymentAccepted": false,
+        "diskFullRollbackObserved": true,
+        "jobId": 110118401286,
+        "logSha256": "530384af8e8c38c65fad6ad2c820f20cebfef10d66074983f5e3c5d9417ae2e8",
+        "logSha256Verified": true,
+        "profileArtifactId": 11130284945,
+        "profileDigest": "f0dce31a6f18ef680fc28575c7766f2a794ba9076bf47b37bb8112d2283991ba",
+        "profileDigestVerified": true,
+        "sandboxIsolationAdapter": "bubblewrap-unshare-all-ro-workspace-v2",
+        "sandboxState": "sandbox_tested",
+        "status": "success",
+        "testSeconds": 15.239,
+        "testedCommit": "c2837627d18979c0f28921a3134d8de358b8531c",
+        "testedTree": "9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8",
+        "testsPassed": 453,
+        "testsRun": 453,
+        "testsSkipped": 0
+      }
+    },
+    "outsideModule": {
+      "conclusion": "Native Rust qualification remains in_progress; no failed step was observed. This is outside the engineering-only success statement.",
+      "rustQualification": [
+        {
+          "conclusion": null,
+          "currentStep": "Compile and test actual imported packages",
+          "failedSteps": [],
+          "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+          "id": 110118401815,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "name": "qualification (base-merge)",
+          "runnerId": 1000439324,
+          "startedAt": "2026-09-30T22:57:00Z",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "currentStep": "Compile and test actual imported packages",
+          "failedSteps": [],
+          "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+          "id": 110118401821,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "name": "qualification (source-head)",
+          "runnerId": 1000439323,
+          "startedAt": "2026-09-30T22:56:55Z",
+          "status": "in_progress"
+        }
+      ]
+    },
+    "overallStatus": "queued",
+    "productCallers": {
+      "base-merge": {
+        "conclusion": null,
+        "currentStep": null,
+        "failedSteps": [],
+        "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+        "id": 110138370201,
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "name": "control.engineering product caller (base-merge)",
+        "runnerId": 0,
+        "startedAt": "2026-09-30T23:07:04Z",
+        "status": "queued"
+      },
+      "source-head": {
+        "conclusion": null,
+        "currentStep": null,
+        "failedSteps": [],
+        "headSha": "c2837627d18979c0f28921a3134d8de358b8531c",
+        "id": 110138370242,
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "name": "control.engineering product caller (source-head)",
+        "runnerId": 0,
+        "startedAt": "2026-09-30T23:07:04Z",
+        "status": "queued"
+      }
+    },
+    "productPair": {
+      "jobPresent": false,
+      "receiptPresent": false,
+      "verified": false
+    },
+    "queueObservation": {
+      "exactSchedulerReason": null,
+      "interpretation": "Both product jobs are eligible after successful sandbox dependencies, remain queued with runner_id=0, and have no steps. The API does not identify the quota, capacity or concurrency cause.",
+      "productJobsAssignedRunner": false,
+      "productRunnerLabel": "ubuntu-24.04",
+      "productStepsPresent": false,
+      "sandboxDependenciesPassed": true
+    },
+    "runAttempt": 1,
+    "runId": 36783235658
+  },
+  "developmentDocs": {
+    "base-merge": {
+      "artifactId": 11130703035,
+      "authorityGranted": false,
+      "identityFieldsVerified": true,
+      "jobId": 110118399917,
+      "kind": "merge-candidate",
+      "member": "merge-candidate.json",
+      "testedCommit": "18d707ed825507e0cf3969844f280f6ebafd9441",
+      "testedTree": "9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8",
+      "verifiedAt": "2026-09-30T22:59:25.369510Z"
+    },
+    "runAttempt": 1,
+    "runId": 36783235565,
+    "source-head": {
+      "artifactId": 11130034919,
+      "authorityGranted": false,
+      "identityFieldsVerified": true,
+      "jobId": 110118399773,
+      "kind": "source-head",
+      "member": "source-head.json",
+      "testedCommit": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "testedTree": "9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8",
+      "testsPassed": 696,
+      "testsRun": 696,
+      "testsSkipped": 0,
+      "verifiedAt": "2026-09-30T23:00:53.542971Z"
+    },
+    "status": "success"
+  },
+  "moduleFailuresObserved": [],
+  "pullRequest": 1175,
+  "quality": {
+    "branchCoverage": {
+      "covered_branches": 1735,
+      "covered_lines": 5525,
+      "excluded_lines": 41,
+      "missing_branches": 759,
+      "missing_lines": 1014,
+      "num_branches": 2494,
+      "num_partial_branches": 689,
+      "num_statements": 6539,
+      "percent_covered": 80.37196944536699,
+      "percent_covered_display": "80"
+    },
+    "coverageArtifactId": 11130907753,
+    "jobId": 110118394437,
+    "jobLogsUrl": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/110118394437/logs",
+    "runAttempt": 1,
+    "runId": 36783235583,
+    "status": "success",
+    "testSeconds": 21.894,
+    "testsPassed": 451,
+    "testsRun": 453,
+    "testsSkipped": 2,
+    "typeCheckedFiles": 9
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewedAt": "2026-09-30T23:42:39.111Z",
+  "schema": "hepta.control-engineering-hosted-evidence-review.v1",
+  "scope": {
+    "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "kind": "historical_exact_candidate_only",
+    "newCandidateQualificationClaimed": false,
+    "sourceCommit": "c2837627d18979c0f28921a3134d8de358b8531c",
+    "sourceTree": "9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8",
+    "syntheticMergeCommit": "18d707ed825507e0cf3969844f280f6ebafd9441"
+  }
+}

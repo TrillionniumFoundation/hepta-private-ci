@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import sqlite3
 import time
 
 from .control_plane import (
@@ -19,6 +20,7 @@ from .control_plane import (
     bounded_tuple,
     LeaseReceipt,
     WorkEnvelope,
+    _validate_envelope,
     checked_id,
     checked_sha256,
     semantic_digest,
@@ -26,6 +28,7 @@ from .control_plane import (
 from .evidence import SignatureTrustStore
 
 MAX_KEY_CUSTODY_ROLES = 32
+_MAX_SQLITE_INTEGER = 2**63 - 1
 
 _AUDIT_STATE_TABLES = (
     "work_envelopes",
@@ -194,9 +197,70 @@ def _window(observed: int, expires: int, now: int) -> bool:
     return (
         type(observed) is int
         and type(expires) is int
-        and observed <= now < expires
+        and 0 <= observed <= now < expires
         and expires > observed
     )
+
+
+def _sqlite_counter(value: object) -> bool:
+    return type(value) is int and 1 <= value <= _MAX_SQLITE_INTEGER
+
+
+def _require_persisted_types(
+    row: sqlite3.Row,
+    *,
+    text: tuple[str, ...],
+    integers: tuple[str, ...],
+    code: str,
+) -> None:
+    if any(type(row[field]) is not str for field in text) or any(
+        type(row[field]) is not int or row[field] < 1 for field in integers
+    ):
+        raise EngineeringError(code)
+
+
+def _registered_envelope(
+    store: EngineeringStore, envelope: WorkEnvelope, now: int, code: str
+) -> WorkEnvelope:
+    """Bind supplied context to the live, checksum-consistent durable owner."""
+    value = _validate_envelope(envelope)
+    row = store._get_envelope(value.envelope_id, now)
+    _require_persisted_types(
+        row,
+        text=("envelope_id", "source_commit", "source_tree", "objective_digest",
+              "contract_digest", "owner", "semantic_digest"),
+        integers=("maximum_assignments", "expires_unix_ns", "revision"),
+        code=code,
+    )
+    scopes: dict[str, tuple[str, ...]] = {}
+    for field in ("allowed_paths", "denied_authorities"):
+        encoded = row[field + "_json"]
+        if not isinstance(encoded, (str, bytes, bytearray)):
+            raise EngineeringError(code)
+        try:
+            decoded = json.loads(encoded)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise EngineeringError(code) from None
+        if not isinstance(decoded, list) or any(not isinstance(item, str) for item in decoded):
+            raise EngineeringError(code)
+        scopes[field] = tuple(decoded)
+    record = {
+        "envelope_id": row["envelope_id"],
+        "source_commit": row["source_commit"],
+        "source_tree": row["source_tree"],
+        "objective_digest": row["objective_digest"],
+        "contract_digest": row["contract_digest"],
+        "owner": row["owner"],
+        "allowed_paths": scopes["allowed_paths"],
+        "denied_authorities": scopes["denied_authorities"],
+        "maximum_assignments": row["maximum_assignments"],
+        "expires_unix_ns": row["expires_unix_ns"],
+        "revision": row["revision"],
+    }
+    digest = semantic_digest(record)
+    if digest != row["semantic_digest"] or digest != semantic_digest(asdict(value)):
+        raise EngineeringError(code)
+    return value
 
 
 def verify_distributed_revocation_frontier(
@@ -212,12 +276,9 @@ def verify_distributed_revocation_frontier(
         raise EngineeringError("distributed_revocation_frontier_required")
     checked_id(receipt.cluster_id, "cluster_id")
     checked_id(receipt.leader_id, "leader_id")
-    if (
-        type(receipt.leader_term) is not int
-        or receipt.leader_term < 1
-        or type(receipt.frontier_sequence) is not int
-        or receipt.frontier_sequence < 1
-    ):
+    if not all(_sqlite_counter(value) for value in (
+        receipt.leader_term, receipt.frontier_sequence,
+    )):
         raise EngineeringError("distributed_revocation_frontier_order")
     checked_sha256(receipt.frontier_digest, "revocation_frontier_digest")
     if receipt.frontier_digest == "0" * 64:
@@ -251,6 +312,17 @@ def verify_distributed_fence(
         raise EngineeringError("invalid_time")
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("distributed_fence_store_required")
+    envelope = _registered_envelope(
+        store, envelope, now, "distributed_fence_envelope_mismatch"
+    )
+    if not isinstance(lease, LeaseReceipt):
+        raise EngineeringError("distributed_fence_local_lease_invalid")
+    if not isinstance(receipt, DistributedFenceReceipt):
+        raise EngineeringError("distributed_fence_receipt_required")
+    if any(type(value) is not int or value < 1 for value in (
+        lease.epoch, lease.fencing_token, lease.revision, lease.expires_unix_ns,
+    )):
+        raise EngineeringError("distributed_fence_local_lease_invalid")
     if lease.state != "active":
         raise EngineeringError("distributed_fence_local_lease_inactive")
     if lease.envelope_id != envelope.envelope_id:
@@ -266,22 +338,31 @@ def verify_distributed_fence(
     ).fetchone()
     if current is None:
         raise EngineeringError("distributed_fence_local_lease_unknown")
+    _require_persisted_types(
+        current,
+        text=("envelope_id", "holder", "state"),
+        integers=("authority_epoch", "fencing_token", "revision", "expires_unix_ns"),
+        code="distributed_fence_local_lease_invalid",
+    )
     try:
-        current_paths = tuple(
-            json.loads(bytes(current["paths_json"]).decode("utf-8"))
-        )
+        decoded_paths = json.loads(bytes(current["paths_json"]).decode("utf-8"))
     except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
         raise EngineeringError("distributed_fence_local_lease_invalid") from None
+    if not isinstance(decoded_paths, list) or any(
+        not isinstance(path, str) for path in decoded_paths
+    ):
+        raise EngineeringError("distributed_fence_local_lease_invalid")
+    current_paths = tuple(decoded_paths)
     if (
-        str(current["envelope_id"]) != lease.envelope_id
-        or str(current["holder"]) != lease.holder
-        or str(current["state"]) != "active"
-        or int(current["authority_epoch"]) != lease.epoch
-        or int(current["fencing_token"]) != lease.fencing_token
-        or int(current["revision"]) != lease.revision
-        or int(current["expires_unix_ns"]) != lease.expires_unix_ns
+        current["envelope_id"] != lease.envelope_id
+        or current["holder"] != lease.holder
+        or current["state"] != "active"
+        or current["authority_epoch"] != lease.epoch
+        or current["fencing_token"] != lease.fencing_token
+        or current["revision"] != lease.revision
+        or current["expires_unix_ns"] != lease.expires_unix_ns
         or current_paths != lease.paths
-        or int(current["expires_unix_ns"]) <= now
+        or current["expires_unix_ns"] <= now
     ):
         raise EngineeringError("distributed_fence_local_lease_stale")
 
@@ -300,12 +381,12 @@ def verify_distributed_fence(
         checked_id(value, label)
     if receipt.issuer != "distributed_lease_authority":
         raise EngineeringError("distributed_fence_issuer_role")
-    if (
-        type(receipt.leader_term) is not int
-        or receipt.leader_term < 1
-        or type(receipt.revocation_frontier_sequence) is not int
-        or receipt.revocation_frontier_sequence < 1
-    ):
+    if not all(_sqlite_counter(value) for value in (
+        receipt.leader_term, receipt.revocation_frontier_sequence,
+        receipt.authority_epoch, receipt.fencing_token, receipt.lease_revision,
+    )) or any(type(value) is not int or value < 1 for value in (
+        receipt.envelope_revision, receipt.lease_expires_unix_ns,
+    )):
         raise EngineeringError("distributed_fence_order")
     if (
         receipt.cluster_id != revocation_frontier.cluster_id
@@ -343,7 +424,11 @@ def verify_distributed_fence(
     )
     if receipt.revocation_frontier_digest == "0" * 64:
         raise EngineeringError("distributed_fence_revocation_frontier")
-    if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
+    if (
+        not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now)
+        or receipt.observed_unix_ns > _MAX_SQLITE_INTEGER
+        or receipt.expires_unix_ns > _MAX_SQLITE_INTEGER
+    ):
         raise EngineeringError("distributed_fence_stale")
     if receipt.expires_unix_ns > min(
         lease.expires_unix_ns,
@@ -383,8 +468,8 @@ def admit_distributed_fence(
     no holder may accept an older local fencing token/revision under the current
     cluster frontier.
     """
-    now = store._now(now_ns)
     with store._transaction():
+        now = store._now(now_ns)
         digest = verify_distributed_fence(
             lease,
             envelope,
@@ -400,8 +485,14 @@ def admit_distributed_fence(
             (receipt.cluster_id,),
         ).fetchone()
         if cluster is not None:
-            current_term = int(cluster["leader_term"])
-            current_sequence = int(cluster["revocation_frontier_sequence"])
+            _require_persisted_types(
+                cluster,
+                text=("leader_id", "revocation_frontier_digest"),
+                integers=("leader_term", "revocation_frontier_sequence"),
+                code="distributed_cluster_frontier_invalid",
+            )
+            current_term = cluster["leader_term"]
+            current_sequence = cluster["revocation_frontier_sequence"]
             if (
                 receipt.leader_term < current_term
                 or receipt.revocation_frontier_sequence < current_sequence
@@ -409,14 +500,14 @@ def admit_distributed_fence(
                 raise EngineeringError("distributed_cluster_frontier_stale")
             if (
                 receipt.leader_term == current_term
-                and receipt.leader_id != str(cluster["leader_id"])
+                and receipt.leader_id != cluster["leader_id"]
             ):
                 raise EngineeringError("distributed_fence_leader_conflict")
             if (
                 receipt.leader_term == current_term
                 and receipt.revocation_frontier_sequence == current_sequence
                 and receipt.revocation_frontier_digest
-                != str(cluster["revocation_frontier_digest"])
+                != cluster["revocation_frontier_digest"]
             ):
                 raise EngineeringError("distributed_cluster_frontier_conflict")
 
@@ -432,29 +523,37 @@ def admit_distributed_fence(
             receipt.lease_revision,
         )
         if holder is not None:
+            _require_persisted_types(
+                holder,
+                text=("leader_id", "revocation_frontier_digest", "fence_receipt_digest",
+                      "lease_id", "source_commit", "source_tree"),
+                integers=("leader_term", "revocation_frontier_sequence", "authority_epoch",
+                          "fencing_token", "lease_revision"),
+                code="distributed_fence_frontier_invalid",
+            )
             current_holder = (
-                int(holder["leader_term"]),
-                int(holder["revocation_frontier_sequence"]),
-                int(holder["fencing_token"]),
-                int(holder["lease_revision"]),
+                holder["leader_term"],
+                holder["revocation_frontier_sequence"],
+                holder["fencing_token"],
+                holder["lease_revision"],
             )
             if incoming_holder < current_holder:
                 raise EngineeringError("distributed_fence_frontier_stale")
             if incoming_holder == current_holder:
                 if (
-                    digest != str(holder["fence_receipt_digest"])
+                    digest != holder["fence_receipt_digest"]
                     or receipt.revocation_frontier_digest
-                    != str(holder["revocation_frontier_digest"])
+                    != holder["revocation_frontier_digest"]
                 ):
                     raise EngineeringError("distributed_fence_frontier_conflict")
                 # The cluster row may have been advanced by another holder after
                 # this exact holder receipt was stored. It is no longer current.
                 if cluster is not None and (
-                    receipt.leader_term != int(cluster["leader_term"])
+                    receipt.leader_term != cluster["leader_term"]
                     or receipt.revocation_frontier_sequence
-                    != int(cluster["revocation_frontier_sequence"])
+                    != cluster["revocation_frontier_sequence"]
                     or receipt.revocation_frontier_digest
-                    != str(cluster["revocation_frontier_digest"])
+                    != cluster["revocation_frontier_digest"]
                 ):
                     raise EngineeringError("distributed_fence_frontier_not_current")
                 return digest
@@ -550,8 +649,8 @@ def verify_persisted_distributed_fence(
     now_ns: int | None = None,
 ) -> str:
     """Require both cluster-global and holder-local persisted frontiers."""
-    now = store._now(now_ns)
     with store._transaction():
+        now = store._now(now_ns)
         digest = verify_distributed_fence(
             lease,
             envelope,
@@ -572,29 +671,43 @@ def verify_persisted_distributed_fence(
         ).fetchone()
         if cluster is None or holder is None:
             raise EngineeringError("distributed_fence_not_admitted")
+        _require_persisted_types(
+            cluster,
+            text=("leader_id", "revocation_frontier_digest"),
+            integers=("leader_term", "revocation_frontier_sequence"),
+            code="distributed_cluster_frontier_invalid",
+        )
+        _require_persisted_types(
+            holder,
+            text=("leader_id", "revocation_frontier_digest", "fence_receipt_digest",
+                  "lease_id", "source_commit", "source_tree"),
+            integers=("leader_term", "revocation_frontier_sequence", "authority_epoch",
+                      "fencing_token", "lease_revision"),
+            code="distributed_fence_frontier_invalid",
+        )
         if (
-            str(cluster["leader_id"]) != receipt.leader_id
-            or int(cluster["leader_term"]) != receipt.leader_term
-            or int(cluster["revocation_frontier_sequence"])
+            cluster["leader_id"] != receipt.leader_id
+            or cluster["leader_term"] != receipt.leader_term
+            or cluster["revocation_frontier_sequence"]
             != receipt.revocation_frontier_sequence
-            or str(cluster["revocation_frontier_digest"])
+            or cluster["revocation_frontier_digest"]
             != receipt.revocation_frontier_digest
         ):
             raise EngineeringError("distributed_cluster_frontier_not_current")
         if (
-            str(holder["leader_id"]) != receipt.leader_id
-            or int(holder["leader_term"]) != receipt.leader_term
-            or int(holder["revocation_frontier_sequence"])
+            holder["leader_id"] != receipt.leader_id
+            or holder["leader_term"] != receipt.leader_term
+            or holder["revocation_frontier_sequence"]
             != receipt.revocation_frontier_sequence
-            or str(holder["revocation_frontier_digest"])
+            or holder["revocation_frontier_digest"]
             != receipt.revocation_frontier_digest
-            or str(holder["fence_receipt_digest"]) != digest
-            or str(holder["lease_id"]) != receipt.lease_id
-            or int(holder["authority_epoch"]) != receipt.authority_epoch
-            or int(holder["fencing_token"]) != receipt.fencing_token
-            or int(holder["lease_revision"]) != receipt.lease_revision
-            or str(holder["source_commit"]) != receipt.source_commit
-            or str(holder["source_tree"]) != receipt.source_tree
+            or holder["fence_receipt_digest"] != digest
+            or holder["lease_id"] != receipt.lease_id
+            or holder["authority_epoch"] != receipt.authority_epoch
+            or holder["fencing_token"] != receipt.fencing_token
+            or holder["lease_revision"] != receipt.lease_revision
+            or holder["source_commit"] != receipt.source_commit
+            or holder["source_tree"] != receipt.source_tree
         ):
             raise EngineeringError("distributed_fence_frontier_not_current")
         return digest
@@ -676,6 +789,7 @@ def verify_external_audit_anchor(
         or anchor["eventDigest"] == "0" * 64
     ):
         raise EngineeringError("audit_anchor_empty")
+    envelope = _registered_envelope(store, envelope, now, "audit_anchor_binding_mismatch")
     if envelope.expires_unix_ns <= now:
         raise EngineeringError("audit_anchor_envelope_stale")
     if (
@@ -749,6 +863,7 @@ def verify_external_key_custody(
     bindings: dict[str, tuple[str, str, str]] = {}
     seen_receipt_keys: set[tuple[str, str]] = set()
     seen_subject_identities: set[str] = set()
+    seen_public_keys: set[str] = set()
     canonical: list[KeyCustodyReceipt] = []
     for receipt in values:
         checked_id(receipt.provider, "key_provider")
@@ -801,6 +916,7 @@ def verify_external_key_custody(
             if (
                 key in seen_receipt_keys
                 or receipt.subject_signing_identity in seen_subject_identities
+                or receipt.public_key_digest in seen_public_keys
             ):
                 raise EngineeringError("key_custody_role_separation")
             bindings[role] = (
@@ -810,6 +926,7 @@ def verify_external_key_custody(
             )
             seen_receipt_keys.add(key)
             seen_subject_identities.add(receipt.subject_signing_identity)
+            seen_public_keys.add(receipt.public_key_digest)
         canonical.append(receipt)
 
     if set(bindings) != required:
@@ -831,27 +948,40 @@ def verify_production_controls(
     *,
     now_ns: int | None = None,
 ) -> ProductionControlDecision:
-    distributed_digest = verify_persisted_distributed_fence(
-        lease,
-        envelope,
-        distributed,
-        revocation_frontier,
-        trust_store,
-        store=store,
-        now_ns=now_ns,
+    """Verify prefetched proofs at one owner cut and observation time.
+
+    The injected signature verifier must perform bounded local verification.
+    Receipt-provider calls and remote HSM/KMS operations belong before this
+    owner transaction; the repository's HmacTrustStore verifies without I/O.
+    """
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("distributed_fence_store_required")
+    custody_values = custody if isinstance(custody, KeyCustodyReceipt) else bounded_tuple(
+        custody, MAX_KEY_CUSTODY_ROLES, "key_custody_receipt_limit"
     )
-    audit_digest = verify_external_audit_anchor(
-        store,
-        envelope,
-        audit,
-        trust_store,
-        now_ns=now_ns,
-    )
-    custody_digest = verify_external_key_custody(
-        custody,
-        trust_store,
-        now_ns=now_ns,
-    )
+    with store._transaction():
+        now = store._now(now_ns)
+        distributed_digest = verify_persisted_distributed_fence(
+            lease,
+            envelope,
+            distributed,
+            revocation_frontier,
+            trust_store,
+            store=store,
+            now_ns=now,
+        )
+        audit_digest = verify_external_audit_anchor(
+            store,
+            envelope,
+            audit,
+            trust_store,
+            now_ns=now,
+        )
+        custody_digest = verify_external_key_custody(
+            custody_values,
+            trust_store,
+            now_ns=now,
+        )
     return ProductionControlDecision(
         True,
         True,

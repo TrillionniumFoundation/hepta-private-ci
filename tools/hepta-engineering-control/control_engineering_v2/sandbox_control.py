@@ -15,7 +15,9 @@ try:
 except ImportError:  # Windows portable fixtures cannot be strong sandbox evidence.
     _fcntl = None
 
-from .candidate import Candidate, CandidateEnvelope, SandboxReceipt, sandbox_candidate
+from .candidate import (
+    Candidate, CandidateEnvelope, SandboxReceipt, _normalize_checks, sandbox_candidate,
+)
 from .control_plane import EngineeringError, semantic_digest
 
 MAX_PARALLEL_SANDBOXES = 8
@@ -170,7 +172,7 @@ class SandboxCoordinator:
         candidate: Candidate,
         checks: Iterable[Sequence[str]],
     ) -> SandboxExecutionResult:
-        checks_value = tuple(tuple(item) for item in checks)
+        checks_value = _normalize_checks(checks)
         attempts = 0
         host_slot = self._enter()
         try:

@@ -14,6 +14,7 @@ from typing import Protocol
 from .control_plane import (
     EngineeringError,
     canonical_json,
+    checked_id,
     checked_sha256,
     semantic_digest,
 )
@@ -170,6 +171,7 @@ def _valid_window(observed: int, expires: int, now: int) -> bool:
     return (
         type(observed) is int
         and type(expires) is int
+        and observed >= 0
         and observed <= now < expires
         and expires > observed
     )
@@ -194,6 +196,15 @@ def verify_integration_evidence(
     release, or runtime authority.
     """
     now = time.time_ns() if now_ns is None else now_ns
+    if type(now) is not int or now < 0:
+        raise EngineeringError("invalid_time")
+    if not (
+        isinstance(source, CanonicalSourceReceipt)
+        and isinstance(source_execution, ExecutionReceipt)
+        and isinstance(merge_execution, ExecutionReceipt)
+        and isinstance(independence, EvaluatorIndependenceReceipt)
+    ):
+        raise EngineeringError("integration_evidence_receipt_required")
     reasons: list[str] = []
     repository = Path(root).resolve()
     if source.repository_full_name != expected_repository:
@@ -202,17 +213,37 @@ def verify_integration_evidence(
         remote = _normal_remote(
             _run_git(repository, "config", "--get", "remote.origin.url")
         )
-        if remote and remote != expected_repository:
+        if not remote or remote != expected_repository:
             reasons.append("repository_remote_mismatch")
     except EngineeringError:
         reasons.append("repository_remote_unavailable")
-    try:
-        checked_sha256(source.document_set_digest, "invalid_document_set_digest")
-        checked_sha256(expected_document_set_digest, "invalid_document_set_digest")
-        checked_sha256(source_execution.checks_digest, "invalid_source_checks_digest")
-        checked_sha256(merge_execution.checks_digest, "invalid_merge_checks_digest")
-    except EngineeringError as error:
-        reasons.append(error.code)
+    for digest, label in (
+        (source.document_set_digest, "document_set_digest"),
+        (expected_document_set_digest, "document_set_digest"),
+        (source_execution.checks_digest, "source_checks_digest"),
+        (merge_execution.checks_digest, "merge_checks_digest"),
+    ):
+        try:
+            checked_sha256(digest, label)
+            if digest == "0" * 64:
+                raise EngineeringError("invalid_" + label)
+        except EngineeringError as error:
+            reasons.append(error.code)
+    for identity, label in (
+        (source.signing_identity, "source_signing_identity"),
+        (source_execution.receipt_id, "source_receipt_id"),
+        (source_execution.signing_identity, "source_execution_signing_identity"),
+        (merge_execution.receipt_id, "merge_receipt_id"),
+        (merge_execution.signing_identity, "merge_execution_signing_identity"),
+        (independence.generator_principal, "generator_principal"),
+        (independence.generator_signing_identity, "generator_signing_identity"),
+        (independence.evaluator_principal, "evaluator_principal"),
+        (independence.evaluator_signing_identity, "evaluator_signing_identity"),
+    ):
+        try:
+            checked_id(identity, label)
+        except EngineeringError as error:
+            reasons.append(error.code)
     if source.document_set_digest != expected_document_set_digest:
         reasons.append("document_set_drift")
     if source.issuer != "source_authority":

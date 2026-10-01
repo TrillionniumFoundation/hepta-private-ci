@@ -10,11 +10,14 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from dataclasses import asdict, dataclass
+import hashlib
+import signal
 
-from .candidate import Candidate, CandidateEnvelope
+from .candidate import Candidate, CandidateEnvelope, _normalize_checks
 from .control_plane import (
     EngineeringError,
     bounded_tuple,
+    canonical_json,
     checked_sha256,
     semantic_digest,
 )
@@ -45,6 +48,7 @@ def _verify_execution(
     candidate: Candidate,
     result: SandboxExecutionResult,
     expected_check_digest: str,
+    expected_check_labels: tuple[str, ...],
 ) -> str:
     if not isinstance(result, SandboxExecutionResult):
         raise EngineeringError("mutation_execution_result")
@@ -55,6 +59,7 @@ def _verify_execution(
         or tested.envelope_id != candidate.envelope_id
         or tested.base_commit != candidate.base_commit
         or tested.semantic_digest != candidate.semantic_digest
+        or tested.mutation != candidate.mutation
         or tested.changed_paths != candidate.changed_paths
         or receipt.candidate_id != candidate.candidate_id
         or receipt.base_commit != candidate.base_commit
@@ -68,6 +73,15 @@ def _verify_execution(
         or receipt.isolation_adapter != _STRONG_ADAPTER
         or receipt.credential_environment_count != 0
         or not receipt.check_results
+        or receipt.authority_delta is not False
+        or any(
+            (
+                tested.runtime_authority,
+                tested.merge_authority,
+                tested.selection_authority,
+                tested.release_authority,
+            )
+        )
     ):
         raise EngineeringError("mutation_strong_sandbox_required")
     if (
@@ -75,6 +89,7 @@ def _verify_execution(
         != receipt.candidate_state_digest_after
         or receipt.source_worktree_digest_before
         != receipt.source_worktree_digest_after
+        or receipt.source_tree_before != receipt.source_tree_after
     ):
         raise EngineeringError("mutation_execution_drift")
     for value, label in (
@@ -94,9 +109,25 @@ def _verify_execution(
     receipt_digest = semantic_digest(asdict(receipt))
     if tested.sandbox_receipt_digest != receipt_digest:
         raise EngineeringError("mutation_execution_receipt_binding")
+    labels = tuple(label for label, _ in receipt.check_results)
+    if (
+        len(labels) > len(expected_check_labels)
+        or labels != expected_check_labels[: len(labels)]
+        or any(type(code) is not int for _, code in receipt.check_results)
+        or any(code != 0 for _, code in receipt.check_results[:-1])
+        or type(receipt.passed) is not bool
+    ):
+        raise EngineeringError("mutation_execution_check_binding")
+    infrastructure_codes = {124, 125, 126, 127, -int(signal.SIGKILL)}
+    for name in ("SIGXCPU", "SIGXFSZ"):
+        if hasattr(signal, name):
+            infrastructure_codes.add(-int(getattr(signal, name)))
+    if any(code in infrastructure_codes for _, code in receipt.check_results):
+        raise EngineeringError("mutation_execution_infrastructure_failure")
     if receipt.passed is True:
         if (
             tested.state != "sandbox_tested"
+            or labels != expected_check_labels
             or any(type(code) is not int or code != 0 for _, code in receipt.check_results)
         ):
             raise EngineeringError("mutation_execution_state")
@@ -123,10 +154,12 @@ def run_mutation_testing(
     )
     if not mutant_values:
         raise EngineeringError("mutation_test_empty")
-    checks_value = tuple(tuple(item) for item in checks)
-    if not checks_value:
-        raise EngineeringError("invalid_check")
+    checks_value = _normalize_checks(checks)
     check_set_digest = semantic_digest(checks_value)
+    check_labels = tuple(
+        hashlib.sha256(canonical_json(check)).hexdigest()[:16]
+        for check in checks_value
+    )
 
     if (
         baseline.envelope_id != envelope.envelope_id
@@ -147,6 +180,7 @@ def run_mutation_testing(
         baseline,
         baseline_result,
         check_set_digest,
+        check_labels,
     )
     if baseline_result.receipt.passed is not True:
         raise EngineeringError("mutation_baseline_failed")
@@ -183,6 +217,7 @@ def run_mutation_testing(
             mutant,
             result,
             check_set_digest,
+            check_labels,
         )
         if result.policy_digest != policy_digest:
             raise EngineeringError("mutation_execution_policy_mismatch")

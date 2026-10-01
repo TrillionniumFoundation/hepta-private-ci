@@ -1,10 +1,11 @@
 from dataclasses import asdict, replace
+import hashlib
 import unittest
 from unittest import mock
 
 from control_engineering_v2 import Candidate, CandidateEnvelope, Mutation
 from control_engineering_v2.candidate import SandboxReceipt
-from control_engineering_v2.control_plane import semantic_digest
+from control_engineering_v2.control_plane import canonical_json, semantic_digest
 from control_engineering_v2.mutation_testing import run_mutation_testing
 from control_engineering_v2.sandbox_control import SandboxExecutionResult
 
@@ -43,7 +44,7 @@ def result(
         value.base_commit,
         "b" * 40,
         "b" * 40,
-        (("check", 0 if passed else 1),),
+        ((hashlib.sha256(canonical_json(checks[0])).hexdigest()[:16], 0 if passed else 1),),
         0,
         True,
         1,
@@ -77,6 +78,55 @@ def result(
 
 
 class MutationTestingTests(unittest.TestCase):
+    def rebound(self, execution, **fields):
+        receipt = replace(execution.receipt, **fields)
+        return replace(
+            execution,
+            receipt=receipt,
+            candidate=replace(execution.candidate, sandbox_receipt_digest=semantic_digest(asdict(receipt))),
+        )
+
+    def test_resource_timeout_and_spawn_failures_do_not_kill_mutants(self):
+        baseline = candidate("baseline")
+        mutant = candidate("mutant", "replace_text")
+        for code in (124, 125, 126, 127, -9):
+            with self.subTest(code=code):
+                failed = result(mutant, False)
+                failed = self.rebound(failed, check_results=((failed.receipt.check_results[0][0], code),))
+                coordinator = mock.Mock()
+                coordinator.execute.side_effect = (result(baseline, True), failed)
+                with self.assertRaisesRegex(ValueError, "mutation_execution_infrastructure_failure"):
+                    run_mutation_testing("/repo", CandidateEnvelope("env", "a" * 40, ("src",)), baseline, (mutant,), CHECKS, coordinator)
+
+    def test_receipt_must_prove_exact_check_prefix_and_no_authority_gain(self):
+        baseline = candidate("baseline")
+        mutant = candidate("mutant", "replace_text")
+        for fields, error in (
+            ({"check_results": (("unbound", 0),)}, "mutation_execution_check_binding"),
+            ({"check_results": ()}, "mutation_strong_sandbox_required"),
+            ({"authority_delta": True}, "mutation_strong_sandbox_required"),
+            ({"source_tree_after": "c" * 40}, "mutation_execution_drift"),
+        ):
+            with self.subTest(fields=fields):
+                coordinator = mock.Mock()
+                coordinator.execute.return_value = self.rebound(result(baseline, True), **fields)
+                with self.assertRaisesRegex(ValueError, error):
+                    run_mutation_testing("/repo", CandidateEnvelope("env", "a" * 40, ("src",)), baseline, (mutant,), CHECKS, coordinator)
+
+    def test_check_stream_is_bounded_before_baseline_execution(self):
+        consumed = []
+
+        def checks():
+            for index in range(1000):
+                consumed.append(index)
+                yield ("true",)
+
+        coordinator = mock.Mock()
+        with self.assertRaisesRegex(ValueError, "check_limit_exceeded"):
+            run_mutation_testing("/repo", CandidateEnvelope("env", "a" * 40, ("src",)), candidate("baseline"), (candidate("mutant", "replace_text"),), checks(), coordinator)
+        self.assertEqual(len(consumed), 65)
+        coordinator.execute.assert_not_called()
+
     def test_baseline_passes_and_all_mutants_must_be_killed(self):
         baseline = candidate("baseline")
         mutants = (

@@ -16,6 +16,7 @@ from control_engineering_v2.candidate import generate_candidates, sandbox_candid
 class CandidateSandboxFixture(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="lane-g-candidate-test-")
+        self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name) / "source"
         self.root.mkdir()
         self._git("init", "-q")
