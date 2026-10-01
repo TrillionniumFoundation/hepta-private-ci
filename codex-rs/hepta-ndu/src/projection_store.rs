@@ -411,14 +411,5 @@ fn persist_image(
 mod tests;
 
 #[cfg(all(test, not(unix)))]
-mod unsupported_platform_tests {
-    use super::*;
-
-    #[test]
-    fn unsupported_durability_profile_is_rejected_before_touching_paths() {
-        assert!(matches!(
-            NduProjectionStoreV1::open(Path::new("never-created-unsupported-ndu-profile")),
-            Err(NduProjectionStoreError::UnsupportedPlatform)
-        ));
-    }
-}
+#[path = "projection_store_unsupported_tests.rs"]
+mod unsupported_platform_tests;
