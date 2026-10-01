@@ -560,3 +560,158 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
     );
     assert_eq!(fixture.provider.release_count, 0);
 }
+
+// Synthetic protocol fixtures exercise pre-consumption authentication only.
+// They never read or consume the production source holdout.
+fn signed_registration(
+    plan: &ProductFrozenEvaluationPlanV1,
+) -> (
+    crate::AuthenticatedProductRegistrationV1,
+    LearningEvidenceVerifierV1,
+) {
+    let generator_key = SigningKey::from_bytes(&[61; 32]);
+    let custody_key = SigningKey::from_bytes(&[62; 32]);
+    let scope = digest("registration-scope");
+    let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
+        principal_id: id(name),
+        credential_chain_digest: digest(&format!("{name}-credential")),
+        signing_key_digest: Digest32::of_bytes(key.verifying_key().as_bytes()),
+        scope_digest: scope,
+        authority_epoch: 1,
+        authenticated_at: 1,
+        expires_at: 100,
+    };
+    let generator = principal("registered-generator", &generator_key);
+    let custody = principal("registered-custody", &custody_key);
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: scope,
+        objective_digest: plan.frozen_plan.objective_digest,
+        authority_epoch: 1,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: generator.clone(),
+                controller_id: id("generator-controller"),
+                verifying_key: generator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: custody.clone(),
+                controller_id: id("custody-controller"),
+                verifying_key: custody_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Observer],
+                revoked_at: None,
+            },
+        ],
+    })
+    .unwrap_or_else(|e| panic!("registration trust: {e}"));
+    let binding = crate::ProductRegistrationBindingV1 {
+        registration_digest: digest("durable-root-registration"),
+        source_graph_digest: digest("complete-source-graph"),
+        deployed_baseline_digest: digest("actual-deployed-baseline"),
+        objective_digest: plan.frozen_plan.objective_digest,
+        dataset_digest: plan.frozen_plan.dataset_digest,
+        plan_digest: plan.frozen_plan.plan_digest,
+        final_holdout_digest: plan.frozen_plan.final_holdout_digest,
+        registered_at_unix_micros: 10_123,
+    };
+    let sign = |principal: &AuthenticatedPrincipalV1, key: &SigningKey, role, payload: &[u8]| {
+        let mut evidence = SignedLearningEvidenceV1 {
+            evidence_id: principal.principal_id.clone(),
+            principal_id: principal.principal_id.clone(),
+            role,
+            trust_digest: verifier.trust_digest(),
+            scope_digest: scope,
+            objective_digest: plan.frozen_plan.objective_digest,
+            authority_epoch: 1,
+            issued_at: 10,
+            expires_at: 90,
+            payload_digest: Digest32::of_bytes(payload),
+            signature: [0; 64],
+        };
+        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+        evidence
+    };
+    let generator = sign(
+        &generator,
+        &generator_key,
+        LearningEvidenceRoleV1::Generator,
+        plan.frozen_plan.plan_digest.as_array(),
+    );
+    let custody = sign(
+        &custody,
+        &custody_key,
+        LearningEvidenceRoleV1::Observer,
+        &crate::product_registration_signing_payload_v1(&binding),
+    );
+    let registered = crate::AuthenticatedProductRegistrationV1::verify(
+        plan,
+        binding.clone(),
+        &generator,
+        &custody,
+        &verifier,
+        /*now_unix_millis*/ 50,
+    )
+    .unwrap_or_else(|e| panic!("authenticate registration: {e}"));
+    let mut altered = binding;
+    altered.deployed_baseline_digest = digest("unrelated-baseline");
+    assert!(
+        crate::AuthenticatedProductRegistrationV1::verify(
+            plan, altered, &generator, &custody, &verifier, /*now_unix_millis*/ 50
+        )
+        .is_err()
+    );
+    (registered, verifier)
+}
+
+#[test]
+fn registered_product_runner_authenticates_before_consumption_and_rejects_expiry() {
+    let mut fixture = fixture();
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles,
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    )
+    .unwrap_or_else(|e| panic!("freeze: {e}"));
+    let (registration, verifier) = signed_registration(&frozen);
+    let owner = FencedFinalHoldoutOwnerV1::initialize(
+        MemoryCas::default(),
+        digest("registered-binding"),
+        HoldoutWriterFenceV1 {
+            owner_id: id("registered-owner"),
+            generation: 1,
+            lease_digest: digest("registered-lease"),
+        },
+    )
+    .unwrap_or_else(|e| panic!("owner: {e}"));
+    let mut runner = ProductEvaluationRunnerV1::new(owner);
+    let before = runner.holdout_anchor();
+    assert!(
+        runner
+            .evaluate_registered_temporal_comparison(
+                &registration,
+                &fixture.candidate_plan,
+                &fixture.baseline_plan,
+                &mut fixture.provider,
+                &verifier,
+                /*now_unix_millis*/ 91
+            )
+            .is_err()
+    );
+    assert_eq!(runner.holdout_anchor(), before);
+    assert_eq!(fixture.provider.release_count, 0);
+    let receipt = runner
+        .evaluate_registered_temporal_comparison(
+            &registration,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+            &verifier,
+            /*now_unix_millis*/ 50,
+        )
+        .unwrap_or_else(|e| panic!("registered execution: {e}"));
+    assert_eq!(receipt.product_plan, frozen);
+    assert_eq!(fixture.provider.release_count, 1);
+}

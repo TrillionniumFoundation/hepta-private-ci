@@ -83,7 +83,7 @@ pub struct ProductFrozenEvaluationPlanV1 {
 }
 
 impl ProductFrozenEvaluationPlanV1 {
-    fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
+    pub(crate) fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         if self.receipt_seal != product_plan_seal(self)? {
             return Err(ProductEvaluationError::Integrity("product plan"));
         }
