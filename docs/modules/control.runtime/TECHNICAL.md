@@ -354,3 +354,11 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
 
 The [2026-10-01 adversarial audit](ADVERSARIAL_AUDIT.md) records reproduced recovery/admission defects, their corrections, subsystem completion boundaries and remaining qualification/product work. It does not advance the canonical maturity stages.
+
+PlannerStore keeps both kernel-lock rendezvous files (`planner-store.owner.lock`
+and `planner-store.lock`) across close and crash. Diagnostic PID text is not an
+ownership token. The kernel lock serializes open and restore; restore retains
+its destination lock while replacing files and opening the verified log. Do not
+unlink or replace lock files while any owner can open the directory. Root access
+remains owner-local and trusted. Upgrade historical file-token implementations
+with all owners stopped; concurrent mixed-lock generations are not qualified.

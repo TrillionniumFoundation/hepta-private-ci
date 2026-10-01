@@ -153,21 +153,39 @@ fn failed_open_releases_the_writer_lock() {
     assert!(store.records().is_empty());
 }
 
-#[cfg(target_os = "linux")]
 #[test]
 fn exited_process_lock_is_reclaimed() {
     let directory = must(tempdir());
-    must(std::fs::write(
-        directory.path().join("planner-store.lock"),
-        b"4294967295:0",
-    ));
+    let lock_path = directory.path().join("planner-store.lock");
+    // A legacy token or interrupted diagnostic write is not kernel ownership.
+    must(std::fs::write(&lock_path, b"stale-owner-diagnostic"));
     let store = must(PlannerStoreV1::open(
         directory.path(),
         PlannerStoreConfigV1::default(),
     ));
-    assert!(directory.path().join("planner-store.lock").exists());
+    assert!(lock_path.exists());
+    #[cfg(unix)]
+    let original_inode = {
+        use std::os::unix::fs::MetadataExt;
+        must(std::fs::metadata(&lock_path)).ino()
+    };
+    assert!(matches!(
+        PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()),
+        Err(PlannerStoreError::Locked)
+    ));
     drop(store);
-    assert!(!directory.path().join("planner-store.lock").exists());
+    // Keep the lock inode stable so another opener cannot lock a replacement.
+    assert!(lock_path.exists());
+    let reopened = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    assert!(reopened.records().is_empty());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        assert_eq!(must(std::fs::metadata(&lock_path)).ino(), original_inode);
+    }
 }
 
 #[test]

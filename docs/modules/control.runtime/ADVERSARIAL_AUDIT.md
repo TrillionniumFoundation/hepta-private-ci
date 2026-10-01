@@ -71,6 +71,8 @@ present while the global durable effect product is still uncomposed.
 | Named-host program and test-helper lint failures | P2 qualification reliability | Overflow probe panicked; manual ceiling division and helper `expect` calls violated strict lint | Return an explicit qualification error, use `div_ceil`, and make fixture setup failures explicit without suppressing production lint |
 | macOS release installation rejects a frozen staging rename | P1 integration availability | Rolling-upgrade cases fail during initial immutable release installation | Rename the complete directory on macOS before freezing and syncing its final path; catalog resolution continues to reject writable publication; extend the readonly-source regression and run all 41 Fleet cases |
 | Test waits treat durable writes as latency guarantees | P2 fixture reliability | Browser revocation and cancellation admission/drain use one- or two-second waits; failures persist with two test threads on the busy host | Keep the early fence and in-flight cancellation assertions; bound the final durable fixture observations by 30 seconds without changing production limits |
+| First log creation lacks a parent-directory durability barrier | P1 durability portability, source review | Core open creates the log after its existing directory sync; append synchronizes the file but did not explicitly persist the new directory entry | Sync the opened log and parent directory before returning the writable owner; retain the crash-after-sync recovery test and target-host qualification obligation |
+| macOS crash recovery is blocked by a legacy PID token | P1 durable recovery | Source and fixed-base merge jobs pass Agentd but all three PlannerStore process-exit/recovery cases fail with `CorruptLock`; non-Linux token format does not match its parser | Use persistent kernel locks in the core, retain the destination lock through restore/open, and verify stale diagnostics, contention and stable lock inode across release; exact updated-host qualification remains required |
 | Leaf terminal-cell integration root still uses a macOS alias | P2 qualification reliability | Later source-head qualification passes rolling upgrade then rejects the uncanonicalized terminal-cell cognitive root | Canonicalize the actual temporary fleet root before opening either cognitive owner; retain the production symlink fence |
 | Missing-host rejection is absent from the final empty-ledger check | P2 admission regression coverage | Missing-host admission runs on a second owner but the final empty-ledger assertion observes only the original owner; duplicate setup also hits the 60-second watchdog during I/O pressure | Temporarily remove and restore the original host in one fixture; all rejected requests now share the final empty-ledger assertion and watchdogs stay unchanged |
 | Stale source anchors omit new recovery tests | P2 documentation traceability | The implementation map referenced a new controller regression absent at its historical source anchor; NDU observations also predated the fixes | Rebind the control and NDU maps to actual committed source/tree and refresh exact source objects while preserving every maturity and external-evidence field |
@@ -174,11 +176,30 @@ all-target compilation returned zero. Strict lint returned 101 with the same 14
 Agentd library diagnostics. Final job aggregation failed. These exact failed
 command records remain failed evidence after the leaf fixture correction.
 
-An additional complete local Agentd run is recorded separately. During that run,
+The additional complete local Agentd run at 148ec11 finished with 189 passed
+(28 slow and three flaky retries), one failed, 20 timed out and six skipped;
+command exit 100. Its source commit/tree and clean checkout matched before and
+after execution. The failed storage-rejection observation remained Starting and
+unhealthy rather than reaching the expected rejection/fence. This is failed
+evidence, not proof that an invalid configuration served a request. During that run,
 /proc/pressure/io reported full avg10=49.27; one admission fixture timed out
 twice at the unchanged 60-second watchdog while several SQLite fixture cases
 completed in 35–50 seconds. I/O pressure coincides with the failures but is not
 a proof of every cause and does not convert them to pass receipts.
+
+The 6ad983 source and fixed-base merge jobs on macOS in run 36805066541
+both passed every ordinary Agentd binary (210 cases, six ignored), including the
+one-owner admission and canonical terminal-cell fixtures, plus 154 Control unit
+cases and eight Control integration cases. All three process-recovery cases then
+failed with CorruptLock: package command exit 101, 372 passed and three failed.
+The merge tree matched the source tree. Formatting and all-target compilation
+returned zero; strict lint failed the same 14 Agentd library diagnostics. Fleet
+and NDU suites were not reached. The legacy core token writer/parser mismatch is
+a real crash-recovery defect, independent of the local Agentd pressure failures.
+The correction replaces token liveness with a kernel lock and keeps its inode;
+restore acquires it before replacement and transfers it into the opened store.
+The stale-diagnostic/contending-writer regression now runs on every target.
+These failed candidate records are not overwritten by the correction.
 
 ## Source-navigation correction
 

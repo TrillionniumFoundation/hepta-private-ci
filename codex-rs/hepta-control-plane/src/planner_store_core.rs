@@ -11,7 +11,7 @@ use std::fmt;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
-use std::io::ErrorKind;
+use std::fs::TryLockError;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
@@ -149,57 +149,32 @@ impl From<std::io::Error> for PlannerStoreError {
     }
 }
 
-/// RAII owner lock. On Linux, a lock left by an exited process is reclaimed
-/// only when the recorded PID/start-time pair is no longer current. On other
-/// targets an existing lock fails closed.
+/// Kernel-owned single-writer lock. The file is a persistent rendezvous inode:
+/// its diagnostic contents never authorize ownership, and dropping the file
+/// releases the lock without unlinking it. Process exit releases it on every
+/// supported target, including when Rust destructors do not run.
 struct PlannerWriterLockV1 {
-    root: PathBuf,
-    path: PathBuf,
-    owner_token: String,
     _file: File,
 }
 
 impl PlannerWriterLockV1 {
     fn acquire(root: &Path) -> Result<Self, PlannerStoreError> {
-        let path = root.join(LOCK_NAME);
-        let owner_token = current_process_token()?;
-        loop {
-            match OpenOptions::new().create_new(true).write(true).open(&path) {
-                Ok(mut file) => {
-                    file.write_all(owner_token.as_bytes())?;
-                    file.sync_all()?;
-                    sync_directory(root)?;
-                    return Ok(Self {
-                        root: root.to_path_buf(),
-                        path,
-                        owner_token,
-                        _file: file,
-                    });
-                }
-                Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-                    let existing =
-                        fs::read_to_string(&path).map_err(|_| PlannerStoreError::CorruptLock)?;
-                    if lock_owner_is_current(existing.trim())? {
-                        return Err(PlannerStoreError::Locked);
-                    }
-                    fs::remove_file(&path)?;
-                    sync_directory(root)?;
-                }
-                Err(error) => return Err(error.into()),
-            }
+        let mut file = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .read(true)
+            .write(true)
+            .open(root.join(LOCK_NAME))?;
+        match file.try_lock() {
+            Ok(()) => {}
+            Err(TryLockError::WouldBlock) => return Err(PlannerStoreError::Locked),
+            Err(TryLockError::Error(error)) => return Err(error.into()),
         }
-    }
-}
-
-impl Drop for PlannerWriterLockV1 {
-    fn drop(&mut self) {
-        let owned = fs::read_to_string(&self.path)
-            .ok()
-            .is_some_and(|value| value.trim() == self.owner_token);
-        if owned {
-            let _ = fs::remove_file(&self.path);
-            let _ = sync_directory(&self.root);
-        }
+        file.set_len(0)?;
+        writeln!(file, "pid={}", std::process::id())?;
+        file.sync_all()?;
+        sync_directory(root)?;
+        Ok(Self { _file: file })
     }
 }
 
@@ -225,6 +200,14 @@ impl PlannerStoreV1 {
         let root = root.as_ref().to_path_buf();
         fs::create_dir_all(&root)?;
         let lock = PlannerWriterLockV1::acquire(&root)?;
+        Self::open_locked(root, config, lock)
+    }
+
+    fn open_locked(
+        root: PathBuf,
+        config: PlannerStoreConfigV1,
+        lock: PlannerWriterLockV1,
+    ) -> Result<Self, PlannerStoreError> {
         let log_path = root.join(LOG_NAME);
         let mut log = OpenOptions::new()
             .create(true)
@@ -232,6 +215,10 @@ impl PlannerStoreV1 {
             .read(true)
             .write(true)
             .open(log_path)?;
+        // Persist a newly created log's directory entry before any append may
+        // acknowledge a synced frame. A file sync alone is not a parent sync.
+        log.sync_all()?;
+        sync_directory(&root)?;
         let mut bytes = Vec::new();
         log.read_to_end(&mut bytes)?;
         let decoded = decode_records(&bytes, config)?;
@@ -437,14 +424,8 @@ impl PlannerStoreV1 {
         validate_config(config)?;
         let backup = backup.as_ref();
         let destination = destination.as_ref();
-        if destination.join(LOCK_NAME).exists() {
-            let existing = fs::read_to_string(destination.join(LOCK_NAME))
-                .map_err(|_| PlannerStoreError::CorruptLock)?;
-            if lock_owner_is_current(existing.trim())? {
-                return Err(PlannerStoreError::Locked);
-            }
-            fs::remove_file(destination.join(LOCK_NAME))?;
-        }
+        fs::create_dir_all(destination)?;
+        let lock = PlannerWriterLockV1::acquire(destination)?;
         let log_bytes = fs::read(backup.join(LOG_NAME))?;
         let decoded = decode_records(&log_bytes, config)?;
         if decoded.partial_tail {
@@ -461,7 +442,7 @@ impl PlannerStoreV1 {
         atomic_write(destination, LOG_NAME, &log_bytes)?;
         atomic_write(destination, CHECKPOINT_NAME, &checkpoint_bytes)?;
         sync_directory(destination)?;
-        Self::open(destination, config)
+        Self::open_locked(destination.to_path_buf(), config, lock)
     }
 
     pub fn validate_migration(from: u16, to: u16) -> Result<(), PlannerStoreError> {
@@ -736,43 +717,6 @@ fn atomic_write(root: &Path, name: &str, bytes: &[u8]) -> Result<(), PlannerStor
 fn sync_directory(path: &Path) -> Result<(), PlannerStoreError> {
     File::open(path)?.sync_all()?;
     Ok(())
-}
-
-fn current_process_token() -> Result<String, PlannerStoreError> {
-    process_token(std::process::id())?.ok_or(PlannerStoreError::CorruptLock)
-}
-
-#[cfg(target_os = "linux")]
-fn process_token(pid: u32) -> Result<Option<String>, PlannerStoreError> {
-    let path = format!("/proc/{pid}/stat");
-    let stat = match fs::read_to_string(path) {
-        Ok(value) => value,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
-    };
-    let end = stat.rfind(')').ok_or(PlannerStoreError::CorruptLock)?;
-    let tail = stat.get(end + 1..).ok_or(PlannerStoreError::CorruptLock)?;
-    // The tail starts at proc field 3; starttime is field 22.
-    let start_time = tail
-        .split_whitespace()
-        .nth(19)
-        .ok_or(PlannerStoreError::CorruptLock)?;
-    Ok(Some(format!("{pid}:{start_time}")))
-}
-
-#[cfg(not(target_os = "linux"))]
-fn process_token(pid: u32) -> Result<Option<String>, PlannerStoreError> {
-    Ok(Some(pid.to_string()))
-}
-
-fn lock_owner_is_current(token: &str) -> Result<bool, PlannerStoreError> {
-    let (pid, _) = token
-        .split_once(':')
-        .ok_or(PlannerStoreError::CorruptLock)?;
-    let pid = pid
-        .parse::<u32>()
-        .map_err(|_| PlannerStoreError::CorruptLock)?;
-    Ok(process_token(pid)?.as_deref() == Some(token))
 }
 
 fn take<'a>(
