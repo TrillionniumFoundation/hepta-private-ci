@@ -1,6 +1,6 @@
 use super::*;
 
-#[path = "neuron_artifact_refresh_fixture.rs"]
+#[path = "neuron_artifact_refresh_fixture_tests.rs"]
 mod fixture;
 use fixture::*;
 
