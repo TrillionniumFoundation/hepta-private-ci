@@ -111,7 +111,7 @@ class RepositoryControlTests(unittest.TestCase):
         with self.assertRaises(controls.ControlError):
             self.validate(branch, protection, checks)
 
-    def test_review_bypass_and_disabled_enforcement_fail_closed(self):
+    def test_review_bypass_remains_scoped_and_admin_enforcement_is_owner_selected(self):
         for kind in ("users", "teams", "apps"):
             branch, protection, checks = fixture()
             reviews = protection["required_pull_request_reviews"]
@@ -120,8 +120,7 @@ class RepositoryControlTests(unittest.TestCase):
                 self.validate(branch, protection, checks)
         branch, protection, checks = fixture()
         protection["enforce_admins"]["enabled"] = False
-        with self.assertRaises(controls.ControlError):
-            self.validate(branch, protection, checks)
+        self.validate(branch, protection, checks)
 
     def test_observation_does_not_authorize_activation(self):
         branch, protection, checks = fixture()
