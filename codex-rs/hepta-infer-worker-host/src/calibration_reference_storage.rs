@@ -9,12 +9,12 @@ use std::io::Write;
 use std::path::Path;
 
 #[derive(Clone, Copy)]
-pub(super) enum SourceOwnership {
+pub(in crate::evolving_agentd) enum SourceOwnership {
     RootProtected,
     PrivateOwner,
 }
 
-pub(super) fn read_regular(
+pub(in crate::evolving_agentd) fn read_regular(
     path: &Path,
     maximum: u64,
     ownership: SourceOwnership,

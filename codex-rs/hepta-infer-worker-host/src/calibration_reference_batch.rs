@@ -13,7 +13,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeSet;
 #[path = "calibration_reference_storage.rs"]
-mod storage;
+pub(super) mod storage;
 use storage::SourceOwnership;
 use storage::read_regular;
 use storage::write_private;

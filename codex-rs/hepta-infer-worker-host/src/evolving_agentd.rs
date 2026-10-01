@@ -37,6 +37,11 @@ mod calibration_reference_batch;
 use calibration_reference_batch::CalibrationReferenceBatch;
 pub use calibration_reference_batch::CalibrationReferenceBatchConfigV1;
 
+#[path = "rejected_calibration_feedback.rs"]
+mod rejected_calibration_feedback;
+pub use rejected_calibration_feedback::RejectedCalibrationFeedbackConfigV1;
+use rejected_calibration_feedback::RejectedFeedback;
+
 /// A checksum-pinned installer descriptor. The environment is supplied by the
 /// immutable installed release manifest, never model/request data.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -62,6 +67,8 @@ pub struct SelfIterationHostConfigV1 {
     pub status_file: PathBuf,
     #[serde(default)]
     pub calibration_reference_batch: Option<CalibrationReferenceBatchConfigV1>,
+    #[serde(default)]
+    pub rejected_calibration_feedback: Option<RejectedCalibrationFeedbackConfigV1>,
 }
 
 pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
@@ -199,6 +206,24 @@ pub fn load_host_config(
     if !installed.final_use_authority_config.is_absolute() {
         return Err(invalid("final-use authority configuration path"));
     }
+    if let Some(feedback) = &installed.rejected_calibration_feedback {
+        parse_digest(&feedback.summary_digest)?;
+        parse_digest(&feedback.historical_objective_digest)?;
+        if feedback.proposal_receipt_path == installed.native_journal
+            || feedback.proposal_receipt_path == installed.status_file
+            || !feedback.proposal_receipt_path.is_absolute()
+            || !feedback
+                .proposal_receipt_path
+                .starts_with(&identity.home_root)
+            || feedback.proposal_receipt_path.file_name().is_none()
+            || !feedback.summary_path.is_absolute()
+        {
+            return Err(invalid(
+                "rejected feedback state must have its own original Agent path",
+            ));
+        }
+        private_parent(&feedback.proposal_receipt_path)?;
+    }
     Ok(installed)
 }
 
@@ -222,6 +247,7 @@ async fn run_model_owner(
         identity.spawn_generation,
     )?;
     let mut proposal_attempted = false;
+    let rejected_feedback = installed.rejected_calibration_feedback.clone();
     let mut status = serde_json::json!({
         "version": 1,
         "state": "pending_inputs",
@@ -313,6 +339,25 @@ async fn run_model_owner(
             {
                 continue;
             }
+        }
+        if let Some(source) = &rejected_feedback {
+            if !native_admission_blocked {
+                let result = match RejectedFeedback::open(source.clone(), &identity, host_pin) {
+                    Ok(feedback) => feedback.run_step(model, &installed, &identity).await,
+                    Err(error) => Err(error),
+                };
+                match result {
+                    Ok(receipt) => {
+                        status["state"] = receipt["state"].clone();
+                        status["rejected_calibration_feedback"] = receipt;
+                    }
+                    Err(error) => {
+                        status["rejected_calibration_feedback"] = serde_json::json!({"state":"pending_original_rejection_source","diagnostic":error.to_string(),"qualified":false,"holdout_consumed":false});
+                    }
+                }
+                publish_status(&installed.status_file, &status)?;
+            }
+            continue;
         }
         if native_admission_blocked || proposal_attempted {
             continue;
