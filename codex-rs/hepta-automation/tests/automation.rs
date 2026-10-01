@@ -314,6 +314,44 @@ async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
     assert_eq!(unknown.len(), 1);
     assert_eq!(unknown[0].task_id, task.task_id);
     assert_eq!(unknown[0].occurrence, lease.occurrence);
+
+    store
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            lease.occurrence,
+            &lease.client_user_message_id,
+            &Sha256Digest::for_bytes(b"graceful drain provider absence"),
+            /*observed_at_ms*/ 102,
+        )
+        .await
+        .expect("prove old dispatch absent");
+    assert_eq!(
+        store.drain_blockers().await.expect("safe pending backlog"),
+        0
+    );
+    let retry = store
+        .claim_due(
+            /*now_ms*/ 103, /*generation*/ 2, /*lease_duration_ms*/ 60_000,
+        )
+        .await
+        .expect("retry claim")
+        .expect("same occurrence retry");
+    assert_eq!(store.drain_blockers().await.expect("active retry lease"), 1);
+    prepare_direct_dispatch(&store, &retry, 104).await;
+    assert_eq!(store.drain_blockers().await.expect("retry uncertainty"), 0);
+    store
+        .record_occurrence_admitted(
+            &retry,
+            &AutomationQueueReceipt {
+                queued_submission_id: "drain.queue.receipt".to_string(),
+                client_user_message_id: retry.client_user_message_id.clone(),
+            },
+            /*admitted_at_ms*/ 105,
+        )
+        .await
+        .expect("admit retry");
+    assert_eq!(store.drain_blockers().await.expect("admitted blocker"), 1);
+    store.close().await;
 }
 
 #[tokio::test]
@@ -966,6 +1004,13 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // Timer lifecycle triggers refer to the dispatch and occurrence tables.
+    // Remove the owning table first so SQLite never sees dangling trigger SQL
+    // while validating the later v1 column rewind.
+    sqlx::query("DROP TABLE automation_timer_lifecycle")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop post-v1 timer lifecycle and its triggers");
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -978,6 +1023,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Remove every post-v1 object in reverse dependency order, then rewind the
     // migration ledger so reopening exercises the real v1 -> latest path.
     for statement in [
+        "DROP TABLE IF EXISTS destination_operation_dedupe",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
         "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",

@@ -318,6 +318,39 @@ impl AutomationStore {
             return Err(AutomationError::AccessDenied);
         }
         let (mut transaction, _) = self.begin_timer_write().await?;
+        // A caller-supplied lease is not authority. Check the immutable run
+        // identity and the current claim inside the same writer transaction
+        // before inserting an occurrence or replacing its claim fence.
+        let exact_claim: i64 = sqlx::query_scalar(
+            "SELECT EXISTS(
+                SELECT 1 FROM automation_runs r
+                JOIN automation_tasks t ON t.task_id = r.task_id
+                WHERE r.task_id = ? AND r.occurrence = ?
+                  AND t.owner_agent_id = ? AND r.state = 'leased'
+                  AND r.schedule_revision = ? AND r.scheduled_for_ms = ?
+                  AND r.client_user_message_id = ?
+                  AND r.lease_generation = ? AND r.lease_token = ?
+                  AND r.lease_expires_at_ms = ?
+                  AND t.thread_id = ? AND t.prompt = ?
+            )",
+        )
+        .bind(lease.task.task_id.to_string())
+        .bind(to_i64(lease.occurrence)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(to_i64(lease.schedule_revision)?)
+        .bind(to_i64(lease.scheduled_for_ms)?)
+        .bind(&lease.client_user_message_id)
+        .bind(to_i64(lease.lease_generation)?)
+        .bind(&lease.lease_token)
+        .bind(to_i64(lease.lease_expires_at_ms)?)
+        .bind(&lease.task.thread_id)
+        .bind(&lease.task.prompt)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if exact_claim != 1 {
+            return Err(AutomationError::Conflict);
+        }
         ensure_schedule_metadata(&mut transaction, self, lease.task.task_id).await?;
         if let Some(current) =
             load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)

@@ -230,6 +230,13 @@ impl AutomationCalendarScheduleV2 {
         forward: bool,
     ) -> Result<Option<u64>, AutomationError> {
         self.validate()?;
+        // A finite schedule needs no timezone evidence after its end instant.
+        // Backward queries may arrive much later during delayed recovery.
+        let reference_utc_ms = if forward {
+            reference_utc_ms
+        } else {
+            reference_utc_ms.min(self.end_at_utc_ms.unwrap_or(reference_utc_ms))
+        };
         if let Some(end) = self.end_at_utc_ms
             && forward
             && reference_utc_ms > end
@@ -995,6 +1002,46 @@ mod tests {
             .await
             .expect("read task")
             .expect("task exists")
+    }
+
+    #[tokio::test]
+    async fn calendar_resume_uses_the_next_canonical_instant() {
+        let (_temp, store) = open_calendar_test_store().await;
+        let schedule = utc_daily_schedule();
+        let task = create_backlog_task(&store, &schedule, AutomationMissedRunPolicy::Skip).await;
+        store
+            .set_enabled(task.task_id, false, None, DAY)
+            .await
+            .unwrap();
+        let resume = 2 * DAY + 3 * HOUR;
+        let resumed = store
+            .set_enabled(task.task_id, true, Some(resume), resume)
+            .await
+            .unwrap();
+        assert_eq!(resumed.next_run_at_ms, Some(3 * DAY + 2 * HOUR));
+        assert_eq!(store.claim_due(resume, 1, 1_000).await.unwrap(), None);
+        let lease = store
+            .claim_due(3 * DAY + 2 * HOUR, 1, 1_000)
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(lease.scheduled_for_ms, 3 * DAY + 2 * HOUR);
+        store.close().await;
+    }
+
+    #[test]
+    fn finite_calendar_history_remains_resolvable_after_profile_expiry() {
+        let schedule = utc_daily_schedule();
+        assert_eq!(
+            schedule.latest_at_or_before(100 * DAY).unwrap(),
+            Some(29 * DAY + 2 * HOUR)
+        );
+        let mut unbounded = schedule;
+        unbounded.end_at_utc_ms = None;
+        assert_eq!(
+            unbounded.latest_at_or_before(100 * DAY),
+            Err(AutomationError::Unavailable)
+        );
     }
 
     #[tokio::test]
