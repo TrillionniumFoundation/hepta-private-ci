@@ -55,6 +55,12 @@ An explicit `verify --require-path-lease-attestation` checks the separate
 activation boundary and rejects touched requests without external attestation;
 a static pass never activates a lease or grants authority.
 
+Reviewer approval, administrator enforcement and comment resolution are selected
+by the repository owner. The supplied main ruleset permits administrators to
+merge PRs without granting a direct-push bypass; ordinary required checks remain
+bound to their real publisher. These repository settings do not authorize a
+workload effect or replace independent runtime evaluation.
+
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
 code checks and merge through the configured protected branch. The qualification

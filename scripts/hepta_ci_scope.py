@@ -215,7 +215,15 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             derived = True
             continue
 
-        if path.startswith("scripts/hepta") or path.startswith("scripts/test_hepta"):
+        if (
+            path.startswith("scripts/hepta")
+            or path.startswith("scripts/test_hepta")
+            or (
+                len(parts) == 3
+                and path.startswith("scripts/tests/test_hepta")
+                and PurePosixPath(path).suffix == ".py"
+            )
+        ):
             derived = True
             continue
 
