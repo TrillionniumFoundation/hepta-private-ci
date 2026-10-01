@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1158039fcbcf4c0b487cd2ee10b3737b0a5b317b",
-    "tree": "f84c7ea4330517347dbbc62b426658b03ef664c0"
+    "commit": "26f6907caaada8720f2d593b5a58d2742d542bde",
+    "tree": "a3fa52a9691159648d87921922a67adf80e1eda6"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -234,13 +234,60 @@
       "authority": "deny_all_read",
       "tests": [
         "codex-rs/hepta-memory/src/lane_c_lineage_tests.rs",
-        "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs"
+        "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "codex-rs/hepta-memory/src/lane_c_metadata.rs"
+        "codex-rs/hepta-memory/src/lane_c_metadata.rs",
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::begin_read"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::lineage"
+        }
+      ]
+    },
+    {
+      "operation": "lane_c_whole_scope_snapshot",
+      "nativeSymbol": "lane_c_snapshot",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "state": "sealed_bound_owner_read_transaction_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::snapshot"
+        }
+      ]
+    },
+    {
+      "operation": "lane_c_lineage_read_revalidation",
+      "nativeSymbol": "revalidate_lane_c_lineage",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
+      "state": "sealed_bound_owner_read_transaction_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::revalidate_lineage"
+        }
       ]
     }
   ],
@@ -354,7 +401,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
-      "object": "3d6ed1d334b2c66edfb27d2425a2e6f40d70b0cd"
+      "object": "ecd97ec042353a378ef7499d3d2e385b5c587c86"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs",
@@ -369,8 +416,16 @@
       "object": "2e0b10fcfcbb7c648a3ad8922aa11f4a7692e393"
     },
     {
+      "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+      "object": "f137d8b8b4acb49d4e82a1d0aa50e340f03a3fa5"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs",
+      "object": "ef1bbd31061bac88d736d8ccd287c85b240459b1"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "object": "adb7e2c41c1b13992c651e4c5e4b35b21f0ac426"
+      "object": "69ce1538021038840efbad48d57170bf2e750449"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
