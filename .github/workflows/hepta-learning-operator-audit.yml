@@ -142,6 +142,8 @@ jobs:
           just test --locked -p codex-hepta-agentd --lib \
             learning_operator_ --test-threads=1 --no-tests=fail
           just test --locked -p codex-hepta-agentd --lib \
+            cognitive_ranker --test-threads=1 --no-tests=fail
+          just test --locked -p codex-hepta-agentd --lib \
             intelligence_product::evaluation_tests --test-threads=1 --no-tests=fail
 
       - name: Signed process root trust and actual runtime clock

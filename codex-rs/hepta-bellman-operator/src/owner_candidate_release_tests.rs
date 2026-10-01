@@ -6,7 +6,6 @@ use super::trust_window_tests::tabular_request;
 use super::trust_window_tests::world_request_until;
 use super::*;
 use crate::final_use;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn tabular_outer_release_revalidates_root_and_signed_row_evidence() {

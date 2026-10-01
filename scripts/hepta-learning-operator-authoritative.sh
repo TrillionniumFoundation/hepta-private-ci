@@ -221,6 +221,8 @@ run_stage unit_tests "${EVIDENCE}/unit-tests.log" \
       -p codex-hepta-agentd --lib learning_operator_ \
       --test-threads=1
     just test --locked -p codex-hepta-agentd --lib \
+      cognitive_ranker --test-threads=1 --no-tests=fail
+    just test --locked -p codex-hepta-agentd --lib \
       intelligence_product::evaluation_tests --test-threads=1 --no-tests=fail
     just test --locked -p codex-hepta-agentd --lib \
       plasticity_runtime:: --test-threads=1 --no-tests=fail
@@ -343,6 +345,8 @@ qualify_synthetic_merge() (
     just test --locked \
       -p codex-hepta-agentd --lib learning_operator_ \
       --test-threads=1
+    just test --locked -p codex-hepta-agentd --lib \
+      cognitive_ranker --test-threads=1 --no-tests=fail
     just test --locked -p codex-hepta-agentd --lib \
       intelligence_product::evaluation_tests --test-threads=1 --no-tests=fail
     just test --locked -p codex-hepta-agentd --lib \

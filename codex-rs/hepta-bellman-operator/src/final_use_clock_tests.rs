@@ -1,5 +1,4 @@
 use super::*;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn forward_host_floor_advances_during_fit_instead_of_freezing_at_the_jump() {

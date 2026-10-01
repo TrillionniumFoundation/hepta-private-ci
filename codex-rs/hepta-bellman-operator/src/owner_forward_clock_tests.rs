@@ -6,7 +6,6 @@ use super::trust_window_tests::world_request_until;
 use super::*;
 use crate::final_use;
 use crate::final_use_hardening::clock::FinalUseClockV1;
-use pretty_assertions::assert_eq;
 use std::cell::Cell;
 
 pub(super) fn fence_and_witness(
