@@ -38,6 +38,10 @@ const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
 const DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.canonical-json.v1\0";
 const BOUND_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.bound-digest.v1\0";
 
+/// A structurally validated contract with a stable, integer-only JSON representation.
+/// Custom implementations must preserve their represented value across validation
+/// and serialization. Codec byte budgets bound retained output, not arbitrary
+/// CPU or allocations performed inside caller-provided Serialize/Deserialize code.
 pub trait CognitiveContractV1: Serialize + DeserializeOwned + Clone + Eq + PartialEq {
     const CONTRACT_ID: &'static str;
     const SCHEMA_ID: &'static str;
@@ -168,8 +172,6 @@ struct CognitiveWireEnvelopeV1<T> {
 pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<Vec<u8>, CognitiveWireError> {
-    crate::bounded::serialized_size(value, T::MAX_ENCODED_BYTES, "payload")
-        .map_err(CognitiveWireError::Contract)?;
     value
         .validate_contract()
         .map_err(CognitiveWireError::Contract)?;
@@ -199,7 +201,7 @@ fn envelope_maximum<T: CognitiveContractV1>() -> Result<usize, CognitiveWireErro
 
 /// The envelope has a frozen, four-key lexicographic order. Reuse the checked
 /// canonical payload instead of materializing and serializing it a second time.
-fn encode_envelope_from_payload<T: CognitiveContractV1>(
+pub(super) fn encode_envelope_from_payload<T: CognitiveContractV1>(
     payload: &[u8],
 ) -> Result<Vec<u8>, CognitiveWireError> {
     let maximum = envelope_maximum::<T>()?;
@@ -234,12 +236,12 @@ fn encode_envelope_from_payload<T: CognitiveContractV1>(
 
 // Constructed only by the strict decoder. The bytes and validated value never
 // escape independently before canonical identity and length checks complete.
-struct DecodedCanonicalPayloadV1<T> {
-    value: Validated<T>,
-    bytes: Vec<u8>,
+pub(super) struct DecodedCanonicalPayloadV1<T> {
+    pub(super) value: Validated<T>,
+    pub(super) bytes: Vec<u8>,
 }
 
-fn decode_canonical_payload_v1<T: CognitiveContractV1>(
+pub(super) fn decode_canonical_payload_v1<T: CognitiveContractV1>(
     bytes: &[u8],
 ) -> Result<DecodedCanonicalPayloadV1<T>, CognitiveWireError> {
     let maximum = envelope_maximum::<T>()?;
@@ -335,11 +337,15 @@ pub fn canonical_contract_digests_v1<T: CognitiveContractV1>(
 
 // Private byte-level helpers are only called after the bounded, validating
 // canonical encoder or decoder. Never expose unchecked byte-to-proof constructors.
-fn frozen_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
+pub(super) fn frozen_digest_from_checked_payload<T: CognitiveContractV1>(
+    payload: &[u8],
+) -> Digest32 {
     Digest32::of_parts(&[DIGEST_DOMAIN_V1, T::CONTRACT_ID.as_bytes(), b"\0", payload])
 }
 
-fn bound_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
+pub(super) fn bound_digest_from_checked_payload<T: CognitiveContractV1>(
+    payload: &[u8],
+) -> Digest32 {
     // Stream the exact historical framing. Do not allocate another payload-size
     // vector, alter component order, or collapse the two digest domains.
     Digest32::of_parts(&[
@@ -362,8 +368,25 @@ fn digest_component_length(component: &[u8]) -> [u8; 8] {
         .to_be_bytes()
 }
 
-fn canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
-    let value = serde_json::to_value(value).map_err(CognitiveWireError::Json)?;
+pub(super) fn canonical_json_bytes<T: CognitiveContractV1>(
+    value: &T,
+) -> Result<Vec<u8>, CognitiveWireError> {
+    // Bound the actual serialization before materializing a canonical Value.
+    // Counting a separate Serialize call cannot grant an allocation budget.
+    let serialized = crate::bounded::serialized_bytes(value, T::MAX_ENCODED_BYTES).map_err(
+        |error| match error {
+            crate::bounded::BoundedSerializationError::LimitExceeded { maximum } => {
+                CognitiveWireError::PayloadLength {
+                    actual: maximum.saturating_add(1),
+                    maximum,
+                }
+            }
+            crate::bounded::BoundedSerializationError::Json(error) => {
+                CognitiveWireError::Json(error)
+            }
+        },
+    )?;
+    let value = serde_json::from_slice(&serialized).map_err(CognitiveWireError::Json)?;
     let mut output = String::new();
     write_canonical_value(&value, &mut output)?;
     Ok(output.into_bytes())

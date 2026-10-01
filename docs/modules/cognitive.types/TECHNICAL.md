@@ -138,7 +138,7 @@ Critical protocol schemas:
 - `SharedExperienceUseReceiptV2`
 - `SharedExperienceRevocationReceiptV2`
 
-The canonical Rust definitions live only in `codex-rs/hepta-cognitive-types/src/hnmf.rs`, `hnmf_learning.rs` and `shared_experience.rs`. The canonical V1/V2 wire codec is `src/wire.rs`: strict UTF-8 JSON, lexicographically sorted object keys, integer-only numeric fields, exact schema/version/contract identity, encoded-size limits, and deny-unknown deserialization. The HNMF qualification packages are oracles/algorithms and must import these contracts rather than redefine them.
+The canonical Rust definitions live only in `codex-rs/hepta-cognitive-types/src/hnmf.rs`, `hnmf_learning.rs` and `shared_experience.rs`. The canonical V1/V2 wire API is `src/wire.rs`, with its shared private codec in `src/wire_legacy.rs`: strict UTF-8 JSON, lexicographically sorted object keys, integer-only numeric fields, exact schema/version/contract identity, encoded-size limits, and deny-unknown deserialization. The HNMF qualification packages are oracles/algorithms and must import these contracts rather than redefine them.
 
 Exact ModulePort-to-schema sets are machine-bound in `IMPLEMENTATION_MAP.json.portSchemaBindings`. Registry projection alone is not a consumer migration. The five named consumers now have source-level exact-binding wrappers, while legacy record and packet surfaces remain present for rollback and historical readability. `IMPLEMENTATION_MAP.json` therefore records source convergence separately from authenticated product composition and keeps `canonicalConsumerConvergenceProved=false` until exact-head and synthetic-merge product execution prove every normal caller and authorize legacy retirement. Existing Lane C owner-local records such as `MemoryAdmissionCandidateV1`, `MemoryWriteIntentV1` and `MemoryWriteReceiptV1` remain typed-local contracts until a separately registered wire schema is added; they are not silently reinterpreted as `MemoryEventV1`.
 
@@ -341,3 +341,26 @@ HNMF qualification has independent native, reference, consumer and owner jobs fo
 source head and, on pull requests, an exact two-parent merge candidate. Check
 outcomes and source/tree identities are retained even when another check fails.
 No failed, skipped or cancelled unit can satisfy the aggregate qualification job.
+
+### Actual serialization budget and resource receipt consistency
+
+The codec enforces the contract byte ceiling during the actual serialization
+retained for canonicalization, rather than relying on a separate count preflight.
+It retains only bounded JSON bytes before materializing the canonical value. A changing custom serializer cannot make that second library
+allocation unbounded merely by passing a small preflight. The reported excess
+length is a witnessed lower bound, maximum + 1; the remainder is not traversed.
+Custom implementations still own deterministic representation and validation.
+This does not contain arbitrary computation or allocations inside their Rust
+Serialize/Deserialize implementations.
+
+The compatibility and prepared APIs use the same private canonicalization,
+envelope and digest framing implementation in wire_legacy.rs. Prepared decode
+takes ownership of the canonical payload buffer already checked by the strict
+decoder, eliminating the former second payload copy. Historical schema identities,
+wire framing, Unicode scalar preservation and both digest profiles are unchanged.
+
+Recall resource receipts must cover the number of distinct traced activation
+paths and the union of node IDs in active nodes, path endpoints and contradictions.
+Those are lower bounds on the claimed synapse and node counts. They do not prove
+actual owner execution or membership in an authenticated graph. Budget admission,
+source identity, freshness and final use remain the corresponding owner's work.

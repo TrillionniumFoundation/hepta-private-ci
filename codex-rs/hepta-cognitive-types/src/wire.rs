@@ -15,15 +15,8 @@ pub(crate) use legacy::decode_validated_wire_with_digests_v1;
 pub use legacy::*;
 
 use codex_hepta_types::Digest32;
-use serde::Serialize;
-use serde_json::Value;
 
-use crate::contract::CANONICALIZATION_ALGORITHM_V1;
 use crate::contract::Validated;
-
-const PREPARED_MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
-const PREPARED_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.canonical-json.v1\0";
-const PREPARED_BOUND_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.bound-digest.v1\0";
 
 /// Typed identity for the frozen historical V1 contract digest.
 ///
@@ -86,10 +79,8 @@ where
     /// Validate once, materialize one bounded canonical payload and derive both
     /// digest profiles from that exact retained byte buffer.
     pub fn new(value: T) -> Result<Self, CognitiveWireError> {
-        crate::bounded::serialized_size(&value, T::MAX_ENCODED_BYTES, "payload")
-            .map_err(CognitiveWireError::Contract)?;
         let value = Validated::new(value).map_err(CognitiveWireError::Contract)?;
-        let canonical_bytes = prepared_canonical_json_bytes(value.as_inner())?;
+        let canonical_bytes = legacy::canonical_json_bytes(value.as_inner())?;
         prepared_check_payload_length::<T>(&canonical_bytes)?;
         Ok(Self::from_checked_parts(
             value,
@@ -97,22 +88,23 @@ where
         ))
     }
 
-    /// Reuse the exact payload slice from a wire envelope already accepted by
-    /// the frozen strict decoder. No second payload serialization is performed.
+    /// Retain the canonical payload buffer already checked by the strict
+    /// decoder. No second payload serialization or payload copy is performed.
     pub fn decode_wire(bytes: &[u8]) -> Result<Self, CognitiveWireError> {
-        let value = legacy::decode_validated_wire_v1::<T>(bytes)?;
-        let payload = prepared_payload_slice::<T>(bytes)?;
-        prepared_check_payload_length::<T>(payload)?;
+        let decoded = legacy::decode_canonical_payload_v1::<T>(bytes)?;
         Ok(Self::from_checked_parts(
-            value,
-            payload.to_vec().into_boxed_slice(),
+            decoded.value,
+            decoded.bytes.into_boxed_slice(),
         ))
     }
 
     fn from_checked_parts(value: Validated<T>, canonical_bytes: Box<[u8]>) -> Self {
-        let frozen_digest = FrozenContractDigestV1(prepared_frozen_digest::<T>(&canonical_bytes));
-        let bound_digest =
-            SchemaBoundContractDigestV1(prepared_bound_digest::<T>(&canonical_bytes));
+        let frozen_digest = FrozenContractDigestV1(
+            legacy::frozen_digest_from_checked_payload::<T>(&canonical_bytes),
+        );
+        let bound_digest = SchemaBoundContractDigestV1(
+            legacy::bound_digest_from_checked_payload::<T>(&canonical_bytes),
+        );
         Self {
             value,
             canonical_bytes,
@@ -149,7 +141,7 @@ where
     /// Build the frozen envelope around retained canonical bytes without
     /// serializing or validating the payload again.
     pub fn encode_wire(&self) -> Result<Vec<u8>, CognitiveWireError> {
-        prepared_encode_envelope::<T>(&self.canonical_bytes)
+        legacy::encode_envelope_from_payload::<T>(&self.canonical_bytes)
     }
 
     #[must_use]
@@ -170,16 +162,14 @@ pub fn decode_validated_canonical_payload_v1<T: CognitiveContractV1>(
 pub fn canonical_contract_typed_digests_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<(FrozenContractDigestV1, SchemaBoundContractDigestV1), CognitiveWireError> {
-    crate::bounded::serialized_size(value, T::MAX_ENCODED_BYTES, "payload")
-        .map_err(CognitiveWireError::Contract)?;
     value
         .validate_contract()
         .map_err(CognitiveWireError::Contract)?;
-    let bytes = prepared_canonical_json_bytes(value)?;
+    let bytes = legacy::canonical_json_bytes(value)?;
     prepared_check_payload_length::<T>(&bytes)?;
     Ok((
-        FrozenContractDigestV1(prepared_frozen_digest::<T>(&bytes)),
-        SchemaBoundContractDigestV1(prepared_bound_digest::<T>(&bytes)),
+        FrozenContractDigestV1(legacy::frozen_digest_from_checked_payload::<T>(&bytes)),
+        SchemaBoundContractDigestV1(legacy::bound_digest_from_checked_payload::<T>(&bytes)),
     ))
 }
 
@@ -195,156 +185,12 @@ fn prepared_check_payload_length<T: CognitiveContractV1>(
     Ok(())
 }
 
-fn prepared_envelope_maximum<T: CognitiveContractV1>() -> Result<usize, CognitiveWireError> {
-    T::MAX_ENCODED_BYTES
-        .checked_add(PREPARED_MAX_ENVELOPE_OVERHEAD_BYTES)
-        .ok_or(CognitiveWireError::EnvelopeLength {
-            actual: usize::MAX,
-            maximum: T::MAX_ENCODED_BYTES,
-        })
-}
-
-fn prepared_envelope_parts<T: CognitiveContractV1>() -> Result<(String, String), CognitiveWireError>
-{
-    let maximum = prepared_envelope_maximum::<T>()?;
-    if T::CONTRACT_ID.len() > PREPARED_MAX_ENVELOPE_OVERHEAD_BYTES
-        || T::SCHEMA_ID.len() > PREPARED_MAX_ENVELOPE_OVERHEAD_BYTES
-    {
-        return Err(CognitiveWireError::EnvelopeLength {
-            actual: maximum.saturating_add(1),
-            maximum,
-        });
-    }
-    let contract = serde_json::to_string(T::CONTRACT_ID).map_err(CognitiveWireError::Json)?;
-    let schema = serde_json::to_string(T::SCHEMA_ID).map_err(CognitiveWireError::Json)?;
-    Ok((
-        format!("{{\"contract\":{contract},\"payload\":"),
-        format!(",\"schema\":{schema},\"schemaVersion\":{COGNITIVE_WIRE_VERSION_V1}}}"),
-    ))
-}
-
-fn prepared_encode_envelope<T: CognitiveContractV1>(
-    payload: &[u8],
-) -> Result<Vec<u8>, CognitiveWireError> {
-    prepared_check_payload_length::<T>(payload)?;
-    let maximum = prepared_envelope_maximum::<T>()?;
-    let (prefix, suffix) = prepared_envelope_parts::<T>()?;
-    let length = payload
-        .len()
-        .saturating_add(prefix.len())
-        .saturating_add(suffix.len());
-    if length > maximum {
-        return Err(CognitiveWireError::EnvelopeLength {
-            actual: length,
-            maximum,
-        });
-    }
-    let mut encoded = Vec::with_capacity(length);
-    encoded.extend_from_slice(prefix.as_bytes());
-    encoded.extend_from_slice(payload);
-    encoded.extend_from_slice(suffix.as_bytes());
-    Ok(encoded)
-}
-
-fn prepared_payload_slice<T: CognitiveContractV1>(
-    wire: &[u8],
-) -> Result<&[u8], CognitiveWireError> {
-    let (prefix, suffix) = prepared_envelope_parts::<T>()?;
-    let Some(after_prefix) = wire.strip_prefix(prefix.as_bytes()) else {
-        return Err(CognitiveWireError::NonCanonicalInput);
-    };
-    let Some(payload) = after_prefix.strip_suffix(suffix.as_bytes()) else {
-        return Err(CognitiveWireError::NonCanonicalInput);
-    };
-    Ok(payload)
-}
-
-fn prepared_frozen_digest<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
-    Digest32::of_parts(&[
-        PREPARED_DIGEST_DOMAIN_V1,
-        T::CONTRACT_ID.as_bytes(),
-        b"\0",
-        payload,
-    ])
-}
-
-fn prepared_bound_digest<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
-    Digest32::of_parts(&[
-        PREPARED_BOUND_DIGEST_DOMAIN_V1,
-        &prepared_component_length(T::SCHEMA_ID.as_bytes()),
-        T::SCHEMA_ID.as_bytes(),
-        &COGNITIVE_WIRE_VERSION_V1.to_be_bytes(),
-        &prepared_component_length(T::CONTRACT_ID.as_bytes()),
-        T::CONTRACT_ID.as_bytes(),
-        &prepared_component_length(CANONICALIZATION_ALGORITHM_V1.as_bytes()),
-        CANONICALIZATION_ALGORITHM_V1.as_bytes(),
-        &prepared_component_length(payload),
-        payload,
-    ])
-}
-
-fn prepared_component_length(component: &[u8]) -> [u8; 8] {
-    u64::try_from(component.len())
-        .unwrap_or(u64::MAX)
-        .to_be_bytes()
-}
-
-fn prepared_canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
-    let value = serde_json::to_value(value).map_err(CognitiveWireError::Json)?;
-    let mut output = String::new();
-    prepared_write_canonical_value(&value, &mut output)?;
-    Ok(output.into_bytes())
-}
-
-fn prepared_write_canonical_value(
-    value: &Value,
-    output: &mut String,
-) -> Result<(), CognitiveWireError> {
-    match value {
-        Value::Null => output.push_str("null"),
-        Value::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
-        Value::Number(value) => {
-            if !value.is_i64() && !value.is_u64() {
-                return Err(CognitiveWireError::NonIntegerNumber);
-            }
-            output.push_str(&value.to_string());
-        }
-        Value::String(value) => {
-            output.push_str(&serde_json::to_string(value).map_err(CognitiveWireError::Json)?);
-        }
-        Value::Array(values) => {
-            output.push('[');
-            for (index, item) in values.iter().enumerate() {
-                if index != 0 {
-                    output.push(',');
-                }
-                prepared_write_canonical_value(item, output)?;
-            }
-            output.push(']');
-        }
-        Value::Object(values) => {
-            output.push('{');
-            let mut entries = values.iter().collect::<Vec<_>>();
-            entries.sort_by(|left, right| left.0.cmp(right.0));
-            for (index, (key, item)) in entries.into_iter().enumerate() {
-                if index != 0 {
-                    output.push(',');
-                }
-                output.push_str(&serde_json::to_string(key).map_err(CognitiveWireError::Json)?);
-                output.push(':');
-                prepared_write_canonical_value(item, output)?;
-            }
-            output.push('}');
-        }
-    }
-    Ok(())
-}
-
 #[cfg(test)]
 mod prepared_tests {
     use std::cell::Cell;
 
     use serde::Deserialize;
+    use serde::Serialize;
 
     use super::*;
     use crate::hnmf::HnmfContractError;
@@ -411,7 +257,7 @@ mod prepared_tests {
         let prepared = ValidatedCanonicalPayload::new(PreparedProbe(7)).expect("prepared");
         let serializations = SERIALIZATIONS.with(Cell::get);
         let validations = VALIDATIONS.with(Cell::get);
-        assert_eq!(serializations, 2);
+        assert_eq!(serializations, 1);
         assert_eq!(validations, 1);
         for _ in 0..8 {
             let _ = prepared.encode_wire().expect("wire");
@@ -424,7 +270,7 @@ mod prepared_tests {
     }
 
     #[test]
-    fn strict_decode_reuses_the_verified_envelope_payload_slice() {
+    fn strict_decode_reuses_the_checked_payload_buffer() {
         let wire = legacy::encode_wire_v1(&PreparedProbe(9)).expect("wire");
         SERIALIZATIONS.with(|count| count.set(0));
         VALIDATIONS.with(|count| count.set(0));

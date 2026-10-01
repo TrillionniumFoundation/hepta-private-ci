@@ -166,7 +166,10 @@ fn targeted_mutation_inventory_covers_reviewed_identity_keys() {
         "topology-node-logical-identity",
         "schema-bound-digest-domain",
         "consumer-payload-family",
-        "nine-targeted-source-mutants-not-global-mutation-coverage",
+        "recall-path-resource-accounting",
+        "recall-node-resource-accounting",
+        "actual-serialization-byte-budget",
+        "twelve-targeted-source-mutants-not-global-mutation-coverage",
     ] {
         assert!(
             MUTATION_RUNNER.contains(token),

@@ -449,6 +449,33 @@ impl RecallPacketV1 {
         }
         self.resource_receipt.validate()?;
         population_counts_v1(&self.active_nodes)?;
+        // Each distinct traced path is a synapse, and every referenced node
+        // belongs to the reported graph. Counts are structural consistency,
+        // not authenticated evidence of what the owner actually processed.
+        let referenced_nodes = self
+            .active_nodes
+            .iter()
+            .map(|node| &node.node_id)
+            .chain(
+                self.activation_paths
+                    .iter()
+                    .flat_map(|path| [&path.source_node_id, &path.target_node_id]),
+            )
+            .chain(
+                self.contradictions
+                    .iter()
+                    .flat_map(|pair| [&pair.left_node_id, &pair.right_node_id]),
+            )
+            .collect::<BTreeSet<_>>();
+        if self.activation_paths.len()
+            > usize::try_from(self.resource_receipt.synapse_count).unwrap_or(usize::MAX)
+            || referenced_nodes.len() > usize::from(self.resource_receipt.node_count)
+        {
+            return Err(HnmfContractError::Invalid(
+                "recall resource receipt binding",
+            ));
+        }
+
         if usize::from(self.resource_receipt.candidate_event_count) < self.selected_events.len()
             || usize::from(self.resource_receipt.active_node_count) != self.active_nodes.len()
             || self.resource_receipt.active_node_count > self.resource_receipt.node_count

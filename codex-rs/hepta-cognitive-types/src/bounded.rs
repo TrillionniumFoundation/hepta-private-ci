@@ -1,5 +1,5 @@
-//! Allocation-free JSON byte-budget preflight. An exceeded size is a lower
-//! bound (`maximum + 1`), not a claim that the entire payload was traversed.
+//! JSON byte budgets for allocation-free counting and bounded retained output.
+//! An exceeded size is a lower bound (`maximum + 1`), not a full traversal.
 
 use std::io;
 use std::io::Write;
@@ -44,6 +44,50 @@ impl Write for ByteBudget {
         }
         self.written += bytes.len();
         Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+pub(crate) enum BoundedSerializationError {
+    LimitExceeded { maximum: usize },
+    Json(serde_json::Error),
+}
+
+/// Bound the bytes actually retained, even if Serialize changes after preflight.
+/// Arbitrary work performed by a caller's Serialize implementation is not contained.
+pub(crate) fn serialized_bytes<T: Serialize>(
+    value: &T,
+    maximum: usize,
+) -> Result<Vec<u8>, BoundedSerializationError> {
+    let mut writer = BoundedBuffer {
+        budget: ByteBudget {
+            maximum,
+            written: 0,
+            exceeded: false,
+        },
+        bytes: Vec::with_capacity(maximum.min(1_024)),
+    };
+    let result = serde_json::to_writer(&mut writer, value);
+    if writer.budget.exceeded {
+        return Err(BoundedSerializationError::LimitExceeded { maximum });
+    }
+    result.map_err(BoundedSerializationError::Json)?;
+    Ok(writer.bytes)
+}
+
+struct BoundedBuffer {
+    budget: ByteBudget,
+    bytes: Vec<u8>,
+}
+
+impl Write for BoundedBuffer {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        let written = self.budget.write(bytes)?;
+        self.bytes.extend_from_slice(bytes);
+        Ok(written)
     }
 
     fn flush(&mut self) -> io::Result<()> {

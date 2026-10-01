@@ -277,3 +277,6 @@ mod shared_experience_context_tests;
 
 #[cfg(test)]
 mod record_digest_reuse_tests;
+
+#[cfg(test)]
+mod wire_budget_tests;

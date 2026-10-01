@@ -2,7 +2,7 @@
   "schema": "hepta.cognitive-types.current-state.v1",
   "schemaVersion": 1,
   "module": "cognitive.types",
-  "observedDate": "2026-09-30",
+  "observedDate": "2026-10-01",
   "candidateIdentity": {
     "authority": "exact_head_and_deterministic_synthetic_merge_ci_receipts",
     "selfReportedCommitIsQualificationEvidence": false,
@@ -25,7 +25,11 @@
     "deterministicFuzzCorpus": "implemented_python_tests_passed_on_prior_candidate",
     "fuzzReceiptSealing": "implemented_python_tests_passed_on_prior_candidate",
     "fuzzCampaignSourceCoverageGuard": "implemented_current_candidate_ci_pending",
-    "windowsObjectiveTestDrift": "source_corrected_current_candidate_ci_pending"
+    "windowsObjectiveTestDrift": "source_corrected_current_candidate_ci_pending",
+    "actualSerializationBudget": "implemented_adversarial_regressions_passed_hosted_qualification_pending",
+    "recallResourceAccounting": "implemented_path_and_referenced_node_lower_bounds_hosted_qualification_pending",
+    "canonicalCodecOwner": "wire_legacy.rs_shared_by_compatibility_and_prepared_apis",
+    "targetedMutationInventory": "twelve_targeted_mutants_not_global_coverage"
   },
   "qualification": {
     "exactHead": "pending_current_candidate",

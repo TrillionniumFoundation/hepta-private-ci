@@ -91,6 +91,11 @@ class LosslessOracleTests(unittest.TestCase):
         self.assertEqual((left["sourceNodeId"], left["targetNodeId"], left["relation"]),
                          (right["sourceNodeId"], right["targetNodeId"], right["relation"]))
         self.assertLess(left["contributionPpm"], right["contributionPpm"])
+        self.assertGreaterEqual(
+            recall["payload"]["resourceReceipt"]["synapseCount"],
+            len(recall["payload"]["activationPaths"]),
+        )  # The identity mutant must not be killed by a different resource guard.
+
 
         plasticity = json.loads(cases["plasticity:logical-target-conflict"])
         left, right = plasticity["payload"]["weightProposals"]

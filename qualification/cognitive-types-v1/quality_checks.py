@@ -126,8 +126,24 @@ def cases(vectors):
     duplicate_path["contributionPpm"] = 2
     recall["payload"]["activationPaths"] = [path, duplicate_path]
     recall["payload"]["resourceReceipt"]["nodeCount"] = 2
-    recall["payload"]["resourceReceipt"]["synapseCount"] = 1
+    recall["payload"]["resourceReceipt"]["synapseCount"] = 2
     negative.append(("recall:logical-activation-path-conflict", canonical(recall)))
+
+    recall = copy.deepcopy(envelopes["RecallPacketV1"])
+    recall["payload"]["activationPaths"] = [path]
+    recall["payload"]["resourceReceipt"].update(nodeCount=2, synapseCount=1)
+    positive.append(("recall:resource-exact", copy.deepcopy(recall)))
+    for name, field, count in [
+        ("recall:underreported-synapses", "synapseCount", 0),
+        ("recall:underreported-path-nodes", "nodeCount", 1),
+    ]:
+        underreported = copy.deepcopy(recall)
+        underreported["payload"]["resourceReceipt"][field] = count
+        negative.append((name, canonical(underreported)))
+    recall["payload"]["contradictions"] = [
+        {"leftNodeId": "node:1", "rightNodeId": "node:3"}
+    ]
+    negative.append(("recall:underreported-contradiction-nodes", canonical(recall)))
 
     plasticity = copy.deepcopy(envelopes["PlasticityBatchV1"])
     row = copy.deepcopy(plasticity["payload"]["weightProposals"][0])

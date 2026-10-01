@@ -71,3 +71,6 @@ include!("identity_tests.rs");
 include!("handoff_tests.rs");
 include!("codec_tests.rs");
 include!("handoff_profile_tests.rs");
+
+#[path = "recall_resource_tests.rs"]
+mod resource_tests;

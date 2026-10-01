@@ -89,7 +89,7 @@ The local continuation executed 39 tests in `test_verify_receipts` and `test_res
 
 The libFuzzer target now asserts canonical bytes, structural roundtrip and both digest profiles for every accepted V1/V2 input. Compiling this target is not a fuzz campaign, and no long-running fuzz result is claimed by its presence.
 
-`run_mutations.py` evaluates nine targeted source mutants in disposable external Git worktrees: provenance, selected-event, active-node, activation-path, weight-target, threshold-target and topology-node logical identity; the schema-bound digest domain; and the consumer payload-family gate. Each hostile identity fixture preserves full-value canonical ordering so only the reviewed logical-key invariant kills the corresponding mutant. Wire mutants first require the baseline probe to pass, then require the mutant to compile and produce an observably wrong semantic result. The consumer mutant first requires its exact Rust regression to pass on the immutable candidate, then compiles the mutated crate with `--no-run` and counts a kill only when that exact named regression reports `FAILED`. A compiler error, unrelated test failure, crash, timeout, missing anchor or missing output is an invalid experiment, not a killed mutant. The source candidate remains unchanged; only the temporary mutated copy is removed. This is test-sensitivity measurement, not self-modifying qualification or a repair path. The nine experiments do not establish global mutation coverage.
+`run_mutations.py` evaluates twelve targeted source mutants in disposable external Git worktrees: provenance, selected-event, active-node, activation-path, weight-target, threshold-target and topology-node logical identity; the schema-bound digest domain; the consumer payload-family gate, recall path/node accounting and the actual serialization byte budget. Each hostile identity fixture preserves full-value canonical ordering so only the reviewed logical-key invariant kills the corresponding mutant. Wire mutants first require the baseline probe to pass, then require the mutant to compile and produce an observably wrong semantic result. Rust test mutants first require their exact regression to pass on the immutable candidate, then compile the mutated crate with `--no-run` and count a kill only when that exact named regression reports `FAILED`. A compiler error, unrelated test failure, crash, timeout, missing anchor or missing output is an invalid experiment, not a killed mutant. The source candidate remains unchanged; only the temporary mutated copy is removed. This is test-sensitivity measurement, not self-modifying qualification or a repair path. The twelve experiments do not establish global mutation coverage.
 
 ## 6. Performance, traceability and evidence limits
 
@@ -136,3 +136,38 @@ Observed local results include 119 cognitive.types tests, 385 consumer/shared-co
 Final local integration checks passed the seven-package all-target strict-Clippy command above and Agentd all-target compilation. The boxed outcome's real consumer rebuild passed after explicitly unboxing at the Agentd boundary. A subsequent Memory dependency pass grouped the existing memory/revision identity and outcome/replay transition parameters at private transaction interfaces and updated their actual caller sites; public writer signatures, rollback behavior and transaction ownership are unchanged. Memory executed 273 passing tests with seven skipped; the latter remain unproved. The control package was rechecked with 88 passing tests. The store V2 digest map now uses the existing method directly. These changes remove the observed dependency lint blockers without disabling production lints or authority assertions.
 
 After provisioning isolated DotSlash and uv tools, both full formatter commands completed. They also reformatted existing unrelated repository Python scripts. Those broad formatting-only edits were discarded to keep this repair scoped; therefore the final source does not claim a clean whole-repository formatting baseline. Rust formatting and the cognitive.types traceability projection are checked independently.
+
+## 8. Actual output budgets and trace accounting
+
+Four adversarial regressions demonstrated two additional source defects: recall
+metadata could underreport the graph behind its path/contradiction references,
+and a generic serializer that grew after preflight was fully traversed before
+the codec refused it. The actual codec serialization now uses a bounded writer,
+and recall validation checks both local accounting lower bounds. The prepared
+and compatibility APIs share the private canonical codec rather than maintaining
+two copies of the framing and digest algorithm. Strict prepared decode retains
+the already checked canonical buffer.
+
+The targeted mutation inventory adds independent path-accounting, node-accounting
+and actual-byte-budget mutants. The duplicate-path fixture declares enough
+synapses that only the identity guard rejects it; the new accounting guard must
+not accidentally mask lost identity sensitivity. All twelve experiments still
+require a compiling mutant and an observable wrong result from the real probe or
+the exact named regression. Resource/work performed inside caller-supplied Rust
+serialization code and authenticated physical owner execution are separate from
+these library-side bounds.
+
+Implementation-map source observations must be refreshed after source changes
+to this module or its reviewed dependencies. Rebinding the navigation observation
+does not grant product execution, independent acceptance, compatibility retirement
+or release. The existing production claim gates remain false.
+
+The scoped local review executed 123 cognitive.types tests, 210 tests across the
+five registered consumer packages (two skipped), and 130 qualification Python
+tests. The differential probe accepted 23 positive cases and rejected 109
+hostile cases while retaining all 16 golden contract profiles. All-target strict
+Clippy for the module and its five consumer packages and the Rust formatting
+check passed. These results are local review observations; hosted matrices and
+resource/latency qualification still require immutable receipts. Removing the
+codec's duplicate preflight is checked by the prepared-payload serialization
+counter; a calibrated throughput or tail-latency improvement is not claimed.

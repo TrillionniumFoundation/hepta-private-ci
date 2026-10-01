@@ -18,7 +18,7 @@ import tempfile
 import quality_checks as quality
 from run_qualification import git, run_check
 
-TARGETED_MUTATION_SCOPE = "nine-targeted-source-mutants-not-global-mutation-coverage"
+TARGETED_MUTATION_SCOPE = "twelve-targeted-source-mutants-not-global-mutation-coverage"
 
 RECIPES = [
     {
@@ -120,6 +120,31 @@ RECIPES = [
         "mode": "rust_test",
         "test": "consumer_tests::payload_consumer_matrix_fails_closed",
     },
+    {
+        "name": "recall-path-resource-accounting",
+        "file": "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "old": "if self.activation_paths.len()",
+        "new": "if false && self.activation_paths.len()",
+        "case": "recall:underreported-synapses",
+        "negative": True,
+    },
+    {
+        "name": "recall-node-resource-accounting",
+        "file": "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "old": "|| referenced_nodes.len() > usize::from(self.resource_receipt.node_count)",
+        "new": "|| false && referenced_nodes.len() > usize::from(self.resource_receipt.node_count)",
+        "case": "recall:underreported-path-nodes",
+        "negative": True,
+    },
+    {
+        "name": "actual-serialization-byte-budget",
+        "file": "codex-rs/hepta-cognitive-types/src/bounded.rs",
+        "old": "budget: ByteBudget {\n            maximum,",
+        "new": "budget: ByteBudget {\n            maximum: usize::MAX,",
+        "mode": "rust_test",
+        "test": "wire_budget_tests::actual_serialization_is_bounded_when_preflight_observation_changes",
+    },
+
 ]
 
 

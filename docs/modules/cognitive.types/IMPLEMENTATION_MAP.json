@@ -220,7 +220,7 @@
     {
       "operation": "canonical_wire_v1",
       "nativeSymbol": "CognitiveContractV1",
-      "sourcePath": "codex-rs/hepta-cognitive-types/src/wire.rs",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/wire_legacy.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [
@@ -338,7 +338,7 @@
   "canonicalWire": {
     "version": 1,
     "encoding": "canonical_json_utf8_sorted_object_keys_integer_only",
-    "implementation": "codex-rs/hepta-cognitive-types/src/wire.rs",
+    "implementation": "codex-rs/hepta-cognitive-types/src/wire_legacy.rs",
     "denyUnknownCriticalFields": true
   },
   "portSchemaBindings": {

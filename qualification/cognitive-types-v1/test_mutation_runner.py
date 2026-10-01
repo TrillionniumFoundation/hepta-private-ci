@@ -29,9 +29,13 @@ class MutationRunnerTests(unittest.TestCase):
             "plasticity-threshold-target-logical-identity": "plasticity:logical-threshold-conflict",
             "topology-node-logical-identity": "topology:logical-node-conflict",
             "schema-bound-digest-domain": "ModalitySpanRefV1:golden",
+            "recall-path-resource-accounting": "recall:underreported-synapses",
+            "recall-node-resource-accounting": "recall:underreported-path-nodes",
+            "actual-serialization-byte-budget": "wire_budget_tests::actual_serialization_is_bounded_when_preflight_observation_changes",
+
             "consumer-payload-family": "consumer_tests::payload_consumer_matrix_fails_closed",
         }
-        self.assertEqual(len(RECIPES), 9)
+        self.assertEqual(len(RECIPES), 12)
         self.assertEqual(
             {
                 row["name"]: row.get("case", row.get("test"))
@@ -39,10 +43,10 @@ class MutationRunnerTests(unittest.TestCase):
             },
             expected,
         )
-        self.assertEqual(len({row["file"] + row["old"] for row in RECIPES}), 9)
+        self.assertEqual(len({row["file"] + row["old"] for row in RECIPES}), 12)
         self.assertEqual(
             TARGETED_MUTATION_SCOPE,
-            "nine-targeted-source-mutants-not-global-mutation-coverage",
+            "twelve-targeted-source-mutants-not-global-mutation-coverage",
         )
 
     def test_only_observed_wrong_semantics_count_as_killed(self):
