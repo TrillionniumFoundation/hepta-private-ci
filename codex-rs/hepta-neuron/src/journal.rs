@@ -46,6 +46,9 @@ pub struct JournalAnchor {
 enum RecoveryPolicy {
     Unanchored,
     Require(JournalAnchor),
+    RequireComplete,
+    Fresh,
+    Existing,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -107,6 +110,27 @@ impl SparseJournal {
         Self::open_with_policy(file, config, scope, max_records, RecoveryPolicy::Unanchored)
     }
 
+    /// Canonical bootstrap requires emptiness while holding the file lock.
+    pub(crate) fn open_fresh(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(file, config, scope, max_records, RecoveryPolicy::Fresh)
+    }
+
+    /// Recover an enrolled root in the first-acknowledgement window. It cannot
+    /// silently create a missing journal or adopt work beyond the first tick.
+    pub(crate) fn open_existing(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(file, config, scope, max_records, RecoveryPolicy::Existing)
+    }
+
     /// Recover the first segment at least through the externally acknowledged
     /// checkpoint. Anchor validation occurs before any repair.
     pub fn open_anchored(
@@ -122,6 +146,23 @@ impl SparseJournal {
             scope,
             max_records,
             RecoveryPolicy::Require(anchor),
+        )
+    }
+
+    /// An acknowledgement in a later segment requires every frame in this
+    /// sealed root. Validate completeness before initialization or tail repair.
+    pub(crate) fn open_complete(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            RecoveryPolicy::RequireComplete,
         )
     }
 
@@ -145,9 +186,18 @@ impl SparseJournal {
         let mut file = LockedFile::acquire(file)?;
         let header = root_header(config_digest, scope);
         let length = file.metadata()?.len();
+        if matches!(policy, RecoveryPolicy::Fresh) && length != 0 {
+            return Err(JournalError::Conflict);
+        }
+        if matches!(policy, RecoveryPolicy::Existing) && length == 0 {
+            return Err(JournalError::Corrupt);
+        }
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
-            if let RecoveryPolicy::Require(_) = policy {
+            if matches!(
+                policy,
+                RecoveryPolicy::Require(_) | RecoveryPolicy::RequireComplete
+            ) {
                 return Err(JournalError::AcknowledgedHistoryMissing);
             }
             file.write_all(&header)
@@ -238,10 +288,16 @@ impl SparseJournal {
         let mut file = LockedFile::acquire(file)?;
         let header = successor_header(config_digest, scope, seed_anchor);
         let length = file.metadata()?.len();
+        if matches!(policy, RecoveryPolicy::Fresh) && length != 0 {
+            return Err(JournalError::Conflict);
+        }
+        if matches!(policy, RecoveryPolicy::Existing) && length == 0 {
+            return Err(JournalError::Corrupt);
+        }
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
-            if let RecoveryPolicy::Require(anchor) = policy
-                && anchor.sequence > seed_anchor.sequence
+            if matches!(policy, RecoveryPolicy::RequireComplete)
+                || matches!(policy, RecoveryPolicy::Require(anchor) if anchor.sequence > seed_anchor.sequence)
             {
                 return Err(JournalError::AcknowledgedHistoryMissing);
             }
@@ -273,6 +329,14 @@ impl SparseJournal {
     ) -> Result<Self, JournalError> {
         let frame_len = 304 + 16 * config.width;
         let length = file.metadata()?.len();
+        if matches!(policy, RecoveryPolicy::Existing) && length > (data_offset + frame_len) as u64 {
+            return Err(JournalError::Corrupt);
+        }
+        if matches!(policy, RecoveryPolicy::RequireComplete)
+            && length != (data_offset + max_records * frame_len) as u64
+        {
+            return Err(JournalError::AcknowledgedHistoryMissing);
+        }
         if length < data_offset as u64
             || length > (data_offset + max_records * frame_len + frame_len - 1) as u64
         {
@@ -361,6 +425,26 @@ impl SparseJournal {
         Self::open_successor(file, self.config.clone(), self.scope, max_records, seed)
     }
 
+    /// Canonical rotation creates a successor only if the locked file is empty.
+    pub(crate) fn start_fresh_successor(
+        &self,
+        file: File,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
+        Self::open_successor_with_policy(
+            file,
+            self.config.clone(),
+            self.scope,
+            max_records,
+            seed,
+            RecoveryPolicy::Fresh,
+        )
+    }
+
     /// Recover a successor segment using this journal's exact current checkpoint
     /// as its seed and an independently retained acknowledgement witness.
     pub fn recover_successor(
@@ -380,6 +464,26 @@ impl SparseJournal {
             max_records,
             seed,
             anchor,
+        )
+    }
+
+    /// A witness beyond this successor requires a complete sealed segment.
+    pub(crate) fn recover_complete_successor(
+        &self,
+        file: File,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
+        Self::open_successor_with_policy(
+            file,
+            self.config.clone(),
+            self.scope,
+            max_records,
+            seed,
+            RecoveryPolicy::RequireComplete,
         )
     }
 

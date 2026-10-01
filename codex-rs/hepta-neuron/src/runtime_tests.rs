@@ -833,6 +833,46 @@ fn early_owner_rollover_rejects_before_initializing_successor_file() {
 }
 
 #[test]
+fn successor_recovery_cannot_bypass_full_segment_rotation() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::for_config(&config);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 4,
+        config,
+        witness.clone(),
+    ));
+    let mut model = FakeModel::new();
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let anchor = JournalAnchor {
+        sequence: 1,
+        checkpoint_digest: first.tick.checkpoint_after,
+    };
+    let root_length = checked(fs::metadata(fixture.0.join("journal"))).len();
+    assert_eq!(
+        runtime.rollover(fixture.named_file("early"), /*max_records*/ 4),
+        Err(NeuronRuntimeError::SegmentNotFull)
+    );
+    assert_eq!(
+        runtime.recover_next_segment(fixture.named_file("early"), /*max_records*/ 4),
+        Err(NeuronRuntimeError::SegmentNotFull)
+    );
+    assert_eq!(checked(fs::metadata(fixture.0.join("early"))).len(), 0);
+    assert_eq!(
+        checked(fs::metadata(fixture.0.join("journal"))).len(),
+        root_length
+    );
+    assert_eq!(checked(runtime.current_anchor()), Some(anchor));
+    assert_eq!(checked(witness.current()), Some(anchor));
+    checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+    assert_eq!(model.calls, 2);
+}
+
+#[test]
 fn full_owner_journal_rejects_before_reinvoking_model() {
     let fixture = Fixture::new();
     let native = native_config();
@@ -1011,4 +1051,85 @@ fn canonical_bootstrap_rejects_witness_context_mismatch_before_journal_initializ
         ));
         assert_eq!(checked(fs::metadata(fixture.0.join("journal"))).len(), 0);
     }
+}
+
+#[test]
+fn owner_rollover_rejects_existing_tail_without_replacing_acknowledged_state() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::for_config(&config);
+    let mut model = FakeModel::new();
+    let (second_anchor, third_anchor) = {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 2,
+            config.clone(),
+            witness.clone(),
+        ));
+        let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+        let second = checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+        let second_anchor = checked(runtime.current_anchor()).expect("acknowledged second tick");
+        checked(runtime.rollover(fixture.named_file("successor"), /*max_records*/ 2));
+        witness.fail_next_compare_and_swap();
+        assert!(matches!(
+            runtime.tick(&mut model, input(3, second.tick.checkpoint_after)),
+            Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+        ));
+        (
+            second_anchor,
+            checked(runtime.current_anchor()).expect("durable unacknowledged third tick"),
+        )
+    };
+    let root_bytes = checked(fs::read(fixture.0.join("journal")));
+    let successor_bytes = checked(fs::read(fixture.0.join("successor")));
+    let mut recovered = checked(NeuronRuntime::recover(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 2,
+        config.clone(),
+        second_anchor,
+        witness.clone(),
+    ));
+    assert_eq!(
+        recovered.rollover(fixture.named_file("successor"), /*max_records*/ 2),
+        Err(NeuronRuntimeError::RolloverRequiresEmptyJournal)
+    );
+    assert_eq!(checked(recovered.current_anchor()), Some(second_anchor));
+    assert_eq!(checked(witness.current()), Some(second_anchor));
+    assert_eq!(
+        checked(recovered.current_eligibility_sample())
+            .expect("acknowledged root eligibility")
+            .checkpoint_digest(),
+        second_anchor.checkpoint_digest
+    );
+    assert_eq!(
+        recovered.tick(&mut model, input(3, second_anchor.checkpoint_digest)),
+        Err(NeuronRuntimeError::Journal(JournalError::Capacity))
+    );
+    assert_eq!(model.calls, 3);
+    drop(recovered);
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), root_bytes);
+    assert_eq!(
+        checked(fs::read(fixture.0.join("successor"))),
+        successor_bytes
+    );
+
+    let mut recovered = checked(NeuronRuntime::recover(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 2,
+        config,
+        second_anchor,
+        witness.clone(),
+    ));
+    checked(recovered.recover_next_segment(fixture.named_file("successor"), /*max_records*/ 2));
+    assert_eq!(checked(recovered.current_anchor()), Some(third_anchor));
+    assert_eq!(checked(witness.current()), Some(third_anchor));
+    checked(recovered.tick(&mut model, input(4, third_anchor.checkpoint_digest)));
+    assert_eq!(model.calls, 4);
 }

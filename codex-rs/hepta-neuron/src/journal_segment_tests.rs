@@ -275,3 +275,114 @@ fn plasticity_anchor_queries_preserve_global_sequence_across_rollover() {
     assert_eq!(checked(recovered.current_anchor()), Some(current));
     assert!(checked(recovered.contains_anchor(seed)));
 }
+
+#[test]
+fn fresh_root_open_rejects_existing_bytes_without_replay_or_repair() {
+    let fixture = Fixture::new();
+    {
+        let mut root = checked(SparseJournal::open_fresh(
+            fixture.file("root"),
+            config(),
+            scope(),
+            /*max_records*/ 2,
+        ));
+        assert_eq!(checked(root.current_anchor()), None);
+        checked(root.commit(Digest32::ZERO, &tick(1)));
+    }
+    let history = fixture.bytes("root");
+    let mut partial_tail = history.clone();
+    partial_tail.extend_from_slice(b"partial unacknowledged frame");
+    for existing in [history[..HEADER].to_vec(), history, partial_tail] {
+        checked(fs::write(fixture.root.join("root"), &existing));
+        assert_eq!(
+            SparseJournal::open_fresh(
+                fixture.file("root"),
+                config(),
+                scope(),
+                /*max_records*/ 2,
+            )
+            .err(),
+            Some(JournalError::Conflict)
+        );
+        assert_eq!(fixture.bytes("root"), existing);
+    }
+}
+
+#[test]
+fn fresh_successor_rejects_seeded_history_without_replacing_or_repairing_it() {
+    let fixture = Fixture::new();
+    let mut root = checked(SparseJournal::open_fresh(
+        fixture.file("root"),
+        config(),
+        scope(),
+        /*max_records*/ 2,
+    ));
+    let first = checked(root.commit(Digest32::ZERO, &tick(1)));
+    let second = checked(root.commit(first.checkpoint_after, &tick(2)));
+    let third_anchor = {
+        let mut successor =
+            checked(root.start_fresh_successor(fixture.file("successor"), /*max_records*/ 2));
+        assert_eq!(
+            checked(successor.current_anchor()),
+            checked(root.current_anchor())
+        );
+        checked(successor.commit(second.checkpoint_after, &tick(3)));
+        checked(successor.current_anchor()).expect("complete successor tick")
+    };
+    let root_before = journal_bytes(&mut root);
+    let history = fixture.bytes("successor");
+    let mut partial_tail = history.clone();
+    partial_tail.extend_from_slice(b"partial unacknowledged frame");
+    for existing in [history[..SUCCESSOR_HEADER].to_vec(), history, partial_tail] {
+        checked(fs::write(fixture.root.join("successor"), &existing));
+        assert_eq!(
+            root.start_fresh_successor(fixture.file("successor"), /*max_records*/ 2)
+                .err(),
+            Some(JournalError::Conflict)
+        );
+        assert_eq!(fixture.bytes("successor"), existing);
+        assert_eq!(journal_bytes(&mut root), root_before);
+    }
+    let recovered = checked(root.recover_successor(
+        fixture.file("successor"),
+        /*max_records*/ 2,
+        third_anchor,
+    ));
+    assert_eq!(checked(recovered.current_anchor()), Some(third_anchor));
+}
+
+#[test]
+fn existing_root_open_never_enrolls_an_empty_file() {
+    let fixture = Fixture::new();
+    assert_eq!(
+        SparseJournal::open_existing(
+            fixture.file("root"),
+            config(),
+            scope(),
+            /*max_records*/ 2,
+        )
+        .err(),
+        Some(JournalError::Corrupt)
+    );
+    assert_eq!(fixture.bytes("root"), Vec::<u8>::new());
+    let anchor = {
+        let mut root = checked(SparseJournal::open_fresh(
+            fixture.file("root"),
+            config(),
+            scope(),
+            /*max_records*/ 2,
+        ));
+        checked(root.commit(Digest32::ZERO, &tick(1)));
+        checked(root.current_anchor()).expect("existing root checkpoint")
+    };
+    let original = fixture.bytes("root");
+    let recovered = checked(SparseJournal::open_existing(
+        fixture.file("root"),
+        config(),
+        scope(),
+        /*max_records*/ 2,
+    ));
+    assert_eq!(checked(recovered.current_anchor()), Some(anchor));
+    drop(recovered);
+    assert_eq!(fixture.bytes("root"), original);
+}

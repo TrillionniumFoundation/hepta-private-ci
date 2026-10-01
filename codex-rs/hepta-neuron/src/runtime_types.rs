@@ -409,6 +409,7 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     SegmentNotFull,
+    RolloverRequiresEmptyJournal,
     PendingReconciliation,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),

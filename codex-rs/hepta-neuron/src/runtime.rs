@@ -52,7 +52,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if witness.current()?.is_some() {
             return Err(NeuronRuntimeError::BootstrapWitnessPresent);
         }
-        let journal = SparseJournal::open(file, native.clone(), scope, max_records)?;
+        let journal = SparseJournal::open_fresh(file, native.clone(), scope, max_records)?;
         Ok(Self {
             config,
             native,
@@ -157,106 +157,20 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
-    /// Recover the first segment of a multi-segment chain. If the independent
-    /// witness is beyond this segment, the segment must be complete; the next
-    /// segment header will bind its exact final checkpoint before composition.
-    pub fn recover_chain_root(
-        file: File,
-        native: SparseConfig,
-        scope: JournalScope,
-        max_records: usize,
-        config: NeuronRuntimeConfigV1,
-        witness: W,
-    ) -> Result<Self, NeuronRuntimeError> {
-        config.validate_native(&native)?;
-        Self::require_witness_config(&config, scope, &witness)?;
-        let latest = witness
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if latest.sequence <= max_records as u64 {
-            return Self::recover(file, native, scope, max_records, config, latest, witness);
-        }
-        let journal = SparseJournal::open(file, native.clone(), scope, max_records)?;
-        let current = journal
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if current.sequence() != max_records as u64 {
-            return Err(NeuronRuntimeError::Journal(
-                JournalError::AcknowledgedHistoryMissing,
-            ));
-        }
-        Ok(Self {
-            config,
-            native,
-            scope,
-            journal,
-            witness,
-            pending: None,
-        })
-    }
-
     /// Rotate a full, independently acknowledged segment while preserving its
     /// exact current checkpoint as the new segment's immutable seed. Early
     /// rotation would make the configured segment boundary ambiguous on recovery.
+    /// The successor file must be empty; previously created segments use
+    /// `recover_next_segment` so their complete tail is independently acknowledged.
     pub fn rollover(&mut self, file: File, max_records: usize) -> Result<(), NeuronRuntimeError> {
         self.require_acknowledged_frontier()?;
         if self.journal.remaining_capacity()? != 0 {
             return Err(NeuronRuntimeError::SegmentNotFull);
         }
-        self.journal = self.journal.start_successor(file, max_records)?;
-        Ok(())
-    }
-
-    /// Recover the next segment in a chain. Intermediate segments must be full
-    /// when the external witness lies beyond them. The segment containing the
-    /// external witness is opened anchored before any tail repair.
-    pub fn recover_next_segment(
-        &mut self,
-        file: File,
-        max_records: usize,
-    ) -> Result<(), NeuronRuntimeError> {
-        Self::require_witness_config(&self.config, self.scope, &self.witness)?;
-        if self.pending.is_some() {
-            return Err(NeuronRuntimeError::PendingReconciliation);
+        if file.metadata().map_err(JournalError::from)?.len() != 0 {
+            return Err(NeuronRuntimeError::RolloverRequiresEmptyJournal);
         }
-        let latest = self
-            .witness
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        let seed = self
-            .journal
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        let segment_end = seed.sequence().saturating_add(max_records as u64);
-        let length = file.metadata().map_err(JournalError::from)?.len();
-        let next = if latest.sequence <= segment_end {
-            self.journal.recover_successor(file, max_records, latest)?
-        } else {
-            if length == 0 {
-                return Err(NeuronRuntimeError::Journal(
-                    JournalError::AcknowledgedHistoryMissing,
-                ));
-            }
-            let recovered = self.journal.start_successor(file, max_records)?;
-            let current = recovered
-                .current()?
-                .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-            if current.sequence() != segment_end {
-                return Err(NeuronRuntimeError::Journal(
-                    JournalError::AcknowledgedHistoryMissing,
-                ));
-            }
-            recovered
-        };
-        if latest.sequence <= segment_end {
-            let recovered = next
-                .current_anchor()?
-                .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-            if recovered != latest {
-                self.witness.compare_and_swap(Some(latest), recovered)?;
-            }
-        }
-        self.journal = next;
+        self.journal = self.journal.start_fresh_successor(file, max_records)?;
         Ok(())
     }
 
@@ -495,6 +409,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
 
 #[path = "runtime_admission.rs"]
 mod admission;
+
+#[path = "runtime_recovery.rs"]
+mod recovery;
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
