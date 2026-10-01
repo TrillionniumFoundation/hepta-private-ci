@@ -319,6 +319,158 @@ fn authority_fixture(
 
 #[cfg(unix)]
 #[tokio::test]
+async fn durable_claim_intent_rejects_payload_and_predecessor_substitution() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
+        .await
+        .expect("open");
+    let operation = intent(b"durable claimed payload");
+    store.prepare_intent(&operation).await.expect("prepare");
+    let claim = store
+        .claim_operation(
+            &operation.scope_id,
+            &operation.operation_id,
+            &stable_id("worker:exact-intent"),
+            generation(/*value*/ 1),
+            Duration::from_secs(30),
+        )
+        .await
+        .expect("claim")
+        .expect("claim row");
+    let before = (
+        store
+            .operation(&operation.scope_id, &operation.operation_id)
+            .await
+            .expect("operation before"),
+        store
+            .outbox_status(
+                &operation.destination,
+                &operation.scope_id,
+                &operation.operation_id,
+            )
+            .await
+            .expect("outbox before"),
+    );
+    let mut changed_payload = claim.clone();
+    changed_payload.intent.payload_digest = Digest32::of_bytes(b"substituted payload");
+    let mut changed_predecessor = claim.clone();
+    changed_predecessor.intent.expected_predecessor = Some(stable_id("operation:substituted-parent"));
+    let forged_claims = [(changed_payload, 41), (changed_predecessor, 42)];
+    let proof = Digest32::of_bytes(b"substitution evidence");
+    for (forged, nonce) in &forged_claims {
+        assert!(matches!(
+            store.renew_claim(forged, Duration::from_secs(30)).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+        assert!(matches!(
+            store.record_dispatch(forged, proof).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+        assert!(matches!(
+            store.acknowledge_outbox(forged, proof).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+        assert!(matches!(
+            store.mark_indeterminate(forged, proof).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+        assert!(matches!(
+            store
+                .release_not_dispatched(forged, proof, Duration::ZERO)
+                .await,
+            Err(DurableOperationError::StaleLease)
+        ));
+        // Even a correctly signed grant for the substituted bytes cannot
+        // replace the durable intent or consume its nonce on a denied claim.
+        let (authority, signed, _authority_dir) = authority_fixture(&forged.intent, *nonce);
+        assert!(matches!(
+            store.authorize_dispatch(&authority, &signed, forged).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+        authority
+            .claim(&signed, &forged.intent.final_use_binding())
+            .expect("denied durable claim did not consume the grant");
+    }
+    assert_eq!(
+        (
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("operation after denial"),
+            store
+                .outbox_status(
+                    &operation.destination,
+                    &operation.scope_id,
+                    &operation.operation_id,
+                )
+                .await
+                .expect("outbox after denial"),
+        ),
+        before
+    );
+
+    let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 43);
+    let authorized = store
+        .authorize_dispatch(&authority, &signed, &claim)
+        .await
+        .expect("original claim remains authorizable");
+    store
+        .execute_authorized(authorized, |actual| {
+            assert_eq!(actual, &operation);
+            DispatchEffect::Dispatched {
+                value: (),
+                dispatch_digest: proof,
+                acknowledgement_digest: None,
+            }
+        })
+        .await
+        .expect("original payload reaches the effect");
+    let unknown = Digest32::of_bytes(ACK_LOST_DIGEST_DOMAIN);
+    let unsettled = store
+        .mark_indeterminate(&claim, unknown)
+        .await
+        .expect("exact indeterminate replay");
+    for (forged, _) in &forged_claims {
+        assert!(matches!(
+            store.mark_indeterminate(forged, unknown).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+    }
+    assert_eq!(
+        store
+            .operation(&operation.scope_id, &operation.operation_id)
+            .await
+            .expect("after denied indeterminate replay")
+            .expect("operation"),
+        unsettled
+    );
+    store
+        .observe_terminal(
+            &operation.scope_id,
+            &operation.operation_id,
+            &ReconciliationReceiptV1 {
+                outcome: ReconciliationOutcome::Applied,
+                evidence_digest: proof,
+                observer_id: stable_id("observer:exact-intent"),
+                observer_generation: generation(/*value*/ 1),
+            },
+        )
+        .await
+        .expect("settle original operation");
+    store
+        .acknowledge_outbox(&claim, proof)
+        .await
+        .expect("exact historical acknowledgement replay");
+    for (forged, _) in &forged_claims {
+        assert!(matches!(
+            store.acknowledge_outbox(forged, proof).await,
+            Err(DurableOperationError::StaleLease)
+        ));
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
 async fn crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");

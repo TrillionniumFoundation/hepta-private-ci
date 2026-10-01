@@ -429,7 +429,6 @@ impl DurableOperationStore {
         let binding = claim.intent.final_use_binding();
         let signing_bytes = signed.grant.signing_bytes()?;
         let authority_digest = Digest32::of_bytes(&signing_bytes);
-        let token = authority.claim(signed, &binding)?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -447,6 +446,11 @@ impl DurableOperationStore {
                 to: "dispatching",
             });
         }
+        let token = authority.claim(signed, &binding)?;
+        // Authority admission can wait on its own durable writer. Recheck the
+        // lease with the current clock before persisting dispatch admission.
+        let now = now_millis()?;
+        require_current_lease(&mut tx, claim, now).await?;
         let revision = next_revision(operation.revision)?;
         sqlx::query(
             "UPDATE operation_ledger SET state = 'dispatching', authority_epoch = ?,
@@ -476,14 +480,51 @@ impl DurableOperationStore {
     /// persist its classified outcome. Async adapters should make their actual
     /// side-effect entry synchronous (for example enqueue to an owner runtime)
     /// and reconcile any later uncertainty through `observe_terminal`.
+    /// The callback must be bounded and must not synchronously reenter this
+    /// source store or wait for remote execution. A source writer fence spans
+    /// only this local entry; owner runtimes perform any later work separately.
     pub async fn execute_authorized<T>(
         &self,
         authorized: AuthorizedDispatch,
         effect: impl FnOnce(&OperationIntentV1) -> DispatchEffect<T>,
     ) -> Result<T, DurableOperationError> {
         let claim = authorized.claim.clone();
-        let observation = match authorized.enter(effect) {
-            Ok(observation) => observation,
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
+        let now = now_millis()?;
+        let status = require_current_lease(&mut tx, &claim, now).await?;
+        let operation =
+            load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
+                .await?
+                .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if operation.state != DurableOperationState::Dispatching {
+            return Err(DurableOperationError::InvalidTransition {
+                from: operation.state,
+                to: "effect_entry",
+            });
+        }
+        let lease_until = status
+            .lease_until_unix_ms
+            .ok_or(DurableOperationError::StaleLease)?;
+        let observation = authorized.enter(|intent| {
+            // Final-use validation may wait. The writer still excludes owner
+            // takeover, while this check covers expiry before actual entry.
+            let now = to_u64(now_millis()?)?;
+            if now < operation.updated_at_unix_ms || now < status.updated_at_unix_ms {
+                return Err(DurableOperationError::ClockRollback);
+            }
+            if lease_until <= now {
+                return Err(DurableOperationError::StaleLease);
+            }
+            Ok(effect(intent))
+        });
+        tx.rollback().await.map_err(sqlx_error)?;
+        let observation = match observation {
+            Ok(Ok(observation)) => observation,
+            Ok(Err(error)) => return Err(error),
             Err(error) => {
                 self.release_not_dispatched(
                     &claim,
@@ -612,6 +653,9 @@ impl DurableOperationStore {
         )
         .await?
         .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if status.intent != claim.intent {
+            return Err(DurableOperationError::StaleLease);
+        }
         if status.state == DurableOutboxState::Acknowledged {
             if status.acknowledgement_digest == Some(acknowledgement_digest) {
                 tx.commit().await.map_err(sqlx_error)?;
@@ -673,6 +717,9 @@ impl DurableOperationStore {
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
                 .await?
                 .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if operation.intent != claim.intent {
+            return Err(DurableOperationError::StaleLease);
+        }
         if operation.state == DurableOperationState::Indeterminate
             && operation.indeterminate_digest == Some(reason_digest)
         {
@@ -1281,8 +1328,8 @@ impl AuthorizedDispatch {
 
     fn enter<T>(
         mut self,
-        effect: impl FnOnce(&OperationIntentV1) -> DispatchEffect<T>,
-    ) -> Result<DispatchEffect<T>, DurableOperationError> {
+        effect: impl FnOnce(&OperationIntentV1) -> T,
+    ) -> Result<T, DurableOperationError> {
         let token = self.token.take().ok_or(DurableOperationError::Unavailable(
             "final-use token already consumed".to_owned(),
         ))?;
@@ -1305,6 +1352,9 @@ async fn require_current_lease(
     )
     .await?
     .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+    if status.intent != claim.intent {
+        return Err(DurableOperationError::StaleLease);
+    }
     if status.updated_at_unix_ms > to_u64(now)? {
         return Err(DurableOperationError::ClockRollback);
     }
@@ -1671,7 +1721,7 @@ async fn verify_quick_check(pool: &SqlitePool) -> Result<(), DurableOperationErr
     Ok(())
 }
 
-async fn ensure_clock_not_behind(
+pub(crate) async fn ensure_clock_not_behind(
     tx: &mut Transaction<'_, Sqlite>,
     now: i64,
 ) -> Result<(), DurableOperationError> {
