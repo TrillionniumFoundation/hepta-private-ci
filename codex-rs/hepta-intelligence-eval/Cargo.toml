@@ -48,3 +48,9 @@ name = "hepta-fixed-holdout-custody"
 path = "src/bin/hepta-fixed-holdout-custody.rs"
 required-features = ["fixed-eval-host"]
 test = false
+
+[[bin]]
+name = "hepta-fixed-product-evaluation"
+path = "src/bin/hepta-fixed-product-evaluation.rs"
+required-features = ["fixed-eval-host"]
+test = false

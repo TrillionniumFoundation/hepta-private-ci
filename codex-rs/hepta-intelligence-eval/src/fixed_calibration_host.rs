@@ -271,3 +271,121 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
     println!("{}", serde_json::to_string(&output)?);
     Ok(())
 }
+
+/// Revalidate an existing independent result without reading any private key.
+/// The Root product provider supplies protected bytes and an independently
+/// pinned evaluator executable. Expiry remains pending, never qualification.
+pub(crate) fn read_fixed_calibration_result(
+    config_bytes: &[u8],
+    evaluator_program: Digest32,
+    result_bytes: &[u8],
+    now: u64,
+) -> HostResult<serde_json::Value> {
+    if config_bytes.len() > 32 * 1024 || result_bytes.len() > 64 * 1024 {
+        return Err("bounded evaluator policy/result".into());
+    }
+    let config: Config = serde_json::from_slice(config_bytes)?;
+    let output: serde_json::Value = serde_json::from_slice(result_bytes)?;
+    if config.schema != "hepta.fixed-calibration-evaluator-config.v1"
+        || config.program_digest.parse::<Digest32>()? != evaluator_program
+        || config.uid == 0
+        || config.gid == 0
+        || config.inaccessible_paths.len() != 5
+        || output["schema"] != "hepta.fixed-independent-calibration-evaluation.v1"
+        || output["policy_config_digest"] != Digest32::of_bytes(config_bytes).to_string()
+        || output["evaluator_uid"] != config.uid
+        || output["evaluator_gid"] != config.gid
+        || output["qualified"] != false
+        || output["production_activation"] != false
+        || output["holdout_consumed"] != false
+        || output["authority_grants_any"] != false
+    {
+        return Err("independent result/pinned policy/program binding".into());
+    }
+    let evidence: ReviewEvidenceWireV1 =
+        serde_json::from_value(output["evaluator_signed_evidence"].clone())?;
+    let evidence = evidence.native()?;
+    if evidence.principal_id.as_str() != "fixed-no-custody-reviewer" {
+        return Err("fixed reviewer identity".into());
+    }
+    let publication_bytes = read_root_review_input(&config.publication_path, 4 * 1024 * 1024)?;
+    let publication: FixedCalibrationPublicationV1 = serde_json::from_slice(&publication_bytes)?;
+    let cut = &publication.cut;
+    if cut.schema != "hepta.signed-calibration-cut.v1"
+        || cut.observer_program_digest != config.observer_program_digest
+        || cut.candidate_weights_digest != config.candidate_weights_digest
+        || cut.baseline_weights_digest != config.baseline_weights_digest
+        || publication.trust.root_verifying_key_hex != config.root_verifying_key_hex
+        || publication.trust.objective_digest != config.objective_digest
+        || publication.trust.scope_digest != config.scope_digest
+    {
+        return Err("protected custody cut/evaluator policy".into());
+    }
+    // Expired artifacts remain original evidence, but cannot authorize a new
+    // execution. Do not move the verification clock backwards to accept them.
+    if now > evidence.expires_at {
+        return Ok(
+            serde_json::json!({"state":"pending_fresh_independent_evaluation","current_authentication":false,
+            "original_result_digest":Digest32::of_bytes(result_bytes).to_string(),"original_signed_result":output,
+            "qualification":false,"original_custody_publication":serde_json::from_slice::<serde_json::Value>(&publication_bytes)?}),
+        );
+    }
+    let (root, distribution) = publication.trust.native()?;
+    let trust = activate_learning_trust(&root, distribution, None, now)?;
+    let before = read_root_review_input(&config.ledger_path, 8 * 1024 * 1024)?;
+    if Digest32::of_bytes(&before) != cut.ledger_file_digest.parse::<Digest32>()? {
+        return Err("readonly ledger cut changed".into());
+    }
+    let snapshot = inspect_ledger(
+        open_root_review_input(&config.ledger_path)?,
+        cut.ledger_binding_digest.parse()?,
+        4096,
+        LedgerAnchor {
+            sequence: cut.acknowledged_sequence,
+            chain_digest: cut.acknowledged_head.parse()?,
+        },
+    )?;
+    let dataset = cut.dataset.native()?;
+    let binding = cut.binding()?;
+    let generator = cut.generator_evidence.native()?;
+    let observer = publication.observer_evidence.native()?;
+    let producer = cut.freeze_evidence.native()?;
+    let generator_payload = decode_review_payload_hex(&cut.generator_payload_hex)?;
+    let margin = FixedQ32::from_raw(config.minimum_primary_improvement_q32);
+    let decision = decide_with_signed_calibration_preflight_v1(
+        SignedCalibrationPreflightRequestV1 {
+            snapshot: &snapshot,
+            dataset: &dataset,
+            cut_binding: &binding,
+            generator_payload: &generator_payload,
+            minimum_primary_improvement: margin,
+            generator: &generator,
+            observer: &observer,
+            producer: &producer,
+            evaluator: &evidence,
+        },
+        trust.verifier(),
+        now,
+    )?;
+    let disposition = match decision.disposition {
+        CalibrationPreflightDispositionV1::Rejected => "rejected",
+        CalibrationPreflightDispositionV1::RequiresFinalQualification => {
+            "requires_final_qualification"
+        }
+    };
+    if output["disposition"] != disposition
+        || output["candidate_correct"] != decision.candidate_correct
+        || output["baseline_correct"] != decision.baseline_correct
+        || output["labeled_pairs"] != decision.labeled_pairs
+        || output["dataset_digest"] != decision.dataset_digest.to_string()
+        || output["evaluation_evidence_digest"] != decision.evidence_digest.to_string()
+        || before != read_root_review_input(&config.ledger_path, 8 * 1024 * 1024)?
+    {
+        return Err("independent output/native decision mismatch".into());
+    }
+    Ok(
+        serde_json::json!({"state":disposition,"current_authentication":true,
+        "original_result_digest":Digest32::of_bytes(result_bytes).to_string(),"original_signed_result":output,
+        "qualification":false,"original_custody_publication":serde_json::from_slice::<serde_json::Value>(&publication_bytes)?}),
+    )
+}

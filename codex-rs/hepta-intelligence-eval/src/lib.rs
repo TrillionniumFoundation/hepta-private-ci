@@ -418,6 +418,13 @@ pub use fixed_calibration_host::initialize_fixed_evaluator_key;
 pub use fixed_calibration_host::run_fixed_calibration_evaluator;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_product_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_product_source;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_product_host::inspect_fixed_product_evaluation;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_holdout_custody;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_holdout_custody::inspect_fixed_source_holdout;

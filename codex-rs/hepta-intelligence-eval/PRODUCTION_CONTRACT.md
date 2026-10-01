@@ -20,6 +20,9 @@ External or production callers enter through `ProductEvaluationRunnerV1`; the ru
 | `evaluation_signing_payload_v2` / `longitudinal_evaluation_signing_payload_v3` | **Public signer contracts** | External signers attest exactly the runner-derived bundle/timing bytes |
 | `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitives** | Not default cross-crate APIs; only the product runner may turn them into product qualification |
 | `freeze_product_evaluation_plan_v1` | **Production plan freeze** | Freezes V2 metric roles, metric-to-estimator mapping and candidate/baseline temporal plan identities before holdout release |
+| `evaluate_registered_temporal_comparison` | **Authenticated host execution ingress** | Rechecks the Generator plan and independent custody Observer's exact durable registration before consulting the provider or consuming holdout |
+| `LockedFileProductEvidenceSinkV1` | **Single-host evidence adapter** | Preserves the full original signed request and exact native decision; fsync before ACK, exact replay, independent ACK rollback detection |
+| `inspect_fixed_product_evaluation` (`fixed-eval-host`) | **Preflight only** | Reads protected masked source, the existing custody inspection and independent calibration result; publishes pending prerequisites without registration, gold release or qualification |
 | `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | **Production-required when multiple writers/hosts can contend** | Linearizable CAS, monotonic writer fencing and accepted-or-unknown reconciliation |
 | `DurableFinalHoldoutJournalV1` | Single-host/cooperative-owner only | Local file durability when the host can guarantee exclusive namespace ownership |
 | `trusted_inprocess::decide_independently{,_v2}` | **Trusted-only** | Explicit compatibility/test feature; never external qualification ingress |
@@ -33,8 +36,8 @@ only with the explicit `trusted-inprocess-eval` feature.
 For ordinary qualification:
 
 1. freeze the V2 plan and metric roles before holdout observation;
-2. durably consume the exact frozen plan through the authoritative holdout owner;
-3. authenticate the generator's signature over the frozen plan digest;
+2. authenticate the generator's frozen plan and the independent custody Observer's exact durable registration with current trust before holdout consumption;
+3. durably consume the exact frozen plan through the authoritative holdout owner;
 4. authenticate the evaluator's signature over the exact V2 evaluation payload;
 5. verify current host-owned trust, scope, objective, authority epoch, lifetime and revocation; generator, evaluator and longitudinal observer must be pairwise distinct by principal, credential chain, signing key and controller;
 6. run the bound statistical, support, safety and claim-scope checks;
@@ -65,6 +68,22 @@ An archived benchmark remains limited to its preregistered task/population and
 does not establish pretraining disjointness or future online generalization.
 The existing fenced holdout, independence, support and primary-superiority gates
 apply unchanged through `ProductEvaluationRunnerV1`.
+
+The fixed masked-source adapter freezes the complete **calibration batch**
+dependency graph, including unscored bridge tasks and the original scored pair
+digests. Its masked dependency-node digests are explicitly distinct from the
+original gold claim's content digest. It does not register a product plan or
+provide the complete training-plus-final graph needed by such a plan.
+
+The current estimator profile supports IPS, SNIPS and DR on a common logged
+behavior/outcome cut. Separate classifier outputs and confidence values cannot
+manufacture behavior probabilities. There is no full-information paired-gold
+benchmark profile in this protocol. The fixed host reports
+`pending_supported_behavior_cut` and preserves the unregistered, unconsumed
+holdout. Expired independent calibration signatures require fresh evidence;
+the verifier clock is never moved backwards. Actual future execution of an
+archived task may support its explicit benchmark qualification scope, but does
+not establish a system-longitudinal claim.
 
 ## Final-holdout ownership
 
@@ -107,6 +126,14 @@ The host remains responsible for authenticating the store namespace, retaining
 the minimum anchor independently of the journal backup, containing-directory
 durability, retention and physical storage policy. A backup must not be able to
 manufacture a newer fence or current authoritative state.
+
+The file evidence sink similarly requires an authority-approved regular file,
+durable containing-directory creation, and an independently retained prior
+publication ACK on recovery. Missing/torn/conflicting evidence is never an ACK.
+It preserves every byte of the original signed request and the exact terminal
+native decision; it does not authenticate arbitrary request bytes or create
+eligibility itself. The host must supply the authenticated request used by the
+runner. One execution has one immutable publication and a bounded record size.
 
 ## Canonical product evaluation chain
 
