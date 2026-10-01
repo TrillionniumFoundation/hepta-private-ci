@@ -431,6 +431,11 @@
       "sourcePath": "scripts/hepta-maintain-secrets-product",
       "nativeSymbol": "apply",
       "state": "root_original_revision_cas_and_same_pending_publication_recovery"
+    },
+    {
+      "sourcePath": "scripts/hepta-upgrade-secrets-product",
+      "nativeSymbol": "main/apply",
+      "state": "root_existing_software_revision_cas_and_same_pending_publication_recovery"
     }
   ],
   "sourceObjects": [
@@ -632,5 +637,26 @@
     "originalAgentControlDeadlineMs": 2000,
     "existingGrantAndOperationExpiryClipped": true,
     "formalInstalledActivation": false
+  },
+  "originalSoftwareUpgradeQualification": {
+    "packageNativePassed": 129,
+    "packageOriginalSkips": 2,
+    "actualNondevChecks": 14,
+    "owningFileLockAndPolicyChecks": 7,
+    "roleUids": [
+      982,
+      981,
+      983,
+      992
+    ],
+    "agentUids": [
+      986,
+      969
+    ],
+    "agentPrimaryGid": 975,
+    "scope": "Actual old/new runtime executables, original four stable writer locks, same-intent image/manifest/completion interruption recovery, exact original grant/ACK/quota preservation, new UID969 pinned TLS KV consumption in the same period, completed replay and policy/software publication exclusion. Isolated original SSD instance; installed activation remains pending.",
+    "ownerDatabaseKeysQuotaPeriodOrAckReplaced": false,
+    "servicesStartedByUpgrader": false,
+    "installedCaller": false
   }
 }
