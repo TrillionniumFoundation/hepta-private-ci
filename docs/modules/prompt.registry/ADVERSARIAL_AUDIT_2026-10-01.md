@@ -557,6 +557,32 @@ Final `just fmt --base origin/main` completed successfully with exit 0.
 Local Rust tests are not rerun after automatic fixes or formatting; later CI
 must establish execution for its actual source and merge candidates.
 
+## Renewed source checkpoint and scoped metadata binding
+
+The renewed source checkpoint is
+`947e24bf95aa46d8de68340667d3024be9f9901e`, tree
+`79145dc713ac8ebc864b94b9dd9213d00334e4e3`, on draft PR #1301.
+It includes the latest-main policy integration and all eight renewed repairs.
+The published tree was checked against the complete local source tree.
+
+Only the eleven causally affected maps with valid original ancestry were
+rebound: platform.types, kernel.operations, runtime.supervisor,
+intelligence.control, memory.retrieval, memory.federation, knowledge.graph,
+learning.operator, learning.plasticity, prompt.registry and prompt.optimizer.
+The plasticity JSON projection was synchronized. JSON comparison confirmed
+that map changes affect source-provenance fields only; all operation, execution,
+production, independent-acceptance, activation and release fields are unchanged.
+The nine inherited non-ancestor maps were not rewritten. This checkpoint and
+metadata update grant no runtime-test or product-qualification receipt.
+
+On the clean metadata candidate, development-profile documentation and all
+forty navigation maps passed. The full qualification-profile map check returned
+exit 1 for exactly the nine inherited non-ancestor anchors listed above, with
+`merge-base --is-ancestor` exit 1 rather than missing-object errors. The other
+maps did not produce qualification failures. The final caller scan, including
+the new linear-search production file, passed across 2,902 Rust files; all four
+protected prompt mutation product-caller sets remain empty.
+
 Source changes are prepared as reviewable commits for the existing draft PR.
 The eleven scoped implementation-map observations may be bound to a real
 current-source checkpoint. That metadata work preserves the nine invalid
