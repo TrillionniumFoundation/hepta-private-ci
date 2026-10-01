@@ -820,6 +820,56 @@ async fn reopen_rejects_memory_fts_source_drift() {
 }
 
 #[tokio::test]
+async fn reopen_rejects_noninteger_fts_revisions_despite_numeric_join_affinity() {
+    for tamper in [
+        "UPDATE memory_fts SET revision = '01'",
+        "UPDATE memory_fts SET revision = 1.0",
+    ] {
+        let temp = TempDir::new().expect("FTS revision type temp dir");
+        let owner = agent_id(/*suffix*/ 88);
+        let store = seeded_projection_store(&temp, &owner).await;
+        let original = sqlx::query("SELECT revision FROM memory_fts")
+            .fetch_one(&store.pool)
+            .await
+            .expect("valid indexed memory revision");
+        assert_eq!(
+            original
+                .try_get::<i64, _>("revision")
+                .expect("integer revision"),
+            1
+        );
+        sqlx::query(tamper)
+            .execute(&store.pool)
+            .await
+            .expect("change FTS revision storage type");
+        let quick_check: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
+            .fetch_all(&store.pool)
+            .await
+            .expect("structural integrity after revision type drift");
+        assert_eq!(quick_check, vec!["ok".to_string()]);
+        let joined = sqlx::query(
+            "SELECT f.revision FROM memory_fts f
+             JOIN memory_revisions r
+               ON r.memory_id = f.memory_id AND r.revision = f.revision",
+        )
+        .fetch_one(&store.pool)
+        .await
+        .expect("numeric affinity still joins the corrupted index to its source");
+        assert!(joined.try_get::<i64, _>("revision").is_err());
+        store.pool.close().await;
+        drop(store);
+        let error = match CognitiveStore::open(&layout(&temp, &owner)).await {
+            Ok(_) => panic!("noninteger FTS revision must fail reopen: {tamper}"),
+            Err(error) => error,
+        };
+        expect_corrupt_with(
+            error,
+            "memory FTS rows do not match immutable memory revisions",
+        );
+    }
+}
+
+#[tokio::test]
 async fn reopen_preserves_memory_fts_history_and_rejects_obsolete_content_drift() {
     let temp = TempDir::new().expect("historical memory FTS temp dir");
     let owner = agent_id(/*suffix*/ 86);
@@ -918,6 +968,10 @@ async fn reopen_rejects_obsolete_entity_fts_source_drift() {
              memory_id, memory_revision, entity_key, canonical_entity_id, entity_type, label
          ) SELECT memory_id, memory_revision, entity_key, canonical_entity_id, entity_type, label
            FROM kg_revision_entity_fts WHERE memory_revision = 1",
+        "UPDATE kg_revision_entity_fts SET memory_revision = '01'
+         WHERE memory_revision = 1",
+        "UPDATE kg_revision_entity_fts SET memory_revision = 1.0
+         WHERE memory_revision = 1",
     ] {
         let temp = TempDir::new().expect("obsolete entity FTS temp dir");
         let owner = agent_id(/*suffix*/ 87);

@@ -677,6 +677,8 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     // tombstoned history. Historical rows also affect FTS corpus statistics.
     // Verify the complete source-derived view without loading its history into
     // Rust memory or issuing one query for each revision.
+    // FTS columns are not STRICT: join affinity accepts numeric TEXT/REAL
+    // revisions that the typed retrieval reader cannot decode as integers.
     let mismatched_memory_fts: i64 = sqlx::query_scalar(
         "WITH indexed_revisions AS (
              SELECT memory_id, CAST(revision AS INTEGER) AS revision,
@@ -693,7 +695,10 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
              SELECT COUNT(*) FROM memory_fts f
              LEFT JOIN memory_revisions r
                ON r.memory_id = f.memory_id AND r.revision = f.revision
-             WHERE r.memory_id IS NULL OR f.content IS NOT r.content
+             WHERE typeof(f.memory_id) != 'text'
+                OR typeof(f.revision) != 'integer'
+                OR typeof(f.content) != 'text'
+                OR r.memory_id IS NULL OR f.content IS NOT r.content
          )",
     )
     .fetch_one(pool)
@@ -727,7 +732,13 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
                ON e.memory_id = f.memory_id
               AND e.memory_revision = f.memory_revision
               AND e.entity_key = f.entity_key
-             WHERE e.entity_key IS NULL
+             WHERE typeof(f.memory_id) != 'text'
+                OR typeof(f.memory_revision) != 'integer'
+                OR typeof(f.entity_key) != 'text'
+                OR typeof(f.canonical_entity_id) != 'text'
+                OR typeof(f.entity_type) != 'text'
+                OR typeof(f.label) != 'text'
+                OR e.entity_key IS NULL
                 OR f.canonical_entity_id IS NOT e.canonical_entity_id
                 OR f.entity_type IS NOT e.entity_type
                 OR f.label IS NOT e.label
