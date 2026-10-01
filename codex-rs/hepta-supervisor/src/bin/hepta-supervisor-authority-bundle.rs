@@ -5,6 +5,14 @@ use std::path::PathBuf;
 use codex_hepta_supervisor::ProductionAuthorityBundle;
 use ed25519_dalek::VerifyingKey;
 
+#[cfg(unix)]
+#[path = "../directory_io.rs"]
+mod directory_io;
+#[path = "../regular_file_io.rs"]
+mod regular_file_io;
+
+const MAX_PUBLIC_KEY_BYTES: u64 = 8_192;
+
 fn main() -> anyhow::Result<()> {
     let options = parse_options()?;
     let grant_key = load_public_key(&options.grant_key, "grant verifier key")?;
@@ -91,7 +99,9 @@ fn load_public_key(path: &Path, label: &str) -> anyhow::Result<[u8; 32]> {
     if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
         anyhow::bail!("{label} must be a regular non-symlink file");
     }
-    let bytes = std::fs::read(path)?;
+    let mut file = regular_file_io::open_regular_file(path, MAX_PUBLIC_KEY_BYTES)?;
+    let mut bytes = Vec::new();
+    regular_file_io::read_bounded(&mut file, &mut bytes, MAX_PUBLIC_KEY_BYTES)?;
     if bytes.len() == 32 {
         return bytes
             .try_into()
@@ -126,7 +136,7 @@ fn write_new_file(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
     file.sync_all()?;
     drop(file);
     #[cfg(unix)]
-    std::fs::File::open(parent)?.sync_all()?;
+    directory_io::sync_directory(parent)?;
     Ok(())
 }
 

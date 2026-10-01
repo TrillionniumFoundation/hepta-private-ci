@@ -168,25 +168,7 @@ fn read_secure_file(path: &Path) -> Result<Vec<u8>, ProductionAuthorityBundleErr
     #[cfg(unix)]
     validate_unix_metadata(&before)?;
 
-    let mut options = std::fs::OpenOptions::new();
-    options.read(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
-    let mut file = options.open(path)?;
-    let opened = file.metadata()?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        if before.dev() != opened.dev() || before.ino() != opened.ino() {
-            return Err(ProductionAuthorityBundleError::Invalid(
-                "bundle identity changed while opening".to_string(),
-            ));
-        }
-        validate_unix_metadata(&opened)?;
-    }
+    let mut file = open_secure_file(path, &before)?;
     let mut bytes = Vec::new();
     file.by_ref()
         .take(MAX_BUNDLE_BYTES + 1)
@@ -197,6 +179,40 @@ fn read_secure_file(path: &Path) -> Result<Vec<u8>, ProductionAuthorityBundleErr
         ));
     }
     Ok(bytes)
+}
+
+fn open_secure_file(
+    path: &Path,
+    before: &std::fs::Metadata,
+) -> Result<std::fs::File, ProductionAuthorityBundleError> {
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        // A special-file substitution must not block before descriptor checks.
+        options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK);
+    }
+    let file = options.open(path)?;
+    let opened = file.metadata()?;
+    if !opened.file_type().is_file() || opened.len() > MAX_BUNDLE_BYTES {
+        return Err(ProductionAuthorityBundleError::Invalid(
+            "opened bundle must be a bounded regular file".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if before.dev() != opened.dev() || before.ino() != opened.ino() {
+            return Err(ProductionAuthorityBundleError::Invalid(
+                "bundle identity changed while opening".to_string(),
+            ));
+        }
+        validate_unix_metadata(&opened)?;
+    }
+    #[cfg(not(unix))]
+    let _ = before;
+    Ok(file)
 }
 
 #[cfg(unix)]
@@ -263,6 +279,10 @@ fn hex_lower(bytes: &[u8]) -> String {
     }
     output
 }
+
+#[cfg(all(test, unix))]
+#[path = "authority_bundle_open_tests.rs"]
+mod open_tests;
 
 #[cfg(test)]
 mod tests {

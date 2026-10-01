@@ -603,6 +603,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         runtime.healthy = false;
         runtime.fenced = true;
+        // An exact terminal observation leaves only same-owner cleanup. Other
+        // containment callers must not resignal while that cleanup is pending.
+        if slot.matrix.observed_exit.is_some() {
+            return Ok(());
+        }
         let mut event_generation = None;
         if !matches!(runtime.phase, MatrixRuntimePhase::Killing) {
             runtime
@@ -697,16 +702,8 @@ fn load_binding(
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
         Err(error) => return Err(error.into()),
     };
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > MAX_MATRIX_BINDING_BYTES
-    {
-        return Err(SupervisorError::Invalid(format!(
-            "Matrix public binding is not a bounded regular file: {}",
-            path.display()
-        )));
-    }
-    let binding: MatrixBindingV1 = serde_json::from_slice(&std::fs::read(path)?)
+    let bytes = read_binding_after_metadata(path, &metadata)?;
+    let binding: MatrixBindingV1 = serde_json::from_slice(&bytes)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     binding
         .validate()
@@ -719,6 +716,39 @@ fn load_binding(
     }
     Ok(Some(binding))
 }
+
+fn read_binding_after_metadata(
+    path: &std::path::Path,
+    metadata: &std::fs::Metadata,
+) -> Result<Vec<u8>, SupervisorError> {
+    if !metadata.file_type().is_file()
+        || metadata.file_type().is_symlink()
+        || metadata.len() > MAX_MATRIX_BINDING_BYTES
+    {
+        return Err(SupervisorError::Invalid(format!(
+            "Matrix public binding is not a bounded regular file: {}",
+            path.display()
+        )));
+    }
+    let mut file = crate::regular_file_io::open_regular_file(path, MAX_MATRIX_BINDING_BYTES)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let opened = file.metadata()?;
+        if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
+            return Err(SupervisorError::Invalid(
+                "Matrix binding identity changed while opening".to_string(),
+            ));
+        }
+    }
+    let mut bytes = Vec::new();
+    crate::regular_file_io::read_bounded(&mut file, &mut bytes, MAX_MATRIX_BINDING_BYTES)?;
+    Ok(bytes)
+}
+
+#[cfg(all(test, unix))]
+#[path = "matrix_binding_io_tests.rs"]
+mod binding_io_tests;
 
 fn next_matrix_incarnation(
     agent_id: &AgentId,

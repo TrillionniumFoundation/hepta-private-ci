@@ -14,6 +14,10 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use zeroize::Zeroizing;
 
+#[cfg(unix)]
+#[path = "../regular_file_io.rs"]
+mod regular_file_io;
+
 const MAX_HEAD_BYTES: u64 = 8 * 1024 * 1024;
 
 fn main() -> ExitCode {
@@ -68,12 +72,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(unix)]
 fn load_private_seed(path: &str) -> Result<SigningKey, Box<dyn std::error::Error>> {
     use std::os::unix::fs::MetadataExt;
-    use std::os::unix::fs::OpenOptionsExt;
-
-    let mut file = std::fs::OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_NOFOLLOW)
-        .open(path)?;
+    let mut file =
+        regular_file_io::open_regular_file(std::path::Path::new(path), /*maximum*/ 32)?;
     let metadata = file.metadata()?;
     if !metadata.is_file()
         || metadata.mode() & 0o077 != 0
@@ -83,7 +83,7 @@ fn load_private_seed(path: &str) -> Result<SigningKey, Box<dyn std::error::Error
         return Err("revocation seed must be a regular, singly linked owner-only file".into());
     }
     let mut seed = Zeroizing::new(Vec::new());
-    file.by_ref().take(33).read_to_end(&mut seed)?;
+    regular_file_io::read_bounded(&mut file, &mut seed, /*maximum*/ 32)?;
     if seed.len() != 32 {
         return Err("revocation seed must be exactly 32 raw bytes".into());
     }
