@@ -7,6 +7,8 @@ codex_rust_crate(
     compile_data = glob([
         "migrations/**",
         "consumer_migrations/**",
+        "authority_migrations/**",
+        "operator_migrations/**",
     ]),
     crate_name = "codex_hepta_bao_adapter",
 )

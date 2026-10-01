@@ -16,11 +16,41 @@ use codex_hepta_types::StableId;
 
 mod authbus_saga;
 #[cfg(target_os = "linux")]
+mod authority_frontier;
+#[cfg(target_os = "linux")]
+mod authority_grants;
+#[cfg(target_os = "linux")]
+mod authority_role;
+#[cfg(target_os = "linux")]
+mod authority_role_config;
+#[cfg(target_os = "linux")]
+mod authority_role_owner;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_role_tests.rs"]
+mod authority_role_tests;
+#[cfg(target_os = "linux")]
+mod operator_approval;
+#[cfg(target_os = "linux")]
+mod operator_role;
+#[cfg(target_os = "linux")]
+mod role_client;
+#[cfg(target_os = "linux")]
+mod role_storage;
+#[cfg(target_os = "linux")]
+mod role_wire;
+
+#[cfg(target_os = "linux")]
 mod consumer_port;
 mod final_use_host;
 mod https_consumer;
 mod lease_lifecycle;
+#[cfg(target_os = "linux")]
+mod local_endpoint;
+#[cfg(target_os = "linux")]
+mod local_service;
 mod operation_execution;
+#[cfg(target_os = "linux")]
+mod private_files;
 mod product_bootstrap;
 #[cfg(all(test, unix))]
 mod saga_crash;
@@ -39,6 +69,21 @@ pub use consumer_port::CredentialConsumerServiceConfig;
 pub use consumer_port::OriginalOperationBudget;
 #[cfg(target_os = "linux")]
 pub use consumer_port::serve_credential_consumer;
+
+#[cfg(target_os = "linux")]
+pub use authority_role::serve_secrets_authority;
+#[cfg(target_os = "linux")]
+pub use authority_role_config::SecretsAuthorityServiceConfig;
+#[cfg(target_os = "linux")]
+pub use operator_role::SecretsOperatorServiceConfig;
+#[cfg(target_os = "linux")]
+pub use operator_role::serve_secrets_operator;
+#[cfg(target_os = "linux")]
+pub use role_client::ApprovedSecretOperation;
+#[cfg(target_os = "linux")]
+pub use role_client::SecretsAuthorityClient;
+#[cfg(target_os = "linux")]
+pub use role_client::SecretsRoleClientConfig;
 
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoConsumerObservationV1;

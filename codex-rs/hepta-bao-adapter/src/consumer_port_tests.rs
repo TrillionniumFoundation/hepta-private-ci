@@ -195,7 +195,7 @@ fn independent_consumer_authenticates_and_retains_original_signed_ack_after_rest
     assert!(client.observe("native-original", [7; 32])?);
     let intent = client.intent("native-original", [7; 32])?;
     let status = || -> Result<Vec<u8>, Box<dyn Error>> {
-        let response = PreparedConnection::connect(
+        let response: ConsumerResponse = PreparedConnection::connect(
             &fixture.port.socket_path,
             fixture.port.service_uid,
             Duration::from_secs(2),

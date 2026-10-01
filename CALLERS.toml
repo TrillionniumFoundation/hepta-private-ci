@@ -55,7 +55,12 @@ required_boundary_ids = [
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect"
+  "final_use_guarded_effect",
+  "secrets_authority_service_boot",
+  "secrets_operator_service_boot",
+  "secrets_original_authorization",
+  "secrets_original_durable_begin",
+  "secrets_operator_independent_approval"
 ]
 
 [[boundary]]
@@ -242,8 +247,8 @@ id = "final_use_approval_trust"
 symbol = "FinalUseApprovalVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role_config.rs", "codex-rs/hepta-bao-adapter/src/operator_approval.rs", "codex-rs/hepta-bao-adapter/src/role_client.rs"]
+caller_markers = ["FinalUseApprovalVerifier::new"]
 
 [[boundary]]
 id = "final_use_approval_verify"
@@ -589,3 +594,46 @@ forbidden = ["permit_all", "SigningKey::generate", "AuthorityPosture::ALLOW_ALL"
 path = "codex-rs/hepta-infer-worker-host/src/final_use_trust_port.rs"
 required = ["config.issuer_uid != 0", "validate_connected_issuer_with_attestation", "guard", "revalidate()", "response.frontier != *next", "impl AuthorityClock", "impl AuthorityFrontierStore"]
 forbidden = ["SystemAuthorityClock", "permit_all"]
+
+[[boundary]]
+id = "secrets_authority_service_boot"
+symbol = "serve_secrets_authority"
+definition_path = "codex-rs/hepta-bao-adapter/src/authority_role.rs"
+definition_markers = ["pub async fn serve_secrets_authority", "BoundSocket::bind", "AuthorityRoleOwner::open"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_secrets_authority", "SecretsAuthorityServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_operator_service_boot"
+symbol = "serve_secrets_operator"
+definition_path = "codex-rs/hepta-bao-adapter/src/operator_role.rs"
+definition_markers = ["pub async fn serve_secrets_operator", "BoundSocket::bind", "OperatorRoleOwner::open"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_secrets_operator", "SecretsOperatorServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_original_authorization"
+symbol = "SecretsAuthorityClient::authorize_original"
+definition_path = "codex-rs/hepta-bao-adapter/src/role_client.rs"
+definition_markers = ["pub fn authorize_original", "self.refresh_revocations()?", "verify_grant"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["authorize_original", "SecretsRoleClientConfig::load_root_owned"]
+call_pattern = "client\\s*\\.\\s*authorize_original\\s*\\("
+
+[[boundary]]
+id = "secrets_original_durable_begin"
+symbol = "AuthorityRoleOwner::begin_original"
+definition_path = "codex-rs/hepta-bao-adapter/src/authority_grants.rs"
+definition_markers = ["pub async fn begin_original", ".verify(&grant, approval)", "self.commit(tx, guard).await?"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role.rs"]
+caller_markers = ["begin_original", "AuthorityResponse::OriginalAdmitted"]
+call_pattern = "self\\s*\\.\\s*begin_original\\s*\\("
+
+[[boundary]]
+id = "secrets_operator_independent_approval"
+symbol = "OperatorRoleOwner::approve"
+definition_path = "codex-rs/hepta-bao-adapter/src/operator_approval.rs"
+definition_markers = ["pub async fn approve", "verify_grant", "self.config.frozen_binding", "self.commit(tx, guard).await?"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/operator_role.rs"]
+caller_markers = ["self.approve", "OperatorRequest::Approve"]
+call_pattern = "self\\s*\\.\\s*approve\\s*\\("

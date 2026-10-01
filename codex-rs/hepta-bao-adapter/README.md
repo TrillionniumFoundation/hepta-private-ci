@@ -214,3 +214,70 @@ malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
 `lease_lifecycle.rs` now provides a durable metadata-only lifecycle owner for issue/renew/revoke intents and observations. It enforces operation-id idempotency, semantic-conflict rejection, explicit Unknown states, restart recovery and provider-observation reconciliation. It deliberately does not dispatch provider mutation APIs: the OpenBao compatibility registry still marks dynamic lease issuance/renew/revoke as a blocking partial surface, so provider-native mutation remains fail-closed until that endpoint contract is qualified.
+
+### Actual issuer and independent operator services
+
+`hepta-secrets-runtime serve-authority /etc/hepta-secrets/authority.json`
+starts the actual issuer/time/frontier SQL owner as UID 982.
+`serve-operator /etc/hepta-secrets/operator.json` starts the separate approval
+and revocation owner as UID 981. The deployment unit files select runtime group
+976 solely for the protected Unix endpoint directories and sockets. Private
+state directories remain mode 0700 and private key files mode 0600 under their
+own UID. Account supplementary groups need not change. Neither service uses a
+model, evaluator, Supervisor or provider private key.
+
+The Root-owned JSON files and every ancestor must be absolute, canonical and
+not writable by group or others. Files may grant read to group 976. They reject
+unknown keys. Every `service` object has `socket_path`, `ipc_group_gid`,
+`service_uid`, `allowed_peer_uids`, `request_timeout_ms` (1..5000) and
+`shutdown_drain_ms` (request deadline..10000). Authority peers are exactly
+`[992, 981]`; the operator peer is `[992]`. The operator may fetch authority time
+and frontier metadata but cannot issue a grant or begin an original operation.
+
+| Root configuration | Required binding and key fields |
+| --- | --- |
+| `authority.json` | `schema_version=1`, `service`, `database_path`, `runtime_uid=992`, `operator_uid=981`, `issuer_id`, `issuer_signing_key_file`, `issuer_verifying_key`, `time_issuer_id`, `time_key_epoch`, `time_signing_key_file`, `time_verifying_key`, `approver_id`, `approver_verifying_key`, `distributor_id`, `distributor_verifying_key`, `frozen_binding`, `initial_revocations`, `grant_lifetime_ms` (1..180000). |
+| `operator.json` | `schema_version=1`, `service`, `database_path`, `runtime_uid=992`, `authority_time`, `issuer_id`, `issuer_verifying_key`, `approver_id`, `approval_signing_key_file`, `approval_verifying_key`, `distributor_id`, `revocation_signing_key_file`, `revocation_verifying_key`, `frozen_binding`, `root_revocation_head_file`, `feed_lifetime_ms` (1..10000), `maximum_grant_lifetime_ms` (1..180000). |
+| runtime `client.json` | `schema_version=1`, `runtime_uid=992`, `authority`, `operator`, `issuer_id`, `issuer_verifying_key`, `approver_id`, `approver_verifying_key`, `frozen_binding`. `authority` has the same shape as operator `authority_time`. |
+
+`authority_time`/`authority` contain `connection={socket_path,peer_uid=982,
+timeout_ms}` (1..2000), `issuer_id`, `key_epoch` and the time `verifying_key`.
+`operator` contains a connection object with `peer_uid=981`. Public keys are
+32-byte JSON arrays; private signing files contain exactly 32 raw seed bytes.
+Issuer, time, approval and revocation keys must all differ. The Root-selected
+`frozen_binding` is the exact `BaoClient::binding` result for the approved KV
+version, read scope and consumer configuration. It is not accepted from a
+requesting workload. The Root revocation file has `authority_epoch`, `revision`
+and `revoked_grant_ids`; it can only advance monotonically. The signed feed
+uses the authority's real separately protected time source. That source persists
+its host wall-time floor and signing revision outside the replaceable runtime;
+it does not claim hardware clock attestation.
+
+As UID 992, `authorize-original /etc/hepta-secrets/client.json ORIGINAL_ID`
+refreshes the independently signed head, asks the issuer for the stored original
+grant and asks the operator for its independently verified approval. These are
+public signed envelopes, not raw credentials. An exact repeated ID returns the
+same original envelopes, including their original expiry; it never mints a new
+nonce to make an expired operation pass. `original-status` reads the durable
+original begin tuple. The first `begin_original` service response is distinct
+from historical Status and is the only response allowed to precede a new
+runtime attempt. An unknown or lost response cannot be recovered into another
+effect attempt. Actual runtime/provider/consumer settlement IPC is a separate
+composition stage and remains incomplete here.
+
+The issuer persists the governed revocation head separately from the runtime's
+external nonce frontier. Publishing a newer head does not report that local
+runtime state has already advanced. CAS requires the exact original frontier,
+a governed target epoch/revision and a state digest absent from retained
+historical frontiers. Original grants, approvals and begin records cannot be
+updated or deleted. Both services use the established FULL SQLite connection
+policy and the same four-request, bounded kernel-peer loop as the credential
+consumer. SIGTERM stops admission and physically drains owned requests and SQL
+connections. Timeout or uncertain SQL completion fences writes while retaining
+original Status; it does not mean that a submitted transaction rolled back.
+
+These concrete producers have been qualified under the enrolled 982/981/992
+UIDs with real signed approval, FULL original begin, actual process restarts,
+real grant expiry and bounded SIGTERM join. No installed Fleet configuration,
+provider credential or original Agent identity was changed. Dynamic issue,
+renew and revoke endpoints and the remaining capability matrix remain closed.

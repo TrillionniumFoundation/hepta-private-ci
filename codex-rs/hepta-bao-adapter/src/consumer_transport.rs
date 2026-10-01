@@ -16,11 +16,9 @@ use rustix::net::SocketFlags;
 use rustix::net::SocketType;
 
 use super::ConsumerPortError;
-use super::consumer_wire::ConsumerRequest;
-use super::consumer_wire::ConsumerResponse;
 use super::consumer_wire::MAX_FRAME_BYTES;
 
-pub(super) struct PreparedConnection {
+pub(crate) struct PreparedConnection {
     stream: UnixStream,
     deadline: Instant,
     peer_uid: u32,
@@ -65,10 +63,10 @@ impl PreparedConnection {
         Ok(connection)
     }
 
-    pub fn exchange(
+    pub fn exchange<Request: serde::Serialize, Response: serde::de::DeserializeOwned>(
         mut self,
-        request: &ConsumerRequest,
-    ) -> Result<ConsumerResponse, ConsumerPortError> {
+        request: &Request,
+    ) -> Result<Response, ConsumerPortError> {
         self.verify_peer()?;
         let body = serde_json::to_vec(request).map_err(unavailable)?;
         if body.is_empty() || body.len() > MAX_FRAME_BYTES {

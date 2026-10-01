@@ -28,7 +28,7 @@ mod consumer_wire;
 
 pub use consumer_server::CredentialConsumerServiceConfig;
 pub use consumer_server::serve_credential_consumer;
-use consumer_transport::PreparedConnection;
+pub(crate) use consumer_transport::PreparedConnection;
 use consumer_wire::ConsumerIntent;
 use consumer_wire::ConsumerRequest;
 use consumer_wire::ConsumerResponse;
