@@ -575,7 +575,7 @@ impl LearningArtifactOwnerHost {
         bytes: &[u8],
         now: u64,
     ) -> Result<PathBuf, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_current_transaction(transaction, now)?;
         let manifest = &transaction.intent().admission.validated_manifest.manifest;
         let relative = PathBuf::from("payloads").join(format!(
             "{}-{}.bin",
@@ -605,7 +605,7 @@ impl LearningArtifactOwnerHost {
         binding: Digest32,
         now: u64,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_current_transaction(transaction, now)?;
         let encoded = encode_snapshot(registry, binding)?;
         let expected = RegistrySnapshotReceipt {
             binding,
@@ -640,7 +640,7 @@ impl LearningArtifactOwnerHost {
         withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_current_transaction(transaction, now)?;
         let current = self.discover_current_head(now)?;
         if current.as_ref().is_some_and(|current| {
             signed.witness.head_digest == current.signed.witness.head_digest
@@ -738,7 +738,7 @@ impl LearningArtifactOwnerHost {
         withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<crate::ArtifactPublicationReceiptV1, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_current_transaction(transaction, now)?;
         let current = self
             .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
@@ -949,16 +949,9 @@ impl LearningArtifactOwnerHost {
         snapshot: ArtifactPublicationTransactionSnapshotV1,
         now: u64,
     ) -> Result<ArtifactPublicationTransactionV1, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
-        let recovery = self
-            .recover_publication(&snapshot.intent.operation_id)?
-            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
-        let expected =
-            checkpoint_from_snapshot(&snapshot, recovery.checkpoint.original_writer_lease_digest);
-        if expected != recovery.checkpoint {
-            return Err(ArtifactOwnerHostError::CheckpointMismatch);
-        }
-        Ok(ArtifactPublicationTransactionV1::from_snapshot(snapshot)?)
+        let transaction = ArtifactPublicationTransactionV1::from_snapshot(snapshot)?;
+        self.require_current_transaction(&transaction, now)?;
+        Ok(transaction)
     }
 
     pub fn discover_current_head(
@@ -2337,3 +2330,7 @@ mod checkpoint_tests;
 #[cfg(test)]
 #[path = "owner_rotation_tests.rs"]
 mod rotation_tests;
+
+#[cfg(test)]
+#[path = "owner_transaction_binding_tests.rs"]
+mod transaction_binding_tests;

@@ -204,6 +204,34 @@ pub(super) fn sync_parent(path: &Path) -> Result<(), ArtifactOwnerHostError> {
 }
 
 impl LearningArtifactOwnerHost {
+    // Pure publication snapshots are publicly constructible and confer no
+    // owner authority. Each mutation must start from this owner's exact durable
+    // checkpoint, under a live lease for the admission's producer and scope.
+    pub(super) fn require_current_transaction(
+        &self,
+        transaction: &ArtifactPublicationTransactionV1,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let writer = self.require_current_writer(now)?;
+        let admission = &transaction.intent().admission;
+        if admission.validated_manifest.manifest.producer_id != writer.producer_id
+            || admission.withdrawal_scope_digest != self.verifier.trust.withdrawal_scope_digest
+        {
+            return Err(ArtifactOwnerHostError::WriterLeaseContext);
+        }
+        let recovery = self
+            .recover_publication(&transaction.intent().operation_id)?
+            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+        let expected = checkpoint_from_snapshot(
+            &transaction.snapshot(),
+            recovery.checkpoint.original_writer_lease_digest,
+        );
+        if expected != recovery.checkpoint {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        Ok(())
+    }
+
     /// Verify an exact historical signed publication head for a terminal retry.
     pub(crate) fn verify_terminal_publication_head(
         &self,
