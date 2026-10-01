@@ -67,6 +67,23 @@ pub struct IndependentModulatorV1 {
 }
 
 impl IndependentModulatorV1 {
+    /// Admit a bounded outcome signal already verified by the host.
+    ///
+    /// This checks numeric bounds and a nonzero receipt binding. The host must
+    /// separately verify the observation's provenance, freshness and
+    /// independence; this pure mechanism grants no verification authority.
+    pub fn new(
+        observation_receipt_digest: Digest32,
+        values_q24: Vec<i64>,
+    ) -> Result<Self, PlasticityError> {
+        let value = Self {
+            observation_receipt_digest,
+            values_q24,
+        };
+        validate_modulator(&value)?;
+        Ok(value)
+    }
+
     #[must_use]
     pub fn observation_receipt_digest(&self) -> Digest32 {
         self.observation_receipt_digest
@@ -147,10 +164,12 @@ pub fn accumulate_plasticity(
     let eligibility = aggregate_eligibility(signal_history)?;
     validate_modulator(independent_modulator)?;
     validate_trust_region(trust_region)?;
-    let mut groups = parameter_groups.to_vec();
-    if !(1..=MAX_GROUPS).contains(&groups.len()) {
+    if !(1..=MAX_GROUPS).contains(&parameter_groups.len()) {
         return Err(PlasticityError::GroupCountOutOfRange);
     }
+    // Sort bounded references only. Invalid caller-owned projection vectors
+    // must not be deep-copied before their dimensions are checked.
+    let mut groups = parameter_groups.iter().collect::<Vec<_>>();
     groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut seen = BTreeSet::new();
     for group in &groups {
@@ -379,7 +398,7 @@ fn modulator_digest(modulator: &IndependentModulatorV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn group_map_digest(groups: &[ParameterGroupMapV1]) -> Digest32 {
+fn group_map_digest(groups: &[&ParameterGroupMapV1]) -> Digest32 {
     let mut bytes = b"hepta.neuron.parameter-group-map.v1".to_vec();
     for group in groups {
         push_id(&mut bytes, &group.group_id);

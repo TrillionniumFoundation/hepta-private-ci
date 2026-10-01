@@ -68,6 +68,9 @@ pub struct SparseCheckpoint {
     activity: Vec<i64>,
     threshold: Vec<i64>,
     eligibility: Vec<i64>,
+    // Replay-derived receipt metadata. It is not part of the V1 checkpoint
+    // preimage or journal encoding; replay recomputes it from the stored tick.
+    projection_count: u32,
     digest: Digest32,
 }
 
@@ -175,6 +178,26 @@ impl SparseCheckpoint {
 
     pub fn sequence(&self) -> u64 {
         self.sequence
+    }
+
+    pub(crate) fn predecessor_digest(&self) -> Digest32 {
+        self.predecessor
+    }
+
+    pub(crate) fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
+    pub(crate) fn matches_config_digest(&self, config_digest: Digest32) -> bool {
+        self.config == config_digest
+    }
+
+    pub(crate) fn matches_body_digest(&self, body_digest: Digest32) -> bool {
+        self.body == body_digest
+    }
+
+    pub(crate) fn projection_count(&self) -> u32 {
+        self.projection_count
     }
 
     /// Canonical digest of the recurrent temporal-state vector only.
@@ -348,6 +371,7 @@ pub fn sparse_tick(
         activity: vec![0; config.width],
         threshold: vec![0; config.width],
         eligibility: vec![0; config.width],
+        projection_count: 0,
         digest: Digest32::ZERO,
     };
     let mut inhibition = vec![0_i64; config.width];
@@ -403,6 +427,7 @@ pub fn sparse_tick(
         }
         projections += 1;
     }
+    next.projection_count = projections;
     next.digest = next.calculate_digest();
     let active_count = next.activation.iter().filter(|&&v| v > 0).count();
     let receipt = SparseSignalReceipt {

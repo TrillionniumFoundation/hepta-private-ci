@@ -65,3 +65,9 @@ removes the additive export; the old API and callers remain unchanged.
 The durable V1 `SparseConfig` format remains single-population and same-width so old journal replay bytes never change meaning. `PopulationSparseConfigV2` / `population_sparse_tick_v2` are a separate pure mechanism profile: temporal state is bounded independently from activation state, temporal-to-activation projection is explicit, populations form one complete non-overlapping activation partition, each population performs deterministic local top-k, and a bounded global top-k is applied only to those local candidates. V2 emits no authority and still requires independent calibration.
 
 This V2 source implementation closes the mechanism-shape gap in the readiness target; it does not silently make the V1 journal capable of replaying V2 state. A production promotion to V2 requires a separately versioned durable encoding, owner migration/recovery tests, exact product composition, and target-host qualification.
+
+The 2026-10-01 audit adds explicit collection lengths to the pure V2 config
+digest so projection, inhibition and population boundaries cannot be confused.
+All prior pure V2 config/checkpoint digests change. Rebuild affected qualification
+chains from a fresh sequence-1 checkpoint and rerun their evidence; never relabel
+or inherit an old checkpoint. Durable V1 journal encoding and digests are unchanged.
