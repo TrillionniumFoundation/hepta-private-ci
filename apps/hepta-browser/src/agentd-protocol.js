@@ -91,14 +91,20 @@ export function canonicalAgentdBrowserJson(value) {
 // Writing fields directly avoids JSON.stringify's numeric-property reordering.
 function writeCanonical(value) {
   if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return "[" + value.map(writeCanonical).join(",") + "]";
+  if (Array.isArray(value))
+    return "[" + value.map(writeCanonical).join(",") + "]";
   const keys = Object.keys(value).map((key) => ({
     key,
     bytes: Buffer.from(key, "utf8"),
   }));
   keys.sort((left, right) => Buffer.compare(left.bytes, right.bytes));
-  return "{" + keys.map(({ key }) =>
-    JSON.stringify(key) + ":" + writeCanonical(value[key])).join(",") + "}";
+  return (
+    "{" +
+    keys
+      .map(({ key }) => JSON.stringify(key) + ":" + writeCanonical(value[key]))
+      .join(",") +
+    "}"
+  );
 }
 
 export function agentdBrowserPayloadDigest(payload) {
