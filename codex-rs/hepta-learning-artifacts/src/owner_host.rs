@@ -2481,3 +2481,7 @@ mod witness_receipt_tests;
 #[cfg(test)]
 #[path = "owner_admission_quota_tests.rs"]
 mod admission_quota_tests;
+
+#[cfg(test)]
+#[path = "owner_capacity_tests.rs"]
+mod capacity_tests;
