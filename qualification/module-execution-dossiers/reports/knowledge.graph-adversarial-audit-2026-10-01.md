@@ -214,7 +214,9 @@ process-kill / SQLite-WAL 回归不等于物理断电恢复证明。
 对应 tree：`250b001aa22ec36bc689b6d10f2ba7c7be642f9c`。
 本地验证发生在提交前的候选源码上；随后 formatter 及 Clippy 仅修正测试写法。
 最后一轮六 crate fix 只移除 Agentd 测试中一个多余 clone，未改生产语义。
-这不是完整 exact-head / synthetic-merge 资格回执。
+来源对象检查的候选为 `c6b241d06a73a08191beb1521caf0e0630e6c3a6`；
+对应 tree 为 `aca9debccf88b97e0b6056837cbcab977d78e319`。
+五个受影响映射身份与对象一致性通过；完整 exact-head / synthetic-merge 执行资格仍未完成。
 
 | 检查 | 结果 | 证据与边界 |
 | --- | --- | --- |
@@ -229,6 +231,7 @@ process-kill / SQLite-WAL 回归不等于物理断电恢复证明。
 | memory strict Clippy | 基线 lint 债务保留 | 两个已有 8 参数接口；普通 test lint 还有 schema/production writer 测试警告；未添加 allow 隐藏 |
 | Agentd product E2E、exact HEAD / synthetic merge | 本地未执行完整资格 | 保留生产状态 false；交由独立候选资格流水线 |
 | development map / module docs | 40 模块通过 | 导航与登记一致性，不证明执行或发布 |
+| 当前五个受影响 map 来源身份 | 通过 | KG 55 对象 / 55 路径；cognitive 19、prompt 两 map 各 4、runtime.agentd 16；不代表全仓执行资格 |
 | 严格来源身份全局检查 | 21 个其他模块仍阻塞 | 旧分支锚点缺少真实 main 祖先身份；本次只修复 KG 及关联来源登记，不伪造祖先关系或续期旧执行证据 |
 | detailed-design 全局检查 | 失败 | 既有 `inference.control` design digest 漂移 |
 | implementation contracts 全局检查 | 失败 | 既有 `kernel.operations` source/deployment closure 声明 |

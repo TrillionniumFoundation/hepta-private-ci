@@ -77,7 +77,11 @@
       "ui.native",
       "utility.ndu"
     ],
-    "reason": "pre-existing unavailable or diverged branch source anchors; three additional unchanged 331b81 anchors exposed by complete identity verification; introduced runtime.agentd observation drift is refreshed separately"
+    "reason": "pre-existing unavailable or diverged branch source anchors; three additional unchanged 331b81 anchors exposed by complete identity verification; introduced runtime.agentd observation drift is refreshed separately",
+    "candidate": {
+      "commit": "c6b241d06a73a08191beb1521caf0e0630e6c3a6",
+      "tree": "aca9debccf88b97e0b6056837cbcab977d78e319"
+    }
   },
   "claimBoundary": {
     "completeExactHeadAndSyntheticMergeQualification": false,
@@ -113,12 +117,12 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "scoped_identity": {
-      "filename": "kg-scoped-source-identity.json",
-      "sha256": "9c6433cb73d0f256320dafe8f03238bbf9598ef5fb5ea85f426513615b8e559c"
+      "filename": "kg-final-scoped-source-identity.json",
+      "sha256": "224289804a3cb922aa7fa5a804520256408474e18f6fc480c7edadcdcbeb7849"
     },
     "global_identity": {
-      "filename": "kg-map-qualification.log",
-      "sha256": "12d11a6abece8158dcfd7705f0217ac287185c39ceb5cb37ce4f6a8acbf24632"
+      "filename": "kg-map-final-qualification.log",
+      "sha256": "055f65a10939d523e27cfcc67756568970a5c6e5179fdb1cb0966a2a9b69a6dc"
     },
     "read_capacity": {
       "filename": "kg-read-capacity-final.log",
@@ -139,6 +143,10 @@
     "module_docs": {
       "filename": "kg-docs-final.log",
       "sha256": "20a30d086a352bbc32bf2991e1a30f2ab5dbb521a9e30513ee9e95025523999a"
+    },
+    "development_maps": {
+      "filename": "kg-map-final-development.log",
+      "sha256": "a7f40d999e7527fe089418268d98aa5ab59d4cd11481e280e2f1b37912521770"
     }
   },
   "fullCapacityAttempt": {
@@ -234,6 +242,89 @@
     ]
   },
   "scopedSourceIdentity": {
-    "status": "PENDING_CURRENT_SOURCE_REFRESH"
+    "status": "PASS_SCOPED_SOURCE_IDENTITY_AND_OBJECTS",
+    "scope": "five affected maps; not whole-repository qualification or execution proof",
+    "candidate": {
+      "commit": "c6b241d06a73a08191beb1521caf0e0630e6c3a6",
+      "tree": "aca9debccf88b97e0b6056837cbcab977d78e319"
+    },
+    "maps": [
+      {
+        "module": "knowledge.graph",
+        "sourceBase": {
+          "commit": "3e9c9bfc431badc57f48cae835601f12c0da46e3",
+          "tree": "8050b74c5f59e69582204ce709369ee71228c523"
+        },
+        "checkedPaths": 55,
+        "sourceObjects": 55
+      },
+      {
+        "module": "cognitive.store",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 19,
+        "sourceObjects": 19
+      },
+      {
+        "module": "prompt.registry",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 4,
+        "sourceObjects": null
+      },
+      {
+        "module": "prompt.optimizer",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 4,
+        "sourceObjects": null
+      },
+      {
+        "module": "runtime.agentd",
+        "sourceBase": {
+          "commit": "27bf740f26483e0b29fe51ddcc51a5116440ab82",
+          "tree": "8f2b0ab97532a82dda85f0427cb66a388c607df8"
+        },
+        "checkedPaths": 16,
+        "sourceObjects": 16
+      }
+    ]
+  },
+  "developmentModuleDocs": {
+    "authorityGranted": false,
+    "historicalEvidenceRevalidated": false,
+    "modules": 40,
+    "productExecutionProved": false,
+    "sourceBindings": 40,
+    "status": "PASS_HEPTA_MODULE_DOCS_CLOSED_WORLD",
+    "technicalDocuments": 40,
+    "validationScope": "registry_ownership_paths_and_document_navigation",
+    "verificationProfile": "development"
+  },
+  "developmentImplementationMaps": {
+    "candidateBoundMaps": 0,
+    "candidateSource": {
+      "commit": "c6b241d06a73a08191beb1521caf0e0630e6c3a6",
+      "tree": "aca9debccf88b97e0b6056837cbcab977d78e319"
+    },
+    "currentSourceIdentityRequired": false,
+    "exactObservedFallbackMaps": 39,
+    "historicalEvidenceRevalidated": false,
+    "legacyProvenanceOnlyMaps": [],
+    "maps": 40,
+    "modules": 40,
+    "productionImplementationProved": false,
+    "provenanceAnchoredExactBlobMaps": 1,
+    "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+    "sourceObservationCount": 8,
+    "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
+    "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
+    "verificationProfile": "development"
   }
 }
