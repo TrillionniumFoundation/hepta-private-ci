@@ -2,9 +2,9 @@
 
 **Status date:** 2026-10-01
 
-**Immutable source anchor:** `b5f1f394414caca41207950718b2efe14a5378f7`
+**Immutable source anchor:** `8207feeafa6ede89a244e8fc590ab4a2758b0c4e`
 
-**Source tree:** `1ba05b4c0b79c057eb2d9a322631813b2321fa92`
+**Source tree:** `b2f23d351eb6598ac36fbfa8f8f05687f4609eab`
 
 **Machine manifest:** `qualification/kernel-authority/convergence_manifest.json`  
 **Validator:** `qualification/kernel-authority/convergence_acceptance.py`

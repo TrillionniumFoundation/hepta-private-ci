@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5f1f394414caca41207950718b2efe14a5378f7",
-    "tree": "1ba05b4c0b79c057eb2d9a322631813b2321fa92"
+    "commit": "8207feeafa6ede89a244e8fc590ab4a2758b0c4e",
+    "tree": "b2f23d351eb6598ac36fbfa8f8f05687f4609eab"
   },
   "mappingSourceIdentityMode": "path_only",
   "exactSourceEvidenceMode": "lane_a_runtime_wiring_only_no_product_execution_claim",
@@ -365,6 +365,180 @@
         "exact-head"
       ],
       "state": "parser_and_source_integrity_only_not_native_or_production_acceptance"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+      "object": "9dc2ae3debbff26dc48b7ed00b85dd3462641a34"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
+      "object": "4bb054fa114d4e7569f4cda220cbcb19bfb57fb6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+      "object": "d1d8d563230e8dd87475604585c22352c3ce93a4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "d964a8514393e2d373ec25a5a04fe5b15cbdf3de"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+      "object": "6cfb9f835bdd8efee8b8e98dda14c82c957d9562"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "object": "d6232415313fa47c332a309c9c377aad8d6e6278"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "object": "f2dee71f01019b0397b40acd298a16deaa344ae2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "f68ff6f7f05e54195df149bd2f92ddffb325b314"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "object": "aa44a2e53eff984f92f839d6b0a2cf0457dcf1ac"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "object": "7840a3aab99080c99849c04553611fd728df1332"
+    },
+    {
+      "path": "codex-rs/hepta-contracts",
+      "object": "fbcc438bb869d1a36c4f52704647fbf971def63d"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "object": "cb8cf2839a6b9113df050a705d34ef8b38d4d541"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_runtime_clock.rs",
+      "object": "59e2caf5c56c5ebd293b7fa4ab5a4c6645bde343"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "object": "17b1c2584086da8359cd4124c38db5ed31711c10"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
+      "object": "e9d0570e5a9430ead48cafbc8942c6e5873e1ad3"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "object": "2b3ebb4549d63436cb8943a10f59639b78ae0a1b"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "object": "8c74246abcd485d7cbcac7b1bb640511b38dff91"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "object": "af77bf02236fbb400bc0348544c86626d3ad91d6"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "object": "a67cebbb4c56bfe8c8b6da5ccf7c4da21b8e23cf"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "object": "242a8524f23d411ff40e1402b2d61487531e41d3"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_time_tests.rs",
+      "object": "f2f51026260e08e5eebf7d706af6f451f7575ac2"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+      "object": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "object": "5088cb4bdf8a7a09a64c4d100f36a0b5c05e89a7"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs",
+      "object": "241166b82c40e27a301cb2d18ed533438536dc69"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs",
+      "object": "a4fe68567ace1abad696ec52c27880ca7406f30e"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "object": "9ffbbbc6164eff3109bd53cf1d65d3a09fc6833b"
+    },
+    {
+      "path": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+      "object": "6199ce0027528f3a9a0402b4e8e3c870c5b84617"
+    },
+    {
+      "path": "docs/modules/kernel.authority/TECHNICAL.md",
+      "object": "38b391663bcbd12fec7d351dcbbbcc3aeec1451e"
+    },
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
+      "object": "9bfa81f77610eb8600e593199b60822ee0395869"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_kernel_authority_extension_api.py",
+      "object": "8e1977d5a7139875ac8f56ffae04aea4104ee2c2"
+    },
+    {
+      "path": "qualification/kernel-authority/capacity_matrix.py",
+      "object": "2c2ed25f3bf7e617d7822fbb63e2487eb90d61a8"
+    },
+    {
+      "path": "qualification/kernel-authority/owner_runtime_qualification.py",
+      "object": "ac64f3cd16f14c7ec05eb06c111e7cb2b6bcdfb7"
+    },
+    {
+      "path": "qualification/kernel-authority/pilot_execution.py",
+      "object": "79ebe92c8dd1bc302e04a844c9e642688bfb0305"
+    },
+    {
+      "path": "qualification/kernel-authority/run_native_checks.py",
+      "object": "325571df517367a7dd55bebdf6950ee5d40ef6df"
+    },
+    {
+      "path": "qualification/kernel-authority/runtime_qualification.py",
+      "object": "bc9ad7c5d6057bd656aaeefffa59110f187e6601"
+    },
+    {
+      "path": "qualification/kernel-authority/storage_model.py",
+      "object": "b732369a1b2a337c91141c26d396b2f76e2e9fff"
+    },
+    {
+      "path": "qualification/kernel-authority/test_capacity_matrix.py",
+      "object": "c5602bd39ada0c6ee8504ef16bb0125532be089c"
+    },
+    {
+      "path": "qualification/kernel-authority/test_native_checks.py",
+      "object": "758ec4f4e9a78f2f8d9edcbff98f0fd2d17ebf47"
+    },
+    {
+      "path": "qualification/kernel-authority/test_owner_runtime_qualification.py",
+      "object": "24dcb203ccca9ddc82a252bc434387460a3357cd"
+    },
+    {
+      "path": "qualification/kernel-authority/test_pilot_execution.py",
+      "object": "2e8820d0cf96b4f9ce07008ef7cbb2a78db07e5a"
+    },
+    {
+      "path": "qualification/kernel-authority/test_runtime_qualification.py",
+      "object": "bb9a2c9fafef64bf238b4724e5f3efc47f202039"
+    },
+    {
+      "path": "qualification/kernel-authority/test_storage_model.py",
+      "object": "c206abba9042a282d26c0b4976707fe3b7c5212f"
+    },
+    {
+      "path": "qualification/kernel-authority/test_workflow_coverage.py",
+      "object": "ad7e49d89d9617efcc9b58008c638f4c3cd435c5"
     }
   ]
 }
