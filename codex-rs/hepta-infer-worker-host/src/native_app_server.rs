@@ -100,8 +100,10 @@ use intelligence_owner::verify_intelligence_execution;
 use observation::NativeObservationOwner;
 use observation::check_observation_boundary;
 use observation::observe_event;
+use recovery::apply_recovery_cancellation;
 use recovery::downgrade_for_owner_loss;
 use recovery::preserve_recovery_evidence;
+use recovery::retain_recovered_output;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -207,6 +209,7 @@ impl AppServerModelDriver {
         record: &NativeRunRecord,
         expected_prompt: &str,
         intelligence: Option<&NativeIntelligenceRunBinding>,
+        cancellation: &CancellationToken,
     ) -> Result<Option<NativeRunOutput>> {
         if record.request.principal_id != self.config.agent_id.to_string()
             || record.request.worker_generation != self.config.generation
@@ -384,16 +387,6 @@ impl AppServerModelDriver {
             .find(|turn| turn.id == turn_id)
             .ok_or("reconciled terminal receipt turn disappeared")?;
 
-        let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
-            }
-        }
         let (status, boundary_status) = match receipt.status {
             AdapterStatus::Succeeded => {
                 (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
@@ -415,7 +408,7 @@ impl AppServerModelDriver {
             model_provider: dispatch.model_provider.clone(),
             status,
             boundary_status,
-            output: output_text,
+            output: String::new(),
             observed_output_tokens: None,
             terminal_observed: true,
             owner_authority: NativeOwnerAuthority::Unverified,
@@ -430,7 +423,16 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
+        retain_recovered_output(
+            &mut output,
+            turn.items.iter().filter_map(|item| match item {
+                ThreadItem::AgentMessage { text, .. } => Some(text.as_str()),
+                _ => None,
+            }),
+            MAX_OUTPUT_BYTES,
+        );
         preserve_recovery_evidence(record, &mut output)?;
+        apply_recovery_cancellation(&mut output, cancellation);
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);
@@ -441,6 +443,7 @@ impl AppServerModelDriver {
                 binding,
                 &mut output,
                 Instant::now() + RPC_TIMEOUT,
+                cancellation,
             )
             .await
         {
@@ -776,7 +779,7 @@ impl AppServerModelDriver {
             return Err(reason.into());
         }
         #[cfg(test)]
-        if context.is_some() {
+        if context.is_some() || intelligence.is_some() {
             pause_before_final_revalidation_for_test().await;
         }
         if let Some(snapshot) = context.as_ref() {

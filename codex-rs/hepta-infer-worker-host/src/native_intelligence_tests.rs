@@ -163,6 +163,7 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
             &handoff(),
             &mut output,
             Instant::now() + RPC_TIMEOUT,
+            &CancellationToken::new(),
         )
         .await;
         if let Err(reason) = result {

@@ -725,7 +725,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             maximum_in_flight: 1,
         },
         "answer until the owner cancels".to_string(),
-        Some("papaya".to_string()),
+        /*context_query*/ None,
         NativeIntelligenceRunBinding {
             run_id: "worker-owner-cancel".to_string(),
             expected_revision: attached.revision,

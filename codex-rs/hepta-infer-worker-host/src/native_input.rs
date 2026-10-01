@@ -72,6 +72,21 @@ pub struct NativeIntelligenceRunBinding {
     pub envelope_digest: String,
 }
 
+/// Separate owner RPCs cannot attest optional memory and intelligence cuts at
+/// the same final-use boundary. Require the existing profiles separately.
+pub(super) fn validate_native_composition(
+    context_query: &Option<String>,
+    intelligence: Option<&NativeIntelligenceRunBinding>,
+) -> Result<()> {
+    if context_query.is_some() && intelligence.is_some() {
+        return Err(
+            "optional context query with intelligence requires a combined owner final-use port"
+                .into(),
+        );
+    }
+    Ok(())
+}
+
 /// Validate borrowed handoff fields before request hashing or owner RPCs.
 /// The stable V1 identifier and canonical Digest32 profiles own their bounds.
 pub(super) fn validate_intelligence_binding(binding: &NativeIntelligenceRunBinding) -> Result<()> {

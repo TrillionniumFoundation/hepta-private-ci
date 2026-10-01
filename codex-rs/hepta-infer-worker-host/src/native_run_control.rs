@@ -24,6 +24,9 @@ pub use super::input::NativeIntelligenceRunBinding;
 use super::input::bounded_diagnostic;
 pub(super) use super::input::digest;
 use super::input::native_source_payload_digest;
+use super::input::validate_native_composition;
+use super::recovery::preserve_recovery_evidence;
+use super::recovery::reconcile_with_cancellation;
 
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
@@ -88,6 +91,7 @@ impl AppServerModelDriver {
         {
             return Err("context query must contain 1..2048 bytes".into());
         }
+        validate_native_composition(&context_query, intelligence)?;
         StableId::with_profile(&admission.request_id, IdProfileV1::Stable)?;
         let request = NativeRequest {
             request_id: admission.request_id,
@@ -121,23 +125,34 @@ impl AppServerModelDriver {
             {
                 return Ok(output.clone());
             }
-            if let Some(reconciled) = self
-                .reconcile_existing(&record, &prompt, intelligence)
-                .await?
-            {
+            let (record, recovery) = reconcile_with_cancellation(
+                control,
+                &record.request.request_id,
+                cancellation,
+                |record| async move {
+                    self.reconcile_existing(&record, &prompt, intelligence, cancellation)
+                        .await
+                },
+            )
+            .await?;
+            if let Some(reconciled) = recovery {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
                 return settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()
                 });
             }
-            if let Some(output) = record.observation {
-                return Ok(output);
+            if let Some(mut output) = record.observation.clone() {
+                preserve_recovery_evidence(&record, &mut output)?;
+                let settled = control.settle_native(&record.request.request_id, output)?;
+                return settled.observation.ok_or_else(|| {
+                    "durable recovery fallback omitted its normalized observation".into()
+                });
             }
             let dispatch = record
                 .dispatch
                 .as_ref()
                 .ok_or("missing durable dispatch binding")?;
-            let output = NativeRunOutput {
+            let mut output = NativeRunOutput {
                 thread_id: dispatch.thread_id.clone(),
                 turn_id: record.turn_id.clone().unwrap_or_default(),
                 model: record.request.model.clone(),
@@ -154,6 +169,7 @@ impl AppServerModelDriver {
                 ),
                 codex_terminal_correlation_digest: None,
             };
+            preserve_recovery_evidence(&record, &mut output)?;
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
         }

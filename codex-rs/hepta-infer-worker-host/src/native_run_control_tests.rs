@@ -310,3 +310,35 @@ async fn malformed_intelligence_binding_is_rejected_before_journal_admission() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn unsupported_intelligence_memory_composite_has_no_admission_or_owner_io() {
+    let (driver, path) = fixture("unsupported-composite");
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let error = driver
+        .run_intelligence(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            Some("memory query".to_string()),
+            NativeIntelligenceRunBinding {
+                run_id: "run-a".to_string(),
+                expected_revision: 2,
+                context_digest: "a".repeat(64),
+                envelope_digest: "b".repeat(64),
+            },
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap_err();
+    // A nonexistent owner socket makes any attempted owner I/O fail differently.
+    assert_eq!(
+        error.to_string(),
+        "optional context query with intelligence requires a combined owner final-use port"
+    );
+    assert_eq!(control.native_record("r1"), None);
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}

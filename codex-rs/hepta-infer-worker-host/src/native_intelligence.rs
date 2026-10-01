@@ -5,6 +5,7 @@ use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_agentd::AgentdClient;
 use tokio::time::Instant;
 use tokio::time::timeout_at;
+use tokio_util::sync::CancellationToken;
 
 use super::LOCAL_CANCELLED;
 use super::LOCAL_DEADLINE_ELAPSED;
@@ -16,6 +17,7 @@ use super::RPC_TIMEOUT;
 use super::Result;
 use super::input::bounded_diagnostic;
 use super::input::validate_intelligence_binding;
+use super::recovery::apply_recovery_cancellation;
 use super::unix_time_ms;
 
 #[path = "native_intelligence_receipt.rs"]
@@ -93,8 +95,10 @@ pub(super) async fn reconcile_intelligence_terminal(
     binding: &NativeIntelligenceRunBinding,
     output: &mut NativeRunOutput,
     deadline: Instant,
+    cancellation: &CancellationToken,
 ) -> std::result::Result<(), String> {
     let run = read_intelligence_run(owner, binding, deadline).await?;
+    apply_recovery_cancellation(output, cancellation);
     let minimum_revision = binding
         .expected_revision
         .checked_add(1)

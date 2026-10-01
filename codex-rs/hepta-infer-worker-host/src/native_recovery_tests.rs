@@ -1,6 +1,7 @@
 use super::*;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 
 fn completed() -> NativeRunOutput {
     NativeRunOutput {
@@ -167,4 +168,175 @@ fn historical_recovery_denies_missing_frontier_before_owner_publication() {
     assert!(recovered.terminal_observed);
     assert_eq!(recovered.boundary_status, NativeBoundaryStatus::Quarantined);
     assert!(!recovered.succeeded());
+}
+
+fn recovery_control(path: &std::path::Path) -> DurableInferenceControl {
+    use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+    let mut control = DurableInferenceControl::open(path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(record(None).request, /*maximum_in_flight*/ 1)
+        .unwrap();
+    control
+        .dispatch_native(
+            "request-a",
+            NativeDispatch {
+                thread_id: "thread-a".to_string(),
+                model_provider: "provider-a".to_string(),
+                context_digest: "a".repeat(64),
+                owner_context_digest: None,
+                codex_payload_digest: None,
+                codex_request_digest: None,
+                app_server_version: None,
+                protocol_id: None,
+                codex_source_admission_digest: None,
+                codex_home_digest: None,
+                codex_connection_id: None,
+                codex_session_id: None,
+                codex_deadline_ms: None,
+                codex_authority_epoch: None,
+                codex_revocation_revision: None,
+                codex_revocation_head_sha256: None,
+                codex_authority_witness_sha256: None,
+            },
+        )
+        .unwrap();
+    control
+        .native_started("request-a", "turn-a".to_string())
+        .unwrap();
+    control
+}
+
+#[test]
+fn oversized_recovered_terminal_keeps_utf8_prefix_and_releases_denied_slot() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("large-terminal.journal");
+    let mut control = recovery_control(&path);
+    let limit = 1024 * 1024;
+    let prefix = "a".repeat(limit - 2);
+    let oversized = format!("{prefix}😀lost tail");
+    let mut output = NativeRunOutput {
+        output: String::new(),
+        ..completed()
+    };
+    retain_recovered_output(&mut output, [oversized.as_str(), "later text"], limit);
+    assert_eq!(
+        output,
+        NativeRunOutput {
+            output: prefix,
+            boundary_status: NativeBoundaryStatus::Quarantined,
+            stop_reason: Some("reconciled output byte limit exceeded".to_string()),
+            ..completed()
+        }
+    );
+    let settled = control.settle_native("request-a", output.clone()).unwrap();
+    assert_eq!(settled.state, NativeReservationState::Released);
+    assert_eq!(settled.observation, Some(output.clone()));
+    assert!(!output.succeeded());
+    let mut second = record(None).request;
+    second.request_id = "request-b".to_string();
+    control
+        .reserve_native(second, /*maximum_in_flight*/ 1)
+        .unwrap();
+}
+
+#[test]
+fn output_at_exact_limit_and_prior_denials_keep_their_original_semantics() {
+    let mut exact = NativeRunOutput {
+        output: String::new(),
+        ..completed()
+    };
+    retain_recovered_output(&mut exact, ["ab", "说明", ""], /*maximum_bytes*/ 8);
+    assert_eq!(
+        exact,
+        NativeRunOutput {
+            output: "ab说明".to_string(),
+            ..completed()
+        }
+    );
+    for boundary_status in [
+        NativeBoundaryStatus::Cancelled,
+        NativeBoundaryStatus::TimedOut,
+    ] {
+        let previous = NativeRunOutput {
+            boundary_status,
+            output: "ab".to_string(),
+            observed_output_tokens: Some(17),
+            status: NativeRunStatus::Indeterminate,
+            terminal_observed: false,
+            stop_reason: Some("earlier local denial".to_string()),
+            codex_terminal_correlation_digest: None,
+            ..completed()
+        };
+        let mut recovered = NativeRunOutput {
+            output: String::new(),
+            ..completed()
+        };
+        retain_recovered_output(&mut recovered, ["ab说明longer"], /*maximum_bytes*/ 7);
+        preserve_recovery_evidence(&record(Some(previous)), &mut recovered).unwrap();
+        assert_eq!(
+            recovered,
+            NativeRunOutput {
+                output: "ab说".to_string(),
+                boundary_status,
+                observed_output_tokens: Some(17),
+                stop_reason: Some("earlier local denial".to_string()),
+                ..completed()
+            }
+        );
+    }
+}
+
+#[tokio::test]
+async fn recovery_cancellation_is_durable_on_both_sides_of_await_and_on_error() {
+    for initially_cancelled in [false, true] {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("cancel-recovery.journal");
+        let mut control = recovery_control(&path);
+        let cancellation = CancellationToken::new();
+        if initially_cancelled {
+            cancellation.cancel();
+        }
+        let cancellation_ref = &cancellation;
+        let result = reconcile_with_cancellation(
+            &mut control,
+            "request-a",
+            &cancellation,
+            |record| async move {
+                assert_eq!(record.cancel_requested, initially_cancelled);
+                tokio::task::yield_now().await;
+                cancellation_ref.cancel();
+                Ok(Some(completed()))
+            },
+        )
+        .await
+        .unwrap();
+        let (record, output) = result;
+        let output = output.unwrap();
+        assert!(record.cancel_requested);
+        assert_eq!(output.boundary_status, NativeBoundaryStatus::Cancelled);
+        assert!(!output.succeeded());
+        drop(control);
+        let reopened = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+        assert_eq!(reopened.native_record("request-a"), Some(&record));
+    }
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("cancel-error.journal");
+    let mut control = recovery_control(&path);
+    let cancellation = CancellationToken::new();
+    let result = reconcile_with_cancellation(&mut control, "request-a", &cancellation, |_| async {
+        tokio::task::yield_now().await;
+        cancellation.cancel();
+        Err("provider history read failed".into())
+    })
+    .await;
+    assert_eq!(
+        result.unwrap_err().to_string(),
+        "provider history read failed"
+    );
+    let current = control.native_record("request-a").unwrap().clone();
+    assert!(current.cancel_requested);
+    assert_eq!(current.state, NativeReservationState::Cancelling);
+    drop(control);
+    let reopened = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    assert_eq!(reopened.native_record("request-a"), Some(&current));
 }

@@ -153,3 +153,21 @@ fn utf8_prefix_respects_protocol_byte_limits_at_multibyte_boundaries() {
     assert_eq!(bounded_utf8_prefix("😀", /*maximum_bytes*/ 3), "");
     assert_eq!(bounded_utf8_prefix("😀", /*maximum_bytes*/ 0), "");
 }
+
+#[test]
+fn native_input_rejects_unattested_composite_and_preserves_separate_profiles() {
+    let binding = NativeIntelligenceRunBinding {
+        run_id: "run-a".to_string(),
+        expected_revision: 2,
+        context_digest: "a".repeat(64),
+        envelope_digest: "b".repeat(64),
+    };
+    let query = Some("memory query".to_string());
+    validate_native_composition(&query, /*intelligence*/ None).unwrap();
+    validate_native_composition(&None, Some(&binding)).unwrap();
+    let error = validate_native_composition(&query, Some(&binding)).unwrap_err();
+    assert_eq!(
+        error.to_string(),
+        "optional context query with intelligence requires a combined owner final-use port"
+    );
+}
