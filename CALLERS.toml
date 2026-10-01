@@ -163,7 +163,7 @@ id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-supervisor/src/local_model_relay.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-supervisor/src/local_model_relay.rs"]
 caller_markers = ["claim_final_use"]
 
 [[boundary]]
@@ -180,8 +180,8 @@ id = "final_use_delivery"
 symbol = "deliver_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn deliver_final_use", "authority.with_verified_use(token, expected, consumer)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["deliver_final_use", "deliver_final_use(authority, verified, &binding", "ConsumerIndeterminate"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs"]
+caller_markers = ["deliver_final_use(authority, verified, &binding", "prepare_delivery(&receipt).await"]
 
 [[boundary]]
 id = "final_use_delivery_witness"
@@ -300,7 +300,7 @@ caller_markers = []
 [[boundary]]
 id = "bao_registered_consumer_new"
 symbol = "RegisteredBaoConsumer::new"
-definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
 definition_markers = ["impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
 product_callers = []
 caller_markers = []
@@ -326,8 +326,8 @@ caller_markers = []
 id = "bao_registered_final_use_host"
 symbol = "BaoFinalUseHost::consume_kv_v2"
 call_pattern = '(?:bao_host|final_use_host|BaoFinalUseHost)\s*(?:\.|::)\s*consume_kv_v2\s*\('
-definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host_ingress.rs"
+definition_markers = ["impl BaoFinalUseHost", "pub async fn consume_kv_v2", "self.approved_consumer", "self.ensure_revocation_fresh()", "consume_kv_v2_guarded"]
 product_callers = []
 caller_markers = []
 
@@ -488,13 +488,28 @@ forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-required = ["pub async fn consume_kv_v2", "claim_final_use(authority, grant, &binding)", "deliver_final_use(authority, verified, &binding"]
+required = ["pub struct BaoClient", "pub async fn consume_kv_v2", "HttpClientBuilder::build_pinned_https_direct", "pub fn binding"]
 forbidden = ["impl Default for BaoClient", ".claim(grant, &binding)", ".with_verified_use(verified"]
 
 [[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs"
+required = ["pub(crate) async fn consume_kv_v2_guarded_async", "claim_final_use(authority, grant, &binding)", "prepare_delivery(&receipt).await", "deliver_final_use(authority, verified, &binding"]
+forbidden = [".claim(grant, &binding)", ".with_verified_use(verified"]
+
+[[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
+required = ["pub struct RegisteredBaoConsumer", "impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
+forbidden = ["impl Default for RegisteredBaoConsumer", "permit_all"]
+
+[[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-required = ["pub struct RegisteredBaoConsumer", "pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "pub async fn consume_kv_v2", "StaleRevocationFeed", "AuthorityClock", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
+required = ["pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "StaleRevocationFeed", "AuthorityClock", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
 forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/final_use_host_ingress.rs"
+required = ["pub async fn consume_kv_v2", "self.approved_consumer", "self.ensure_revocation_fresh()", "consume_kv_v2_guarded"]
+forbidden = ["permit_all"]
 
 [authority]
 runtime_authority = false
