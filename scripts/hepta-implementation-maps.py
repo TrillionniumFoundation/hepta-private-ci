@@ -168,6 +168,37 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
                             "Rust test identity does not name a source function"
                         )
                 paths.add(path)
+    objects = row.get("sourceObjects", [])
+    if not isinstance(objects, list):
+        raise ValueError("source objects must be a list")
+    for entry in objects:
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("path"), str)
+            or not entry["path"]
+        ):
+            raise ValueError("invalid explicit source object path")
+        paths.add(entry["path"])
+    evidence = row.get("exactSourceEvidence")
+    if evidence is not None:
+        if (
+            not isinstance(evidence, dict)
+            or evidence.get("kind") != "path_blob_manifest_v1"
+            or not isinstance(evidence.get("entries"), list)
+            or not evidence["entries"]
+        ):
+            raise ValueError("invalid exact source manifest")
+        for entry in evidence["entries"]:
+            if (
+                not isinstance(entry, dict)
+                or not isinstance(entry.get("path"), str)
+                or not entry["path"]
+            ):
+                raise ValueError("invalid exact source manifest path")
+            paths.add(entry["path"])
+    own_map = f"docs/modules/{row.get('module')}/IMPLEMENTATION_MAP.json"
+    if own_map in paths:
+        raise ValueError("source object cannot bind its own implementation map")
     for path in paths:
         local = checked_source_path(ROOT, path)
         if not local.exists():
@@ -316,17 +347,7 @@ def tracked_source_paths(row: dict) -> list[str]:
     )
     if isinstance(roots, str):
         roots = [roots]
-    paths = set(evidence_paths(row, roots))
-    for entry in row.get("sourceObjects", []):
-        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
-            raise ValueError("invalid explicit source object path")
-        paths.add(entry["path"])
-    own_map = f"docs/modules/{row.get('module')}/IMPLEMENTATION_MAP.json"
-    if own_map in paths:
-        raise ValueError("source object cannot bind its own implementation map")
-    for path in paths:
-        checked_source_path(ROOT, path)
-    return sorted(paths)
+    return evidence_paths(row, roots)
 
 
 def current_source_objects(row: dict) -> list[dict[str, str]]:
@@ -548,6 +569,10 @@ EXECUTION_CLAIMS = frozenset(
         "independentDecisionEvidenceProved",
         "namedHostQualificationReceiptProved",
         "registeredNumericAdmissionProductExecutionProved",
+        "productExecutionComplete",
+        "deploymentQualificationComplete",
+        "independentAcceptanceComplete",
+        "targetHostQualified",
     }
 )
 BOOLEAN_CLAIMS = EXECUTION_CLAIMS | {
@@ -573,7 +598,14 @@ def validate_claim_types(row: dict) -> bool:
         for name in BOOLEAN_CLAIMS.intersection(claim):
             if type(claim[name]) is not bool:
                 raise ValueError(f"{name} must be boolean")
-    return any(claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS)
+    status = row.get("status")
+    if "status" in row and (
+        not isinstance(status, dict) or type(status.get("qualified")) is not bool
+    ):
+        raise ValueError("status.qualified must be boolean")
+    return (isinstance(status, dict) and status["qualified"] is True) or any(
+        claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS
+    )
 
 
 def canonical_product_callers(callers: list) -> list[dict]:
@@ -618,6 +650,57 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         verify_source_identity(
             row, resolve_source_roots(ROOT, module), current_source_base()
         )
+
+        def require_original_object(source: str, value, label: str) -> None:
+            if (
+                not isinstance(value, str)
+                or re.fullmatch(r"[0-9a-f]{40}", value) is None
+            ):
+                raise ValueError(f"{label} requires a literal Git object id")
+            # No-drift verification makes HEAD identical to the original source
+            # observation for this path. Check the old literal before refresh.
+            if value != git("rev-parse", f"HEAD:{source}"):
+                raise ValueError(f"stale {label}: {source}")
+
+        if "sourceObjects" in row and not row["sourceObjects"]:
+            raise ValueError(
+                "execution claim requires nonempty declared source objects"
+            )
+        seen_objects = set()
+        for entry in row.get("sourceObjects", []):
+            source = entry["path"]
+            value = entry.get("object", entry.get("blobSha"))
+            if source in seen_objects:
+                raise ValueError("duplicate explicit source object path")
+            seen_objects.add(source)
+            if (
+                "object" in entry
+                and "blobSha" in entry
+                and entry["object"] != entry["blobSha"]
+            ):
+                raise ValueError("conflicting explicit source object spellings")
+            require_original_object(source, value, "explicit source object")
+        if "exactSourceEvidence" in row:
+            failures = []
+            validate_path_blob_manifest(row, module["id"], failures)
+            if failures:
+                raise ValueError("; ".join(failures))
+        if row.get("mappingSourceIdentityMode") == "exact_blob":
+            for op in row["operations"]:
+                source = op.get(
+                    "sourcePath", (op.get("ownerEntrypoint") or {}).get("path")
+                )
+                if not source:
+                    raise ValueError("exact source blob requires a mapped source path")
+                require_original_object(
+                    source, op.get("sourceBlob"), "exact source blob"
+                )
+        for caller in row.get("productCallers", []):
+            if "blobSha" in caller:
+                source = caller.get("sourcePath", caller.get("path"))
+                require_original_object(
+                    source, caller["blobSha"], "product caller blob"
+                )
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):

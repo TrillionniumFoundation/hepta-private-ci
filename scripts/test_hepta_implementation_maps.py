@@ -204,7 +204,7 @@ class SourceIdentityTests(unittest.TestCase):
             (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
         )
 
-    def test_source_rebind_requires_revoking_stale_ndu_execution_claims(self):
+    def test_source_rebind_requires_revoking_stale_execution_claims(self):
         for index, claim in enumerate(
             (
                 "requestLocalReadOnlyProductExecutionProved",
@@ -213,6 +213,10 @@ class SourceIdentityTests(unittest.TestCase):
                 "independentDecisionEvidenceProved",
                 "namedHostQualificationReceiptProved",
                 "registeredNumericAdmissionProductExecutionProved",
+                "productExecutionComplete",
+                "deploymentQualificationComplete",
+                "independentAcceptanceComplete",
+                "targetHostQualified",
             )
         ):
             with self.subTest(claim=claim):
@@ -246,6 +250,200 @@ class SourceIdentityTests(unittest.TestCase):
                 self.assertFalse(rebound["productionImplementation"])
                 self.assertEqual(rebound["sourceBase"], candidate)
                 self.commit("persist source navigation without execution qualification")
+                self.verify()
+
+    def test_execution_rebind_checks_all_explicit_witness_paths_before_refresh(self):
+        for binding in ("object", "blobSha", "path_blob_manifest_v1"):
+            with self.subTest(binding=binding):
+                row = self.row("alpha", maps.current_source_base())
+                self.rows["alpha"] = row
+                row["claimBoundary"]["productExecutionProved"] = True
+                witness_blob = self.git("rev-parse", "HEAD:README.md")
+                if binding == "path_blob_manifest_v1":
+                    row["exactSourceEvidence"] = {
+                        "kind": binding,
+                        "entries": [
+                            {
+                                "path": "src/alpha/lib.rs",
+                                "blobSha": self.git(
+                                    "rev-parse", "HEAD:src/alpha/lib.rs"
+                                ),
+                            },
+                            {"path": "README.md", "blobSha": witness_blob},
+                        ],
+                    }
+                else:
+                    row["sourceObjects"] = [
+                        {"path": "README.md", binding: witness_blob}
+                    ]
+                self.change_maps()
+                self.write("README.md", f"changed only the {binding} witness\n")
+                self.commit("explicit evidence changed after claimed execution")
+                before = {
+                    path: path.read_bytes()
+                    for path in self.root.glob("docs/modules/*/IMPLEMENTATION_MAP.json")
+                }
+                with (
+                    self.assertRaisesRegex(
+                        maps.SourceDrift, "changed after source observation"
+                    ),
+                    contextlib.redirect_stdout(io.StringIO()),
+                ):
+                    maps.migrate(["alpha", "beta"])
+                self.assertEqual(before, {path: path.read_bytes() for path in before})
+
+                row["claimBoundary"]["productExecutionProved"] = False
+                self.change_maps()
+                self.migrate(["alpha"])
+                rebound = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+                self.assertFalse(rebound["claimBoundary"]["productExecutionProved"])
+                self.assertFalse(rebound["productionImplementation"])
+                current_blob = self.git("rev-parse", "HEAD:README.md")
+                if binding == "path_blob_manifest_v1":
+                    entries = rebound["exactSourceEvidence"]["entries"]
+                    self.assertIn(
+                        {"path": "README.md", "blobSha": current_blob}, entries
+                    )
+                else:
+                    self.assertIn(
+                        {"path": "README.md", "object": current_blob},
+                        rebound["sourceObjects"],
+                    )
+                self.commit("persist source witness rebind without execution claim")
+                self.verify()
+
+    def test_source_rebind_requires_revoking_stale_status_qualification(self):
+        row = self.rows["alpha"]
+        row["status"] = {"implemented": True, "composed": False, "qualified": True}
+        self.change_maps()
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let _changed = 1; }\n")
+        self.commit("change qualified source")
+        before = {
+            path: path.read_bytes()
+            for path in self.root.glob("docs/modules/*/IMPLEMENTATION_MAP.json")
+        }
+        with (
+            self.assertRaises(maps.SourceDrift),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            maps.migrate(["alpha", "beta"])
+        self.assertEqual(before, {path: path.read_bytes() for path in before})
+        row["status"]["qualified"] = False
+        self.change_maps()
+        self.migrate(["alpha"])
+        rebound = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(
+            rebound["status"],
+            {"implemented": True, "composed": False, "qualified": False},
+        )
+        self.commit("persist navigation without host qualification")
+        self.verify()
+
+    def execution_literal_fixture(self, binding, value):
+        row = self.row("alpha", maps.current_source_base())
+        row["claimBoundary"]["productExecutionProved"] = True
+        source = "README.md"
+        if binding == "path_blob_manifest_v1":
+            row["exactSourceEvidence"] = {
+                "kind": binding,
+                "entries": [
+                    {
+                        "path": "src/alpha/lib.rs",
+                        "blobSha": self.git("rev-parse", "HEAD:src/alpha/lib.rs"),
+                    },
+                    {"path": source, "blobSha": value},
+                ],
+            }
+        elif binding == "sourceBlob":
+            source = "src/alpha/lib.rs"
+            row["mappingSourceIdentityMode"] = "exact_blob"
+            row["observedAtHead"] = copy.deepcopy(row["sourceBase"])
+            row["observedSourcePaths"] = ["src/alpha"]
+            row["operations"][0]["sourceBlob"] = value
+        elif binding in ("caller_blob", "legacy_caller_blob"):
+            source = "host/caller.rs"
+            key = "path" if binding == "legacy_caller_blob" else "sourcePath"
+            row["productCallers"] = [{key: source, "blobSha": value}]
+        else:
+            row["sourceObjects"] = [{"path": source, binding: value}]
+        self.rows["alpha"] = row
+        return row, source
+
+    def test_execution_rebind_cannot_launder_invalid_original_git_literals(self):
+        for binding in (
+            "object",
+            "blobSha",
+            "path_blob_manifest_v1",
+            "sourceBlob",
+            "caller_blob",
+            "legacy_caller_blob",
+        ):
+            for value in ("malformed", "0" * 40):
+                with self.subTest(binding=binding, value=value):
+                    row, source = self.execution_literal_fixture(binding, value)
+                    self.change_maps()
+                    before = {
+                        path: path.read_bytes()
+                        for path in self.root.glob(
+                            "docs/modules/*/IMPLEMENTATION_MAP.json"
+                        )
+                    }
+                    with (
+                        self.assertRaises(ValueError),
+                        contextlib.redirect_stdout(io.StringIO()),
+                    ):
+                        maps.migrate(["alpha", "beta"])
+                    self.assertEqual(
+                        before, {path: path.read_bytes() for path in before}
+                    )
+
+                    row["claimBoundary"]["productExecutionProved"] = False
+                    self.change_maps()
+                    self.migrate(["alpha"])
+                    rebound = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+                    self.assertFalse(rebound["claimBoundary"]["productExecutionProved"])
+                    actual = self.git("rev-parse", f"HEAD:{source}")
+                    if binding == "path_blob_manifest_v1":
+                        self.assertIn(
+                            {"path": source, "blobSha": actual},
+                            rebound["exactSourceEvidence"]["entries"],
+                        )
+                    elif binding == "sourceBlob":
+                        self.assertEqual(rebound["operations"][0]["sourceBlob"], actual)
+                    else:
+                        self.assertIn(
+                            {"path": source, "object": actual}, rebound["sourceObjects"]
+                        )
+                        if "caller" in binding:
+                            self.assertEqual(
+                                rebound["productCallers"][0]["blobSha"], actual
+                            )
+                    self.commit(
+                        "persist repaired navigation without execution evidence"
+                    )
+                    self.verify()
+
+    def test_execution_rebind_preserves_valid_original_and_legacy_git_literals(self):
+        for binding in (
+            "object",
+            "blobSha",
+            "path_blob_manifest_v1",
+            "sourceBlob",
+            "caller_blob",
+            "legacy_caller_blob",
+        ):
+            with self.subTest(binding=binding):
+                _, source = self.execution_literal_fixture(binding, "placeholder")
+                actual = self.git("rev-parse", f"HEAD:{source}")
+                self.execution_literal_fixture(binding, actual)
+                self.change_maps()
+                self.migrate(["alpha"])
+                rebound = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+                self.assertTrue(rebound["claimBoundary"]["productExecutionProved"])
+                self.assertFalse(rebound["productionImplementation"])
+                self.commit(
+                    "normalize valid source bindings without changing execution facts"
+                )
                 self.verify()
 
     def test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses(self):
