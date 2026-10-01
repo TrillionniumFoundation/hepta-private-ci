@@ -52,9 +52,13 @@ async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
     for _ in 0..4 {
         held.push(store.pool.acquire().await.expect("fault connection"));
     }
-    let page_cap = format!("PRAGMA max_page_count = {pages}");
     for connection in &mut held {
-        sqlx::query(&page_cap)
+        // SQLite PRAGMA values cannot be bound. The only dynamic fragment is
+        // the positive i64 page count read from this database above.
+        let mut page_cap = sqlx::QueryBuilder::<sqlx::Sqlite>::new("PRAGMA max_page_count = ");
+        page_cap.push(pages);
+        page_cap
+            .build()
             .execute(&mut **connection)
             .await
             .expect("set per-connection page cap");
