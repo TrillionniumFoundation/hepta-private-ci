@@ -42,7 +42,9 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots above are materialized. Executed checks belong to an exact source candidate and are recorded in the [2026-10-01 audit](ADVERSARIAL_AUDIT_2026-10-01.md). Focused tests, all-target compilation, strict lint and source/merge qualification remain separate evidence obligations; a successful focused test does not imply that a later blocked lint step executed. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots above are materialized. Executed checks belong to an exact source candidate and are recorded in the [2026-10-01 audit](ADVERSARIAL_AUDIT_2026-10-01.md). Focused tests, all-target compilation, strict lint and source/merge qualification remain distinct observations; a successful focused test does not imply that a later blocked lint step executed. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+
+Follow [the global development policy](../../DEVELOPMENT.md#2-canonical-document-system-and-historical-cleanup): ordinary authorized source work runs affected package tests and applicable review checks. `hepta-docs.py`, `hepta-module-docs.py` and `hepta-implementation-maps.py` use `--profile development` to validate current ownership, schemas, paths and references, including local edits. Their default qualification profile additionally checks historical source identities and inventories. Qualification receipts require committed inputs and apply when the relevant runtime, independent-evaluation, candidate-execution or release boundary is exercised. A development-profile pass neither renews those receipts nor proves production completion. Automatic native CI selects affected owners and reverse consumers from both Git revisions; deeper qualification workflows remain reusable or manually runnable.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -122,6 +124,27 @@ Native ceilings are 16,384 total records, 128 compatible realizations and requir
 factor IDs, and 64 KiB per payload. V3 metadata and payload extent files each have
 a 32 MiB ceiling. A smaller configured record ceiling is persisted and cannot
 silently change on reopen. These bounds are enforcement, not latency measurements.
+
+`migrate_v1` rejects an oversized total factor/realization count with
+`CapacityExceeded`, or more bindings than realizations with `Corrupt`, before
+decoding records, building indexes or synthesizing imported lifecycle events.
+This preflight follows the storage schema/configuration checks; it does not remove
+the existing bounded storage-file decode. Final-use payload registration rejects
+empty or over-64-KiB input with `Core(PayloadTooLarge)` after owner availability
+checking and before factor cloning, payload hashing or `FinalUseAuthority::claim`.
+The registry image, selected files and grant claimability are unchanged by this
+shape rejection. It does not refund a nonce after a final-use effect has begun.
+
+For V3 reopen, ordinary and anchored constructors pass the configured record
+limit into `PayloadState::hydrate`. Shared `validate_stored_metadata_bounds`
+checks header/revision, configuration and collection counts before reference
+sorting or payload-file open/read/hash. Reference count cannot exceed realization
+count; reference IDs are validated on borrowed strings before indexing clones.
+Invalid configuration, aggregate capacity and other shape failures retain
+`ConfigurationMismatch`, `CapacityExceeded` and `Corrupt` respectively. This
+preflight follows bounded metadata JSON decoding; full semantic restore and
+anchor comparison still precede migration or unselected-tail cleanup. Rejected
+input preserves the selected metadata, committed payload and orphan trailing bytes.
 
 `register_factor_relation` and `factor_graph_source_v1` belong to the in-memory
 image. The current durable schema has no relation records or governed relation
@@ -300,11 +323,15 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs) covers first-match prefix fallback, nonoverlapping cursor advancement and missing semantics; these new cases await candidate execution.
+- [codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs) covers the public lower-level compiler/delivery 10,000-token guard and serialized-payload byte rejection using admitted and signed-selection fixtures; these new cases await candidate execution.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs) covers future and expired prompt-edge/endpoint supports, overlapping-support cut transitions and exact millisecond boundaries; these new fixtures await candidate execution.
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named case: `external_material_cannot_admit_itself`.
 - [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named case: `every_state_change_allocates_one_revision_and_identical_retry_does_not`.
 - [codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs) covers adversarial storage restore and bootstrap recovery.
 - [codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs) covers missing state, old backups, equal-revision forks, mismatch-before-trim/migration and parent-sync retry.
 - [codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs) covers exact 8,191/8,192/8,193-byte dimension-array boundaries and canonical ordering.
+- [codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs) covers V1 capacity before record decode, orphan bindings, exact-capacity migration, V3 metadata/ref preflight before payload access and payload rejection before grant claim; these new fixtures await candidate execution.
 - [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs) and [prompt_delivery_multirole_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_multirole_tests.rs) cover sealed compilation and exact selected realization identity.
 - [codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs) covers rehashed pricing/portfolio tampering and candidate semantic integrity.
 - [codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs) follows actual durable enumeration and independent signed completeness/pricing through expiry and known-revocation selection boundaries.
@@ -328,7 +355,7 @@ Applicable work packages:
 
 The bootstrap package is `PIM-0-PROMPT-INTERVENTION-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation requires the declared target root, matching registered public surfaces and applicable tests and review checks. Exact-head and merge-candidate qualification evidence is additionally required at the boundary that consumes it; it is not a separately handwritten permission to perform ordinary authorized source work. Later planned packages may remain without invalidating documentation closure, but their missing product capabilities must remain explicit.
 
 ## 14. Activation, compatibility and retirement
 
@@ -373,6 +400,29 @@ pricing/completeness evidence, every verified pair-evidence horizon and selected
 realization expiry. Selection time is privately sealed; exercise before that time
 returns `RejectStale`. These are bounded dependency facts from learning.ledger,
 not a registry-owned evidence authority.
+
+An empty sealed portfolio follows the same exercise time and scope checks.
+`exercise_v1` returns `RejectStale` for time before selection, at/after its
+exclusive deadline, or changed state digest, generation vector or exact model
+tuple/digest. Only a current, in-window empty portfolio yields `NoIntervention`;
+that branch cannot bypass freshness checks. Nonempty portfolios then undergo
+the current registry/lifecycle read and exercise-versus-wait comparison.
+
+Selection also bounds the frozen KG projection by its next relevant support
+transition, using the optimizer's private `canonical_temporal.rs` helper.
+Relevant prompt edges connect candidate factors or require a missing target from
+a known candidate; their endpoint-node supports count too. Future invisible
+supports can change applicability and therefore bound the portfolio before they
+become visible. `valid_from` is inclusive and `valid_to` exclusive in KG seconds;
+conversion to milliseconds saturates rather than wrapping. A portfolio expires
+at the earliest later boundary, even where overlapping supports keep a relation
+visible but change the support-cut digest. Unrelated nodes/edges and non-prompt
+relations do not shorten it. This graph deadline joins the existing requested,
+pricing, pair-evidence and realization ceilings and propagates through the
+sealed portfolio to compiler and Agentd staging. Selection at the boundary must
+query the updated projection; later graph generations still require current
+host revalidation.
+
 Selection, exercise and registry compilation validate the corresponding sealed
 inputs before use. Integrity failures are `CandidateIntegrity`,
 `PricingIntegrity` or `PortfolioIntegrity`. These objects have no serialized
@@ -392,6 +442,31 @@ cost only; the registry/compiler does not independently run the exact tokenizer.
 Fragments declared above 1,000 tokens fall under the repository's P0 manual
 review rule. Actual tokenizer attestation and the applicable manual-review receipt
 remain qualification work; a passing declared-bound test establishes neither.
+
+The public lower-level `compile_exercised_prompt_context_v1` and
+`prepare_prompt_delivery_v1` also validate the sealed portfolio and apply that
+individual-item bound before fragment construction or delivery-receipt work.
+They report `PromptPipelineErrorV1::PromptFragmentTokenLimit`. These APIs and
+the registry-backed V2 compiler share `MAX_PROMPT_FRAGMENT_TOKENS = 10_000`,
+so the generic path cannot bypass the V2 declared-cost ceiling. The bound still
+does not attest actual tokenizer cost or supply the P0 review receipt.
+
+`prepare_prompt_delivery_v1` additionally applies the context compiler's existing
+16-MiB `MAX_SERIALIZED_PAYLOAD_BYTES_V2` ceiling after portfolio/compiled-receipt
+binding checks and request destructuring. Oversized caller bytes fail before
+exercise, source materialization, occurrence scanning, hashing or serialization
+copies, using the existing `ContextCompiler(SerializedPayloadTooLarge)` error
+classification. This preflight does not change the wire format or grant authority.
+
+Source-byte occurrence proof uses the private
+[`prompt_serialization_search.rs`](../../../codex-rs/hepta-intelligence/src/prompt_serialization_search.rs)
+KMP helper rather than repeated slice-window equality. Each search is
+`O(haystack length + needle length)` and retains first-match, nonoverlapping
+cursor and missing-occurrence semantics. The needle is explicitly capped at
+64 KiB, bounding its `usize` prefix table to 512 KiB on a 64-bit target.
+This algorithmic bound comes from the source structure; the new Rust candidate
+has neither execution nor benchmark evidence yet. The signed maximal-pattern
+fixture uses declared token cost and does not attest tokenizer cost.
 
 Agentd's runtime journal rejects a dispatch whose `dispatched_unix_ms` is equal
 to or after the staged deadline. A terminal observation must be at or after its

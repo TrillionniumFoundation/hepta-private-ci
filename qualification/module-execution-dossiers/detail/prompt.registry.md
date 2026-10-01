@@ -41,7 +41,7 @@ These are required product test designs, not executed-test receipts. Each implem
 
 KG holds rebuildable factor interactions; learning.ledger owns causal exposure/outcome, not this registry. Rollback may choose a compatible non-revoked predecessor, but never restore an old lifecycle snapshot before a revocation.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Use all eighteen dossier receipt fields when the corresponding qualification or runtime boundary consumes a dossier. Ordinary authorized source development instead runs affected package tests, applicable review checks and development-profile ownership/schema/path/reference validation; Git and CI supply the candidate identity. A development-profile pass does not renew historical qualification evidence or prove product execution. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
 ## 8. Current native implementation
 
@@ -107,6 +107,24 @@ the input collection. Identifier validation uses the 128-byte ASCII stable-ID
 profile on borrowed protocol and admission inputs before creating owned IDs.
 These checks preserve public APIs, wire versions and existing shape errors.
 
+V1 migration checks the combined factor/realization count and rejects excess
+bindings before record decoding, index construction or synthetic imported events.
+The storage-file byte ceiling still applies before the typed image exists.
+Final-use payload registration rejects empty or over-65,536-byte input before
+factor cloning, hashing or grant claim. It preserves the registry/selected files
+and original grant claimability on this shape failure; it does not refund a nonce
+after entering a final-use effect.
+
+Both ordinary and anchored V3 reopen pass the configured record limit into
+`PayloadState::hydrate`. Its shared `validate_stored_metadata_bounds` checks
+header/revision, resource configuration and collection counts before sorting
+references or opening, reading or hashing payload bytes. Reference count is
+bounded by realization count and reference IDs are borrowed-validated before
+indexing clones. These failures preserve `ConfigurationMismatch`,
+`CapacityExceeded` or `Corrupt` and leave selected metadata and payload/tail bytes
+unchanged. The bounded typed-JSON decode still occurs first; full semantic restore
+and anchor comparison remain mandatory before migration or tail cleanup.
+
 ### 8.3 Named composition and remaining product path
 
 [Agentd state bootstrap](../../../codex-rs/hepta-agentd/src/state.rs) calls [AgentdPromptPipelineOwner::open_state_dirs](../../../codex-rs/hepta-agentd/src/prompt_runtime.rs) with the agent home `prompt-registry` directory and run `prompt-runtime` directory. [The embedded App Server options](../../../codex-rs/hepta-agentd/src/app_runtime.rs) receive that owner's runtime host. `AgentdPromptPipelineOwner::enumerate_candidates` reads this exact store, and `compile_and_stage` calls [compile_prompt_registry_v2](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) before staging the selected actual bytes. These methods exist, but no external product callsite invokes enumeration or compilation/staging. Host attachment is therefore a partial named composition, not execution of the complete intervention path.
@@ -135,12 +153,28 @@ the no-pair path. Portfolio validity also includes pair-evidence endpoints, requ
 validity and realization expiry. Privately sealed selection time makes exercise
 before selection return `RejectStale`. Evidence trust remains ledger/host-owned;
 these dependency checks do not create another registry authority.
+`exercise_v1` applies the exclusive horizon and exact state/vector/model scope
+checks before returning `NoIntervention` for an empty sealed portfolio. Empty
+portfolios return `RejectStale` for backdated/expired time or scope drift, while
+nonempty portfolios additionally revalidate the current registry/lifecycle cut.
 Exercise and registry compilation validate the selected-portfolio
 seal. `CandidateIntegrity`, `PricingIntegrity` and `PortfolioIntegrity` preserve
 these failure distinctions. Callers use verified pricing/selection constructors;
 private seals have no serde reconstruction path and grant no execution authority.
 They retain construction provenance, not continuously current trust; producer
 trust/revocation refresh at exercise or physical send remains a host requirement.
+
+The optimizer's private `canonical_temporal.rs::graph_valid_until_unix_ms` caps
+portfolio validity by the next relevant prompt-edge or endpoint-support transition
+in the frozen KG projection, including supports not yet visible. Relevant edges
+join candidate factors or require a missing target from a known candidate.
+KG support starts are inclusive and ends exclusive in seconds, converted with
+saturating multiplication to millisecond deadlines. Overlapping-support transitions
+also expire the old support cut even if the relation remains visible. Unrelated
+and non-prompt facts do not shorten the portfolio. This cap joins requested,
+pricing/pair-evidence and realization deadlines; the compiler and staging host
+consume the same sealed portfolio horizon. A later graph generation still needs
+current host revalidation.
 
 Registry compilation and compiled-output validation separately enforce a maximum
 declared `token_cost` of 10,000 per selected fragment, reporting the typed
@@ -149,6 +183,25 @@ not only an aggregate context budget. It does not certify actual tokenizer cost.
 Fragments declared above 1,000 tokens require the repository's P0 manual review;
 the applicable review receipt and exact-tokenizer attestation remain pending
 qualification evidence.
+
+The public lower-level `compile_exercised_prompt_context_v1` and
+`prepare_prompt_delivery_v1` validate the sealed portfolio and enforce the same
+per-fragment bound before construction or delivery-receipt rebinding, using
+`PromptPipelineErrorV1::PromptFragmentTokenLimit`. They share the
+`MAX_PROMPT_FRAGMENT_TOKENS = 10_000` constant with the registry-backed V2 path.
+
+`prepare_prompt_delivery_v1` rejects serialized payloads above the existing
+16-MiB context-compiler ceiling before exercise, materialization, occurrence
+scanning, hashing or serialization copies, after portfolio/receipt binding checks.
+It preserves the existing `ContextCompiler(SerializedPayloadTooLarge)` error
+classification rather than adding a wire error.
+
+Serialization occurrence proof uses private
+`prompt_serialization_search.rs::find_subslice`, a KMP first-occurrence search
+with `O(H + N)` work per search. The explicit 64-KiB needle ceiling bounds its
+prefix table to 512 KiB on a 64-bit target. First-match, cursor order and
+missing-occurrence behavior remain unchanged. This is an algorithmic source
+bound, not executed-candidate or runtime benchmark evidence.
 
 Runtime journal dispatch must precede the staged deadline, and terminal observation
 must not precede dispatch; equal dispatch/terminal timestamps are allowed. The
@@ -202,3 +255,57 @@ fails and time 99 before verification fails. Enumeration seal coverage includes
 `rehashed_enumeration_metadata_cannot_hide_omissions`; intelligence adds
 `signed_prompt_fragment_declared_token_cost_obeys_individual_item_cap` using
 the signed pricing/selection path at 10,000 and 10,001 declared tokens.
+
+[durable_input_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs)
+adds `legacy_record_capacity_precedes_decode_and_preserves_selected_bytes`,
+`legacy_orphan_bindings_are_rejected_and_exact_capacity_remains_migratable` and
+`payload_shape_rejection_preserves_registry_and_signed_grant_claimability`.
+The payload fixture uses real Ed25519 final-use grants at zero, 65,537 and 65,536
+bytes. These newly added source cases await execution for the repaired candidate;
+the earlier CI results do not cover them.
+
+Its fourth fixture,
+`v3_metadata_bounds_precede_payload_access_and_preserve_recovery_inputs`,
+uses a missing payload file to prove typed metadata/configuration/count/reference
+rejection precedes I/O, then verifies an existing payload with an orphan tail and
+the selected manifest remain unchanged under ordinary and anchored reopen.
+Execution for the new candidate remains pending.
+
+[canonical_temporal_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs)
+adds ten real durable-enumeration/signed-pricing/selection/exercise cases. They
+cover future conflict and required-factor edges, expiring complements and
+endpoints, future endpoint visibility, unrelated facts, exact exclusive
+millisecond boundaries, negative/unrepresentable second bounds and a future
+support in an already visible relation. Source presence is not an execution
+receipt for this new candidate.
+
+`empty_portfolio_obeys_the_same_time_and_scope_currentness_checks` constructs
+a genuinely signed zero-token-budget selection: current empty exercise succeeds
+as `NoIntervention`, while time before selection, exclusive expiry and changed
+nonzero state/vector/model fields produce `RejectStale`. Execution remains pending.
+
+[prompt_pipeline_fragment_bounds_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs)
+adds `public_prompt_compiler_enforces_declared_fragment_bound_before_compilation`
+and `public_prompt_delivery_checks_fragment_bound_before_receipt_rebinding`
+through genuine admitted/signed-selection portfolios at 10,000 and 10,001
+declared tokens. Execution for the new source candidate remains pending.
+
+The same file adds
+`public_prompt_delivery_rejects_oversized_payload_before_occurrence_scanning`:
+an admitted and signed-selection preparation receives 16 MiB plus one byte
+without the selected bytes, and must return size rejection before the otherwise
+applicable missing-occurrence error. Execution remains pending.
+
+Two further public-path fixtures,
+`public_prompt_delivery_handles_maximum_repeated_prefix_missing_occurrence`
+and `public_prompt_delivery_records_the_first_of_multiple_source_occurrences`,
+cover a 64-KiB repeated-prefix source against an exactly 16-MiB serialization
+and the first matching range at offsets 6–9 respectively. The five public-path
+cases still await execution; their declared token costs do not attest actual
+tokenizer cost.
+
+[prompt_serialization_search_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs)
+adds `first_match_handles_prefix_fallback_and_overlapping_occurrences`,
+`advancing_the_cursor_selects_the_next_non_overlapping_occurrence` and
+`empty_or_absent_needles_preserve_missing_semantics`. These three small source
+cases also await execution for the repaired candidate.
