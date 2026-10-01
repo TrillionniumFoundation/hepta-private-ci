@@ -8,6 +8,7 @@ use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
 use super::NduSolverIterationReceipt;
+use super::NduSolverTerminationReceipt;
 use super::PreferenceState;
 use super::SolveDisposition;
 use super::UpdateGeneration;
@@ -107,6 +108,79 @@ fn already_converged_solve_is_revision_stable_no_op() {
     assert_eq!(termination.terminal_residual_raw, 0);
     assert_eq!(termination.maximum_residual_raw, 0);
     assert!(receipts.is_empty());
+}
+
+#[test]
+fn already_converged_nonzero_residual_is_retained_without_an_iteration() {
+    for residual_raw in [-4_096, 4_096] {
+        let initial = must(PreferenceState::genesis(
+            id("agent-nonzero-noop"),
+            SubjectClass::Agent,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::from_raw(1_i64 << 31),
+            }],
+        ));
+        let (terminal, termination, receipts) = must(solve_preference_target(
+            initial.clone(),
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::from_raw((1_i64 << 31) + residual_raw),
+            }],
+            FixedQ32::from_raw(1_i64 << 30),
+        ));
+
+        assert_eq!(terminal, initial);
+        assert_eq!(
+            termination,
+            NduSolverTerminationReceipt {
+                disposition: SolveDisposition::Converged,
+                iterations: 0,
+                terminal_residual_raw: 4_096,
+                maximum_residual_raw: 4_096,
+                projection_count: 0,
+                predecessor_digest: initial.state_digest,
+                terminal_state_digest: initial.state_digest,
+            }
+        );
+        assert!(receipts.is_empty());
+    }
+}
+
+#[test]
+fn maximum_residual_tracks_post_update_iterations_in_both_directions() {
+    for target_raw in [-4_294_967_296, 4_294_967_296] {
+        let initial = must(PreferenceState::genesis(
+            id("agent-directional"),
+            SubjectClass::Agent,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::ZERO,
+            }],
+        ));
+        let predecessor = initial.state_digest;
+        let (terminal, termination, receipts) = must(solve_preference_target(
+            initial,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::from_raw(target_raw),
+            }],
+            FixedQ32::from_raw(1_i64 << 30),
+        ));
+
+        // A quarter-step from zero toward either unit endpoint leaves a
+        // three-quarter-unit residual; the initial unit residual is excluded.
+        assert_eq!(
+            receipts.first().expect("first solver receipt").residual_raw,
+            3_221_225_472
+        );
+        assert_eq!(termination.maximum_residual_raw, 3_221_225_472);
+        assert!(termination.terminal_residual_raw <= 4_096);
+        assert_eq!(termination.projection_count, 0);
+        assert_eq!(termination.predecessor_digest, predecessor);
+        assert_eq!(termination.terminal_state_digest, terminal.state_digest);
+        assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
+    }
 }
 
 #[test]
