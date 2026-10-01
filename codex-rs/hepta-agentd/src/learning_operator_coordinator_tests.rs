@@ -1,7 +1,6 @@
 use super::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use pretty_assertions::assert_eq;
 
 const TRAINING_AT: u64 = 110;
 const EVALUATION_FREEZE_AT: u64 = 200;

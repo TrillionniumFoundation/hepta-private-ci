@@ -297,7 +297,9 @@ def verify_final_use_contract() -> None:
         "codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs",
         [
             "pub struct RankerAdmissionSnapshotV2",
-            "pub(crate) learning_verifier",
+            "pub(crate) learning_trust: ActivatedLearningTrustV1",
+            "learning_trust.distribution_digest()",
+            ".revalidate_at(snapshot.now_unix_micros)",
             "pub(crate) artifact_trust_digest",
             "pub(crate) runtime_profile_digest",
             "pub(crate) now_unix_micros",
@@ -308,6 +310,7 @@ def verify_final_use_contract() -> None:
         "codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs",
         [
             "pub learning_verifier:",
+            "pub learning_trust:",
             "pub artifact_trust_digest:",
             "pub runtime_profile_digest:",
             "pub now_unix_micros:",

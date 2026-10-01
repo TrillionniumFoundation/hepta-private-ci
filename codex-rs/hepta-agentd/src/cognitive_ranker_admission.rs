@@ -4,8 +4,6 @@
 use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
 
 use codex_hepta_bellman_operator::LoadedTabularOperatorV2;
 use codex_hepta_bellman_operator::TabularOperatorPredictionV1;
@@ -17,14 +15,17 @@ use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryUseWindowV1;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use super::CurrentCognitiveRegistry;
 use super::PinnedCognitiveRanker;
+use crate::learning_operator_artifact_owner::clock::LearningOperatorUseClockV1;
 
 /// A current host-owned signer registry and clock. The learning-evidence trust
 /// and the artifact-owner trust are distinct and both must match at final use.
@@ -32,7 +33,7 @@ use super::PinnedCognitiveRanker;
 /// constructor; the fields are not part of the public API.
 #[derive(Clone, Debug)]
 pub struct RankerAdmissionSnapshotV2 {
-    pub(crate) learning_verifier: LearningEvidenceVerifierV1,
+    pub(crate) learning_trust: ActivatedLearningTrustV1,
     pub(crate) artifact_trust_digest: Digest32,
     pub(crate) runtime_profile_digest: Digest32,
     pub(crate) now_unix_micros: u64,
@@ -40,13 +41,16 @@ pub struct RankerAdmissionSnapshotV2 {
 
 impl RankerAdmissionSnapshotV2 {
     pub fn new(
-        learning_verifier: LearningEvidenceVerifierV1,
+        learning_trust: ActivatedLearningTrustV1,
         artifact_trust_digest: Digest32,
         runtime_profile_digest: Digest32,
         now_unix_micros: u64,
     ) -> Result<Self, String> {
-        if learning_verifier.trust_digest().is_zero()
-            || learning_verifier.authority_epoch() == 0
+        learning_trust
+            .revalidate_at(now_unix_micros)
+            .map_err(|error| error.to_string())?;
+        if learning_trust.verifier().trust_digest().is_zero()
+            || learning_trust.verifier().authority_epoch() == 0
             || artifact_trust_digest.is_zero()
             || runtime_profile_digest.is_zero()
             || now_unix_micros == 0
@@ -57,7 +61,7 @@ impl RankerAdmissionSnapshotV2 {
             );
         }
         Ok(Self {
-            learning_verifier,
+            learning_trust,
             artifact_trust_digest,
             runtime_profile_digest,
             now_unix_micros,
@@ -66,7 +70,7 @@ impl RankerAdmissionSnapshotV2 {
 
     #[must_use]
     pub fn learning_verifier(&self) -> &LearningEvidenceVerifierV1 {
-        &self.learning_verifier
+        self.learning_trust.verifier()
     }
 
     #[must_use]
@@ -86,7 +90,9 @@ impl RankerAdmissionSnapshotV2 {
 }
 
 /// Implement this on the authority/configuration host, never on submitted model
-/// bytes. A failed read is terminal for this consumer until explicit reload.
+/// bytes. Each refresh must validate the active root-signed trust distribution
+/// and independently sample current host time. A failed read is terminal for this
+/// consumer until explicit reload.
 pub trait CurrentRankerAdmission: Send + Sync {
     fn current(&self) -> Result<RankerAdmissionSnapshotV2, String>;
 }
@@ -120,10 +126,10 @@ impl Authorization {
     fn revalidate(&self, snapshot: &RankerAdmissionSnapshotV2) -> Result<(), String> {
         match self {
             Self::Selection(selection) => {
-                selection.revalidate(&snapshot.learning_verifier, snapshot.now_unix_micros)
+                selection.revalidate(snapshot.learning_verifier(), snapshot.now_unix_micros)
             }
             Self::Rollback(rollback) => {
-                rollback.revalidate(&snapshot.learning_verifier, snapshot.now_unix_micros)
+                rollback.revalidate(snapshot.learning_verifier(), snapshot.now_unix_micros)
             }
         }
         .map_err(|error| error.to_string())
@@ -134,27 +140,47 @@ pub(super) struct EvaluatedUse {
     provider: Arc<dyn CurrentRankerAdmission>,
     authorization: Authorization,
     learning_trust: Digest32,
+    learning_distribution: Digest32,
     artifact_trust: Digest32,
     runtime_profile: Digest32,
     authority_epoch: u64,
-    last_use: AtomicU64,
+    clock: Mutex<LearningOperatorUseClockV1>,
 }
 
 impl EvaluatedUse {
     pub(super) fn revalidate(&self, current: &VerifiedCurrentRegistryViewV1) -> Result<(), String> {
-        let snapshot = self.provider.current()?;
-        if snapshot.learning_verifier.trust_digest() != self.learning_trust
-            || snapshot.learning_verifier.authority_epoch() != self.authority_epoch
+        self.revalidate_window(current.trust_digest(), current.use_window())
+    }
+
+    pub(super) fn revalidate_window(
+        &self,
+        artifact_trust: Digest32,
+        window: VerifiedCurrentRegistryUseWindowV1,
+    ) -> Result<(), String> {
+        let mut snapshot = self.provider.current()?;
+        if snapshot.learning_verifier().trust_digest() != self.learning_trust
+            || snapshot.learning_verifier().authority_epoch() != self.authority_epoch
+            || snapshot.learning_trust.distribution_digest() != self.learning_distribution
             || snapshot.artifact_trust_digest != self.artifact_trust
-            || current.trust_digest() != self.artifact_trust
+            || artifact_trust != self.artifact_trust
             || snapshot.runtime_profile_digest != self.runtime_profile
-            || snapshot.now_unix_micros < self.last_use.load(Ordering::Acquire)
         {
             return Err("ranker trust/runtime/clock changed; explicit reload required".to_string());
         }
+        snapshot.now_unix_micros = self
+            .clock
+            .lock()
+            .map_err(|_| "ranker clock poisoned".to_string())?
+            .observe(snapshot.now_unix_micros)
+            .map_err(|error| error.to_string())?;
+        snapshot
+            .learning_trust
+            .revalidate_at(snapshot.now_unix_micros)
+            .map_err(|error| error.to_string())?;
+        window
+            .revalidate_at(snapshot.now_unix_micros)
+            .map_err(|error| error.to_string())?;
         self.authorization.revalidate(&snapshot)?;
-        self.last_use
-            .fetch_max(snapshot.now_unix_micros, Ordering::AcqRel);
         Ok(())
     }
 }
@@ -255,6 +281,10 @@ impl PinnedCognitiveRanker {
         authorization: Authorization,
     ) -> Result<Self, String> {
         let host = admission.current()?;
+        let clock = LearningOperatorUseClockV1::new(host.now_unix_micros);
+        host.learning_trust
+            .revalidate_at(host.now_unix_micros)
+            .map_err(|error| error.to_string())?;
         authorization.revalidate(&host)?;
         if body_generation == 0
             || selected.manifest.kind != ArtifactKind::Policy
@@ -267,8 +297,8 @@ impl PinnedCognitiveRanker {
             || selected.manifest.compatibility_digest != model_pin.runtime_profile_digest
             || selected.registry_receipt.head_digest != model_pin.registry_head_digest
             || model_pin.runtime_profile_digest != host.runtime_profile_digest
-            || model_pin.trust_digest != host.learning_verifier.trust_digest()
-            || model_pin.authority_epoch != host.learning_verifier.authority_epoch()
+            || model_pin.trust_digest != host.learning_verifier().trust_digest()
+            || model_pin.authority_epoch != host.learning_verifier().authority_epoch()
             || host.artifact_trust_digest.is_zero()
             || host.now_unix_micros == 0
         {
@@ -289,10 +319,11 @@ impl PinnedCognitiveRanker {
                 provider: admission,
                 authorization,
                 learning_trust: model_pin.trust_digest,
+                learning_distribution: host.learning_trust.distribution_digest(),
                 artifact_trust: host.artifact_trust_digest,
                 runtime_profile: model_pin.runtime_profile_digest,
                 authority_epoch: model_pin.authority_epoch,
-                last_use: AtomicU64::new(host.now_unix_micros),
+                clock: Mutex::new(clock),
             }),
         };
         value.revalidate()?;
