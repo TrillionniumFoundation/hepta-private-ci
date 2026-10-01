@@ -212,7 +212,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Some(exit) = slot.observed_exit {
             // No further signal or poll is needed after an exact terminal
             // observation. Only the failed durable finalization is retried.
-            self.finalize_exit(agent_id, slot, runtime, exit)?;
+            self.finalize_exit(agent_id, slot, runtime, exit, now)?;
             slot.pending_control = None;
             return Ok(RuntimeTickOutcome::Exited {
                 restart_fault: None,
@@ -240,7 +240,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             self.push_logs(slot, observation.logs);
             if let ProcessState::Exited(exit) = observation.state {
                 slot.observed_exit = Some(exit);
-                self.finalize_exit(agent_id, slot, runtime, exit)?;
+                self.finalize_exit(agent_id, slot, runtime, exit, now)?;
                 slot.pending_control = None;
                 return Ok(RuntimeTickOutcome::Exited {
                     restart_fault: None,
@@ -327,7 +327,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 None
             };
             slot.observed_exit = Some(exit);
-            self.finalize_exit(agent_id, slot, runtime, exit)?;
+            self.finalize_exit(agent_id, slot, runtime, exit, now)?;
             slot.pending_control = None;
             return Ok(RuntimeTickOutcome::Exited {
                 restart_fault: restart_fault.or(companion_fault),
@@ -471,6 +471,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         runtime: &AgentRuntime<D::Process>,
         exit: crate::ProcessExit,
+        now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
@@ -501,6 +502,29 @@ impl<D: ProcessDriver> Supervisor<D> {
             ProcessLeaseRemoval::new(record.layout.owner_run_root(), &lease)
         });
         removal.finish(record.layout.owner_run_root(), &lease)?;
+
+        let pending_restart = !slot.has_recovery_denial()
+            && !fenced
+            && crate::restart_budget::pending_restart(
+                record.layout.owner_run_root(),
+                self.config.restart_max_attempts,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .is_some();
+        if pending_restart {
+            let process = RestartProcessWitness::new(
+                runtime.spawn_generation,
+                runtime.identity.clone(),
+                runtime.release_id.clone(),
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            restart_lineage::mark_process_absent(
+                record.layout.owner_run_root(),
+                agent_id,
+                &process,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        }
 
         // Only an exact observed exit plus same-owner lease cleanup advances
         // predecessor -> replacement-pending. A signal acknowledgement alone
@@ -596,6 +620,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.exit_lease_removal = None;
         slot.observed_exit = None;
         slot.event(generation, SupervisorEventKind::Exited(exit));
+        if pending_restart
+            && slot.release_change.is_none()
+            && restart_lineage::exited_restart(record.layout.owner_run_root(), agent_id)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .is_some()
+        {
+            let fresh = self.record(agent_id)?;
+            self.retry_absent_replacement(agent_id, slot, &fresh, now)?;
+        }
         Ok(())
     }
 

@@ -44,6 +44,9 @@ mod adopted_release;
 #[path = "recovery_admission.rs"]
 mod admission;
 
+#[path = "recovery_restart.rs"]
+mod restart;
+
 #[cfg(test)]
 #[path = "recovery_admission_tests.rs"]
 mod admission_tests;
@@ -141,6 +144,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let Some(claim) = pending else {
+            if slot.runtime.is_none()
+                && read_lease(record.layout.owner_run_root())?.is_none()
+                && restart_lineage::exited_restart(record.layout.owner_run_root(), agent_id)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                    .is_some()
+            {
+                return self.retry_absent_replacement(agent_id, slot, &record, now);
+            }
             restart_lineage::cancel_if_budget_absent(record.layout.owner_run_root(), agent_id)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.restart_pending = false;
@@ -149,6 +160,19 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
 
         slot.restart_attempt = claim.attempt;
+        let missing_unleased =
+            if slot.runtime.is_none() && read_lease(record.layout.owner_run_root())?.is_none() {
+                let missing =
+                    self.recover_unleased_restart_process(agent_id, slot, &record, &claim, now)?;
+                if slot.recovery_blocker.is_some() {
+                    slot.restart_pending = false;
+                    slot.restart_not_before = None;
+                    return Ok(());
+                }
+                missing
+            } else {
+                None
+            };
         let current = slot
             .runtime
             .as_ref()
@@ -202,11 +226,19 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
             }
+            RestartRecoveryRole::ReplacementExited => {
+                return self.retry_absent_replacement(agent_id, slot, &record, now);
+            }
             RestartRecoveryRole::Completed => {
                 crate::restart_budget::complete_restart(record.layout.owner_run_root())
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                if let Some(missing) = missing_unleased
+                    && record.lifecycle.lifecycle != AgentLifecycle::Stopped
+                {
+                    return self.queue_absent_restart(agent_id, slot, &record, missing, now);
+                }
             }
             RestartRecoveryRole::Cancelled => {
                 crate::restart_budget::cancel_restart(record.layout.owner_run_root())
@@ -666,7 +698,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             Adoption::Missing => {
                 // An absent process does not make malformed control evidence
                 // valid. Retain rejected evidence for explicit reconciliation.
-                admission?;
+                let admitted = admission?;
+                self.recover_missing_main_restart(agent_id, slot, record, &lease, &admitted, now)?;
                 remove_lease(record.layout.owner_run_root(), &lease)?;
                 let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(

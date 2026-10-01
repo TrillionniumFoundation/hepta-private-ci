@@ -27,7 +27,7 @@ use thiserror::Error;
 use crate::ProcessIdentity;
 
 pub(crate) const RESTART_LINEAGE_FILE: &str = "supervisor-restart-lineage.json";
-const RESTART_LINEAGE_SCHEMA_VERSION: u32 = 1;
+const RESTART_LINEAGE_SCHEMA_VERSION: u32 = 2;
 const RESTART_LINEAGE_DOMAIN: &[u8] = b"hepta-supervisor:restart-lineage:v1";
 const MAX_RESTART_LINEAGE_BYTES: usize = 16_384;
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -65,6 +65,7 @@ enum RestartLineagePhase {
     PredecessorOwned,
     ReplacementPending,
     ReplacementStarted,
+    ReplacementExited,
     Completed,
     Cancelled,
 }
@@ -88,6 +89,7 @@ pub(crate) enum RestartRecoveryRole {
     PredecessorOwned,
     ReplacementPending,
     ReplacementStarted,
+    ReplacementExited,
     Completed,
     Cancelled,
 }
@@ -140,6 +142,7 @@ impl DurableRestartLineage {
         phase: RestartLineagePhase,
     ) -> Result<Self, RestartLineageError> {
         let mut next = Self {
+            schema_version: RESTART_LINEAGE_SCHEMA_VERSION,
             predecessor_exit_observed,
             replacement,
             phase,
@@ -157,7 +160,9 @@ impl DurableRestartLineage {
     fn terminal(&self) -> bool {
         matches!(
             self.phase,
-            RestartLineagePhase::Completed | RestartLineagePhase::Cancelled
+            RestartLineagePhase::Completed
+                | RestartLineagePhase::Cancelled
+                | RestartLineagePhase::ReplacementExited
         )
     }
 
@@ -171,12 +176,15 @@ impl DurableRestartLineage {
             RestartLineagePhase::ReplacementPending => {
                 self.predecessor_exit_observed && self.replacement.is_none()
             }
-            RestartLineagePhase::ReplacementStarted | RestartLineagePhase::Completed => {
+            RestartLineagePhase::ReplacementStarted
+            | RestartLineagePhase::Completed
+            | RestartLineagePhase::ReplacementExited => {
                 self.predecessor_exit_observed && self.replacement.is_some()
             }
             RestartLineagePhase::Cancelled => true,
         };
-        if self.schema_version != RESTART_LINEAGE_SCHEMA_VERSION
+        if !matches!(self.schema_version, 1 | RESTART_LINEAGE_SCHEMA_VERSION)
+            || (self.phase == RestartLineagePhase::ReplacementExited && self.schema_version == 1)
             || self.window_started_unix_ms == 0
             || self.attempt == 0
             || !state_valid
@@ -230,13 +238,17 @@ pub(crate) fn begin(
         attempt,
         predecessor,
     )?;
+    publish_begin(run_root, next)
+}
+
+fn publish_begin(run_root: &Path, next: DurableRestartLineage) -> Result<(), RestartLineageError> {
     if let Some(current) = read(run_root)? {
-        if current.same_operation(window_started_unix_ms, attempt) {
-            if current.agent_id != *agent_id {
-                return Err(RestartLineageError::Invalid(
-                    "restart lineage belongs to another Agent".to_string(),
-                ));
-            }
+        if current.agent_id != next.agent_id {
+            return Err(RestartLineageError::Invalid(
+                "restart lineage belongs to another Agent".to_string(),
+            ));
+        }
+        if current.same_operation(next.window_started_unix_ms, next.attempt) {
             if !current.terminal() && current.predecessor != next.predecessor {
                 return Err(RestartLineageError::Invalid(
                     "restart predecessor changed for the same operation".to_string(),
@@ -261,8 +273,38 @@ pub(crate) fn reconcile_pending(
     current: Option<&RestartProcessWitness>,
     process_lease_present: bool,
 ) -> Result<RestartRecoveryRole, RestartLineageError> {
-    let mut lineage = match read(run_root)? {
+    let stored = read(run_root)?;
+    if stored
+        .as_ref()
+        .is_some_and(|lineage| lineage.agent_id != *agent_id)
+    {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage belongs to another Agent".to_string(),
+        ));
+    }
+    let mut lineage = match stored {
         Some(lineage) if lineage.same_operation(window_started_unix_ms, attempt) => lineage,
+        Some(lineage)
+            if lineage.phase == RestartLineagePhase::ReplacementExited
+                && current.is_none()
+                && !process_lease_present =>
+        {
+            // A crash after the next budget claim must reuse that charged
+            // claim and carry its exact already-absent predecessor forward.
+            let next = DurableRestartLineage::new(
+                agent_id.clone(),
+                window_started_unix_ms,
+                attempt,
+                lineage.replacement,
+            )?
+            .with_state(
+                /*predecessor_exit_observed*/ true,
+                /*replacement*/ None,
+                RestartLineagePhase::ReplacementPending,
+            )?;
+            publish_begin(run_root, next.clone())?;
+            next
+        }
         Some(lineage) if !lineage.terminal() => {
             return Err(RestartLineageError::Invalid(
                 "pending restart does not match the unresolved lineage".to_string(),
@@ -336,6 +378,14 @@ pub(crate) fn reconcile_pending(
                 "live process does not match the durable restart replacement".to_string(),
             )),
         },
+        RestartLineagePhase::ReplacementExited => {
+            if current.is_some() || process_lease_present {
+                return Err(RestartLineageError::Invalid(
+                    "exited replacement still has unresolved ownership".into(),
+                ));
+            }
+            Ok(RestartRecoveryRole::ReplacementExited)
+        }
         RestartLineagePhase::Completed => Ok(RestartRecoveryRole::Completed),
         RestartLineagePhase::Cancelled => Ok(RestartRecoveryRole::Cancelled),
     }
@@ -446,7 +496,10 @@ pub(crate) fn cancel(run_root: &Path, agent_id: &AgentId) -> Result<(), RestartL
             "restart lineage belongs to another Agent".to_string(),
         ));
     }
-    if lineage.terminal() {
+    if matches!(
+        lineage.phase,
+        RestartLineagePhase::Completed | RestartLineagePhase::Cancelled
+    ) {
         return Ok(());
     }
     write(
@@ -458,6 +511,15 @@ pub(crate) fn cancel(run_root: &Path, agent_id: &AgentId) -> Result<(), RestartL
         )?,
     )
 }
+
+#[path = "restart_lineage_absence.rs"]
+mod absence;
+pub(crate) use absence::begin_absence_if_unrecorded;
+pub(crate) use absence::begin_absent;
+pub(crate) use absence::completed_process_matches;
+pub(crate) use absence::exited_restart;
+pub(crate) use absence::mark_process_absent;
+pub(crate) use absence::process_to_reconcile;
 
 pub(crate) fn cancel_if_budget_absent(
     run_root: &Path,
