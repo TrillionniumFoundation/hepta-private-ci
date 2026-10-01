@@ -1,0 +1,103 @@
+{
+  "sourceHead": "831be9ed2ac480039eb0f229dd423effff3315a7",
+  "trackedCheckoutClean": false,
+  "checks": [
+    {
+      "name": "evidence-tests",
+      "command": [
+        "python3",
+        "scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/evidence-tests.log",
+      "bytes": 121,
+      "sha256": "0ca8740e7436af4b20f98acb17bc956746cef6ce167c3782c38d46496ec26da9"
+    },
+    {
+      "name": "lane-e-tests",
+      "command": [
+        "python3",
+        "scripts/test_hepta_lane_e_closure.py"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/lane-e-tests.log",
+      "bytes": 114,
+      "sha256": "3541f69aa65dda8ed27d17140e2dc40e048251b1fec60193cef651c517bf00de"
+    },
+    {
+      "name": "lane-e-self-test",
+      "command": [
+        "python3",
+        "scripts/hepta-lane-e-closure.py",
+        "self-test"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/lane-e-self-test.log",
+      "bytes": 210,
+      "sha256": "6b38eac44a1caa287b7adfee7722e631eed4efe6e64ba3d01823f5d2f199b921"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts/hepta-learning-operator-contract.py",
+        "scripts/hepta-learning-operator-map.py",
+        "scripts/hepta-learning-operator-readiness.py",
+        "scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/ruff.log",
+      "bytes": 26,
+      "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+    },
+    {
+      "name": "python-compile",
+      "command": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/hepta-learning-operator-contract.py",
+        "scripts/hepta-learning-operator-map.py",
+        "scripts/hepta-learning-operator-readiness.py",
+        "scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/python-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "bash-syntax",
+      "command": [
+        "bash",
+        "-n",
+        "scripts/hepta-learning-operator-authoritative.sh"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/bash-syntax.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "yaml",
+      "command": [
+        "python3",
+        "-c",
+        "import yaml; from pathlib import Path; [print(name,sorted(yaml.safe_load((Path('.github/workflows')/name).read_text())['jobs'])) for name in ('learning-operator-authoritative.yml','hepta-learning-operator-audit.yml')]"
+      ],
+      "exitCode": 0,
+      "logPath": "/dev/shm/hepta-round2-99c8d2276f89/verification-final/yaml.log",
+      "bytes": 130,
+      "sha256": "435aee8d3036ccc2950672e37372cecd9ed898b8c55c54ddcb636c7d6707a1ca"
+    }
+  ],
+  "sourceQualificationIssued": false
+}

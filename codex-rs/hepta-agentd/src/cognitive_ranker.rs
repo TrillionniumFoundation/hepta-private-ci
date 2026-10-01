@@ -5,27 +5,46 @@
 //! This component can only permute already-admitted SQLite records; it cannot
 //! add context, grant access, select a new artifact, train, or dispatch a turn.
 
+#[cfg(test)]
 use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+#[cfg(test)]
 use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
+use codex_hepta_bellman_operator::OperatorAdmissionStageV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
+#[cfg(test)]
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+#[cfg(test)]
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 #[cfg(test)]
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+#[cfg(test)]
 use codex_hepta_learning_artifacts::load_pinned_candidate;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
+
+const MAX_RANKER_ITEMS: usize = 1024;
+// Matches the native memory owner's admitted revision size. Ranking borrows
+// these bytes and never clones, hashes or drops an item's content.
+const MAX_RANKER_ITEM_CONTENT_BYTES: usize = 64 * 1024;
+
+#[path = "cognitive_ranker_cache.rs"]
+mod candidate_cache;
+use candidate_cache::with_exclusive_candidate;
+#[path = "cognitive_ranker_admission.rs"]
+mod admission;
+pub use admission::CurrentRankerAdmission;
+use admission::EvaluatedUse;
+pub use admission::RankerAdmissionSnapshotV2;
+use admission::RankerModel;
 
 /// The artifact authority, not the model or a caller-supplied receipt,
 /// determines currentness. Implementations must return an opaque view issued
@@ -39,6 +58,37 @@ pub(crate) fn verified_fixture_current_view(
     snapshot: File,
     receipt: RegistrySnapshotReceipt,
     expected_predecessor_head_digest: Digest32,
+) -> Result<VerifiedCurrentRegistryViewV1, String> {
+    verified_fixture_current_view_with_window(
+        snapshot,
+        receipt,
+        expected_predecessor_head_digest,
+        FixtureCurrentWindow {
+            issued_at: 20,
+            expires_at: 1_000,
+            verified_at: 20,
+            signer_expires_at: 1_000,
+            signer_revoked_at: None,
+        },
+    )
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy)]
+pub(crate) struct FixtureCurrentWindow {
+    issued_at: u64,
+    expires_at: u64,
+    verified_at: u64,
+    signer_expires_at: u64,
+    signer_revoked_at: Option<u64>,
+}
+
+#[cfg(test)]
+pub(crate) fn verified_fixture_current_view_with_window(
+    snapshot: File,
+    receipt: RegistrySnapshotReceipt,
+    expected_predecessor_head_digest: Digest32,
+    window: FixtureCurrentWindow,
 ) -> Result<VerifiedCurrentRegistryViewV1, String> {
     use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
     use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
@@ -63,8 +113,8 @@ pub(crate) fn verified_fixture_current_view(
         minimum_authority_epoch: 1,
         maximum_authority_epoch: 10,
         valid_from: 1,
-        expires_at: 1_000,
-        revoked_at: None,
+        expires_at: window.signer_expires_at,
+        revoked_at: window.signer_revoked_at,
     };
     let verifier = ArtifactOwnerVerifierV1::new(ArtifactOwnerTrustV1 {
         registry_id: registry_id.clone(),
@@ -90,8 +140,8 @@ pub(crate) fn verified_fixture_current_view(
             authority_epoch: 1,
             signer_id,
             signing_key_digest: Digest32::of_bytes(&verifying_key),
-            issued_at: 20,
-            expires_at: 1_000,
+            issued_at: window.issued_at,
+            expires_at: window.expires_at,
         },
         signature: [0; 64],
     };
@@ -101,7 +151,7 @@ pub(crate) fn verified_fixture_current_view(
         minimum_generation: generation,
         expected_predecessor_head_digest,
         minimum_authority_epoch: 1,
-        now: 20,
+        now: window.verified_at,
     };
     verifier
         .verify_current_registry_view(snapshot, receipt, &signed, &requirement)
@@ -114,7 +164,8 @@ pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
     policy_digest: Digest32,
-    model: LoadedTabularOperatorV1,
+    model: RankerModel,
+    admission: Option<EvaluatedUse>,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
@@ -139,6 +190,16 @@ pub fn cognitive_sensor_id(query: &str) -> Result<StableId, String> {
 /// Bind an action to the *exact* admitted revision and content. A correction or
 /// deletion cannot inherit a score merely by retaining the same memory ID.
 pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, String> {
+    if item.memory_id.is_empty()
+        || item.memory_id.len() > 256
+        || item.content_sha256.len() != 64
+        || !item
+            .content_sha256
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit())
+    {
+        return Err("ranking memory identity outside bounded read profile".to_string());
+    }
     let mut bytes = Vec::new();
     bytes.extend_from_slice(&(item.memory_id.len() as u64).to_be_bytes());
     bytes.extend_from_slice(item.memory_id.as_bytes());
@@ -148,7 +209,33 @@ pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, Stri
         .map_err(|error| error.to_string())
 }
 
+// The caller's exclusive borrow keeps intermediate permutations private.
+// Any error or unwind restores the exact original ordering with numeric swaps;
+// neither success nor rollback copies or destroys owned item payloads.
+struct RankerOrderTransaction<'a> {
+    items: &'a mut [CognitiveContextItem],
+    undo: Vec<(usize, usize)>,
+}
+
+impl Drop for RankerOrderTransaction<'_> {
+    fn drop(&mut self) {
+        for &(left, right) in self.undo.iter().rev() {
+            self.items.swap(left, right);
+        }
+    }
+}
+
 impl PinnedCognitiveRanker {
+    #[must_use]
+    pub fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        if self.admission.is_some() {
+            OperatorAdmissionStageV1::SelectedReadOnly
+        } else {
+            OperatorAdmissionStageV1::StructurallyValidated
+        }
+    }
+
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn load(
         owner: AgentId,
@@ -179,85 +266,13 @@ impl PinnedCognitiveRanker {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
-            model,
+            model: RankerModel::Fixture(model),
+            admission: None,
             current,
             cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
         };
         value.revalidate()?;
         Ok(value)
-    }
-
-    /// Load a candidate only after independent longitudinal evaluation and a
-    /// separately authenticated selector have admitted the exact artifact.
-    /// The opaque selection token cannot be fabricated from registry metadata.
-    #[allow(clippy::too_many_arguments)]
-    pub fn load_evaluated(
-        owner: AgentId,
-        body_generation: u64,
-        snapshot: File,
-        payload: File,
-        selected: PinnedCandidateSpec,
-        model_pin: TabularPayloadPinV1,
-        current: Arc<dyn CurrentCognitiveRegistry>,
-        selection: &VerifiedSelfEvolutionSelectionV1,
-    ) -> Result<Self, String> {
-        let receipt = selection.receipt();
-        if body_generation != receipt.candidate_generation.get()
-            || selected.manifest.artifact_id != receipt.candidate_id
-            || selected.manifest.generation != receipt.candidate_generation
-            || selected.manifest.content_digest != receipt.candidate_artifact_digest
-            || selected.manifest.objective_digest != receipt.objective_digest
-            || selected.manifest.support_digest != receipt.dataset_digest
-        {
-            return Err(
-                "selected ranker does not match independently admitted candidate".to_string(),
-            );
-        }
-        Self::load(
-            owner,
-            body_generation,
-            snapshot,
-            payload,
-            selected,
-            model_pin,
-            current,
-        )
-    }
-
-    /// Reload the exact predecessor only after an independent evaluator has
-    /// admitted rollback for the selected candidate. Rollback restores bytes,
-    /// not the old runtime generation or a revoked current witness.
-    #[allow(clippy::too_many_arguments)]
-    pub fn load_evaluated_rollback(
-        owner: AgentId,
-        body_generation: u64,
-        snapshot: File,
-        payload: File,
-        selected: PinnedCandidateSpec,
-        model_pin: TabularPayloadPinV1,
-        current: Arc<dyn CurrentCognitiveRegistry>,
-        rollback: &VerifiedSelfEvolutionRollbackV1,
-    ) -> Result<Self, String> {
-        let receipt = rollback.selection().receipt();
-        if body_generation != rollback.rollback_generation().get()
-            || selected.manifest.artifact_id != receipt.predecessor_id
-            || selected.manifest.generation != receipt.predecessor_generation
-            || selected.manifest.content_digest != receipt.predecessor_artifact_digest
-            || selected.manifest.objective_digest != receipt.objective_digest
-        {
-            return Err(
-                "rollback ranker does not match independently admitted predecessor".to_string(),
-            );
-        }
-        Self::load(
-            owner,
-            body_generation,
-            snapshot,
-            payload,
-            selected,
-            model_pin,
-            current,
-        )
     }
 
     pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64) -> Result<(), String> {
@@ -268,22 +283,31 @@ impl PinnedCognitiveRanker {
     }
 
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
-        let mut cache = self
-            .cache
-            .lock()
-            .map_err(|_| "ranker lock poisoned".to_string())?;
-        let Some(mut candidate) = cache.take() else {
-            return Err("ranker unavailable; explicit reload required".to_string());
-        };
-        // Keep the cache absent on witness errors, panics and failed refreshes.
-        // The provider cannot inject a bare file/receipt: the artifact authority
-        // must first issue an opaque verified CURRENT view.
-        let current = self.current.current()?;
-        let result = candidate
-            .with_current(current, |_| consume())
-            .map_err(|error| error.to_string())??;
-        *cache = Some(candidate);
-        Ok(result)
+        with_exclusive_candidate(&self.cache, |candidate| {
+            // The provider cannot inject a bare file/receipt: the artifact
+            // authority must first issue an opaque verified CURRENT view.
+            // Both owner I/O and immutable model lookups run outside the mutex.
+            let current = self.current.current()?;
+            if let Some(admission) = &self.admission {
+                admission.revalidate(&current)?;
+            }
+            let result = candidate
+                .with_current(current, |_| consume())
+                .map_err(|error| error.to_string())??;
+            let current = self.current.current()?;
+            if let Some(admission) = &self.admission {
+                admission.revalidate(&current)?;
+            }
+            let current_trust = current.trust_digest();
+            let current_window = current.use_window();
+            candidate
+                .with_current(current, |_| ())
+                .map_err(|error| error.to_string())?;
+            if let Some(admission) = &self.admission {
+                admission.revalidate_window(current_trust, current_window)?;
+            }
+            Ok(result)
+        })
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), String> {
@@ -298,13 +322,22 @@ impl PinnedCognitiveRanker {
         items: &mut [CognitiveContextItem],
     ) -> Result<CognitiveRankObservation, String> {
         self.require_identity(owner, generation)?;
-        if items.len() > 1024 {
+        if items.len() > MAX_RANKER_ITEMS
+            || items
+                .iter()
+                .any(|item| item.content.len() > MAX_RANKER_ITEM_CONTENT_BYTES)
+        {
             return Err("ranking candidates exceed cognitive read bound".to_string());
         }
         let sensor = cognitive_sensor_id(query)?;
-        self.with_current(|| {
-            let mut scored = Vec::with_capacity(items.len());
-            for (index, item) in items.iter().enumerate() {
+        let count = items.len();
+        let mut order = RankerOrderTransaction {
+            items,
+            undo: Vec::with_capacity(count),
+        };
+        let observation = self.with_current(|| {
+            let mut scored = Vec::with_capacity(count);
+            for (index, item) in order.items.iter().enumerate() {
                 match self.model.predict(&sensor, &cognitive_action_id(item)?) {
                     Ok(prediction) => scored.push((index, prediction.value.raw())),
                     // Partial support abstains from this downstream policy
@@ -321,19 +354,34 @@ impl PinnedCognitiveRanker {
                 }
             }
             scored.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
-            let original = items.to_vec();
+            let mut destinations = [0_usize; MAX_RANKER_ITEMS];
             for (destination, (source, _)) in scored.into_iter().enumerate() {
-                items[destination] = original[source].clone();
+                destinations[source] = destination;
+            }
+            for source in 0..count {
+                while destinations[source] != source {
+                    let destination = destinations[source];
+                    order.items.swap(source, destination);
+                    destinations.swap(source, destination);
+                    order.undo.push((source, destination));
+                }
             }
             Ok(CognitiveRankObservation {
                 policy_digest: self.policy_digest,
                 propensity: ProbabilityQ32::ONE,
                 applied: true,
             })
-        })
+        })?;
+        // Only bounded numeric bookkeeping remains after the release guard.
+        order.undo.clear();
+        Ok(observation)
     }
 }
 
 #[cfg(test)]
 #[path = "cognitive_ranker_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_ranker_evaluated_tests.rs"]
+pub(crate) mod evaluated_tests;

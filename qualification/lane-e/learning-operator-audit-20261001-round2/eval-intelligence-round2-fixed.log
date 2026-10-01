@@ -1,0 +1,91 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-ndu v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-ndu)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+error[E0425]: cannot find type `LearningEvidenceVerifierV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:332:5
+    |
+332 |     LearningEvidenceVerifierV1,
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: hepta-learning-ledger/src/signed_evidence.rs:23:1
+    |
+ 23 | pub enum LearningEvidenceRoleV1 {
+    | ------------------------------- similarly named enum `LearningEvidenceRoleV1` defined here
+    |
+help: an enum with a similar name exists
+    |
+332 -     LearningEvidenceVerifierV1,
+332 +     LearningEvidenceRoleV1,
+    |
+
+error[E0422]: cannot find struct, variant or union type `AuthenticatedPrincipalV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:338:52
+    |
+338 |     let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find type `AuthenticatedPrincipalV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:380:29
+    |
+380 |     let sign = |principal: &AuthenticatedPrincipalV1,
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `AuthenticatedPrincipalV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:477:20
+    |
+477 |         generator: AuthenticatedPrincipalV1 {
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `AuthenticatedPrincipalV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:486:20
+    |
+486 |         evaluator: AuthenticatedPrincipalV1 {
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `AuthenticatedPrincipalV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:664:34
+    |
+664 |     let principal = |name: &str| AuthenticatedPrincipalV1 {
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0422]: cannot find struct, variant or union type `AuthenticatedPrincipalV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:822:52
+    |
+822 |     let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0433]: cannot find type `LearningEvidenceVerifierV1` in this scope
+   --> hepta-intelligence-eval/src/product_runner_tests.rs:349:26
+    |
+349 |     let verifier = match LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^ use of undeclared type `LearningEvidenceVerifierV1`
+    |
+help: an enum with a similar name exists
+    |
+349 -     let verifier = match LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+349 +     let verifier = match LearningEvidenceRoleV1::new(LearningEvidenceTrustV1 {
+    |
+
+   Compiling codex-hepta-kg v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-kg)
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+Some errors have detailed explanations: E0422, E0425, E0433.
+For more information about an error, try `rustc --explain E0422`.
+error: could not compile `codex-hepta-intelligence-eval` (lib test) due to 8 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: command `/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-intelligence-eval --package codex-hepta-intelligence --lib --locked` exited with code 101
+error: recipe `test` failed on line 88 with exit code 101

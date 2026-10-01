@@ -238,3 +238,121 @@ fn trust_distribution_rejects_root_substitution_and_revocation() {
         LearningTrustDistributionError::InvalidRoot
     );
 }
+
+#[test]
+fn activated_distribution_expires_even_while_signer_evidence_is_valid() {
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let signed = signed_distribution(
+        &root_key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-v1"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(7, 1),
+        },
+    );
+    let activated = activate_learning_trust(&root(&root_key), signed.clone(), None, 50).unwrap();
+    let payload = b"still-signed-owner-evidence";
+    let mut evidence = crate::SignedLearningEvidenceV1 {
+        evidence_id: id("evidence"),
+        principal_id: id("generator"),
+        role: LearningEvidenceRoleV1::Generator,
+        trust_digest: activated.verifier().trust_digest(),
+        scope_digest: digest("scope"),
+        objective_digest: digest("objective"),
+        authority_epoch: 7,
+        issued_at: 20,
+        expires_at: 95,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = SigningKey::from_bytes(&[1; 32])
+        .sign(&evidence.signing_bytes())
+        .to_bytes();
+    assert!(
+        activated
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Generator,
+                &evidence,
+                payload,
+                /*now*/ 91
+            )
+            .is_ok()
+    );
+    assert!(activated.is_current_at(/*now*/ 89));
+    assert_eq!(
+        activated.revalidate_at(/*now*/ 90),
+        Err(LearningTrustDistributionError::DistributionWindow)
+    );
+    assert_eq!(
+        activated.revalidate_at(/*now*/ 91),
+        Err(LearningTrustDistributionError::DistributionWindow)
+    );
+    assert_eq!(
+        activate_learning_trust(&root(&root_key), signed, None, /*now*/ 90).unwrap_err(),
+        LearningTrustDistributionError::DistributionWindow
+    );
+    for earlier in [14, 19, 49] {
+        assert_eq!(
+            activated.revalidate_at(earlier),
+            Err(LearningTrustDistributionError::ClockRegression)
+        );
+    }
+}
+
+#[test]
+fn activated_distribution_retains_known_future_root_revocation() {
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let mut root = root(&root_key);
+    root.revoked_at = Some(80);
+    let signed = signed_distribution(
+        &root_key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-v1"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(7, 1),
+        },
+    );
+    let activated = activate_learning_trust(&root, signed, None, /*now*/ 50).unwrap();
+    assert!(activated.is_current_at(/*now*/ 79));
+    assert_eq!(
+        activated.revalidate_at(/*now*/ 80),
+        Err(LearningTrustDistributionError::InvalidRoot)
+    );
+}
+
+#[test]
+fn rotation_cannot_regress_the_actual_activation_clock() {
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let root = root(&root_key);
+    let first = activate_learning_trust(
+        &root,
+        signed_distribution(
+            &root_key,
+            LearningTrustDistributionV1 {
+                distribution_id: id("trust-v1"),
+                generation: 1,
+                effective_at: 20,
+                trust: trust(7, 1),
+            },
+        ),
+        None,
+        /*now*/ 70,
+    )
+    .unwrap();
+    let successor = signed_distribution(
+        &root_key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-v2"),
+            generation: 2,
+            effective_at: 30,
+            trust: trust(8, 2),
+        },
+    );
+    assert_eq!(
+        activate_learning_trust(&root, successor, Some(&first), /*now*/ 60).unwrap_err(),
+        LearningTrustDistributionError::ClockRegression
+    );
+}

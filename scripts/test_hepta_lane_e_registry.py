@@ -2,6 +2,7 @@
 
 import copy
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -23,9 +24,10 @@ class RegisteredSourceTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.patch = patch.object(lane, "ROOT", self.root)
-        self.patch.start()
-        self.addCleanup(self.patch.stop)
+        for module in (lane, lane.contract):
+            root_patch = patch.object(module, "ROOT", self.root)
+            root_patch.start()
+            self.addCleanup(root_patch.stop)
         self.modules = []
         self.cases = []
         for index, module in enumerate(sorted(lane.EXPECTED_MODULES)):
@@ -159,6 +161,21 @@ class RegisteredSourceTests(unittest.TestCase):
             "codex-rs/real-product/src/lib.rs",
             "fn write() { LedgerEvent::Decision(value); }\n",
         )
+        manifest = "[features]\ndefault=[]\n" + lane.FEATURE + "=[]\n"
+        self.write(lane.MANIFEST, manifest)
+        self.write(
+            lane.EXCEPTIONS,
+            json.dumps(
+                {
+                    "schema": "hepta.lane-e-legacy-writer-exceptions.v2",
+                    "authorityDelta": "none",
+                    "reviewedBlobs": {
+                        lane.MANIFEST: lane.blob_sha(manifest.encode())
+                    },
+                    "exceptions": [],
+                }
+            ),
+        )
         findings = lane.Findings()
         lane.verify_product_writer_exclusivity(findings)
         self.assertEqual(
@@ -178,7 +195,30 @@ class DefaultAuthoritySurfaceTests(unittest.TestCase):
             with self.subTest(source=source):
                 self.assertTrue(lane.unsigned_root_exports(source))
 
-    def test_signed_api_and_explicit_trusted_module_preserve_default_boundary(self):
+    def test_signed_direct_alias_and_wildcard_exports_require_sealed_receipts(self):
+        for source in [
+            "pub use signed_evaluation::decide_with_signed_evidence_v2;",
+            "pub use signed_evaluation::{decide_with_signed_evidence_v2 as renamed, Other};",
+            "pub use signed_evaluation::*;",
+            "pub use longitudinal_time::{decide_with_signed_longitudinal_evidence_v3};",
+            "pub use longitudinal_time::*;",
+        ]:
+            with self.subTest(source=source):
+                self.assertTrue(lane.signed_decision_root_exports(source))
+
+    def test_private_signed_decisions_and_authentication_preserve_default_boundary(self):
+        source = """
+        // pub use signed_evaluation::decide_with_signed_evidence_v2;
+        const NOTE: &str = "pub fn decide_with_signed_evidence_v2() {}";
+        pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
+        pub use signed_evaluation::authenticate_evaluation_evidence_v2;
+        pub use product_qualification::ProductQualificationReceiptV1;
+        #[cfg(feature = "trusted-inprocess-eval")]
+        pub mod trusted_inprocess { pub fn decide_with_signed_evidence_v2() {} }
+        """
+        self.assertEqual(lane.signed_decision_root_exports(source), set())
+
+    def test_signed_api_and_explicit_trusted_module_preserve_unsigned_boundary(self):
         source = """
         // pub use closure::decide_independently;
         const NOTE: &str = "pub fn evaluate() {}";

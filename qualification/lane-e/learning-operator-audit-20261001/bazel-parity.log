@@ -1,0 +1,81 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: ede4f642-600b-4841-9abd-bcb8e51a8f76
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+    currently loading: codex-rs/hepta-bellman-operator
+Loading: 0 packages loaded
+    currently loading: codex-rs/hepta-bellman-operator
+Loading: 0 packages loaded
+    currently loading: codex-rs/hepta-bellman-operator
+Loading: 0 packages loaded
+    currently loading: codex-rs/hepta-bellman-operator
+Loading: 0 packages loaded
+    currently loading: codex-rs/hepta-bellman-operator
+DEBUG: /workspace/scratch/99c8d2276f89/bazel-root/acdc24a8c08ffd049a06f86a70626611/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libgit2", version = "1.9.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "off",
+    deps = ["@libgit2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "on",
+)
+```
+DEBUG: /workspace/scratch/99c8d2276f89/bazel-root/acdc24a8c08ffd049a06f86a70626611/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "off",
+    deps = ["@libssh2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "on",
+)
+```
+INFO: Repo rules_rs++crate+crates defined by rule _hub_repo in @@rules_rs+//rs:extensions.bzl
+ERROR: /workspace/scratch/99c8d2276f89/bazel-root/acdc24a8c08ffd049a06f86a70626611/external/rules_rs+/rs/extensions.bzl:1016:18: An error occurred during the fetch of repository 'rules_rs++crate+crates':
+   Traceback (most recent call last):
+	File "/workspace/scratch/99c8d2276f89/bazel-root/acdc24a8c08ffd049a06f86a70626611/external/rules_rs+/rs/extensions.bzl", line 1016, column 18, in _hub_repo_impl
+		rctx.file(path, contents)
+Error in file: java.io.IOException: No space left on device
+ERROR: no such package '@@rules_rs++crate+crates//': java.io.IOException: No space left on device
+ERROR: Error while writing profile file: No space left on device
+java.util.logging.ErrorManager: 2
+java.io.IOException: No space left on device
+	at java.base/java.io.FileOutputStream.writeBytes(Native Method)
+	at java.base/java.io.FileOutputStream.write(Unknown Source)
+	at com.google.common.io.CountingOutputStream.write(CountingOutputStream.java:53)
+	at java.base/sun.nio.cs.StreamEncoder.writeBytes(Unknown Source)
+	at java.base/sun.nio.cs.StreamEncoder.implFlushBuffer(Unknown Source)
+	at java.base/sun.nio.cs.StreamEncoder.implFlush(Unknown Source)
+	at java.base/sun.nio.cs.StreamEncoder.flush(Unknown Source)
+	at java.base/java.io.OutputStreamWriter.flush(Unknown Source)
+	at com.google.devtools.build.lib.util.SimpleLogHandler$Output.flush(SimpleLogHandler.java:778)
+	at com.google.devtools.build.lib.util.SimpleLogHandler.flush(SimpleLogHandler.java:464)
+	at com.google.devtools.build.lib.util.DebugLoggerConfigurator.flushServerLog(DebugLoggerConfigurator.java:65)
+	at com.google.devtools.build.lib.runtime.BlazeRuntime.afterCommand(BlazeRuntime.java:829)

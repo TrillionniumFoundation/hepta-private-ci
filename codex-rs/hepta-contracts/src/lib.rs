@@ -19,6 +19,7 @@ mod canonical;
 mod final_use;
 mod final_use_control;
 mod identity;
+pub mod learning_operator_protocol;
 mod memory;
 mod provider;
 mod provider_effect;

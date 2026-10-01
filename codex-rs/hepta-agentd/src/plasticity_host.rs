@@ -21,9 +21,10 @@ use codex_hepta_intelligence::PlasticityAnchorCommitterV1;
 use codex_hepta_intelligence::propose_authenticated_parameter_plasticity_v1;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionError;
 use codex_hepta_plasticity::DurableRegistryAnchorV1;
 use codex_hepta_plasticity::GeneratedParameterCandidateSetV3;
 use codex_hepta_plasticity::ParameterGeneratorProfileV3;
@@ -53,6 +54,7 @@ pub enum AgentdPlasticityHostErrorV1 {
     ArtifactIneligible,
     ArtifactBinding,
     Ledger(DurableLedgerError),
+    Trust(LearningTrustDistributionError),
     Writer(AnchoredPlasticityWriterErrorV1),
     Product(ParameterPlasticityProductErrorV1),
     AdmissionDrift,
@@ -701,17 +703,20 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
-pub fn propose_agentd_plasticity_v1(
+pub(crate) fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
     owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
-    verifier: &LearningEvidenceVerifierV1,
+    trust: &ActivatedLearningTrustV1,
     writer: &mut AnchoredPlasticityWriterV1,
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    trust
+        .revalidate_at(now)
+        .map_err(AgentdPlasticityHostErrorV1::Trust)?;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),
@@ -736,8 +741,14 @@ pub fn propose_agentd_plasticity_v1(
         return Err(AgentdPlasticityHostErrorV1::AdmissionDrift);
     }
     request.admission = resolved;
-    propose_authenticated_parameter_plasticity_v1(request, verifier, writer, anchor_store, now)
-        .map_err(Into::into)
+    propose_authenticated_parameter_plasticity_v1(
+        request,
+        trust.verifier(),
+        writer,
+        anchor_store,
+        now,
+    )
+    .map_err(Into::into)
 }
 
 pub fn bootstrap_agentd_plasticity_writer_v1(

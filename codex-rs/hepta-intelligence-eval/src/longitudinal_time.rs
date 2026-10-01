@@ -99,28 +99,26 @@ pub fn longitudinal_evaluation_signing_payload_v3(
     Ok(bytes)
 }
 
-/// External longitudinal entrypoint. Does not mint a holdout-use anchor,
-/// authenticate a storage namespace, select an artifact, or bypass statistics.
-pub fn decide_with_signed_longitudinal_evidence_v3(
-    bundle: IndependentEvaluationBundleV1,
-    roles: Vec<MetricRoleContractV2>,
+/// Reauthenticate longitudinal signatures and observed time without eligibility.
+pub(crate) fn authenticate_longitudinal_evidence_v3(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
     evidence: &SignedEvaluationEvidenceV1,
     timing: &LongitudinalTimeEvidenceV1,
     minimum_window_micros: u64,
     verifier: &LearningEvidenceVerifierV1,
     now_unix_micros: u64,
-) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
+) -> Result<crate::VerifiedEvaluationAuthenticationV2, SignedEvaluationError> {
     let payload =
-        longitudinal_evaluation_signing_payload_v3(&bundle, &roles, timing, minimum_window_micros)?;
+        longitudinal_evaluation_signing_payload_v3(bundle, roles, timing, minimum_window_micros)?;
     let authentication = crate::signed_evaluation::authenticate(
-        &bundle,
+        bundle,
         evidence,
         verifier,
         &payload,
         now_unix_micros,
     )?;
-    let observer_payload =
-        future_window_signing_payload_v1(&bundle, timing, minimum_window_micros)?;
+    let observer_payload = future_window_signing_payload_v1(bundle, timing, minimum_window_micros)?;
     let observer = verifier.verify(
         LearningEvidenceRoleV1::Observer,
         &timing.observer,
@@ -142,18 +140,39 @@ pub fn decide_with_signed_longitudinal_evidence_v3(
     verify_signed_role_separation(&generator, &observer, now_unix_micros)?;
     verify_signed_actor_separation(&evaluator, &observer, now_unix_micros)?;
     validate_observed_windows(
-        &bundle,
+        bundle,
         timing,
         evidence.generator_plan.issued_at,
         minimum_window_micros,
         now_unix_micros,
     )?;
-    let mut authenticated = authentication.as_array().to_vec();
-    authenticated.extend_from_slice(&timing.observer.signature);
+    Ok(authentication.bind_observer_signature(&timing.observer.signature))
+}
+
+/// Eligibility is issued only inside the sealed product runner.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn decide_with_signed_longitudinal_evidence_v3(
+    bundle: IndependentEvaluationBundleV1,
+    roles: Vec<MetricRoleContractV2>,
+    evidence: &SignedEvaluationEvidenceV1,
+    timing: &LongitudinalTimeEvidenceV1,
+    minimum_window_micros: u64,
+    verifier: &LearningEvidenceVerifierV1,
+    now_unix_micros: u64,
+) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
+    let authentication = authenticate_longitudinal_evidence_v3(
+        &bundle,
+        &roles,
+        evidence,
+        timing,
+        minimum_window_micros,
+        verifier,
+        now_unix_micros,
+    )?;
     Ok(SignedEvaluationDecisionV1 {
         decision: decide_independently_v2(bundle, roles, now_unix_micros)?,
-        trust_digest: verifier.trust_digest(),
-        authentication_digest: Digest32::of_bytes(&authenticated),
+        trust_digest: authentication.trust_digest(),
+        authentication_digest: authentication.authentication_digest(),
     })
 }
 

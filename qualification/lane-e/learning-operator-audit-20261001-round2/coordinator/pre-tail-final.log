@@ -1,0 +1,58 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+    Blocking waiting for file lock on artifact directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator)
+   Compiling learning-operator-coordinator-source-check v0.0.0 (/workspace/scratch/99c8d2276f89/coordinator-harness)
+warning: function `evaluate` is never used
+   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-agentd/src/product_qualification_test_support.rs:115:15
+    |
+115 | pub(super) fn evaluate(
+    |               ^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated functions `new` and `sign` are never used
+   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-agentd/src/learning_operator_test_support.rs:21:19
+    |
+ 20 | impl LearningFixture {
+    | -------------------- associated functions in this implementation
+ 21 |     pub(crate) fn new() -> Self {
+    |                   ^^^
+...
+187 |     pub(crate) fn sign(
+    |                   ^^^^
+
+warning: `learning-operator-coordinator-source-check` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized] target(s) in 3.04s
+────────────
+ Nextest run ID 2d03ee30-670c-4384-be79-b5336e353374 with nextest profile: local
+    Starting 24 tests across 1 binary
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::host_clock_and_receipt_expiry_reject_pre_persistence_work
+        PASS [   0.005s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::fresh_process_payload_mismatch_rolls_back_before_shadow
+        PASS [   0.005s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::fresh_process_load_at_deadline_is_rejected_and_rolled_back
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::realistic_monotonic_shadow_timeline_is_qualified_then_rolled_back
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::shadow_rejection_rolls_back_and_never_reaches_currentness
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::revoked_candidate_is_observed_and_rolled_back_without_activation
+        PASS [   0.012s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::currentness_clock_regression_is_rejected_and_rolled_back
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::unverified_cleanup_is_not_a_terminal_outcome_and_retains_the_verified_storage_binding
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::terminal_audit_binds_producer_and_generation_identity_despite_equal_opaque_receipt_digests
+        PASS [   0.005s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::terminal_audit_commits_to_selection_reason_and_cleanup_evidence
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::unverified_persistence_retains_recovery_identity_and_never_targets_an_unrelated_object
+        PASS [   0.008s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::verified_persistence_is_cleaned_up_when_actual_host_deadline_passes
+        PASS [   0.933s] learning-operator-coordinator-source-check learning_operator_shadow_loader::tests::a_frozen_wall_clock_cannot_hide_actual_load_time_past_the_deadline
+        PASS [   0.989s] learning-operator-coordinator-source-check learning_operator_artifact_owner::tests::expiry_after_real_fsync_preserves_known_storage_receipt
+        PASS [   0.987s] learning-operator-coordinator-source-check learning_operator_shadow_loader::tests::failed_real_current_read_cannot_revive_consumer_from_restored_backup
+        PASS [   1.070s] learning-operator-coordinator-source-check learning_operator_artifact_owner::tests::reused_evaluation_records_and_wrong_source_or_runtime_do_not_write
+        PASS [   0.069s] learning-operator-coordinator-source-check learning_operator_source_binding::tests::bounded_source_independence_is_order_independent_and_rejects_actual_overlap
+        PASS [   0.110s] learning-operator-coordinator-source-check learning_operator_source_binding::tests::oversized_or_duplicated_inputs_fail_before_quadratic_work
+        PASS [   1.349s] learning-operator-coordinator-source-check learning_operator_artifact_owner::tests::real_dual_ledger_fit_publishes_exact_retry_and_recovers_ack_after_expiry
+        PASS [   1.386s] learning-operator-coordinator-source-check learning_operator_artifact_owner::tests::an_identical_later_fit_cannot_reuse_earlier_signed_science_freeze
+        PASS [   1.546s] learning-operator-coordinator-source-check learning_operator_shadow_loader::tests::retained_storage_selection_must_be_valid_at_actual_load_and_each_use
+        PASS [   0.885s] learning-operator-coordinator-source-check learning_operator_shadow_loader::tests::v3_load_preserves_distinct_training_and_evaluation_and_predicts_read_only
+        PASS [   0.976s] learning-operator-coordinator-source-check learning_operator_shadow_loader::tests::v3_load_rejects_training_eval_substitution_and_runtime_relabel
+        PASS [   2.154s] learning-operator-coordinator-source-check learning_operator_shadow_loader::tests::cancellation_and_clock_regression_close_loaded_shadow_consumer
+────────────
+     Summary [   2.168s] 24 tests run: 24 passed, 0 skipped

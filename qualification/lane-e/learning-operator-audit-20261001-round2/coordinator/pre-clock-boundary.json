@@ -1,0 +1,29 @@
+{
+  "checkout": "/dev/shm/hepta-round2-99c8d2276f89/checkout",
+  "harness": "/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final",
+  "test_result": "30 passed, 0 skipped",
+  "nextest_run_id": "918a58df-6d3d-47c7-927b-638d67c70312",
+  "command": "just --justfile /dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/justfile test --manifest-path /dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/Cargo.toml --locked --offline",
+  "counts": {
+    "coordinator": 12,
+    "real_persistence": 7,
+    "evaluated_loader": 9,
+    "source_bounds": 2
+  },
+  "scope": "Exact Agentd core adapter sources compiled against real path dependencies from the same memory checkout. Locked CAS/fsync ProductRunner, dual real ledgers, root-signed trust, actual owner fsync and signed independent selections are used in private fixtures.",
+  "test_only_feature": "operator qualification-unverified-input is enabled only as the existing Agentd dev fixture signing support; final-use candidates are obtained from actual production opaque capabilities.",
+  "not_proven": [
+    "actual Agentd ProductRunner host class and default library/V8 chain compilation",
+    "real daemon process qualification",
+    "fresh-process learning.operator round trip",
+    "durable coordinator rollback composition",
+    "external scientific efficacy and deployment receipts"
+  ],
+  "artifact_unit_test": {
+    "result": "94 passed, 1 skipped",
+    "command": "just test --locked --offline -p codex-hepta-learning-artifacts --lib --test-threads=2 --no-tests=fail",
+    "nextest_run_id": "a28db507-15be-4a9a-8b1e-0f263daa8f2c",
+    "skip": "Existing owner_host_process_fault_worker is only invoked inside the passing process kill/reopen matrix; its standalone execution is intentionally ignored."
+  },
+  "historical_evidence": "pre-tail-* preserve 24-test history; pre-release-* preserve 29-test history. final.log records the 30-test final release-fence result. Setup logs retain corrected pre-compilation configuration errors."
+}

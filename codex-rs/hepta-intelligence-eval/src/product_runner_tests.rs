@@ -1,5 +1,9 @@
 use super::*;
 
+use crate::IndependentEvaluationDispositionV1;
+use crate::ObservedFutureWindowV1;
+use crate::ProductWindowSnapshotBindingV1;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -140,7 +144,7 @@ fn temporal_plan(name: &str, objective: Digest32) -> TemporalEvaluationPlan {
             outcome_watermark: 100,
             minimum_rows: 2,
             minimum_ess: FixedQ32::ONE,
-            maximum_weight: FixedQ32::from_raw(4_i64 << 32),
+            maximum_weight: FixedQ32::from_raw(3_i64 << 31),
         },
         confidence: ClusterConfidencePlan {
             plan_digest: digest(&format!("{name}-confidence-plan")),
@@ -239,7 +243,7 @@ fn fixture() -> Fixture {
     let mut candidate_observations = Vec::new();
     let mut baseline_observations = Vec::new();
     let mut assignments = Vec::new();
-    for index in 0..128 {
+    for index in 0..1024 {
         let decision = id(&format!("decision-{index}"));
         targets.push(HeldOutTarget {
             decision_id: decision.clone(),
@@ -263,7 +267,7 @@ fn fixture() -> Fixture {
                     evaluation_probability: match ProbabilityQ32::from_raw(if candidate {
                         3 << 30
                     } else {
-                        1 << 31
+                        1 << 30
                     }) {
                         Ok(value) => value,
                         Err(error) => panic!("evaluation probability: {error}"),
@@ -279,7 +283,7 @@ fn fixture() -> Fixture {
                     evaluation_probability: match ProbabilityQ32::from_raw(if candidate {
                         1 << 30
                     } else {
-                        1 << 31
+                        3 << 30
                     }) {
                         Ok(value) => value,
                         Err(error) => panic!("evaluation probability: {error}"),
@@ -308,6 +312,8 @@ fn fixture() -> Fixture {
         provider: Provider {
             manifest,
             inputs: Some(TemporalComparisonInputsV1 {
+                training_snapshot_id: None,
+                window_snapshots: Vec::new(),
                 training,
                 targets,
                 candidate_observations,
@@ -331,6 +337,7 @@ fn signed_context(
 ) {
     let generator_key = SigningKey::from_bytes(&[41; 32]);
     let evaluator_key = SigningKey::from_bytes(&[42; 32]);
+    let observer_key = SigningKey::from_bytes(&[43; 32]);
     let scope = digest("product-eval-scope");
     let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
         principal_id: id(name),
@@ -360,6 +367,13 @@ fn signed_context(
                 controller_id: id("evaluator-controller"),
                 verifying_key: evaluator_key.verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: principal("observer", &observer_key),
+                controller_id: id("observer-controller"),
+                verifying_key: observer_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Observer],
                 revoked_at: None,
             },
         ],
@@ -511,6 +525,68 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert!(!qualified.evidence_digest.is_zero());
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
+    // This preregistered synthetic fixture has a real conservative interval
+    // separation: 1,024 independent clusters and actual weight envelope 1.5.
+    assert_eq!(
+        qualified.decision.decision.disposition,
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+    );
+
+    qualified
+        .revalidate_consumption(
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+        )
+        .unwrap();
+    assert!(
+        qualified
+            .revalidate_consumption(
+                &bundle,
+                &fixture.roles,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &verifier,
+                91
+            )
+            .is_err()
+    );
+    let mut substituted = bundle;
+    substituted.metrics[0].candidate.lower = FixedQ32::ZERO;
+    assert!(
+        qualified
+            .revalidate_consumption(
+                &substituted,
+                &fixture.roles,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &verifier,
+                50
+            )
+            .is_err()
+    );
+    let mut changed = qualified.clone();
+    changed.decision.decision.disposition = IndependentEvaluationDispositionV1::Ineligible;
+    assert!(changed.validate_integrity().is_err());
+    changed = qualified.clone();
+    changed.decision.decision.baseline_id = id("other-baseline");
+    assert!(changed.validate_integrity().is_err());
+    changed = qualified.clone();
+    changed.decision.decision.evaluation_id = id("other-evaluation");
+    assert!(changed.validate_integrity().is_err());
+    changed = qualified.clone();
+    changed
+        .decision
+        .decision
+        .failed_metrics
+        .push(id("other-metric"));
+    assert!(changed.validate_integrity().is_err());
+    changed = qualified.clone();
+    changed.publication_digest = digest("other-publication");
+    assert!(changed.validate_integrity().is_err());
 
     let mut changed_generator = qualified;
     changed_generator.generator.principal_id = id("substituted-generator");
@@ -559,4 +635,388 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
             .is_err()
     );
     assert_eq!(fixture.provider.release_count, 0);
+}
+
+#[test]
+fn rejected_published_qualification_cannot_be_relabelled_eligible() {
+    let mut fixture = fixture();
+    let inputs = fixture.provider.inputs.as_mut().unwrap();
+    inputs
+        .candidate_observations
+        .clone_from(&inputs.baseline_observations);
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles.clone(),
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    )
+    .unwrap();
+    let owner = FencedFinalHoldoutOwnerV1::initialize(
+        MemoryCas::default(),
+        digest("rejected-owner"),
+        HoldoutWriterFenceV1 {
+            owner_id: id("rejected-evaluation-owner"),
+            generation: 1,
+            lease_digest: digest("rejected-lease"),
+        },
+    )
+    .unwrap();
+    let mut runner = ProductEvaluationRunnerV1::new(owner);
+    let temporal = runner
+        .evaluate_temporal_comparison(
+            &frozen,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+        )
+        .unwrap();
+    let principal = |name: &str| AuthenticatedPrincipalV1 {
+        principal_id: id(name),
+        credential_chain_digest: digest(&format!("{name}-credential")),
+        signing_key_digest: digest(&format!("{name}-key")),
+        scope_digest: digest("placeholder-scope"),
+        authority_epoch: 7,
+        authenticated_at: 1,
+        expires_at: 100,
+    };
+    let context = ProductQualificationContextV1 {
+        generator: principal("placeholder-generator"),
+        evaluator: principal("placeholder-evaluator"),
+        retention_receipt_digests: vec![],
+        unlearning_receipt_digest: Digest32::ZERO,
+    };
+    let template = runner.qualification_bundle(&temporal, &context).unwrap();
+    let (context, _, _) = signed_context(&template, &fixture.roles);
+    let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
+    let (_, evidence, verifier) = signed_context(&bundle, &fixture.roles);
+    let mut sink = Sink::default();
+    let mut qualification = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+            &mut sink,
+        )
+        .unwrap();
+    assert_eq!(
+        qualification.decision.decision.disposition,
+        IndependentEvaluationDispositionV1::Ineligible
+    );
+    assert_eq!(sink.persisted, vec![qualification.publication_digest]);
+    qualification.decision.decision.disposition =
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection;
+    qualification.decision.decision.failed_metrics.clear();
+    assert!(qualification.validate_integrity().is_err());
+    assert!(
+        qualification
+            .revalidate_consumption(
+                &bundle,
+                &fixture.roles,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &verifier,
+                50
+            )
+            .is_err()
+    );
+}
+
+#[test]
+fn longitudinal_qualification_binds_actual_observed_times_counts_and_source_cut() {
+    let mut fixture = fixture();
+    fixture.cross_fold.claim_scope = EvaluationClaimScopeV1::SystemLongitudinal;
+    let inputs = fixture.provider.inputs.as_mut().unwrap();
+    inputs.snapshot_ids = vec![
+        id("snapshot-training"),
+        id("snapshot-final"),
+        id("snapshot-other"),
+    ];
+    inputs.training_snapshot_id = Some(id("snapshot-training"));
+    inputs.future_window_ids = vec![id("final-window"), id("other-window")];
+    inputs.window_snapshots = vec![
+        ProductWindowSnapshotBindingV1 {
+            window_id: id("final-window"),
+            snapshot_id: id("snapshot-final"),
+        },
+        ProductWindowSnapshotBindingV1 {
+            window_id: id("other-window"),
+            snapshot_id: id("snapshot-other"),
+        },
+    ];
+    for (index, target) in inputs.targets.iter_mut().enumerate() {
+        target.window_id = id(if index % 2 == 0 {
+            "other-window"
+        } else {
+            "final-window"
+        });
+        target.decision_at = if index % 2 == 0 { 20 } else { 26 };
+        inputs.candidate_observations[index].outcome_observed_at =
+            if index % 2 == 0 { 25 } else { 50 };
+        inputs.baseline_observations[index].outcome_observed_at =
+            if index % 2 == 0 { 25 } else { 50 };
+    }
+    let actual_inputs = inputs.clone();
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles.clone(),
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    )
+    .unwrap();
+    let mut missing_cohort = actual_inputs.clone();
+    for target in &mut missing_cohort.targets {
+        target.window_id = id("final-window");
+    }
+    assert!(matches!(
+        crate::product_observed_cohort::derive(&frozen.frozen_plan, &missing_cohort),
+        Err(ProductEvaluationError::Binding(
+            "empty claimed future cohort"
+        ))
+    ));
+    let original_cut =
+        crate::product_observed_cohort::derive(&frozen.frozen_plan, &actual_inputs).unwrap();
+    let mut merged_clusters = actual_inputs.clone();
+    merged_clusters.assignments[0].cluster_id = merged_clusters.assignments[1].cluster_id.clone();
+    assert_ne!(
+        original_cut,
+        crate::product_observed_cohort::derive(&frozen.frozen_plan, &merged_clusters).unwrap()
+    );
+    let mut reordered = actual_inputs.clone();
+    reordered.targets.reverse();
+    reordered.candidate_observations.reverse();
+    reordered.baseline_observations.reverse();
+    reordered.assignments.reverse();
+    reordered.window_snapshots.reverse();
+    for row in reordered
+        .candidate_observations
+        .iter_mut()
+        .chain(&mut reordered.baseline_observations)
+    {
+        row.actions.reverse();
+    }
+    assert_eq!(
+        original_cut,
+        crate::product_observed_cohort::derive(&frozen.frozen_plan, &reordered).unwrap()
+    );
+    let mut duplicate_snapshot = actual_inputs;
+    duplicate_snapshot.window_snapshots[0].snapshot_id =
+        duplicate_snapshot.window_snapshots[1].snapshot_id.clone();
+    assert!(matches!(
+        crate::product_observed_cohort::derive(&frozen.frozen_plan, &duplicate_snapshot),
+        Err(ProductEvaluationError::Binding("window snapshot mapping"))
+    ));
+    let owner = FencedFinalHoldoutOwnerV1::initialize(
+        MemoryCas::default(),
+        digest("timed-owner"),
+        HoldoutWriterFenceV1 {
+            owner_id: id("timed-evaluation-owner"),
+            generation: 1,
+            lease_digest: digest("timed-lease"),
+        },
+    )
+    .unwrap();
+    let mut runner = ProductEvaluationRunnerV1::new(owner);
+    let temporal = runner
+        .evaluate_temporal_comparison(
+            &frozen,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+        )
+        .unwrap();
+    let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
+        principal_id: id(name),
+        credential_chain_digest: digest(&format!("{name}-credential")),
+        signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+        scope_digest: digest("product-eval-scope"),
+        authority_epoch: 7,
+        authenticated_at: 1,
+        expires_at: 100,
+    };
+    let context = ProductQualificationContextV1 {
+        generator: principal("generator", &SigningKey::from_bytes(&[41; 32])),
+        evaluator: principal("evaluator", &SigningKey::from_bytes(&[42; 32])),
+        retention_receipt_digests: vec![digest("retention")],
+        unlearning_receipt_digest: digest("unlearning"),
+    };
+    let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
+    let (_, evidence, verifier) = signed_context(&bundle, &fixture.roles);
+    let sign = |name: &str, key: &SigningKey, role, payload: &[u8], issued_at| {
+        let signer = principal(name, key);
+        let mut signed = SignedLearningEvidenceV1 {
+            evidence_id: signer.principal_id.clone(),
+            principal_id: signer.principal_id,
+            role,
+            trust_digest: verifier.trust_digest(),
+            scope_digest: signer.scope_digest,
+            objective_digest: bundle.objective_digest,
+            authority_epoch: 7,
+            issued_at,
+            expires_at: 90,
+            payload_digest: Digest32::of_bytes(payload),
+            signature: [0; 64],
+        };
+        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+        signed
+    };
+    let observer_key = SigningKey::from_bytes(&[43; 32]);
+    let evaluator_key = SigningKey::from_bytes(&[42; 32]);
+    let mut timing = LongitudinalTimeEvidenceV1 {
+        frozen_unix_micros: 10,
+        windows: ["other-window", "final-window"]
+            .iter()
+            .enumerate()
+            .map(|(index, window)| {
+                let actual = temporal
+                    .observed_cohorts
+                    .iter()
+                    .find(|cohort| cohort.window_id == id(window))
+                    .unwrap();
+                ObservedFutureWindowV1 {
+                    window_id: actual.window_id.clone(),
+                    snapshot_id: actual.snapshot_id.clone(),
+                    starts_unix_micros: if index == 0 { 11 } else { 26 },
+                    ends_unix_micros: if index == 0 { 25 } else { 50 },
+                    observation_count: actual.observation_count,
+                    observed_source_cut: actual.observed_source_cut,
+                }
+            })
+            .collect(),
+        observer: sign(
+            "observer",
+            &observer_key,
+            LearningEvidenceRoleV1::Observer,
+            b"placeholder",
+            60,
+        ),
+    };
+    let authenticate = |timing: &mut LongitudinalTimeEvidenceV1| {
+        timing.observer = sign(
+            "observer",
+            &observer_key,
+            LearningEvidenceRoleV1::Observer,
+            &crate::future_window_signing_payload_v1(&bundle, timing, 10).unwrap(),
+            60,
+        );
+        SignedEvaluationEvidenceV1 {
+            generator_plan: evidence.generator_plan.clone(),
+            evaluator_bundle: sign(
+                "evaluator",
+                &evaluator_key,
+                LearningEvidenceRoleV1::Evaluator,
+                &crate::longitudinal_evaluation_signing_payload_v3(
+                    &bundle,
+                    &fixture.roles,
+                    timing,
+                    10,
+                )
+                .unwrap(),
+                60,
+            ),
+        }
+    };
+    let signed = authenticate(&mut timing);
+    let mut sink = Sink::default();
+    let qualified = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &signed,
+            ProductTimingEvidenceV1::SystemLongitudinal {
+                timing: &timing,
+                minimum_window_micros: 10,
+            },
+            &verifier,
+            70,
+            &mut sink,
+        )
+        .unwrap();
+    assert_eq!(
+        qualified.decision.decision.disposition,
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+    );
+    qualified
+        .revalidate_consumption(
+            &bundle,
+            &fixture.roles,
+            &signed,
+            ProductTimingEvidenceV1::SystemLongitudinal {
+                timing: &timing,
+                minimum_window_micros: 10,
+            },
+            &verifier,
+            70,
+        )
+        .unwrap();
+    for mutation in 0..4 {
+        let mut substituted = timing.clone();
+        match mutation {
+            0 => {
+                substituted.windows[0].starts_unix_micros = 21;
+                substituted.windows[0].ends_unix_micros = 35;
+                substituted.windows[1].starts_unix_micros = 36;
+                substituted.windows[1].ends_unix_micros = 60;
+            }
+            1 => substituted.windows[0].observed_source_cut = digest("different-real-input-cut"),
+            2 => substituted.windows[0].observation_count += 1,
+            3 => substituted.windows[0].snapshot_id = substituted.windows[1].snapshot_id.clone(),
+            _ => unreachable!(),
+        }
+        let signed = authenticate(&mut substituted);
+        let mut sink = Sink::default();
+        assert!(matches!(
+            runner.qualify_and_persist(
+                &temporal,
+                &context,
+                &signed,
+                ProductTimingEvidenceV1::SystemLongitudinal {
+                    timing: &substituted,
+                    minimum_window_micros: 10
+                },
+                &verifier,
+                70,
+                &mut sink
+            ),
+            Err(ProductEvaluationError::Binding(
+                "actual observed window binding"
+            ))
+        ));
+        assert!(sink.persisted.is_empty());
+    }
+    let mut tampered = temporal.clone();
+    tampered.observed_cohorts[0].first_decision_at += 1;
+    assert!(runner.qualification_bundle(&tampered, &context).is_err());
+}
+
+#[test]
+fn released_input_resource_limits_precede_comparison_sorting_and_fit() {
+    let mut fixture = fixture();
+    let inputs = fixture.provider.inputs.as_mut().unwrap();
+    let original_actions = inputs.candidate_observations[0].actions.clone();
+    let action = original_actions[0].clone();
+    inputs.candidate_observations[0].actions = vec![action; 129];
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles,
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    )
+    .unwrap();
+    assert!(matches!(
+        super::validate_released_inputs(&frozen, inputs),
+        Err(ProductEvaluationError::Binding("released input resources"))
+    ));
+    inputs.candidate_observations[0].actions = original_actions;
+    let target = inputs.targets[0].clone();
+    inputs.targets.resize(16_385, target);
+    assert!(matches!(
+        super::validate_released_inputs(&frozen, inputs),
+        Err(ProductEvaluationError::Binding("released input resources"))
+    ));
 }

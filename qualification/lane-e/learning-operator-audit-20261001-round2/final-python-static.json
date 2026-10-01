@@ -1,0 +1,12 @@
+{
+  "name": "final-python-static",
+  "command": [
+    "python3",
+    "-c",
+    "import subprocess; commands=[[\"/root/.cache/uv/archive-v0/lKcnMBEJBVjTWfWo/ruff-0.16.9.data/scripts/ruff\",\"check\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"],[\"bash\",\"-n\",\"../scripts/hepta-learning-operator-authoritative.sh\"]]; [subprocess.run(c,check=True) for c in commands]"
+  ],
+  "exitCode": 1,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/final-python-static.log",
+  "sha256": "73ef4e980aea4999b0cb0f859a5448a97dd4c2921222ef34e3d6dd911b813401",
+  "bytes": 6772
+}

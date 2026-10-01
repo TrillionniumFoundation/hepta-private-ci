@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.learning-operator-schema-compatibility.v2",
+  "schemaVersion": 2,
+  "module": "learning.operator",
+  "defaultQualificationPath": {
+    "trainingProfile": "TrainingProfileV1",
+    "worldModelProfile": "WorldModelProfileV1",
+    "tabularCapability": "FinalUseTabularCapabilityV1",
+    "worldModelCapability": "FinalUseWorldModelCapabilityV1",
+    "tabularSelectedArtifact": "OpaquePinnedTabularArtifactV1",
+    "worldModelSelectedArtifact": "OpaquePinnedWorldModelV1",
+    "tabularLoader": "LoadedTabularOperatorV2",
+    "hostLoop": "coordinate_learning_operator_shadow_v1",
+    "activationAllowed": false,
+    "typeState": [
+      "CanonicalProfile",
+      "OwnerAuthenticatedSource",
+      "CurrentAtCapabilityIssue",
+      "SingleUseFinalUseCapability",
+      "CurrentImmediatelyBeforeFit",
+      "ImmutableCandidate",
+      "CurrentImmediatelyBeforeHandoff",
+      "IndependentlyEvaluated",
+      "IndependentlySelected",
+      "FreshProcessLoaded",
+      "ShadowObserved",
+      "CurrentOrRevokedAtUse",
+      "ExactPredecessorRolledBack"
+    ],
+    "selectedTabularPredictor": "SelectedTabularOperatorV1",
+    "liveOwnerRevalidationRequired": true,
+    "defaultRuntimeLoopWired": false
+  },
+  "versions": [
+    {
+      "version": "V1",
+      "status": "structural_qualification_compatibility_only",
+      "defaultExport": true,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "Decode and validate, then re-freeze and independently evaluate through the final-use path.",
+      "defaultSurface": "Named owner-bound pins and immutable read-only adapters only; raw fitters remain compatibility-only."
+    },
+    {
+      "version": "V2",
+      "status": "bounded_internal_compatibility",
+      "defaultExport": true,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "Reconstruct the canonical profile internally and issue a single-use owner-bound capability.",
+      "defaultSurface": "LoadedTabularOperatorV2 and complete pins; bounded raw fitters remain compatibility-only."
+    },
+    {
+      "version": "V3",
+      "status": "owner_authenticated_source_compatibility",
+      "defaultExport": false,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "Use the V3 owner receipt as input to the final-use capability; do not persist the verified wrapper.",
+      "ownerReceiptInputAllowed": true,
+      "defaultSurface": "DatasetSnapshotReceiptV3 enters final-use requests; direct V3 verify/fit remains crate-internal."
+    },
+    {
+      "version": "FinalUseV1",
+      "status": "authoritative_shadow_qualification_path",
+      "defaultExport": true,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "No implicit downgrade. Reopen the exact immutable predecessor and its original complete pin."
+    }
+  ],
+  "resourceQualification": {
+    "sensorCandidateCounts": [
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "tabularSampleCounts": [
+      100000,
+      500000,
+      1000000
+    ],
+    "cooperativeCancellation": "WorkControlV1",
+    "absoluteDeadlineRequired": true
+  },
+  "externalEvidence": {
+    "independentAcceptanceRequired": true,
+    "targetHostBenchmarkRequired": true,
+    "futureWindowEfficacyRequired": true,
+    "repositoryMaySelfIssue": false
+  }
+}

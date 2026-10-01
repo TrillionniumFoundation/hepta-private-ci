@@ -1,0 +1,12 @@
+["/workspace/scratch/99c8d2276f89/tooling/bin/uv", "run", "--offline", "--frozen", "--project", "scripts", "ruff", "format", "--check", "scripts/hepta-learning-operator-contract.py", "scripts/hepta-learning-operator-map.py", "scripts/hepta-learning-operator-receipt.py", "scripts/test_hepta_learning_operator_evidence.py"]
+4 files already formatted
+["/workspace/scratch/99c8d2276f89/tooling/bin/uv", "run", "--offline", "--frozen", "--project", "scripts", "ruff", "check", "scripts/hepta-learning-operator-contract.py", "scripts/hepta-learning-operator-map.py", "scripts/hepta-learning-operator-receipt.py", "scripts/test_hepta_learning_operator_evidence.py"]
+All checks passed!
+["bash", "-n", "scripts/hepta-learning-operator-authoritative.sh"]
+["python3", "-c", "from pathlib import Path; ['scripts/hepta-learning-operator-contract.py', 'scripts/hepta-learning-operator-map.py', 'scripts/hepta-learning-operator-receipt.py', 'scripts/test_hepta_learning_operator_evidence.py'] and [compile(Path(p).read_text(),p,'exec') for p in ['scripts/hepta-learning-operator-contract.py', 'scripts/hepta-learning-operator-map.py', 'scripts/hepta-learning-operator-receipt.py', 'scripts/test_hepta_learning_operator_evidence.py']]; print('Python compile passed')"]
+Python compile passed
+["python3", "-c", "import yaml; from pathlib import Path; [print(p,sorted(yaml.safe_load(Path(p).read_text())['jobs'])) for p in ['.github/workflows/learning-operator-authoritative.yml', '.github/workflows/hepta-learning-operator-audit.yml']"]
+  File "<string>", line 1
+    import yaml; from pathlib import Path; [print(p,sorted(yaml.safe_load(Path(p).read_text())['jobs'])) for p in ['.github/workflows/learning-operator-authoritative.yml', '.github/workflows/hepta-learning-operator-audit.yml']
+                                           ^
+SyntaxError: '[' was never closed

@@ -1,0 +1,406 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.0
+   Compiling cfg-if v1.0.4
+   Compiling unicode-ident v1.0.22
+   Compiling cpufeatures v0.2.17
+   Compiling serde_core v1.0.228
+   Compiling proc-macro2 v1.0.106
+   Compiling generic-array v0.14.7
+   Compiling zmij v1.0.19
+   Compiling quote v1.0.45
+   Compiling memchr v2.8.1
+   Compiling syn v2.0.117
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling itoa v1.0.17
+   Compiling digest v0.10.7
+   Compiling zeroize v1.8.2
+   Compiling sha2 v0.10.9
+   Compiling const-oid v0.9.6
+   Compiling semver v1.0.27
+   Compiling codex-hepta-types v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-types)
+   Compiling rustc_version v0.4.1
+   Compiling serde_json v1.0.149
+   Compiling der v0.7.10
+   Compiling curve25519-dalek v4.1.3
+   Compiling signature v2.2.0
+   Compiling spki v0.7.3
+   Compiling subtle v2.6.1
+   Compiling linux-raw-sys v0.12.1
+   Compiling pkcs8 v0.10.2
+   Compiling bitflags v2.13.1
+   Compiling ed25519 v2.2.3
+   Compiling codex-hepta-intuition v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-intuition)
+   Compiling libc v0.2.186
+   Compiling yansi v1.0.1
+   Compiling diff v0.1.13
+   Compiling pretty_assertions v1.4.1
+   Compiling getrandom v0.4.2
+   Compiling serde_derive v1.0.228
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling rustix v1.1.4
+   Compiling codex-hepta-wire v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-wire)
+   Compiling fastrand v2.3.0
+   Compiling once_cell v1.21.4
+   Compiling codex-hepta-plasticity v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-plasticity)
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-learning-artifacts)
+   Compiling serde v1.0.228
+   Compiling codex-hepta-cognitive-types v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-contracts v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-contracts)
+   Compiling tempfile v3.27.0
+   Compiling codex-hepta-neuron v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-neuron)
+   Compiling codex-hepta-objective v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-objective)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-cognitive-read)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-kg v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-kg)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-ndu v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-ndu)
+   Compiling codex-hepta-context-compiler v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-context-compiler)
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-hepta-intelligence v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-intelligence)
+    Finished `test` profile [unoptimized] target(s) in 16.09s
+────────────
+ Nextest run ID cdea333c-5467-4831-aa7a-446618edfe5a with nextest profile: local
+    Starting 324 tests across 3 binaries (2 tests skipped)
+        PASS [   0.003s] codex-hepta-bellman-operator authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget
+        PASS [   0.003s] codex-hepta-bellman-operator budget::tests::explicit_context_propagates_cancellation_to_worker_thread
+        PASS [   0.003s] codex-hepta-bellman-operator authoritative_tests::target_host_profile_has_statistically_meaningful_minimum_sample
+        PASS [   0.003s] codex-hepta-bellman-operator budget::tests::concurrent_memory_reservations_share_one_absolute_ceiling
+        PASS [   0.004s] codex-hepta-bellman-operator authoritative_tests::mutation_cancelled_work_is_rejected_before_fit
+        PASS [   0.004s] codex-hepta-bellman-operator authoritative_tests::mutation_persisted_payload_cannot_reuse_the_selected_pin
+        PASS [   0.005s] codex-hepta-bellman-operator budget::tests::inherited_context_spans_composite_suboperations
+        PASS [   0.003s] codex-hepta-bellman-operator budget::tests::worker_cannot_expand_an_already_bound_budget
+        PASS [   0.003s] codex-hepta-bellman-operator budget::tests::nested_context_restores_outer_cancellation_domain
+        PASS [   0.004s] codex-hepta-bellman-operator budget::tests::operation_budget_is_cumulative_across_worker_meters
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::request_tests::accepted_requests_do_not_retain_caller_vectors_spare_allocation
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::request_tests::negative_measurements_cannot_reach_world_final_use_capability_admission
+        PASS [   0.005s] codex-hepta-bellman-operator budget::tests::matching_work_control_preserves_capability_issue_time
+        PASS [   0.002s] codex-hepta-bellman-operator final_use::selected::tests::completed_work_is_rejected_when_selection_expires_during_operation
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::selected::tests::elapsed_work_after_forward_host_observation_is_retained
+        PASS [   0.005s] codex-hepta-bellman-operator final_use::request_tests::world_request_rejects_outcomes_the_transition_fitter_cannot_consume
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::selected::tests::selection_clock_overflow_fails_closed
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::tests::selected_tabular_cannot_relabel_training_trust
+        PASS [   0.005s] codex-hepta-bellman-operator final_use::selected::tests::frozen_host_clock_cannot_extend_the_selection_window
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::tests::selected_tabular_clock_cannot_reset_across_loads_or_revive_after_expiry
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::tests::selected_world_model_expires_with_selection_before_model_retention
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::tests::selected_tabular_load_and_repeated_predictions_retain_selection_window
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::cancellation_at_publication_guard_rejects_completed_work
+        PASS [   0.015s] codex-hepta-bellman-operator budget::tests::explicit_context_preserves_one_deadline_across_dispatch_delay
+        PASS [   0.002s] codex-hepta-bellman-operator final_use_hardening::tests::elapsed_deadline_boundary_and_overflow_fail_closed
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::capability_issue_at_deadline_fails_closed
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::effective_now_preserves_later_host_time_and_rejects_overflow
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::final_use_window_is_strictly_before_deadline
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::publish_before_use_is_clock_regression
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::use_at_deadline_fails_closed
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::admission::tests::malformed_candidate_payload_is_candidate_global
+        PASS [   0.006s] codex-hepta-bellman-operator final_use_hardening::tests::monotonic_fit_context_elapsed_time_cannot_reset
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::admission::tests::payload_authority_failure_stops_the_consumer
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::admission::tests::revoked_evidence_requires_fresh_owner_admission
+        PASS [   0.004s] codex-hepta-bellman-operator final_use_hardening::tests::use_before_capability_issue_is_clock_regression
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::admission::tests::unsupported_cells_abstain_without_invalidating_the_candidate
+        PASS [   0.046s] codex-hepta-bellman-operator legacy::authenticated::tests::op_02_signed_regularity_binds_evaluator_identity_and_exact_assessment
+        PASS [   0.050s] codex-hepta-bellman-operator legacy::authenticated::tests::op_02_signed_applicability_requires_authenticated_independent_evaluator
+        PASS [   0.083s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::capability_issuance_tests::retained_issuance_evidence_reserves_shared_memory_until_capability_drop
+        PASS [   0.052s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::owner_dataset_rejects_oversized_signed_rows_before_canonicalization
+        PASS [   0.130s] codex-hepta-bellman-operator final_use::request_tests::tabular_constructor_rejects_oversized_or_impossible_signed_profile_before_cloning
+        PASS [   0.125s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::capability_issuance_tests::world_issuance_revalidates_model_retention_after_owner_verification
+        PASS [   0.013s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::terminal_trust_tests::terminal_elapsed_clock_overflow_stops_the_consumer
+        PASS [   0.121s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::owner_dataset_signed_freeze_and_rows_reach_real_trainer
+        PASS [   0.202s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::capability_issuance_tests::tabular_issuance_revalidates_root_and_evidence_after_owner_verification
+        PASS [   0.125s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::owner_proof_expires_before_fit_and_reordered_rows_keep_same_signature
+        PASS [   0.222s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::terminal_trust_tests::terminal_owner_training_revalidates_distribution_at_prepare_verify_and_fit
+        PASS [   0.361s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::expiry_tests::tabular_row_evidence_expiring_during_fit_rejects_publication_before_deadline
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_06_tabular_fit_requires_exact_frozen_dataset_evidence
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_06_world_model_requires_exact_frozen_dataset_evidence
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_07_row_semantics_payload_binds_every_tabular_field
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_07_world_model_payload_binds_transition_semantics
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::dataset_bound::tests::verified_inputs_reject_relabelled_duplicates_before_fitting
+        PASS [   0.380s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::expiry_tests::world_row_evidence_expiring_during_fit_rejects_publication_before_deadline
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::learned::tests::direct_prediction_preserves_full_range_and_ties_even_fits
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::learned::tests::direct_predictions_reject_malformed_and_impossible_statistics
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::learned::tests::op_05_default_fit_rejects_relabelled_duplicate_evidence
+        PASS [   0.290s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::signed_training_rejects_config_target_duplicate_epoch_and_signature_substitution
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::learned::tests::op_05_tabular_operator_fits_complete_grid_deterministically
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::learned::tests::op_05_tabular_operator_rejects_missing_or_underfilled_cells
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::learned::tests::op_05_tabular_prediction_is_synthetic_and_domain_bounded
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::learned::tests::training_identity_commits_executed_sample_threshold
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::learned_strict::tests::op_05_indexed_prediction_uses_canonical_grid
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::learned_strict::tests::op_05_strict_fit_rejects_relabelled_duplicate_evidence
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::loaded::tests::actual_fit_serializes_and_predicts_with_no_mutable_loaded_surface
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::loaded::tests::host_pinning_cannot_admit_impossible_sample_statistics
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::loaded::tests::invalid_statistics_grid_and_authority_cannot_be_encoded
+        PASS [   0.010s] codex-hepta-bellman-operator legacy::loaded::tests::distinct_process_load_changes_prediction_and_rolls_back_without_retraining
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::loaded::tests::loaded_process_predicts_only_the_host_pinned_candidate
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::reference::tests::op_01_farthest_point_sensor_core_is_deterministic
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::reference::tests::op_01_tabular_reference_produces_exact_targets_and_gaps
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::reference::tests::op_02_applicability_rejects_degenerate_diffusion
+        PASS [   0.016s] codex-hepta-bellman-operator legacy::loaded::tests::independent_pin_and_all_truncations_are_checked
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::reference::tests::op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget
+        PASS [   0.016s] codex-hepta-bellman-operator legacy::reference::tests::sensor_manifest_binds_unselected_candidate_coordinates
+        PASS [   0.018s] codex-hepta-bellman-operator legacy::reference::tests::reference_receipt_binds_source_evidence_and_equal_output_inputs
+        PASS [   0.021s] codex-hepta-bellman-operator legacy::reference::tests::sensor_geometry_rounds_coverage_and_mesh_ratio_conservatively
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::reference::tests::sensor_separation_tracks_all_prior_selected_points
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::tests::invalid_gamma_fails_closed
+        PASS [   0.006s] codex-hepta-bellman-operator legacy::tests::deterministic_and_canonical
+        PASS [   0.309s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::terminal_trust_tests::terminal_projection_expiring_during_fit_rejects_completed_work
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::tests::target_builder_uses_signed_nearest_ties_even_like_reference
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::tests::terminal_transition_has_no_bootstrap
+        PASS [   0.009s] codex-hepta-bellman-operator legacy::tests::duplicate_sample_fails
+        PASS [   0.094s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::world_final_use_request_cannot_relabel_authoritative_training_trust
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::training_preflight::tests::exact_signed_profile_boundary_is_admitted
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::training_preflight::tests::impossible_support_rejects_before_work
+        PASS [   0.006s] codex-hepta-bellman-operator legacy::training_preflight::tests::all_small_shapes_match_independent_integer_oracle
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::world_model::tests::op_04_prediction_is_synthetic_and_unsupported_pairs_abstain
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::world_model::tests::op_04_transition_model_is_action_conditioned_and_probability_exact
+        PASS [   0.239s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::trust_window_tests::world_retention_expiring_during_fit_rejects_effective_publication
+        PASS [   0.002s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_rejects_duplicate_samples_and_invalid_outcomes
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_predictions_reject_modified_fitted_statistics_and_lineage
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::world_model::tests::op_04_world_model_rejects_relabelled_duplicate_evidence
+        PASS [   0.007s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_identity_binds_exact_rows_and_is_permutation_invariant
+        PASS [   0.004s] codex-hepta-bellman-operator sensor_core_qualification::tests::clustered_outlier_cannot_hide_behind_working_set_geometry
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_qualification::tests::full_input_geometry_rounds_up_and_accounts_for_persistent_candidate_copy
+        PASS [   0.009s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_prediction_checks_resource_caps_before_integrity_work
+        PASS [   0.006s] codex-hepta-bellman-operator profiles::tests::world_model_profile_digest_binds_sensor_core_identity
+        PASS [   0.003s] codex-hepta-bellman-operator sensor_core_qualification::tests::full_input_geometry_work_is_budgeted
+        PASS [   0.007s] codex-hepta-bellman-operator sensor_core_qualification::tests::full_input_digest_is_order_independent_and_content_sensitive
+        PASS [   0.003s] codex-hepta-bellman-operator sensor_core_qualification::tests::semantic_receipt_reports_exact_and_reduced_modes
+        PASS [   0.007s] codex-hepta-bellman-operator sensor_core_qualification::tests::low_dimensional_manifold_is_checked_against_every_input_point
+        PASS [   0.004s] codex-hepta-bellman-operator sensor_core_qualification::tests::qualified_build_preflights_bytes_before_cloning_and_coordinate_indexing
+        PASS [   0.003s] codex-hepta-bellman-operator sensor_core_v2::tests::duplicate_coordinates_reject_without_pairwise_scan
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_v2::tests::byte_budget_rejects_before_coordinate_index_construction
+        PASS [   0.003s] codex-hepta-bellman-operator sensor_core_v2::tests::exact_profile_preserves_canonical_fps
+        PASS [   0.003s] codex-hepta-bellman-operator sensor_core_v2::tests::exact_v2_manifest_matches_reference_conservative_geometry_and_input_binding
+        PASS [   0.008s] codex-hepta-bellman-operator sensor_core_qualification::tests::reduced_mode_is_deterministic_and_fails_closed_on_geometry
+        PASS [   0.003s] codex-hepta-bellman-operator sensor_core_v2::tests::operation_budget_fails_before_expensive_fps
+        PASS [   0.003s] codex-hepta-bellman-operator tabular_v2::tests::bounded_fit_matches_v1_rounding_and_admission_identity_at_extremes
+        PASS [   0.006s] codex-hepta-bellman-operator sensor_core_v2::tests::large_design_records_deterministic_approximation
+        PASS [   0.005s] codex-hepta-bellman-operator tabular_v2::tests::bounded_fit_matches_v1_artifact_identity
+        PASS [   0.004s] codex-hepta-bellman-operator tabular_v2::tests::byte_budget_rejects_before_fit
+        PASS [   0.004s] codex-hepta-bellman-operator tabular_v2::tests::long_ids_are_budgeted_before_binding_buffers_are_allocated
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::conditional_variance_uses_the_exact_unrounded_mean
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::memory_preflight_accounts_for_owned_identifier_text_and_input_capacity
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::fitted_estimates_and_branch_storage_cannot_be_mutated_in_place
+        PASS [   0.007s] codex-hepta-bellman-operator world_model_v2::tests::conditional_variance_is_zero_for_identical_observations
+        PASS [   0.003s] codex-hepta-bellman-operator world_model_v2::tests::predictions_reject_modified_evaluation_lineage_and_work
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::support_and_retention_fail_closed
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::v2_binds_evaluation_and_shares_branch_storage
+        PASS [   0.004s] codex-hepta-intelligence canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed
+        PASS [   0.005s] codex-hepta-intelligence canonical::tests::abstention_stops_before_context_and_evaluation
+        PASS [   0.010s] codex-hepta-bellman-operator world_model_v2::tests::confidence_radius_retains_precision_below_the_variance_quantum
+        PASS [   0.006s] codex-hepta-intelligence canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners
+        PASS [   0.004s] codex-hepta-intelligence canonical::tests::owner_generation_change_between_call_and_publication_fails_closed
+        PASS [   0.004s] codex-hepta-intelligence capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact
+        PASS [   0.004s] codex-hepta-intelligence capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan
+        PASS [   0.008s] codex-hepta-intelligence canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics
+        PASS [   0.004s] codex-hepta-intelligence capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics
+        PASS [   0.008s] codex-hepta-intelligence capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted
+        PASS [   0.004s] codex-hepta-intelligence capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements
+        PASS [   0.006s] codex-hepta-intelligence capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements
+        PASS [   0.007s] codex-hepta-intelligence capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject
+        PASS [   0.366s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::trust_window_tests::tabular_distribution_expiry_blocks_effective_publication_with_valid_signatures
+        PASS [   0.472s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::trust_window_tests::world_distribution_expiry_blocks_effective_publication_with_valid_signatures
+        PASS [   0.201s] codex-hepta-intelligence evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal
+        PASS [   0.305s] codex-hepta-intelligence evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes
+        PASS [   0.373s] codex-hepta-intelligence evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded
+        PASS [   0.075s] codex-hepta-intelligence ndu_stochastic_admission::tests::current_artifact_and_independent_evidence_compose_to_deny_all_admission
+        PASS [   0.005s] codex-hepta-intelligence neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority
+        PASS [   0.008s] codex-hepta-intelligence objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns
+        PASS [   0.005s] codex-hepta-intelligence objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot
+        PASS [   0.009s] codex-hepta-intelligence objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts
+        PASS [   0.075s] codex-hepta-intelligence ndu_stochastic_admission::tests::withdrawal_frontier_change_invalidates_previously_admitted_artifact
+        PASS [   0.452s] codex-hepta-intelligence evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage
+        PASS [   0.451s] codex-hepta-intelligence evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch
+        PASS [   0.005s] codex-hepta-intelligence pipeline::tests::full_shadow_path_is_ordered_and_authority_free
+        PASS [   0.008s] codex-hepta-intelligence pipeline::tests::invalid_budget_fails_before_any_port_call
+        PASS [   0.003s] codex-hepta-intelligence pipeline::tests::ledger_failure_overrides_advisory_decision
+        PASS [   0.026s] codex-hepta-intelligence outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append
+        PASS [   0.008s] codex-hepta-intelligence pipeline::tests::mixed_snapshot_rejects_before_next_stage
+        PASS [   0.003s] codex-hepta-intelligence pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision
+        PASS [   0.005s] codex-hepta-intelligence pipeline::tests::optional_neuron_outage_uses_bounded_fallback
+        PASS [   0.004s] codex-hepta-intelligence pipeline::tests::persisted_receipt_rejects_trace_mutation
+        PASS [   0.008s] codex-hepta-intelligence pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages
+        PASS [   0.003s] codex-hepta-intelligence pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt
+        PASS [   0.004s] codex-hepta-intelligence pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage
+        PASS [   0.003s] codex-hepta-intelligence pipeline::tests::required_objective_failure_is_terminal_and_receipted
+        PASS [   0.004s] codex-hepta-intelligence pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision
+        PASS [   0.003s] codex-hepta-intelligence pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement
+        PASS [   0.007s] codex-hepta-intelligence pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts
+        PASS [   0.003s] codex-hepta-intelligence pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage
+        PASS [   0.006s] codex-hepta-intelligence pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts
+        PASS [   0.003s] codex-hepta-intelligence pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation
+        PASS [   0.103s] codex-hepta-intelligence outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation
+        PASS [   0.003s] codex-hepta-intelligence pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt
+        PASS [   0.003s] codex-hepta-intelligence plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator
+        PASS [   0.003s] codex-hepta-intelligence plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap
+        PASS [   0.009s] codex-hepta-intelligence pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call
+        PASS [   0.122s] codex-hepta-intelligence outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit
+        PASS [   0.452s] codex-hepta-intelligence evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
+        PASS [   0.659s] codex-hepta-intelligence evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome
+        PASS [   0.233s] codex-hepta-intelligence plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor
+        PASS [   0.564s] codex-hepta-intelligence evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports
+        PASS [   0.194s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision
+        PASS [   0.355s] codex-hepta-intelligence plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context
+        PASS [   0.236s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision
+        PASS [   0.031s] codex-hepta-intelligence prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift
+        PASS [   0.031s] codex-hepta-intelligence prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input
+        PASS [   0.165s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_tampered_frontier_witness
+        PASS [   0.033s] codex-hepta-intelligence prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery
+        PASS [   0.043s] codex-hepta-intelligence prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization
+        PASS [   0.020s] codex-hepta-intelligence tests::canonical_candidate_limit_is_enforced
+        PASS [   0.436s] codex-hepta-intelligence plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append
+        PASS [   0.047s] codex-hepta-intelligence prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation
+        PASS [   0.008s] codex-hepta-intelligence tests::duplicate_candidate_is_rejected
+        PASS [   0.381s] codex-hepta-intelligence plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded
+        PASS [   0.005s] codex-hepta-intelligence tests::hard_veto_is_never_overridden
+        PASS [   0.006s] codex-hepta-intelligence tests::highest_eligible_candidate_is_selected_without_effect_authority
+        PASS [   0.042s] codex-hepta-intelligence prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed
+        PASS [   0.005s] codex-hepta-intelligence tests::maximum_candidate_receipt_is_canonical_and_digest_complete
+        PASS [   0.005s] codex-hepta-intelligence topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact
+        PASS [   0.005s] codex-hepta-intelligence vertical_tests::omitted_cognitive_read_evidence_fails_closed
+        PASS [   0.007s] codex-hepta-intelligence vertical_tests::candidate_outside_compiled_legal_actions_fails_closed
+        PASS [   0.014s] codex-hepta-intelligence tests::no_eligible_candidate_abstains
+        PASS [   0.010s] codex-hepta-intelligence vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile
+        PASS [   0.006s] codex-hepta-intelligence vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation
+        PASS [   0.009s] codex-hepta-intelligence vertical_tests::selected_objective_profile_digest_cannot_be_replaced
+        PASS [   0.005s] codex-hepta-intelligence vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority
+        PASS [   0.005s] codex-hepta-intelligence-eval closure::tests::eval_03_intersects_superiority_safety_retention_and_unlearning
+        PASS [   0.003s] codex-hepta-intelligence-eval closure::tests::eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout
+        PASS [   0.005s] codex-hepta-intelligence-eval closure::tests::evaluation_fails_candidate_when_interval_or_floor_does_not_pass
+        PASS [   0.004s] codex-hepta-intelligence-eval closure::tests::final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse
+        PASS [   0.014s] codex-hepta-intelligence vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::eval_04_rejects_role_collision_and_missing_future_windows
+        PASS [   0.072s] codex-hepta-intelligence prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation
+        PASS [   0.005s] codex-hepta-intelligence-eval closure::tests::final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::freezing_rejects_vacuous_or_invalid_metric_roles
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::independent_decision_consumes_bound_holdout_receipt
+        PASS [   0.040s] codex-hepta-intelligence topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::noninferiority_uses_direction_and_includes_the_registered_margin
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::preregistered_roles_allow_unchanged_safety_and_cost_within_budget
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::primary_superiority_has_strict_margins_without_q32_subtraction_overflow
+        PASS [   0.190s] codex-hepta-intelligence plasticity_product_tests::raw_signed_metrics_cannot_substitute_for_published_qualification
+        PASS [   0.004s] codex-hepta-intelligence-eval durable_holdout::tests::ambiguous_write_fences_the_handle
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout
+        PASS [   0.006s] codex-hepta-intelligence-eval durable_holdout::tests::durable_reopen_prevents_holdout_reuse
+        PASS [   0.010s] codex-hepta-intelligence-eval durable_holdout::tests::consumption_survives_a_distinct_process
+        PASS [   0.022s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_anchor_error_after_commit_poisoned_without_local_append
+        PASS [   0.068s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::time_policy_observer_and_future_collection_cannot_be_substituted
+        PASS [   0.008s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_capacity_rejects_before_external_reservation
+        PASS [   0.037s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_anchor_cas_rejects_stale_replicas_without_mutation
+        PASS [   0.004s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_reservation_with_failed_local_write_is_fail_closed
+        PASS [   0.003s] codex-hepta-intelligence-eval durable_holdout::tests::idempotent_retry_does_not_append_and_byte_corruption_rejects
+        PASS [   0.082s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::evaluator_and_observer_cannot_share_identity_key_credential_or_controller
+        PASS [   0.007s] codex-hepta-intelligence-eval durable_holdout::tests::lock_binding_cas_and_invalid_plan_do_not_mutate_storage
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::indeterminate_write_poison_requires_recovery_and_preserves_history
+        PASS [   0.003s] codex-hepta-intelligence-eval fenced_holdout::tests::stale_or_same_generation_different_fence_cannot_take_over
+        PASS [   0.011s] codex-hepta-intelligence-eval durable_holdout::tests::independent_anchor_rejects_old_backup_and_partial_tail
+        PASS [   0.003s] codex-hepta-intelligence-eval fenced_holdout::tests::newer_generation_fences_out_the_old_writer
+        PASS [   0.004s] codex-hepta-intelligence-eval fenced_holdout::tests::state_digest_changes_on_fence_takeover_without_rewriting_journal_head
+        PASS [   0.003s] codex-hepta-intelligence-eval fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback
+        PASS [   0.003s] codex-hepta-intelligence-eval holdout_journal::tests::eval_05_holdout_journal_rejects_stale_head_and_keeps_retry_idempotent
+        PASS [   0.008s] codex-hepta-intelligence-eval fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix
+        PASS [   0.007s] codex-hepta-intelligence-eval holdout_journal::tests::capacity_failure_does_not_consume_holdout_or_break_full_journal_retry
+        PASS [   0.011s] codex-hepta-intelligence-eval fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit
+        PASS [   0.006s] codex-hepta-intelligence-eval holdout_journal::tests::eval_05_holdout_journal_reopens_exactly
+        PASS [   0.084s] codex-hepta-intelligence-eval closure::tests::signed_evaluation_binds_metrics_roles_and_host_identities
+        PASS [   0.027s] codex-hepta-intelligence-eval ndu_well_posedness::tests::complete_signed_independent_evidence_is_accepted_without_authority
+        PASS [   0.029s] codex-hepta-intelligence-eval ndu_convergence::tests::tampered_evaluator_payload_cannot_self_certify
+        PASS [   0.037s] codex-hepta-intelligence-eval ndu_convergence::tests::independent_signed_evidence_can_issue_accepted_deny_all_certificate
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::confidence::tests::confidence_plan_requires_prespecified_assumptions_and_budget
+        PASS [   0.134s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::signed_observed_windows_pass_only_with_full_statistical_bundle
+        PASS [   0.028s] codex-hepta-intelligence-eval ndu_well_posedness::tests::conditional_mean_threshold_and_expiry_fail_closed
+        PASS [   0.003s] codex-hepta-intelligence-eval ope::confidence::tests::outward_integer_radius_has_an_exact_scalar_oracle
+        PASS [   0.050s] codex-hepta-intelligence-eval ndu_convergence::tests::spectral_or_residual_failure_rejects_but_missing_support_is_unavailable
+        PASS [   0.017s] codex-hepta-intelligence-eval ope::confidence::tests::merging_dependent_rows_widens_intervals
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::confidence::tests::point_estimate_failures_cannot_be_hidden_by_intervals
+        PASS [   0.019s] codex-hepta-intelligence-eval ope::confidence::tests::rejects_missing_duplicate_unknown_and_single_cluster_assignments
+        PASS [   0.033s] codex-hepta-intelligence-eval ope::confidence::tests::independent_constant_rows_have_nonzero_uncertainty
+        PASS [   0.018s] codex-hepta-intelligence-eval ope::confidence::tests::row_and_assignment_order_are_canonical
+        PASS [   0.034s] codex-hepta-intelligence-eval ope::confidence::tests::multiplicity_and_stricter_alpha_never_narrow_bounds
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::distribution_and_weight_gates_are_enforced
+        PASS [   0.023s] codex-hepta-intelligence-eval ope::confidence::tests::repeating_rows_within_clusters_does_not_manufacture_precision
+        PASS [   0.008s] codex-hepta-intelligence-eval ope::confidence::tests::unchosen_actions_also_have_to_respect_the_weight_ceiling
+        PASS [   0.003s] codex-hepta-intelligence-eval ope::tests::documented_ope_golden_vector_is_exact
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::duplicate_observations_cannot_inflate_sample_count
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::effective_sample_size_cannot_be_replaced_by_raw_row_count
+        PASS [   0.003s] codex-hepta-intelligence-eval ope::tests::exact_weight_ceiling_cannot_be_weakened_by_q32_rounding
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::incomplete_candidates_and_unknown_choice_are_rejected
+        PASS [   0.017s] codex-hepta-intelligence-eval ope::confidence::tests::unresolved_weight_denominator_returns_full_reward_interval
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::missing_evidence_and_out_of_range_outcomes_are_rejected
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::nonzero_outcome_model_uses_residual_correction
+        PASS [   0.060s] codex-hepta-intelligence-eval ndu_well_posedness::tests::missing_support_is_unavailable_and_failed_assumption_rejects
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::outcome_after_frozen_watermark_is_rejected
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::row_and_candidate_permutations_preserve_every_receipt_field
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::pending_outcome_is_not_zero_reward
+        PASS [   0.003s] codex-hepta-intelligence-eval ope::tests::tiny_supported_weights_retain_exact_ess
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::scaled_ratio_preserves_exact_floor_and_ties_even_at_wide_bounds
+        PASS [   0.004s] codex-hepta-intelligence-eval ope::tests::signed_rounding_is_ties_to_even
+        PASS [   0.003s] codex-hepta-intelligence-eval ope::tests::unsupported_unchosen_action_is_also_rejected
+        PASS [   0.039s] codex-hepta-intelligence-eval ope::tests::exact_ess_floor_cannot_be_weakened_by_q32_rounding
+        PASS [   0.026s] codex-hepta-intelligence-eval product_runner::tests::product_runner_never_releases_holdout_before_fenced_consumption
+        PASS [   0.011s] codex-hepta-intelligence-eval self_evolution_selection::tests::receipt_rejects_generation_rewind_and_baseline_drift
+        PASS [   0.038s] codex-hepta-intelligence-eval product_runner::tests::released_input_resource_limits_precede_comparison_sorting_and_fit
+        PASS [   0.012s] codex-hepta-intelligence-eval self_evolution_selection::tests::signing_payload_binds_predecessor_candidate_and_longitudinal_policy
+        PASS [   0.009s] codex-hepta-intelligence-eval sequential::tests::deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor
+        PASS [   0.029s] codex-hepta-intelligence-eval sequential::tests::full_pilot_horizon_preserves_the_undiscounted_terminal_return
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::horizon_and_cumulative_limits_are_enforced
+        PASS [   0.008s] codex-hepta-intelligence-eval sequential::tests::incomplete_or_unobserved_trajectories_are_insufficient_not_zero_reward
+        PASS [   0.069s] codex-hepta-intelligence-eval self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions
+        PASS [   0.004s] codex-hepta-intelligence-eval sequential::tests::ordering_is_canonical_but_history_and_cluster_binding_are_not_erased
+        PASS [   0.004s] codex-hepta-intelligence-eval sequential::tests::support_is_checked_at_each_depth_not_only_episode_entry
+        PASS [   0.009s] codex-hepta-intelligence-eval sequential::tests::terminal_convention_prevents_counting_terminal_value_twice
+        PASS [   0.008s] codex-hepta-intelligence-eval sequential::tests::tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit
+        PASS [   0.003s] codex-hepta-intelligence-eval sequential::tests::zero_support_and_tiny_behavior_probability_reject_before_overflow
+        PASS [   0.009s] codex-hepta-intelligence-eval sequential::tests::two_step_backward_dr_matches_nine_tenths_and_reports_depth_support
+        PASS [   0.036s] codex-hepta-intelligence-eval temporal_evaluation::tests::actual_fitted_predictions_feed_the_doubly_robust_estimator
+        PASS [   0.051s] codex-hepta-intelligence-eval signed_qualification_e2e_tests::signed_qualification_e2e_binds_plan_holdout_roles_and_trust
+        PASS [   0.176s] codex-hepta-intelligence-eval product_runner::tests::rejected_published_qualification_cannot_be_relabelled_eligible
+        PASS [   0.048s] codex-hepta-intelligence-eval temporal_evaluation::tests::all_input_orderings_preserve_the_complete_receipt
+        PASS [   0.044s] codex-hepta-intelligence-eval temporal_evaluation::tests::caller_prediction_fields_cannot_override_the_training_model
+        PASS [   0.161s] codex-hepta-intelligence-eval sequential::tests::exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding
+        PASS [   0.033s] codex-hepta-intelligence-eval temporal_evaluation::tests::composite_digest_binds_every_plan_scope
+        PASS [   0.010s] codex-hepta-intelligence-eval temporal_evaluation::tests::composite_digest_matches_canonical_golden_vector
+        PASS [   0.013s] codex-hepta-intelligence-eval temporal_evaluation::tests::dependent_episodes_cannot_be_split_between_clusters
+        PASS [   0.009s] codex-hepta-intelligence-eval temporal_evaluation::tests::observed_outcomes_must_follow_the_held_out_decision
+        PASS [   0.010s] codex-hepta-intelligence-eval temporal_evaluation::tests::independently_revised_subplan_can_be_resealed_without_aliasing_other_digests
+        PASS [   0.224s] codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+        PASS [   0.016s] codex-hepta-intelligence-eval temporal_evaluation::tests::dependent_principals_cannot_be_split_between_clusters
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_evaluation::tests::validation_principals_cannot_enter_training
+        PASS [   0.008s] codex-hepta-intelligence-eval temporal_evaluation::tests::rejects_changed_legal_action_sets
+        PASS [   0.003s] codex-hepta-intelligence-eval temporal_fold::tests::mean_rounding_uses_ties_to_even
+        PASS [   0.004s] codex-hepta-intelligence-eval temporal_fold::tests::fits_training_mean_without_validation_labels
+        PASS [   0.010s] codex-hepta-intelligence-eval temporal_evaluation::tests::rejects_nonbijective_cohort_joins
+        PASS [   0.004s] codex-hepta-intelligence-eval temporal_fold::tests::model_identity_does_not_depend_on_validation_features
+        PASS [   0.003s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_all_training_validation_lineage_overlaps
+        PASS [   0.003s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_late_training_outcomes_and_early_validation
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::ordering_does_not_change_receipts
+        PASS [   0.004s] codex-hepta-intelligence-eval temporal_fold::tests::unsupported_actions_and_insufficient_samples_are_not_imputed
+        PASS [   0.004s] codex-hepta-intelligence-eval tests::eligible_is_not_promotion
+        PASS [   0.008s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_duplicates_missing_evidence_and_invalid_rewards
+        PASS [   0.003s] codex-hepta-intelligence-eval tests::every_registered_threshold_is_enforced
+        PASS [   0.004s] codex-hepta-intelligence-eval tests::hard_regression_is_rejected
+        PASS [   0.003s] codex-hepta-intelligence-eval tests::receipt_digest_binds_threshold_metadata_in_canonical_order
+        PASS [   0.003s] codex-hepta-intelligence-eval tests::self_evaluation_is_rejected
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::missing_support_is_insufficient
+        PASS [   0.004s] codex-hepta-intelligence-eval tests::registered_hard_regression_allowance_is_enforced_exactly
+        PASS [   0.003s] codex-hepta-intelligence-eval tests::unrepresentable_metric_deltas_fail_closed
+        PASS [   0.479s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows
+        PASS [   0.329s] codex-hepta-intelligence-eval product_runner::tests::longitudinal_qualification_binds_actual_observed_times_counts_and_source_cut
+        PASS [   1.669s] codex-hepta-intelligence evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port
+────────────
+     Summary [   2.172s] 324 tests run: 324 passed, 2 skipped

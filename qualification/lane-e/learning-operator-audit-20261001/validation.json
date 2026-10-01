@@ -1,0 +1,440 @@
+{
+  "apiSurface": {
+    "cases": 14,
+    "passed": true,
+    "path": "qualification/lane-e/learning-operator-audit-20261001/api-surface.json"
+  },
+  "claimBoundary": "Local scoped observations only; no protected workflow, integrated product, independent scientific or deployment qualification. Each log retains its actual run scope.",
+  "configuration": {
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "profile": "unoptimized with debug information and incremental disabled",
+    "rust": "1.95.0"
+  },
+  "engineeringQualified": false,
+  "localAuditHistory": {
+    "gitBlob": "3f2d8d244cda60b8616cceb6e2041e146da06468",
+    "path": "qualification/lane-e/learning-operator-audit-20261001/local-audit-history.bundle",
+    "prerequisites": [
+      "2f34f3a7d51c39463d8010d5b2c35612cb748319",
+      "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3"
+    ],
+    "sha256": "1bce1e3ae966d8808c5be43dde74979ec888605bacebd18523bc25ef045eedc2"
+  },
+  "module": "learning.operator",
+  "navigationRevision": "d0131ff85948503e448c2bb6a1de1501edda9513",
+  "navigationRevisionNamespace": "archived-local-audit-history",
+  "observations": [
+    {
+      "command": "just test --locked -p codex-hepta-bellman-operator",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-test-default.log",
+      "logSha256": "c6774573c7e0e502d9b0094a71567b0c87f1a80c599cae21606619f83be0d38a",
+      "name": "default-tests",
+      "observedCount": 107,
+      "status": "pass"
+    },
+    {
+      "command": "just test --locked -p codex-hepta-bellman-operator --features qualification-unverified-input",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-test-compatibility.log",
+      "logSha256": "19275f22c1ead80509d4be7127d5707c240e0c9bce701bc595b0992516402bc7",
+      "name": "compatibility-tests",
+      "observedCount": 107,
+      "status": "pass"
+    },
+    {
+      "command": "cargo check --locked -p codex-hepta-bellman-operator --all-targets",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-check-default.log",
+      "logSha256": "a71b64e601b4ecac45c98b06947bb13964cd13c4700b43a27164f895b5b67224",
+      "name": "default-check",
+      "revision": "f01103b381656eec58d881d7821c93f52c6f2381",
+      "status": "pass"
+    },
+    {
+      "command": "cargo check --locked -p codex-hepta-bellman-operator --all-targets --features qualification-unverified-input",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-check-compatibility.log",
+      "logSha256": "a9600619ad129eea613ece3d439172e78289fa7bfad407c39382fc37269071fb",
+      "name": "compatibility-check",
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy --locked -p codex-hepta-bellman-operator --all-targets -- -D warnings",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-clippy-default.log",
+      "logSha256": "575a753200809cb3c4a53db6d61e3f89df3f39fab49a8bb93c69baa3f6b1012b",
+      "name": "default-clippy",
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy --locked -p codex-hepta-bellman-operator --all-targets --features qualification-unverified-input -- -D warnings",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-clippy-compatibility.log",
+      "logSha256": "78049da05ded2f9936ce631fab1bc542673ae366d9d9dd215f579ad1072f76f8",
+      "name": "compatibility-clippy",
+      "status": "pass"
+    },
+    {
+      "command": "just test --locked -p codex-hepta-bellman-operator full_v3_qualification_path_profile --run-ignored only",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-owner-profile.log",
+      "logSha256": "f3f7b6abd12d4dfe3a78fdc147e1ced220eca4b5b713656dd6c50c2979078098",
+      "name": "owner-profile",
+      "observedCount": 1,
+      "status": "pass"
+    },
+    {
+      "command": "just test --locked -p codex-hepta-bellman-operator authoritative_performance_matrix_v1 --profile learning-operator-performance --run-ignored only --test-threads=1 --success-output immediate",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/operator-performance-long.log",
+      "logSha256": "f8808cee048700c1b9c197cac0e89d7337c268acf235ad4539790ddb9d440fb3",
+      "name": "performance-regression",
+      "observedCount": 1,
+      "status": "pass"
+    },
+    {
+      "command": "just --justfile <scratch>/coordinator-harness/justfile test --manifest-path <scratch>/coordinator-harness/Cargo.toml --config-file <scratch>/coordinator-harness/.config/nextest.toml",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/coordinator-test.log",
+      "logSha256": "119609b29271249d4b16b00cd628e6fdfa8f1863fb3f299321870f6afa26a4a4",
+      "name": "coordinator-source-harness",
+      "observedCount": 12,
+      "status": "pass"
+    },
+    {
+      "command": "python3 scripts/test_hepta_lane_e_closure.py",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/python-guard-test.log",
+      "logSha256": "c42f0f24eb75b29d130625f016867511d513cceb2760fe3bc1f2c4faa1019902",
+      "name": "closed-world-guards",
+      "observedCount": 15,
+      "status": "pass"
+    },
+    {
+      "command": "python3 scripts/test_hepta_learning_operator_evidence.py",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/evidence-guard-test.log",
+      "logSha256": "1e3ef5cdcf021847fc849860f33132e425ab5bb7d1cc5a1c30c789e8e346e439",
+      "name": "evidence-tampering",
+      "observedCount": 13,
+      "status": "pass"
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts/tests -p test_hepta_ci_scope.py",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/ci-scope-test.log",
+      "logSha256": "c7ad40a18fdf84fca22385aa3a849365d3087b42bf0446420e6ed6d95d44b996",
+      "name": "ci-scope",
+      "observedCount": 18,
+      "status": "pass"
+    },
+    {
+      "command": "python3 scripts/hepta-learning-operator-contract.py verify",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/source-doc-contract.log",
+      "logSha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69",
+      "name": "source-doc-contract",
+      "status": "pass"
+    },
+    {
+      "command": "python3 scripts/hepta-learning-operator-mutation.py --output <scratch>/mutation.json",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/mutation.log",
+      "logSha256": "f63264cad05c62786f245d25aac1ed4e7129ea8ce0676cffbbd92f8144431df3",
+      "name": "mutations",
+      "observedCount": 9,
+      "status": "pass"
+    },
+    {
+      "command": "cargo check --locked -p codex-hepta-agentd --lib",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/agentd-check.log",
+      "logSha256": "dfc2ad1311a93c391b81d5f996248b79fb520a60b5df8f4f0276fa40b2c226cd",
+      "name": "agentd-check",
+      "status": "blocked"
+    },
+    {
+      "command": "bazel batch query/build parity attempt; see log",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/bazel-parity.log",
+      "logSha256": "2bcc3885060b597d14d48f2c6e9b8500041fbe55ee37ac4318cf77322e9389f8",
+      "name": "bazel-execution",
+      "status": "blocked"
+    },
+    {
+      "command": "python3 scripts/hepta-lane-e-closure.py verify",
+      "log": "qualification/lane-e/learning-operator-audit-20261001/lane-e-verification.log",
+      "logSha256": "fd90c57f8a4bae5e61baef51ec024d3136010fb3d5018bd82102fca3535e3e86",
+      "name": "lane-e",
+      "status": "blocked"
+    }
+  ],
+  "operatorSourceTree": "c93ffd8a852fc2f7491a60c18ee59b84f2915b13",
+  "postFormatting": {
+    "change": "Test-only re-export spelling made formatter-stable; runtime and default public API unchanged. All-target default compilation and formatting check passed after this edit.",
+    "checkLog": "qualification/lane-e/learning-operator-audit-20261001/operator-check-default.log",
+    "formatLog": "qualification/lane-e/learning-operator-audit-20261001/operator-format-check.log",
+    "operatorSourceTree": "cf91fa80128e954f2eeb3b6e6b24bd1fbbd8709e",
+    "revision": "f01103b381656eec58d881d7821c93f52c6f2381",
+    "revisionNamespace": "archived-local-audit-history"
+  },
+  "productLoopWired": false,
+  "qualificationClaim": false,
+  "remainingBlockers": [
+    "real owner-port/runtime composition and durable reconciliation",
+    "canonical wire adapters/parity",
+    "learning.eval public raw qualification bypass in real callers",
+    "full Agentd/Bazel execution blocked by disk capacity",
+    "unified authoritative/merge CI and independent scientific/target-host acceptance"
+  ],
+  "remoteSourceSnapshot": {
+    "exactlyMatchesLocalCandidate": "a318fec911d96af3ca755fd7c5b7fac8eb03a4fa",
+    "sha": "986eae8438285bf6d9a97e5f12ab6a3b1240afea",
+    "tree": "6352a2bdf4785ba1e18ffc9be1124b10b4f871e7"
+  },
+  "schema": "hepta.learning-operator-adversarial-audit-observations.v1",
+  "shippingCapacityClaim": false,
+  "sourceObjects": [
+    {
+      "gitBlob": "8e0477835a069ccfb3e5cd4174bc50f33cb52074",
+      "path": "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs",
+      "sha256": "07a4494d9696f4f37dbee352ba80382a6eb932108218ee75791a0f142c434a02"
+    },
+    {
+      "gitBlob": "462e4e39ae7862339f6c9a2986d7023883c04959",
+      "path": "codex-rs/hepta-agentd/src/learning_operator_coordinator_rollback.rs",
+      "sha256": "f0be2d3859e2633a817c06921e13841b510c78fb101675a530a0e8208255b48e"
+    },
+    {
+      "gitBlob": "019c9d6451d2241655a94568331ec128eb3186d1",
+      "path": "codex-rs/hepta-agentd/src/learning_operator_coordinator_tests.rs",
+      "sha256": "08201d8799e067822f115dbf581e6d793e7555a9f1c137f89ff891e14c8a987a"
+    },
+    {
+      "gitBlob": "642a42e00934abe91f1b76c2d171487db289904c",
+      "path": "codex-rs/hepta-agentd/src/learning_operator_coordinator_types.rs",
+      "sha256": "7edaf1dc359086a3d39fb0504b6b43a90068319577fe7e4c8eaf53081123a482"
+    },
+    {
+      "gitBlob": "b070b886496742aa66503e68e024b3180d32c3b3",
+      "path": "codex-rs/hepta-agentd/src/learning_operator_coordinator_validation.rs",
+      "sha256": "6d458042415504ab7088821782a9fc922c921b950294ec571b6a385a0a5bb348"
+    },
+    {
+      "gitBlob": "9b6f9fa93b2a69827d6f5b89f96389490d830df6",
+      "path": "codex-rs/hepta-bellman-operator/src/admission.rs",
+      "sha256": "513800d02c6bd48dfd4e27bfc7eee3d4a89a379cbd618b6ec704b805f4e67acd"
+    },
+    {
+      "gitBlob": "b051815e3f38374fd4a3261d5e977de0a897e47c",
+      "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+      "sha256": "56ea8013cb669221199a215f124ae72937bc7fa20eda187d65a660fbee4dd1c4"
+    },
+    {
+      "gitBlob": "ed4b15661af4628e650f82f62c6dc72573f23eea",
+      "path": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
+      "sha256": "b6643ada77df0b4ebdc072db3996b82f5797664f50bfd5115ac3e754f8596338"
+    },
+    {
+      "gitBlob": "d89e2fd5f024b70e31174f7de470847ea80e3fba",
+      "path": "codex-rs/hepta-bellman-operator/src/authoritative_lib.rs",
+      "sha256": "388d05423834c333021a802d3f487b3c454dbea2618cc4d56c2c3870483a9ed2"
+    },
+    {
+      "gitBlob": "0a9b1036bf10cfa43c2a00f1f66fdddb02ccfde2",
+      "path": "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs",
+      "sha256": "686f7e1b829122875be7db19ff7a22325b9e57f6187b87a477cf40de07520bb5"
+    },
+    {
+      "gitBlob": "5367187a8c0b8dbdd9fac7bff456df42237267fd",
+      "path": "codex-rs/hepta-bellman-operator/src/budget.rs",
+      "sha256": "a595e50afaa50ba1ecf0879082823e2d8040aafc372bda2dc5486692c46235d5"
+    },
+    {
+      "gitBlob": "98f5a6474563526177dec5d50e8a93406f3b5477",
+      "path": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
+      "sha256": "657b2bf09ca375079c5f5fb67a57ba19d0ff3d30c77a37d1b1d93e56a377ca1c"
+    },
+    {
+      "gitBlob": "8863def5313c54f22636c828fe4d3740c32fe711",
+      "path": "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
+      "sha256": "f053227cccd61603818457b007044b28e56c9e957d72f81bd3f1105f4f844046"
+    },
+    {
+      "gitBlob": "53777d676b9280c787eebbad9b2c3a5c58bd284c",
+      "path": "codex-rs/hepta-bellman-operator/src/final_use.rs",
+      "sha256": "8fcbd9210c0842dd56807ab5adc255e2aee6944ff8ea95acb482d2d8d51ce1a6"
+    },
+    {
+      "gitBlob": "9aa6b2c54e56585f3734e591117b210e9d8a264c",
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
+      "sha256": "8746ab49e35fb941d9429f46ca1eaf0927b95f7f9eaa43ca5f15812a7586097e"
+    },
+    {
+      "gitBlob": "8223d8920bb38edc39bf0f7e082ec931bfd091ec",
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_selected.rs",
+      "sha256": "aba3a44b8032ed79583c92da6aa141f46a97847a161374d05651508aa722eb4a"
+    },
+    {
+      "gitBlob": "d46aa975a5554a9bd5e4de32f946ab4bc47ac5d3",
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_tests.rs",
+      "sha256": "523894a87ed5bf0b31344f56001efc5fc24995cfce007e8e3059357e891f3b76"
+    },
+    {
+      "gitBlob": "b985ed9526813892c43f992808a5f810a3937915",
+      "path": "codex-rs/hepta-bellman-operator/src/learned.rs",
+      "sha256": "c8ff03fccf3d7b6ef218904a0520922f2c60aafec5c884536356c386e92dccb4"
+    },
+    {
+      "gitBlob": "316d74d4c1c20b6a17e612704b26ec977e5e0b48",
+      "path": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "sha256": "7d0f662282018651b2874d68e4b8726d18038601531901a86f27d66a350306b6"
+    },
+    {
+      "gitBlob": "742e01730ef403817aea09a4f36f90eafda114cc",
+      "path": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+      "sha256": "a2335adbaab3d1b118d8c2891696ff5474ca6db8a33cadb92fd33a4dd23af1e2"
+    },
+    {
+      "gitBlob": "72d1d4243cf3f8835f19175f341d2a4a58d003ec",
+      "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
+      "sha256": "08d96bddb4c613479a6f6037491a998ab62d591c0f5295c9053697b2c4f4af52"
+    },
+    {
+      "gitBlob": "5d3dd16514647a7e45e61066924735d260c0bdc6",
+      "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+      "sha256": "cfb469f071588c1ec1cddde6462e56f122135e8e3e75c2527e036c6b7822eee2"
+    },
+    {
+      "gitBlob": "914f6d6cb7d35b9e5c14bed350babe4864239eb3",
+      "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "sha256": "12da8e6aad0e4a21ae097a8f5d8eca74cdcdd7cd4f0fc6425d5eadcc0411538e"
+    },
+    {
+      "gitBlob": "1914ad23a7c3871a1f351709865c6abdeff54f2d",
+      "path": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
+      "sha256": "50b26b8d33826c9a95cd52393cc47148e6ac63ee9a5b286531807e0f6a3ed7fb"
+    },
+    {
+      "gitBlob": "f0df522dad764b48ee638fea946a2ef7643673ef",
+      "path": "codex-rs/hepta-bellman-operator/src/owner_dataset_expiry_tests.rs",
+      "sha256": "8ac4dc140081f6f0f5e511f64867c1e9579c2c114ee5ce692a8a9ed8635734d0"
+    },
+    {
+      "gitBlob": "c89ef477ea17424bee5e568289afa88e2ba554d8",
+      "path": "codex-rs/hepta-bellman-operator/src/owner_dataset_tests.rs",
+      "sha256": "d08600e7de89e968c3294059f1df76879824afb39858cd4ff64849a04fa9a100"
+    },
+    {
+      "gitBlob": "1248514b119ac603c24b6e6f49bfd72c82f589a4",
+      "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+      "sha256": "1990547679d6acf3e992a5252bdbe92bc4120f06cb550172adff3a1341d9a15e"
+    },
+    {
+      "gitBlob": "abc2091e915e49d9f61c22ac4600c3f412347bd0",
+      "path": "codex-rs/hepta-bellman-operator/src/profiles.rs",
+      "sha256": "6cdfe7ea7832114398e32079604606874b1813df107146e9bfa5b6b77521074b"
+    },
+    {
+      "gitBlob": "4c3d6b80134a1e2487734268278b5fb9fd571b3b",
+      "path": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "sha256": "3f53773db07d97e626e73b535c7d856a37aebc5d0fa6a0e272ea3c6431b1b73a"
+    },
+    {
+      "gitBlob": "552d8345591b26403bd673f3f580748e70ec000f",
+      "path": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+      "sha256": "7f43281b58f64ed1ee55910bb1072d96a01d35c4969a2b2b37d2d85654df4ad6"
+    },
+    {
+      "gitBlob": "a3429eb219626f06f75f431aa9788effdbaa0b78",
+      "path": "codex-rs/hepta-bellman-operator/src/row_commitment.rs",
+      "sha256": "18e1da19c8ca0132c315c78ad87a9d8e0735ea6ff4ea28af6a078ebe76ac5923"
+    },
+    {
+      "gitBlob": "65f4626f9f384c8283f4dd1c6aa098b41e33483b",
+      "path": "codex-rs/hepta-bellman-operator/src/sensor_core_qualification.rs",
+      "sha256": "93325eba52e3a83137bb3fa6751440d4fbcd77d3de0ea7063b04be54e6ab351e"
+    },
+    {
+      "gitBlob": "2dce191baadb4e47aa6637466e0e1caa2b6494bd",
+      "path": "codex-rs/hepta-bellman-operator/src/sensor_core_v2.rs",
+      "sha256": "f6b2d48c78b42528950efdec50cb1c79136a357ffe31626103374a4e5a82e69a"
+    },
+    {
+      "gitBlob": "acadd1eba1c7f5de55345bf7b096dd6222e06a71",
+      "path": "codex-rs/hepta-bellman-operator/src/tabular_v2.rs",
+      "sha256": "5021e9d02c3f35355d8c7000dfc2578ce445cc2ea9d0c7e85a620cc01330ea16"
+    },
+    {
+      "gitBlob": "2407c8768c8c5ebee151f695a1390539b63d3615",
+      "path": "codex-rs/hepta-bellman-operator/src/terminal_v3.rs",
+      "sha256": "33bbeced0fcd9c69d47dedb272723dfc050a4a241c4cf147a2d7a5cccc8ab6af"
+    },
+    {
+      "gitBlob": "1a6ee799f4091a4f8aaa003d0d2601570838cc2c",
+      "path": "codex-rs/hepta-bellman-operator/src/training_preflight.rs",
+      "sha256": "b2b293ea9851cb8094378b57f075abfc2b1de12ae5b792ae08bc37e3a5314ce5"
+    },
+    {
+      "gitBlob": "923d3bbc6dd7c796bc5f9889a446b6432a6af256",
+      "path": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "sha256": "af1fb4cd3f77e20741060b49b7ff89a7b93ebeb408fbd4a9a5840209e192f0af"
+    },
+    {
+      "gitBlob": "9579a52ae77cbef3ad8f6e38a917d1a921b6b838",
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+      "sha256": "ae8fe0a84d90ad716a4bee23a67a7bba9a6a27ea59edaeed84c5cd80d78c8e16"
+    },
+    {
+      "gitBlob": "dcd09c35a65febc7be32b12027bf84401caf74f6",
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_v2.rs",
+      "sha256": "5b6ca5b28871e75ab89df009e8dfac61d0884e3246e9942c853dab7964da9801"
+    },
+    {
+      "gitBlob": "3e355587e84ac48a0c3dcb2692a523129226e9cf",
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_v2_integrity.rs",
+      "sha256": "741f0050c4f8834ba0251c644575e056e2a2b930dfb68d652d5ff552e2e649d8"
+    },
+    {
+      "gitBlob": "734a9437f771d9d48317ff78391b8cde55488def",
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_v2_memory.rs",
+      "sha256": "b9e71a4eb418c74c5f506d9c81d4d190767e51747fe2330295ecb8cae5f66b6e"
+    },
+    {
+      "gitBlob": "24922f6742c888eb5dcdf0087084748b53b463d1",
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_v2_tests.rs",
+      "sha256": "ad8ba3f1603893f481d1370866b67504d88cf2dd91ee55032950676bf2bb78fe"
+    },
+    {
+      "gitBlob": "18bb9cbe2ed793edb4322b2165168b5c7533bacd",
+      "path": "scripts/hepta-learning-operator-api-surface.py",
+      "sha256": "b29c6afd6e2ab787718f4fa7af3affd00e0cbb9e5b24dbcbb67b5ca4c6dc03a5"
+    },
+    {
+      "gitBlob": "128103ba30ad5c6de0ec8d6bc7eb45edfa398497",
+      "path": "scripts/hepta-learning-operator-authoritative.sh",
+      "sha256": "ee1cd435c58ac46eeadd7e5e5d4eb0553cf0e217539c1242c0a5da67e5149d8f"
+    },
+    {
+      "gitBlob": "010508fe2415da9ce942c20ef8bc60f4532718a8",
+      "path": "scripts/hepta-learning-operator-contract.py",
+      "sha256": "c35623809e0f6199bb8561f56fab437456aec3d659923b7ec7633be2034ab95d"
+    },
+    {
+      "gitBlob": "3596cd5c03da0b4718096ec4afe8b2b7b9608950",
+      "path": "scripts/hepta-learning-operator-evidence.py",
+      "sha256": "56b51a288712a2a1cb490adf44bb5e6335e6a5a976a2214508ec79143639b853"
+    },
+    {
+      "gitBlob": "5bcfd80430637797cc6574902486394c6df47ff7",
+      "path": "scripts/hepta-learning-operator-map.py",
+      "sha256": "379c882027b7a34959b75b928f4fafff76be6488c428b3501ea9e2411c3bfda0"
+    },
+    {
+      "gitBlob": "a392dd09002516f5eb848d81b21e9003b07f1f9d",
+      "path": "scripts/hepta-learning-operator-mutation.py",
+      "sha256": "97511c69d3026dade29c8dae34c5d5390e318ae4550a1db95a9d469371357693"
+    },
+    {
+      "gitBlob": "b8ebcd6aeb3e510e65b601fd4be6f7459d08e9f8",
+      "path": "scripts/hepta-learning-operator-readiness.py",
+      "sha256": "b8623476bf46b5e235c49791c8eef473eecbecc6e3e44e5e4679b826ed6d46cc"
+    },
+    {
+      "gitBlob": "d290c8ba5d980cbc0d5ef150a364f0f4c4644307",
+      "path": "scripts/hepta-learning-operator-receipt.py",
+      "sha256": "7823f735a75dad1657cf62d68420a199f119d55ec12d37bd2f32500c923bfd97"
+    },
+    {
+      "gitBlob": "d6839ba8c29900f3ddad0a0a09348a48856a2c94",
+      "path": "scripts/hepta-learning-operator-stage.py",
+      "sha256": "701d8a52e15c50e39b6b610739b5dfec1b38b1139da2fcf92651623a9cbb6b70"
+    }
+  ]
+}

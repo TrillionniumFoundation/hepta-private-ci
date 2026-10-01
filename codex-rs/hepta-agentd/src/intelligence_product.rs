@@ -627,6 +627,8 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
 }
 
+#[path = "learning_operator_product_persistence.rs"]
+mod learning_operator_persistence;
 #[path = "intelligence_product_runner.rs"]
 mod runner;
 

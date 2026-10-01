@@ -1,0 +1,51 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-shadow-qualification v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-shadow-qualification)
+    Finished `test` profile [unoptimized] target(s) in 7.00s
+────────────
+ Nextest run ID e9713924-fd81-4295-a6e6-f0423ca4f0cf with nextest profile: local
+    Starting 32 tests across 1 binary
+        PASS [   0.009s] codex-hepta-shadow-qualification driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm
+        PASS [   0.009s] codex-hepta-shadow-qualification driver_tests::app_and_mcp_fsm_persist_before_every_sample_write
+        PASS [   0.010s] codex-hepta-shadow-qualification child_tests::persists_inbound_wire_before_rejecting_invalid_json
+        PASS [   0.012s] codex-hepta-shadow-qualification importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint
+        PASS [   0.013s] codex-hepta-shadow-qualification importer_tests::inventories_all_broken_samples_before_checkpointing_failure
+        PASS [   0.009s] codex-hepta-shadow-qualification loopback_tests::persists_exact_http_requests_and_responses
+        PASS [   0.008s] codex-hepta-shadow-qualification observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens
+        PASS [   0.018s] codex-hepta-shadow-qualification durable_tests::rejects_group_or_other_runtime_permissions
+        PASS [   0.006s] codex-hepta-shadow-qualification observer_tests::returns_tokens_only_after_four_private_durable_pairs
+        PASS [   0.007s] codex-hepta-shadow-qualification oracle_tests::loads_the_embedded_frozen_oracle
+        PASS [   0.012s] codex-hepta-shadow-qualification observer_tests::rejects_noncanonical_input_before_writing_an_artifact
+        PASS [   0.006s] codex-hepta-shadow-qualification oracle_tests::rejects_nonofficial_or_mutated_oracle_bytes
+        PASS [   0.007s] codex-hepta-shadow-qualification product_receipts_tests::validates_exact_row_and_rejects_index_drift
+        PASS [   0.010s] codex-hepta-shadow-qualification request_tests::parses_the_frozen_app_server_pair
+        PASS [   0.008s] codex-hepta-shadow-qualification request_tests::parses_the_frozen_mcp_pair
+        PASS [   0.007s] codex-hepta-shadow-qualification runtime_tests::creates_private_surface_layouts_and_strict_configs
+        PASS [   0.008s] codex-hepta-shadow-qualification request_tests::rejects_noncanonical_or_multiline_requests
+        PASS [   0.004s] codex-hepta-shadow-qualification runtime_tests::rejects_an_unpinned_product_binary
+        PASS [   0.020s] codex-hepta-shadow-qualification report_tests::writes_an_exact_report_with_no_authority
+        PASS [   0.009s] codex-hepta-shadow-qualification semantic_verifier_tests::normalizes_dynamic_identity_and_matches_oracle_bytes
+        PASS [   0.026s] codex-hepta-shadow-qualification report_tests::inventories_import_semantic_duplicate_and_missing_failures
+        PASS [   0.004s] codex-hepta-shadow-qualification session_tests::extracts_only_bounded_dynamic_identifiers
+        PASS [   0.008s] codex-hepta-shadow-qualification semantic_verifier_tests::rejects_semantic_or_identity_divergence
+        PASS [   0.020s] codex-hepta-shadow-qualification sealer_tests::rejects_a_checkpoint_changed_before_sealing
+        PASS [   0.004s] codex-hepta-shadow-qualification session_tests::requires_an_explicit_response_result
+        PASS [   0.016s] codex-hepta-shadow-qualification sealer_tests::seals_a_failed_checkpoint_without_losing_failures
+        PASS [   0.005s] codex-hepta-shadow-qualification trial_tests::rejects_an_unbounded_trial_before_creating_runtime_state
+        PASS [   0.020s] codex-hepta-shadow-qualification sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled
+        PASS [   0.004s] codex-hepta-shadow-qualification value_learning_tests::objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable
+        PASS [   0.010s] codex-hepta-shadow-qualification transport_tests::detects_transport_artifact_changes_after_capture
+        PASS [   0.078s] codex-hepta-shadow-qualification child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream
+        PASS [   0.198s] codex-hepta-shadow-qualification lane_e_closure_tests::lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
+────────────
+     Summary [   0.200s] 32 tests run: 32 passed, 0 skipped

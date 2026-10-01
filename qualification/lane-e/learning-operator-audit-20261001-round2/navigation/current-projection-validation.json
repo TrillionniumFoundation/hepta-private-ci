@@ -1,0 +1,181 @@
+{
+  "schema": "hepta.navigation-projection-validation.v1",
+  "sourceCandidate": {
+    "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+    "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+  },
+  "scope": "Read-only validation of navigation over committed sources with check_checkout=false because only navigation metadata is dirty; this is not a whole-repository clean-candidate gate.",
+  "maps": [
+    {
+      "module": "platform.types",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 25,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": null,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "kernel.authority",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 13,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "kernel.operations",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 24,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "runtime.supervisor",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 14,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": null,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "runtime.agentd",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 16,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "context.compiler",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 13,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "intelligence.control",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 38,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "memory.retrieval",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 43,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "knowledge.graph",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 37,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "learning.operator",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 60,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "learning.eval",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 25,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "learning.plasticity",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 37,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "learning.ledger",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 26,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    },
+    {
+      "module": "learning.artifacts",
+      "verifiedCurrentSourceIdentity": true,
+      "allOriginalBooleanFactsUnchanged": true,
+      "checkedEvidencePathCount": 17,
+      "sourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "sourceObjectsCurrent": true,
+      "staleLegacyPathOnlySourceBlobHints": []
+    }
+  ],
+  "plasticityGeneratedProjectionMatches": true,
+  "controlEngineeringImmutableMapByteHashUnchanged": true,
+  "executionScienceActivationBooleanFactsChanged": false
+}

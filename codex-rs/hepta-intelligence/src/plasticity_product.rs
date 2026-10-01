@@ -15,9 +15,11 @@ use std::fs::File;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::ProductEvaluationError;
+use codex_hepta_intelligence_eval::ProductQualificationReceiptV1;
+use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
@@ -66,6 +68,8 @@ pub struct PlasticityAdmissionEvidenceV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CandidateEvaluationAdmissionV1 {
+    /// Fenced estimator execution and durable publication are required.
+    pub qualification: ProductQualificationReceiptV1,
     pub bundle: IndependentEvaluationBundleV1,
     pub metric_roles: Vec<MetricRoleContractV2>,
     pub evidence: SignedEvaluationEvidenceV1,
@@ -112,6 +116,7 @@ pub enum ParameterPlasticityProductErrorV1 {
     GeneratorEvidence(SignedEvidenceError),
     AdmissionEvidence(SignedEvidenceError),
     Evaluation(SignedEvaluationError),
+    Qualification(ProductEvaluationError),
     Ineligible(IndependentEvaluationDispositionV1),
     MissingEvaluation(String),
     DuplicateEvaluation(String),
@@ -445,6 +450,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     for candidate in update_candidates {
         let candidate_id = candidate.candidate_id.clone();
         let CandidateEvaluationAdmissionV1 {
+            qualification,
             bundle,
             metric_roles,
             evidence,
@@ -484,15 +490,29 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
 
-        let decision =
-            decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
-                .map_err(E::Evaluation)?;
+        let decision = qualification
+            .revalidate_consumption(
+                &bundle,
+                &metric_roles,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                verifier,
+                now,
+            )
+            .map_err(E::Qualification)?;
         if decision.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
             return Err(E::Ineligible(decision.decision.disposition));
         }
         push_id(&mut evaluation_binding, &candidate_id);
+        for digest in [
+            qualification.evidence_digest,
+            qualification.publication_digest,
+            qualification.temporal_execution_digest,
+        ] {
+            evaluation_binding.extend_from_slice(digest.as_array());
+        }
         evaluation_binding.extend_from_slice(decision.decision.evidence_digest.as_array());
         evaluation_binding.extend_from_slice(decision.authentication_digest.as_array());
         evaluation_binding.extend_from_slice(decision.trust_digest.as_array());

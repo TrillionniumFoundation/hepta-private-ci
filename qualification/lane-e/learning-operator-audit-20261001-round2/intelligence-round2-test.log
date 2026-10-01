@@ -1,0 +1,123 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-contracts)
+   Compiling libc v0.2.186
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-wire)
+   Compiling getrandom v0.4.2
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-neuron)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-cognitive-read)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-objective v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-objective)
+   Compiling codex-hepta-plasticity v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-plasticity)
+   Compiling tempfile v3.27.0
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-ndu v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-ndu)
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+   Compiling codex-hepta-kg v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-kg)
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-intelligence v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-intelligence)
+    Finished `test` profile [unoptimized] target(s) in 12.35s
+────────────
+ Nextest run ID 0499a3cc-56a9-482c-a1c5-7f92381e1f6e with nextest profile: local
+    Starting 83 tests across 3 binaries
+        PASS [   0.003s] codex-hepta-intelligence capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact
+        PASS [   0.003s] codex-hepta-intelligence canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics
+        PASS [   0.003s] codex-hepta-intelligence canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners
+        PASS [   0.004s] codex-hepta-intelligence capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted
+        PASS [   0.005s] codex-hepta-intelligence canonical::tests::abstention_stops_before_context_and_evaluation
+        PASS [   0.006s] codex-hepta-intelligence capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan
+        PASS [   0.004s] codex-hepta-intelligence capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements
+        PASS [   0.006s] codex-hepta-intelligence capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements
+        PASS [   0.010s] codex-hepta-intelligence canonical::tests::owner_generation_change_between_call_and_publication_fails_closed
+        PASS [   0.010s] codex-hepta-intelligence canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed
+        PASS [   0.007s] codex-hepta-intelligence capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics
+        PASS [   0.007s] codex-hepta-intelligence capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject
+        PASS [   0.164s] codex-hepta-intelligence evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal
+        PASS [   0.201s] codex-hepta-intelligence evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch
+        PASS [   0.077s] codex-hepta-intelligence ndu_stochastic_admission::tests::current_artifact_and_independent_evidence_compose_to_deny_all_admission
+        PASS [   0.369s] codex-hepta-intelligence evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded
+        PASS [   0.008s] codex-hepta-intelligence neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority
+        PASS [   0.099s] codex-hepta-intelligence ndu_stochastic_admission::tests::withdrawal_frontier_change_invalidates_previously_admitted_artifact
+        PASS [   0.028s] codex-hepta-intelligence objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot
+        PASS [   0.029s] codex-hepta-intelligence objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns
+        PASS [   0.413s] codex-hepta-intelligence evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes
+        PASS [   0.014s] codex-hepta-intelligence objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts
+        PASS [   0.466s] codex-hepta-intelligence evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome
+        PASS [   0.044s] codex-hepta-intelligence outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append
+        PASS [   0.010s] codex-hepta-intelligence pipeline::tests::full_shadow_path_is_ordered_and_authority_free
+        PASS [   0.008s] codex-hepta-intelligence pipeline::tests::invalid_budget_fails_before_any_port_call
+        PASS [   0.007s] codex-hepta-intelligence pipeline::tests::ledger_failure_overrides_advisory_decision
+        PASS [   0.005s] codex-hepta-intelligence pipeline::tests::mixed_snapshot_rejects_before_next_stage
+        PASS [   0.006s] codex-hepta-intelligence pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision
+        PASS [   0.484s] codex-hepta-intelligence evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
+        PASS [   0.007s] codex-hepta-intelligence pipeline::tests::optional_neuron_outage_uses_bounded_fallback
+        PASS [   0.018s] codex-hepta-intelligence pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages
+        PASS [   0.020s] codex-hepta-intelligence pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt
+        PASS [   0.020s] codex-hepta-intelligence pipeline::tests::persisted_receipt_rejects_trace_mutation
+        PASS [   0.098s] codex-hepta-intelligence outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit
+        PASS [   0.101s] codex-hepta-intelligence outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation
+        PASS [   0.008s] codex-hepta-intelligence pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage
+        PASS [   0.005s] codex-hepta-intelligence pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision
+        PASS [   0.004s] codex-hepta-intelligence pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts
+        PASS [   0.004s] codex-hepta-intelligence pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement
+        PASS [   0.004s] codex-hepta-intelligence pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts
+        PASS [   0.010s] codex-hepta-intelligence pipeline::tests::required_objective_failure_is_terminal_and_receipted
+        PASS [   0.005s] codex-hepta-intelligence pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage
+        PASS [   0.007s] codex-hepta-intelligence pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation
+        PASS [   0.007s] codex-hepta-intelligence pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt
+        PASS [   0.005s] codex-hepta-intelligence pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call
+        PASS [   0.005s] codex-hepta-intelligence plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap
+        PASS [   0.006s] codex-hepta-intelligence plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator
+        PASS [   0.564s] codex-hepta-intelligence evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage
+        PASS [   0.524s] codex-hepta-intelligence evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports
+        PASS [   0.220s] codex-hepta-intelligence plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded
+        PASS [   0.243s] codex-hepta-intelligence plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append
+        PASS [   0.217s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision
+        PASS [   0.063s] codex-hepta-intelligence prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift
+        PASS [   0.315s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision
+        PASS [   0.065s] codex-hepta-intelligence prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input
+        PASS [   0.336s] codex-hepta-intelligence plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor
+        PASS [   0.340s] codex-hepta-intelligence plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context
+        PASS [   0.052s] codex-hepta-intelligence prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery
+        PASS [   0.057s] codex-hepta-intelligence prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation
+        PASS [   0.009s] codex-hepta-intelligence tests::duplicate_candidate_is_rejected
+        PASS [   0.054s] codex-hepta-intelligence prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed
+        PASS [   0.028s] codex-hepta-intelligence tests::canonical_candidate_limit_is_enforced
+        PASS [   0.091s] codex-hepta-intelligence prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization
+        PASS [   0.005s] codex-hepta-intelligence tests::highest_eligible_candidate_is_selected_without_effect_authority
+        PASS [   0.003s] codex-hepta-intelligence topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact
+        PASS [   0.015s] codex-hepta-intelligence tests::hard_veto_is_never_overridden
+        PASS [   0.009s] codex-hepta-intelligence tests::no_eligible_candidate_abstains
+        PASS [   0.075s] codex-hepta-intelligence prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation
+        PASS [   0.242s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_tampered_frontier_witness
+        PASS [   0.007s] codex-hepta-intelligence vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile
+        PASS [   0.018s] codex-hepta-intelligence tests::maximum_candidate_receipt_is_canonical_and_digest_complete
+        PASS [   0.006s] codex-hepta-intelligence vertical_tests::omitted_cognitive_read_evidence_fails_closed
+        PASS [   0.005s] codex-hepta-intelligence vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation
+        PASS [   0.014s] codex-hepta-intelligence vertical_tests::candidate_outside_compiled_legal_actions_fails_closed
+        PASS [   0.006s] codex-hepta-intelligence vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority
+        PASS [   0.005s] codex-hepta-intelligence vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering
+        PASS [   0.010s] codex-hepta-intelligence vertical_tests::selected_objective_profile_digest_cannot_be_replaced
+        PASS [   0.004s] codex-hepta-intelligence::lane_f_shadow_vertical lane_f_native_shadow_vertical_closes_without_effect_authority
+        PASS [   0.219s] codex-hepta-intelligence plasticity_product_tests::raw_signed_metrics_cannot_substitute_for_published_qualification
+        PASS [   0.045s] codex-hepta-intelligence topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record
+        PASS [   0.120s] codex-hepta-intelligence::intuition_frozen_qualification frozen_model_and_data_produce_signed_current_generation_policy_decision
+        PASS [   1.890s] codex-hepta-intelligence evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port
+────────────
+     Summary [   1.902s] 83 tests run: 83 passed, 0 skipped

@@ -363,10 +363,19 @@ fn cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_co
         } else {
             must(fs::write(directory.path("current"), b"truncated"));
         }
-        assert!(
-            cached
-                .with_unverified_current(file, current, |_| panic!("invalid view consumed"))
-                .is_err()
+        assert_eq!(
+            cached.with_unverified_current(file, current, |_| panic!("invalid view consumed")),
+            Err::<(), _>(PinnedCandidateLoadError::Storage(
+                ArtifactStorageError::Corrupt
+            ))
+        );
+        assert_eq!(
+            cached.with_unverified_current(
+                must(File::open(directory.path("current"))),
+                current,
+                |_| panic!("failed refresh revived consumer")
+            ),
+            Err(PinnedCandidateLoadError::Unavailable)
         );
         assert_eq!(
             cached.with_unverified_current(

@@ -187,6 +187,13 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  learning-operator-authoritative:
+    name: learning-operator-authoritative
+    needs: scope
+    if: needs.scope.outputs.learning == 'true' || needs.scope.outputs.full_repo == 'true'
+    uses: ./.github/workflows/learning-operator-authoritative.yml
+    secrets: inherit
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
@@ -227,6 +234,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - learning-operator-authoritative
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -238,6 +246,7 @@ jobs:
         env:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
+          LEARNING: ${{ needs.scope.outputs.learning }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
         shell: bash
         run: |
@@ -247,6 +256,7 @@ jobs:
           import json
           import os
           native = os.environ["NATIVE"] == "true"
+          learning = os.environ["LEARNING"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
           if not (native or full):
@@ -255,6 +265,8 @@ jobs:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
               allowed.append("hepta-scoped")
+          if not (learning or full):
+              allowed.append("learning-operator-authoritative")
           if not (not native and not full):
               allowed.append("lightweight")
           print(json.dumps(allowed))

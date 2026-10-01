@@ -1,0 +1,14 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator)
+    Finished `test` profile [unoptimized] target(s) in 2.42s
+────────────
+ Nextest run ID a1d8f228-a80f-475d-b70b-afcdafeaf10e with nextest profile: local
+    Starting 1 test across 1 binary (108 tests skipped)
+        PASS [   0.114s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::full_v3_qualification_path_profile
+────────────
+     Summary [   0.115s] 1 test run: 1 passed, 108 skipped

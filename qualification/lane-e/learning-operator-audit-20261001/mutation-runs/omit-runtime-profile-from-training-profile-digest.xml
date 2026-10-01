@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" failures="1" errors="0" uuid="1f89b9e3-6903-4ee1-92e0-cdddd43d1e1c" timestamp="2026-10-01T07:16:05.691+09:00" time="0.009">
+    <testsuite name="codex-hepta-bellman-operator" tests="1" disabled="0" errors="0" failures="1">
+        <testcase name="authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget" classname="codex-hepta-bellman-operator" timestamp="2026-10-01T07:16:05.696+09:00" time="0.004">
+            <failure message="thread &apos;authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget&apos; (480) panicked at hepta-bellman-operator/src/authoritative_tests.rs:106:5" type="test failure with exit code 101">thread &apos;authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget&apos; (480) panicked at hepta-bellman-operator/src/authoritative_tests.rs:106:5:
+assertion `left != right` failed
+  left: Digest32(&quot;2d77bb8c18ae8e63783c4d702fdc9af1f6cf02caf0c1c5d82d69c528b9a7fa01&quot;)
+ right: Digest32(&quot;2d77bb8c18ae8e63783c4d702fdc9af1f6cf02caf0c1c5d82d69c528b9a7fa01&quot;)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget ... FAILED
+
+failures:
+
+failures:
+    authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 108 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>
+thread &apos;authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget&apos; (480) panicked at hepta-bellman-operator/src/authoritative_tests.rs:106:5:
+assertion `left != right` failed
+  left: Digest32(&quot;2d77bb8c18ae8e63783c4d702fdc9af1f6cf02caf0c1c5d82d69c528b9a7fa01&quot;)
+ right: Digest32(&quot;2d77bb8c18ae8e63783c4d702fdc9af1f6cf02caf0c1c5d82d69c528b9a7fa01&quot;)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

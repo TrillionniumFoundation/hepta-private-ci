@@ -235,6 +235,15 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Revalidate the root-signed signer distribution independently of each
+    /// evidence signature's lifetime. This read grants no new authority.
+    pub fn revalidate_trust_at(
+        &self,
+        now: u64,
+    ) -> Result<(), crate::LearningTrustDistributionError> {
+        self.trust.revalidate_at(now)
+    }
+
     #[must_use]
     pub fn trust_distribution_digest(&self) -> Digest32 {
         self.trust.distribution_digest()

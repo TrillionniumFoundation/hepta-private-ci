@@ -1,0 +1,135 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-types)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-intuition v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-intuition)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator)
+    Finished `test` profile [unoptimized] target(s) in 6.87s
+────────────
+ Nextest run ID b4ff9136-6881-4b21-be16-f1c29b816470 with nextest profile: local
+    Starting 117 tests across 1 binary (2 tests skipped)
+        PASS [   0.004s] codex-hepta-bellman-operator authoritative_tests::mutation_cancelled_work_is_rejected_before_fit
+        PASS [   0.004s] codex-hepta-bellman-operator authoritative_tests::mutation_persisted_payload_cannot_reuse_the_selected_pin
+        PASS [   0.004s] codex-hepta-bellman-operator budget::tests::concurrent_memory_reservations_share_one_absolute_ceiling
+        PASS [   0.004s] codex-hepta-bellman-operator authoritative_tests::target_host_profile_has_statistically_meaningful_minimum_sample
+        PASS [   0.005s] codex-hepta-bellman-operator authoritative_tests::mutation_profile_digest_covers_runtime_and_error_budget
+        PASS [   0.006s] codex-hepta-bellman-operator budget::tests::inherited_context_spans_composite_suboperations
+        PASS [   0.003s] codex-hepta-bellman-operator budget::tests::nested_context_restores_outer_cancellation_domain
+        PASS [   0.003s] codex-hepta-bellman-operator budget::tests::operation_budget_is_cumulative_across_worker_meters
+        PASS [   0.004s] codex-hepta-bellman-operator budget::tests::worker_cannot_expand_an_already_bound_budget
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::request_tests::negative_measurements_cannot_reach_world_final_use_capability_admission
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::request_tests::world_request_rejects_outcomes_the_transition_fitter_cannot_consume
+        PASS [   0.009s] codex-hepta-bellman-operator budget::tests::explicit_context_propagates_cancellation_to_worker_thread
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::selected::tests::selection_clock_overflow_fails_closed
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::selected::tests::frozen_host_clock_cannot_extend_the_selection_window
+        PASS [   0.008s] codex-hepta-bellman-operator budget::tests::matching_work_control_preserves_capability_issue_time
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::selected::tests::elapsed_work_after_forward_host_observation_is_retained
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::selected::tests::completed_work_is_rejected_when_selection_expires_during_operation
+        PASS [   0.003s] codex-hepta-bellman-operator final_use::tests::selected_tabular_clock_cannot_reset_across_loads_or_revive_after_expiry
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::tests::selected_tabular_cannot_relabel_training_trust
+        PASS [   0.015s] codex-hepta-bellman-operator budget::tests::explicit_context_preserves_one_deadline_across_dispatch_delay
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::cancellation_at_publication_guard_rejects_completed_work
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::effective_now_preserves_later_host_time_and_rejects_overflow
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::tests::selected_world_model_expires_with_selection_before_model_retention
+        PASS [   0.003s] codex-hepta-bellman-operator final_use_hardening::tests::elapsed_deadline_boundary_and_overflow_fail_closed
+        PASS [   0.004s] codex-hepta-bellman-operator final_use::tests::selected_tabular_load_and_repeated_predictions_retain_selection_window
+        PASS [   0.005s] codex-hepta-bellman-operator final_use_hardening::tests::capability_issue_at_deadline_fails_closed
+        PASS [   0.004s] codex-hepta-bellman-operator final_use_hardening::tests::publish_before_use_is_clock_regression
+        PASS [   0.004s] codex-hepta-bellman-operator final_use_hardening::tests::use_at_deadline_fails_closed
+        PASS [   0.006s] codex-hepta-bellman-operator final_use_hardening::tests::final_use_window_is_strictly_before_deadline
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::admission::tests::malformed_candidate_payload_is_candidate_global
+        PASS [   0.006s] codex-hepta-bellman-operator final_use_hardening::tests::monotonic_fit_context_elapsed_time_cannot_reset
+        PASS [   0.005s] codex-hepta-bellman-operator final_use_hardening::tests::use_before_capability_issue_is_clock_regression
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::admission::tests::revoked_evidence_requires_fresh_owner_admission
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::admission::tests::payload_authority_failure_stops_the_consumer
+        PASS [   0.007s] codex-hepta-bellman-operator legacy::admission::tests::unsupported_cells_abstain_without_invalidating_the_candidate
+        PASS [   0.050s] codex-hepta-bellman-operator legacy::authenticated::tests::op_02_signed_applicability_requires_authenticated_independent_evaluator
+        PASS [   0.050s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::owner_dataset_rejects_oversized_signed_rows_before_canonicalization
+        PASS [   0.057s] codex-hepta-bellman-operator legacy::authenticated::tests::op_02_signed_regularity_binds_evaluator_identity_and_exact_assessment
+        PASS [   0.145s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::owner_dataset_signed_freeze_and_rows_reach_real_trainer
+        PASS [   0.168s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::owner_proof_expires_before_fit_and_reordered_rows_keep_same_signature
+        PASS [   0.009s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_06_tabular_fit_requires_exact_frozen_dataset_evidence
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_06_world_model_requires_exact_frozen_dataset_evidence
+        PASS [   0.006s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_07_row_semantics_payload_binds_every_tabular_field
+        PASS [   0.013s] codex-hepta-bellman-operator legacy::dataset_bound::tests::op_07_world_model_payload_binds_transition_semantics
+        PASS [   0.149s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::trust_window_tests::world_retention_expiring_during_fit_rejects_effective_publication
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::dataset_bound::tests::verified_inputs_reject_relabelled_duplicates_before_fitting
+        PASS [   0.007s] codex-hepta-bellman-operator legacy::learned::tests::direct_prediction_preserves_full_range_and_ties_even_fits
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::learned::tests::direct_predictions_reject_malformed_and_impossible_statistics
+        PASS [   0.010s] codex-hepta-bellman-operator legacy::learned::tests::op_05_default_fit_rejects_relabelled_duplicate_evidence
+        PASS [   0.009s] codex-hepta-bellman-operator legacy::learned::tests::op_05_tabular_operator_fits_complete_grid_deterministically
+        PASS [   0.016s] codex-hepta-bellman-operator legacy::learned::tests::op_05_tabular_prediction_is_synthetic_and_domain_bounded
+        PASS [   0.024s] codex-hepta-bellman-operator legacy::learned::tests::op_05_tabular_operator_rejects_missing_or_underfilled_cells
+        PASS [   0.013s] codex-hepta-bellman-operator legacy::learned::tests::training_identity_commits_executed_sample_threshold
+        PASS [   0.012s] codex-hepta-bellman-operator legacy::learned_strict::tests::op_05_indexed_prediction_uses_canonical_grid
+        PASS [   0.008s] codex-hepta-bellman-operator legacy::learned_strict::tests::op_05_strict_fit_rejects_relabelled_duplicate_evidence
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::loaded::tests::actual_fit_serializes_and_predicts_with_no_mutable_loaded_surface
+        PASS [   0.116s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::world_final_use_request_cannot_relabel_authoritative_training_trust
+        PASS [   0.260s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::signed_training_rejects_config_target_duplicate_epoch_and_signature_substitution
+        PASS [   0.008s] codex-hepta-bellman-operator legacy::loaded::tests::invalid_statistics_grid_and_authority_cannot_be_encoded
+        PASS [   0.011s] codex-hepta-bellman-operator legacy::loaded::tests::host_pinning_cannot_admit_impossible_sample_statistics
+        PASS [   0.228s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::trust_window_tests::tabular_distribution_expiry_blocks_effective_publication_with_valid_signatures
+        PASS [   0.021s] codex-hepta-bellman-operator legacy::loaded::tests::distinct_process_load_changes_prediction_and_rolls_back_without_retraining
+        PASS [   0.006s] codex-hepta-bellman-operator legacy::reference::tests::op_02_applicability_rejects_degenerate_diffusion
+        PASS [   0.011s] codex-hepta-bellman-operator legacy::reference::tests::op_01_farthest_point_sensor_core_is_deterministic
+        PASS [   0.008s] codex-hepta-bellman-operator legacy::reference::tests::op_01_tabular_reference_produces_exact_targets_and_gaps
+        PASS [   0.012s] codex-hepta-bellman-operator legacy::loaded::tests::loaded_process_predicts_only_the_host_pinned_candidate
+        PASS [   0.026s] codex-hepta-bellman-operator legacy::loaded::tests::independent_pin_and_all_truncations_are_checked
+        PASS [   0.289s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::expiry_tests::world_row_evidence_expiring_during_fit_rejects_publication_before_deadline
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::reference::tests::op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::reference::tests::sensor_manifest_binds_unselected_candidate_coordinates
+        PASS [   0.005s] codex-hepta-bellman-operator legacy::reference::tests::sensor_separation_tracks_all_prior_selected_points
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::tests::deterministic_and_canonical
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::tests::duplicate_sample_fails
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::tests::invalid_gamma_fails_closed
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::tests::terminal_transition_has_no_bootstrap
+        PASS [   0.012s] codex-hepta-bellman-operator legacy::reference::tests::sensor_geometry_rounds_coverage_and_mesh_ratio_conservatively
+        PASS [   0.013s] codex-hepta-bellman-operator legacy::reference::tests::reference_receipt_binds_source_evidence_and_equal_output_inputs
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::training_preflight::tests::exact_signed_profile_boundary_is_admitted
+        PASS [   0.249s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::trust_window_tests::world_distribution_expiry_blocks_effective_publication_with_valid_signatures
+        PASS [   0.006s] codex-hepta-bellman-operator legacy::training_preflight::tests::all_small_shapes_match_independent_integer_oracle
+        PASS [   0.004s] codex-hepta-bellman-operator legacy::training_preflight::tests::impossible_support_rejects_before_work
+        PASS [   0.003s] codex-hepta-bellman-operator legacy::world_model::tests::op_04_transition_model_is_action_conditioned_and_probability_exact
+        PASS [   0.011s] codex-hepta-bellman-operator legacy::tests::target_builder_uses_signed_nearest_ties_even_like_reference
+        PASS [   0.014s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_identity_binds_exact_rows_and_is_permutation_invariant
+        PASS [   0.015s] codex-hepta-bellman-operator legacy::world_model::tests::op_04_world_model_rejects_relabelled_duplicate_evidence
+        PASS [   0.016s] codex-hepta-bellman-operator legacy::world_model::tests::op_04_prediction_is_synthetic_and_unsupported_pairs_abstain
+        PASS [   0.013s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_predictions_reject_modified_fitted_statistics_and_lineage
+        PASS [   0.010s] codex-hepta-bellman-operator profiles::tests::world_model_profile_digest_binds_sensor_core_identity
+        PASS [   0.013s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_rejects_duplicate_samples_and_invalid_outcomes
+        PASS [   0.015s] codex-hepta-bellman-operator legacy::world_model::tests::world_model_prediction_checks_resource_caps_before_integrity_work
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_qualification::tests::full_input_geometry_work_is_budgeted
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_qualification::tests::qualified_build_preflights_bytes_before_cloning_and_coordinate_indexing
+        PASS [   0.006s] codex-hepta-bellman-operator sensor_core_qualification::tests::full_input_geometry_rounds_up_and_accounts_for_persistent_candidate_copy
+        PASS [   0.008s] codex-hepta-bellman-operator sensor_core_qualification::tests::clustered_outlier_cannot_hide_behind_working_set_geometry
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_v2::tests::byte_budget_rejects_before_coordinate_index_construction
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_qualification::tests::semantic_receipt_reports_exact_and_reduced_modes
+        PASS [   0.005s] codex-hepta-bellman-operator sensor_core_v2::tests::duplicate_coordinates_reject_without_pairwise_scan
+        PASS [   0.012s] codex-hepta-bellman-operator sensor_core_qualification::tests::low_dimensional_manifold_is_checked_against_every_input_point
+        PASS [   0.020s] codex-hepta-bellman-operator sensor_core_qualification::tests::full_input_digest_is_order_independent_and_content_sensitive
+        PASS [   0.009s] codex-hepta-bellman-operator sensor_core_v2::tests::operation_budget_fails_before_expensive_fps
+        PASS [   0.014s] codex-hepta-bellman-operator sensor_core_v2::tests::exact_profile_preserves_canonical_fps
+        PASS [   0.021s] codex-hepta-bellman-operator sensor_core_qualification::tests::reduced_mode_is_deterministic_and_fails_closed_on_geometry
+        PASS [   0.015s] codex-hepta-bellman-operator tabular_v2::tests::bounded_fit_matches_v1_artifact_identity
+        PASS [   0.007s] codex-hepta-bellman-operator tabular_v2::tests::bounded_fit_matches_v1_rounding_and_admission_identity_at_extremes
+        PASS [   0.007s] codex-hepta-bellman-operator tabular_v2::tests::byte_budget_rejects_before_fit
+        PASS [   0.007s] codex-hepta-bellman-operator tabular_v2::tests::long_ids_are_budgeted_before_binding_buffers_are_allocated
+        PASS [   0.344s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::expiry_tests::tabular_row_evidence_expiring_during_fit_rejects_publication_before_deadline
+        PASS [   0.020s] codex-hepta-bellman-operator sensor_core_v2::tests::exact_v2_manifest_matches_reference_conservative_geometry_and_input_binding
+        PASS [   0.009s] codex-hepta-bellman-operator world_model_v2::tests::conditional_variance_is_zero_for_identical_observations
+        PASS [   0.021s] codex-hepta-bellman-operator sensor_core_v2::tests::large_design_records_deterministic_approximation
+        PASS [   0.005s] codex-hepta-bellman-operator world_model_v2::tests::fitted_estimates_and_branch_storage_cannot_be_mutated_in_place
+        PASS [   0.005s] codex-hepta-bellman-operator world_model_v2::tests::conditional_variance_uses_the_exact_unrounded_mean
+        PASS [   0.005s] codex-hepta-bellman-operator world_model_v2::tests::memory_preflight_accounts_for_owned_identifier_text_and_input_capacity
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::support_and_retention_fail_closed
+        PASS [   0.004s] codex-hepta-bellman-operator world_model_v2::tests::v2_binds_evaluation_and_shares_branch_storage
+        PASS [   0.008s] codex-hepta-bellman-operator world_model_v2::tests::confidence_radius_retains_precision_below_the_variance_quantum
+        PASS [   0.006s] codex-hepta-bellman-operator world_model_v2::tests::predictions_reject_modified_evaluation_lineage_and_work
+────────────
+     Summary [   0.372s] 117 tests run: 117 passed, 2 skipped

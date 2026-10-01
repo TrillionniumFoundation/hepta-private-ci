@@ -1,0 +1,20 @@
+{
+  "name": "operator-final-owner-profile",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "--lib",
+    "-E",
+    "test(full_v3_qualification_path_profile)",
+    "--run-ignored",
+    "ignored-only",
+    "--test-threads=1"
+  ],
+  "exitCode": 0,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-final-owner-profile.log",
+  "sha256": "0590f2bcd889c4e94f612e1b1abfe4f841dee69cd7764142a8c212dc0f9ec18b",
+  "bytes": 773
+}

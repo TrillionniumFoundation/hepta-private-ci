@@ -73,6 +73,7 @@ pub struct ProductMetricSourceContractV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductFrozenEvaluationPlanV1 {
     pub frozen_plan: CrossFoldPlanReceiptV1,
+    pub holdout_window_ids: Vec<StableId>,
     pub metric_roles: Vec<MetricRoleContractV2>,
     pub metric_contracts: Vec<MetricContractV1>,
     pub metric_sources: Vec<ProductMetricSourceContractV1>,
@@ -148,9 +149,27 @@ pub fn freeze_product_evaluation_plan_v1(
         baseline_temporal.plan_digest,
         &metric_sources,
     )?;
+    let window_count = plan
+        .folds
+        .iter()
+        .try_fold(0usize, |count, fold| {
+            count.checked_add(fold.holdout_windows.len())
+        })
+        .ok_or(ProductEvaluationError::Binding("holdout window bounds"))?;
+    if window_count > 1024 {
+        return Err(ProductEvaluationError::Binding("holdout window bounds"));
+    }
+    let mut holdout_window_ids: Vec<_> = plan
+        .folds
+        .iter()
+        .flat_map(|fold| fold.holdout_windows.iter().cloned())
+        .collect();
+    holdout_window_ids.sort();
+    holdout_window_ids.dedup();
     let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;
     let mut receipt = ProductFrozenEvaluationPlanV1 {
         frozen_plan,
+        holdout_window_ids,
         metric_roles,
         metric_contracts,
         metric_sources,
@@ -179,6 +198,8 @@ impl StdError for ProductProviderErrorV1 {}
 
 #[derive(Clone, Debug)]
 pub struct TemporalComparisonInputsV1 {
+    pub training_snapshot_id: Option<StableId>,
+    pub window_snapshots: Vec<crate::ProductWindowSnapshotBindingV1>,
     pub training: Vec<OutcomeTrainingSample>,
     pub targets: Vec<HeldOutTarget>,
     pub candidate_observations: Vec<OpeRow>,
@@ -226,6 +247,8 @@ pub trait ProductQualificationEvidenceSinkV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductTemporalEvaluationReceiptV1 {
+    pub training_snapshot_id: Option<StableId>,
+    pub observed_cohorts: Vec<crate::ProductObservedCohortV1>,
     pub holdout: FinalHoldoutJournalReceiptV1,
     pub product_plan: ProductFrozenEvaluationPlanV1,
     pub candidate: TemporalEvaluationReceipt,
@@ -270,6 +293,8 @@ impl ProductTemporalEvaluationReceiptV1 {
             &self.metrics,
             &self.snapshot_ids,
             &self.future_window_ids,
+            &self.observed_cohorts,
+            self.training_snapshot_id.as_ref(),
             estimate,
             support,
             confidence,
@@ -385,7 +410,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 
         let holdout = self.holdout.consume(&product_plan.frozen_plan)?;
         let mut inputs = provider.release_after_consumption(&holdout)?;
-        validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
+        validate_released_inputs(product_plan, &inputs)?;
         validate_comparable_observations(
             &inputs.candidate_observations,
             &inputs.baseline_observations,
@@ -410,6 +435,8 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         candidate.validate_integrity()?;
         baseline.validate_integrity()?;
 
+        let observed_cohorts =
+            crate::product_observed_cohort::derive(&product_plan.frozen_plan, &inputs)?;
         let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;
         let (estimate_receipt_digest, support_audit_digest, confidence_receipt_digest) =
             comparison_digests(&candidate, &baseline, &metrics);
@@ -421,11 +448,15 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             &metrics,
             &inputs.snapshot_ids,
             &inputs.future_window_ids,
+            &observed_cohorts,
+            inputs.training_snapshot_id.as_ref(),
             estimate_receipt_digest,
             support_audit_digest,
             confidence_receipt_digest,
         );
         let mut receipt = ProductTemporalEvaluationReceiptV1 {
+            training_snapshot_id: inputs.training_snapshot_id,
+            observed_cohorts,
             holdout,
             product_plan: product_plan.clone(),
             candidate,
@@ -510,6 +541,10 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 if bundle.claim_scope != EvaluationClaimScopeV1::SystemLongitudinal {
                     return Err(ProductEvaluationError::Binding("longitudinal scope"));
                 }
+                crate::product_observed_cohort::validate_timing(
+                    &temporal.observed_cohorts,
+                    timing,
+                )?;
                 decide_with_signed_longitudinal_evidence_v3(
                     bundle,
                     roles,
@@ -548,7 +583,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -560,6 +595,16 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    // Every public decision field affects downstream selection and must be sealed.
+    push_id(&mut bytes, &receipt.decision.decision.evaluation_id);
+    push_id(&mut bytes, &receipt.decision.decision.candidate_id);
+    push_id(&mut bytes, &receipt.decision.decision.baseline_id);
+    bytes.push(match receipt.decision.decision.disposition {
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
+        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(&mut bytes, &receipt.decision.decision.failed_metrics);
     push_id(&mut bytes, &receipt.candidate_id);
     push_principal(&mut bytes, &receipt.evaluator);
     push_principal(&mut bytes, &receipt.generator);
@@ -595,14 +640,28 @@ fn push_principal(bytes: &mut Vec<u8>, principal: &AuthenticatedPrincipalV1) {
 }
 
 fn validate_released_inputs(
-    frozen: &CrossFoldPlanReceiptV1,
+    product_plan: &ProductFrozenEvaluationPlanV1,
     inputs: &TemporalComparisonInputsV1,
 ) -> Result<(), ProductEvaluationError> {
+    crate::product_observed_cohort::preflight(inputs)?;
+    let frozen = &product_plan.frozen_plan;
     if inputs.targets.is_empty()
         || inputs
             .targets
             .iter()
-            .any(|target| target.window_id != frozen.final_holdout_window_id)
+            .any(|target| match frozen.claim_scope {
+                EvaluationClaimScopeV1::Qualification => {
+                    target.window_id != frozen.final_holdout_window_id
+                }
+                EvaluationClaimScopeV1::SystemLongitudinal => {
+                    !inputs.future_window_ids.contains(&target.window_id)
+                        || !product_plan.holdout_window_ids.contains(&target.window_id)
+                }
+            })
+        || !inputs
+            .targets
+            .iter()
+            .any(|target| target.window_id == frozen.final_holdout_window_id)
         || inputs.targets.len() != inputs.candidate_observations.len()
         || inputs.targets.len() != inputs.baseline_observations.len()
         || inputs.targets.len() != inputs.assignments.len()
@@ -745,11 +804,13 @@ fn execution_digest(
     metrics: &[MetricGateV1],
     snapshot_ids: &[StableId],
     future_window_ids: &[StableId],
+    observed_cohorts: &[crate::ProductObservedCohortV1],
+    training_snapshot_id: Option<&StableId>,
     estimate_digest: Digest32,
     support_digest: Digest32,
     confidence_digest: Digest32,
 ) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-execution.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-execution.v2".to_vec();
     for digest in [
         holdout.record_digest,
         holdout.use_receipt.use_digest,
@@ -768,6 +829,9 @@ fn execution_digest(
     }
     push_ids(&mut bytes, snapshot_ids);
     push_ids(&mut bytes, future_window_ids);
+    bytes.extend_from_slice(
+        crate::product_observed_cohort::digest(observed_cohorts, training_snapshot_id).as_array(),
+    );
     Digest32::of_bytes(&bytes)
 }
 
@@ -792,6 +856,13 @@ fn product_evaluation_seal(
     }
     push_ids(&mut bytes, &receipt.snapshot_ids);
     push_ids(&mut bytes, &receipt.future_window_ids);
+    bytes.extend_from_slice(
+        crate::product_observed_cohort::digest(
+            &receipt.observed_cohorts,
+            receipt.training_snapshot_id.as_ref(),
+        )
+        .as_array(),
+    );
     bytes.push(u8::from(receipt.authority.grants_any()));
     Ok(Digest32::of_bytes(&bytes))
 }
@@ -809,6 +880,7 @@ fn product_plan_seal(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    push_ids(&mut bytes, &plan.holdout_window_ids);
     for contract in &plan.metric_contracts {
         push_id(&mut bytes, &contract.metric_id);
         bytes.push(match contract.direction {

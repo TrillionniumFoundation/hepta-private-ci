@@ -88,6 +88,34 @@ fn stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation() {
 }
 
 #[test]
+fn owned_stable_id_discards_spare_capacity_without_changing_admission() {
+    let maximum_length = "a".repeat(/*n*/ 128);
+    let excessive_length = "a".repeat(/*n*/ 129);
+    for raw in [
+        "a",
+        "learning.ledger:episode-1",
+        maximum_length.as_str(),
+        "",
+        "bad/path",
+        "é",
+        "a\0",
+        excessive_length.as_str(),
+    ] {
+        let mut source = String::with_capacity(/*capacity*/ 1_048_576);
+        source.push_str(raw);
+        let supplied_capacity = source.capacity();
+        let expected = validate_id(&source, IdProfileV1::Stable);
+        let observed = StableId::new(source);
+        assert_eq!(observed, expected);
+        if let Ok(id) = observed {
+            let owned = id.0.into_inner();
+            assert_eq!(owned.capacity(), owned.len());
+            assert!(owned.capacity() < supplied_capacity);
+        }
+    }
+}
+
+#[test]
 fn identity_bounds_and_monotonic_overflow_fail_closed() {
     assert!(StableId::new("a".repeat(128)).is_ok());
     assert_eq!(

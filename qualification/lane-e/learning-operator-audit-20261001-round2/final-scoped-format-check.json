@@ -1,0 +1,12 @@
+{
+  "name": "final-scoped-format-check",
+  "command": [
+    "python3",
+    "-c",
+    "import subprocess; commands=[[\"cargo\",\"fmt\",\"--\",\"--check\",\"--config\",\"imports_granularity=Item\"],[\"../scripts/.venv/bin/ruff\",\"format\",\"--check\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/hepta-learning-operator-receipt.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"]]; [subprocess.run(c,check=True) for c in commands]"
+  ],
+  "exitCode": 0,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/final-scoped-format-check.log",
+  "sha256": "2dedc330e2c50c4ba8c45e5202f51d401f52c9a095dd56ab6eb22dd6ee70cbe6",
+  "bytes": 44228
+}

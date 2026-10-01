@@ -1,0 +1,1078 @@
+{
+  "schema": "hepta.learning-operator-local-audit-round3.v1",
+  "module": "learning.operator",
+  "baselineRemoteSha": "38b9ec0a6a37c389ba5ca478f520967098a30fd7",
+  "latestMainObserved": "997e7beef8151160065df36b024bc8da5c989e93",
+  "coreSourceCheckpoint": {
+    "sha": "a180997d54925a77d7720246adb558224a11d318",
+    "tree": "b6b33bea1ef48394d757b2482c51f21040ff750b"
+  },
+  "terminalFixtureCheckpoint": {
+    "sha": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+    "tree": "a24c9f580215b46454620234a72501abf75c24fb"
+  },
+  "mechanicalFixCheckpoint": {
+    "sha": "177bd36d4feac6d84a5ba0c3f9e6daec52a6d390",
+    "tree": "da20391fe414c7ffaae4f12711c152a117d10afb"
+  },
+  "finalNavigationCheckpoint": {
+    "sha": "d46c0e624889bd69c937d6a9c0f66fcf58e28b05",
+    "tree": "00a4ab3b910e9c09d9314a4eb890623c51fd04d0"
+  },
+  "toolchain": {
+    "rust": "1.95.0",
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "debugInfo": false,
+    "incremental": false
+  },
+  "rawEvidenceArchive": "raw-evidence.tar.gz",
+  "rawEvidenceIndex": "evidence-index.json",
+  "observations": [
+    {
+      "name": "cargo-fetch-locked",
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:27:18.189942+00:00",
+      "finishedAt": "2026-10-01T05:27:33.415670+00:00",
+      "elapsedSeconds": 15.225725709000471,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/cargo-fetch-locked.log",
+      "logSha256": "f5c5523217bd4fb299ef879cf0e3d7a082002859cbbe9e8b7be3262a64e1ca0e",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/controlled-pause-attempt/agentd-suites.json",
+      "originalManifestSha256": "17375316ee750563f354db61cce4cee9c4c99a8f9b6ba8d96f794478068fff32",
+      "atRunSourceHead": null,
+      "atRunSourceHeadMissing": true,
+      "rawLogMember": "host/controlled-pause-attempt/cargo-fetch-locked.log",
+      "status": "passed"
+    },
+    {
+      "name": "agentd-check-final",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--all-targets"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:27:33.416255+00:00",
+      "finishedAt": "2026-10-01T05:33:40.058555+00:00",
+      "elapsedSeconds": 366.64230995599974,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/agentd-check-final.log",
+      "logSha256": "5dfa3df150c101a1775d16f31f1cf652cd1805c6606a0a67c523e8b840865939",
+      "sourceChangedPaths": [
+        "codex-rs/.round3-validation-pause.toml"
+      ],
+      "originalManifestMember": "host/controlled-pause-attempt/agentd-suites.json",
+      "originalManifestSha256": "17375316ee750563f354db61cce4cee9c4c99a8f9b6ba8d96f794478068fff32",
+      "atRunSourceHead": null,
+      "atRunSourceHeadMissing": true,
+      "rawLogMember": "host/controlled-pause-attempt/agentd-check-final.log",
+      "status": "passed-with-control-artifact-delta"
+    },
+    {
+      "name": "cargo-fetch-locked",
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:37:04.858890+00:00",
+      "finishedAt": "2026-10-01T05:37:06.071850+00:00",
+      "elapsedSeconds": 1.2129211810006382,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/cargo-fetch-locked.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/operator-import-failure-attempt/agentd-suites.json",
+      "originalManifestSha256": "6078070a682b6de9e15bd2881b522d8f8a96b65b90eda75edbbba97f1a557216",
+      "atRunSourceHead": null,
+      "atRunSourceHeadMissing": true,
+      "rawLogMember": "host/operator-import-failure-attempt/cargo-fetch-locked.log",
+      "status": "passed"
+    },
+    {
+      "name": "agentd-check-final",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--all-targets"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:37:06.072265+00:00",
+      "finishedAt": "2026-10-01T05:37:08.493690+00:00",
+      "elapsedSeconds": 2.4214365580010053,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/agentd-check-final.log",
+      "logSha256": "6d7bd28065486b7fbfdc35083f6062935ec9d23e558883fa78c0d9a3deb127e0",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/operator-import-failure-attempt/agentd-suites.json",
+      "originalManifestSha256": "6078070a682b6de9e15bd2881b522d8f8a96b65b90eda75edbbba97f1a557216",
+      "atRunSourceHead": null,
+      "atRunSourceHeadMissing": true,
+      "rawLogMember": "host/operator-import-failure-attempt/agentd-check-final.log",
+      "status": "passed"
+    },
+    {
+      "name": "operator-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:37:08.494158+00:00",
+      "finishedAt": "2026-10-01T05:37:18.999008+00:00",
+      "elapsedSeconds": 10.504861929999606,
+      "exitCode": 101,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/operator-default.log",
+      "logSha256": "69ce2092e632b4882c3e3a555dc20bff9bbd3b4000dda9c06c1d1a210723b6d4",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/operator-import-failure-attempt/agentd-suites.json",
+      "originalManifestSha256": "6078070a682b6de9e15bd2881b522d8f8a96b65b90eda75edbbba97f1a557216",
+      "atRunSourceHead": null,
+      "atRunSourceHeadMissing": true,
+      "rawLogMember": "host/operator-import-failure-attempt/operator-default.log",
+      "status": "failed-attempt"
+    },
+    {
+      "name": "operator-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:41:24.417475+00:00",
+      "finishedAt": "2026-10-01T05:41:28.984177+00:00",
+      "elapsedSeconds": 4.566704963999655,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/operator-default.log",
+      "logSha256": "d89c2d3e3c1ae0680d603d75304b8087bd47ffd934fa0013c01d8b15d44ca8c3",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/operator-default.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 136,
+        "passed": 136,
+        "failed": 0,
+        "skippedOrFiltered": 2
+      }
+    },
+    {
+      "name": "operator-compatibility",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--features",
+        "qualification-unverified-input"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:41:28.984563+00:00",
+      "finishedAt": "2026-10-01T05:41:34.212466+00:00",
+      "elapsedSeconds": 5.227915929999654,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/operator-compatibility.log",
+      "logSha256": "b41adfb5804e08df11418557c5ea19dada4ad39d9becff106ba6e848d8771581",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/operator-compatibility.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 136,
+        "passed": 136,
+        "failed": 0,
+        "skippedOrFiltered": 2
+      }
+    },
+    {
+      "name": "terminal-cell-owner",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "terminal_cell_owner"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:41:34.212883+00:00",
+      "finishedAt": "2026-10-01T05:49:55.362481+00:00",
+      "elapsedSeconds": 501.149612014,
+      "exitCode": 100,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/terminal-cell-owner.log",
+      "logSha256": "f63ee219a49055403d1e799706720f0dd0c4438e22a0b322347ee8d502b2346e",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/terminal-cell-owner.log",
+      "status": "failed-attempt",
+      "observedTests": {
+        "run": 2,
+        "passed": 0,
+        "failed": 2,
+        "skippedOrFiltered": 1
+      }
+    },
+    {
+      "name": "operator-owner-ports",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "learning_operator_",
+        "--test-threads=1",
+        "--no-tests=fail"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:49:55.364426+00:00",
+      "finishedAt": "2026-10-01T05:50:55.638762+00:00",
+      "elapsedSeconds": 60.274374593000175,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/operator-owner-ports.log",
+      "logSha256": "a6551cb3f1e71859634b74f73639fb70e118a81a644fde468bc6321acec69873",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/operator-owner-ports.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 35,
+        "passed": 35,
+        "failed": 0,
+        "skippedOrFiltered": 187
+      }
+    },
+    {
+      "name": "cognitive-ranker",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "cognitive_ranker",
+        "--test-threads=1",
+        "--no-tests=fail"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:50:55.639964+00:00",
+      "finishedAt": "2026-10-01T05:51:11.127598+00:00",
+      "elapsedSeconds": 15.487615414000174,
+      "exitCode": 100,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/cognitive-ranker.log",
+      "logSha256": "65518fcd63473f62e6da5baeb013003fc4f092af335ae26d0d15118f81090c99",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/cognitive-ranker.log",
+      "status": "environment-blocked",
+      "observedTests": {
+        "run": 20,
+        "passed": 19,
+        "failed": 1,
+        "skippedOrFiltered": 202
+      }
+    },
+    {
+      "name": "sealed-product-evaluation",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "intelligence_product::evaluation_tests",
+        "--test-threads=1",
+        "--no-tests=fail"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:51:11.128351+00:00",
+      "finishedAt": "2026-10-01T05:51:16.742535+00:00",
+      "elapsedSeconds": 5.61419857600049,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/sealed-product-evaluation.log",
+      "logSha256": "b08f690232a0ecafce364e08eb2e048849f6aa714eb2894881cc477a6e312971",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/sealed-product-evaluation.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 4,
+        "passed": 4,
+        "failed": 0,
+        "skippedOrFiltered": 218
+      }
+    },
+    {
+      "name": "plasticity-runtime",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "plasticity_runtime::",
+        "--test-threads=1",
+        "--no-tests=fail"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:51:16.743225+00:00",
+      "finishedAt": "2026-10-01T05:51:19.170447+00:00",
+      "elapsedSeconds": 2.427230799999961,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/plasticity-runtime.log",
+      "logSha256": "840321b075f383f2ec26073e7f17bb2b5357d33be65cc461d407811ce6b18836",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/plasticity-runtime.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 3,
+        "passed": 3,
+        "failed": 0,
+        "skippedOrFiltered": 219
+      }
+    },
+    {
+      "name": "plasticity-process-bootstrap",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "plasticity_process_bootstrap::",
+        "--test-threads=1",
+        "--no-tests=fail"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:51:19.170983+00:00",
+      "finishedAt": "2026-10-01T05:51:21.193871+00:00",
+      "elapsedSeconds": 2.022922739000933,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/plasticity-process-bootstrap.log",
+      "logSha256": "ee0149893b5bdfe956491c1192f11912c9a6fd6a5a5d275deaf8bde2f808a65d",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/plasticity-process-bootstrap.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 3,
+        "passed": 3,
+        "failed": 0,
+        "skippedOrFiltered": 219
+      }
+    },
+    {
+      "name": "plasticity-process-e2e",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--features",
+        "qualification-cognitive-write",
+        "--test",
+        "plasticity_process_e2e",
+        "--test-threads=1",
+        "--no-tests=fail"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:51:21.194474+00:00",
+      "finishedAt": "2026-10-01T05:51:50.938516+00:00",
+      "elapsedSeconds": 29.744069782000224,
+      "exitCode": 100,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/plasticity-process-e2e.log",
+      "logSha256": "ec3ee826fb204f9a0e6bb0f459b62040d8c6823d518dffce56a06fb053dc7a35",
+      "sourceChangedPaths": [
+        "codex-rs/.round3-validation-pause.toml"
+      ],
+      "originalManifestMember": "host/first-owner-batch-attempt/agentd-suites.json",
+      "originalManifestSha256": "63a6ae9046e8d9c7e21dd5bf93691eb329cfcb88cfedf4c0b47463c6b679f744",
+      "atRunSourceHead": "a180997d54925a77d7720246adb558224a11d318",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/first-owner-batch-attempt/plasticity-process-e2e.log",
+      "status": "environment-blocked"
+    },
+    {
+      "name": "terminal-cell-owner-retry",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "terminal_cell_owner"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:56:35.478418+00:00",
+      "finishedAt": "2026-10-01T05:56:45.870463+00:00",
+      "elapsedSeconds": 10.392044194999471,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/terminal-cell-owner-retry.log",
+      "logSha256": "b549b4a104bc329cfd52f6d60b195fb8954b265bbd1249fa2e7249480a71acf6",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/terminal-cell-owner-retry.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 2,
+        "passed": 2,
+        "failed": 0,
+        "skippedOrFiltered": 1
+      }
+    },
+    {
+      "name": "cross-owner-libraries",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:56:45.871087+00:00",
+      "finishedAt": "2026-10-01T05:57:27.867879+00:00",
+      "elapsedSeconds": 41.996806639999704,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/cross-owner-libraries.log",
+      "logSha256": "26bc131eafcbcb2778e5a46bbf83e402a17fe941b9f1a2215e66e2b393488918",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/cross-owner-libraries.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 654,
+        "passed": 654,
+        "failed": 0,
+        "skippedOrFiltered": 2
+      }
+    },
+    {
+      "name": "canonical-json-feature-unification",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "learning_operator_protocol::tests",
+        "--features",
+        "serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value",
+        "--test-threads=1"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:57:27.869202+00:00",
+      "finishedAt": "2026-10-01T05:57:40.676375+00:00",
+      "elapsedSeconds": 12.807183388998965,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/canonical-json-feature-unification.log",
+      "logSha256": "375a6f9b76df94fff40ec84c858ff9b33899aff5fe9dd46c68ce738c31400f8a",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/canonical-json-feature-unification.log",
+      "status": "passed",
+      "observedTests": {
+        "run": 12,
+        "passed": 12,
+        "failed": 0,
+        "skippedOrFiltered": 174
+      }
+    },
+    {
+      "name": "external-api-consumers",
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-api-surface.py"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:57:40.676866+00:00",
+      "finishedAt": "2026-10-01T05:57:51.029556+00:00",
+      "elapsedSeconds": 10.35269735500151,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/external-api-consumers.log",
+      "logSha256": "6b2a5e13c1c5ac62d2a3d49bbe4ed030c77594670f8f31685d4a56409cb6823f",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/external-api-consumers.log",
+      "status": "passed",
+      "observedApiConsumers": {
+        "count": 19,
+        "passed": true,
+        "positive": 3,
+        "compileFail": 16
+      }
+    },
+    {
+      "name": "operator-default-strict-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:57:51.029973+00:00",
+      "finishedAt": "2026-10-01T05:57:58.204627+00:00",
+      "elapsedSeconds": 7.174664281999867,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/operator-default-strict-clippy.log",
+      "logSha256": "a19d171f0c8f45e2ae7cb32557858fc1c771725dd40082d6170b88258970a4bd",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/operator-default-strict-clippy.log",
+      "status": "passed"
+    },
+    {
+      "name": "operator-compat-strict-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--all-targets",
+        "--features",
+        "qualification-unverified-input",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:57:58.205034+00:00",
+      "finishedAt": "2026-10-01T05:58:00.813163+00:00",
+      "elapsedSeconds": 2.6081385999987106,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/operator-compat-strict-clippy.log",
+      "logSha256": "2dce3101fb501cdc13bc942eb49e092639cc92733fd33901e2231fdfb3f70417",
+      "sourceChangedPaths": [],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/operator-compat-strict-clippy.log",
+      "status": "passed"
+    },
+    {
+      "name": "scoped-just-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs",
+      "startedAt": "2026-10-01T05:58:00.813576+00:00",
+      "finishedAt": "2026-10-01T06:00:28.962419+00:00",
+      "elapsedSeconds": 148.14885687900096,
+      "exitCode": 0,
+      "log": "/workspace/scratch/99c8d2276f89/round3-validation/scoped-just-fix.log",
+      "logSha256": "822b2d8a1627e3412863f5b67af30f4a663a2ef47633ac5a16050d2ba7c7263e",
+      "sourceChangedPaths": [
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"
+      ],
+      "originalManifestMember": "host/agentd-suites.json",
+      "originalManifestSha256": "95d08c77b42bf5f890904cfe17189ad488d9d18ce34bde43738279a9a2388f57",
+      "atRunSourceHead": "f6a6e497c00807da4444fde00a74c7d111bf4f8c",
+      "atRunSourceHeadMissing": false,
+      "rawLogMember": "host/scoped-just-fix.log",
+      "status": "passed-with-source-delta"
+    }
+  ],
+  "controlObservations": [
+    {
+      "member": "host/root-control-validation.json",
+      "sha256": "bbd3905dc45442d7ac33543e7bef54f3e2369553898249a4497345adc71492e6",
+      "original": {
+        "sourceCommit": "894b2260399d03757f3fab69357d0555223ead2a",
+        "results": [
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-contract.py",
+              "verify"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832469.885855,
+            "finishedAtUnix": 1790832469.931165,
+            "log": "control-00.log",
+            "sha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-lane-e-closure.py",
+              "verify"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832469.9313118,
+            "finishedAtUnix": 1790832472.8901281,
+            "log": "control-01.log",
+            "sha256": "3f9c9e4f79e4137802b044278ffb8a7cd18aa8c5f4d1120bade87452512f15bf"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-lane-e-closure.py",
+              "self-test"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832472.8902235,
+            "finishedAtUnix": 1790832472.9572809,
+            "log": "control-02.log",
+            "sha256": "6b38eac44a1caa287b7adfee7722e631eed4efe6e64ba3d01823f5d2f199b921"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-module-docs.py",
+              "verify",
+              "--profile",
+              "development"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832472.957361,
+            "finishedAtUnix": 1790832473.3884523,
+            "log": "control-03.log",
+            "sha256": "20a30d086a352bbc32bf2991e1a30f2ab5dbb521a9e30513ee9e95025523999a"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/test_hepta_lane_e_closure.py"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832473.388529,
+            "finishedAtUnix": 1790832474.0662897,
+            "log": "control-04.log",
+            "sha256": "323de75cada1a6cf322dbab996308a67a4a813175af5a749846cb73cbb4b6da0"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/test_hepta_lane_e_registry.py"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832474.0663688,
+            "finishedAtUnix": 1790832474.1894138,
+            "log": "control-05.log",
+            "sha256": "833af8ba6fd734ac45299e0d9055beaf978ada37598f7c54df8d6ea27b95c9f1"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/test_hepta_verification_profiles.py"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832474.1894917,
+            "finishedAtUnix": 1790832479.0437515,
+            "log": "control-06.log",
+            "sha256": "e3b867fa139fef5fc50b632e32cc8e1b8f9cd5d108b5720e48b5af5151332186"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/test_hepta_ci_v8.py"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832479.0438817,
+            "finishedAtUnix": 1790832479.1741102,
+            "log": "control-07.log",
+            "sha256": "ba8dd02bb7437942124041e01665b154f224dfbcb0a07cdebc0a6802f7ac9c74"
+          },
+          {
+            "argv": [
+              "bash",
+              "-n",
+              "scripts/hepta-learning-operator-authoritative.sh"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832479.174185,
+            "finishedAtUnix": 1790832479.1769466,
+            "log": "control-08.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "argv": [
+              "git",
+              "diff",
+              "--check"
+            ],
+            "exitCode": 0,
+            "startedAtUnix": 1790832479.177003,
+            "finishedAtUnix": 1790832479.190563,
+            "log": "control-09.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      }
+    },
+    {
+      "member": "host/final-navigation-validation.json",
+      "sha256": "ada33ef9b9ea1eba40c52bce035ef06c0554d5f78ba1068b37a226bf676417c7",
+      "original": {
+        "sourceCommit": "c6b885b9eb78df4235fe6768c6b746548f226578",
+        "sourceTree": "b9bf8e93ad13686162d299d40c2f6b32119590b1",
+        "scope": "source navigation and declared evidence, not build/execution/science qualification",
+        "results": [
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-implementation-maps.py",
+              "verify",
+              "--profile",
+              "qualification",
+              "--expected-sha",
+              "c6b885b9eb78df4235fe6768c6b746548f226578",
+              "--expected-tree",
+              "b9bf8e93ad13686162d299d40c2f6b32119590b1"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:42.126120+00:00",
+            "elapsedSeconds": 6.206995820000884,
+            "exitCode": 1,
+            "log": "final-navigation-00.log",
+            "sha256": "f5c763b4ce42ff95e179637fc97ec48212d1a9bc5b50a411d46e782322c7bdd8"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-module-docs.py",
+              "verify",
+              "--profile",
+              "qualification"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:48.333351+00:00",
+            "elapsedSeconds": 5.88167205299942,
+            "exitCode": 1,
+            "log": "final-navigation-01.log",
+            "sha256": "585f28f5174db6b5a0cc4817c7a98020ad6ec7d2d7e310a5891f694118530957"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-map.py",
+              "emit",
+              "--source-sha",
+              "c6b885b9eb78df4235fe6768c6b746548f226578",
+              "--source-tree",
+              "b9bf8e93ad13686162d299d40c2f6b32119590b1",
+              "--output",
+              "/workspace/scratch/99c8d2276f89/round3-validation/current-implementation-projection.json"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:54.215194+00:00",
+            "elapsedSeconds": 0.9361977489988931,
+            "exitCode": 0,
+            "log": "final-navigation-02.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-map.py",
+              "verify",
+              "--path",
+              "/workspace/scratch/99c8d2276f89/round3-validation/current-implementation-projection.json",
+              "--expected-sha",
+              "c6b885b9eb78df4235fe6768c6b746548f226578",
+              "--expected-tree",
+              "b9bf8e93ad13686162d299d40c2f6b32119590b1"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:55.151523+00:00",
+            "elapsedSeconds": 0.5049324150004395,
+            "exitCode": 0,
+            "log": "final-navigation-03.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-contract.py",
+              "verify"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:55.656620+00:00",
+            "elapsedSeconds": 0.05263230799937446,
+            "exitCode": 0,
+            "log": "final-navigation-04.log",
+            "sha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-lane-e-closure.py",
+              "verify"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:55.709428+00:00",
+            "elapsedSeconds": 3.67370986899914,
+            "exitCode": 0,
+            "log": "final-navigation-05.log",
+            "sha256": "3f9c9e4f79e4137802b044278ffb8a7cd18aa8c5f4d1120bade87452512f15bf"
+          },
+          {
+            "argv": [
+              "git",
+              "diff",
+              "--check"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:46:59.383394+00:00",
+            "elapsedSeconds": 0.009996020000471617,
+            "exitCode": 0,
+            "log": "final-navigation-06.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      }
+    },
+    {
+      "member": "host/resolved-anchor-validation.json",
+      "sha256": "d487466f9212e8d54edf3a4ba79a36ea13b2eed5bb6537cbc46e60ee129d74d0",
+      "original": {
+        "sourceCommit": "c6b885b9eb78df4235fe6768c6b746548f226578",
+        "scope": "actual historical objects fetched; ancestry checked; navigation only",
+        "results": [
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-implementation-maps.py",
+              "verify",
+              "--profile",
+              "qualification",
+              "--expected-sha",
+              "c6b885b9eb78df4235fe6768c6b746548f226578"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:48:25.472664+00:00",
+            "elapsedSeconds": 8.394753988000957,
+            "exitCode": 1,
+            "log": "resolved-anchor-00.log",
+            "sha256": "5672bbcde5881a88f9d57693b5d7af02e4705dbdab2b541f1c29da3be1a10101"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-module-docs.py",
+              "verify",
+              "--profile",
+              "qualification"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:48:33.867680+00:00",
+            "elapsedSeconds": 7.473690804999933,
+            "exitCode": 1,
+            "log": "resolved-anchor-01.log",
+            "sha256": "5885e65346ae66291efe001280684d4a7a92f2fe44fe57240e47be4aac8f63c3"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-module-docs.py",
+              "verify",
+              "--profile",
+              "development"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T05:48:41.341542+00:00",
+            "elapsedSeconds": 0.5607416999991983,
+            "exitCode": 0,
+            "log": "resolved-anchor-02.log",
+            "sha256": "20a30d086a352bbc32bf2991e1a30f2ab5dbb521a9e30513ee9e95025523999a"
+          }
+        ]
+      }
+    },
+    {
+      "member": "host/postfix-navigation-validation.json",
+      "sha256": "fdab5019b8ca73ac271d5b8dc3d4694b91f92dc9951f7183dcc4bbe3ebc6cba7",
+      "original": {
+        "sourceCommit": "d46c0e624889bd69c937d6a9c0f66fcf58e28b05",
+        "sourceTree": "00a4ab3b910e9c09d9314a4eb890623c51fd04d0",
+        "scope": "clean exact mapped code/control identity; navigation only, not execution or scientific acceptance",
+        "results": [
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-map.py",
+              "emit",
+              "--source-sha",
+              "d46c0e624889bd69c937d6a9c0f66fcf58e28b05",
+              "--source-tree",
+              "00a4ab3b910e9c09d9314a4eb890623c51fd04d0",
+              "--output",
+              "/workspace/scratch/99c8d2276f89/round3-validation/postfix-implementation-projection.json"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T06:04:43.115432+00:00",
+            "elapsedSeconds": 0.9971439029995963,
+            "exitCode": 0,
+            "log": "postfix-navigation-00.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-map.py",
+              "verify",
+              "--path",
+              "/workspace/scratch/99c8d2276f89/round3-validation/postfix-implementation-projection.json",
+              "--expected-sha",
+              "d46c0e624889bd69c937d6a9c0f66fcf58e28b05",
+              "--expected-tree",
+              "00a4ab3b910e9c09d9314a4eb890623c51fd04d0"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T06:04:44.112978+00:00",
+            "elapsedSeconds": 0.508268986000985,
+            "exitCode": 0,
+            "log": "postfix-navigation-01.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-learning-operator-contract.py",
+              "verify"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T06:04:44.622498+00:00",
+            "elapsedSeconds": 0.05683581899938872,
+            "exitCode": 0,
+            "log": "postfix-navigation-02.log",
+            "sha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69"
+          },
+          {
+            "argv": [
+              "python3",
+              "scripts/hepta-module-docs.py",
+              "verify",
+              "--profile",
+              "development"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T06:04:44.679482+00:00",
+            "elapsedSeconds": 0.47381499699986307,
+            "exitCode": 0,
+            "log": "postfix-navigation-03.log",
+            "sha256": "20a30d086a352bbc32bf2991e1a30f2ab5dbb521a9e30513ee9e95025523999a"
+          },
+          {
+            "argv": [
+              "git",
+              "diff",
+              "--check"
+            ],
+            "cwd": "/workspace/scratch/99c8d2276f89/hepta-private-ci",
+            "startedAt": "2026-10-01T06:04:45.153457+00:00",
+            "elapsedSeconds": 0.0075980210003763204,
+            "exitCode": 0,
+            "log": "postfix-navigation-04.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      }
+    }
+  ],
+  "engineeringQualified": false,
+  "defaultLoopWired": false,
+  "independentScientificAcceptance": false,
+  "targetHostCapacityAccepted": false,
+  "activation": false,
+  "release": false,
+  "hostedFinalHeadCi": "pending at publication; observe linked GitHub runs separately",
+  "claimBoundary": "Actual scoped builds/tests/lint and source navigation only. Initial host batch retained a non-Cargo imported controlled-pause marker; final resumed batch explicitly checked its absence. Raw failures, source hashes and original source-head gaps are not rewritten. Unix socket tests remain required and environment-blocked locally. Historical counts, performance and science receipts are not transferred. Global strict qualification remains blocked by nine inherited nonancestor provenance anchors.",
+  "rawEvidenceArchiveSha256": "bacf6aa74f68b42401e04a219e8b9aa5d010605c2c8e1001aeebfe750f290d90",
+  "rawEvidenceMemberCount": 117
+}

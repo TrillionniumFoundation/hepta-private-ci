@@ -1,17 +1,4 @@
-use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
-use codex_hepta_intelligence_eval::CrossFoldPlanV1;
-use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
-use codex_hepta_intelligence_eval::EvaluationDirectionV1;
-use codex_hepta_intelligence_eval::EvaluationIntervalV1;
-use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
-use codex_hepta_intelligence_eval::MetricContractV1;
-use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::MetricRoleContractV2;
-use codex_hepta_intelligence_eval::MetricRoleV2;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
-use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
+use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -160,68 +147,25 @@ pub(super) fn evidence_fixture(
             minimum_improvement: FixedQ32::from_raw(5),
         },
     }];
-    let frozen_plan = freeze_cross_fold_plan_v2(
-        CrossFoldPlanV1 {
-            plan_id: id("qualification-plan"),
-            claim_scope: EvaluationClaimScopeV1::Qualification,
-            candidate_id: binding.selected_candidate_id.clone(),
-            baseline_id: id("baseline"),
-            objective_digest,
-            dataset_digest,
-            estimand_digest,
-            metric_contracts: vec![MetricContractV1 {
-                metric_id: id("task-utility"),
-                direction: EvaluationDirectionV1::Maximize,
-                safety_floor: Some(FixedQ32::from_raw(80)),
-            }],
-            family_alpha_ppm: 50_000,
-            simultaneous_comparisons: 1,
-            folds: vec![fold(1), fold(2)],
-            final_holdout_window_id: id("holdout-window-2"),
-            final_holdout_digest: digest("final-holdout"),
-        },
-        roles.clone(),
-    )
-    .unwrap();
-    let holdout_use = FinalHoldoutRegistry::new().consume(&frozen_plan).unwrap();
-
-    let bundle = IndependentEvaluationBundleV1 {
-        evaluation_id: id("evaluation"),
+    let cross_fold = CrossFoldPlanV1 {
+        plan_id: id("qualification-plan"),
+        claim_scope: EvaluationClaimScopeV1::Qualification,
         candidate_id: binding.selected_candidate_id.clone(),
         baseline_id: id("baseline"),
-        claim_scope: EvaluationClaimScopeV1::Qualification,
-        generator: generator.clone(),
-        evaluator: evaluator.clone(),
-        frozen_plan,
-        holdout_use,
         objective_digest,
         dataset_digest,
         estimand_digest,
-        estimate_receipt_digest: digest("estimate"),
-        support_audit_digest: digest("support-audit"),
-        confidence_receipt_digest: digest("confidence"),
-        retention_receipt_digests: Vec::new(),
-        unlearning_receipt_digest: Digest32::ZERO,
-        snapshot_ids: vec![id("snapshot-1")],
-        future_window_ids: vec![id("future-window-1")],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        metrics: vec![MetricGateV1 {
+        metric_contracts: vec![MetricContractV1 {
             metric_id: id("task-utility"),
             direction: EvaluationDirectionV1::Maximize,
-            candidate: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(100),
-                upper: FixedQ32::from_raw(110),
-            },
-            baseline: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(80),
-                upper: FixedQ32::from_raw(90),
-            },
             safety_floor: Some(FixedQ32::from_raw(80)),
-            support_digest: digest("metric-support"),
         }],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        folds: vec![fold(1), fold(2)],
+        final_holdout_window_id: id("holdout-window-2"),
+        final_holdout_digest: digest("final-holdout"),
     };
-
     let trust_definition = LearningEvidenceTrustV1 {
         scope_digest,
         objective_digest,
@@ -245,6 +189,19 @@ pub(super) fn evidence_fixture(
     };
     let trust = activate(trust_definition, now);
     let verifier = trust.verifier();
+    let (runner, temporal) = crate::product_qualification_test_support::evaluate(
+        cross_fold,
+        roles.clone(),
+        vec![id("snapshot-1")],
+        vec![id("holdout-window-2")],
+    );
+    let context = ProductQualificationContextV1 {
+        generator: generator.clone(),
+        evaluator: evaluator.clone(),
+        retention_receipt_digests: vec![],
+        unlearning_receipt_digest: Digest32::ZERO,
+    };
+    let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
 
     let payload = evaluation_signing_payload_v2(&bundle, &roles).unwrap();
     let evidence = SignedEvaluationEvidenceV1 {
@@ -266,7 +223,21 @@ pub(super) fn evidence_fixture(
         ),
     };
 
-    let payload = intelligence_evaluation_binding_payload_v1(binding, &evidence).unwrap();
+    let mut sink = crate::product_qualification_test_support::DurableSink::new();
+    let qualification = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            verifier,
+            now,
+            &mut sink,
+        )
+        .unwrap();
+    sink.assert_publication(qualification.publication_digest);
+    let payload =
+        intelligence_evaluation_binding_payload_v1(binding, &evidence, &qualification).unwrap();
     let use_attestation = sign(
         verifier,
         &evaluator,
@@ -278,6 +249,7 @@ pub(super) fn evidence_fixture(
     (
         trust,
         AgentdSignedEvaluationV1 {
+            qualification,
             bundle,
             roles,
             evidence,
@@ -395,6 +367,34 @@ fn evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted() {
     assert!(
         changed
             .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
+            .is_err()
+    );
+}
+
+#[test]
+fn published_qualification_cannot_be_edited_or_substituted_at_consumption() {
+    let binding = binding();
+    let input = input(&binding);
+    let mut changed = session(&binding, 1_000);
+    changed.signed.qualification.decision.decision.disposition =
+        IndependentEvaluationDispositionV1::Ineligible;
+    assert!(
+        changed
+            .evaluate(&input, &binding.selected_candidate_id, 1_000)
+            .is_err()
+    );
+    let mut changed = session(&binding, 1_000);
+    changed.signed.qualification.publication_digest = digest("unpublished-evidence");
+    assert!(
+        changed
+            .evaluate(&input, &binding.selected_candidate_id, 1_000)
+            .is_err()
+    );
+    let mut changed = session(&binding, 1_000);
+    changed.signed.qualification.decision.decision.baseline_id = id("substituted-baseline");
+    assert!(
+        changed
+            .evaluate(&input, &binding.selected_candidate_id, 1_000)
             .is_err()
     );
 }
