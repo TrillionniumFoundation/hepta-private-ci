@@ -106,6 +106,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_repository_integrity.py'
           python3 scripts/hepta-repository-integrity.py self-test
           python3 scripts/hepta-repository-integrity.py verify \
             --base "${{ steps.identity.outputs.base }}" \
