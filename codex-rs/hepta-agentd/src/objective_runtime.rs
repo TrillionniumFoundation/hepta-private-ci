@@ -290,6 +290,7 @@ impl ObjectiveRuntimeHost {
         };
 
         if published.publication.disposition == RunStartAppendDisposition::IdempotentReplay
+            && record.disposition == RunStartObjectiveDispositionV1::Compiled
             && (agentd.canonical_intelligence_enabled()
                 || agentd.intuition_policy.get().is_some()
                 || agentd.intelligence_product.get().is_some()
@@ -297,7 +298,9 @@ impl ObjectiveRuntimeHost {
         {
             // Publication deduplication serializes concurrent requests, but the
             // seven-owner handoff is not yet durable. Rebuilding that handoff
-            // could mint another Decision or revive an already dispatched run.
+            // would rerun owners instead of restoring the original receipt.
+            // Compiler-native ExplicitAbstain has no such handoff: its entire
+            // result is this immutable publication, reauthenticated below.
             return Err(AgentdError::Invalid(
                 "agentd.intuition.service.durable_handoff_reconciliation_required".to_string(),
             ));

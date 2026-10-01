@@ -73,8 +73,7 @@ fn profile_json() -> serde_json::Value {
     })
 }
 
-fn source_json() -> String {
-    let source = objective_envelope();
+fn source_json(source: &ObjectiveSourceEnvelopeV1) -> String {
     serde_json::to_string(&serde_json::json!({
         "requestId": source.request_id,
         "principalScopeDigest": source.principal_scope_digest.to_string(),
@@ -82,7 +81,7 @@ fn source_json() -> String {
         "structuredIntent": {
             "successPredicates": [{ "predicateId": "task.success", "unit": "ratio", "comparator": "gte", "boundQ32": 1_i64 << 31, "evidenceSourceId": "observer.task", "terminal": false }],
             "terminalConditions": [{ "predicateId": "task.terminal", "unit": "boolean", "comparator": "eq", "boundQ32": FixedQ32::ONE.raw(), "evidenceSourceId": "observer.task", "terminal": true }],
-            "legalActionClasses": ["read"],
+            "legalActionClasses": source.structured_intent.legal_action_classes,
             "forbiddenActionClasses": ["network"],
             "confirmationActionClasses": [],
             "constraints": [{ "constraintId": "latency.ceiling", "unit": "micros", "comparator": "lte", "boundQ32": 5_000, "evidenceSourceId": "observer.clock", "terminal": false }],
@@ -100,12 +99,16 @@ fn source_json() -> String {
     })).expect("strict source JSON")
 }
 
-fn request(identity: &AgentdIdentity, run_id: &StableId) -> AuthBusObjectiveIngress {
+fn request(
+    identity: &AgentdIdentity,
+    run_id: &StableId,
+    source: &ObjectiveSourceEnvelopeV1,
+) -> AuthBusObjectiveIngress {
     let body = AuthBusObjectiveBody {
         spawn_generation: identity.spawn_generation,
         run_id: run_id.to_string(),
         objective_revision: 7,
-        source_envelope_json: source_json(),
+        source_envelope_json: source_json(source),
         runtime_body_digest: digest("runtime-body").to_string(),
         preference_state_digest: digest("preference").to_string(),
         model_tuple_digest: digest("model-tuple").to_string(),
@@ -150,7 +153,11 @@ async fn objective_host_parallel_and_reopened_replays_stop_before_provider() {
     write_private(&profile_path, &profile_json());
     let host =
         ObjectiveRuntimeHost::open(identity, &profile_path).expect("actual ObjectiveStart owner");
-    let request = request(identity, &fixture.record.snapshot.run_id);
+    let request = request(
+        identity,
+        &fixture.record.snapshot.run_id,
+        &objective_envelope(),
+    );
     let ledger_before = std::fs::read(&fixture.ledger_path).expect("ledger before");
     let witness_before = std::fs::read(&fixture.witness_path).expect("witness before");
 
@@ -217,6 +224,146 @@ async fn objective_host_parallel_and_reopened_replays_stop_before_provider() {
         matches!(retry, Err(AgentdError::Invalid(code)) if code == "agentd.intuition.service.durable_handoff_reconciliation_required")
     );
     assert_eq!(fixture.provider.calls.load(Ordering::Acquire), 1);
+    assert_eq!(
+        std::fs::read(&fixture.ledger_path).expect("ledger after"),
+        ledger_before
+    );
+    assert_eq!(
+        std::fs::read(&fixture.witness_path).expect("witness after"),
+        witness_before
+    );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn compiler_explicit_abstain_parallel_and_reopened_replays_keep_original_publication() {
+    let fixture = RunningFixture::new().await;
+    let identity = fixture.state.identity();
+    let profile_path = identity.home_root.join("objective-profile.json");
+    write_private(&profile_path, &profile_json());
+    let host =
+        ObjectiveRuntimeHost::open(identity, &profile_path).expect("actual ObjectiveStart owner");
+    let mut source = objective_envelope();
+    source.structured_intent.legal_action_classes.clear();
+    source.intent_digest =
+        canonical_objective_intent_digest_v1(&source).expect("native abstain intent");
+    let request = request(identity, &fixture.record.snapshot.run_id, &source);
+    let ledger_before = std::fs::read(&fixture.ledger_path).expect("ledger before");
+    let witness_before = std::fs::read(&fixture.witness_path).expect("witness before");
+    let original = match host
+        .submit(
+            &fixture.state,
+            request.clone(),
+            /*current_generation*/ 2,
+        )
+        .await
+        .expect("native compiler abstain publication")
+    {
+        crate::objective_runtime::ObjectiveStartResult::Admitted(receipt) => Some(receipt),
+        crate::objective_runtime::ObjectiveStartResult::Conflict { .. } => None,
+    }
+    .expect("native compiler abstain is not a conflict");
+    assert_eq!(original.disposition, "explicit_abstain");
+    assert!(!original.idempotent);
+    let journal_path = identity
+        .home_root
+        .join("objective-run-start-v1")
+        .join("journal.bin");
+    let journal_before = std::fs::read(&journal_path).expect("published journal");
+    let mut expected = original;
+    expected.idempotent = true;
+
+    // This is the compiler's terminal outcome, not Compiled followed by a
+    // canonical policy abstention. The latter still needs its original handoff.
+    let runtime = tokio::runtime::Handle::current();
+    let start = std::sync::Barrier::new(/*n*/ 2);
+    let left_request = request.clone();
+    let right_request = request.clone();
+    let parallel = std::thread::scope(|threads| {
+        let left = threads.spawn(|| {
+            start.wait();
+            runtime.block_on(host.submit(
+                &fixture.state,
+                left_request,
+                /*current_generation*/ 2,
+            ))
+        });
+        let right = threads.spawn(|| {
+            start.wait();
+            runtime.block_on(host.submit(
+                &fixture.state,
+                right_request,
+                /*current_generation*/ 2,
+            ))
+        });
+        [
+            left.join().expect("left terminal retry"),
+            right.join().expect("right terminal retry"),
+        ]
+    });
+    for result in parallel {
+        assert!(
+            matches!(result, Ok(crate::objective_runtime::ObjectiveStartResult::Admitted(receipt)) if receipt == expected)
+        );
+    }
+    drop(host);
+    let reopened =
+        ObjectiveRuntimeHost::open(identity, &profile_path).expect("durable RunStart owner reopen");
+    reopened
+        .reconcile(
+            &fixture.state,
+            /*current_generation*/ 2,
+            wall_clock_ms().expect("recovery clock"),
+        )
+        .expect("native compiler terminal recovery");
+    let retry = reopened
+        .submit(
+            &fixture.state,
+            request.clone(),
+            /*current_generation*/ 2,
+        )
+        .await;
+    assert!(
+        matches!(retry, Ok(crate::objective_runtime::ObjectiveStartResult::Admitted(receipt)) if receipt == expected)
+    );
+
+    let mut expired = request.clone();
+    expired.expires_at_ms = 0;
+    assert!(matches!(
+        reopened.submit(&fixture.state, expired, /*current_generation*/ 2).await,
+        Err(AgentdError::Invalid(message)) if message == "objective expiry must be within five minutes"
+    ));
+    let trust_path = identity.home_root.join("objective-trust.json");
+    let mut trust: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&trust_path).expect("current issuer trust"))
+            .expect("trust JSON");
+    trust["revoked"] = serde_json::json!(true);
+    write_private(&trust_path, &trust);
+    assert!(matches!(
+        reopened.submit(&fixture.state, request.clone(), /*current_generation*/ 2).await,
+        Err(AgentdError::Invalid(message)) if message.starts_with("objective signature:")
+    ));
+    trust["revoked"] = serde_json::json!(false);
+    write_private(&trust_path, &trust);
+    let registry = FleetRegistry::open_existing(
+        HeptaFleetRoot::parse(fixture._directory.path().join("fleet")).expect("existing Fleet"),
+    )
+    .expect("existing Fleet owner");
+    registry
+        .compare_and_transition(
+            &identity.agent_id,
+            /*expected_generation*/ 2,
+            AgentLifecycle::Draining,
+        )
+        .expect("Draining 3");
+    assert!(matches!(
+        reopened.submit(&fixture.state, request, /*current_generation*/ 2).await,
+        Err(AgentdError::Invalid(message)) if message == "Agent generation is not ready"
+    ));
+    assert_eq!(fixture.provider.calls.load(Ordering::Acquire), 0);
+    assert_eq!(
+        std::fs::read(&journal_path).expect("journal after retries"),
+        journal_before
+    );
     assert_eq!(
         std::fs::read(&fixture.ledger_path).expect("ledger after"),
         ledger_before
