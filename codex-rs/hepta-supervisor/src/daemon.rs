@@ -732,7 +732,7 @@ async fn handle_request<D: ProcessDriver>(
                     status_from(
                         &state.supervisor_epoch,
                         &record,
-                        supervisor.snapshot(&agent_id),
+                        supervisor.metadata_snapshot(&agent_id),
                     )
                 })
                 .collect::<Result<Vec<_>, _>>()
@@ -1087,7 +1087,7 @@ fn publish_recovery_observations<D: ProcessDriver>(
         .map(|_| authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str()));
     for (agent_id, record) in state.registry.load()?.agents {
         let snapshot = supervisor
-            .snapshot(&agent_id)
+            .metadata_snapshot(&agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
         let observation = crate::publish_production_recovery_observation(
             record.layout.owner_run_root(),
@@ -1158,7 +1158,7 @@ fn agent_status_locked<D: ProcessDriver>(
     status_from(
         &state.supervisor_epoch,
         &record,
-        supervisor.snapshot(agent_id),
+        supervisor.metadata_snapshot(agent_id),
     )
 }
 

@@ -107,6 +107,15 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn snapshot(&self, agent_id: &AgentId) -> Option<AgentSupervisorSnapshot> {
+        let mut snapshot = self.metadata_snapshot(agent_id)?;
+        let slot = self.slots.get(agent_id)?;
+        snapshot.events = slot.events.items.iter().cloned().collect();
+        snapshot.logs = slot.logs.items.iter().cloned().collect();
+        Some(snapshot)
+    }
+
+    /// Observe control and ownership fields without copying diagnostic history.
+    pub(crate) fn metadata_snapshot(&self, agent_id: &AgentId) -> Option<AgentSupervisorSnapshot> {
         self.slots
             .get(agent_id)
             .map(|slot| AgentSupervisorSnapshot {
@@ -160,8 +169,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     restart_attempt: slot.matrix.restart_attempt,
                     last_error: slot.matrix.last_error.clone(),
                 },
-                events: slot.events.items.iter().cloned().collect(),
-                logs: slot.logs.items.iter().cloned().collect(),
+                events: Vec::new(),
+                logs: Vec::new(),
                 control_revision: slot.control_revision,
                 restart_pending: slot.restart_pending,
                 restart_attempt: slot.restart_attempt,

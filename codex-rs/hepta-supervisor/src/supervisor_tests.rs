@@ -2343,3 +2343,6 @@ mod matrix_restart_recovery_tests;
 
 #[path = "signed_restart_recovery_tests.rs"]
 mod signed_restart_recovery_tests;
+
+#[path = "supervisor_metadata_tests.rs"]
+mod metadata_tests;
