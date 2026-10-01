@@ -196,7 +196,13 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
                 .await
                 .is_err()
         );
-        assert_eq!(control.native_record("r1"), Some(&stopped));
+        assert!(control.native_record("r1").is_none());
+        assert_eq!(
+            control
+                .reserve_native(stopped.request.clone(), /*maximum_in_flight*/ 1)
+                .unwrap(),
+            stopped
+        );
         drop(control);
         std::fs::remove_file(path).unwrap();
     }
@@ -245,6 +251,7 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
             },
         )
         .unwrap();
+    let rejected = control.native_record("r1").unwrap().clone();
     drop(control);
 
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
@@ -263,7 +270,11 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
             .to_string()
             .contains("explicitly rejected before start")
     );
-    let record = control.native_record("r1").unwrap();
+    assert!(control.native_record("r1").is_none());
+    let record = control
+        .reserve_native(rejected.request.clone(), /*maximum_in_flight*/ 1)
+        .unwrap();
+    assert_eq!(record, rejected);
     assert_eq!(record.state, NativeReservationState::Released);
     assert!(record.dispatch_rejection.is_some());
     assert_eq!(record.observation, None);
@@ -379,7 +390,13 @@ async fn expired_absolute_deadline_cannot_be_refreshed_on_reopen() {
             .await
             .is_err()
     );
-    assert_eq!(control.native_record("r1"), Some(&stopped));
+    assert!(control.native_record("r1").is_none());
+    assert_eq!(
+        control
+            .reserve_native(stopped.request.clone(), /*maximum_in_flight*/ 1)
+            .unwrap(),
+        stopped
+    );
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
