@@ -208,6 +208,9 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retrieval-publication-host.json" --minimum-tests 7 -- just test --locked -p codex-hepta-agentd -E 'test(cognitive_publication) & !test(cognitive_publication_socket)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retrieval-publication-socket.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd -E 'test(cognitive_publication_socket_reused_client_request_ids_bind_exact_confirmed_frames)' --test-threads 1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retrieval-publication-ledger.json" --minimum-tests 16 -- just test --locked -p codex-hepta-learning-ledger -E 'test(retrieval_publication)'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- just test --locked -p codex-hepta-intelligence-eval -E 'test(selector_and_rollback_are_opaque_independent_admissions)'

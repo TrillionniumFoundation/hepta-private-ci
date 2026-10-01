@@ -3,6 +3,9 @@ use super::*;
 #[path = "cognitive_publication_tests.rs"]
 mod cognitive_publication;
 
+#[path = "cognitive_publication_socket_tests.rs"]
+mod cognitive_publication_socket;
+
 #[path = "cognitive_context_delivery_tests.rs"]
 mod delivery;
 
