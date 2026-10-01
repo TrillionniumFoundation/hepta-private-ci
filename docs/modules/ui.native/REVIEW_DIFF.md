@@ -5,25 +5,38 @@ The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 `work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the
 immutable implementation SHA/tree and ADVERSARIAL-AUDIT-20261001.md for findings.
 
-The current implementation source for this follow-up is
-`703e9bf2871b26d646f1c4d748e0b0061f70ad3c`, tree
-`d549e3e492093810b685c7d65d58d6983566a82b`. This ordinary commit changes three
-fixture files: actual Unix zero-exit candidate copy, environment-only picker
-Command, and Windows authority helper error propagation. It retains startup
-rejection, rollback digest/mode assertions, owner lifetime and strict lints.
-The inventory selection remains 406 Git blobs, 32 paths and 16 local Cargo
-dependencies, inventory SHA256
-`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`.
-The re-anchored precommit structural checker passed for this exact 406/32/16
-inventory. This is a structural diagnostic, not platform or release acceptance.
-CURRENT_SOURCE.json binds this new inventory. Full current
-suites, strict lint, owner, full-symbol ACK, release, storage/performance and
-same-run CI are pending.
+The current ordinary implementation source is `a1abe5b2a083213c095cdabaf4b3048144e3cad0`, tree
+`6269ea8bf6f01c77a3025881e636096a4111b330`. It adds same-descriptor macOS extended-ACL and ownership-enforcement
+checks for native private state and shared authority stores, rejects Unix
+authority-store FIFOs without blocking, and fixes the Windows registrar fixture's
+ambiguous PowerShell `Marshal.SizeOf` overload through a typed C# probe. Existing
+owner/mode/link checks, final-use authority, update fences, native layout offsets
+and the owned shortcut property-store roundtrip remain enforced.
 
-The focused Linux 2/2 pass (0.163 s) was observed on the post-EBD worktree whose
-three repaired files match 703e9bf blobs; it is not a full suite or macOS/Windows
-execution. A standalone Rust 1.95 type-shape Clippy probe exited 0: complexity
-230 is below 250. It does not qualify the Windows fixture.
+CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16
+local Cargo dependencies, inventory SHA256 `347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`. Complete tests, strict
+lint, release, compiler-negative boundaries and seven-subject CI must execute
+for this new source. Historical success does not qualify it; all production,
+deployment and release flags remain false.
+
+Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
+separate scale entries ignored) and strict all-target/all-feature application
+Clippy in 7.75 s. The structural checker binds the 415/32/16 inventory. A separate
+source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
+including both bounded FIFO cases, and strict Clippy; its reduced workspace is
+not the complete four-owner or platform qualification subject. New Darwin and
+Windows fixtures still require the exact target CI.
+
+Historical source `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` has fresh clean-review-head Linux diagnostics:
+application 243/243 (three separate scale entries ignored, 4.803 s), Python 238
+total (237 passed/one Windows junction skip, 14.970 s), strict application
+Clippy (7.51 s), three actual external E0603 boundaries, three release binaries,
+self-test and real child-fault recovery. Run 36823756631 passed both macOS
+subjects and Linux storage; both Windows subjects failed their registrar
+fixture because PowerShell marshaled `System.RuntimeType` as an object.
+Its exact receipts and terminal status are retained in
+[20261001-703e9-verification.json](history/20261001-703e9-verification.json). The subsequent independent Darwin ACL/FIFO
+review and Windows failure require this new freeze.
 
 Historical EBD source `ebd04a7ed458aa5feaba69525f48f3623c4db033` repaired 11
 source files covering checkout attributes/identity, macOS cfg/FIFO and Windows
@@ -90,6 +103,7 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | optimize SHA-256 only in the test profile while hashing full executable symbols and preserving production update fences | `0c176c9d4df6055418529389bf0f749f74ac1a69` |
 | freeze checkout attributes and owner-lock LF; regress real autocrlf checkout and owned fixture command selection; fix macOS cfg/Unix FIFO and Windows PROPVARIANT layout/owned-shortcut roundtrip | `ebd04a7ed458aa5feaba69525f48f3623c4db033` |
 | use the actual Unix zero-exit executable and propagate Windows authority fixture errors while preserving strict checks | `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` |
+| reject Darwin private ACLs and ignored ownership, preserve unsafe atomic destinations, reject Unix authority FIFOs without blocking, and call the typed Windows registrar layout probe | `a1abe5b2a083213c095cdabaf4b3048144e3cad0` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;
@@ -107,7 +121,7 @@ python3 scripts/check_hepta_ui_native_convergence.py
 ```
 
 Review directory-handle ownership and WAL/checkpoint recovery first; then update
-child-root ownership, same-handle Windows ACL checks, mutable hardlink rejection,
+child-root ownership, same-handle Windows and Darwin ACL checks, ignored-ownership rejection, existing-destination preservation, nonblocking authority-file admission, mutable hardlink rejection,
 copy digests, rollback identity, ACK/cancellation arbitration and bounded staging
 admission. Trace helper activation through its existing manager root and binding
 preparation through exact input/view capture, worker admission and stale-result
@@ -123,11 +137,11 @@ Inspect Linux-only cfg while retaining all-platform root validation, real Unix
 FIFO rejection, and Windows PROPVARIANT native size/offsets plus owned `.lnk`
 property-store roundtrip; their source presence is not a real macOS/Windows pass.
 
-Independent review of the three latest fixture repairs found no further
-reproducible issue within that scope; fresh full suites and CI remain pending.
-The earlier EBD static-review stop was superseded by executed macOS/Windows
-failures. New execution failures require another ordinary source repair and
-freeze. The result remains an incomplete implementation candidate. Non-Linux verified
-Open/Reveal adapters remain absent. Physical acceptance, coverage, soak,
-production signing, independent supply-chain acceptance and release authority
-remain explicit gates.
+The earlier bounded review stop was superseded by actual Windows fixture
+failure and the independent Darwin ACL/FIFO findings. Re-review the new cuts,
+then execute the exact frozen source on every target; fixture source and partial
+historical success cannot establish convergence or platform acceptance. The
+result remains an incomplete implementation candidate. Non-Linux verified
+Open/Reveal adapters remain absent. Physical acceptance, ownership-ignored
+volumes, coverage, soak, production signing, independent supply-chain acceptance
+and release authority remain explicit gates.

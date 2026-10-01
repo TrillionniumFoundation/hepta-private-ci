@@ -5,25 +5,33 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-当前已发布的普通源码为 `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`，tree 为
-`d549e3e492093810b685c7d65d58d6983566a82b`。该源仍是未完整验收的实现候选。
-本次普通提交仅修改三个夹具文件：Unix 零退出候选与环境检查 Command 使用
-实际 `/usr/bin/true`，Windows authority helper 的五个 fallible 操作经 Result
-和 `?` 传播。启动拒绝、回滚摘要/0751 mode、owner 生命周期、严格 lint 和
-所有生产流程不变。清单选择仍为 406 Git blobs、32 paths、16 local Cargo
-依赖，inventory SHA256 为
-`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`，由 CURRENT_SOURCE.json 绑定。
-新锚点的 precommit 结构检查实际通过，精确绑定该 406/32/16 清单；这是结构诊断，
-不是平台、完整同次 CI 或发布资格。
-当前完整应用/Python/
-owner 套件、strict lint、完整符号 ACK、release、存储/性能及同次 CI 待执行，
-不得继承旧源通过结果。production/deployment/release 标志保持 false。
+当前普通源码为 `a1abe5b2a083213c095cdabaf4b3048144e3cad0`，tree 为
+`6269ea8bf6f01c77a3025881e636096a4111b330`，仍是未完整验收的实现候选。新修复在 macOS 对同一打开句柄检查
+扩展 ACL 与 ownership-enforcement，覆盖私有根/child、journal、更新暂存和
+shared authority store。权限迁移、写入/截断和原子替换前均拒绝 ACE；既有
+不安全目标被保留。Unix authority 文件使用 NONBLOCK 后继续严格类型检查，
+避免 FIFO 等待 writer。Windows registrar 夹具通过 typed C# probe 固定
+Marshal.SizeOf(Type) 调用，保留实际布局 offsets 与 owned .lnk roundtrip。
+生产流程不删除 ACL，不放宽 owner/type/link/权限、final-use 或 update fence。
 
-唯一新的实际测试诊断是 Linux focused 2/2 通过（0.163 s）：执行于 post-EBD
-工作树，三个修复文件与 703e9bf 的 Git blobs 一致；不是新源完整套件或 macOS/
-Windows 通过。独立 Rust 1.95 同形返回类型 Clippy probe 在 `-D warnings`、
-`-D clippy::type_complexity` 下 exit 0，复杂度 230 < 默认阈值 250；该探针
-不编译 Windows authority 夹具，也不赋予 owner 或平台资格。
+CURRENT_SOURCE.json 绑定 415 Git blobs、32 selection paths、16 本地
+Cargo 依赖，inventory SHA256 为 `347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`。新源需要重新执行完整套件、
+lint、release、负向编译和七主体 CI；production/deployment/release 均为 false。
+
+新源实际 Linux 应用 243/243 通过（2.472 s，三项独立 scale ignored），strict
+app Clippy 通过（7.75 s），结构检查绑定 415/32/16 清单。独立 source-equivalent
+owner 诊断通过 194 项 Linux contracts 测试（含两个 FIFO）与严格 Clippy；
+其缩小 workspace 不等于完整四个 owner 或真实跨平台 qualification。新增
+Darwin/Windows fixture 仍需新同次 CI。
+
+历史 703e9bf 源在干净 review head AE 上实际通过 Linux 应用 243/243
+（三项独立 scale ignored，4.803 s）、Python 238 项（237 pass/一项 Windows
+junction skip，14.970 s）、strict app Clippy（7.51 s）、三个外部 E0603
+边界、三个 release 二进制、self-test 与真实 child-fault recovery。run
+36823756631 的两个 macOS 主体及 Linux storage 成功；两个 Windows 主体
+均因 PowerShell SizeOf 误选重载失败。精确终态与原始证据见
+[703 不可变历史记录](history/20261001-703e9-verification.json)。这些通过结果
+不得继承给本次新源；追加权限/FIFO复审与 Windows 实际失败取代了旧停点。
 
 历史 EBD 源 `ebd04a7ed458aa5feaba69525f48f3623c4db033` 修复 checkout 字节、
 macOS cfg/FIFO、Windows PATH/registrar ABI。其 Linux debug 应用 243/243
@@ -149,7 +157,7 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 | --- | --- | --- |
 | 产品实现 | 主调用链、MAC v2 网关、内核最终使用、WAL、历史分页及更新协调已经落地；基线仍有构建/协议缺陷 | 本轮修复与回归，不等同生产完成 |
 | 功能覆盖 | Linux Open/Reveal 使用验证 FD；macOS/Windows 等价能力适配器仍缺失并拒绝执行 | 各目标平台的真实资源能力适配与测试 |
-| 仓库验收 | 已执行跨平台工作流未取得完整成功；EBD 后续实际发现 macOS executable fixture 与 Windows helper lint 失败，703e9bf 最小修复后仍待新完整 receipt | 同一 head/base/workflow/run/attempt 的完整成功证据 |
+| 仓库验收 | 703 的 Linux head/merge/storage 与两个 macOS 主体成功，两个 Windows 主体及 aggregate 失败；新增 Darwin/FIFO/typed probe 源待完整同次 CI | 同一 head/base/workflow/run/attempt 的完整成功证据 |
 | 实体桌面 | 无完整 Windows/macOS/X11/Wayland、IME、DPI、无障碍及安装验收 | 对应实体主机执行记录 |
 | 发布资格 | 未完成独立签名、供应链接受、审批与保护规则 | 独立负责人提供并审核，授权标志保持 false |
 
@@ -209,6 +217,11 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 | P2 | Windows 打包 PROPVARIANT 指针 union 只有 x64 16/x86 12 bytes，少于 SDK 24/16 | CountedArray union 自适应布局；实际打包 C# 的 Windows-only SizeOf/OffsetOf 与 owned shortcut Set/Get AUMID roundtrip 回归，当前 Windows 执行待验 |
 | P2 | macOS 完整更新回归复制不存在的 `/bin/true`，实际 ENOENT | 703e9bf 使用真实 `/usr/bin/true`；保留零退出启动拒绝、回滚摘要和 0751 mode，环境-only picker Command 同步修正；Linux focused 2/2 不算 macOS 通过 |
 | P2 | Windows owner strict lint 拒绝 authority fixture helper 五处 unwrap | 703e9bf 经 Result/`?` 传播五个 fallible 操作，保留严格 lint、owner 生命周期与断言；同形类型 probe exit 0，不代替 Windows 编译/执行 |
+
+| P1 | macOS 仅 UID/mode 不能排除扩展 ACL 或 ignore-ownership 卷；私有状态可能仍授予其他主体访问 | 小型 OS utility 同 FD 查询并拒绝任何 ACE/失败/忽略 ownership；native 与 contracts 保留 forbid unsafe，权限迁移前和持久化各 cut 重验 |
+| P1 | 原子替换仅检查新临时文件，会覆盖已有带 ACE 的状态并移除权限证据 | 写前与提交前检查既有目标，同 FD、NOFOLLOW；拒绝保留原内容和 ACL，真实边界夹具覆盖 temp/root/destination drift |
+| P2 | Unix authority store 在类型验证前 RDONLY 打开 FIFO，可能一直阻塞 | 追加 NONBLOCK，保留同 FD regular/owner/mode/nlink 验证；有界实际 FIFO 回归，两秒内拒绝而非挂起 suite |
+| P2 | Windows registrar 夹具 PowerShell SizeOf(Type) 重载解析成 object，实际 RuntimeType 无法 marshal | 由已有 C# probe 调用明确 Type 重载；expected size、全部 offset 与 owned shortcut AUMID roundtrip 保留，新 Windows CI 待执行 |
 
 基线远端 run 36682622270 的六个平台在构造阶段就因输出污染失败；storage
 以 --locked 拒绝不一致依赖状态。此前 run 36670666771 亦同。因此基线
@@ -393,10 +406,13 @@ owner 与用户 SID 一致且无线程 impersonation。它保持安全拒绝，�
 
 所有 productionQualified/deploymentQualified/releaseAuthorized 保持 false。
 EBD 静态复审的有界停点已被真实 macOS/Windows 执行发现的新夹具问题取代。
-本轮将 Unix executable 与 Windows helper lint 三文件最小修复发布为普通源
-703e9bf。独立同范围复审未找到进一步可复现问题，但新源完整套件和 CI 待执行；
-不能宣称无未来优化意见、100% 完成或继承 EBD/0c/323 通过。新执行如发现问题，
-应继续修复、重新冻结并复验。
+703 的两个 macOS 主体通过仍不能覆盖新增权限分支；Windows 的新真实
+脚本失败与独立 Darwin ACL/FIFO发现已继续修复，必须重新冻结、复审和执行。
+不能宣称无未来优化意见、100%完成或继承任何历史通过。
+真实 macOS ACL夹具保持 0700/0600并比较 bytes/ACL；fixture-only -N仅用于
+刚创建的自有临时目录，不代表产品自动修复权限。ignore-ownership 特殊卷
+尚无真实挂载 receipt，不能拿静态 bit 校验或一般 ACL fixture充当验证。
+权限查询/替换不是 OS事务；可信属主在校验之后改变权限仍属所有权合同边界。
 未将可复现构建失败归类为外部实体验收缺口。明确保留以下验收工作：
 完整七主体执行、存储硬预算、源覆盖率与持续 soak、非 Linux 资源能力适配，
 实体平台/IME/DPI/无障碍、签名和独立供应链/发布审批。

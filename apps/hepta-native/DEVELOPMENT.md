@@ -1,29 +1,37 @@
 # hepta-native developer guide
 
-This guide applies to immutable implementation source
-`703e9bf2871b26d646f1c4d748e0b0061f70ad3c`, tree
-`d549e3e492093810b685c7d65d58d6983566a82b`. The source is an implementation
-candidate; production, deployment and release flags remain false.
+The current ordinary implementation source is `a1abe5b2a083213c095cdabaf4b3048144e3cad0`, tree
+`6269ea8bf6f01c77a3025881e636096a4111b330`. It adds same-descriptor macOS extended-ACL and ownership-enforcement
+checks for native private state and shared authority stores, rejects Unix
+authority-store FIFOs without blocking, and fixes the Windows registrar fixture's
+ambiguous PowerShell `Marshal.SizeOf` overload through a typed C# probe. Existing
+owner/mode/link checks, final-use authority, update fences, native layout offsets
+and the owned shortcut property-store roundtrip remain enforced.
 
-The current ordinary source contains three fixture-only repairs: the Unix
-zero-exit executable fixture and environment-only picker Command use
-`/usr/bin/true`, and the Windows authority fixture propagates its five fallible
-helper operations through `Result`. Startup denial, rollback digest/mode
-assertions, owner lifetime, strict lints and all production flows remain intact.
-The source inventory selection remains 406 Git blobs, 32 selection paths and
-16 local Cargo dependencies, with inventory SHA256
-`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`. CURRENT_SOURCE.json binds this inventory.
-The re-anchored precommit structural checker passed for this exact 406/32/16
-inventory. This is a structural diagnostic, not platform or release acceptance.
-Current complete application/Python/owner suites, strict application/owner lint,
-full-symbol ACK, release, storage/performance and same-run CI are pending.
+CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16
+local Cargo dependencies, inventory SHA256 `347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`. Complete tests, strict
+lint, release, compiler-negative boundaries and seven-subject CI must execute
+for this new source. Historical success does not qualify it; all production,
+deployment and release flags remain false.
 
-A Linux focused run passed 2/2 tests in 0.163 s on the post-EBD worktree whose
-three repaired files match this source's Git blobs. It is a focused diagnostic,
-not a full current-source suite or macOS/Windows pass. A same-shape, standalone
-Rust 1.95 Clippy type probe exited 0 with `-D warnings` and
-`-D clippy::type_complexity`: the fixture return type scores 230 against the
-250 threshold. The probe does not compile the Windows authority fixture.
+Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
+separate scale entries ignored) and strict all-target/all-feature application
+Clippy in 7.75 s. The structural checker binds the 415/32/16 inventory. A separate
+source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
+including both bounded FIFO cases, and strict Clippy; its reduced workspace is
+not the complete four-owner or platform qualification subject. New Darwin and
+Windows fixtures still require the exact target CI.
+
+Historical source `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` has fresh clean-review-head Linux diagnostics:
+application 243/243 (three separate scale entries ignored, 4.803 s), Python 238
+total (237 passed/one Windows junction skip, 14.970 s), strict application
+Clippy (7.51 s), three actual external E0603 boundaries, three release binaries,
+self-test and real child-fault recovery. Run 36823756631 passed both macOS
+subjects and Linux storage; both Windows subjects failed their registrar
+fixture because PowerShell marshaled `System.RuntimeType` as an object.
+Its exact receipts and terminal status are retained in
+[20261001-703e9-verification.json](../../docs/modules/ui.native/history/20261001-703e9-verification.json). The subsequent independent Darwin ACL/FIFO
+review and Windows failure require this new freeze.
 
 Historical source `ebd04a7ed458aa5feaba69525f48f3623c4db033` repaired checkout
 bytes, macOS cfg/FIFO, Windows fixture PATH and the packaged PROPVARIANT ABI.
@@ -226,6 +234,37 @@ the actual opened child's owner and ACL. The shared utility's read/write
 `open_file` also applies mutable-file checks, protecting its contracts callers.
 An admission check cannot prevent a trusted principal from adding a later
 hardlink. Preserve target-OS root replacement, ACL drift and alias regressions.
+
+On macOS, `codex_utils_private_state::verify_private_permissions` checks the
+same opened descriptor through the Darwin ACL API and typed `fstatfs`. Private
+roots, children, journal files, update locks/staging and final-use/lease state
+reject every extended ACL entry, including deny-only entries, query failures,
+unsupported queries and mounts with `MNT_IGNORE_OWNERSHIP`. UID, mode, identity,
+regular-file and applicable hardlink checks remain separate requirements.
+
+The wrapper accepts an absent ACL only for Darwin's documented `ENOENT` path;
+a returned ACL is validated before iteration. Darwin entry success is zero,
+and only `-1/EINVAL` on a valid empty ACL admits an empty list. ACL allocations
+are freed without changing filesystem permissions. Callers retain
+`forbid(unsafe_code)`; the small OS utility owns the FFI boundary.
+
+Checks precede permission migration, private bytes/truncation and atomic
+publication. Held roots, the staging descriptor and any existing destination
+are checked again before replacement; a destination carrying an ACE is
+preserved instead of silently replaced with a private temporary. Native
+boundary tests inject actual ACEs after open and file sync. External installer
+targets/downloads/backups do not acquire this private-state policy. All Unix
+shared authority-store opens additionally use `NONBLOCK` before type validation
+so an owner-only FIFO is rejected without waiting for a writer.
+
+Real macOS ACL fixtures require unchanged 0700/0600 modes and compare original
+bytes and ACLs. Fixture-only ACL removal establishes a control solely on newly
+created owned temporary directories; production never removes an ACL. Source
+presence and Linux execution do not qualify Darwin behavior. An ownership-ignored
+volume still requires a real target-host mount receipt; no static bit assertion
+or current ACL fixture is presented as that receipt. A trusted owner may change
+permissions after validation; these checks do not provide filesystem transactions
+or independent authorization.
 
 On Windows, `current_user_sid()` identifies the process primary token's
 `TokenUser`; it does not resolve a thread impersonation token or the effective
