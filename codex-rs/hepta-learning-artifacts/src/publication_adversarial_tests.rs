@@ -1,6 +1,8 @@
 use super::tests::*;
 use super::*;
 
+use crate::ArtifactEvent;
+
 use crate::ArtifactKind;
 use crate::ArtifactManifest;
 use crate::test_support::FixtureValue;

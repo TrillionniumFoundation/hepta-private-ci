@@ -1,5 +1,7 @@
 use super::*;
 
+use crate::ArtifactEvent;
+
 use codex_hepta_types::Generation;
 
 use crate::ArtifactKind;
