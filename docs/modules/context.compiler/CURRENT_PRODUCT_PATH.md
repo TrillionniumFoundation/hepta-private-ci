@@ -1,7 +1,7 @@
 # context.compiler current product path
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `facc0765923237424bab4f620257b1049c5b91db654755a34a6a99d4a2fee913`. Source anchor: `959f81f82df0ac5dd832435fbcd99767d0f18fa4`.
+State SHA-256: `c5fa257d195dd0ec013e60432dff45496c359a6ffb6da7ddbb64eab36681a728`. Source anchor: `4a0ffa709a07b0e34d872271908b433a4feb7ee4`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
