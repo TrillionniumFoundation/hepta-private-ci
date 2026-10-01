@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "e5dd19789973e1e142f8f6147a9909fc79b4cef0",
+    "tree": "d38be4883b9e251279bccae1449b4a7735c3316d"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -315,11 +315,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "b9367f7003dc4898367ab2082076ea51e2b9bed0"
+      "object": "c52bb34ce3aab55e404d346b8baa95915c349c02"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+      "object": "e6ab2806d4a7d3fea3b679c2c857aaf815bc4aac"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -351,15 +351,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
-      "object": "b25375be9219be18baba2ab4d3488658d0040897"
-    },
-    {
-      "path": "codex-rs/hepta-codex-adapter",
-      "object": "e1cc6d8c61c6e0d22d51a64dee3dafd0609f3dc5"
-    },
-    {
-      "path": "docs/modules/runtime.codex/TECHNICAL.md",
-      "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
+      "object": "dadabb4b16a9bc1203cad5b813f627fb02636d51"
     },
     {
       "path": "codex-rs/hepta-app-bridge",
@@ -368,6 +360,14 @@
     {
       "path": "codex-rs/hepta-app-host",
       "object": "b931976b50e941adf7d7cf97b9834d4e0bea0f60"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter",
+      "object": "5643ca35d5a347bd53bf6a5f9bcd0dfbe964d90b"
+    },
+    {
+      "path": "docs/modules/runtime.codex/TECHNICAL.md",
+      "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
     }
   ]
 }

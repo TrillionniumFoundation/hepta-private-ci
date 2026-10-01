@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "e5dd19789973e1e142f8f6147a9909fc79b4cef0",
+    "tree": "d38be4883b9e251279bccae1449b4a7735c3316d"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -231,8 +231,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "e5dd19789973e1e142f8f6147a9909fc79b4cef0",
+    "tree": "d38be4883b9e251279bccae1449b4a7735c3316d"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -240,7 +240,7 @@
     "entries": [
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-        "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+        "blobSha": "178ca1ece158074c47eeee105676170d58eea024"
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -248,11 +248,11 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+        "blobSha": "7f02e2b525292f3b24d323dbb1cd3d860e8bd1d1"
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "da1001efb17d8135077022cd46e21a5cd66a5a48"
       }
     ]
   },
@@ -304,23 +304,23 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "b2113d06d93f1dc5dcf15c2281a862b8048fa018"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
-      "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+      "object": "4c7595cb5a78248d519561438e66ca3c97d2e541"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
-      "object": "08afc2c6c333974567385a9f5630e0b6b71a6fbd"
+      "object": "9043ca5cfb8f5afedfe4e87d974d7ec24d5e5450"
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "27ef667cae96e92239ff3c15b7e1bbd2dd712310"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "da1001efb17d8135077022cd46e21a5cd66a5a48"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
@@ -328,11 +328,11 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "object": "7f02e2b525292f3b24d323dbb1cd3d860e8bd1d1"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      "object": "178ca1ece158074c47eeee105676170d58eea024"
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -340,11 +340,11 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
-      "object": "176b5c7200bea7d07d6642440d1f03c37209cef3"
+      "object": "85ca5574b2060751718bcde51d5f7e5312483e63"
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
+      "object": "f51c23fd98d30336a682fe05bd7ba9837830b1a1"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
@@ -352,7 +352,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "463854a1574e88a076f90f28d34d5ca98cf8adb3"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
@@ -360,7 +360,7 @@
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "d3b6b0b8ee7a14bc6de6f42dfe1652d862a853b5"
     }
   ]
 }
