@@ -3,6 +3,7 @@ use std::collections::BTreeSet;
 use std::io::Write as _;
 
 use super::RebuildBoundary;
+use super::publish_bucket_batch;
 use super::rebuild_buckets;
 use super::spool_nonce;
 use crate::error::ShellError;
@@ -14,8 +15,10 @@ use crate::model::PlatformAction;
 use crate::model::TerminalStatus;
 use crate::model::sha256_hex;
 use crate::private_state::PrivateStateRoot;
+use crate::retirement::BUCKET_SCHEMA;
 use crate::retirement::Checkpoint;
 use crate::retirement::Head;
+use crate::retirement::IndexBucket;
 use crate::retirement::RetirementStore;
 use crate::retirement::SEGMENT_BYTES;
 use crate::retirement::SEGMENT_SCHEMA;
@@ -187,6 +190,93 @@ fn error_after_a_bucket_write_keeps_legacy_head_and_retry_has_exact_membership()
         .unwrap()
         .unwrap();
     assert!(groups.iter().flatten().all(|id| reopened.contains(id)));
+}
+
+#[test]
+fn first_bucket_notification_follows_a_joined_bounded_batch() {
+    let temp = tempfile::tempdir().unwrap();
+    let journal = temp.path().join("operations.json");
+    let identities: Vec<_> = (0..6)
+        .map(|prefix| format!("{prefix:02x}{}", "a".repeat(62)))
+        .collect();
+    let (root, checkpoint, chain) = seed_legacy(
+        &journal,
+        std::slice::from_ref(&identities),
+        &BTreeMap::new(),
+    );
+    let head = std::fs::read(root.path().join("head.json")).unwrap();
+    let result = rebuild_buckets(&root, &chain, |boundary| {
+        if matches!(boundary, RebuildBoundary::BucketPublished) {
+            let published = std::fs::read_dir(root.path())?
+                .collect::<Result<Vec<_>, _>>()?
+                .iter()
+                .filter(|entry| entry.file_name().to_string_lossy().starts_with("bucket-"))
+                .count();
+            assert_eq!(
+                published, 4,
+                "first batch is complete; the next has not started"
+            );
+            return Err(ShellError::State(
+                "stop at the first joined batch".to_owned(),
+            ));
+        }
+        Ok(())
+    });
+    assert!(result.is_err());
+    assert_eq!(std::fs::read(root.path().join("head.json")).unwrap(), head);
+    assert!(scratch_paths(&root).is_empty());
+    let reopened = RetirementStore::open(&journal, Some(&checkpoint))
+        .unwrap()
+        .unwrap();
+    assert_eq!(reopened.len(), identities.len());
+    assert!(identities.iter().all(|id| reopened.contains(id)));
+}
+
+#[test]
+fn failed_publisher_joins_every_other_durable_writer_before_returning() {
+    let temp = tempfile::tempdir().unwrap();
+    let journal = temp.path().join("operations.json");
+    let identities: Vec<_> = (0..4)
+        .map(|prefix| format!("{prefix:02x}{}", "a".repeat(62)))
+        .collect();
+    let (root, _, _) = seed_legacy(
+        &journal,
+        std::slice::from_ref(&identities),
+        &BTreeMap::new(),
+    );
+    let head = std::fs::read(root.path().join("head.json")).unwrap();
+    let batch: Vec<_> = identities
+        .iter()
+        .map(|identity| {
+            let prefix = identity[..2].to_owned();
+            let bucket = IndexBucket {
+                schema: BUCKET_SCHEMA.to_owned(),
+                prefix: prefix.clone(),
+                entries: BTreeMap::from([(identity.clone(), None)]),
+            };
+            (prefix, serde_json::to_vec(&bucket).unwrap())
+        })
+        .collect();
+    let expected: Vec<_> = batch
+        .iter()
+        .map(|(_, bytes)| {
+            (
+                root.path()
+                    .join(format!("bucket-{}.json", sha256_hex(bytes))),
+                bytes.clone(),
+            )
+        })
+        .collect();
+    crate::journal_storage::write_private(&root, &expected[0].0, b"foreign CAS content").unwrap();
+    assert!(publish_bucket_batch(&root, batch).is_err());
+    assert_eq!(
+        std::fs::read(&expected[0].0).unwrap(),
+        b"foreign CAS content"
+    );
+    for (path, bytes) in &expected[1..] {
+        assert_eq!(std::fs::read(path).unwrap(), *bytes);
+    }
+    assert_eq!(std::fs::read(root.path().join("head.json")).unwrap(), head);
 }
 
 #[test]

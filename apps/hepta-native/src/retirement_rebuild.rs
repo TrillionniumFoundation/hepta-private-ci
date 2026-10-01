@@ -35,6 +35,7 @@ use crate::private_state::PrivateStateRoot;
 
 const SPOOL_ENTRY_BYTES: usize = 128;
 const MAX_SPOOL_BYTES: u64 = (MAX_INDEX_BUCKET_ENTRIES * SPOOL_ENTRY_BYTES) as u64;
+const MAX_BUCKET_PUBLISHERS: usize = 4;
 
 #[derive(Clone, Copy)]
 enum RebuildBoundary {
@@ -204,15 +205,70 @@ fn rebuild_buckets(
     }
     observe(RebuildBoundary::SegmentsSpooled)?;
     let mut buckets = BTreeMap::new();
-    for (prefix, mut spool) in spools {
-        let bucket = spool.bucket(&prefix)?;
-        let bytes = serde_json::to_vec(&bucket)?;
-        let digest = write_content_addressed(root, "bucket", &bytes, INDEX_BUCKET_BYTES)?;
-        buckets.insert(prefix, digest);
-        observe(RebuildBoundary::BucketPublished)?;
+    let mut spools = spools.into_iter();
+    loop {
+        let mut batch = Vec::with_capacity(MAX_BUCKET_PUBLISHERS);
+        // Validate one spool at a time and retain at most four serialized
+        // buckets. Every publisher still performs the original durable write.
+        for (prefix, mut spool) in spools.by_ref().take(MAX_BUCKET_PUBLISHERS) {
+            let bucket = spool.bucket(&prefix)?;
+            batch.push((prefix, serde_json::to_vec(&bucket)?));
+        }
+        if batch.is_empty() {
+            break;
+        }
+        for (prefix, digest) in publish_bucket_batch(root, batch)? {
+            buckets.insert(prefix, digest);
+            observe(RebuildBoundary::BucketPublished)?;
+        }
     }
     root.verify()?;
     Ok(buckets)
+}
+
+fn publish_bucket_batch(
+    root: &PrivateStateRoot,
+    batch: Vec<(String, Vec<u8>)>,
+) -> Result<Vec<(String, String)>, ShellError> {
+    std::thread::scope(|scope| {
+        let mut workers = Vec::with_capacity(batch.len());
+        let mut failure = None;
+        for (prefix, bytes) in batch {
+            match std::thread::Builder::new()
+                .name("hepta-retirement-bucket".to_owned())
+                .spawn_scoped(scope, move || {
+                    let digest =
+                        write_content_addressed(root, "bucket", &bytes, INDEX_BUCKET_BYTES)?;
+                    Ok::<_, ShellError>((prefix, digest))
+                }) {
+                Ok(worker) => workers.push(worker),
+                Err(error) => {
+                    failure = Some(error.into());
+                    break;
+                }
+            }
+        }
+        let mut published = Vec::with_capacity(workers.len());
+        // Join every physical writer, including after a spawn failure, I/O
+        // failure or panic. No writer may outlive the failed rebuild attempt.
+        for worker in workers {
+            match worker.join() {
+                Ok(Ok(bucket)) => published.push(bucket),
+                Ok(Err(error)) => {
+                    failure.get_or_insert(error);
+                }
+                Err(_) => {
+                    failure.get_or_insert_with(|| {
+                        ShellError::State("retirement bucket publisher panicked".to_owned())
+                    });
+                }
+            }
+        }
+        match failure {
+            Some(error) => Err(error),
+            None => Ok(published),
+        }
+    })
 }
 
 fn spool_nonce(segment_digests: &[String]) -> String {
