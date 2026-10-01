@@ -348,7 +348,7 @@
   ],
   "sourceStateProjection": {
     "source": "docs/modules/intuition.policy/CURRENT_STATE.json",
-    "contentSha256": "3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962",
+    "contentSha256": "bb2b3368640c49f81356bb762e0795965ff399192da112705fce4071de319798",
     "facts": [
       {
         "id": "native_policy",
@@ -387,16 +387,28 @@
       },
       {
         "id": "admission_receipt",
-        "summary": "Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged.",
+        "summary": "All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged.",
         "state": "source_partial",
-        "source": "codex-rs/hepta-agentd/src/intuition_policy_admission.rs",
-        "symbol": "finish_canonical_admission",
+        "source": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "start_canonical_intelligence",
         "tests": [
           "codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs",
           "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
-          "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs"
+          "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs"
         ],
-        "evidence": "Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence."
+        "evidence": "Signed writer-wait owner/RunStart and evaluation-lease regressions plus separately required real request, durable recovery and delivery evidence."
+      },
+      {
+        "id": "authority_read",
+        "summary": "Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed.",
+        "state": "source_present",
+        "source": "codex-rs/hepta-agentd/src/intelligence_authority_read.rs",
+        "symbol": "fn read_file",
+        "tests": [
+          "codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs"
+        ],
+        "evidence": "Canonical intelligence_product test logs for oversized input, growth after metadata and unsafe Unix paths; current target-host owner-file admission still requires execution artifacts."
       },
       {
         "id": "startup_profile",

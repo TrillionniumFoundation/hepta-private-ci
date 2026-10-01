@@ -24,12 +24,14 @@ Immutable startup profile / current signed ObjectiveStart
   -> authenticated generator/evaluator/observer evidence
   -> native explicit risk routing / immutable host pins
   -> sole writer lock / fresh owner clock / current trust and three-role revalidation
+  -> reject-only canonical seven-owner / RunStart fence; selected evaluation lease check
   -> selected-only LedgerWriter commit with independent witness
-  -> final run/context admission with retained policy receipt
+  -> repeated canonical currentness check / final run/context admission with retained policy receipt
   -> in-process bound outcome (not a wire or durable delivery acknowledgement)
 ```
 
 A post-policy failure retains the exact acknowledged receipt and its typed cause. The kernel and receipt grant no dispatch authority.
+The canonical final-use callback can reject admission but receives only a read-only clock interface. The sink samples time again and revalidates policy qualification after the callback. These checks do not create a cross-owner durable transaction or restart reconciliation.
 
 ## Durable orchestration target, not a completed state machine
 
@@ -50,7 +52,8 @@ Do not treat tracing output, a clean drop/reopen, or a digest-only record as dur
 | `native_policy` | `codex-rs/hepta-intuition/src/production_native.rs` / `native_profile_decision` | `codex-rs/hepta-intuition/src/production_tests.rs` | Fixed-tree kernel tests, risk-rule matrix and golden vectors. |
 | `authenticated_roles` | `codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs` / `verify_verified_role_separation` | `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs` | Signed product tests including distinct principals sharing one evaluator/observer controller. |
 | `host_commit` | `codex-rs/hepta-agentd/src/intuition_policy.rs` / `commit_v4` | `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`; `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`; `codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs` | Exact-source, merge and independent boundary/trust logs for writer-wait expiry, scheduled revocation, distribution expiry, trust rotation and append; process interruption remains required. |
-| `admission_receipt` | `codex-rs/hepta-agentd/src/intuition_policy_admission.rs` / `finish_canonical_admission` | `codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs` | Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence. |
+| `admission_receipt` | `codex-rs/hepta-agentd/src/state.rs` / `start_canonical_intelligence` | `codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs` | Signed writer-wait owner/RunStart and evaluation-lease regressions plus separately required real request, durable recovery and delivery evidence. |
+| `authority_read` | `codex-rs/hepta-agentd/src/intelligence_authority_read.rs` / `fn read_file` | `codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs` | Canonical intelligence_product test logs for oversized input, growth after metadata and unsafe Unix paths; current target-host owner-file admission still requires execution artifacts. |
 | `startup_profile` | `codex-rs/hepta-agentd/src/state.rs` / `new_with_intuition_profile` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs`; `codex-rs/hepta-agentd/src/intelligence_product_tests.rs` | Default Production and explicit development tests; real process startup and restart qualification. |
 | `telemetry` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs` / `agentd_error_reason` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs` | Source tests plus actual target-host exporter, audit delivery and alert observations. |
 | `source_qualification` | `.github/workflows/hepta-intuition-qualification.yml` / `Intuition required` | `scripts/tests/test_intuition_exact.py` | Current same-run command records, nonzero test execution, retained binaries and agreement artifacts. |

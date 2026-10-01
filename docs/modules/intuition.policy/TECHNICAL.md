@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `bb2b3368640c49f81356bb762e0795965ff399192da112705fce4071de319798`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,8 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged. |
+| `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
 | `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
@@ -50,6 +51,8 @@ Version and requirement-to-test/artifact mappings: `docs/modules/intuition.polic
 This stable document is the implementation guide for `intuition.policy`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
 **Current source boundary:** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, the canonical serving hook and in-process receipt binding exist in source. Final-use `commit_v4` retains the original signed qualification and samples the owner clock only after acquiring the sole learning-writer lock; it revalidates the root-signed trust lease, current trust generation, signatures, controller separation, lifetime and host pins before append. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish source, execution and production acceptance; no production acceptance or promotion is asserted here.
+
+The canonical Agentd composition also rechecks its frozen seven-owner snapshot and current RunStart authority for every disposition after the writer wait, before policy append. Selected runs additionally recheck their evaluation trust lease. The sink samples time again and revalidates policy qualification after the reject-only callback; callback I/O cannot reuse an earlier qualification time. Currentness is repeated before final run/context admission. These checks do not constitute a durable cross-owner transaction or restart journal.
 
 ## 1. Identity, mission and ownership
 
@@ -260,6 +263,7 @@ Current operating and state-format references:
 - [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
 - `codex-rs/hepta-intuition/src/production.rs` for bounded product semantics and stable error codes.
 - `codex-rs/hepta-agentd/src/intuition_policy.rs` for retained three-party qualification, prepared profile/time/trust fences and final-use `commit_v4` under the sole writer boundary.
+- `codex-rs/hepta-agentd/src/intelligence_authority_read.rs` for bounded signed owner-file reads through one checked handle before JSON and signature validation.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -271,6 +275,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
 - `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`: signed host append, idempotent replay and durable reopen.
 - `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`: cross-profile prepared values, evidence expiry, clock rollback, writer-wait expiry, concurrent attempts and current-trust rotation fences before append.
+- `codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs`: changed signed owner generations or RunStart entitlement during writer wait, and expired evaluation distributions before prepared-product reuse.
 - `scripts/intuition_golden_vectors.py`: five independent Python digest encodings and 512 seeded owner-separation mutations over the deterministic fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
