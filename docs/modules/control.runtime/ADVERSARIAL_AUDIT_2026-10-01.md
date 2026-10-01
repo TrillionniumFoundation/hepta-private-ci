@@ -148,3 +148,17 @@ binaries after the short-root corrections. It then failed both rolling-upgrade
 cases during initial release installation and failed NDU owner-test helper lint.
 All-target compilation passed. These are failed candidate records; the newer
 publication and helper corrections still require their own macOS receipt.
+
+## Source-navigation correction
+
+The broader document verifier also found dependent module observations predating
+this candidate's source/build inputs, and six maps anchored on parallel commits
+that were not ancestors of the selected branch. The original commit/tree pairs
+were fetched and checked against Git objects. With every generic execution,
+acceptance, activation and release claim false, those six source-navigation maps
+were explicitly rebound to the selected committed source rather than treating
+parallel-branch provenance as current qualification. Closed-world caller bindings
+and mapped paths were validated; all existing completion/claim/gate fields were
+preserved. Other affected valid-ancestor observations were refreshed separately.
+The original records remain reviewable in Git history. This correction records
+what source exists and does not certify execution or independent acceptance.
