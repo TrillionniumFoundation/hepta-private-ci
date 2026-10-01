@@ -93,6 +93,12 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 max-threads = 1
 
 [[profile.default.overrides]]
+# This complete owner-budget fixture also competes with ordinary SQLite tests.
+# Reserve this invocation's slots; retain its workload, watchdog and retries.
+filter = 'package(codex-hepta-memory) & test(=cognitive_store::budget::tests::legal_source_appends_stop_atomically_at_reopen_budget_and_replay_at_capacity)'
+threads-required = 'num-test-threads'
+
+[[profile.default.overrides]]
 # Exercise the real 128-MiB owner budget and near-limit append journals without
 # concurrent heavy SQLite fixtures competing for the same disk. Preserve the
 # ordinary per-test watchdog, retries and complete production-sized workload.

@@ -61,6 +61,10 @@ async fn scalar_catalog_rejection_preserves_the_complete_typed_vector_oracle() {
         "INSERT INTO sqlite_schema(type, name, tbl_name, rootpage, sql)
          SELECT type, name, tbl_name, rootpage, sql FROM sqlite_schema
          WHERE name = 'source_ledger_no_update'",
+        "UPDATE sqlite_schema SET (type, name, tbl_name, rootpage, sql) = (
+            SELECT type, name, tbl_name, rootpage, sql FROM sqlite_schema
+            WHERE name = 'source_ledger_no_delete'
+         ) WHERE name = 'source_ledger_no_update'",
         "UPDATE sqlite_schema SET sql = zeroblob(8) WHERE name = 'source_ledger_no_update'",
     ] {
         let temp = TempDir::new().expect("temp dir");
@@ -113,6 +117,12 @@ async fn scalar_catalog_rejection_preserves_the_complete_typed_vector_oracle() {
             // gate is therefore necessary, even with unique compiled names.
             assert!(set_matches);
             assert_eq!(count, expected.len() as i64 + 1);
+        }
+        if mutation.contains("SET (type, name, tbl_name, rootpage, sql)") {
+            // Equal cardinality and actual-subset containment would accept
+            // this duplicate/missing pair. Reference containment rejects it.
+            assert_eq!(count, expected.len() as i64);
+            assert!(!set_matches);
         }
         let error = verify_full_schema(&mut transaction)
             .await

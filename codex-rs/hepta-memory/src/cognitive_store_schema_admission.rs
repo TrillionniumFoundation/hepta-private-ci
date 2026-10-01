@@ -224,8 +224,9 @@ pub(in super::super) async fn verify_full_schema(
     let references = references().await?;
     let expected = &references[MIGRATOR.migrations.len()];
     let count = schema_metadata_count(connection).await?;
-    // EXCEPT compares sets, so matching cardinality is required as well: a
-    // duplicated catalog row must not disappear from the equality proof.
+    // Every unique compiled reference row must occur in the actual catalog.
+    // Equal cardinality then excludes both duplicates and extra rows. Neither
+    // reference containment nor cardinality alone establishes exact equality.
     if count == expected.len() as i64
         && let Some(query) = compiled_catalog_query().await?
     {
@@ -298,9 +299,6 @@ async fn compiled_catalog_query() -> Result<Option<&'static Arc<str>>, Cognitive
             }
             query.push_str(
                 ") SELECT NOT EXISTS (
-                    SELECT name, type, tbl_name, sql FROM sqlite_schema
-                    EXCEPT SELECT name, type, tbl_name, sql FROM expected
-                 ) AND NOT EXISTS (
                     SELECT name, type, tbl_name, sql FROM expected
                     EXCEPT SELECT name, type, tbl_name, sql FROM sqlite_schema
                  )",

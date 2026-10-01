@@ -33,6 +33,9 @@ use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
 use crate::cognitive_test_support::workspace;
 
+#[path = "cognitive_kg_source_frontier_tests.rs"]
+mod source_frontier_tests;
+
 fn active_revision(scope: CognitiveScope, content: &str, valid_from: i64) -> MemoryRevisionDraft {
     MemoryRevisionDraft {
         scope,

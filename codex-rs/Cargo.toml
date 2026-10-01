@@ -633,10 +633,10 @@ debug = "limited"
 # build script. Use its normal optimized engine for every development/test
 # consumer while retaining unoptimized Rust owner code and unchanged checks.
 [profile.dev.package.libsqlite3-sys]
-opt-level = 2
+opt-level = 3
 
 [profile.test.package.libsqlite3-sys]
-opt-level = 2
+opt-level = 3
 
 [profile.dev-small]
 inherits = "dev"
