@@ -15,10 +15,17 @@ pub fn run_with_process_configuration<F>(configure: F) -> anyhow::Result<()>
 where
     F: FnOnce(AgentdConfig) -> anyhow::Result<AgentdConfig> + Send + 'static,
 {
-    let mut config = AgentdConfig::from_process_environment()?;
-    let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
-    codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
+    // Re-exec helpers share the daemon image but do not acquire its writer
+    // authority. Preserve its alias home before dispatch without loading the
+    // Fleet configuration or taking the parent's already-held writer flock.
+    if let Some(home) =
+        std::env::var_os(crate::HEPTA_AGENT_HOME_ENV).filter(|value| !value.is_empty())
+    {
+        let codex_home = AbsolutePathBuf::from_absolute_path(PathBuf::from(home))?;
+        codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
+    }
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
+        let mut config = AgentdConfig::from_process_environment()?;
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
