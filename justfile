@@ -87,7 +87,7 @@ install:
 # Use --all-features only for an explicit feature-matrix qualification.
 [unix]
 test *args:
-    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py "$@"
+    umask 0077 && RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py "$@"
 
 [windows]
 test *args:
