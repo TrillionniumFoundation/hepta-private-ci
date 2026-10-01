@@ -111,6 +111,12 @@ pub use witness::FileAnchorWitnessStore;
 
 const MAX_FEATURES: usize = 4_096;
 
+/// Mutable state for the legacy Q32 mechanism.
+///
+/// Public values and the supplied digest do not authenticate each other. The
+/// digest's original request and predecessor are not retained in this record.
+/// Hosts must preserve trusted outputs or verify the complete source history;
+/// this type must not be used as a canonical recovery checkpoint.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronState {
     pub model_digest: Digest32,
@@ -159,6 +165,11 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Compute a legacy Q32 successor from host-supplied features and state.
+///
+/// Validation checks bounds, model, width and advancing generation, but does
+/// not establish the provenance or integrity of a mutable previous state.
+/// Success grants no authority and does not certify production readiness.
 pub fn step(
     request: StepRequest,
     previous: Option<&NeuronState>,

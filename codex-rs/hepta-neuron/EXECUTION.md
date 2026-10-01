@@ -9,7 +9,12 @@ those entire packages or advance any capability/activation claim.
 
 `SparseConfig`, `SparseTick`, `SparseCheckpoint`, `SparseSignalReceipt` and
 `sparse_tick` are exported from the existing `codex-hepta-neuron` crate.
-The legacy Q32 `step` API is unchanged. The new API uses signed Q24 only.
+The legacy Q32 `step` API is unchanged. Its `NeuronState` fields remain public
+and mutable; the state digest does not authenticate edited values because the
+record omits the original request and predecessor needed to recompute it. Hosts
+must retain trusted outputs or verify their complete source history. Legacy
+state is not a canonical recovery checkpoint and supplies no authority or
+production-completion evidence. The new API uses signed Q24 only.
 
 The frozen external encoder/head supplies a drive vector. The kernel computes
 `h_next = clip(rho*h + drive, -8, 8)`, subtracts registered lateral inhibition
@@ -49,6 +54,12 @@ use the existing deterministic/slow path until an independently qualified
 confidence/OOD adapter exists. No current weight, topology or artifact is changed.
 Real model receipts, ablations, measured latency and longitudinal efficacy remain
 external or later-package evidence, not consequences of these unit tests.
+
+`checkpoint_bytes` is a conservative mechanism binary payload bound, including
+the domain tag, all seven retained digests, sequence/time, projection metadata,
+and five framed numeric vectors. It is not the canonical JSON DTO size, allocator
+footprint or a measured disk write. The V1 journal persists tick/receipt frames;
+`journal_bytes_written` and write amplification cover those frames only.
 
 ## Verification and rollback
 

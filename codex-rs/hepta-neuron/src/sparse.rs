@@ -12,6 +12,7 @@ use codex_hepta_types::Generation;
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
 const ELIGIBILITY_L1: i64 = 4 * Q;
+const CHECKPOINT_DOMAIN: &[u8] = b"hepta.neuron.sparse-checkpoint.q24.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct InhibitoryEdge {
@@ -225,9 +226,16 @@ impl SparseCheckpoint {
         &self.activation
     }
 
-    /// Upper bound for a canonical checkpoint encoding of the current state.
+    /// Conservative binary payload bound for all retained mechanism fields.
+    ///
+    /// Includes the domain tag, replay metadata and vector length frames. This
+    /// is not the JSON protocol size, allocator footprint or actual disk I/O;
+    /// the V1 journal persists ticks and receipts rather than this payload.
     pub fn bounded_encoded_bytes(&self) -> usize {
-        let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();
+        let fixed = CHECKPOINT_DOMAIN.len()
+            + 7 * std::mem::size_of::<Digest32>()
+            + 2 * std::mem::size_of::<u64>()
+            + std::mem::size_of::<u32>();
         let vector_headers = 5 * std::mem::size_of::<u64>();
         let vector_values = [
             self.temporal.len(),
@@ -264,7 +272,7 @@ impl SparseCheckpoint {
     }
 
     fn calculate_digest(&self) -> Digest32 {
-        let mut bytes = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
+        let mut bytes = CHECKPOINT_DOMAIN.to_vec();
         for value in [
             self.config,
             self.scope,
