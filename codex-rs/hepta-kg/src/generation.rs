@@ -21,6 +21,9 @@ use codex_hepta_types::StableId;
 #[path = "generation_limits.rs"]
 mod limits;
 use limits::validate_generation_limits;
+#[path = "validated_generation.rs"]
+mod validated;
+pub use validated::ValidatedKnowledgeGenerationV2;
 
 pub const MAX_KNOWLEDGE_NODES_V2: usize = 65_536;
 pub const MAX_KNOWLEDGE_EDGES_V2: usize = 262_144;
@@ -423,6 +426,13 @@ pub fn query_relations(
     query: KnowledgeRelationQueryV2,
 ) -> Result<KnowledgeRelationResultV2, KnowledgeGenerationErrorV2> {
     generation.validate()?;
+    query_relations_validated(generation, query)
+}
+
+fn query_relations_validated(
+    generation: &KnowledgeGenerationV2,
+    query: KnowledgeRelationQueryV2,
+) -> Result<KnowledgeRelationResultV2, KnowledgeGenerationErrorV2> {
     if query.generation_digest != generation.generation_digest {
         return Err(KnowledgeGenerationErrorV2::DigestMismatch(
             "query_generation",
