@@ -8,6 +8,8 @@ use codex_app_server_protocol::TurnStartedNotification;
 
 #[path = "native_intelligence_observation_tests.rs"]
 mod intelligence_observation;
+#[path = "native_intelligence_terminal_cancel_tests.rs"]
+mod intelligence_terminal_cancel;
 #[path = "native_output_observation_tests.rs"]
 mod output_observation;
 #[path = "native_output_recovery_tests.rs"]
