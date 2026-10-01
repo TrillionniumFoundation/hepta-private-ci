@@ -1,6 +1,7 @@
 //! Verify the registered generator plan before any holdout consumption/release.
 //! The custody host owns the immutable registration and trusted event clock.
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
@@ -9,13 +10,18 @@ use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_types::Digest32;
 
 use crate::EvaluationClaimScopeV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::FinalHoldoutCasStoreV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::FinalHoldoutProviderV1;
 use crate::ProductEvaluationError;
 use crate::ProductFrozenEvaluationPlanV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::ProductTemporalEvaluationReceiptV1;
 use crate::SignedEvaluationError;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::TemporalEvaluationPlan;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::product_runner::ProductEvaluationRunnerV1;
 
 /// Values from the custody owner's durable, immutable plan registration.
@@ -32,6 +38,7 @@ pub struct ProductRegistrationBindingV1 {
     pub registered_at_unix_micros: u64,
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     /// Host ingress: reauthenticate both the Generator's exact frozen plan and
     /// the independent custody registration before even consulting a provider.
@@ -61,9 +68,13 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 pub struct AuthenticatedProductRegistrationV1 {
     plan: ProductFrozenEvaluationPlanV1,
     binding: ProductRegistrationBindingV1,
+    #[cfg(any(test, feature = "trusted-inprocess-eval"))]
     generator: AuthenticatedPrincipalV1,
+    #[cfg(any(test, feature = "trusted-inprocess-eval"))]
     trust_digest: Digest32,
+    #[cfg(any(test, feature = "trusted-inprocess-eval"))]
     generator_evidence: SignedLearningEvidenceV1,
+    #[cfg(any(test, feature = "trusted-inprocess-eval"))]
     custody_evidence: SignedLearningEvidenceV1,
 }
 
@@ -160,13 +171,18 @@ impl AuthenticatedProductRegistrationV1 {
         Ok(Self {
             plan: plan.clone(),
             binding,
+            #[cfg(any(test, feature = "trusted-inprocess-eval"))]
             generator: generator.principal().clone(),
+            #[cfg(any(test, feature = "trusted-inprocess-eval"))]
             trust_digest: verifier.trust_digest(),
+            #[cfg(any(test, feature = "trusted-inprocess-eval"))]
             generator_evidence: generator_evidence.clone(),
+            #[cfg(any(test, feature = "trusted-inprocess-eval"))]
             custody_evidence: custody_evidence.clone(),
         })
     }
 
+    #[cfg(any(test, feature = "trusted-inprocess-eval"))]
     pub(crate) fn verify_current(
         &self,
         verifier: &LearningEvidenceVerifierV1,

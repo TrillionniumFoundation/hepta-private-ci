@@ -278,7 +278,7 @@ pub use signed_admission::admit_signed_eligibility_v2;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
-#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+#[cfg(test)]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
