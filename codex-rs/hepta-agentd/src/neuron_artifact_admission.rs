@@ -30,6 +30,11 @@ use codex_hepta_agent_components::neuron::NeuronRuntimeConfigV1;
 use codex_hepta_agent_components::neuron::NeuronTickInputV1;
 use codex_hepta_agent_components::types::Digest32;
 
+#[path = "neuron_artifact_current_owner.rs"]
+mod current_owner;
+use current_owner::CurrentOwner;
+use current_owner::CurrentReadGuard;
+
 #[path = "neuron_artifact_refresh.rs"]
 mod refresh;
 pub use refresh::AgentdNeuronSelectionRefreshIngressV1;
@@ -49,7 +54,7 @@ pub struct NeuronSelectedArtifactsV1 {
 }
 
 pub struct AgentdNeuronArtifactAdmissionV1 {
-    owner: Arc<Mutex<LearningArtifactOwnerHost>>,
+    owner: CurrentOwner,
     artifact_root: PathBuf,
     selector: ArtifactSelectionVerifierV1,
     selections: NeuronSelectedArtifactsV1,
@@ -94,6 +99,47 @@ impl AgentdNeuronArtifactAdmissionV1 {
     /// CURRENT view and independent selector signature.
     pub fn new(
         owner: Arc<Mutex<LearningArtifactOwnerHost>>,
+        artifact_root: impl AsRef<Path>,
+        selector: ArtifactSelectionVerifierV1,
+        selections: NeuronSelectedArtifactsV1,
+        clock: Arc<dyn AuthorityClock>,
+        config: &NeuronRuntimeConfigV1,
+    ) -> Result<Self, NeuronAdmissionError> {
+        Self::new_with_current_owner(
+            CurrentOwner::Writer(owner),
+            artifact_root,
+            selector,
+            selections,
+            clock,
+            config,
+        )
+    }
+
+    /// Load Root-published artifacts through an actual protected read-only
+    /// CURRENT owner. This conveys no writer lease or mutable owner handle.
+    #[cfg(target_os = "linux")]
+    pub fn from_read_only_owner(
+        owner: Arc<
+            Mutex<codex_hepta_agent_components::learning_artifacts::ReadOnlyArtifactCurrentOwnerV1>,
+        >,
+        artifact_root: impl AsRef<Path>,
+        selector: ArtifactSelectionVerifierV1,
+        selections: NeuronSelectedArtifactsV1,
+        clock: Arc<dyn AuthorityClock>,
+        config: &NeuronRuntimeConfigV1,
+    ) -> Result<Self, NeuronAdmissionError> {
+        Self::new_with_current_owner(
+            CurrentOwner::ReadOnly(owner),
+            artifact_root,
+            selector,
+            selections,
+            clock,
+            config,
+        )
+    }
+
+    pub(super) fn new_with_current_owner(
+        owner: CurrentOwner,
         artifact_root: impl AsRef<Path>,
         selector: ArtifactSelectionVerifierV1,
         selections: NeuronSelectedArtifactsV1,
@@ -164,10 +210,7 @@ impl AgentdNeuronArtifactAdmissionV1 {
         if now < self.last_time || self.selection_expiries.iter().any(|expiry| now > *expiry) {
             return Err(NeuronAdmissionError::Revoked);
         }
-        let owner = self
-            .owner
-            .try_lock()
-            .map_err(|_| NeuronAdmissionError::Unavailable)?;
+        let owner = self.owner.lock()?;
         let current = owner
             .current_registry_view(now)
             .map_err(|_| NeuronAdmissionError::Revoked)?;
@@ -293,7 +336,7 @@ impl AgentdNeuronArtifactAdmissionV1 {
     #[allow(clippy::too_many_arguments)]
     fn verify_one(
         &self,
-        owner: &LearningArtifactOwnerHost,
+        owner: &CurrentReadGuard<'_>,
         current: &VerifiedCurrentRegistryViewV1,
         now: u64,
         selection: &SignedArtifactSelectionV1,

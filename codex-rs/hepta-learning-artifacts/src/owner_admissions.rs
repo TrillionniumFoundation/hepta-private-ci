@@ -6,6 +6,7 @@
 use super::*;
 use crate::admission_storage::MAX_ARTIFACT_ADMISSION_BYTES;
 use crate::admission_storage::encode_artifact_admission;
+#[cfg(test)]
 use crate::read_artifact_admission_by_digest;
 use crate::read_artifact_admission_by_manifest_digest;
 use std::collections::BTreeMap;

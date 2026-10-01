@@ -111,6 +111,8 @@ pub use owner_host::ArtifactOwnerRecoveryV1;
 pub use owner_host::ArtifactOwnerTrustV1;
 pub use owner_host::ArtifactOwnerVerifierV1;
 pub use owner_host::LearningArtifactOwnerHost;
+#[cfg(target_os = "linux")]
+pub use owner_host::ReadOnlyArtifactCurrentOwnerV1;
 pub use owner_host::SignedArtifactWriterLeaseV1;
 pub use owner_host::SignedCurrentArtifactHeadV1;
 pub use owner_host::TrustedArtifactSignerV1;

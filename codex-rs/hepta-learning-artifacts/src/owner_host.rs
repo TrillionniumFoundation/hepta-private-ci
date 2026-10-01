@@ -68,6 +68,14 @@ mod read_context;
 use read_context::ArtifactOwnerReadContext;
 #[path = "owner_read_admissions.rs"]
 mod read_admissions;
+#[cfg(target_os = "linux")]
+#[path = "owner_read_only.rs"]
+mod read_only;
+#[cfg(target_os = "linux")]
+#[path = "owner_root_read_frontier.rs"]
+mod root_read_frontier;
+#[cfg(target_os = "linux")]
+pub use read_only::ReadOnlyArtifactCurrentOwnerV1;
 #[path = "owner_read_checkpoints.rs"]
 mod read_checkpoints;
 
@@ -890,11 +898,6 @@ impl LearningArtifactOwnerHost {
         Ok(registry)
     }
 
-    /// Recover the artifact registry that exactly backs the authenticated
-    /// current head. A current-head side effect may have crossed the boundary
-    /// before the transaction advanced from RegistryDurable; that uncertainty
-    /// is recoverable but must block unrelated publication until reconciled.
-
     /// Return the authenticated exact registry view backing the newest signed
     /// CURRENT head discovered by this owner. The opaque result cannot be
     /// fabricated from a bare file and receipt by a product consumer.
@@ -905,6 +908,8 @@ impl LearningArtifactOwnerHost {
         self.read_context().current_registry_view(now)
     }
 
+    /// Recover the exact registry backing CURRENT. A head published before its
+    /// checkpoint advanced remains an unresolved publication boundary.
     pub fn recover_current_registry(
         &self,
         now: u64,

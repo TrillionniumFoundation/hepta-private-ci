@@ -4,7 +4,7 @@ use super::*;
 
 #[derive(Clone)]
 pub struct AgentdNeuronSelectionRefreshIngressV1 {
-    owner: Arc<Mutex<LearningArtifactOwnerHost>>,
+    owner: CurrentOwner,
     artifact_root: PathBuf,
     selector: ArtifactSelectionVerifierV1,
     clock: Arc<dyn AuthorityClock>,
@@ -24,8 +24,8 @@ impl AgentdNeuronSelectionRefreshIngressV1 {
         selections: NeuronSelectedArtifactsV1,
     ) -> Result<Digest32, NeuronAdmissionError> {
         validate_same_artifacts(&self.original, &selections)?;
-        let current = AgentdNeuronArtifactAdmissionV1::new(
-            Arc::clone(&self.owner),
+        let current = AgentdNeuronArtifactAdmissionV1::new_with_current_owner(
+            self.owner.clone(),
             &self.artifact_root,
             self.selector.clone(),
             selections,
@@ -58,7 +58,7 @@ impl AgentdNeuronArtifactAdmissionV1 {
     /// It carries public trust and original tuple pins, never signing material.
     pub fn selection_refresh_ingress(&self) -> AgentdNeuronSelectionRefreshIngressV1 {
         AgentdNeuronSelectionRefreshIngressV1 {
-            owner: Arc::clone(&self.owner),
+            owner: self.owner.clone(),
             artifact_root: self.artifact_root.clone(),
             selector: self.selector.clone(),
             clock: Arc::clone(&self.clock),
@@ -86,8 +86,8 @@ impl AgentdNeuronArtifactAdmissionV1 {
         // or a previously valid signature. CURRENT may change after submit.
         let reconstructed = (|| {
             validate_same_artifacts(&self.selections, &selections)?;
-            let next = Self::new(
-                Arc::clone(&self.owner),
+            let next = Self::new_with_current_owner(
+                self.owner.clone(),
                 &self.artifact_root,
                 self.selector.clone(),
                 selections,
