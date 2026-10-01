@@ -7,10 +7,16 @@
 //! updates are accepted only through an independently pinned signed feed.
 
 use std::collections::BTreeMap;
+use std::collections::VecDeque;
 use std::fmt;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Instant;
 
+use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::QuotaReservation;
+use codex_hepta_authbus::ReservationState;
+use codex_hepta_authbus::SettlementStatus;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::FinalUseApprovalVerifier;
@@ -21,11 +27,57 @@ use codex_hepta_contracts::FinalUseRevocationReceipt;
 use codex_hepta_contracts::SignedFinalUseApproval;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
+use crate::BaoAuthBusAdmission;
+use crate::BaoAuthBusError;
+use crate::BaoAuthBusEvidenceProvider;
 use crate::BaoClient;
 use crate::BaoClientError;
+use crate::BaoConsumptionOperationV1;
+use crate::BaoConsumptionRecoveryActionV1;
+use crate::BaoConsumptionStateV1;
 use crate::BaoReadRequest;
 use crate::BaoSecretReceipt;
+use crate::DurableLeaseRegistryV1;
+use crate::LeaseRegistryErrorV1;
+
+#[path = "sqlite_product_runtime.rs"]
+mod sqlite_product_runtime;
+pub use sqlite_product_runtime::BaoRecoveryBatchReportV1;
+pub use sqlite_product_runtime::BaoRecoveryWorkerMetricsV1;
+pub use sqlite_product_runtime::BaoSqliteProductRuntimeConfigV1;
+pub use sqlite_product_runtime::SqliteBaoProductRuntimeMetricsV1;
+pub use sqlite_product_runtime::SqliteBaoProductRuntimeV1;
+
+/// Independently approved operation inputs; dependencies remain host-owned.
+#[derive(Clone, Copy)]
+pub struct BaoApprovedReadV1<'a> {
+    pub admission: &'a BaoAuthBusAdmission,
+    pub grant: &'a SignedFinalUseGrant,
+    pub approval: &'a SignedFinalUseApproval,
+    pub request: &'a BaoReadRequest,
+}
+
+pub type BaoOperationConsumerCallback =
+    Arc<dyn Fn(&str, [u8; 32], &[u8]) -> Result<(), ()> + Send + Sync + 'static>;
+pub type BaoConsumerObserverCallback =
+    Arc<dyn Fn(&str, [u8; 32]) -> Result<BaoConsumerObservationV1, ()> + Send + Sync + 'static>;
+
+/// Durable observation of the original consumer effect.
+///
+/// The legacy `NotApplied` value remains conservative and cannot release quota.
+/// `NotAppliedWithEvidence` is the terminal negative outcome: the enrolled
+/// observer must return a nonzero immutable evidence digest for the original
+/// operation identity and semantic digest.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BaoConsumerObservationV1 {
+    Succeeded,
+    NotApplied,
+    NotAppliedWithEvidence { evidence_sha256: [u8; 32] },
+    Unknown,
+}
 
 pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
 
@@ -33,11 +85,15 @@ pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync
 pub struct RegisteredBaoConsumer {
     id: String,
     callback: BaoConsumerCallback,
+    configuration_sha256: Option<[u8; 32]>,
+    operation_callback: Option<BaoOperationConsumerCallback>,
+    observer: Option<BaoConsumerObserverCallback>,
 }
 
 impl fmt::Debug for RegisteredBaoConsumer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("RegisteredBaoConsumer")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("RegisteredBaoConsumer")
             .field("id", &self.id)
             .field("callback", &"[TRUSTED CALLBACK]")
             .finish()
@@ -49,12 +105,195 @@ impl RegisteredBaoConsumer {
         if !consumer_id(&id) {
             return Err(BaoFinalUseHostError::InvalidConsumerId);
         }
-        Ok(Self { id, callback })
+        Ok(Self {
+            id,
+            callback,
+            configuration_sha256: None,
+            operation_callback: None,
+            observer: None,
+        })
+    }
+
+    /// A product registration must bind its immutable implementation/configuration
+    /// identity and provide an operation-bound observer for restart reconciliation.
+    pub fn for_operations(
+        id: String,
+        configuration_sha256: [u8; 32],
+        callback: BaoOperationConsumerCallback,
+        observer: BaoConsumerObserverCallback,
+    ) -> Result<Self, BaoFinalUseHostError> {
+        if !consumer_id(&id) || configuration_sha256 == [0; 32] {
+            return Err(BaoFinalUseHostError::InvalidConsumerConfiguration);
+        }
+        Ok(Self {
+            id,
+            callback: Arc::new(|_| Err(())),
+            configuration_sha256: Some(configuration_sha256),
+            operation_callback: Some(callback),
+            observer: Some(observer),
+        })
     }
 
     pub fn id(&self) -> &str {
         &self.id
     }
+}
+
+const OPERATION_DURATION_SAMPLE_LIMIT: usize = 256;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BaoOperationLatencyMetricsV1 {
+    pub attempts: u64,
+    pub succeeded: u64,
+    pub admission_rejected: u64,
+    pub reconciliation_required: u64,
+    pub awaiting_evidence: u64,
+    pub awaiting_settlement: u64,
+    pub terminal_failed: u64,
+    pub identity_conflict: u64,
+    pub capacity_rejected: u64,
+    pub owner_busy: u64,
+    pub commit_indeterminate: u64,
+    pub durable_owner_failed: u64,
+    pub external_control_failed: u64,
+    pub last_duration_micros: u64,
+    pub max_duration_micros: u64,
+    pub p50_duration_micros: u64,
+    pub p95_duration_micros: u64,
+    pub p99_duration_micros: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BaoOperationMetricsV1 {
+    pub forward: BaoOperationLatencyMetricsV1,
+    pub recovery: BaoOperationLatencyMetricsV1,
+}
+
+#[derive(Default)]
+struct BaoOperationMetricSeriesV1 {
+    attempts: u64,
+    succeeded: u64,
+    admission_rejected: u64,
+    reconciliation_required: u64,
+    awaiting_evidence: u64,
+    awaiting_settlement: u64,
+    terminal_failed: u64,
+    identity_conflict: u64,
+    capacity_rejected: u64,
+    owner_busy: u64,
+    commit_indeterminate: u64,
+    durable_owner_failed: u64,
+    external_control_failed: u64,
+    last_duration_micros: u64,
+    max_duration_micros: u64,
+    duration_samples_micros: VecDeque<u64>,
+}
+
+impl BaoOperationMetricSeriesV1 {
+    fn record(&mut self, started: Instant, error_class: Option<BaoProductErrorClassV1>) {
+        self.attempts = self.attempts.saturating_add(1);
+        match error_class {
+            None => self.succeeded = self.succeeded.saturating_add(1),
+            Some(BaoProductErrorClassV1::AdmissionRejected) => {
+                self.admission_rejected = self.admission_rejected.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::ReconciliationRequired) => {
+                self.reconciliation_required = self.reconciliation_required.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::AwaitingOriginalEvidence) => {
+                self.awaiting_evidence = self.awaiting_evidence.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::AwaitingSettlement) => {
+                self.awaiting_settlement = self.awaiting_settlement.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::HistoricalTerminalFailure) => {
+                self.terminal_failed = self.terminal_failed.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::IdentityConflict) => {
+                self.identity_conflict = self.identity_conflict.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::CapacityRejected) => {
+                self.capacity_rejected = self.capacity_rejected.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::OwnerBusy) => {
+                self.owner_busy = self.owner_busy.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::CommitIndeterminate) => {
+                self.commit_indeterminate = self.commit_indeterminate.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::DurableOwnerFailure) => {
+                self.durable_owner_failed = self.durable_owner_failed.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::ExternalControlFailure) => {
+                self.external_control_failed = self.external_control_failed.saturating_add(1);
+            }
+        }
+        let micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        self.last_duration_micros = micros;
+        self.max_duration_micros = self.max_duration_micros.max(micros);
+        if self.duration_samples_micros.len() == OPERATION_DURATION_SAMPLE_LIMIT {
+            self.duration_samples_micros.pop_front();
+        }
+        self.duration_samples_micros.push_back(micros);
+    }
+
+    fn snapshot(&self) -> BaoOperationLatencyMetricsV1 {
+        let mut samples = self
+            .duration_samples_micros
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        samples.sort_unstable();
+        BaoOperationLatencyMetricsV1 {
+            attempts: self.attempts,
+            succeeded: self.succeeded,
+            admission_rejected: self.admission_rejected,
+            reconciliation_required: self.reconciliation_required,
+            awaiting_evidence: self.awaiting_evidence,
+            awaiting_settlement: self.awaiting_settlement,
+            terminal_failed: self.terminal_failed,
+            identity_conflict: self.identity_conflict,
+            capacity_rejected: self.capacity_rejected,
+            owner_busy: self.owner_busy,
+            commit_indeterminate: self.commit_indeterminate,
+            durable_owner_failed: self.durable_owner_failed,
+            external_control_failed: self.external_control_failed,
+            last_duration_micros: self.last_duration_micros,
+            max_duration_micros: self.max_duration_micros,
+            p50_duration_micros: operation_percentile(&samples, 50),
+            p95_duration_micros: operation_percentile(&samples, 95),
+            p99_duration_micros: operation_percentile(&samples, 99),
+        }
+    }
+}
+
+#[derive(Default)]
+struct BaoOperationMetricsOwnerV1 {
+    forward: BaoOperationMetricSeriesV1,
+    recovery: BaoOperationMetricSeriesV1,
+}
+
+impl BaoOperationMetricsOwnerV1 {
+    fn snapshot(&self) -> BaoOperationMetricsV1 {
+        BaoOperationMetricsV1 {
+            forward: self.forward.snapshot(),
+            recovery: self.recovery.snapshot(),
+        }
+    }
+}
+
+fn operation_percentile(samples: &[u64], percentile: usize) -> u64 {
+    if samples.is_empty() {
+        return 0;
+    }
+    let last = samples.len() - 1;
+    let index = last
+        .checked_mul(percentile)
+        .and_then(|value| value.checked_add(99))
+        .map(|value| value / 100)
+        .unwrap_or(last)
+        .min(last);
+    samples[index]
 }
 
 /// Host-selected composition of final-use authority, independent approval,
@@ -65,12 +304,14 @@ pub struct BaoFinalUseHost {
     revocation_verifier: FinalUseRevocationFeedVerifier,
     clock: Arc<dyn AuthorityClock>,
     revocation_fresh_until_unix_ms: Mutex<u64>,
-    consumers: BTreeMap<String, BaoConsumerCallback>,
+    consumers: BTreeMap<String, RegisteredBaoConsumer>,
+    operation_metrics: Mutex<BaoOperationMetricsOwnerV1>,
 }
 
 impl fmt::Debug for BaoFinalUseHost {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BaoFinalUseHost")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoFinalUseHost")
             .field("authority", &self.authority)
             .field("approval_verifier", &self.approval_verifier)
             .field("revocation_verifier", &self.revocation_verifier)
@@ -89,7 +330,7 @@ impl BaoFinalUseHost {
     ) -> Result<Self, BaoFinalUseHostError> {
         let mut registry = BTreeMap::new();
         for consumer in consumers {
-            if registry.insert(consumer.id, consumer.callback).is_some() {
+            if registry.insert(consumer.id.clone(), consumer).is_some() {
                 return Err(BaoFinalUseHostError::DuplicateConsumer);
             }
         }
@@ -103,11 +344,46 @@ impl BaoFinalUseHost {
             clock,
             revocation_fresh_until_unix_ms: Mutex::new(0),
             consumers: registry,
+            operation_metrics: Mutex::new(Default::default()),
         })
     }
 
     pub fn consumer_count(&self) -> usize {
         self.consumers.len()
+    }
+
+    #[must_use]
+    pub fn operation_metrics(&self) -> BaoOperationMetricsV1 {
+        self.operation_metrics
+            .lock()
+            .map(|metrics| metrics.snapshot())
+            .unwrap_or_else(|_| BaoOperationMetricsOwnerV1::default().snapshot())
+    }
+
+    fn record_forward_metric(
+        &self,
+        started: Instant,
+        result: &Result<BaoSecretReceipt, BaoProductHostError>,
+    ) {
+        if let Ok(mut metrics) = self.operation_metrics.lock() {
+            metrics.forward.record(
+                started,
+                result.as_ref().err().map(BaoProductHostError::class),
+            );
+        }
+    }
+
+    fn record_recovery_metric(
+        &self,
+        started: Instant,
+        result: &Result<BaoSecretReceipt, BaoProductHostError>,
+    ) {
+        if let Ok(mut metrics) = self.operation_metrics.lock() {
+            metrics.recovery.record(
+                started,
+                result.as_ref().err().map(BaoProductHostError::class),
+            );
+        }
     }
 
     fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
@@ -125,6 +401,22 @@ impl BaoFinalUseHost {
         Ok(())
     }
 
+    fn approved_consumer(
+        &self,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        consumer_id: &str,
+    ) -> Result<BaoConsumerCallback, BaoFinalUseHostError> {
+        self.ensure_revocation_fresh()?;
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        self.consumers
+            .get(consumer_id)
+            .map(|consumer| consumer.callback.clone())
+            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)
+    }
+
     /// Apply one independently signed revocation head. The feed signature is
     /// checked before the durable authority owner sees the head; the authority
     /// itself enforces epoch/revision monotonicity and same-epoch superset rules.
@@ -132,6 +424,12 @@ impl BaoFinalUseHost {
         &self,
         update: &SignedFinalUseRevocationUpdate,
     ) -> Result<FinalUseRevocationReceipt, BaoFinalUseHostError> {
+        // Publish the durable head and its freshness together. Concurrent feed
+        // updates must not replace a newer head's deadline with an older one.
+        let mut fresh_until = self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         let now_unix_ms = self
             .clock
             .now_unix_ms()
@@ -140,143 +438,28 @@ impl BaoFinalUseHost {
             .revocation_verifier
             .apply(&self.authority, update, now_unix_ms)
             .map_err(BaoFinalUseHostError::Control)?;
-        let mut fresh_until = self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         *fresh_until = receipt.valid_until_unix_ms();
         Ok(receipt)
     }
-
-    /// Production composition boundary. The request's signed `consumer_id`
-    /// selects one pre-enrolled callback; callers cannot substitute a closure at
-    /// the callsite. Independent operator approval is verified before any
-    /// provider dispatch. Freshness is checked again at the registered consumer
-    /// entry after provider I/O, so a feed that expires while the network call is
-    /// in flight cannot release a secret. The lower-level client performs the
-    /// claim/network/digest/final-delivery authority fencing.
-    pub async fn consume_kv_v2(
-        &self,
-        client: &BaoClient,
-        grant: &SignedFinalUseGrant,
-        approval: &SignedFinalUseApproval,
-        request: &BaoReadRequest,
-    ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
-        self.ensure_revocation_fresh()?;
-        self.approval_verifier
-            .verify(grant, approval)
-            .map_err(BaoFinalUseHostError::Control)?;
-        let consumer = self
-            .consumers
-            .get(&request.consumer_id)
-            .cloned()
-            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
-        match client
-            .consume_kv_v2_guarded(&self.authority, grant, request, move |secret| {
-                self.ensure_revocation_fresh()?;
-                consumer(secret).map_err(|()| {
-                    BaoFinalUseHostError::Client(BaoClientError::ConsumerIndeterminate)
-                })
-            })
-            .await
-            .map_err(BaoFinalUseHostError::Client)?
-        {
-            Ok(receipt) => Ok(receipt),
-            Err(error) => Err(error),
-        }
-    }
 }
-
-fn consumer_id(value: &str) -> bool {
-    !value.is_empty()
-        && value.len() <= 128
-        && value != "."
-        && value != ".."
-        && value
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum BaoFinalUseHostError {
-    InvalidConsumerId,
-    DuplicateConsumer,
-    EmptyConsumerRegistry,
-    UnregisteredConsumer,
-    StaleRevocationFeed,
-    Unavailable,
-    Trust(AuthorityTrustError),
-    Control(FinalUseControlError),
-    Client(BaoClientError),
-}
-
-impl fmt::Display for BaoFinalUseHostError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
-    }
-}
-impl std::error::Error for BaoFinalUseHostError {}
 
 #[cfg(all(test, unix))]
-mod tests {
-    use super::*;
-    use ed25519_dalek::SigningKey;
+#[path = "final_use_host_tests.rs"]
+mod tests;
 
-    fn callback() -> BaoConsumerCallback {
-        Arc::new(|_| Ok(()))
-    }
+#[path = "final_use_host_ingress.rs"]
+mod final_use_host_ingress;
+#[path = "final_use_host_recovery.rs"]
+mod final_use_host_recovery;
 
-    #[test]
-    fn consumer_registry_is_closed_and_unique() {
-        assert_eq!(
-            RegisteredBaoConsumer::new("../escape".into(), callback()).unwrap_err(),
-            BaoFinalUseHostError::InvalidConsumerId
-        );
-        let consumer = RegisteredBaoConsumer::new("model-provider".into(), callback()).unwrap();
-        assert_eq!(consumer.id(), "model-provider");
-    }
-
-    #[test]
-    fn host_rejects_duplicate_consumer_identity() {
-        let directory = tempfile::tempdir().unwrap();
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-        let issuer = SigningKey::from_bytes(&[31; 32]);
-        let approver = SigningKey::from_bytes(&[32; 32]);
-        let distributor = SigningKey::from_bytes(&[33; 32]);
-        let authority = FinalUseAuthority::open_state_dir(
-            directory.path(),
-            "security-owner".into(),
-            issuer.verifying_key().to_bytes(),
-            codex_hepta_contracts::FinalUseRevocations {
-                authority_epoch: 1,
-                revision: 1,
-                revoked_grant_ids: Default::default(),
-            },
-        )
-        .unwrap();
-        let approval_verifier = FinalUseApprovalVerifier::new(
-            "operator-approver".into(),
-            approver.verifying_key().to_bytes(),
-        )
-        .unwrap();
-        let revocation_verifier = FinalUseRevocationFeedVerifier::new(
-            "revocation-distributor".into(),
-            distributor.verifying_key().to_bytes(),
-        )
-        .unwrap();
-        let first = RegisteredBaoConsumer::new("model-provider".into(), callback()).unwrap();
-        let second = RegisteredBaoConsumer::new("model-provider".into(), callback()).unwrap();
-        assert_eq!(
-            BaoFinalUseHost::new(
-                authority,
-                approval_verifier,
-                revocation_verifier,
-                Arc::new(codex_hepta_contracts::SystemAuthorityClock),
-                [first, second],
-            )
-            .unwrap_err(),
-            BaoFinalUseHostError::DuplicateConsumer
-        );
-    }
-}
+#[path = "final_use_host_settlement.rs"]
+mod final_use_host_settlement;
+pub use final_use_host_settlement::BaoFinalUseHostError;
+pub use final_use_host_settlement::BaoProductErrorClassV1;
+pub use final_use_host_settlement::BaoProductHostError;
+use final_use_host_settlement::abort_evidence;
+use final_use_host_settlement::consumer_id;
+use final_use_host_settlement::provider_failure_code;
+use final_use_host_settlement::settle_terminal_row;
+use final_use_host_settlement::validate_product_admission;
+use final_use_host_settlement::validate_reservation;

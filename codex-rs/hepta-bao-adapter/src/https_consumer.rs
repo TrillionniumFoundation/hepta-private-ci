@@ -1,8 +1,8 @@
 //! Explicitly enrolled HTTPS consumer. It cannot issue its own grant, follow
 //! redirects, use an ambient proxy, or return secret bytes in its receipt.
 
-use std::collections::BTreeMap;
 use std::fmt;
+use std::future::Future;
 use std::time::Duration;
 
 use codex_hepta_authbus::AuthBusAuthorityError;
@@ -30,6 +30,10 @@ use serde::Serialize;
 use url::Url;
 use zeroize::Zeroizing;
 
+#[path = "https_response.rs"]
+mod response;
+use response::KvResponse;
+
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
@@ -38,7 +42,14 @@ pub struct BaoToken(Zeroizing<String>);
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
         let value = Zeroizing::new(value);
-        if value.is_empty() || value.len() > 8192 || HeaderValue::from_str(&value).is_err() {
+        // Validate borrowed bytes: constructing a temporary HeaderValue would
+        // allocate an unnecessary token copy which is not zeroized on drop.
+        if value.is_empty()
+            || value.len() > 8192
+            || value
+                .bytes()
+                .any(|byte| byte != b'\t' && (byte < 32 || byte == 127))
+        {
             return Err(BaoClientError::InvalidConfiguration);
         }
         Ok(Self(value))
@@ -51,11 +62,13 @@ impl fmt::Debug for BaoToken {
 }
 
 /// One exact KV v2 version and string field, bound to one named consumer.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoReadRequest {
     pub subject_id: String,
     pub consumer_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumer_configuration_sha256: Option<[u8; 32]>,
     pub namespace: String,
     pub mount: String,
     pub path: String,
@@ -64,15 +77,24 @@ pub struct BaoReadRequest {
     pub expected_secret_sha256: [u8; 32],
 }
 
-/// Contains observations only; it is never a reusable permission or secret.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-pub struct BaoSecretReceipt {
-    pub request_sha256: [u8; 32],
-    pub response_sha256: [u8; 32],
-    pub secret_sha256: [u8; 32],
-    pub version: u64,
-    pub secret_bytes: usize,
+impl fmt::Debug for BaoReadRequest {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoReadRequest")
+            .field("subject_id", &self.subject_id)
+            .field("consumer_id", &self.consumer_id)
+            .field("consumer_configuration_sha256", &"[SENSITIVE DIGEST]")
+            .field("namespace", &"[SENSITIVE IDENTIFIER]")
+            .field("mount", &"[SENSITIVE IDENTIFIER]")
+            .field("path", &"[SENSITIVE IDENTIFIER]")
+            .field("field", &"[SENSITIVE IDENTIFIER]")
+            .field("version", &self.version)
+            .field("expected_secret_sha256", &"[SENSITIVE DIGEST]")
+            .finish()
+    }
 }
+
+pub use crate::lease_lifecycle::BaoSecretReceipt;
 
 /// Host-selected AuthBus identities for one provider operation. The operation
 /// identity is supplied by the durable operation owner and becomes part of the
@@ -85,6 +107,15 @@ pub struct BaoAuthBusAdmission {
     pub operation_id: StableId,
     pub amount: u64,
     pub expires_at_ms: u64,
+}
+
+/// Exact authorization inputs for one metadata-bound provider read.
+#[derive(Clone, Copy)]
+pub struct BaoAuthorizedReadV1<'a> {
+    pub admission: &'a BaoAuthBusAdmission,
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
+    pub request: &'a BaoReadRequest,
 }
 
 /// Independent evidence producer used by the product host. AuthBus verifies
@@ -111,6 +142,8 @@ pub enum BaoAuthBusError {
     Control(#[from] AuthBusAuthorityError),
     #[error("AuthBus evidence producer failed: {0}")]
     Evidence(&'static str),
+    #[error("durable Bao owner failed: {0}")]
+    DurableOwner(#[from] crate::SqliteBaoOwnerErrorV1),
     #[error("provider outcome is indeterminate; reservation remains held")]
     Indeterminate {
         reservation_id: StableId,
@@ -122,6 +155,11 @@ pub enum BaoAuthBusError {
         receipt: Option<BaoSecretReceipt>,
         control_error: String,
     },
+}
+
+pub(crate) enum BaoGuardedDeliveryError<Preparation, Consumer> {
+    Preparation(Preparation),
+    Consumer(Consumer),
 }
 
 pub struct BaoClient {
@@ -181,6 +219,7 @@ impl BaoClient {
             || !segmented(&request.mount)
             || !segmented(&request.path)
             || !component(&request.field)
+            || request.consumer_configuration_sha256 == Some([0; 32])
             || request.version == 0
             || request.expected_secret_sha256 == [0; 32]
         {
@@ -233,138 +272,19 @@ impl BaoClient {
     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
         &self,
         authbus: &AuthBusAuthorityHost,
-        admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
+        read: BaoAuthorizedReadV1<'_>,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
-        if admission.policy_revision == 0
-            || admission.expected_quota_revision == 0
-            || admission.amount == 0
-            || admission.expires_at_ms == 0
-        {
-            return Err(BaoClientError::InvalidRequest.into());
-        }
-        let binding = self.binding(request)?;
-        let principal = StableId::new(binding.subject_id.clone())
-            .map_err(|_| BaoClientError::InvalidRequest)?;
-        let action =
-            StableId::new("action:bao-read").map_err(|_| BaoClientError::InvalidRequest)?;
-        let scope = Digest32::from_array(binding.scope_sha256);
-        let effect_digest = self.authbus_effect_digest(request, &admission.operation_id)?;
-
-        let observed = evidence.trusted_time()?;
-        let time = authbus.observe_trusted_time_attestation(&observed).await?;
-        let decision = authbus
-            .authorize(
-                &principal,
-                &action,
-                scope,
-                admission.policy_revision,
-                time.clone(),
-            )
-            .await?;
-        let reservation = authbus
-            .reserve(
-                &decision,
-                ReservationRequest {
-                    quota_key: admission.quota_key.clone(),
-                    operation_id: admission.operation_id.clone(),
-                    amount: admission.amount,
-                    effect_digest,
-                    expected_quota_revision: admission.expected_quota_revision,
-                    expires_at_ms: admission.expires_at_ms,
-                },
-                time,
-            )
-            .await?;
-
-        // Re-sample authenticated time immediately before the irreversible
-        // boundary. Once this transition commits, timeout/transport uncertainty
-        // can never refund quota without signed terminal evidence.
-        let dispatch_time = authbus
-            .observe_trusted_time_attestation(&evidence.trusted_time()?)
-            .await?;
-        let dispatched = authbus
-            .mark_dispatch_attempted(
-                &reservation.reservation_id,
-                reservation.revision,
-                effect_digest,
-                dispatch_time,
-            )
-            .await?;
-
-        let provider = self
-            .consume_kv_v2(authority, grant, request, consumer)
-            .await;
-        match provider {
-            Ok(receipt) => {
-                let terminal = Digest32::of_bytes(
-                    &serde_json::to_vec(&receipt)
-                        .map_err(|_| BaoAuthBusError::Evidence("receipt encoding failed"))?,
-                );
-                settle_observed(
-                    authbus,
-                    evidence,
-                    &dispatched,
-                    SettlementStatus::Completed,
-                    admission.amount,
-                    terminal,
-                    Some(receipt),
-                )
-                .await?
-                .ok_or(BaoAuthBusError::Evidence(
-                    "successful settlement lost its receipt",
-                ))
-            }
-            Err(error) if ambiguous_after_dispatch(&error) => {
-                let time = authbus
-                    .observe_trusted_time_attestation(&evidence.trusted_time()?)
-                    .await;
-                match time {
-                    Ok(time) => {
-                        let _ = authbus
-                            .mark_indeterminate(
-                                &dispatched.reservation_id,
-                                dispatched.revision,
-                                time,
-                            )
-                            .await;
-                    }
-                    Err(_) => {
-                        // The durable DispatchAttempted row remains conservative;
-                        // restart reconciliation promotes it to Indeterminate.
-                    }
-                }
-                Err(BaoAuthBusError::Indeterminate {
-                    reservation_id: dispatched.reservation_id,
-                    provider_error: error,
-                })
-            }
-            Err(error) => {
-                let terminal =
-                    Digest32::of_bytes(format!("hepta.bao.terminal.v3:{error:?}").as_bytes());
-                match settle_observed(
-                    authbus,
-                    evidence,
-                    &dispatched,
-                    SettlementStatus::Completed,
-                    admission.amount,
-                    terminal,
-                    None,
-                )
-                .await
-                {
-                    Ok(None) => Err(BaoAuthBusError::Provider(error)),
-                    Ok(Some(_)) => Err(BaoAuthBusError::Evidence(
-                        "terminal provider failure unexpectedly produced a receipt",
-                    )),
-                    Err(pending) => Err(pending),
-                }
-            }
-        }
+        self.consume_kv_v2_with_authbus_guarded(
+            authbus,
+            read,
+            evidence,
+            |_| Ok(()),
+            |_| Ok(()),
+            |secret, _receipt| consumer(secret),
+        )
+        .await
     }
 
     /// Claim a kernel permit, fetch exactly one version, then deliver only to
@@ -378,120 +298,19 @@ impl BaoClient {
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
         match self
-            .consume_kv_v2_guarded(authority, grant, request, consumer)
+            .consume_kv_v2_guarded(
+                authority,
+                grant,
+                request,
+                |_| Ok(()),
+                |secret, _receipt| consumer(secret),
+            )
             .await?
         {
             Ok(receipt) => Ok(receipt),
             Err(()) => Err(BaoClientError::ConsumerIndeterminate),
         }
     }
-
-    /// Crate-private typed final-delivery gate used by the registered host.
-    /// Provider I/O and secret validation complete first, then kernel authority
-    /// is revalidated and this gate executes at the final consumer boundary.
-    pub(crate) async fn consume_kv_v2_guarded<E>(
-        &self,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
-        consumer: impl FnOnce(&[u8]) -> Result<(), E>,
-    ) -> Result<Result<BaoSecretReceipt, E>, BaoClientError> {
-        let binding = self.binding(request)?;
-        let mut url = self.origin.clone();
-        {
-            let mut parts = url
-                .path_segments_mut()
-                .map_err(|_| BaoClientError::InvalidRequest)?;
-            parts.clear().push("v1");
-            for part in request.mount.split('/') {
-                parts.push(part);
-            }
-            parts.push("data");
-            for part in request.path.split('/') {
-                parts.push(part);
-            }
-        }
-        url.query_pairs_mut()
-            .append_pair("version", &request.version.to_string());
-        let mut token = HeaderValue::from_str(&self.token.0)
-            .map_err(|_| BaoClientError::InvalidConfiguration)?;
-        token.set_sensitive(true);
-        let mut network_request = self
-            .client
-            .get(url)
-            .header("X-Vault-Token", token)
-            .header("Accept", "application/json");
-        if !request.namespace.is_empty() {
-            network_request = network_request.header("X-Vault-Namespace", &request.namespace);
-        }
-        let verified =
-            claim_final_use(authority, grant, &binding).map_err(BaoClientError::Authority)?;
-        let mut response = network_request.send().await.map_err(transport_error)?;
-        match response.status() {
-            StatusCode::OK => {}
-            StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => {
-                return Err(BaoClientError::ProviderDenied);
-            }
-            StatusCode::NOT_FOUND => return Err(BaoClientError::NotFound),
-            _ => return Err(BaoClientError::ProviderUnavailable),
-        }
-        if response
-            .content_length()
-            .is_some_and(|length| length > MAX_RESPONSE_BYTES as u64)
-        {
-            return Err(BaoClientError::ResponseTooLarge);
-        }
-        let mut body = Zeroizing::new(Vec::new());
-        while let Some(chunk) = response.chunk().await.map_err(transport_error)? {
-            if chunk.len() > MAX_RESPONSE_BYTES - body.len() {
-                return Err(BaoClientError::ResponseTooLarge);
-            }
-            body.extend_from_slice(&chunk);
-        }
-        let decoded: KvResponse =
-            serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
-        if decoded.data.metadata.version != request.version {
-            return Err(BaoClientError::VersionMismatch);
-        }
-        let secret = decoded
-            .data
-            .data
-            .get(&request.field)
-            .ok_or(BaoClientError::InvalidResponse)?;
-        let digest = Digest32::of_bytes(secret.as_bytes()).into_array();
-        if digest != request.expected_secret_sha256 {
-            return Err(BaoClientError::SecretDigestMismatch);
-        }
-        let receipt = BaoSecretReceipt {
-            request_sha256: binding.request_sha256,
-            response_sha256: Digest32::of_bytes(&body).into_array(),
-            secret_sha256: digest,
-            version: request.version,
-            secret_bytes: secret.len(),
-        };
-        match deliver_final_use(authority, verified, &binding, || {
-            consumer(secret.as_bytes())
-        })
-        .map_err(BaoClientError::Authority)?
-        {
-            Ok(()) => Ok(Ok(receipt)),
-            Err(error) => Ok(Err(error)),
-        }
-    }
-}
-
-#[derive(Deserialize)]
-struct KvResponse {
-    data: KvPayload,
-}
-#[derive(Deserialize)]
-struct KvPayload {
-    data: BTreeMap<String, Zeroizing<String>>,
-    metadata: KvMetadata,
-}
-#[derive(Deserialize)]
-struct KvMetadata {
-    version: u64,
 }
 
 fn component(value: &str) -> bool {
@@ -506,7 +325,7 @@ fn component(value: &str) -> bool {
 fn segmented(value: &str) -> bool {
     value.len() <= 1024 && value.split('/').all(component)
 }
-async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
+pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     authbus: &AuthBusAuthorityHost,
     evidence: &mut E,
     reservation: &QuotaReservation,
@@ -515,10 +334,13 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     terminal_evidence_digest: Digest32,
     receipt: Option<BaoSecretReceipt>,
 ) -> Result<Option<BaoSecretReceipt>, BaoAuthBusError> {
-    let time = match authbus
-        .observe_trusted_time_attestation(&evidence.trusted_time()?)
-        .await
-    {
+    let pending = |error: BaoAuthBusError| BaoAuthBusError::SettlementPending {
+        reservation_id: reservation.reservation_id.clone(),
+        receipt: receipt.clone(),
+        control_error: error.to_string(),
+    };
+    let attestation = evidence.trusted_time().map_err(pending)?;
+    let time = match authbus.observe_trusted_time_attestation(&attestation).await {
         Ok(time) => time,
         Err(error) => {
             return Err(BaoAuthBusError::SettlementPending {
@@ -528,13 +350,15 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             });
         }
     };
-    let signed = evidence.settlement_evidence(
-        reservation,
-        status,
-        observed_cost,
-        terminal_evidence_digest,
-        time.wall_time_ms(),
-    )?;
+    let signed = evidence
+        .settlement_evidence(
+            reservation,
+            status,
+            observed_cost,
+            terminal_evidence_digest,
+            time.wall_time_ms(),
+        )
+        .map_err(pending)?;
     let issuer = match authbus
         .settlement_issuer(&signed.claims.issuer_id, signed.claims.key_epoch)
         .await
@@ -548,6 +372,8 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             });
         }
     };
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("settlement.before");
     if let Err(error) = authbus.settle(&issuer, &signed, time).await {
         return Err(BaoAuthBusError::SettlementPending {
             reservation_id: reservation.reservation_id.clone(),
@@ -555,10 +381,12 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             control_error: error.to_string(),
         });
     }
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("settlement.after");
     Ok(receipt)
 }
 
-fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
+fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
     matches!(
         error,
         BaoClientError::TransportUnavailable
@@ -604,3 +432,8 @@ impl std::error::Error for BaoClientError {}
 #[cfg(all(test, unix))]
 #[path = "https_consumer_tests.rs"]
 mod tests;
+
+#[path = "provider_authbus_dispatch.rs"]
+mod provider_authbus_dispatch;
+#[path = "provider_final_use_dispatch.rs"]
+mod provider_final_use_dispatch;

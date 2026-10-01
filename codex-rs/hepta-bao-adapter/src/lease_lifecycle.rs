@@ -1,22 +1,49 @@
 //! Durable metadata-only SecretLease lifecycle owner.
 //!
 //! This module deliberately stores no secret value. Provider effects are
-//! represented as observations so a timeout/crash can remain Unknown until a
-//! trusted reconciler observes the original operation.
+//! represented as observations so a timeout or crash remains `Unknown` until a
+//! trusted reconciler observes the original operation. The Unix storage profile
+//! is single-writer: an advisory lock fences parallel owners, replacement is
+//! synchronized before success, and a post-replacement durability failure
+//! fences the open writer until it is reopened.
 
 use std::collections::BTreeMap;
+use std::collections::VecDeque;
+use std::fs;
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::TryLockError;
+use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Instant;
 
 use serde::Deserialize;
 use serde::Serialize;
 
-const SCHEMA_VERSION: u32 = 1;
+#[path = "consumption_lifecycle.rs"]
+mod consumption;
+pub use consumption::BaoConsumptionOperationV1;
+pub use consumption::BaoConsumptionPhaseV1;
+pub use consumption::BaoConsumptionRecoveryActionV1;
+pub use consumption::BaoConsumptionStateV1;
+pub use consumption::BaoSecretReceipt;
+pub use consumption::BaoSecretTelemetryV1;
+
+const LEGACY_SCHEMA_VERSION: u32 = 1;
+const INTERMEDIATE_SCHEMA_VERSION: u32 = 2;
+const PREVIOUS_SCHEMA_VERSION: u32 = 3;
+const SCHEMA_VERSION: u32 = 4;
 const MAX_RECORDS: usize = 65_536;
 const MAX_METADATA_BYTES: usize = 16 * 1024;
+const MAX_STORE_BYTES: usize = 8 * 1024 * 1024;
+const CONTROL_RESERVE_BYTES: usize = 64 * 1024;
+const CONSUMPTION_FUTURE_RESERVE_BYTES: usize = 4096;
+const COMMIT_DURATION_SAMPLE_LIMIT: usize = 256;
+const INITIALIZED_MARKER: &[u8] = b"hepta.secret-lease-registry.initialized.v1\n";
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -67,11 +94,29 @@ pub struct LeaseOperationV1 {
     pub kind: LeaseOperationKindV1,
     pub semantic_sha256: [u8; 32],
     pub lease_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expected_generation: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub observed_at_unix_ms: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub resulting_generation: Option<u64>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub legacy_binding_incomplete: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub result_lease: Option<SecretLeaseMetadataV1>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub result_observation: Option<ProviderLeaseObservationV1>,
     pub state: LeaseOperationStateV1,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LeaseOperationResultV1 {
+    pub operation: LeaseOperationV1,
+    pub lease: Option<SecretLeaseMetadataV1>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "result", rename_all = "snake_case")]
+#[serde(tag = "result", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ProviderLeaseObservationV1 {
     IssueApplied {
         lease: SecretLeaseMetadataV1,
@@ -97,21 +142,194 @@ pub enum ProviderLeaseObservationV1 {
 #[serde(deny_unknown_fields)]
 struct StoredRegistryV1 {
     schema_version: u32,
+    #[serde(default)]
+    revision: u64,
+    #[serde(default)]
+    time_frontier_unix_ms: u64,
     operations: BTreeMap<String, LeaseOperationV1>,
     leases: BTreeMap<String, SecretLeaseMetadataV1>,
+    #[serde(default)]
+    consumptions: BTreeMap<String, BaoConsumptionOperationV1>,
+}
+
+trait LeaseRegistryPersistenceV1: Send + Sync {
+    fn write_and_sync_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()>;
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()>;
+    fn sync_parent(&self, parent: &Path) -> io::Result<()>;
+}
+
+#[derive(Debug)]
+struct FsLeaseRegistryPersistenceV1;
+
+impl LeaseRegistryPersistenceV1 for FsLeaseRegistryPersistenceV1 {
+    fn write_and_sync_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()> {
+        let mut options = private_file_options();
+        let mut file = options.write(true).create_new(true).open(path)?;
+        file.write_all(bytes)?;
+        file.sync_all()
+    }
+
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()> {
+        fs::rename(from, to)
+    }
+
+    fn sync_parent(&self, parent: &Path) -> io::Result<()> {
+        File::open(parent)?.sync_all()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LeaseRegistryCommitMetricsV1 {
+    pub attempts: u64,
+    pub confirmed_commits: u64,
+    pub rejected_commits: u64,
+    pub unavailable_commits: u64,
+    pub indeterminate_commits: u64,
+    pub writer_fence_events: u64,
+    pub attempted_bytes: u64,
+    pub confirmed_bytes: u64,
+    pub last_duration_micros: u64,
+    pub max_duration_micros: u64,
+    pub p50_duration_micros: u64,
+    pub p95_duration_micros: u64,
+    pub p99_duration_micros: u64,
+}
+
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct LeaseRegistryMigrationSnapshotV1 {
+    pub schema_version: u32,
+    pub revision: u64,
+    pub time_frontier_unix_ms: u64,
+    pub operations: Vec<LeaseOperationV1>,
+    pub leases: Vec<SecretLeaseMetadataV1>,
+    pub consumptions: Vec<BaoConsumptionOperationV1>,
+}
+
+impl std::fmt::Debug for LeaseRegistryMigrationSnapshotV1 {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("LeaseRegistryMigrationSnapshotV1")
+            .field("schema_version", &self.schema_version)
+            .field("revision", &self.revision)
+            .field("time_frontier_unix_ms", &self.time_frontier_unix_ms)
+            .field("operation_count", &self.operations.len())
+            .field("lease_count", &self.leases.len())
+            .field("consumption_count", &self.consumptions.len())
+            .finish()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LeaseRegistryDiagnosticsV1 {
+    pub schema_version: u32,
+    pub revision: u64,
+    pub lease_operation_count: usize,
+    pub lease_count: usize,
+    pub consumption_count: usize,
+    pub consumption_by_state: BTreeMap<BaoConsumptionStateV1, usize>,
+    pub pending_by_recovery_action: BTreeMap<BaoConsumptionRecoveryActionV1, usize>,
+    pub pending_quota_amount: u64,
+    pub post_dispatch_without_receipt: usize,
+    pub observer_pending: usize,
+    pub settlement_pending: usize,
+    pub oldest_pending_age_revisions: u64,
+    pub encoded_bytes: usize,
+    pub lease_future_reserve_bytes: usize,
+    pub consumption_future_reserve_bytes: usize,
+    pub max_store_bytes: usize,
+    pub available_bytes: usize,
+    pub fenced: bool,
+    pub commit_metrics: LeaseRegistryCommitMetricsV1,
+}
+
+#[derive(Default)]
+struct LeaseRegistryRuntimeMetricsV1 {
+    attempts: u64,
+    confirmed_commits: u64,
+    rejected_commits: u64,
+    unavailable_commits: u64,
+    indeterminate_commits: u64,
+    writer_fence_events: u64,
+    attempted_bytes: u64,
+    confirmed_bytes: u64,
+    last_duration_micros: u64,
+    max_duration_micros: u64,
+    duration_samples_micros: VecDeque<u64>,
+}
+
+impl LeaseRegistryRuntimeMetricsV1 {
+    fn record_duration(&mut self, started: Instant) {
+        let micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        self.last_duration_micros = micros;
+        self.max_duration_micros = self.max_duration_micros.max(micros);
+        if self.duration_samples_micros.len() == COMMIT_DURATION_SAMPLE_LIMIT {
+            self.duration_samples_micros.pop_front();
+        }
+        self.duration_samples_micros.push_back(micros);
+    }
+
+    fn snapshot(&self) -> LeaseRegistryCommitMetricsV1 {
+        let mut samples = self
+            .duration_samples_micros
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        samples.sort_unstable();
+        LeaseRegistryCommitMetricsV1 {
+            attempts: self.attempts,
+            confirmed_commits: self.confirmed_commits,
+            rejected_commits: self.rejected_commits,
+            unavailable_commits: self.unavailable_commits,
+            indeterminate_commits: self.indeterminate_commits,
+            writer_fence_events: self.writer_fence_events,
+            attempted_bytes: self.attempted_bytes,
+            confirmed_bytes: self.confirmed_bytes,
+            last_duration_micros: self.last_duration_micros,
+            max_duration_micros: self.max_duration_micros,
+            p50_duration_micros: percentile(&samples, 50),
+            p95_duration_micros: percentile(&samples, 95),
+            p99_duration_micros: percentile(&samples, 99),
+        }
+    }
+}
+
+fn percentile(samples: &[u64], percentile: usize) -> u64 {
+    if samples.is_empty() {
+        return 0;
+    }
+    let last = samples.len() - 1;
+    let index = last
+        .checked_mul(percentile)
+        .and_then(|value| value.checked_add(99))
+        .map(|value| value / 100)
+        .unwrap_or(last)
+        .min(last);
+    samples[index]
 }
 
 pub struct DurableLeaseRegistryV1 {
+    executions: crate::operation_execution::OperationExecutionSet,
     path: PathBuf,
+    lock: File,
     state: StoredRegistryV1,
+    persistence: Arc<dyn LeaseRegistryPersistenceV1>,
+    fenced: bool,
+    runtime_metrics: LeaseRegistryRuntimeMetricsV1,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("DurableLeaseRegistryV1")
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("DurableLeaseRegistryV1")
             .field("path", &self.path)
+            .field("schema_version", &self.state.schema_version)
+            .field("revision", &self.state.revision)
             .field("operation_count", &self.state.operations.len())
             .field("lease_count", &self.state.leases.len())
+            .field("consumption_count", &self.state.consumptions.len())
+            .field("fenced", &self.fenced)
+            .field("commit_attempts", &self.runtime_metrics.attempts)
             .finish()
     }
 }
@@ -126,405 +344,68 @@ pub enum LeaseRegistryErrorV1 {
     InvalidTransition,
     ObservationMismatch,
     CorruptState,
+    WriterBusy,
+    CommitIndeterminate,
+    Fenced,
+    UnsupportedPlatform,
+    LegacyRequalificationRequired,
     Unavailable,
 }
 
 impl std::fmt::Display for LeaseRegistryErrorV1 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{self:?}")
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{self:?}")
     }
 }
 
 impl std::error::Error for LeaseRegistryErrorV1 {}
 
-impl DurableLeaseRegistryV1 {
-    pub fn open(path: impl Into<PathBuf>) -> Result<Self, LeaseRegistryErrorV1> {
-        let path = path.into();
-        let state = if path.exists() {
-            let mut bytes = Vec::new();
-            File::open(&path)
-                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
-                .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-            if bytes.len() > 8 * 1024 * 1024 {
-                return Err(LeaseRegistryErrorV1::CorruptState);
-            }
-            let state: StoredRegistryV1 =
-                serde_json::from_slice(&bytes).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
-            validate_state(&state)?;
-            state
-        } else {
-            StoredRegistryV1 {
-                schema_version: SCHEMA_VERSION,
-                operations: BTreeMap::new(),
-                leases: BTreeMap::new(),
-            }
-        };
-        Ok(Self { path, state })
-    }
-
-    pub fn lease(&self, lease_id: &str) -> Option<&SecretLeaseMetadataV1> {
-        self.state.leases.get(lease_id)
-    }
-
-    pub fn operation(&self, operation_id: &str) -> Option<&LeaseOperationV1> {
-        self.state.operations.get(operation_id)
-    }
-
-    pub fn prepare_issue(
-        &mut self,
-        operation_id: String,
-        semantic_sha256: [u8; 32],
-    ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        self.prepare(
-            operation_id,
-            LeaseOperationKindV1::Issue,
-            semantic_sha256,
-            None,
-        )
-    }
-
-    pub fn prepare_renew(
-        &mut self,
-        operation_id: String,
-        lease_id: String,
-        semantic_sha256: [u8; 32],
-    ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        self.require_active(&lease_id)?;
-        self.prepare(
-            operation_id,
-            LeaseOperationKindV1::Renew,
-            semantic_sha256,
-            Some(lease_id),
-        )
-    }
-
-    pub fn prepare_revoke(
-        &mut self,
-        operation_id: String,
-        lease_id: String,
-        semantic_sha256: [u8; 32],
-    ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        let lease = self
-            .state
-            .leases
-            .get(&lease_id)
-            .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-        if matches!(
-            lease.state,
-            SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
-        ) {
-            return Err(LeaseRegistryErrorV1::InvalidTransition);
-        }
-        self.prepare(
-            operation_id,
-            LeaseOperationKindV1::Revoke,
-            semantic_sha256,
-            Some(lease_id),
-        )
-    }
-
-    pub fn mark_unknown(
-        &mut self,
-        operation_id: &str,
-    ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        let mut next = self.state.clone();
-        let operation = next
-            .operations
-            .get_mut(operation_id)
-            .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
-        if !matches!(
-            operation.state,
-            LeaseOperationStateV1::Prepared | LeaseOperationStateV1::Unknown
-        ) {
-            return Err(LeaseRegistryErrorV1::InvalidTransition);
-        }
-        operation.state = LeaseOperationStateV1::Unknown;
-        if let Some(lease_id) = operation.lease_id.as_ref() {
-            if let Some(lease) = next.leases.get_mut(lease_id) {
-                lease.state = match operation.kind {
-                    LeaseOperationKindV1::Renew => SecretLeaseStateV1::RenewUnknown,
-                    LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
-                    LeaseOperationKindV1::Issue => lease.state,
-                };
-            }
-        }
-        self.commit(next)?;
-        self.operation(operation_id)
-            .cloned()
-            .ok_or(LeaseRegistryErrorV1::OperationNotFound)
-    }
-
-    pub fn reconcile(
-        &mut self,
-        operation_id: &str,
-        observation: ProviderLeaseObservationV1,
-    ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        let current = self
-            .state
-            .operations
-            .get(operation_id)
-            .cloned()
-            .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
-        if !matches!(
-            current.state,
-            LeaseOperationStateV1::Prepared | LeaseOperationStateV1::Unknown
-        ) {
-            return Err(LeaseRegistryErrorV1::InvalidTransition);
-        }
-
-        let mut next = self.state.clone();
-        match (&current.kind, observation) {
-            (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
-                validate_lease(&lease)?;
-                if next.leases.contains_key(&lease.lease_id) {
-                    return Err(LeaseRegistryErrorV1::ObservationMismatch);
-                }
-                next.leases.insert(lease.lease_id.clone(), lease);
-                let operation = next.operations.get_mut(operation_id).unwrap();
-                operation.state = LeaseOperationStateV1::Applied;
-            }
-            (
-                LeaseOperationKindV1::Renew,
-                ProviderLeaseObservationV1::RenewApplied {
-                    lease_id,
-                    observed_at_unix_ms,
-                    expires_at_unix_ms,
-                    renewable,
-                    provider_metadata_sha256,
-                },
-            ) => {
-                if current.lease_id.as_deref() != Some(lease_id.as_str())
-                    || provider_metadata_sha256 == [0; 32]
-                    || expires_at_unix_ms <= observed_at_unix_ms
-                {
-                    return Err(LeaseRegistryErrorV1::ObservationMismatch);
-                }
-                let lease = next
-                    .leases
-                    .get_mut(&lease_id)
-                    .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-                lease.expires_at_unix_ms = expires_at_unix_ms;
-                lease.renewable = renewable;
-                lease.provider_metadata_sha256 = provider_metadata_sha256;
-                lease.generation = lease
-                    .generation
-                    .checked_add(1)
-                    .ok_or(LeaseRegistryErrorV1::InvalidTransition)?;
-                lease.state = SecretLeaseStateV1::Active;
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Applied;
-            }
-            (
-                LeaseOperationKindV1::Revoke,
-                ProviderLeaseObservationV1::RevokeApplied {
-                    lease_id,
-                    observed_at_unix_ms: _,
-                    provider_metadata_sha256,
-                },
-            ) => {
-                if current.lease_id.as_deref() != Some(lease_id.as_str())
-                    || provider_metadata_sha256 == [0; 32]
-                {
-                    return Err(LeaseRegistryErrorV1::ObservationMismatch);
-                }
-                let lease = next
-                    .leases
-                    .get_mut(&lease_id)
-                    .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-                lease.provider_metadata_sha256 = provider_metadata_sha256;
-                lease.state = SecretLeaseStateV1::Revoked;
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Applied;
-            }
-            (_, ProviderLeaseObservationV1::Unknown) => {
-                return self.mark_unknown(operation_id);
-            }
-            (_, ProviderLeaseObservationV1::Denied) => {
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Denied;
-                restore_unknown_lease_state(&mut next, &current)?;
-            }
-            (_, ProviderLeaseObservationV1::NotApplied) => {
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Denied;
-                restore_unknown_lease_state(&mut next, &current)?;
-            }
-            _ => return Err(LeaseRegistryErrorV1::ObservationMismatch),
-        }
-        self.commit(next)?;
-        self.operation(operation_id)
-            .cloned()
-            .ok_or(LeaseRegistryErrorV1::OperationNotFound)
-    }
-
-    pub fn expire_at(&mut self, now_unix_ms: u64) -> Result<usize, LeaseRegistryErrorV1> {
-        let mut next = self.state.clone();
-        let mut changed = 0usize;
-        for lease in next.leases.values_mut() {
-            if lease.state == SecretLeaseStateV1::Active && now_unix_ms >= lease.expires_at_unix_ms
-            {
-                lease.state = SecretLeaseStateV1::Expired;
-                changed += 1;
-            }
-        }
-        if changed != 0 {
-            self.commit(next)?;
-        }
-        Ok(changed)
-    }
-
-    fn prepare(
-        &mut self,
-        operation_id: String,
-        kind: LeaseOperationKindV1,
-        semantic_sha256: [u8; 32],
-        lease_id: Option<String>,
-    ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        if !identifier(&operation_id)
-            || semantic_sha256 == [0; 32]
-            || lease_id.as_deref().is_some_and(|value| !identifier(value))
-        {
-            return Err(LeaseRegistryErrorV1::InvalidInput);
-        }
-        if let Some(existing) = self.state.operations.get(&operation_id) {
-            if existing.kind == kind
-                && existing.semantic_sha256 == semantic_sha256
-                && existing.lease_id == lease_id
-            {
-                return Ok(existing.clone());
-            }
-            return Err(LeaseRegistryErrorV1::OperationConflict);
-        }
-        if self.state.operations.len() >= MAX_RECORDS {
-            return Err(LeaseRegistryErrorV1::CapacityExceeded);
-        }
-        let operation = LeaseOperationV1 {
-            operation_id: operation_id.clone(),
-            kind,
-            semantic_sha256,
-            lease_id,
-            state: LeaseOperationStateV1::Prepared,
-        };
-        let mut next = self.state.clone();
-        next.operations.insert(operation_id, operation.clone());
-        self.commit(next)?;
-        Ok(operation)
-    }
-
-    fn require_active(&self, lease_id: &str) -> Result<(), LeaseRegistryErrorV1> {
-        let lease = self
-            .state
-            .leases
-            .get(lease_id)
-            .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-        if lease.state != SecretLeaseStateV1::Active || !lease.renewable {
-            return Err(LeaseRegistryErrorV1::InvalidTransition);
-        }
-        Ok(())
-    }
-
-    fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-        validate_state(&next)?;
-        persist(&self.path, &next)?;
-        self.state = next;
-        Ok(())
+impl Drop for DurableLeaseRegistryV1 {
+    fn drop(&mut self) {
+        let _ = File::unlock(&self.lock);
     }
 }
 
-fn restore_unknown_lease_state(
-    state: &mut StoredRegistryV1,
-    operation: &LeaseOperationV1,
-) -> Result<(), LeaseRegistryErrorV1> {
-    let Some(lease_id) = operation.lease_id.as_ref() else {
-        return Ok(());
-    };
-    let lease = state
-        .leases
-        .get_mut(lease_id)
-        .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-    if matches!(
-        lease.state,
-        SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
-    ) {
-        lease.state = SecretLeaseStateV1::Active;
-    }
-    Ok(())
-}
-
-fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-    if state.schema_version != SCHEMA_VERSION
-        || state.operations.len() > MAX_RECORDS
-        || state.leases.len() > MAX_RECORDS
-    {
-        return Err(LeaseRegistryErrorV1::CorruptState);
-    }
-    for (id, operation) in &state.operations {
-        if id != &operation.operation_id
-            || !identifier(id)
-            || operation.semantic_sha256 == [0; 32]
-            || operation
-                .lease_id
-                .as_deref()
-                .is_some_and(|value| !identifier(value))
-        {
-            return Err(LeaseRegistryErrorV1::CorruptState);
-        }
-    }
-    for (id, lease) in &state.leases {
-        if id != &lease.lease_id {
-            return Err(LeaseRegistryErrorV1::CorruptState);
-        }
-        validate_lease(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
-    }
-    Ok(())
-}
-
-fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
-    if !identifier(&lease.lease_id)
-        || !identifier(&lease.secret_reference_id)
-        || !identifier(&lease.consumer_id)
-        || lease.scope_sha256 == [0; 32]
-        || lease.provider_metadata_sha256 == [0; 32]
-        || lease.generation == 0
-        || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
-        || lease.state != SecretLeaseStateV1::Active
-    {
-        return Err(LeaseRegistryErrorV1::InvalidInput);
-    }
-    let encoded = serde_json::to_vec(lease).map_err(|_| LeaseRegistryErrorV1::InvalidInput)?;
-    if encoded.len() > MAX_METADATA_BYTES {
-        return Err(LeaseRegistryErrorV1::InvalidInput);
-    }
-    Ok(())
-}
-
-fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-    let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let file_name = path
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    let next = parent.join(format!("{file_name}.next"));
-    let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    file.write_all(&bytes)
-        .and_then(|()| file.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
-}
-
-fn identifier(value: &str) -> bool {
-    !value.is_empty()
-        && value.len() <= 256
-        && value
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b"_-.:/".contains(&b))
-}
-
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "lease_lifecycle_tests.rs"]
 mod tests;
+
+#[path = "lease_registry_diagnostics.rs"]
+mod lease_registry_diagnostics;
+#[path = "lease_registry_mutations.rs"]
+mod lease_registry_mutations;
+#[path = "lease_registry_reconciliation.rs"]
+mod lease_registry_reconciliation;
+#[path = "lease_registry_storage.rs"]
+mod lease_registry_storage;
+
+#[path = "lease_registry_pending.rs"]
+mod lease_registry_pending;
+use lease_registry_pending::ensure_operation_capacity;
+use lease_registry_pending::has_pending_kind;
+use lease_registry_pending::has_pending_mutation;
+use lease_registry_pending::latest_observed_at;
+use lease_registry_pending::new_operation;
+use lease_registry_pending::restore_after_negative_observation;
+
+#[path = "lease_registry_validation.rs"]
+mod lease_registry_validation;
+use lease_registry_validation::migrate_state;
+use lease_registry_validation::validate_new_active_lease;
+use lease_registry_validation::validate_state;
+
+#[path = "lease_registry_encoding.rs"]
+mod lease_registry_encoding;
+use lease_registry_encoding::PersistFailure;
+use lease_registry_encoding::encode_state;
+use lease_registry_encoding::future_reserve_bytes;
+use lease_registry_encoding::identifier;
+use lease_registry_encoding::parent_directory;
+use lease_registry_encoding::persist_bytes;
+use lease_registry_encoding::prepare_parent;
+use lease_registry_encoding::private_file_options;
+use lease_registry_encoding::reject_existing_symlink;
+use lease_registry_encoding::remove_if_present;
+use lease_registry_encoding::sibling_with_suffix;
+use lease_registry_encoding::stamp_consumption_revisions;
+use lease_registry_encoding::validate_private_file;
