@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `1706bdf37df7e87efcab2f308b0908657db60690f931fba54107d53341b64f86`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,8 +13,8 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged. |
-| `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness, RunStart authority and source deadline after writer waits; selected runs reverify original evaluation proofs and canonical deadline; receipt remains in process and outward V1 is unchanged. |
+| `authority_read` | `source_present` | Owner files use bounded checked-handle reads; each full final-use fence authenticates one immutable signed manifest for all seven owners, without caching across boundaries or changing live-stage freshness. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
 | `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
@@ -22,7 +22,7 @@ All four production completion predicates remain false. Current execution identi
 
 Remaining closure requirements:
 
-- **durable_handoff**: Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal.
+- **durable_handoff**: Persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Tracing and in-process receipts are not a durable journal.
 - **transport_receipt**: Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1.
 - **generation_recovery**: Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases.
 - **typed_domains**: Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings.
@@ -55,6 +55,10 @@ Canonical Agentd admission supplies a reject-only final-use check that re-reads 
 The signed owner-file reader checks the same open handle's type, permissions and size, reads at most 64 KiB plus one byte, and rejects excess actual bytes before JSON or cryptography. Unix also rejects symlinks and verifies path/handle identity. A valid metadata length cannot authorize an unbounded later read.
 
 Selected prepared runs retain the original signed evaluation session, generator/evaluator/use proofs and exact evaluation input. Final-use and run-admission checks repeat evaluation under current time, bind the result to the existing context/snapshot/candidate/receipt and reject any shorter proof expiry or effective signer revocation even while the root lease remains valid. This retained state is private and in memory; process restart still requires the unimplemented durable handoff/reconciliation path.
+
+Every canonical disposition must also meet the original RunStart deadline; selected runs must meet their canonical run deadline. Recheck both after the writer wait and before policy append, and recheck source expiry after acquiring the run lock. These deadline checks use current owner/wall time and the existing coordinator's rejection semantics.
+
+A full owner fence verifies one signed manifest and checks all seven owners against that immutable view. Each new final-use boundary constructs a new view; the live stage oracle still reads current signed input separately. This eliminates six repeated file/crypto operations per full fence and prevents combining owner rows from different manifests. It is an operation-count change, not a claimed combined request-latency measurement.
 
 The canonical serving gate now emits bounded OpenTelemetry metrics and a tracing span through the process-global Codex telemetry clients. That source integration does not by itself establish deployed entitlement integration, a configured exporter endpoint, dashboard delivery, alert routing, diagnostic audit delivery or operator acceptance. Those remain separate release gates.
 
@@ -124,6 +128,8 @@ The benchmark is explicitly durable-ledger-only. Do not label its throughput or 
 ## 5. Recovery, backup and restore
 
 Before any operator recovery, stop new admissions for the affected generation and preserve the request identity, prepared digest, deterministic Decision record ID, expected predecessor, any returned commit receipt, current ledger frontier and independent witness frontier. An `IndeterminateAfterLedgerCommit` outcome is not proof that nothing was written. Do not issue an unrelated fresh Decision ID to escape an ambiguous result.
+
+An idempotent RunStart replay must reconcile the original authenticated request and policy/evaluation material. Rebuilding provider inputs or automatically redispatching merely because the same run ID reappears cannot stand in for that reconciliation. Exact persistent handoff material and real crash/replay fixtures remain required; the current in-process retained receipts do not establish this behavior after restart.
 
 Back up the ledger or complete segment set, checkpoint metadata, independent witness, admitted trust-distribution metadata, and required public verification material at a consistent quiesced frontier. Preserve file ownership, permissions and directory durability. Keep private signing keys out of diagnostic artifacts. Store the witness independently; copying only the ledger is not a complete restore set.
 

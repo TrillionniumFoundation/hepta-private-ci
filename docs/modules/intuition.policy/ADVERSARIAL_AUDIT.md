@@ -26,6 +26,7 @@
 | P1 | canonical owner 计算沿历史政策入口，而认证提交使用产品 V4 profile，合法产品请求可能因语义不一致被拒绝。 | 产品组合向纯计算传入认证调用使用的同一不可变 profile；显式开发兼容路径保留既有语义，新增产品路由回归。 |
 | P1 | 政策证据在 writer 内复验，但 canonical 七 owner 快照、所选运行的评估信任租约与 RunStart 权限可能在 writer 等待期间改变；回调 I/O 还可能跨越资格有效期。 | 每种 disposition 在 writer 锁内、append 前复查签名快照与 RunStart；所选运行额外查评估租约；回调后重采时间并重验政策资格，final admission 再次复验。回调仅接收只读 clock 接口。新增 owner 代际、entitlement、回调期间资格过期及评估租约回归；仍不代替持久交接。 |
 | P1 | 原始 evaluation 三份签名材料在 Ready 生成后被消费丢弃，只复查较长的 root lease 可能放过较早的 proof expiry 或预定 signer revocation。 | selected preparation 保留原 session、三证明和 exact input/candidate/receipt；final-use 与 admission 重新 evaluate 全部证据，并绑定既有 context/snapshot/candidate/receipt。新增三份合法短签名与预定撤销用例，尚需新候选执行。 |
+| P1 | RunStart entitlement 和政策资格仍有效时，writer 等待可能跨越原请求或 canonical run 的 deadline。 | 每种 disposition 检查原 RunStart deadline，selected 额外查 canonical deadline；采用 checked 微秒向毫秒向上取整，沿已有 coordinator 的 InvalidDeadline 语义拒绝。新增实际签名输入的 deadline 等待 fixture，不宣称真实 daemon journal 验证。 |
 | P2 | 纯内核允许 128 个真实候选，但产品学习记录还需一个 abstain 项，超过 ledger 的 128 项上限。 | Agentd 产品准备最多允许 127 个真实候选，提前返回稳定错误；内核仍允许 128，不截断完整集、不扩大 ledger 上限。覆盖 127 个候选加 abstain 的持久往返和 128 个产品候选的提前拒绝。 |
 | P2 | ingress 和 canonical runner 在 host 的 127 预检之前已复制候选/ID 或占用 worker。 | raw legal/intuition 两类数量在复制或 worker 使用前 O(1) 校验，product 127、compatibility 128，数量不一致拒绝；Busy fixture 仅证明边界可到 worker，不宣称产品请求已认证成功。 |
 | P2 | 多个候选承诺入口在数量校验之前分配并哈希候选内容。 | 在承诺入口共享执行 1..128 预检，保持已接受历史字节与 digest 不变。 |
@@ -35,6 +36,7 @@
 | P2 | hosted boundary 测试把不同 typed pin 拒绝都期待为同一错误，并以禁止的 sequence=0 acknowledged 恢复空 ledger。 | 按实际 pin 验证稳定错误码；比较拒绝前后 ledger/witness 完整字节、恢复真实 witness，以 Unacknowledged 重开验证无记录；未放宽生产校验。 |
 | P2 | docs CI 发现 standalone fuzz carrier 没有唯一 module 归属，以及技术指南的两个 section fragment 已失效。 | 在既有 Cargo ownership registry 登记 fuzz 属于 intuition.policy 的测试载体，修正 fragment 并刷新导航/内容索引；不新增生产 owner，不跳过文档验证。 |
 | P2 | 签名 owner 文件先查 metadata 再无限读取，文件增长可绕过内存边界；run coordinator 锁等待可能再次消费过期权限并产生锁顺序风险。 | 同一受检 handle 最多读 64 KiB 加一字节，按实际长度拒绝再解析，保留 Unix symlink/权限拒绝；run lock 使用 try_lock、返回有完整政策回执的 typed overload，并在持锁后检查 expiry。新增有限读取、增长和权限 fixture，等待新候选执行。 |
+| P2 | 一个完整七 owner fence 重复读取和验证签名文件七次，可能混合不同签名 manifest 的行并增加锁内 I/O/crypto。 | 每个完整 fence 使用一份不可变已认证 manifest，下一 boundary 重新加载，live per-stage oracle 仍重新读取。文件/crypto 次数由七变一；新增两份真实签名 manifest 切换回归，未伪造跨阶段 cache 或 p99 测量。 |
 
 版本兼容边界仍须保留：V2 评分与分配承诺分别编码，但历史生成者 completeness V1 签名仍绑定含 utility、confidence、OOD 和 assignment probability 的 V1 候选 digest。本轮明确记录这种耦合，未改写已有签名字节；彻底分离需要新版本及生产者、消费者迁移。
 
@@ -61,7 +63,7 @@
 
 | 剩余项 | 可验收结果 |
 | --- | --- |
-| durable handoff | 通过 Agentd owner 持久记录准备、政策提交、run start、context attachment 和交付进度；与唯一 learning ledger 协作恢复。 |
+| durable handoff | 通过 Agentd owner 持久保留 exact 已认证请求、policy/evaluation 材料及准备、提交、run/context/交付进度；IdempotentReplay 沿原 intent 和已知 receipt 恢复，不重建 provider 输入或自动 redispatch；需要实际崩溃/重放 fixture。 |
 | 版本化 outward receipt | 迁移对外 admission／ack 合同，绑定政策回执与实际交付结果；不静默改变现有 V1 含义。 |
 | restart 与 typed domains | 当前权限复验、跨进程单调代际、明确的时间／序列／计数域，以及实际 kill、并发、磁盘与损坏恢复。 |
 | legacy migration | 清点和迁移剩余 V1／V2 advisory 消费者，保留必要的显式兼容边界及版本验证。 |

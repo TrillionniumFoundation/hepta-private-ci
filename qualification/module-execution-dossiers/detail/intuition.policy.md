@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `1706bdf37df7e87efcab2f308b0908657db60690f931fba54107d53341b64f86`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,8 +13,8 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged. |
-| `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness, RunStart authority and source deadline after writer waits; selected runs reverify original evaluation proofs and canonical deadline; receipt remains in process and outward V1 is unchanged. |
+| `authority_read` | `source_present` | Owner files use bounded checked-handle reads; each full final-use fence authenticates one immutable signed manifest for all seven owners, without caching across boundaries or changing live-stage freshness. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
 | `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
@@ -22,7 +22,7 @@ All four production completion predicates remain false. Current execution identi
 
 Remaining closure requirements:
 
-- **durable_handoff**: Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal.
+- **durable_handoff**: Persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Tracing and in-process receipts are not a durable journal.
 - **transport_receipt**: Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1.
 - **generation_recovery**: Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases.
 - **typed_domains**: Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings.
@@ -92,6 +92,8 @@ Canonical product composition additionally invokes a reject-only owner fence und
 
 `PreparedEvaluationUseV1` retains the original signed evaluation session, exact port input, selected candidate and resulting receipt. `PreparedAgentdIntelligenceRunV1::revalidate_evaluation` repeats all evaluation proofs and compares the unchanged envelope's run, context, snapshot, objective, candidate and receipt bindings. Individual signed expiry and scheduled signer revocation remain effective independently of a longer root distribution lease. This is in-process final-use state, not a persistent recovery journal.
 
+Each full currentness fence uses `ManifestFreshnessOracleV1` over one verified signed manifest for all seven owner rows. The manifest view is scoped to that fence; it is never retained across a writer wait or reused by later live-stage checks. Source and selected canonical run deadlines are checked at final use with existing coordinator semantics; `run_start_deadline_ms` uses checked ceiling conversion from source microseconds.
+
 The service retains a committed receipt if the final admission check returns either `false` or an error. That result is indeterminate for downstream admission, not evidence that the ledger append never occurred. The canonical run/context boundary now retains the complete policy receipt and typed downstream cause in process. Durable restart reconciliation and outward transport of that receipt remain separate unclosed requirements.
 
 Idempotent replay uses the deterministic record identity, exact signed evidence and original predecessor. The current host implements one bounded exact replay for a ledger-committed/witness-not-advanced error. Ordinary rejection is not retried. A later reconciliation failure must not erase an already-known durable commit; interruption tests must cover both the first append and the retry boundary. Reopen-after-clean-drop is not a substitute for killing a process after append but before witness/acknowledgement.
@@ -141,6 +143,7 @@ Additional committed test sources include:
 - `intelligence_product_final_use_tests.rs`: signed owner-generation and RunStart-entitlement changes while waiting for the writer, plus evaluation-distribution expiry before reusing a prepared product;
 - the same final-use test source retains each of three independently re-signed short evaluation proofs and exercises scheduled signer revocation while the root distribution still remains valid;
 - `intelligence_authority_read_tests.rs`: bounded unauthenticated input, file growth after metadata, and Unix symlink/writable-file rejection before owner snapshot parsing;
+- `intelligence_authority_snapshot_tests.rs`: a full fence cannot combine rows from two signed manifests; the next fence and live stage checks reread current input;
 - `intelligence_candidate_bound_tests.rs`: raw legal/intuition count preflight before signed input or worker use, with separate product 127 and compatibility 128 maxima; reaching Busy checks capacity only, not full product authentication;
 - `trust_distribution_tests.rs`: admitted distribution expiry and scheduled root revocation remain checked at use;
 - `intelligence_product_tests.rs`, `intelligence_product_signed_tests.rs` and `intelligence_evaluation_tests.rs`: canonical default-production profile routing, signed product and evaluation distribution-lifetime regressions;

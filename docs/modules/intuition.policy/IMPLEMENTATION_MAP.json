@@ -348,7 +348,7 @@
   ],
   "sourceStateProjection": {
     "source": "docs/modules/intuition.policy/CURRENT_STATE.json",
-    "contentSha256": "2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d",
+    "contentSha256": "1706bdf37df7e87efcab2f308b0908657db60690f931fba54107d53341b64f86",
     "facts": [
       {
         "id": "native_policy",
@@ -388,7 +388,7 @@
       },
       {
         "id": "admission_receipt",
-        "summary": "All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged.",
+        "summary": "All canonical dispositions recheck owner currentness, RunStart authority and source deadline after writer waits; selected runs reverify original evaluation proofs and canonical deadline; receipt remains in process and outward V1 is unchanged.",
         "state": "source_partial",
         "source": "codex-rs/hepta-agentd/src/state.rs",
         "symbol": "start_canonical_intelligence",
@@ -402,14 +402,15 @@
       },
       {
         "id": "authority_read",
-        "summary": "Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed.",
+        "summary": "Owner files use bounded checked-handle reads; each full final-use fence authenticates one immutable signed manifest for all seven owners, without caching across boundaries or changing live-stage freshness.",
         "state": "source_present",
-        "source": "codex-rs/hepta-agentd/src/intelligence_authority_read.rs",
-        "symbol": "fn read_file",
+        "source": "codex-rs/hepta-agentd/src/intelligence_authority.rs",
+        "symbol": "fn read_manifest",
         "tests": [
-          "codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs"
+          "codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_authority_snapshot_tests.rs"
         ],
-        "evidence": "Canonical intelligence_product test logs for oversized input, growth after metadata and unsafe Unix paths; current target-host owner-file admission still requires execution artifacts."
+        "evidence": "Canonical intelligence_product logs for bounded growth/read guards, signed-manifest switching and fresh next-boundary reads; target-host owner-file admission still requires execution artifacts."
       },
       {
         "id": "startup_profile",
@@ -460,7 +461,7 @@
     "gaps": [
       {
         "id": "durable_handoff",
-        "required": "Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal."
+        "required": "Persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Tracing and in-process receipts are not a durable journal."
       },
       {
         "id": "transport_receipt",
