@@ -5,17 +5,106 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-本次后续修订冻结于 `32310eefbef2a80164b669fe3bfcaef69b47b9da`，tree 为
-`90e28eb295688c11e93d4aec0ad983ba53e0e612`。该源仍是未完整验收的实现候选：
-非 Linux Open/Reveal 缺少等价资源能力适配，完整同源 CI、实体桌面、签名及
-独立发布审批均未完成。最终同源的 release 应用回归 243/243 通过（1.469 s），
-包含真实 headless egui text snapshot；all-targets/all-features 严格应用 Clippy
-通过（4.78 s）。三项 ignored 是两个独立规模主体及其 worker；原生资格 Python
-227/227 和严格 native-map adapter 86/86 通过，两个完整 release 规模主体也通过。
-三个 release 二进制构建、自检和真实子进程 qualification-e2e 通过。ca66 的先期
-243 项回归、ed5 的 212/226 项回归及 21cbe83 的 210 项 owner 回归保留为历史，
-不能继承为最终源 owner 或平台验收。最后一次独立静态复审未发现
-新的同范围可复现问题；这不是对所有未来缺陷或生产完成度的保证。
+当前已发布的普通源码为 `ebd04a7ed458aa5feaba69525f48f3623c4db033`，tree 为
+`59c0fa2b20036d591e5438e91bd6d7257c7c12d0`。该源仍是未完整验收的实现候选。
+本次普通提交修改 11 个源码文件，修复 checkout 字节身份、macOS strict 编译、
+Windows 夹具命令选择及打包 registrar 的 PROPVARIANT ABI。冻结清单包含
+406 个 Git blobs、32 个 selection paths 和 16 个 local Cargo dependencies。
+当前 ebd04 的 fresh Linux debug 常规应用实际 243/243 通过（5.581 s），
+三个规模条目 ignored；Python suite 238 项、237 通过，一个 Windows NTFS
+junction 场景在 Linux OS-skip（20.778 s）。联合 map 回归 104/104 通过
+（22.123 s），package/portal 36/36 通过（0.167 s），投影 generate/verify/lint
+和 7 项测试通过。结构检查为 pass，inventory SHA256 为
+`ec5658b2f11bc46010bb33e460fc8b287465c6a95fcd96c6248aebde8e083d36`。
+当前严格 debug all-target/all-feature Clippy `-D warnings` 实际通过，fresh
+检查含 315 个依赖、用时 2 min 30 s。完整 debug symbols ACK 真实 1/1 通过
+（3.020 s），完整实际可执行摘要、owner fence 与生产期限保留。当前 owner、
+release、存储/性能及完整同次 CI 仍待实际证据；production/deployment/release
+标志为 false。
+
+前一期历史源 `0c176c9d4df6055418529389bf0f749f74ac1a69` 的实际 Linux debug
+常规应用 243/243 通过（6.377 s），三个独立规模条目 ignored；严格 debug
+all-targets/all-features Clippy 通过（9.39 s），完整符号 ACK 夹具通过（3.358 s）。
+Python suite 实际运行 236 项、235 通过，一个 Windows NTFS junction 专属
+场景在 Linux 跳过（20.939 s）；联合 native-map adapter/global-map 回归
+104/104 通过（22.945 s），package/portal 36/36 通过（0.138 s），投影
+generate/verify/lint 和 7 项测试通过。结构检查绑定 404 Git blobs、30 个
+selection paths 和 16 个 local Cargo dependencies。这些先期结果及真实 CI
+保存在 [0c176 不可变历史文件](history/20261001-0c176-verification.json)，
+不会自动继承给 ebd04；随后真实 autocrlf checkout 复现的 owner Cargo.lock
+CRLF 漂移、macOS 编译和 Windows PATH 失败正是继续优化的依据。
+
+历史源 `32310eefbef2a80164b669fe3bfcaef69b47b9da`、tree
+`90e28eb295688c11e93d4aec0ad983ba53e0e612` 的本地 release 和后续真实存储
+CI 证据保存在 [不可变历史文件](history/20261001-32310-verification.json)。
+其 243 release/227 Python/86 adapter 数量和下文规模数值归属旧源。
+旧 run 36796737020 的 Linux merge 与 storage 成功，但 Linux head ACK、
+macOS/Windows Python 失败，aggregate 正确拒绝。更晚 run 36820183453
+两个 macOS 主体已通过 identity/Python 和应用/owner formatting，但严格
+应用 Clippy 失败；实际错误与修复见下文。这是代码/构建门槛，不能称为
+实体平台缺少证据。旧 queued 和“无新可复现问题”结论均已撤回。
+
+## 实际 CI 后续挑战
+
+[run 36796737020](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36796737020)
+的候选为 `72567596c9fa1503c8a1a6162ab8b47a57cdf1ec`，产品冻结为历史 32310。
+Linux merge 的 18 项检查成功，包括 owner 210、严格 Clippy、实际外部 crate
+E0603、release 二进制/无签名包以及 gateway/keyring/Xvfb 虚拟桌面生命周期。
+Linux storage 的 48 份 trace 全部重验硬预算；独立分位数和 syscall parser
+复算与原 qualification 一致。上述成功属于旧源的具体主体，整体 aggregate
+仍因 Linux head ACK、macOS 3 failures/4 errors、Windows 9 failures/6 errors
+而失败。存储数值与摘要完整保存在不可变历史 JSON，不重标为新源验收。
+
+[run 36820183453](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36820183453)
+的 macOS head `ebfca337f91270322bc0bc94966c24f4bdf23fa3` 与 merge
+`4065d6dc8c3634b4f2a070668ec4cb42d58c45ec` 已实际通过 identity、Python、
+应用 formatting 和 owner formatting。两个 app_lint 均 exit 101，分别用时
+36.864 s 和 32.852 s。下载 artifacts 11142798959/11143445293 后核对 ZIP
+SHA256 与 GitHub 上传摘要一致，分别为
+`328510bddafb1cb0626574f9acaec57646c2ca4da9491872cad1ca153acec2e1` 和
+`2a75d66aab1e256935849af9bc0aff6441ef479902a79c68da3d2333fcb7b18c`。
+四项具体错误完全相同：
+
+| 路径 | 实际编译错误 | 源码修复与验收边界 |
+| --- | --- | --- |
+| `src/ui/native_picker.rs:8` | macOS 未使用 `std::path::Path`，被 `-D warnings` 拒绝 | import 仅 Linux 编译；macOS picker 行为不变 |
+| `src/update_storage_tests.rs:74` | E0425：Apple 目标没有 `rustix::fs::mkfifoat` | Unix 夹具用绝对 `/usr/bin/mkfifo -m 600` 创建真实 FIFO，核对 `is_fifo` 后继续锁拒绝；不跳过 Unix 测试 |
+| `src/platform.rs:91` | 非 Linux 的 `allowed_path_roots` 字段未读取 | 字段与初始化仅 Linux 保留；所有平台仍检查参数绝对路径并真实 canonicalize |
+| `src/platform.rs:124` | 非 Linux 的 `path_allowed` 无调用 | 方法仅 Linux 编译；不放松非 Linux Open/Reveal 的能力拒绝 |
+
+这三个源码文件修订后的 Linux focused 回归实际 13/13 通过（0.049 s）；
+其余 233 项为过滤表达式未选择，不是完整应用套件或 macOS 执行证据。
+第一次编译尝试曾对两个 `.rcgu.o` 报 ENOENT，未产生成功测试 receipt；
+随后在同一 own target 以一个 build job 重试成功。这是新提交前的 focused
+诊断；ebd04 的 fresh 常规结果见开篇，真实 macOS CI 仍待重验。
+Windows Python 已将问题缩小为实际 Git 自带 `strace.exe` 抢占夹具命令；
+ebd04 在 Bash 内优先设置 owned fixture PATH 并验证 `command -v`，保留
+实际 shell stdout/stderr。此前未捕获 shell 身份的旧失败不能据此断言 WSL。
+
+同一历史 0c176 run 的 Linux head 与 merge 均实际成功，各完成 18 项检查。
+head artifact 11143397048 的 ZIP SHA256 为
+`9d271ab5009d01fb8de3a96aa477512e10c9981cb9bc3db2559df45ce79d935d`，
+merge artifact 11143646128 为
+`d760b9f47badcdbe794e30025bfddfea6e71bf0f4a34e447a56ba86c848d0555`。
+head 包含 normal application 243、owner 210、Python suite 236、三项实际
+compiler-negative 外部 crate 拒绝及虚拟 Xvfb desktop lifecycle；它们属于旧源。
+其 storage job 实际成功：artifact 11143665973，ZIP
+SHA256 `910b89d784245034a06cec45091bb43602b74d7b60f1e3414bfae807e078b8bc`。
+48 份真实 durability traces 全部通过硬预算；active open p95 49.378126 ms、
+mutation p95 2.434639 ms、retirement rebuild p95 1421.0853 ms、combined open
+p95 387.70611 ms。它的 12,288 transitions、13,245 sync calls 和 392,186,600
+written bytes 均与原始 retained evidence 绑定，完整指标见上述 0c176 历史 JSON。
+macOS/Windows 失败仍令 run 整体失败，成功存储主体不能代替完整平台矩阵，
+也不能归属于 ebd04。
+
+独立 ABI 复审还发现打包 C# PROPVARIANT 只有指针 union，x64/x86 大小为
+16/12 bytes，未达到 [Windows SDK](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant)
+包含 counted arrays 的 24/16 bytes。ebd04 添加 sequential CountedArray
+(count + pointer)，让 union 按实际架构取得正确尺寸；Windows 专属回归在
+system PowerShell 编译实际打包源码，检查 Marshal.SizeOf/OffsetOf，并在
+自己的临时 `.lnk` 上执行打包 SetValue 与 COM GetValue 的 AUMID roundtrip，
+最后 PropVariantClear 清理。该源码和测试已落地，Linux 不能算 Windows 执行
+成功，尚无当前源 Windows receipt 或实体 Start Menu/toast 验收。
 
 ## 完成度结论
 
@@ -28,7 +117,7 @@
 | --- | --- | --- |
 | 产品实现 | 主调用链、MAC v2 网关、内核最终使用、WAL、历史分页及更新协调已经落地；基线仍有构建/协议缺陷 | 本轮修复与回归，不等同生产完成 |
 | 功能覆盖 | Linux Open/Reveal 使用验证 FD；macOS/Windows 等价能力适配器仍缺失并拒绝执行 | 各目标平台的真实资源能力适配与测试 |
-| 仓库验收 | 基线七主体工作流失败，manifest 未附成功 run/性能/覆盖率证据 | 同一 head/base/workflow/run/attempt 的完整成功证据 |
+| 仓库验收 | 两轮真实工作流整体失败；后续 Python、ACK、macOS strict 编译、checkout LF、Windows mock/ABI 已修订并重新冻结，当前源未取得完整成功 receipt | 同一 head/base/workflow/run/attempt 的完整成功证据 |
 | 实体桌面 | 无完整 Windows/macOS/X11/Wayland、IME、DPI、无障碍及安装验收 | 对应实体主机执行记录 |
 | 发布资格 | 未完成独立签名、供应链接受、审批与保护规则 | 独立负责人提供并审核，授权标志保持 false |
 
@@ -77,7 +166,15 @@
 | P1 | 更新助手已有 manager，却重新调用 standalone 激活入口打开根路径，丢失已固定身份 | 沿现有 UpdateManager 的私有根能力激活；standalone 保留为独立入口边界 |
 | P2 | 崩溃遗留的其他 staged digest 或未知临时文件可继续累积 | 暂存准入仅允许当前 digest 的单个 package，并校验重试内容；未知、其他 digest 和 crash temporary 均保留并拒绝新暂存，交由显式恢复 |
 | P2 | Windows notification identity marker 无界读取；打包 C# 将 readonly 字段以 ref 传入而无法编译 | 正规文件读取限 128 bytes 并核对 UTF-8/AUMID；readonly key 复制为局部变量，Windows 专属测试编译实际打包源码；不等于安装或可见通知验收 |
-| P2 | 合法 jobs header 尾随注释或空白可能令 job.env 上下文检查漏检 | 按 block header 语义识别 jobs 并保留 env 上下文限制；覆盖注释/空白入口回归，排队 CI 仍是待执行证据 |
+| P2 | 合法 jobs header 尾随注释或空白可能令 job.env 上下文检查漏检 | 按 block header 语义识别 jobs 并保留 env 上下文限制；覆盖注释/空白入口回归，实际 CI 结果按各冻结源单独记录 |
+| P2 | macOS `/var` 与实际 `/private/var` 路径混用，使 inherited workspace 被误判缺失；Windows junction 仅靠 is_symlink 不足以拒绝 | 仅解析声明 ROOT 别名，保留内部原路径组件，用 lstat 的 symlink/reparse 属性拒绝重定向、越界与外部别名重入；Windows 实际 NTFS fixture 尚需在 Windows 执行 |
+| P2 | Python 元数据默认 CRLF 写入与 Git LF blob 不同，语义相同 JSON 也无法通过严格源码身份 | 显式 LF 写入和受控 fixture checkout；保留逐字节拒绝，新增 Windows 默认 newline 与 CRLF 篡改回归 |
+| P2 | Windows shell fixture 未绑定 Git for Windows Bash，失败时只记录不充分的 stderr | 明确选择 Git 安装旁的 Bash，拒绝其他 PATH Bash；同时保存 stdout/stderr。旧 shell 是否为 WSL 属于推断，未作为观测事实 |
+| P2 | ACK fixture 将 readiness 和退出共享一个 20 s deadline，完整符号 debug 可执行摘要耗时仍可超出 readiness | 分别计时并输出 child/pending-state；test profile 单独优化 sha2，继续摘要完整实际可执行文件，生产 5/35 s deadline 与 owner fence 不变 |
+| P2 | core.autocrlf=true 可将未固定 LF 的 owner Cargo.lock 转为 CRLF，producer 原始文件摘要与 aggregate Git blob 不同 | 真实 Git filters 复现 18697 个 CRLF；ebd04 固定 owner lock LF，冻结 root/app attributes 并纳入 workflow trigger，真实 checkout/supply-chain/Git inventory 回归保留逐字节拒绝，当前源 Linux Python suite 已通过；Windows checkout 仍待真实 CI |
+| P2 | macOS strict 编译暴露 Linux-only import/policy storage 和 Unix fixture 误用 Apple 不支持的 rustix API | 按真实平台用途设置 cfg，并用实际 Unix FIFO 替代不可用 API；保留根参数检查、特殊文件拒绝和非 Linux 效果拒绝，最终冻结需真实 macOS 重验 |
+| P2 | Windows 实际 shell 内 Git 的 strace.exe 抢占 owned fixture，Python 一项失败 | Bash 内将夹具目录置于 PATH 最前并核对 command -v；不改产品执行命令或假报平台通过 |
+| P2 | Windows 打包 PROPVARIANT 指针 union 只有 x64 16/x86 12 bytes，少于 SDK 24/16 | CountedArray union 自适应布局；实际打包 C# 的 Windows-only SizeOf/OffsetOf 与 owned shortcut Set/Get AUMID roundtrip 回归，当前 Windows 执行待验 |
 
 基线远端 run 36682622270 的六个平台在构造阶段就因输出污染失败；storage
 以 --locked 拒绝不一致依赖状态。此前 run 36670666771 亦同。因此基线
@@ -107,16 +204,17 @@ Unix Read 不修改文件，允许当前主体所有且无 group/world 权限的
 0600 或 0700 文件及不可变迁移资产别名，
 仍需内容和身份认证；单链接准入检查不能阻止可信主体随后新增硬链接。
 
-## 验证与复审
+## 历史 32310 验证与复审
 
-最终源 32310 的常规 release 应用 243/243、严格 all-targets/all-features
+以下记录属于历史源 32310，不属于当前冻结源。历史源的常规 release 应用
+243/243、严格 all-targets/all-features
 应用 Clippy、资格 Python 227/227（13.041 s）及 native-map adapter 86/86
 （7.671 s）通过；源码冻结结构检查和 19 项 convergence 回归通过。
 两个完整规模主体通过：4096-active 用时 2.461 s，百万 retired 加 4096-active
 共存负载用时 52.572 s。每项 open/rebuild 为 20 个独立新进程，原始数组的
 分位数独立复算一致，预算未放宽：
 
-| 最终 32310 release 本地诊断 | 测量 | 冻结预算 |
+| 历史 32310 release 本地诊断 | 测量 | 冻结预算 |
 | --- | --- | --- |
 | 4096 active open p95 | 31.413 ms | 2000 ms |
 | 12288 mutation p50 / p95 / p99 | 0.022 / 0.043 / 0.234 ms | 25 / 100 / 250 ms |
@@ -241,14 +339,15 @@ PR #1308 的首次远端入口观测还发现 job.env 的 runner 上下文非法
 runner 初始化步骤使用 RUNNER_TEMP 并写入 GITHUB_ENV；不能将修复或队列状态
 表述为七主体 CI 已通过。
 
-最终源码的编译隔离检查在干净 review head
+历史 32310 源码的编译隔离检查在干净 review head
 `7237eca7ba4139d64138e1511afbdb45a507d0ad` 实际重跑，三项外部 crate
 均观察到预期 E0603。夹具从最终应用锁
 `612e3139224be6d1f36dab01850ee048bd7ec9e405dbbd8a556096dc17d3e701`
 归一化，逐项核对依赖身份、checksum 和边，随后执行 offline/locked 编译。
 相同 head 的新建 detached worktree 全局文档验证仍有上述 39 个非本模块
 provenance 失败，ui.native 适配通过；不是全局验证成功。原生远端 run
-36795845661 已接受并排队，尚无七主体成功证据。
+36795845661 当时已接受并排队。该队列观测已被后续真实 run 36796737020
+的整体失败替代，不能作为当前候选的工作流状态。
 
 Windows 最终只读审查还确认一个条件性可用性限制：新对象的缺省 owner
 取 effective token 的默认 owner，而验证要求 primary TokenUser；合法组默认
@@ -259,7 +358,12 @@ owner 与用户 SID 一致且无线程 impersonation。它保持安全拒绝，�
 接纳 owner group 或自动修改已有对象 owner 来消除此限制。
 
 所有 productionQualified/deploymentQualified/releaseAuthorized 保持 false。
-本轮停止条件是复现问题均有对应修复与回归，复审未发现新的同范围可执行
-修复项；这不构成对所有未来缺陷或生产完成度的证明。明确保留以下验收工作：
+旧静态复审的收敛结论已被真实跨平台执行发现的新问题取代。本轮已将
+owner-lockfile LF、macOS strict 构建、Windows mock 与 ABI 修订发布为普通
+源 ebd04。fresh Linux 常规回归、strict Clippy、完整符号 ACK 与独立 integration
+复审完成后，当前这组修订未发现新的同范围可复现、可执行修复项，达到有界
+停点；这不证明未来没有缺陷，也不将历史失败或未执行平台当作通过。
+实际 CI、owner/release/perf 执行如发现新问题，应继续修复、重新冻结并复验。
+未将可复现构建失败归类为外部实体验收缺口。明确保留以下验收工作：
 完整七主体执行、存储硬预算、源覆盖率与持续 soak、非 Linux 资源能力适配，
 实体平台/IME/DPI/无障碍、签名和独立供应链/发布审批。

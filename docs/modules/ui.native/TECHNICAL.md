@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `32310eefbef2a80164b669fe3bfcaef69b47b9da`
-**Implementation tree:** `90e28eb295688c11e93d4aec0ad983ba53e0e612`
+**Immutable implementation source:** `ebd04a7ed458aa5feaba69525f48f3623c4db033`
+**Implementation tree:** `59c0fa2b20036d591e5438e91bd6d7257c7c12d0`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -49,7 +49,10 @@ The convergence chain is a normal Git history:
 5. historical closed unsigned package inventory `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`;
 6. audit base `9be52d267d02a76f73e8a94fd086191c351d1c70`;
 7. historical adversarial audit source `ed5fd2229502099addd6bedec2fae18783d5c162`;
-8. current audited source `32310eefbef2a80164b669fe3bfcaef69b47b9da`.
+8. historical audited source `32310eefbef2a80164b669fe3bfcaef69b47b9da`;
+9. cross-platform source/ACK fixture repair `85185bcb274682ece9da5086813fd60cc2a7214a`;
+10. historical test-profile hashing repair `0c176c9d4df6055418529389bf0f749f74ac1a69`;
+11. current checkout/strict-platform/registrar ABI repair `ebd04a7ed458aa5feaba69525f48f3623c4db033`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -121,6 +124,15 @@ Readiness keeps ActivatedUnconfirmed; receiving the ACK commits Confirmed.
 Cancellation and confirmation share the update owner lock, so timeout cleanup
 cannot kill a candidate after confirmation won. Critical copies validate the
 actual copied bytes before atomic publication.
+
+The acknowledgement regression gives readiness and post-helper exit their own
+20-second observation deadlines; timeout diagnostics retain child status,
+elapsed time and pending-state observations. Full debug-symbol executables are
+still verified in their entirety. Test-only SHA-256 optimization in
+`[profile.test.package.sha2]` keeps that real subject within its fixture budget;
+it does not change production 5/35-second deadlines, digest semantics or the
+update-owner arbitration fence. The 31.353-second full-symbol readiness failure
+before this optimization remains a failed diagnostic, not a qualified receipt.
 
 Pending/result JSON reads, atomic writes and removal, owner/runner locks and
 readiness/ACK/cancellation transitions retain the update `PrivateStateRoot`.
@@ -285,8 +297,15 @@ UTF-8 and an exact AUMID after trimming. Missing, malformed, oversized or final
 symlink/reparse markers reject support. The reader does not sandbox parent
 directories. The registrar copies its static readonly property key to a local
 variable before passing it by `ref`. `tests/windows_registrar.rs` compiles the
-actual packaged C# source in system PowerShell; compilation is distinct from
-successful registration or toast delivery.
+actual packaged C# source in system PowerShell. The PROPVARIANT union contains
+a sequential count/pointer array, matching the SDK's 24-byte x64 and 16-byte x86
+layout instead of the old 16/12-byte pointer-only layout. The Windows-only test
+checks `Marshal.SizeOf` and offsets on its actual host architecture and exercises
+packaged property-store `SetValue` plus COM `GetValue` on an owned temporary
+shortcut, with `PropVariantClear` cleanup. The
+[SDK union definition](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant)
+is the ABI reference. This test has not executed on Linux and does not establish
+physical Windows registration or toast delivery.
 
 The source and package inventory are implemented, but successful registration,
 shortcut property verification and visible toast behavior require a packaged
@@ -383,37 +402,78 @@ The workflow environment-context guard recognizes top-level `jobs:` block
 headers with trailing whitespace or comments; a comment cannot suppress job
 checks. Inline scalar values are not treated as block headers.
 
+Repository identity checks use the canonical declared ROOT while preserving
+dependency components for inspection. Legal root ancestry aliases, including
+macOS `/var` and Windows short paths, do not terminate workspace discovery.
+Internal symlinks and Windows `FILE_ATTRIBUTE_REPARSE_POINT` components are
+rejected through `lstat`, including junctions whose destination remains inside
+the repository. A local dependency cannot leave the repository and re-enter
+through parent traversal or an outside alias. Windows NTFS regressions create
+real `mklink /J` objects; they must execute on Windows before platform acceptance.
+
+Metadata publication writes explicit LF and retains exact Git blob comparison;
+CRLF text with equivalent JSON semantics remains byte drift. Windows shell
+fixtures bind an existing Git for Windows Bash from the Git installation and
+refuse unrelated Bash/WSL selection. Fixture subprocess diagnostics retain
+stdout and stderr. The old Windows failure does not contain proof identifying
+WSL as the selected executable; that explanation is an inference.
+
 SBOM and provenance generation is repository-controlled evidence only. It does
 not establish production signing, notarization, Authenticode, physical-host
 acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The previous `ed5fd2229502099addd6bedec2fae18783d5c162` evidence recorded
-212 application tests, 226 Python tests, 210 related owner tests and strict
-application/owner Clippy. Those counts and checks are historical and do not
-qualify the revised source. The final frozen source passed 243 of 243 normal
-release application tests in 1.469 s, including the actual egui text snapshot,
-and strict release application Clippy for all targets/features in 4.78 s.
-The three ignored entries are the two separate scale subjects and their worker;
-native qualification Python passed 227/227 and the strict native-map adapter
-suite passed 86/86. Both full release scale subjects passed: 4096-active in
-2.461 s and one-million-retired with 4096-active combined load in 52.572 s.
-Each open/rebuild population contains 20 fresh processes. Active, retired and
-combined open p95 were 31.413, 0.414 and 462.509 ms; zero-derived-asset mixed
-rebuild p95 was 1866.871 ms, within unchanged provisional ceilings. All three
-release binaries built and passed self-test and real subprocess qualification-e2e;
-seven fault/fence checks were true and all three authority-grant flags stayed
-false. Package/portal 36/36 and projection generation/verification/lint with
-7 tests passed; the registry inventoried 84 files. These are local Linux
-diagnostics with uncontrolled OS page cache and no durability syscall trace.
-Earlier ca66 results remain
-historical. Actual Bazel 9 dependency metadata update/check passed against the
-revised manifest without changing its module lockfile. Current owner and Windows
-results remain pending. Queued CI is
-pending evidence. An independent static review found no additional
-reproducible issue within the reviewed scope; it does not establish complete
-same-source CI or target-platform acceptance.
+Current source ebd04 fixes those compilation and fixture failures, pins owner
+Cargo.lock checkout to LF, freezes both relevant attributes files and repairs the
+packaged Windows PROPVARIANT ABI. A real autocrlf checkout regression compares
+producer supply-chain lock digests with immutable Git inventory without weakening
+byte checks. Its frozen inventory has 406 Git blobs, 32 selection paths and
+16 local Cargo dependencies, SHA256
+`ec5658b2f11bc46010bb33e460fc8b287465c6a95fcd96c6248aebde8e083d36`.
+Fresh Linux verification of ebd04 passed normal debug application 243/243
+(5.581 s), with three scale entries ignored. Python ran 238 tests successfully:
+237 passed and one Windows-only junction case skipped (20.778 s). Combined
+native-adapter/global-map passed 104/104 (22.123 s), package/portal passed 36/36
+(0.167 s), and projection generation/verification/lint plus seven tests passed.
+Structural verification passed against the frozen 406/32/16 inventory. Strict
+debug all-target/all-feature application Clippy with `-D warnings` passed;
+its fresh check included 315 dependencies and took 2 min 30 s. The full-symbol
+ACK fixture passed 1/1 in 3.020 s, retaining the complete actual executable digest,
+owner fence and production deadlines. Current owner, release, storage/performance
+and same-run CI remain pending; historical passes are not inherited.
+
+Historical verification of implementation `0c176c9d4df6055418529389bf0f749f74ac1a69`
+passed 243/243 normal debug application tests in 6.377 s; three scale entries
+were ignored by that normal suite. Strict debug all-target/all-feature
+application Clippy passed in 9.39 s, and the full-symbol ACK fixture passed in
+3.358 s. Native Python ran 236 tests successfully in 20.939 s: 235 passed and
+one Windows-only junction case was skipped. Combined native-adapter and
+global-map regressions passed 104/104 in 22.945 s. Package/portal passed 36/36
+in 0.138 s; projection generation/verification/lint and seven tests passed.
+The source checker returned structural-pass for 404 frozen Git blobs, 30
+selection paths and 16 local Cargo dependencies. Structural success and local
+Linux diagnostics do not constitute seven-subject or physical-platform acceptance.
+These results are preserved in
+[`history/20261001-0c176-verification.json`](history/20261001-0c176-verification.json).
+That source's run 36820183453 passed Linux head/merge (18 checks each) and
+storage with 48 actual traces and all hard budgets (artifact 11143665973), but failed macOS application Clippy with four
+cfg/API issues and Windows Python when Git's `strace.exe` displaced the mock.
+Partial storage success does not qualify that source or the current candidate.
+
+Historical 32310 evidence is retained in
+[`history/20261001-32310-verification.json`](history/20261001-32310-verification.json).
+Its local 243 release tests, 227 Python tests, 86 map-adapter tests, release
+binaries and scale measurements belong to that source. The later real CI run
+36796737020 failed overall: Linux merge completed 18 checks including owner
+tests, strict Clippy, compiler-negative privacy boundaries, packaging and virtual
+desktop lifecycle; Linux storage passed all hard ceilings with 48 retained
+traces. Linux head ACK failed, macOS Python had three failures/four errors, and
+Windows Python had nine failures/six errors. Partial success supplies historical
+evidence and does not promote the new candidate. Old queued observations and
+the previous static-review convergence statement were superseded by these
+executed failures and follow-up fixes. Earlier ed5 and ca66 evidence likewise
+remains historical.
 
 Equivalent verified-resource Open/Reveal adapters on macOS and Windows remain
 a product implementation gap. Promotion also requires:
@@ -438,11 +498,20 @@ Until those gates close, `productionQualified`, `deploymentQualified` and
 Read `ADVERSARIAL-AUDIT-20261001.md` for reproduced defects, fixes and local
 verification. The previous implementation source remains provenance; a new
 ordinary source commit is frozen at the identity above and requires its own
-qualification receipts. Binding, startup, rooted update and child ACL regressions
+qualification receipts. The executed CI follow-up repaired cross-platform root
+coordinates, source metadata byte handling, shell selection and full-symbol ACK
+fixture performance while retaining fail-closed boundaries. Later real CI also
+exposed macOS-only cfg/API failures and a Windows fixture PATH collision; ebd04
+repairs those, checkout lock bytes and the registrar ABI. Binding, startup,
+rooted update and child ACL regressions
 are in `ui/binding_prepare_tests.rs`,
 `startup_tests.rs`, `update_root_storage_tests.rs`, `journal_windows_tests.rs`
 and the shared utility's `windows_acl_tests.rs`. These cases validate local
 ownership and substitution boundaries without minting execution authority.
+Fresh Linux regressions, strict Clippy, full-symbol ACK and independent
+integration review found no further reproducible repair in this change set.
+This is a bounded review stop, not completed qualification or a claim about
+future defects; new execution failures require another ordinary repair/freeze.
 Exact filenames, input caps, stable focus IDs and a 4 MiB worker-rendered
 diagnostic cache keep
 presentation bounded without changing final-use authority. Explicit staged

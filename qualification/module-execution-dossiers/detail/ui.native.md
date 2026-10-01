@@ -3,8 +3,8 @@
 Parent: `docs/modules/ui.native/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
 Canonical branch: `work/ui-native-qualified-integration-20260928`.
 Audit revision: `work/ui-native-adversarial-audit-20261001`.
-Immutable implementation source: `32310eefbef2a80164b669fe3bfcaef69b47b9da`.
-Implementation tree: `90e28eb295688c11e93d4aec0ad983ba53e0e612`.
+Immutable implementation source: `ebd04a7ed458aa5feaba69525f48f3623c4db033`.
+Implementation tree: `59c0fa2b20036d591e5438e91bd6d7257c7c12d0`.
 Status: implementation candidate; cross-platform execution, physical acceptance
 and release remain separate evidence gates.
 
@@ -77,7 +77,14 @@ toast adapter; visible installed notification requires physical-host evidence.
 Notification identity input is strict UTF-8, bounded to 128 bytes and checked
 against the exact AUMID. The packaged registrar's readonly property key is
 copied before passing it by `ref`; a Windows test compiles the actual packaged
-C# source, separately from registration and toast acceptance.
+C# source. Its PROPVARIANT union now includes a sequential count/pointer array
+for SDK-compatible x64/x86 sizes of 24/16 bytes; the former 16/12-byte layout was
+undersized. The Windows-only test checks actual `Marshal.SizeOf` and offsets and
+uses packaged SetValue plus COM GetValue on its own temporary shortcut, with
+PropVariantClear cleanup. See the
+[SDK ABI](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant).
+This test remains unexecuted on Linux and does not prove installed identity or
+visible toast acceptance.
 
 The GUI supervises mutation, bounded history-read and native-picker lanes.
 Read and mutation admission are mutually exclusive. History pages are bounded
@@ -115,6 +122,12 @@ ActivatedUnconfirmed; the candidate commits Confirmed only after receiving the
 helper acknowledgement. Failed or unobserved startup remains recoverable.
 Rollback failure preserves RecoveryRequired.
 
+The full-symbol ACK fixture uses separate 20-second readiness and post-helper
+exit observations with child/pending-state diagnostics. Test-profile `sha2`
+optimization hashes the complete actual executable, including debug symbols;
+production 5/35-second deadlines, digest checks and owner fencing are unchanged.
+The earlier 31.353-second readiness failure is retained as failed history.
+
 ## Required evidence
 
 The read-only `ui-native-qualification.yml` evaluates exact head and a fixed
@@ -123,34 +136,62 @@ storage qualification. Output directories are separate from the checked-out
 source. The aggregate requires one run/attempt and revalidates source, workflow,
 lockfiles, logs, package, SBOM, provenance and storage evidence.
 
+Qualification path checks canonicalize the declared root alias but inspect raw
+dependency components with `lstat`; internal symlinks and Windows reparse points
+remain forbidden, even when a junction target is within the same repository.
+Outside aliases and parent traversal cannot escape and re-enter. Metadata uses
+explicit LF plus exact committed-byte comparison. Windows shell fixtures bind
+Git for Windows Bash explicitly; the old failed process output did not prove
+which shell implementation had been selected. The actual NTFS junction fixture
+must run on Windows; skipping it on Linux gives no Windows pass.
+
 Required cases include duplicate/revoked effects, real process death after
 Invoking, WAL corruption/partial tail/checkpoint recovery, root and file
 substitution, retirement rebuild, update-copy drift, helper acknowledgement loss,
 rollback failure, stale picker tickets and shutdown of every lane.
 
-The 212 application, 226 Python and 210 owner test counts belong to historical
-`ed5fd2229502099addd6bedec2fae18783d5c162` evidence. Final source
-`32310eefbef2a80164b669fe3bfcaef69b47b9da` passed 243 of 243 normal release
-application tests in 1.469 s, including actual egui text snapshot matching,
-and strict release application Clippy for all targets/features in 4.78 s.
-The three ignored entries are two separate scale subjects and their worker;
-native qualification Python passed 227/227 and the strict native-map adapter
-suite passed 86/86. Both full release scale subjects passed: 4096-active in
-2.461 s and one-million-retired with 4096-active combined load in 52.572 s.
-Each open/rebuild population contains 20 fresh processes. Active, retired and
-combined open p95 were 31.413, 0.414 and 462.509 ms; mixed first-migration
-rebuild p95 was 1866.871 ms, within unchanged ceilings. All three release binaries
-built and passed self-test and real subprocess qualification-e2e, with seven
-fault/fence checks true and three authority-grant flags false. Package/portal
-36/36 and projection generation/verification/lint with 7 tests passed; the
-registry inventoried 84 files. These are local Linux diagnostics with uncontrolled
-OS page cache and no durability syscall trace. Earlier ca66 results remain
-historical. Actual Bazel 9 dependency metadata update/check passed against the
-revised manifest with an unchanged module lockfile. Current owner and Windows
-results remain pending. Queued CI is not a passing receipt.
-Independent static review found no additional reproducible issue in the reviewed
-scope, while the
-candidate remains incomplete.
+Current ebd04 repairs checkout bytes, fixture PATH priority, macOS cfg/FIFO and
+Windows registrar ABI. Root and application checkout attributes are frozen,
+owner Cargo.lock is LF, and real autocrlf checkout-to-supply-chain-to-Git-inventory
+regression retains immutable byte comparison. Its frozen inventory contains
+406 Git blobs, 32 selection paths and 16 local Cargo dependencies. Fresh Linux
+verification of ebd04 passed normal debug application 243/243 (5.581 s), with
+three scale entries ignored. Python ran 238 tests: 237 passed and one Windows
+junction case skipped (20.778 s). Combined native-adapter/global-map passed
+104/104 (22.123 s), package/portal passed 36/36 (0.167 s), and projection
+generation/verification/lint plus seven tests passed. Structural verification
+passed against the frozen 406/32/16 inventory. Strict debug all-target/all-feature
+Clippy with `-D warnings` passed (2 min 30 s including 315 dependency checks).
+The fresh full-symbol ACK fixture passed 1/1 (3.020 s), retaining the complete
+executed-file digest, update-owner fence and production deadlines. Current owner,
+release, storage/performance and same-run CI remain pending; old passes cannot
+qualify the new source.
+
+Historical source `0c176c9d4df6055418529389bf0f749f74ac1a69` passed 243/243 normal
+debug application tests in 6.377 s, with three separate scale entries ignored,
+and strict debug all-target/all-feature application Clippy in 9.39 s. The
+full-symbol ACK fixture passed in 3.358 s. Python ran 236 tests successfully in
+20.939 s: 235 passed and the Windows-only junction test skipped. Combined
+native-adapter/global-map regressions passed 104/104 in 22.945 s, package/portal
+passed 36/36 in 0.138 s, and projection generation/verification/lint plus seven
+tests passed. Structural verification bound 404 Git blobs, 30 selection paths
+and 16 local Cargo dependencies to that historical source. The source-specific
+local results and run 36820183453 are preserved in
+[`20261001-0c176-verification.json`](../../../docs/modules/ui.native/history/20261001-0c176-verification.json).
+That run passed Linux head/merge and storage with 48 traces/all hard budgets,
+but failed macOS strict
+compilation and one Windows Python command fixture.
+
+Historical 32310 evidence is preserved in
+[`20261001-32310-verification.json`](../../../docs/modules/ui.native/history/20261001-32310-verification.json).
+Its 243 release/227 Python/86 adapter counts and release scale measurements
+belong to that source. The later run 36796737020 failed overall despite a
+successful 18-check Linux merge subject and storage hard-budget validation with
+48 traces; Linux head ACK and macOS/Windows Python failed. Those executed
+failures supersede the prior queued/no-new-findings statements. Successful old
+subjects, including owner 210 and virtual Xvfb desktop evidence, do not qualify
+the new freeze or replace physical-host acceptance. The candidate remains
+incomplete, with an explicit non-Linux Open/Reveal capability gap.
 
 Source coverage, sustained soak, all storage ceilings, physical Windows/macOS/
 X11/Wayland behavior, IME, mixed DPI, screen readers, keyboard navigation,

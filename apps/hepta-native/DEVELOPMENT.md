@@ -1,25 +1,49 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`32310eefbef2a80164b669fe3bfcaef69b47b9da`, tree
-`90e28eb295688c11e93d4aec0ad983ba53e0e612`. The source is an implementation
+`ebd04a7ed458aa5feaba69525f48f3623c4db033`, tree
+`59c0fa2b20036d591e5438e91bd6d7257c7c12d0`. The source is an implementation
 candidate; production, deployment and release flags remain false.
 
-This final source passed 243 of 243 normal release-profile application tests
-(1.469 s), including the actual headless egui text snapshot, and strict release
-application Clippy with all targets/features (4.78 s). The three ignored cases
-are the two separate scale subjects and their worker. Native qualification
-Python tests passed 227/227 and the strict native-map adapter suite passed 86/86.
-Both full scale subjects passed: 4096-active in 2.461 s and one-million-retired
-with 4096-active combined load in 52.572 s. Each open/rebuild population contains
-20 fresh processes; performance ceilings were preserved. All three release
-binaries built and passed self-test and real subprocess qualification-e2e.
-Package/portal tests passed 36/36; projection generation, verification, lint and
-7 tests passed with an 84-file registry inventory. These are local Linux
-diagnostics; OS page cache was uncontrolled and durability tracing was unavailable.
-Earlier ca66 results and ed5's older
-212 application / 226 Python / 210 owner counts remain historical evidence.
-Queued CI and Windows-only tests do not yet establish platform qualification.
+The current source fixes owner-lockfile checkout bytes, macOS cfg/FIFO
+compilation, Windows fixture command selection and the packaged PROPVARIANT ABI.
+Its frozen inventory contains 406 Git blobs, 32 selection paths and 16 local
+Cargo dependencies. Fresh Linux checks of ebd04 passed normal debug application
+243/243 (5.581 s), with three scale entries ignored; Python ran 238 tests,
+237 passed and one Windows-only junction case skipped (20.778 s). Combined
+native-adapter/global-map passed 104/104 (22.123 s), package/portal passed 36/36
+(0.167 s), and projection generation/verification/lint plus seven tests passed.
+Structural verification passed against this 406/32/16 inventory. Strict debug
+all-target/all-feature Clippy with `-D warnings` passed; its fresh dependency
+check included 315 dependencies and took 2 min 30 s. The fresh full-symbol ACK
+fixture passed 1/1 in 3.020 s while retaining the complete actual executable
+digest, update-owner fence and production deadlines. Current owner, release,
+storage/performance and complete same-run CI remain pending. Historical passes are not inherited; product flags stay false.
+
+Historical Linux checks of source `0c176c9d4df6055418529389bf0f749f74ac1a69`
+passed 243/243 normal debug-profile application
+tests (6.377 s), with three scale entries ignored by that normal suite, and strict
+debug application Clippy with all targets/features (9.39 s). The full-symbol
+helper-acknowledgement fixture passed in 3.358 s. The native qualification Python
+suite succeeded: 236 tests, 235 passed and one Windows-only NTFS junction test
+skipped (20.939 s). The combined native-map adapter and global-map regression
+suite passed 104/104 (22.945 s); package/portal tests passed 36/36 (0.138 s).
+Projection generation, verification, lint and all seven projection tests passed.
+Structural verification bound 404 Git blobs, 30 selection paths and 16 local
+Cargo dependencies to that historical source. Its complete local diagnostics
+and real CI follow-up are preserved in
+[`20261001-0c176-verification.json`](../../docs/modules/ui.native/history/20261001-0c176-verification.json).
+Run 36820183453 passed both Linux head/merge subjects and storage with 48
+retained traces and all hard budgets,
+but failed macOS strict compilation and one Windows Python shell fixture.
+
+Historical source `32310eefbef2a80164b669fe3bfcaef69b47b9da` and its tree,
+local release results and later partial CI observations are preserved in
+[`20261001-32310-verification.json`](../../docs/modules/ui.native/history/20261001-32310-verification.json).
+Run 36796737020 failed overall: Linux storage and the Linux merge subject
+succeeded, while Linux head ACK and macOS/Windows Python checks failed.
+Its successful subjects cannot qualify the source above. Earlier ed5/ca66
+counts and old queue observations likewise remain historical.
 
 ## Toolchain and source identity
 
@@ -39,6 +63,22 @@ These checks reject retired writer/materializer workflows, patch capsules,
 write permissions, source drift after the frozen implementation, changed portal
 or packaging adapters, stale state anchors and promoted release flags. They do
 not replace compilation, crash tests, physical acceptance or release review.
+
+Source-path validation canonicalizes only the declared repository root alias,
+including macOS `/var` ancestry and Windows short-path spelling. Dependency
+components remain intact: internal symlinks and Windows reparse points,
+including junctions to another directory in the same repository, are rejected.
+Parent traversal cannot escape and re-enter through an outside alias. The
+Windows junction regression creates real `mklink /J` fixtures; its Linux skip
+does not establish Windows execution. Source metadata is written with explicit
+LF and compared with committed Git bytes; JSON-equivalent CRLF drift still fails.
+Windows shell fixtures select Git for Windows Bash explicitly and reject an
+unrelated PATH Bash, including WSL, rather than guessing the shell that failed.
+The Bash process gives its owned fixture commands first PATH priority and checks
+`command -v`, preventing Git's bundled `strace.exe` from replacing the mock.
+Root and application checkout attributes are frozen and workflow-triggered;
+`codex-rs/Cargo.lock` has explicit LF checkout. A real `core.autocrlf=true`
+checkout-to-supply-chain-to-Git-inventory regression preserves exact lock digests.
 
 ## Build, format, lint and tests
 
@@ -64,6 +104,16 @@ identity, transition legality, WAL framing/checksum/sequence/partial tail,
 checkpoint recovery, retirement authority/index rebuild, private-root rejection,
 update rollback, task admission, stale picker tickets, resource identity change,
 final symlink rejection, durable history paging and shutdown of all lanes.
+
+`[profile.test.package.sha2] opt-level = 3` optimizes executable hashing only in
+the test profile. Restart fixtures still hash the complete actual executable,
+including full debug symbols. Do not strip the subject, bypass the digest or
+extend production deadlines to pass this fixture. The readiness and post-helper
+exit observations have separate 20-second fixture deadlines and retain child
+status, elapsed time and pending update diagnostics. Production 5/35-second
+deadlines, complete executable-digest verification and update-owner fences
+remain unchanged. The earlier full-symbol attempt failed readiness in 31.353 s;
+that failed attempt remains diagnostic history.
 
 ## Final-use protocol
 
@@ -208,9 +258,15 @@ Notification support reads that marker as a bounded regular file: 128 bytes,
 valid UTF-8 and the registered AUMID after trimming. Read failure denies support.
 `tests/windows_registrar.rs` compiles the C# embedded in the actual packaged
 PowerShell registrar using system PowerShell; the readonly property key is copied
-to a local value before a `ref` call. This Windows-only compilation test does not
-register a shortcut or prove visible toast delivery. Linux test totals do not
-establish its execution.
+to a local value before a `ref` call. Its PROPVARIANT union includes a sequential
+count/pointer array, giving the SDK size of 24 bytes on x64 and 16 on x86; the
+former pointer-only union incorrectly occupied 16/12 bytes. The Windows-only
+test checks actual `Marshal.SizeOf` and field offsets, then creates an owned
+temporary `.lnk` and exercises packaged `SetValue` plus COM `GetValue` AUMID
+roundtrip with `PropVariantClear` cleanup. See the
+[Windows SDK PROPVARIANT layout](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant).
+Linux test totals do not establish Windows execution; this fixture also does not
+prove installed Start Menu identity or visible toast delivery.
 
 ## UI lanes and persistent history
 

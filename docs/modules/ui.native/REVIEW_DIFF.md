@@ -5,20 +5,42 @@ The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 `work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the
 immutable implementation SHA/tree and ADVERSARIAL-AUDIT-20261001.md for findings.
 
-The final implementation source for this follow-up is
-`32310eefbef2a80164b669fe3bfcaef69b47b9da`, tree
-`90e28eb295688c11e93d4aec0ad983ba53e0e612`. Final same-source normal release
-application tests passed 243/243, and strict application Clippy passed for all
-targets/features. Native qualification Python passed 227/227 and the strict
-native-map adapter suite passed 86/86. Both full release scale subjects passed,
-including one-million-retired with 4096-active combined load and 20 fresh-process
-populations. All three release binaries built and passed self-test and real
-subprocess qualification-e2e. Package/portal 36/36 and projection
-generation/verification/lint with 7 tests passed; the registry inventoried 84 files.
-These are local Linux diagnostics; durability tracing and same-run platform
-qualification remain pending. Earlier
-ed5 and ca66 results remain historical;
-queued CI and Windows-only fixtures do not establish platform qualification.
+The current implementation source for this follow-up is
+`ebd04a7ed458aa5feaba69525f48f3623c4db033`, tree
+`59c0fa2b20036d591e5438e91bd6d7257c7c12d0`. The ordinary commit repairs 11 source files:
+checkout attributes/identity regressions, macOS strict compilation and Windows
+registrar ABI/owned-shortcut roundtrip coverage. Its frozen inventory contains
+406 Git blobs, 32 selection paths and 16 local Cargo dependencies. Fresh Linux
+verification passed normal debug application 243/243 (5.581 s), with three scale
+entries ignored, and Python 238 total (237 passed/one Windows junction skip,
+20.778 s). Combined map passed 104/104 (22.123 s), package/portal passed 36/36
+(0.167 s), projection generation/verification/lint plus seven tests passed, and
+structural verification passed. Strict debug all-target/all-feature Clippy with
+`-D warnings` passed (2 min 30 s including 315 dependency checks). The fresh
+full-symbol ACK fixture passed 1/1 (3.020 s), preserving the whole executed-file
+digest, update-owner fence and production deadlines. Current owner, release,
+storage/performance and same-run CI remain pending; product flags stay false.
+
+Earlier source `0c176c9d4df6055418529389bf0f749f74ac1a69` passed local normal debug
+243/243, Python 236 total (235 pass/one Windows junction skip), combined map
+104/104, package/portal 36/36, projection seven tests, strict application Clippy
+and the full-symbol ACK fixture. These source-specific diagnostics and real
+run 36820183453 are preserved in
+[`history/20261001-0c176-verification.json`](history/20261001-0c176-verification.json).
+That run passed Linux head/merge and storage with 48 traces/all hard budgets,
+but failed macOS strict
+compilation and one Windows Python command fixture. Its passes are historical
+and cannot qualify ebd04. The further real autocrlf checkout challenge reproduced
+18,697 CRLF lock lines; the current source pins LF and retains exact byte checks.
+
+The old 32310 local release counts, measurements and partial real CI storage
+results are immutable history in
+[`history/20261001-32310-verification.json`](history/20261001-32310-verification.json).
+Run 36796737020 failed overall despite successful Linux merge and storage
+subjects; Linux head ACK and macOS/Windows Python failed. Its prior queued
+status and the older static-review convergence conclusion are superseded.
+Historical evidence is not relabeled as a pass for this source; a Windows-only
+test skipped on Linux is not Windows execution.
 
 Historical WAL/index, portal, paging and package commits remain ancestry. The
 old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
@@ -45,6 +67,9 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | regress namespace replacement, failed stage publication and rooted startup records | `9f1bcbdc28c9f48f55266528dd030cd3cde20ca7` |
 | bound Windows notification identity and compile the packaged registrar source | `ca66da671da6f22f1fe8e4ff4ddb4c8fdb8cf7b3` |
 | use a fixed oversize marker fixture under strict native lint | `32310eefbef2a80164b669fe3bfcaef69b47b9da` |
+| preserve fail-closed dependency identity under root aliases/reparse points, LF metadata and explicit Git for Windows Bash; separate ACK fixture phases | `85185bcb274682ece9da5086813fd60cc2a7214a` |
+| optimize SHA-256 only in the test profile while hashing full executable symbols and preserving production update fences | `0c176c9d4df6055418529389bf0f749f74ac1a69` |
+| freeze checkout attributes and owner-lock LF; regress real autocrlf checkout and owned fixture command selection; fix macOS cfg/Unix FIFO and Windows PROPVARIANT layout/owned-shortcut roundtrip | `ebd04a7ed458aa5feaba69525f48f3623c4db033` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;
@@ -68,9 +93,20 @@ admission. Trace helper activation through its existing manager root and binding
 preparation through exact input/view capture, worker admission and stale-result
 discard. Inspect the headless egui projection and packaged C# compile regression
 within their stated test scopes. Finally inspect exact source/package/SBOM semantics, raw performance
-samples, durability counts and the seven-subject evidence aggregate.
+samples, durability counts and the seven-subject evidence aggregate. Review the
+new root-alias and actual Windows junction fixtures, LF/Git-byte drift rejection,
+explicit Git Bash selection and separate readiness/exit deadlines. Confirm that
+the test-only `sha2` optimization does not strip the subject or alter production
+5/35-second deadlines, complete digest checks or update-owner fencing. Check the
+frozen attributes against real autocrlf checkout and immutable lock digests.
+Inspect Linux-only cfg while retaining all-platform root validation, real Unix
+FIFO rejection, and Windows PROPVARIANT native size/offsets plus owned `.lnk`
+property-store roundtrip; their source presence is not a real macOS/Windows pass.
 
-The result is an incomplete implementation candidate. Non-Linux verified
+Fresh Linux regressions, strict Clippy, full-symbol ACK and independent
+integration review found no further reproducible repair in this change set;
+new CI or other execution failures require another ordinary source repair and
+freeze. The result remains an incomplete implementation candidate. Non-Linux verified
 Open/Reveal adapters remain absent. Physical acceptance, coverage, soak,
 production signing, independent supply-chain acceptance and release authority
 remain explicit gates.
