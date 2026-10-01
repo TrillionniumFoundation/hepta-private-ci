@@ -1,4 +1,6 @@
-# control.runtime adversarial audit — 2026-10-01
+# control.runtime adversarial audit
+
+Review date: 2026-10-01
 
 ## Source and review scope
 
@@ -69,6 +71,8 @@ present while the global durable effect product is still uncomposed.
 | Named-host program and test-helper lint failures | P2 qualification reliability | Overflow probe panicked; manual ceiling division and helper `expect` calls violated strict lint | Return an explicit qualification error, use `div_ceil`, and make fixture setup failures explicit without suppressing production lint |
 | macOS release installation rejects a frozen staging rename | P1 integration availability | Rolling-upgrade cases fail during initial immutable release installation | Rename the complete directory on macOS before freezing and syncing its final path; catalog resolution continues to reject writable publication; extend the readonly-source regression and run all 41 Fleet cases |
 | Test waits treat durable writes as latency guarantees | P2 fixture reliability | Browser revocation and cancellation admission/drain use one- or two-second waits; failures persist with two test threads on the busy host | Keep the early fence and in-flight cancellation assertions; bound the final durable fixture observations by 30 seconds without changing production limits |
+| Leaf terminal-cell integration root still uses a macOS alias | P2 qualification reliability | Later source-head qualification passes rolling upgrade then rejects the uncanonicalized terminal-cell cognitive root | Canonicalize the actual temporary fleet root before opening either cognitive owner; retain the production symlink fence |
+| Missing-host rejection is absent from the final empty-ledger check | P2 admission regression coverage | Missing-host admission runs on a second owner but the final empty-ledger assertion observes only the original owner; duplicate setup also hits the 60-second watchdog during I/O pressure | Temporarily remove and restore the original host in one fixture; all rejected requests now share the final empty-ledger assertion and watchdogs stay unchanged |
 | Stale source anchors omit new recovery tests | P2 documentation traceability | The implementation map referenced a new controller regression absent at its historical source anchor; NDU observations also predated the fixes | Rebind the control and NDU maps to actual committed source/tree and refresh exact source objects while preserving every maturity and external-evidence field |
 | Successful displayed CI step can conceal failure | P1 evidence integrity | `continue-on-error` conclusions could be mistaken for pass receipts | Assess command exit/status, actual outcome and final fail-closed aggregation; document that a passing unit binary does not certify later integration binaries |
 
@@ -89,7 +93,9 @@ retry by themselves.
 
 Completed local checks include 170 control-plane cases (154 unit, 16 integration;
 qualification failpoints enabled), all 74 NDU cases, 15 targeted Agentd cases,
-Control/NDU all-target strict lint, all 41 Fleet cases, 40 canonical regression bindings, Lane-D semantic
+Control/NDU all-target strict lint, all 41 Fleet cases, Fleet all-target strict lint, four-package all-target compilation,
+40 module technical documents and source-navigation bindings, 40 canonical
+regression bindings, Lane-D semantic
 verification and its 18 self-tests, and eight workflow-command regressions.
 The first full Agentd run completed with 196 passed (nine flaky retries), four
 failed and ten timed out, with six skipped. The second full run with two test
@@ -105,7 +111,7 @@ Targeted Agentd execution of the earlier affected path fixtures passed 15 cases
 and skipped 155 others. Candidate qualification also includes the Fleet package
 and its all-target formatting/check/lint after the release-installation correction.
 
-The three-package all-target strict Clippy run failed on NDU fixture helpers
+The earlier three-package all-target strict Clippy run failed on NDU fixture helpers
 (corrected by this follow-up) and 14 Agentd library diagnostics outside the control
 final-use path. Those diagnostics cover unused browser/plasticity/learning
 members, large automation/intelligence enum variants, cognitive/plasticity
@@ -114,6 +120,14 @@ argument counts and a collapsible cognitive-context conditional. Required
 pass. Automatic formatting outside this work's scope is excluded from the patch.
 The full Agentd strict gate remains enforced; no lint level or maturity stage is
 relaxed to obtain a successful candidate result.
+The complete four-package strict command was rerun on committed source
+148ec11b4da111083045c8674afa559457918896, tree
+8b637707ba553bbbad631b2963752f6e12911ace, with a clean tree before and after.
+It returned 101 with the same 14 Agentd library diagnostics; later test-target lint
+is not certified by an early library failure. The staged plasticity submission
+methods have callers only in lifetime tests. Their non-test source boundary is
+not an upstream production learning trigger, consistent with the explicit gap in
+learning.plasticity/CURRENT_IMPLEMENTATION.md.
 
 The prior `2095284...` macOS source job is failed evidence: 170 Agentd unit cases
 passed, the next AuthBus integration binary failed two path cases, all-target
@@ -148,6 +162,23 @@ binaries after the short-root corrections. It then failed both rolling-upgrade
 cases during initial release installation and failed NDU owner-test helper lint.
 All-target compilation passed. These are failed candidate records; the newer
 publication and helper corrections still require their own macOS receipt.
+
+## Additional immutable candidate evidence
+
+The 148ec11 source job on macOS in run 36802270911 passed all 170 Agentd
+unit cases, AuthBus and cognitive integration, and both rolling-upgrade cases.
+The later terminal-cell binary failed one case on its noncanonical cognitive root.
+The actual recorded package command returned 101 with 207 passed and one failed,
+and did not reach Control/NDU/Fleet package suites. Four-package formatting and
+all-target compilation returned zero. Strict lint returned 101 with the same 14
+Agentd library diagnostics. Final job aggregation failed. These exact failed
+command records remain failed evidence after the leaf fixture correction.
+
+An additional complete local Agentd run is recorded separately. During that run,
+/proc/pressure/io reported full avg10=49.27; one admission fixture timed out
+twice at the unchanged 60-second watchdog while several SQLite fixture cases
+completed in 35–50 seconds. I/O pressure coincides with the failures but is not
+a proof of every cause and does not convert them to pass receipts.
 
 ## Source-navigation correction
 

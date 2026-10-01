@@ -353,4 +353,4 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
 
-The [2026-10-01 adversarial audit](ADVERSARIAL_AUDIT_2026-10-01.md) records reproduced recovery/admission defects, their corrections, subsystem completion boundaries and remaining qualification/product work. It does not advance the canonical maturity stages.
+The [2026-10-01 adversarial audit](ADVERSARIAL_AUDIT.md) records reproduced recovery/admission defects, their corrections, subsystem completion boundaries and remaining qualification/product work. It does not advance the canonical maturity stages.

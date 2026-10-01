@@ -353,7 +353,9 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     use std::sync::Arc;
 
     let temp = tempfile::tempdir().unwrap();
-    let fleet = HeptaFleetRoot::parse(temp.path().to_path_buf())
+    // Platform temp roots can traverse aliases such as /var on macOS.
+    // Publish the actual root while preserving the production symlink fence.
+    let fleet = HeptaFleetRoot::parse(temp.path().canonicalize().unwrap())
         .unwrap()
         .layout();
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000011").unwrap();
