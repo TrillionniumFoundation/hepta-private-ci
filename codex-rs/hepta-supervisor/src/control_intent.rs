@@ -50,6 +50,13 @@ pub(crate) enum DurableControlKind {
     Kill,
 }
 
+/// Distinguishes a newly published owner request from its durable replay.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum Preparation {
+    Fresh,
+    Retained,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum DurableControlPhase {
@@ -228,7 +235,7 @@ pub(crate) fn prepare_stop(
     target_process_identity: &ProcessIdentity,
     expected_lifecycle_generation: u64,
     stop_grace: Duration,
-) -> Result<(), DurableControlIntentError> {
+) -> Result<Preparation, DurableControlIntentError> {
     let requested_unix_ms = unix_ms_now()?;
     let stop_deadline_unix_ms = requested_unix_ms
         .checked_add(duration_ms(stop_grace)?)
@@ -266,6 +273,7 @@ pub(crate) fn prepare_kill(
             /*stop_deadline_unix_ms*/ None,
         )?,
     )
+    .map(|_preparation| ())
 }
 
 pub(crate) fn mark_stop_requested(run_root: &Path) -> Result<(), DurableControlIntentError> {
@@ -291,17 +299,10 @@ pub(crate) fn recover_pending(
     identity: &ProcessIdentity,
     now: Instant,
 ) -> Result<Option<PendingControl>, DurableControlIntentError> {
-    let Some(intent) = read_control_intent(run_root)? else {
+    let Some(intent) = read_bound_control_intent(run_root, agent_id, spawn_generation, identity)?
+    else {
         return Ok(None);
     };
-    if intent.phase.terminal() {
-        return Ok(None);
-    }
-    if !intent.matches_target(agent_id, spawn_generation, identity) {
-        return Err(DurableControlIntentError::Invalid(
-            "unresolved control intent does not bind the current process lease".to_string(),
-        ));
-    }
     Ok(Some(match intent.kind {
         DurableControlKind::Kill => PendingControl::Kill { spawn_generation },
         DurableControlKind::Stop => PendingControl::Stop {
@@ -317,6 +318,64 @@ pub(crate) fn recover_pending(
             )?,
         },
     }))
+}
+
+/// Validate the durable owner without reprojecting an already retained deadline.
+/// Only recovery with no in-process continuation reconstructs wall-clock time.
+pub(crate) fn continue_pending(
+    run_root: &Path,
+    agent_id: &AgentId,
+    spawn_generation: u64,
+    identity: &ProcessIdentity,
+    current: PendingControl,
+) -> Result<Option<PendingControl>, DurableControlIntentError> {
+    match current {
+        PendingControl::Stop {
+            spawn_generation: target,
+            ..
+        }
+        | PendingControl::Kill {
+            spawn_generation: target,
+        } if target == spawn_generation => {}
+        PendingControl::Drain { .. }
+        | PendingControl::Stop { .. }
+        | PendingControl::Kill { .. } => {
+            return Err(DurableControlIntentError::Invalid(
+                "Stop continuation does not name the current process".to_string(),
+            ));
+        }
+    }
+    let Some(intent) = read_bound_control_intent(run_root, agent_id, spawn_generation, identity)?
+    else {
+        return Ok(None);
+    };
+    match intent.kind {
+        DurableControlKind::Kill => Ok(Some(PendingControl::Kill { spawn_generation })),
+        DurableControlKind::Stop => {
+            validate_wall_clock(intent.requested_unix_ms)?;
+            Ok(Some(current))
+        }
+    }
+}
+
+fn read_bound_control_intent(
+    run_root: &Path,
+    agent_id: &AgentId,
+    spawn_generation: u64,
+    identity: &ProcessIdentity,
+) -> Result<Option<DurableControlIntent>, DurableControlIntentError> {
+    let Some(intent) = read_control_intent(run_root)? else {
+        return Ok(None);
+    };
+    if intent.phase.terminal() {
+        return Ok(None);
+    }
+    if !intent.matches_target(agent_id, spawn_generation, identity) {
+        return Err(DurableControlIntentError::Invalid(
+            "unresolved control intent does not bind the current process lease".to_string(),
+        ));
+    }
+    Ok(Some(intent))
 }
 
 pub(crate) fn reconcile_absent(
@@ -376,19 +435,24 @@ pub(crate) fn has_unresolved(run_root: &Path) -> Result<bool, DurableControlInte
     Ok(read_control_intent(run_root)?.is_some_and(|intent| !intent.phase.terminal()))
 }
 
-fn prepare(run_root: &Path, next: DurableControlIntent) -> Result<(), DurableControlIntentError> {
+fn prepare(
+    run_root: &Path,
+    next: DurableControlIntent,
+) -> Result<Preparation, DurableControlIntentError> {
     if let Some(existing) = read_control_intent(run_root)? {
         if existing.kind == next.kind && existing.same_target(&next) {
-            return Ok(());
+            return Ok(Preparation::Retained);
         }
         if next.kind == DurableControlKind::Kill && existing.same_target(&next) {
-            return write_control_intent(run_root, &next);
+            write_control_intent(run_root, &next)?;
+            return Ok(Preparation::Fresh);
         }
         if !existing.phase.terminal() {
             return Err(DurableControlIntentError::Unresolved);
         }
     }
-    write_control_intent(run_root, &next)
+    write_control_intent(run_root, &next)?;
+    Ok(Preparation::Fresh)
 }
 
 fn advance(
@@ -415,15 +479,20 @@ fn restore_deadline(
     requested_unix_ms: u64,
     deadline_unix_ms: u64,
 ) -> Result<Instant, DurableControlIntentError> {
+    let current_unix_ms = validate_wall_clock(requested_unix_ms)?;
+    let remaining = deadline_unix_ms.saturating_sub(current_unix_ms);
+    now.checked_add(Duration::from_millis(remaining))
+        .ok_or_else(|| DurableControlIntentError::Invalid("deadline overflow".to_string()))
+}
+
+fn validate_wall_clock(requested_unix_ms: u64) -> Result<u64, DurableControlIntentError> {
     let current_unix_ms = unix_ms_now()?;
     if current_unix_ms < requested_unix_ms {
         return Err(DurableControlIntentError::Invalid(
             "wall-clock rollback precedes the durable control request".to_string(),
         ));
     }
-    let remaining = deadline_unix_ms.saturating_sub(current_unix_ms);
-    now.checked_add(Duration::from_millis(remaining))
-        .ok_or_else(|| DurableControlIntentError::Invalid("deadline overflow".to_string()))
+    Ok(current_unix_ms)
 }
 
 fn read_control_intent(

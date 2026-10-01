@@ -45,6 +45,7 @@ struct Faults {
     main_stop_failures: u32,
     main_kill_failures: u32,
     main_poll_failures: u32,
+    matrix_stop_failures: u32,
     matrix_kill_failures: u32,
     matrix_poll_failures: u32,
     main_drains: usize,
@@ -135,6 +136,13 @@ impl ManagedProcess for Process {
             if faults.main_stop_failures > 0 {
                 faults.main_stop_failures -= 1;
                 return Err(ProcessDriverError::new("one-shot main stop failure"));
+            }
+        }
+        if self.role == FakeRole::Matrixd {
+            let mut faults = self.faults.lock().expect("fault state");
+            if faults.matrix_stop_failures > 0 {
+                faults.matrix_stop_failures -= 1;
+                return Err(ProcessDriverError::new("one-shot Matrix stop failure"));
             }
         }
         self.inner.request_stop()

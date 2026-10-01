@@ -95,7 +95,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             .runtime
             .as_ref()
             .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
-        control_intent::prepare_stop(
+        // A fresh request uses the caller's monotonic budget. Durable journal
+        // publication must not deduct wall time from that same supplied Instant.
+        let stop_deadline = deadline(now, self.config.stop_grace)?;
+        let spawn_generation = runtime.spawn_generation;
+        let preparation = control_intent::prepare_stop(
             record.layout.run_root(),
             agent_id,
             runtime.spawn_generation,
@@ -107,6 +111,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Cancel durably after the overriding Stop itself is durable, but before
         // companion deferral, lifecycle CAS or signaling.
         self.cancel_pending_restart(agent_id, slot)?;
+        if preparation == control_intent::Preparation::Fresh {
+            pending::stage(
+                agent_id,
+                slot,
+                pending::PendingControl::Stop {
+                    spawn_generation,
+                    deadline: stop_deadline,
+                },
+            )?;
+        }
         let result = self.stop_runtime_slot(agent_id, slot, now);
         if result.is_ok()
             && slot.runtime.as_ref().is_some_and(|runtime| {
@@ -132,17 +146,56 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
-        let runtime = active_runtime(agent_id, slot)?;
+        let runtime = slot
+            .runtime
+            .as_ref()
+            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
         let spawn_generation = runtime.spawn_generation;
-        let durable = control_intent::recover_pending(
-            record.layout.run_root(),
-            agent_id,
-            spawn_generation,
-            &runtime.identity,
-            now,
-        )
+        // Live retries retain the earlier acknowledged/pending deadline and
+        // never downgrade Kill. A pending Drain is not a Stop continuation.
+        let current = slot
+            .pending_control
+            .filter(|control| control.applies_to(runtime));
+        let retained = match (runtime.phase, current) {
+            (_, Some(control @ pending::PendingControl::Kill { .. })) => Some(control),
+            (RuntimePhase::Killing, _) => Some(pending::PendingControl::Kill { spawn_generation }),
+            (
+                RuntimePhase::Stopping {
+                    deadline: phase_deadline,
+                },
+                Some(pending::PendingControl::Stop {
+                    deadline: pending_deadline,
+                    ..
+                }),
+            ) => Some(pending::PendingControl::Stop {
+                spawn_generation,
+                deadline: phase_deadline.min(pending_deadline),
+            }),
+            (_, Some(control @ pending::PendingControl::Stop { .. })) => Some(control),
+            (RuntimePhase::Stopping { deadline }, _) => Some(pending::PendingControl::Stop {
+                spawn_generation,
+                deadline,
+            }),
+            _ => None,
+        };
+        let durable = match retained {
+            Some(control) => control_intent::continue_pending(
+                record.layout.run_root(),
+                agent_id,
+                spawn_generation,
+                &runtime.identity,
+                control,
+            ),
+            None => control_intent::recover_pending(
+                record.layout.run_root(),
+                agent_id,
+                spawn_generation,
+                &runtime.identity,
+                now,
+            ),
+        }
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let control = match durable {
+        let control = match durable.or(retained) {
             Some(control) => control,
             None => pending::PendingControl::Stop {
                 spawn_generation,

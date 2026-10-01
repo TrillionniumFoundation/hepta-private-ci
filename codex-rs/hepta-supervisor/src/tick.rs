@@ -22,6 +22,7 @@ use crate::restart_lineage::RestartProcessWitness;
 use crate::restart_lineage::RestartRecoveryRole;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
+use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::runtime::deadline;
@@ -440,9 +441,21 @@ impl<D: ProcessDriver> Supervisor<D> {
                 },
             );
         }
-        let retrying = slot
-            .pending_control
-            .is_some_and(|pending| pending.applies_to(runtime));
+        // Successful pre-read containment may clear pending; that cannot
+        // readmit this controlled process from the same tick's health probe.
+        let retrying = overdue_control.is_some()
+            || slot
+                .pending_control
+                .is_some_and(|pending| pending.applies_to(runtime));
+        let deferred_stop = slot.matrix.runtime.is_some()
+            && slot.deferred_agent_action.is_some_and(|action| {
+                action.spawn_generation == runtime.spawn_generation
+                    && action.kind == DeferredAgentActionKind::Stop
+            })
+            && slot.pending_control.is_some_and(|control| {
+                control.applies_to(runtime)
+                    && matches!(control, pending::PendingControl::Stop { deadline, .. } if now < deadline)
+            });
         let control_result = if runtime.fenced {
             if let Some(Err(control)) = overdue_control.as_ref() {
                 Self::record_slot_fault(agent_id, slot, control, report);
@@ -469,6 +482,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             // The successful event was already emitted before registry I/O.
             // Reusing the result also prevents a second signal on this tick.
             result
+        } else if deferred_stop {
+            // Retaining the original Stop budget must not signal the main
+            // before its companion exits. Expiry still contains the main first.
+            Ok(None)
         } else {
             pending::apply(
                 agent_id,
@@ -548,13 +565,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Some(error) = companion_fault {
             return Err(error);
         }
-        if runtime.fenced || retrying {
+        let deferred_health_observation = deferred_stop
+            && matches!(
+                runtime.phase,
+                RuntimePhase::AwaitingHealth { .. } | RuntimePhase::Running
+            );
+        if runtime.fenced || (retrying && !deferred_health_observation) {
             return Ok(RuntimeTickOutcome::Keep);
         }
         let ProcessState::Running { healthy, drained } = observation.state else {
             unreachable!("exited state returned above")
         };
-        runtime.healthy = healthy;
+        runtime.healthy = healthy
+            && !matches!(
+                runtime.phase,
+                RuntimePhase::Stopping { .. } | RuntimePhase::Killing
+            );
         match runtime.phase {
             RuntimePhase::AwaitingHealth { .. } if healthy => {
                 let next = self.registry.compare_and_transition(

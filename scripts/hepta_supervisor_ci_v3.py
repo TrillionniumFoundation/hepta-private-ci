@@ -21,6 +21,7 @@ CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
     "authority_bundle::open_tests::fifo_swap_after_regular_metadata_is_rejected_before_watchdog_release",
     "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::failed_initial_drain_escalates_through_corrupt_fleet_at_original_deadlines",
     "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::failed_initial_stop_escalates_through_corrupt_fleet_at_original_deadline",
+    "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control",
     "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::failed_initial_kill_retries_through_corrupt_fleet_without_signalling_stale_owner",
     "supervisor::tests::tick_control_fault_tests::matrix_fault_tests::direct_companion_kill_failure_survives_main_and_matrix_poll_failures",
     "supervisor::tests::tick_control_fault_tests::matrix_fault_tests::direct_companion_kill_failure_survives_exact_exit_lease_cleanup_failure",
