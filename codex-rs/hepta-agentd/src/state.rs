@@ -37,7 +37,16 @@ mod admission;
 #[path = "state_historical_observation.rs"]
 mod historical_observation;
 
+#[path = "state_secrets.rs"]
+mod secrets;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "state_secrets_tests.rs"]
+mod secrets_tests;
+
 pub(crate) struct AgentdState {
+    #[cfg(target_os = "linux")]
+    pub(crate) secrets_host: std::sync::OnceLock<Arc<crate::secrets_host::AgentdSecretsHost>>,
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
     pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,
     pub(crate) intelligence_product:
@@ -137,6 +146,8 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            #[cfg(target_os = "linux")]
+            secrets_host: std::sync::OnceLock::new(),
             retrieval_executor: crate::retrieval_executor::RetrievalExecutor::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
@@ -501,7 +512,8 @@ impl AgentdState {
                 && self.app_server_drain.drained()
                 && running_turns == 0
                 && automation_blockers == 0
-                && effect_workers == 0,
+                && effect_workers == 0
+                && self.pending_secrets_workers() == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })

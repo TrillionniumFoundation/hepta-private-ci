@@ -44,6 +44,7 @@ where
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
         let mut automation_effect_host = None;
+        let mut secrets_runtime_client = None;
         let mut evidence_recovery_frontier = None;
         let mut evidence_recovery_frontier_trust = None;
         while let Some(flag) = args.next() {
@@ -154,6 +155,12 @@ where
                     "duplicate --objective-profile-file"
                 );
                 objective_profile = Some(path);
+            } else if flag == "--secrets-runtime-client-file" {
+                anyhow::ensure!(
+                    secrets_runtime_client.is_none(),
+                    "duplicate --secrets-runtime-client-file"
+                );
+                secrets_runtime_client = Some(path);
             } else if flag == "--automation-effect-host-file" {
                 anyhow::ensure!(
                     automation_effect_host.is_none(),
@@ -229,6 +236,9 @@ where
             config = config
                 .with_authbus_trust_file(trust.into())
                 .with_authbus_checkpoint_file(checkpoint.into());
+        }
+        if let Some(path) = secrets_runtime_client {
+            config = config.with_secrets_runtime_client_file(path.into());
         }
         if let Some(path) = automation_effect_host {
             config = config.with_automation_effect_host_file(path.into());

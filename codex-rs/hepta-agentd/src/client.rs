@@ -48,6 +48,9 @@ use crate::SessionIngress;
 #[path = "client_automation_listing.rs"]
 mod automation_listing;
 
+#[path = "client_secrets.rs"]
+mod secrets;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,

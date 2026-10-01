@@ -760,6 +760,6 @@ id = "secrets_agent_runtime_consume"
 symbol = "SecretsRuntimeClient::consume_original"
 definition_path = "codex-rs/hepta-bao-adapter/src/runtime_client.rs"
 definition_markers = ["pub fn consume_original", "RuntimeRequest::Consume", "SecretsRuntimeResponse::Unknown", "config.agent_uid != rustix::process::geteuid().as_raw()"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
-caller_markers = ["client.consume_original", "SecretsRuntimeClientConfig::load_root_owned"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs", "codex-rs/hepta-agentd/src/secrets_host.rs"]
+caller_markers = ["client.consume_original"]
 call_pattern = 'client\s*\.\s*consume_original\s*\('

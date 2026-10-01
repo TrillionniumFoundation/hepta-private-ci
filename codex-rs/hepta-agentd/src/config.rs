@@ -93,6 +93,7 @@ pub struct AgentdConfig {
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
+    secrets_runtime_client_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,
@@ -223,6 +224,7 @@ impl AgentdConfig {
             authbus_trust_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,
+            secrets_runtime_client_file: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
             objective_profile_file: None,
@@ -297,6 +299,16 @@ impl AgentdConfig {
 
     pub(crate) fn automation_effect_host_file(&self) -> Option<&Path> {
         self.automation_effect_host_file.as_deref()
+    }
+
+    /// Enroll this original Agent in the single protected secrets daemon.
+    pub fn with_secrets_runtime_client_file(mut self, path: PathBuf) -> Self {
+        self.secrets_runtime_client_file = Some(path);
+        self
+    }
+
+    pub(crate) fn secrets_runtime_client_file(&self) -> Option<&Path> {
+        self.secrets_runtime_client_file.as_deref()
     }
 
     /// Explicit owner-managed objective admission profile. A request cannot

@@ -92,6 +92,11 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            method @ (crate::AgentdMethod::SecretsConsumeOriginal { .. }
+            | crate::AgentdMethod::SecretsOriginalStatus { .. }
+            | crate::AgentdMethod::SecretsRecoverOriginal { .. }) => {
+                self.secrets_original(method).await?
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -109,6 +114,12 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 );
+                if self.secrets_capability_available() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("secrets.original_kv_v2", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.automation_effect_host().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(
