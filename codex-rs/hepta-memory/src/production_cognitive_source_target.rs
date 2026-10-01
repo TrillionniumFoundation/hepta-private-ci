@@ -88,10 +88,18 @@ impl CognitiveSourceOperationV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CognitiveSourceTerminalObservation {
-    Applied { receipt: String },
+    Applied {
+        receipt: String,
+    },
+    /// Requires independent terminal proof; a currently absent row is insufficient.
     NotApplied,
-    Quarantined { reason: String },
-    Unavailable { reason: String },
+    Quarantined {
+        reason: String,
+    },
+    /// No reliable terminal proof, including unknown outcome despite a healthy store.
+    Unavailable {
+        reason: String,
+    },
 }
 
 #[derive(Clone)]
@@ -215,31 +223,6 @@ impl CognitiveSourceOutboxTarget {
         format!("{}:{}", id.source_id.as_str(), id.revision)
     }
 
-    async fn exact_count(
-        &self,
-        draft: &SourceDraft,
-        source_id: &SourceEventId,
-    ) -> Result<i64, sqlx::Error> {
-        let content_sha256 = Sha256Digest::for_bytes(&draft.content);
-        let (scope_kind, workspace_sha256) = draft.scope.database_parts();
-        sqlx::query_scalar(
-            "SELECT COUNT(*) FROM source_ledger
-             WHERE source_id = ? AND source_revision = 1 AND owner_agent_id = ?
-               AND scope_kind = ? AND workspace_sha256 IS ? AND source_kind = ?
-               AND content = ? AND content_sha256 = ? AND observed_at_unix_seconds = ?",
-        )
-        .bind(source_id.as_str())
-        .bind(self.store.owner_agent_id().as_str())
-        .bind(scope_kind)
-        .bind(workspace_sha256)
-        .bind(draft.kind.as_str())
-        .bind(&draft.content)
-        .bind(content_sha256.as_str())
-        .bind(draft.observed_at_unix_seconds)
-        .fetch_one(&self.store.pool)
-        .await
-    }
-
     pub async fn observe_terminal(
         &self,
         request: &ProductionDispatchRequest,
@@ -259,30 +242,41 @@ impl CognitiveSourceOutboxTarget {
             draft.kind,
             &draft.event_key,
         );
-        match self.exact_count(&draft, &source_id).await {
-            Ok(1) => {
-                return CognitiveSourceTerminalObservation::Applied {
-                    receipt: Self::receipt(&SourceRevisionId::new(source_id)),
-                };
-            }
-            Ok(_) => {}
-            Err(error) => {
-                return CognitiveSourceTerminalObservation::Unavailable {
-                    reason: error.to_string(),
-                };
-            }
-        }
-
-        let same_identity: Result<i64, sqlx::Error> = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM source_ledger WHERE source_id = ? AND source_revision = 1",
+        let content_sha256 = Sha256Digest::for_bytes(&draft.content);
+        let (scope_kind, workspace_sha256) = draft.scope.database_parts();
+        // Identity and semantic comparison share one SQLite statement snapshot.
+        // Two separate reads could see absence, then a concurrent exact commit,
+        // and incorrectly classify that committed identity as semantic drift.
+        let exact: Result<Option<i64>, sqlx::Error> = sqlx::query_scalar(
+            "SELECT owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?
+                    AND source_kind = ? AND content = ? AND content_sha256 = ?
+                    AND observed_at_unix_seconds = ?
+             FROM source_ledger WHERE source_id = ? AND source_revision = 1",
         )
+        .bind(self.store.owner_agent_id().as_str())
+        .bind(scope_kind)
+        .bind(workspace_sha256)
+        .bind(draft.kind.as_str())
+        .bind(&draft.content)
+        .bind(content_sha256.as_str())
+        .bind(draft.observed_at_unix_seconds)
         .bind(source_id.as_str())
-        .fetch_one(&self.store.pool)
+        .fetch_optional(&self.store.pool)
         .await;
-        match same_identity {
-            Ok(0) => CognitiveSourceTerminalObservation::NotApplied,
-            Ok(_) => CognitiveSourceTerminalObservation::Quarantined {
+        match exact {
+            Ok(Some(1)) => CognitiveSourceTerminalObservation::Applied {
+                receipt: Self::receipt(&SourceRevisionId::new(source_id)),
+            },
+            Ok(Some(_)) => CognitiveSourceTerminalObservation::Quarantined {
                 reason: "destination source identity exists with different semantics".to_string(),
+            },
+            // An active or cancelled dispatch may still commit queued SQL. Only
+            // destination-owned terminal evidence can establish non-application.
+            // Unavailable keeps reconciliation open without appending a new
+            // StillIndeterminate event on every background observation.
+            Ok(None) => CognitiveSourceTerminalObservation::Unavailable {
+                reason: "destination outcome is unknown: source absence is not terminal proof"
+                    .to_string(),
             },
             Err(error) => CognitiveSourceTerminalObservation::Unavailable {
                 reason: error.to_string(),
