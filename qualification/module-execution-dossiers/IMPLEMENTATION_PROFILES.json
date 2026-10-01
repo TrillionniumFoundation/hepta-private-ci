@@ -1320,7 +1320,7 @@
       "apiContract": "consume_source_batch(frontier,facts,corrections,tombstones); build_generation(candidate,profile); publish_generation(expectedPredecessor,generation); query_relations(snapshot,seeds,bounds).",
       "stateAndEncoding": "Rebuildable node/edge projections keyed generation+identity; edge has relation,support revisions,confidence,validity and tombstone frontier. Supports/contradicts are separate edge kinds.",
       "linearizationAndRecovery": "Build off-route,validate complete support manifest,then atomically publish pointer for one source cut. Partial generation never becomes readable. Source owner remains truth authority.",
-      "algorithmAndBounds": "Query<=4096 nodes/32768 edges/output512 refs,batch<=10000 source records. Incremental and full rebuild must be semantically equal for identical cuts. Last revoked support removes/invalidates edge.",
+      "algorithmAndBounds": "Pilot design: query expansion<=4096 nodes/32768 edges/output512 refs and source batch<=10000. Current kernel admits at most 65536 nodes,262144 edges,1048576 total supports and 256 MiB canonical encoding; cognitive retrieval admits 32 candidates per channel and 4 final results. The repeated-support capacity fixture uses 16 canonical nodes/128 edges, not a full pilot-size canonical graph. Incremental/full source-cut digests must match and last revoked support removes the edge.",
       "acceptanceOracle": "Incremental/full canonical graph digests match. Half-built graph cannot publish. Deleting sole support makes edge ineligible. Contradictions remain alternatives rather than an averaged unsupported fact.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
@@ -1364,7 +1364,7 @@
             "symbol": "register_factor_relation"
           }
         ],
-        "stateAndRecovery": "Cognitive SQLite owns physical facts and atomic complete-generation publication. V2 binds source/revision/validity supports, source snapshot, generation vector, canonical generation and predecessor publication digests. A sealed indexed query view and compact support mapping are reused only inside one owner read transaction with per-seed digest and temporal checks. KG current/predecessor reconstruction is bounded by scope limits; complete owner startup still inspects retained fact-set history. Prompt relations persist through the existing atomic prompt owner with validated V2/V3 restore and have a sealed owner source plus library consumer; neither projection mints source facts or runtime authority.",
+        "stateAndRecovery": "Cognitive SQLite owns physical facts and atomic complete-generation publication. V2 binds source/revision/validity supports, source snapshot, generation vector, canonical generation and predecessor publication digests. A sealed indexed query view and compact support mapping are reused only inside one owner read transaction with per-seed digest and temporal checks. KG current/predecessor reconstruction is bounded by scope limits; complete owner startup still inspects retained fact-set history and validates complete historical memory and revision-entity FTS identity/content through aggregate SQL checks, whose scans/grouping remain history-dependent. Prompt relations persist through the existing atomic prompt owner with validated V2/V3 restore and have a sealed owner source plus library consumer. Canonical selection rejects priced candidates absent from the complete graph and binds the enumerated registry digest into the selected receipt for final exercise freshness. The existing Agentd compiler/runtime consumer binds staged attachments to their source, checks the shared current owner at prepare/dispatch and caps request deadlines by portfolio/realization validity. Uncertain post-rename runtime durability requires reopen; commit/prepare recheck availability after state lock acquisition. Optional legacy stage metadata remains readable/reconcilable but unfenced stages fail closed in the bound pipeline; standalone qualification behavior remains. Neither projection nor those checks mint source facts or runtime authority.",
         "testFiles": [
           "codex-rs/hepta-kg/src/generation_tests.rs",
           "codex-rs/hepta-kg/src/generation_budget_tests.rs",
@@ -1381,17 +1381,21 @@
           "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
           "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
           "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
-          "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs"
+          "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs",
+          "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+          "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/prompt_runtime_source_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-memory/LANE_C_SQLITE.md",
           "qualification/knowledge-graph/AUDIT_20261001.md",
-          "qualification/knowledge-graph/FOLLOWUP_AUDIT_20261001.md"
+          "qualification/knowledge-graph/FOLLOWUP_AUDIT_20261001.md",
+          "qualification/knowledge-graph/SECOND_PASS_AUDIT_20261001.md"
         ],
         "remainingWork": [
-          "Run current exact-head and deterministic synthetic-merge execution before changing productExecutionProved or deploymentQualified; new follow-up tests and documentation are pending validation.",
-          "Run current durable relation restart/revocation/corruption checks and compose a named prompt product caller with current source and final-use revocation checks; the sealed owner adapter currently emits only complements/substitutes/conflicts.",
-          "Supply target-host mutation/query/reopen and retained-history budgets plus owner-approved retention policy before selecting an incremental durable writer or claiming history-independent startup.",
+          "Remote run 36783032514/source 1a75d5f14fe7e66ee108086351917289d43ac passed 118 compiled core tests plus scoped mapping/harness/format in both lanes, but memory compilation failed with E0659 and later crash/capacity/history/Agentd/combined-lint checks were skipped. The current expected core inventory is KG35+registry55+optimizer38=128, not an executed receipt. Re-run expanded six-owner mapping, compiler/runtime, cognitive workloads, scoped fix/strict lint and dependency-lock checks before claiming complete productExecutionProved or deploymentQualified. Local native builds hit ENOSPC and local Bazel lock regeneration was blocked by JDK trust configuration.",
+          "Execute newly wired signed-owner adapter/graph tests, canonical complete-node and relation-only registry-drift regressions, compiler rejection and staged-source/deadline/reopen and queued-poison regressions; previous 118-test receipts do not cover them. Compose the sealed prompt-factor source/projection/selection chain into the existing Agentd compiler/runtime consumer, preserving registry-digest, complete candidate set and final-use checks.",
+          "Supply target-host mutation/query/reopen and retained-history budgets plus owner-approved retention policy before selecting an incremental durable writer or claiming history-independent startup. The default capacity fixture exercises 16 canonical nodes/128 edges with repeated support revisions; qualify canonical graph growth separately.",
           "Bind registered HNMF event/engram/synapse/cross-modal/forget inputs through native owner adapters and independent review before claiming those target capabilities."
         ]
       }

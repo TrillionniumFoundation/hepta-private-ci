@@ -16,6 +16,7 @@ on:
       - "codex-rs/hepta-prompt-optimizer/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence/**"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
@@ -45,6 +46,7 @@ on:
       - "codex-rs/hepta-prompt-optimizer/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence/**"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
@@ -93,6 +95,7 @@ jobs:
           set -euo pipefail
           EVIDENCE_DIR="$RUNNER_TEMP/kg-qualification-$KG_LANE"
           mkdir -p "$EVIDENCE_DIR"
+          df -h > "$EVIDENCE_DIR/disk-before.txt"
           printf 'KG_EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -148,7 +151,8 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify \
             --module knowledge.graph --module prompt.registry \
-            --module cognitive.store --module memory.retrieval
+            --module cognitive.store --module memory.retrieval \
+            --module intelligence.control --module runtime.agentd
 
       - name: Self-test module source and target-host evidence harnesses
         shell: bash
@@ -175,7 +179,7 @@ jobs:
           set -euo pipefail
           cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
             --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
-            --package codex-hepta-agentd -- --check
+            --package codex-hepta-agentd --package codex-hepta-intelligence -- --check
 
       - name: Prepare native test prerequisites
         shell: bash
@@ -222,6 +226,14 @@ jobs:
           just test --locked -p codex-hepta-memory --lib --no-tests=fail --no-capture \
             --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/memory.log"
 
+      - name: Test canonical prompt compiler delivery boundary
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-intelligence --lib \
+            -E 'test(prompt_delivery::tests)' --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/prompt-delivery.log"
+
       - name: Crash/reopen KG transaction windows
         working-directory: codex-rs
         run: |
@@ -250,6 +262,15 @@ jobs:
             --test cognitive_product_e2e --no-tests=fail --no-capture \
             --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/product.log"
 
+      - name: Test Agentd persisted prompt source boundary
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-agentd --lib \
+            -E 'test(prompt_runtime::)' \
+            --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/prompt-runtime.log"
+
       - name: Test qualification witness on top of product writer
         working-directory: codex-rs
         run: |
@@ -269,6 +290,19 @@ jobs:
             --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/history.log"
           test "$(grep -c '^HEPTA_KNOWLEDGE_GRAPH_HISTORY_RECEIPT=' "$KG_EVIDENCE_DIR/history.log")" = 1
 
+      - name: Apply scoped repository lint fixes
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just fix --locked \
+            -p codex-hepta-kg -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer -p codex-hepta-memory \
+            -p codex-hepta-agentd -p codex-hepta-intelligence \
+            --features codex-hepta-agentd/qualification-cognitive-write \
+            2>&1 | tee "$KG_EVIDENCE_DIR/fix.log"
+          git diff > "$KG_EVIDENCE_DIR/lint-fixes.patch"
+          git diff --exit-code
+
       - name: Strict KG lint
         working-directory: codex-rs
         run: |
@@ -276,8 +310,20 @@ jobs:
           cargo clippy --locked \
             -p codex-hepta-kg -p codex-hepta-prompt-registry \
             -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
             -- -D warnings
+
+      - name: Record final build disk usage
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h > "$KG_EVIDENCE_DIR/disk-after.txt"
+          BUILD_DIRECTORY="${CARGO_TARGET_DIR:-codex-rs/target}"
+          if [ -d "$BUILD_DIRECTORY" ]; then
+            du -sm "$BUILD_DIRECTORY" > "$KG_EVIDENCE_DIR/build-size-mib.txt"
+          fi
 
       - name: Preserve exact-candidate receipts and test counts
         if: always()
@@ -296,3 +342,49 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+  bazel-lock:
+    name: knowledge.graph dependency lock
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: knowledge-graph-lock
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Refresh and verify exact dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOCK_EVIDENCE="$RUNNER_TEMP/kg-dependency-lock"
+          mkdir -p "$LOCK_EVIDENCE"
+          git rev-parse HEAD HEAD^{tree} > "$LOCK_EVIDENCE/source-identity.txt"
+          set +e
+          just bazel-lock-update 2>&1 | tee "$LOCK_EVIDENCE/bazel-lock-update.log"
+          LOCK_EXIT=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$LOCK_EXIT" > "$LOCK_EVIDENCE/bazel-lock-update.exit"
+          cp MODULE.bazel.lock "$LOCK_EVIDENCE/MODULE.bazel.lock"
+          git diff -- MODULE.bazel.lock > "$LOCK_EVIDENCE/MODULE.bazel.lock.patch"
+          test "$LOCK_EXIT" = 0
+          git diff --exit-code -- MODULE.bazel.lock
+
+      - name: Preserve dependency lock receipt and generated candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-dependency-lock-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/kg-dependency-lock
+          if-no-files-found: error
+          retention-days: 30
