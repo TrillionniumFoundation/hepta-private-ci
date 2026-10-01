@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "2e9e3e5af902b3bcdfac4cbb302e7383ee54c40e",
+    "tree": "9ee3aa098870e4168761b16b101b18d941a55b48"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "concrete_role_services_and_issuance_cli_wired_runtime_saga_ipc_pending",
+  "productionWriterState": "native_full_sql_role_owners_qualified_under_enrolled_uids_runtime_saga_ipc_pending",
   "operations": [
     {
       "operation": "consume_kv_v2",
@@ -78,12 +78,118 @@
       "designOperation": "ambiguous outcome reconciliation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "serve_authority",
+      "nativeSymbol": "serve_secrets_authority",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_config_and_kernel_peer",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serve_authority",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "issuer_original_begin",
+      "nativeSymbol": "AuthorityRoleOwner::issue/begin_original/original_status",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_grants.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "separate_issuer_and_pinned_independent_approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "issuer_original_begin",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "external_frontier_cas",
+      "nativeSymbol": "AuthorityRoleOwner::apply_revocations/compare_and_set",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_frontier.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "independent_signed_governed_head_and_exact_external_cas",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "external_frontier_cas",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "protected_host_time",
+      "nativeSymbol": "AuthorityRoleOwner::time",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_role_owner.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "separate_uid_private_time_key_and_persisted_host_wall_floor",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "protected_host_time",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serve_operator",
+      "nativeSymbol": "serve_secrets_operator",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/operator_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_scope_head_and_kernel_peer",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "serve_operator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "independent_original_approval",
+      "nativeSymbol": "OperatorRoleOwner::approve",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/operator_approval.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "pinned_issuer_exact_frozen_binding_and_separate_approval_key",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "independent_original_approval",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorize_original",
+      "nativeSymbol": "SecretsAuthorityClient::authorize_original",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/role_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_peer_and_pinned_separate_issuer_approval",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "authorize_original",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serve_credential_consumer",
+      "nativeSymbol": "serve_credential_consumer",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_server.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_credential_hmac_and_durable_independent_ack",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_port_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serve_credential_consumer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the lease lifecycle owner to an authenticated product caller and durable host composition.",
-    "Add provider-native dynamic lease issue/renew/revoke dispatch only after the exact HeptaBao/OpenBao endpoint contract is qualified; current compatibility status is blocking partial.",
-    "Run exact-source package tests, crash/fault injection and deterministic synthetic-merge qualification for this candidate."
+    "Finish authenticated runtime IPC composition across Root-frozen KV version, AuthBus, prepared external consumer and ACK-backed independent settlement; issuance/approval services alone do not prove product execution.",
+    "Qualify provider-native dynamic lease issue/renew/revoke and the remaining capability matrix individually; these endpoints remain closed.",
+    "Complete actual installed Fleet caller wiring and lifecycle validation using the original identities and durable history."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -103,5 +209,12 @@
   "sourceRoot": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
-  ]
+  ],
+  "roleQualification": {
+    "authorityUid": 982,
+    "operatorUid": 981,
+    "runtimeUid": 992,
+    "actualChecks": 10,
+    "scope": "original signed issuance, independent approval, FULL begin/status, revocation governance, external CAS, real expiry and physical restart; no provider delivery or quota settlement claim"
+  }
 }
