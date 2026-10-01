@@ -201,6 +201,16 @@ Current operating and state-format references:
 - [codex-rs/hepta-neuron/EXECUTION.md](../../../codex-rs/hepta-neuron/EXECUTION.md).
 - [codex-rs/hepta-neuron/JOURNAL.md](../../../codex-rs/hepta-neuron/JOURNAL.md).
 - [codex-rs/hepta-neuron/RECOVERY_ANCHOR.md](../../../codex-rs/hepta-neuron/RECOVERY_ANCHOR.md).
+- [2026-10-01 adversarial audit](../../../codex-rs/hepta-neuron/AUDIT_2026-10-01.md).
+
+Canonical owners require an independently retained complete-runtime-config
+commitment. `FileAnchorWitnessStore::open_bound` uses HPTNWA02; the legacy
+unbound witness cannot compose a canonical owner. Verify this commitment before
+journal recovery or repair, and require the independently acknowledged frontier
+before publication. Owner rollover requires a full segment, and does not extend
+the witness's lifetime quota. The operating references above define migration
+and metric boundaries; the pure V2 digest framing correction requires fresh
+qualification chains while retaining V1 journal replay bytes.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -251,7 +261,7 @@ For `neuron.runtime`, this document grants no runtime, production, model, provid
 
 #### `BIO-0-NEURON-INTUITION-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `inference-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-neuron/**`
