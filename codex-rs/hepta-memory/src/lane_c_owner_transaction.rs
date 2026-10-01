@@ -339,3 +339,7 @@ async fn project_in_transaction(
         capture,
     ))
 }
+
+#[cfg(test)]
+#[path = "lane_c_owner_transaction_tests.rs"]
+mod tests;
