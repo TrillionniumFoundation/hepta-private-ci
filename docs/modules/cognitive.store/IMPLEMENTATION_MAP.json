@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b615f691cef067aefe45ec09eb34853208f9c97f",
-    "tree": "4d960c1c37b1ea3bde4a8fda048ad5ac026face0"
+    "commit": "3c4824e256c265fe6dde4d67e80fff86e8e9eed6",
+    "tree": "7ec279d3aa979ff2d635b75bbb36f54a30ed3f66"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -462,11 +462,19 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-      "object": "7a13117bbd91cc551001a424ad63603f38202ea0"
+      "object": "966a06d0900a9f11bf3ee19f8d54582dd59da8d5"
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox_dispatch_settlement.rs",
-      "object": "6ea80ec7bf89143d7a8b39a222647eb0e139fabd"
+      "object": "665b3aff1a98825adadd09d642bbc8eb46b12b14"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_observer_origin.rs",
+      "object": "9dc201ae36173d3e56a5725504518c4f40021580"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_observer_origin_tests.rs",
+      "object": "8093b3fcea5877cf9d989c12233e8721c1366818"
     },
     {
       "path": "codex-rs/hepta-memory/src/logical_turn_registry.rs",
@@ -486,7 +494,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_reconciliation_race_tests.rs",
-      "object": "2879c1f045de541dcf4f8e9f5820c4e31a5c2c31"
+      "object": "9d9709f56036f872c62723ab3b5355dd3b3cc52e"
     },
     {
       "path": "codex-rs/hepta-memory/src/production_reconciliation_tests.rs",
@@ -526,7 +534,7 @@
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "3d9d1b73f38a33bcc47e570d4cfe586640709524"
+      "object": "7cc158c5b1d0423f0fd168b06b3b22c49dd10d22"
     }
   ]
 }
