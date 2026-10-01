@@ -115,6 +115,7 @@ fn issue_rejects_non_active_provider_observations_without_durable_mutation() {
             Err(LeaseRegistryErrorV1::InvalidInput)
         );
         assert_eq!(std::fs::read(&path).unwrap(), persisted);
+        drop(registry);
         let reopened = DurableLeaseRegistryV1::open(path).unwrap();
         assert_eq!(reopened.operation("op:issue:1"), Some(&prepared));
         assert_eq!(reopened.lease("lease:db:1"), None);
