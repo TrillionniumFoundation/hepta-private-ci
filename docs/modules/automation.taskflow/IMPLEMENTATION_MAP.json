@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "3381d87710325b95ee817f8361c3468f5edd6b34",
+    "tree": "7075250176e544cf3cfc14989c32e436c9bd2cdd"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -63,7 +63,7 @@
           "ownerModule": "runtime.agentd"
         }
       ],
-      "sourceBlob": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      "sourceBlob": "8cad3e77ac290324220f917dd433d663740f0078"
     },
     {
       "designOperation": "materialize_due",
@@ -129,7 +129,7 @@
       "nativeSymbol": "pub async fn materialize_occurrence(",
       "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
       "sourcePathExists": true,
-      "sourceBlob": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "sourceBlob": "f3a2c56b7c86cadd07ba82831d1f30b65f6a8cdc"
     },
     {
       "designOperation": "execute_step",
@@ -204,7 +204,7 @@
         }
       ],
       "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "sourceBlob": "067b51c2578993e59208efa3b7d49a7c8b7adfff"
     }
   ],
   "repositoryControlledGaps": [],
@@ -251,8 +251,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "3381d87710325b95ee817f8361c3468f5edd6b34",
+    "tree": "7075250176e544cf3cfc14989c32e436c9bd2cdd"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -260,7 +260,7 @@
     "entries": [
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-        "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+        "blobSha": "8cad3e77ac290324220f917dd433d663740f0078"
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -268,11 +268,11 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+        "blobSha": "f3a2c56b7c86cadd07ba82831d1f30b65f6a8cdc"
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "067b51c2578993e59208efa3b7d49a7c8b7adfff"
       }
     ]
   },
@@ -342,8 +342,16 @@
       "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "17cd60cf883b132d0658c7179a70712b2cfddaf4"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "3a5c1563125656d4330d03374ef75cd81b8fb942"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -351,23 +359,23 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "e8a6521676bd1fb2d9d40722690575e9d345a978"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "067b51c2578993e59208efa3b7d49a7c8b7adfff"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "33ee8676281efd4b2804d0ce10f26d5ffa4c0f82"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "object": "f3a2c56b7c86cadd07ba82831d1f30b65f6a8cdc"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      "object": "8cad3e77ac290324220f917dd433d663740f0078"
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -375,27 +383,44 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
-      "object": "176b5c7200bea7d07d6642440d1f03c37209cef3"
+      "object": "e852e0e9b7728a716e544894eb65002dc2f5b97d"
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
+      "object": "dbb8c8cdbded2dd1afa431d7ac61a8ed64dc040e"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "23b6aa03476a825a8af45e2722ec307d21b15b94"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "840c7ccba5a2feae31cd6dd97766339b8d34bf67"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "006614a04ae3d6a927d83b2da60e4aadb7759f71"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "ac72cda89bf282da3cfb7d5e82d8d1dc6079a030"
     }
-  ]
+  ],
+  "navigationProvenanceRepair": {
+    "supersededSourceBase": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "supersededObservedAtHead": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "reason": "Inherited anchor is not an ancestor of the inspected candidate; scoped fresh source review replaces invalid navigation provenance.",
+    "reviewedAt": {
+      "commit": "3381d87710325b95ee817f8361c3468f5edd6b34",
+      "tree": "7075250176e544cf3cfc14989c32e436c9bd2cdd"
+    },
+    "semantics": "Source navigation only; no historical execution, independent acceptance or activation evidence is transferred."
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }
