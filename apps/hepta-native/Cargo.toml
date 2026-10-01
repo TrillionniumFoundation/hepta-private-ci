@@ -38,6 +38,9 @@ zeroize = "1.8.2"
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "1.1.5", features = ["fs", "process"] }
 
+[target.'cfg(target_os = "macos")'.dependencies]
+codex-utils-private-state = { path = "../../codex-rs/utils/private-state" }
+
 [target.'cfg(windows)'.dependencies]
 codex-hepta-private-state = { path = "../../codex-rs/hepta-private-state" }
 

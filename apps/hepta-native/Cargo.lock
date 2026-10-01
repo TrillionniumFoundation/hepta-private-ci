@@ -706,6 +706,8 @@ dependencies = [
 name = "codex-utils-private-state"
 version = "0.0.0"
 dependencies = [
+ "libc",
+ "rustix 1.1.5",
  "windows-sys 0.52.0",
 ]
 
@@ -1659,6 +1661,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-private-state",
  "codex-keyring-store",
+ "codex-utils-private-state",
  "ed25519-dalek",
  "eframe",
  "embed-manifest",

@@ -26,7 +26,7 @@ serde_json = { workspace = true }
 sha2 = { workspace = true }
 zeroize = { workspace = true }
 
-[target.'cfg(windows)'.dependencies]
+[target.'cfg(any(windows, target_os = "macos"))'.dependencies]
 codex-utils-private-state = { workspace = true }
 
 [dev-dependencies]

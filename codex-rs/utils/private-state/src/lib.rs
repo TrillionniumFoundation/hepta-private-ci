@@ -13,3 +13,9 @@ pub use windows::PrivateStateDirectory;
 
 #[cfg(windows)]
 pub use windows::opened_resource_identity;
+
+#[cfg(target_os = "macos")]
+mod macos;
+
+#[cfg(target_os = "macos")]
+pub use macos::verify_private_permissions;

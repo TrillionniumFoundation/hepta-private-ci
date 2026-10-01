@@ -5603,6 +5603,8 @@ dependencies = [
 name = "codex-utils-private-state"
 version = "0.0.0"
 dependencies = [
+ "libc",
+ "rustix 1.1.4",
  "windows-sys 0.52.0",
 ]
 
