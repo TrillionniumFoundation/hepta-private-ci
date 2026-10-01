@@ -55,6 +55,17 @@ confidence/OOD adapter exists. No current weight, topology or artifact is change
 Real model receipts, ablations, measured latency and longitudinal efficacy remain
 external or later-package evidence, not consequences of these unit tests.
 
+Owner calibration rounds residual penalties upward when converting to ppm:
+confidence rounds conservatively downward and OOD conservatively upward. Exact
+confidence/OOD thresholds remain eligible, while a residual just beyond a
+threshold cannot be rounded into acceptance. The upper activity gate compares
+the exact positive-unit count and vector width using integer cross-products;
+the receipt's floor-ppm activity summary remains replay-compatible.
+Qualification samples must retain
+their exact candidate/source version. Samples computed with the earlier rounding
+rule remain evidence for that earlier version; rerun qualification for this
+candidate instead of relabelling those samples as updated results.
+
 `checkpoint_bytes` is a conservative mechanism binary payload bound, including
 the domain tag, all seven retained digests, sequence/time, projection metadata,
 and five framed numeric vectors. It is not the canonical JSON DTO size, allocator

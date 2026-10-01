@@ -551,16 +551,28 @@ pub(crate) fn calibrate(
         u64::try_from(receipt.prediction_error_q24).map_err(|_| NeuronRuntimeError::Arithmetic)?;
     let zero_confidence = profile.zero_confidence_error_q24 as u64;
     let in_domain = profile.maximum_in_domain_error_q24 as u64;
+    // Round residual penalties upward so ppm conversion cannot manufacture
+    // acceptance just beyond a confidence floor or an OOD ceiling.
     let confidence = PPM
-        .saturating_sub(error.saturating_mul(PPM) / zero_confidence)
+        .saturating_sub(error.saturating_mul(PPM).div_ceil(zero_confidence))
         .min(PPM);
-    let ood = (error.saturating_mul(PPM) / in_domain).min(PPM);
+    let ood = error.saturating_mul(PPM).div_ceil(in_domain).min(PPM);
     let confidence_ppm = confidence as u32;
     let ood_ppm = ood as u32;
+    // The receipt retains its replay-compatible floor ppm summary. Compare
+    // the actual fraction for the upper gate to avoid accepting its remainder.
+    let active_count = receipt
+        .activation_q24
+        .iter()
+        .filter(|value| **value > 0)
+        .count() as u128;
+    let width = receipt.activation_q24.len() as u128;
+    let exceeds_active_ceiling =
+        active_count * u128::from(PPM) > width * u128::from(profile.maximum_active_ppm);
     let abstain = confidence_ppm < profile.minimum_confidence_ppm
         || ood_ppm > profile.maximum_ood_ppm
         || receipt.active_fraction_ppm < profile.minimum_active_ppm
-        || receipt.active_fraction_ppm > profile.maximum_active_ppm
+        || exceeds_active_ceiling
         || receipt.projection_count > profile.maximum_projection_count;
     Ok((confidence_ppm, ood_ppm, abstain))
 }
@@ -606,3 +618,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), NeuronRuntimeErr
     bytes.extend_from_slice(raw);
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "runtime_calibration_tests.rs"]
+mod calibration_tests;
