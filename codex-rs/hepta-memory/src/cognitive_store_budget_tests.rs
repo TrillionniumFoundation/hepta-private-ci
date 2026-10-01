@@ -1,4 +1,6 @@
-use sqlx::Connection;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::SqlitePool;
 use tempfile::TempDir;
 
 use super::*;
@@ -9,6 +11,14 @@ use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
 
+async fn raw_budget_pool(temp: &TempDir) -> SqlitePool {
+    let home = AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute SQLite home");
+    SqliteConfig::from_sqlite_home(home)
+        .open_durable_evidence_pool(&temp.path().join("budget.sqlite3"))
+        .await
+        .expect("raw budget fixture pool")
+}
+
 fn assert_budget_error(result: Result<(), CognitiveStoreError>) {
     assert!(
         matches!(result, Err(CognitiveStoreError::Invalid(message)) if message.contains("startup row/byte bounds")),
@@ -18,9 +28,9 @@ fn assert_budget_error(result: Result<(), CognitiveStoreError>) {
 
 #[tokio::test]
 async fn admission_accumulates_rows_and_bytes_across_tables() {
-    let mut connection = SqliteConnection::connect("sqlite::memory:")
-        .await
-        .expect("connection");
+    let temp = TempDir::new().expect("temp dir");
+    let pool = raw_budget_pool(&temp).await;
+    let mut connection = pool.acquire().await.expect("connection");
     // Small aggregate fixtures isolate admission without allocating the
     // production byte budget. Names remain from the compiled table inventory.
     sqlx::query(
@@ -29,7 +39,7 @@ async fn admission_accumulates_rows_and_bytes_across_tables() {
          INSERT INTO cognitive_local_events VALUES (zeroblob(100));
          INSERT INTO cognitive_local_outbox VALUES (zeroblob(100));",
     )
-    .execute(&mut connection)
+    .execute(&mut *connection)
     .await
     .expect("seed tables");
     let tables = ["cognitive_local_events", "cognitive_local_outbox"];
@@ -65,20 +75,22 @@ async fn admission_accumulates_rows_and_bytes_across_tables() {
     )
     .await
     .expect("exact row budget must remain usable");
+    drop(connection);
+    pool.close().await;
 }
 
 #[tokio::test]
 async fn admission_rejects_production_row_limit_before_fetching_history() {
-    let mut connection = SqliteConnection::connect("sqlite::memory:")
-        .await
-        .expect("connection");
+    let temp = TempDir::new().expect("temp dir");
+    let pool = raw_budget_pool(&temp).await;
+    let mut connection = pool.acquire().await.expect("connection");
     sqlx::query(
         "CREATE TABLE cognitive_local_events(payload BLOB);
          WITH RECURSIVE rows(n) AS (
              SELECT 1 UNION ALL SELECT n + 1 FROM rows WHERE n < 262145
          ) INSERT INTO cognitive_local_events SELECT NULL FROM rows;",
     )
-    .execute(&mut connection)
+    .execute(&mut *connection)
     .await
     .expect("seed oversized row count");
     assert_budget_error(
@@ -89,20 +101,22 @@ async fn admission_rejects_production_row_limit_before_fetching_history() {
         )
         .await,
     );
+    drop(connection);
+    pool.close().await;
 }
 
 #[tokio::test]
 async fn admission_rejects_single_oversized_row_before_fetching_payload() {
-    let mut connection = SqliteConnection::connect("sqlite::memory:")
-        .await
-        .expect("connection");
+    let temp = TempDir::new().expect("temp dir");
+    let pool = raw_budget_pool(&temp).await;
+    let mut connection = pool.acquire().await.expect("connection");
     sqlx::query("CREATE TABLE cognitive_local_events(payload BLOB)")
-        .execute(&mut connection)
+        .execute(&mut *connection)
         .await
         .expect("table");
     sqlx::query("INSERT INTO cognitive_local_events VALUES (zeroblob(?))")
         .bind(MAX_ROW_BYTES)
-        .execute(&mut connection)
+        .execute(&mut *connection)
         .await
         .expect("seed oversized framed row");
     assert_budget_error(
@@ -113,6 +127,8 @@ async fn admission_rejects_single_oversized_row_before_fetching_payload() {
         )
         .await,
     );
+    drop(connection);
+    pool.close().await;
 }
 
 #[tokio::test]

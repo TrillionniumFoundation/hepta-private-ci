@@ -544,7 +544,11 @@ impl AgentdProductionWriterHost {
                 let mut after = self.reconciliation_after.lock().await;
                 let (destination, dispatcher) = after
                     .as_ref()
-                    .and_then(|after| self.dispatchers.range((Excluded(after), Unbounded)).next())
+                    .and_then(|after| {
+                        self.dispatchers
+                            .range::<String, _>((Excluded(after), Unbounded))
+                            .next()
+                    })
                     .or_else(|| self.dispatchers.first_key_value())
                     .ok_or_else(|| {
                         AgentdError::Protocol(

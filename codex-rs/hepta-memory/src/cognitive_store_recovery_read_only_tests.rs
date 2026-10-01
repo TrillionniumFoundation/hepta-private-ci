@@ -56,7 +56,6 @@ async fn cold_recovery_follows_the_activated_generation_after_later_writes() {
 
 #[tokio::test]
 async fn cold_recovery_rejects_a_fifo_active_pointer_without_waiting_for_a_writer() {
-    use std::os::unix::ffi::OsStrExt;
     use std::os::unix::fs::FileTypeExt;
 
     let temp = TempDir::new().expect("temp");
@@ -69,10 +68,16 @@ async fn cold_recovery_rejects_a_fifo_active_pointer_without_waiting_for_a_write
     let pointer = owner_layout
         .cognitive_root()
         .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER);
-    let encoded = std::ffi::CString::new(pointer.as_os_str().as_bytes()).expect("FIFO path");
     // There is deliberately no writer: a blocking read open would hang before
     // the regular-file check. O_NONBLOCK must reach that rejection immediately.
-    assert_eq!(unsafe { libc::mkfifo(encoded.as_ptr(), 0o600) }, 0);
+    assert!(
+        std::process::Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(&pointer)
+            .status()
+            .expect("create the real private FIFO fixture")
+            .success()
+    );
     assert!(matches!(
         CognitiveStore::open_read_only_recovery(
             &owner_layout,

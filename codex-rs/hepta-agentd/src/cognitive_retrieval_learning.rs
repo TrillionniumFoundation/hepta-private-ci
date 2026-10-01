@@ -53,29 +53,6 @@ impl CognitiveRetrievalLearningSink {
         )
     }
 
-    pub(crate) fn append_with_delivery(
-        &self,
-        owner: &AgentId,
-        body_generation: u64,
-        request_id: u64,
-        observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
-    ) -> Result<AppendReceipt, String> {
-        self.append_with_delivery_policy(
-            owner,
-            body_generation,
-            request_id,
-            observation,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
-            None,
-            ProbabilityQ32::ONE,
-        )
-    }
-
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery_policy(
         &self,
