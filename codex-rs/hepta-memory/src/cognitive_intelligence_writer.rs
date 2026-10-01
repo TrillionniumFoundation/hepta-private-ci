@@ -37,6 +37,9 @@ const MAX_TYPE_BYTES: usize = 128;
 const MAX_LABEL_BYTES: usize = 1024;
 const MAX_RELATION_BYTES: usize = 128;
 pub(crate) const REVISION_FACT_VERIFICATION_PAGE: i64 = 128;
+// Native and retained legacy IDs are 74 bytes. Keep the broader StableId
+// contract's 128-byte ceiling so this preflight also accepts adapter IDs.
+const MAX_STORED_COGNITIVE_ID_BYTES: i64 = 128;
 
 #[derive(Clone, Debug)]
 pub(crate) struct CanonicalEntityFact {
@@ -487,6 +490,26 @@ pub(crate) async fn verify_revision_fact_digests(
     // bound memory use and one read transaction keeps every page/fact lookup on
     // the same cut, including when the reopen pool has only one connection.
     let mut transaction = pool.begin().await.map_err(unavailable)?;
+    // KG headers and facts copy these FK-bound identifiers. Check their byte
+    // lengths with scalar SQL before paged headers or streamed shapes can copy
+    // a malformed, arbitrarily large identifier into Rust-owned rows.
+    let oversized_id: bool = sqlx::query_scalar(
+        "SELECT EXISTS (
+             SELECT 1 FROM source_ledger WHERE length(CAST(source_id AS BLOB)) > ?
+         ) OR EXISTS (
+             SELECT 1 FROM memory_revisions WHERE length(CAST(memory_id AS BLOB)) > ?
+         )",
+    )
+    .bind(MAX_STORED_COGNITIVE_ID_BYTES)
+    .bind(MAX_STORED_COGNITIVE_ID_BYTES)
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(unavailable)?;
+    if oversized_id {
+        return Err(CognitiveStoreError::Corrupt(
+            "KG source or memory identifier exceeds the stable identifier byte bound".to_string(),
+        ));
+    }
     let mut after_memory_id = String::new();
     let mut after_revision = 0_i64;
     loop {

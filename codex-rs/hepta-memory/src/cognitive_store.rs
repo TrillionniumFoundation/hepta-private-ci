@@ -712,18 +712,14 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
              SELECT COUNT(*) FROM kg_revision_entities e
              JOIN memory_revisions m
                ON m.memory_id = e.memory_id AND m.revision = e.memory_revision
-             WHERE e.valid_from_unix_seconds < m.valid_from_unix_seconds
-                OR (m.valid_to_unix_seconds IS NOT NULL AND
-                    (e.valid_to_unix_seconds IS NULL OR
-                     e.valid_to_unix_seconds > m.valid_to_unix_seconds))
+             WHERE e.valid_from_unix_seconds != m.valid_from_unix_seconds
+                OR e.valid_to_unix_seconds IS NOT m.valid_to_unix_seconds
          ) + (
              SELECT COUNT(*) FROM kg_revision_relations r
              JOIN memory_revisions m
                ON m.memory_id = r.memory_id AND m.revision = r.memory_revision
-             WHERE r.valid_from_unix_seconds < m.valid_from_unix_seconds
-                OR (m.valid_to_unix_seconds IS NOT NULL AND
-                    (r.valid_to_unix_seconds IS NULL OR
-                     r.valid_to_unix_seconds > m.valid_to_unix_seconds))
+             WHERE r.valid_from_unix_seconds != m.valid_from_unix_seconds
+                OR r.valid_to_unix_seconds IS NOT m.valid_to_unix_seconds
          )",
     )
     .fetch_one(pool)
@@ -731,7 +727,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     .map_err(unavailable)?;
     if invalid_fact_validity != 0 {
         return Err(CognitiveStoreError::Corrupt(
-            "KG fact validity escapes its immutable memory revision".to_string(),
+            "KG fact validity does not match its immutable memory revision".to_string(),
         ));
     }
     let mismatched_citation_scope: i64 = sqlx::query_scalar(
