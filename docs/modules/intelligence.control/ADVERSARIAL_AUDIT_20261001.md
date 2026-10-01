@@ -208,3 +208,58 @@ provider observations or target-host measurements. Those remain explicit gates
 in the module's implementation map and operations runbook. Further optimization
 should be driven by those measurements, including manifest verification cost,
 worker saturation, learning recovery age and cancellation-to-stop latency.
+
+## Follow-up: exact execution and current-main integration
+
+The formerly pending candidate `23d351d9bf13171cb55e734e1d54e0c6b95d7a68`
+has now executed in push source-head run `36795787378` and PR source-head /
+base-merge run `36795792948`. The independent synthetic merge is
+`f69d1a74491f9d5f3a3297b4420181853144964c`, with the same tree as that source.
+Each lane passed 104 intelligence, 52 operation-owner and 119 ledger tests;
+operations and ledger each had one ignored test. Each native stage had
+62 passed, one failed and none ignored. The ten new cancellation regressions
+therefore have nine observed passes and one failure, rather than remaining
+entirely unexecuted.
+
+The failed live-cancellation fixture initialized its mock App Server with
+`userAgent: test-app-server`. The real client parses the version after `/`,
+so the mock supplied no version while its admitted binding required
+`test-app-server`. The terminal correctly failed with
+`CorrelationMismatch("app server version")`. This follow-up changes only that
+fixture to `codex/test-app-server` and asserts its parsed handshake version.
+The production correlation check remains intact. The corrected assertion needs
+its own execution record; the previous failed run is not converted into a pass.
+
+Diagnostics run `36795792676` passed 57 default Agentd intelligence-filter
+tests (one ignored, 163 filtered) and compiled all default Agentd targets.
+Its ten strict-lint errors originate from memory-extension and core files with
+the same blobs as baseline `0f0d40527db1090b8ec3ee51acbc2412a4f99c4a`.
+The corrected durable-fence assertion is outside that filter and was not run:
+the independent default Agentd stage was skipped after the native failure.
+Later qualification-only and independent all-target / lint gates were also
+skipped. A successful readiness-manifest job preserves those failed or missing
+results; it does not upgrade them to successful execution.
+
+Qualification-host run `36795792690` passed 32 probe executions covering
+22 distinct tests. Its records explicitly keep production target-host
+acceptance, independent semantic/security acceptance and activation/release
+false. The probes do not execute the ten new cancellation cases or a real
+provider embedding. Admission timings were rounded to `0.00`; those values
+do not establish zero latency or useful end-to-end performance measurements.
+
+The source document job in run `36795792744` passed 691 Python tests before
+the broad document verifier rejected source-observation drift and missing
+historical anchors in other module mappings. There was no
+`intelligence.control` failure in that list. Shared `runtime.agentd` and
+`inference.worker` mappings are affected by this PR's source changes, so the
+remaining failures are not all unrelated. The separate document merge
+`6747f679597deeb8f9c10ee03391af2fa33c3cf4` ran only its verifier, not another
+691-test suite. Neither job produced a successful qualification receipt.
+
+Current main is `997e7beef8151160065df36b024bc8da5c989e93`, newer than the
+reviewed main baseline. Its development/qualification profile separation and
+SQLite dependency changes require an independent integration check. Existing
+old-base receipts do not establish that integration. In particular, preserve
+the dedicated intelligence source-declaration adapter and cancellation test
+mappings alongside main's new verification profiles; replacing them with the
+generic map would discard the reviewed source declarations.

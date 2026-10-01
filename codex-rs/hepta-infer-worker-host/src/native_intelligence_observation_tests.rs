@@ -164,7 +164,7 @@ async fn bound_run_cancel_reaches_physical_interrupt_and_late_completed_stays_ca
     let server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
         requests: vec![
             vec![serde_json::json!({"id": "initialize", "result": {
-                "userAgent": "test-app-server", "codexHome": "/home/agent"
+                "userAgent": "codex/test-app-server", "codexHome": "/home/agent"
             }})],
             Vec::new(),
             vec![
@@ -195,6 +195,7 @@ async fn bound_run_cancel_reaches_physical_interrupt_and_late_completed_stays_ca
     )
     .await
     .unwrap();
+    assert_eq!(client.server_version(), Some("test-app-server"));
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: PathBuf::from("/unused/test.sock"),
         agent_id: AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap(),
