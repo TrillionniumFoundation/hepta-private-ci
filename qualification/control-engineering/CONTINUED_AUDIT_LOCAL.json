@@ -1,0 +1,97 @@
+{
+  "authorityGranted": false,
+  "coverageJsonSha256": "7c99c10df1c8c4ef4a822ccbe410dee8169f9337bab08881903dfb50868d8da1",
+  "coverageTotals": {
+    "covered_branches": 1802,
+    "covered_lines": 5654,
+    "excluded_lines": 41,
+    "missing_branches": 744,
+    "missing_lines": 997,
+    "num_branches": 2546,
+    "num_partial_branches": 682,
+    "num_statements": 6651,
+    "percent_covered": 81.0699141024247,
+    "percent_covered_display": "81"
+  },
+  "evidenceKind": "repository-controlled-local-diagnostic",
+  "exactCurrentMapsPassed": 40,
+  "excludedHostProfileTests": 31,
+  "formatter": {
+    "exitCode": 127,
+    "limitation": "just is unavailable; no Rust changes",
+    "requiredCommand": "just fmt"
+  },
+  "fullDiscoveryCount": 499,
+  "fullOwnerSuiteQualified": false,
+  "globalDocsLimitation": "Local partial Git history lacks a document qualification provenance commit; full hosted verification is required.",
+  "globalDocsPassed": false,
+  "globalGapInventoryPassed": true,
+  "independentAcceptance": false,
+  "logs": {
+    "docs": {
+      "bytes": 327,
+      "path": "qualification/control-engineering/continued-local-docs.txt",
+      "sha256": "39b49044c4f09775c5a71c48927088a669a8d579f4b3949810547b9c4116b034"
+    },
+    "global-docs": {
+      "bytes": 434,
+      "path": "qualification/control-engineering/continued-local-global-docs.txt",
+      "sha256": "c8af3ef8d1cc9d611fcc01e5a56ec2eb5c2ef9e4fe95aa6b6ef7ce16f6af0c2e"
+    },
+    "mapping-tests": {
+      "bytes": 22654,
+      "path": "qualification/control-engineering/continued-local-mapping-tests.txt",
+      "sha256": "d5c2b0d20000484dca10977aea8cee2f6591bd4502328b8dbab34c1d49e7d071"
+    },
+    "maps": {
+      "bytes": 611,
+      "path": "qualification/control-engineering/continued-local-maps.txt",
+      "sha256": "1a358bbb7f9188bec2d8f0e15be94c3d96178cba49c253e7c69e43c2cb1d5100"
+    },
+    "module-docs": {
+      "bytes": 244,
+      "path": "qualification/control-engineering/continued-local-module-docs.txt",
+      "sha256": "ed996ced728aa5a38282c942a8f878db3873a651ddcf5d9a4e502b6d96b81828"
+    },
+    "mypy": {
+      "bytes": 44,
+      "path": "qualification/control-engineering/continued-local-mypy.txt",
+      "sha256": "8b88f6d12bd312c1b024b66d07a7f7619a68482ac4d64e475759b1823199faa5"
+    },
+    "report": {
+      "bytes": 8670,
+      "path": "qualification/control-engineering/continued-local-report.txt",
+      "sha256": "f109d508a5f8b366b3131e3b377ba81562e461e42e463ac37a627e0f0d2f43c5"
+    },
+    "ruff": {
+      "bytes": 19,
+      "path": "qualification/control-engineering/continued-local-ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "suite": {
+      "bytes": 1305,
+      "path": "qualification/control-engineering/continued-local-suite.txt",
+      "sha256": "73d7c480a3d268d8c753c607ee6e0b31f3e8f447a7e8467bca305c48964d45cb"
+    }
+  },
+  "mappingRegressionTestsPassed": 133,
+  "moduleDocsPassed": 40,
+  "observedUnixNs": 1790813042735160543,
+  "ownerSourceTree": "e5125d067a491ede29bb3d78a9b0c4adf5db035b",
+  "productionAcceptance": false,
+  "qualificationScope": "portable supported suite and exact source/document verification",
+  "ruffPassed": true,
+  "schema": "hepta.control-engineering-adversarial-local.v2",
+  "scopeLimitation": "Only the exact recorded owner source tree is locally exercised. The later final whole-candidate source and synthetic merge require their own hosted evidence.",
+  "sourceCommit": "a744638c614041162c37f4d1c0e478db65745f4b",
+  "strictMypyFiles": 12,
+  "strongSandboxExecuted": false,
+  "supportedRunner": {
+    "path": "qualification/control-engineering/continued-supported-suite.py",
+    "sha256": "3feecfc7a06db79e5848f82a9d3c5c4b3be1ab9f8e09c5c448fd3fd57a7ba50d"
+  },
+  "testSeconds": 21.427,
+  "testsPassed": 466,
+  "testsRun": 468,
+  "testsSkipped": 2
+}

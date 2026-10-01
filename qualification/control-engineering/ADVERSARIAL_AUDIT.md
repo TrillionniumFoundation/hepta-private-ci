@@ -157,3 +157,18 @@ public product calls, signed context substitutions, a real concurrent owner conn
 a real SQLite disk-full failure and real Git execution exceeding its budget. These
 are repairs within the existing engineering owner. They do not create an external
 provider, independent reviewer, native adaptive producer or deployment controller.
+
+The continued local owner snapshot `e5125d067a491ede29bb3d78a9b0c4adf5db035b`
+passed 468 discovered supported tests (466 passed, two host-admission skips),
+with 31 unprivileged-host cases explicitly excluded from this root-only host.
+All 46 newly added regression methods are included. Branch-inclusive coverage
+was 81.0699141024247%; Ruff and 12 strict boundary type checks passed.
+The 133 source-mapping regressions, 40 strict current-source module maps, module
+document verification passed. Whole-repository document verification stopped
+because the recovered partial Git history lacked a historical qualification
+commit; it is not a successful check until that provenance is restored or the
+new exact candidate passes hosted verification.
+[CONTINUED_AUDIT_LOCAL.json](CONTINUED_AUDIT_LOCAL.json) retains exact scope and
+log digests. Full 499-test discovery and strong source/merge qualification belong
+to the new hosted candidate. `just fmt` could not execute because this environment
+has no `just`; this change does not modify Rust.
