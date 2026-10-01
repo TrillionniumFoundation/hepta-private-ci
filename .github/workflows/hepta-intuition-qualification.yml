@@ -1,25 +1,9 @@
 name: Hepta intuition qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-intuition/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "docs/modules/intuition.policy/**"
-      - "qualification/module-execution-dossiers/detail/intuition.policy.md"
-      - ".github/workflows/hepta-intuition-qualification.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/hepta-intuition/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "docs/modules/intuition.policy/**"
-      - "qualification/module-execution-dossiers/detail/intuition.policy.md"
-      - ".github/workflows/hepta-intuition-qualification.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:

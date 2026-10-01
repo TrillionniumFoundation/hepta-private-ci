@@ -1,64 +1,32 @@
 name: Hepta knowledge.graph qualification
 
 on:
-  pull_request:
-    paths:
-      - "justfile"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain.toml"
-      - "codex-rs/.config/nextest.toml"
-      - "codex-rs/hepta-types/**"
-      - "codex-rs/hepta-cognitive-types/**"
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-kg/**"
-      - "codex-rs/hepta-prompt-registry/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/knowledge.graph/**"
-      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
-      - "qualification/knowledge-graph/**"
-      - "qualification/module-execution-dossiers/DETAILS.json"
-      - "scripts/hepta-implementation-maps.py"
-      - "scripts/test_hepta_implementation_maps_scoped.py"
-      - "scripts/hepta-knowledge-graph-target-measure.py"
-      - "scripts/hepta-knowledge-graph-budget-check.py"
-      - "scripts/test_hepta_knowledge_graph_budget.py"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - ".github/workflows/hepta-knowledge-graph-qualification.yml"
-  push:
-    branches: [main]
-    paths:
-      - "justfile"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain.toml"
-      - "codex-rs/.config/nextest.toml"
-      - "codex-rs/hepta-types/**"
-      - "codex-rs/hepta-cognitive-types/**"
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-kg/**"
-      - "codex-rs/hepta-prompt-registry/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/knowledge.graph/**"
-      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
-      - "qualification/knowledge-graph/**"
-      - "qualification/module-execution-dossiers/DETAILS.json"
-      - "scripts/hepta-implementation-maps.py"
-      - "scripts/test_hepta_implementation_maps_scoped.py"
-      - "scripts/hepta-knowledge-graph-target-measure.py"
-      - "scripts/hepta-knowledge-graph-budget-check.py"
-      - "scripts/test_hepta_knowledge_graph_budget.py"
-      - ".github/workflows/hepta-knowledge-graph-qualification.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+    inputs:
+      source_sha:
+        description: Exact source commit; omitted values use the caller candidate.
+        type: string
+        required: false
+        default: ""
+      base_sha:
+        description: Exact base commit; a supplied value enables the synthetic merge lane.
+        type: string
+        required: false
+        default: ""
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact 40-character source SHA; defaults to the selected workflow ref.
+        type: string
+        required: false
+        default: ""
+      base_sha:
+        description: Exact 40-character base SHA; leave empty for source-head only.
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -68,8 +36,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   qualification:
@@ -79,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+        lane: ${{ fromJSON((inputs.base_sha || github.event.pull_request.base.sha) && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
@@ -108,6 +76,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          if [ -n "$BASE_SHA" ]; then
+            [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+            git cat-file -e "$BASE_SHA^{commit}"
+          fi
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --quiet
           git diff --cached --quiet
@@ -120,7 +93,7 @@ jobs:
         with:
           base-sha: ${{ env.BASE_SHA }}
           source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: ${{ github.event.pull_request.number }}
+          pr-number: ${{ github.event.pull_request.number || 0 }}
           author-name: Hepta KG CI
           author-email: hepta-kg-ci@users.noreply.github.com
           message: Synthetic merge
@@ -142,14 +115,13 @@ jobs:
           retries = 0
           slow-timeout = { period = "60s", terminate-after = 30 }
           [profile.local]
-          inherits = "default"
           TOML
 
       - name: Verify knowledge.graph closed-world truth
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify \
+          python3 scripts/hepta-implementation-maps.py verify --profile qualification \
             --module knowledge.graph --module prompt.registry \
             --module cognitive.store --module memory.retrieval \
             --module intelligence.control --module runtime.agentd
@@ -369,6 +341,10 @@ jobs:
           set -euo pipefail
           LOCK_EVIDENCE="$RUNNER_TEMP/kg-dependency-lock"
           mkdir -p "$LOCK_EVIDENCE"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
           git rev-parse HEAD HEAD^{tree} > "$LOCK_EVIDENCE/source-identity.txt"
           set +e
           just bazel-lock-update 2>&1 | tee "$LOCK_EVIDENCE/bazel-lock-update.log"
