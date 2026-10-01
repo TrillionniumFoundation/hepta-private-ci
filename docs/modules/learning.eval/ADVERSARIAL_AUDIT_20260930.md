@@ -327,3 +327,11 @@ attempt journal 均为 7,168 events / 1,103,342 bytes；holdout 源/successor �
 模块详细开发文档、核心实现和 scoped 回归已经形成可审查的实现闭包；本轮关闭了默认覆盖门槛和 worktree 检查缺口。历史 format-lint 此次实际先失败在 ContextCompiler v2 的两个 lint（doc-comment 空行、8/7 参数），而非此前本地首先观察的 Core lint；owner strict 通过不代表整个消费者链 strict 通过。全量同一候选 matrix、新控制面的独立 trusted bootstrap/restack、项目 registry/lineage 协调及真实 target-host/未来窗/独立验收仍未闭合，不能用百分比估计发布完成度。
 
 本轮范围内最后复查没有新增已确认功能缺陷；这表示当前可执行修复收敛，不表示未来不可能发现优化。继续保持 `DENY_ALL / NO_GO`；source full qualification、外部认证、activation、promotion 和 release 均未授权。
+
+### 12.3 推送后继续发现的检查竞态
+
+候选 `9b056a210a5e9aa5ef8b41a9e9a7dcc9ae4e5827` 的离线入口 14/14 通过，trusted bootstrap run 36820081419 成功；当时 exact/convergence/profile 尚未终结。新 development docs run 36820081251 的 head job 110233566820 实际停在全局 900 次 Python 执行中的一个错误：`test_exited_parent_cannot_leave_a_running_pipe_holder` 读取已退出子进程的 `/proc/<pid>/stat` 返回 `ProcessLookupError (ESRCH)`。这次没有运行到旧 lineage gate，不能将旧原因移用到新 run。
+
+修复该实际 CI 观测竞态：与 FileNotFoundError 一样，ESRCH 表示进程已消失。只接受这两种缺失异常，仍检查实际 timeout、父进程 exit、日志摘要、子进程 zombie/不存在，以及存活子进程的失败断言；不屏蔽其他 I/O 错误，也不改变 executor。Linux/POSIX 实际进程 deadline suite **9/9 通过，零跳过**。新的 Lane E head job 110233567117 仍报告同一 10 项 findings，后续 Rust 资格未执行；保留为项目级缺口。
+
+最后候选必须重新绑定源码观察并执行规范离线入口；此处记录的 `9b056a21` 回执与 bootstrap 是中间候选历史证据，不能移用于后续提交。最终身份、离线摘要和最新 CI 观察由草稿 PR 交付记录保存。

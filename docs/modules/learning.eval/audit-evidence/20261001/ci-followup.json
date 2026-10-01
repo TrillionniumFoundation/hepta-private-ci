@@ -116,6 +116,26 @@
     "rust": "1.95.0"
   },
   "observedAt": "2026-10-01",
+  "postPublicationFollowup": {
+    "developmentDocsFailure": "900 test executions, one ProcessLookupError while reading reaped child procfs stat; historical lineage verifier was not reached",
+    "developmentDocsHeadJob": 110233566820,
+    "developmentDocsRun": 36820081251,
+    "exitCode": 0,
+    "fix": "Accept ESRCH and ENOENT as process absence; preserve real timeout and stopped-descendant assertions; no executor change",
+    "intermediateCandidate": "9b056a210a5e9aa5ef8b41a9e9a7dcc9ae4e5827",
+    "intermediateLocalEvidenceSha256": "6cc811437cad70f912498743ec89f6eefdc761c27b99ac73aa9d77507ccf23f2",
+    "laneEFindings": 10,
+    "laneEHeadJob": 110233567117,
+    "laneERun": 36820081253,
+    "localCommand": "python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec_deadline.py' -v",
+    "logSha256": "250d8398d442cb9480be85ad65cdc642349151fbebfee673ea14ecf7a4eea5b6",
+    "mandatoryJustFmtExitCode": 0,
+    "passed": 9,
+    "postFormatLogSha256": "76e171e6d589b4921a21ba313379cc1d896a07ed59c71d9bf236ea544ecc292d",
+    "skipped": 0,
+    "trustedBootstrapConclusion": "success",
+    "trustedBootstrapRun": 36820081419
+  },
   "priorRemoteSource": {
     "commit": "5ca584996a43b9c9545d73aa14351aa7622958f0",
     "convergenceRun": 36805266722,
