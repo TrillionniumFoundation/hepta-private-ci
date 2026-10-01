@@ -256,3 +256,31 @@ SLO。两秒只读投影新鲜度、已经开始的 owner callback、跨 daemon 
 452、170、83 changed lines，API tree 与本地 tree 逐阶段一致。默认
 Supervisor/Fleet 与 qualification/offline Supervisor 的 all-target strict
 Clippy 均通过，完整 fmt 后只还原 46 个无关 formatter-only 路径。
+
+## Darwin 已断开连接的测试服务端竞态
+
+d016 的真实 Linux 全部 native 范围通过，包括 381 项默认／生产 library、
+386 项 qualification、42 项 Fleet 和 15／26 项产品测试。macOS 三库的剩余
+失败仅涉及 forged Agentd、forged Matrix 和 foreign Drain 的三个 peer 负例，
+日志为裸 Os EINVAL；cached catalog、12 项 constructor、Fleet 三项必测和
+全部产品范围均通过。这些结果仍只覆盖 d016，不验证后续传输源码。
+
+先前短路径处理没有解决该残留失败。三个负例在身份拒绝后关闭客户端，
+服务端接收连接再设置 SO_RCVTIMEO／SO_SNDTIMEO。Apple XNU Darwin 24 家族
+源码明确建立了这个竞态：Unix stream disconnect 在两端设置完全关闭标志，
+而 sosetoptlock 对该状态的 setsockopt 返回 EINVAL。实际日志没有 syscall
+上下文，故这是与日志一致的源码解释，不是已经取得逐 syscall trace。
+新增的 common transport fixture 也有同样模式，必须同时纠正。
+
+测试服务端改用显式非阻塞 fd 和经过时间有界的读写循环，避免关闭连接上的
+timeout setsockopt；accepted socket 在 Darwin 继承 listener 的非阻塞状态，
+也不再依赖它能立即完成 read_to_end。原 200 ms／1 s fixture IO 预算、有效
+伪造 JSON 回包能力、精确连接计数、零请求字节、拒绝 adoption、子进程存活
+及所有测试名字保留。不吞掉 EINVAL，不延长门槛、重试或跳过用例。
+修改是否解决真实残留失败，必须由新 head 的 macOS 执行确认。
+
+固定的 primary source 是 XNU `xnu-11215.81.4` 的
+[socket option 校验](https://github.com/apple-oss-distributions/xnu/blob/xnu-11215.81.4/bsd/kern/uipc_socket.c)、
+[Unix disconnect](https://github.com/apple-oss-distributions/xnu/blob/xnu-11215.81.4/bsd/kern/uipc_usrreq.c)
+和 [关闭状态设置](https://github.com/apple-oss-distributions/xnu/blob/xnu-11215.81.4/bsd/kern/uipc_socket2.c)。
+它建立 Darwin 24 家族语义，不冒充 runner 24G830 补丁内核的精确执行身份。

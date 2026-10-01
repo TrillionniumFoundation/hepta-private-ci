@@ -556,7 +556,8 @@ skipped lanes reject the aggregate job.
 
 The current mandatory named library inventory includes all constructor
 observation regressions, cached-release re-admission, all five kernel socket
-peer-identity tests and the Fleet workspace-isolation sweep oracle. Their
+peer-identity tests, the four common exchange-deadline tests and the Fleet
+workspace-isolation sweep oracle. Their
 filesystem fixtures use canonical workspace roots, short Unix socket paths and
 an explicitly writable rename phase before restoring the sealed release mode.
 Those fixture changes preserve the original assertions and production peer,
@@ -567,6 +568,15 @@ was its sole cause. Default and production product lanes retain the
 ready health and the expected registered count, with an exited child reported
 as failure. The R4 audit binds the observed failures of the earlier source to
 their actual CI receipts. New source must acquire its own receipts.
+
+The negative peer and common transport socket fixtures use private bounded
+nonblocking I/O after accept, with the original fixture budgets and complete
+connection, zero-request-byte and live-child assertions. Darwin can reject
+socket timeout options with EINVAL once a correctly rejected peer has already
+closed the connection, and accepted sockets inherit the listener's nonblocking
+state. The fixtures therefore avoid timeout setsockopt after accept, explicitly
+set nonblocking mode and use an absolute I/O deadline. This test-only transport
+does not relax the production protocol, peer check or readiness deadline.
 
 Python validator execution has its own positive, source-bound unittest inventory
 and strict verbose transcript grammar. Every named case must pass exactly once
