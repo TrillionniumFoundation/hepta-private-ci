@@ -1303,10 +1303,33 @@ mod tests {
         state
             .mark_automation_unavailable()
             .expect("unpublish scheduler");
-        assert!(
-            matches!(state.response(20, 1, crate::AgentdMethod::AutomationReconcileEffect {
-            run_id: "missing-effect-run".to_string(), step_id: "effect".to_string(), attempt: 1,
-        }).await, Err(AgentdError::Invalid(message)) if message == "authorized effect is not pending reconciliation")
+        let recovered = state
+            .response(
+                20,
+                1,
+                crate::AgentdMethod::AutomationReconcileEffect {
+                    run_id: intent.run_id.clone(),
+                    step_id: intent.step_id.clone(),
+                    attempt: intent.attempt,
+                },
+            )
+            .await
+            .expect("durable terminal recovery with scheduler detached");
+        assert_eq!(
+            recovered.payload,
+            crate::AgentdPayload::AutomationEffectReconcile(
+                crate::AutomationEffectReconcileSnapshot {
+                    state: crate::AutomationEffectReconcileState::Terminal,
+                    effect: Some(crate::AutomationEffectSnapshot {
+                        run_id: receipt.run_id,
+                        step_id: receipt.step_id,
+                        attempt: receipt.attempt,
+                        event_seq: receipt.event_seq,
+                        receipt_digest: receipt.receipt_digest,
+                        observation: crate::AutomationEffectObservation::Succeeded,
+                    }),
+                }
+            )
         );
         let denied = state
             .response(

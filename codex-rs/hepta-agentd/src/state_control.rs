@@ -4,6 +4,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
@@ -1078,15 +1079,21 @@ fn automation_effect_unavailable() -> AgentdPayload {
 fn effect_snapshot(
     receipt: codex_hepta_automation::TaskFlowStepReceipt,
 ) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
-    let observation = match receipt.observation {
-        Some(TaskFlowStepObservation::Succeeded) => crate::AutomationEffectObservation::Succeeded,
-        Some(TaskFlowStepObservation::Failed) => crate::AutomationEffectObservation::Failed,
-        Some(TaskFlowStepObservation::Indeterminate) => {
+    let observation = match (receipt.final_outcome, receipt.observation) {
+        (Some(TaskFlowReconcileOutcome::Succeeded), _)
+        | (None, Some(TaskFlowStepObservation::Succeeded)) => {
+            crate::AutomationEffectObservation::Succeeded
+        }
+        (Some(TaskFlowReconcileOutcome::Failed), _)
+        | (None, Some(TaskFlowStepObservation::Failed)) => {
+            crate::AutomationEffectObservation::Failed
+        }
+        (None, Some(TaskFlowStepObservation::Indeterminate)) => {
             crate::AutomationEffectObservation::Indeterminate
         }
-        None => {
+        (Some(TaskFlowReconcileOutcome::Cancelled), _) | (None, None) => {
             return Err(AgentdError::Protocol(
-                "automation effect receipt has no provider observation".to_string(),
+                "automation effect receipt has no usable provider observation".to_string(),
             ));
         }
     };
