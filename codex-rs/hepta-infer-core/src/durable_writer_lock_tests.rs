@@ -33,6 +33,48 @@ fn lifecycle_lock_survives_journal_replacement_until_original_owner_drops() -> T
     Ok(())
 }
 
+#[cfg(target_os = "linux")]
+#[test]
+fn inherited_descriptor_cannot_extend_a_retired_original_writer() -> TestResult {
+    use std::os::unix::fs::MetadataExt;
+    use std::process::Stdio;
+
+    let temporary =
+        std::env::temp_dir().join(format!("hepta-writer-{:032x}", rand::random::<u128>()));
+    fs::create_dir(&temporary)?;
+    let path = temporary.join("control.journal");
+    let owner = DurableInferenceControl::open(&path, 8)?;
+    let original_lock = owner._lifecycle_writer_lock.0.metadata()?;
+    let mut child = Command::new("/usr/bin/sleep")
+        .arg("2")
+        .stdin(Stdio::from(owner._lifecycle_writer_lock.0.try_clone()?))
+        .spawn()?;
+    let inherited = fs::metadata(format!("/proc/{}/fd/0", child.id()))?;
+    assert_eq!(
+        (inherited.dev(), inherited.ino()),
+        (original_lock.dev(), original_lock.ino())
+    );
+    fs::rename(&path, temporary.join("prior.journal"))?;
+    fs::write(&path, [])?;
+    assert!(matches!(
+        DurableInferenceControl::open(&path, 8),
+        Err(Error::WriterUnavailable)
+    ));
+    drop(owner);
+    let replacement = DurableInferenceControl::open(&path, 8);
+    let child_still_holds_descriptor = child.try_wait()?.is_none();
+    assert!(child.wait()?.success());
+    let replacement = replacement?;
+    assert!(child_still_holds_descriptor);
+    assert!(matches!(
+        DurableInferenceControl::open(&path, 8),
+        Err(Error::WriterUnavailable)
+    ));
+    drop(replacement);
+    fs::remove_dir_all(temporary)?;
+    Ok(())
+}
+
 #[cfg(unix)]
 #[test]
 fn canonical_directory_and_leaf_aliases_share_original_lifecycle_lock() -> TestResult {

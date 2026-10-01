@@ -10,7 +10,18 @@ use codex_hepta_types::Digest32;
 
 use super::Error;
 
-pub(super) fn acquire(path: &Path) -> Result<(PathBuf, File), Error> {
+#[derive(Debug)]
+pub(super) struct LifecycleLock(File);
+
+impl Drop for LifecycleLock {
+    fn drop(&mut self) {
+        // Command spawning can temporarily inherit the same open description.
+        // Its descriptor must not extend the retired owner's admission lock.
+        let _ = self.0.unlock();
+    }
+}
+
+pub(super) fn acquire(path: &Path) -> Result<(PathBuf, LifecycleLock), Error> {
     let parent = path
         .parent()
         .filter(|parent| !parent.as_os_str().is_empty())
@@ -54,6 +65,7 @@ pub(super) fn acquire(path: &Path) -> Result<(PathBuf, File), Error> {
     }
     let lock = options.open(&lock_path)?;
     lock.try_lock().map_err(|_| Error::WriterUnavailable)?;
+    let lock = LifecycleLock(lock);
     let metadata = fs::symlink_metadata(&lock_path)?;
     if !metadata.file_type().is_file() {
         return Err(Error::InvalidIdentity("native writer lock file"));
@@ -62,7 +74,7 @@ pub(super) fn acquire(path: &Path) -> Result<(PathBuf, File), Error> {
     {
         use std::os::unix::fs::MetadataExt;
         use std::os::unix::fs::PermissionsExt;
-        let opened = lock.metadata()?;
+        let opened = lock.0.metadata()?;
         if metadata.dev() != opened.dev()
             || metadata.ino() != opened.ino()
             || opened.permissions().mode() & 0o077 != 0

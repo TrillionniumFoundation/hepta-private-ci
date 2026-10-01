@@ -182,7 +182,7 @@ impl From<std::io::Error> for Error {
 pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
-    _lifecycle_writer_lock: File,
+    _lifecycle_writer_lock: writer_lock::LifecycleLock,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
     features: feature::FeatureJournal,
