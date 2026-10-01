@@ -54,6 +54,28 @@ fn preparation_response_preserves_snapshot_bytes_and_separates_receipt() {
     assert!(forged.validate().is_err());
     forged.event_digest = "F".repeat(64);
     assert!(forged.validate().is_err());
+    // This malformed receipt still fits the bounded RPC frame. Its field
+    // length must be rejected with the existing canonical parser diagnostic.
+    forged.event_digest = "a".repeat(crate::MAX_CONTROL_FRAME_BYTES as usize / 2);
+    let malformed_payload = AgentdPayload::CognitiveContextPrepared(CognitiveContextPreparation {
+        snapshot: decoded.snapshot,
+        preparation: Some(forged.clone()),
+    });
+    let bytes = serde_json::to_vec(&malformed_payload).unwrap();
+    assert!((bytes.len() as u64) < crate::MAX_CONTROL_FRAME_BYTES);
+    let AgentdPayload::CognitiveContextPrepared(parsed) =
+        serde_json::from_slice::<AgentdPayload>(&bytes).unwrap()
+    else {
+        panic!("wrong malformed payload");
+    };
+    let canonical_width_error = Sha256Digest::parse("").unwrap_err();
+    assert_eq!(
+        parsed.preparation.unwrap().validate(),
+        Err(canonical_width_error.clone())
+    );
+    forged.event_digest = "c".repeat(64);
+    forged.chain_digest = "d".repeat(crate::MAX_CONTROL_FRAME_BYTES as usize / 2);
+    assert_eq!(forged.validate(), Err(canonical_width_error));
     let mut unexpected = serde_json::to_value(&forged).unwrap();
     unexpected["training_grant"] = serde_json::json!(true);
     assert!(serde_json::from_value::<CognitivePreparationReceipt>(unexpected).is_err());

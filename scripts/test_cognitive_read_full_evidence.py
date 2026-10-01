@@ -25,8 +25,27 @@ class CognitiveReadFullEvidenceTests(unittest.TestCase):
         flattened = "\n".join(" ".join(argv) for argv in commands.values())
         for forbidden in ("git push", "git commit", "gh pr merge", "cargo publish"):
             self.assertNotIn(forbidden, flattened)
+        # Named/package tests do not substitute for format/check/lint coverage
+        # of each touched crate's implementation and all other targets.
+        for label in ("rust-format", "all-target-check", "strict-clippy"):
+            argv = commands[label]
+            cargo_args = argv[: argv.index("--")] if "--" in argv else argv
+            pairs = list(zip(cargo_args, cargo_args[1:]))
+            for package in (
+                "codex-hepta-agent-protocol",
+                "codex-hepta-learning-ledger",
+                "codex-hepta-compact-engine",
+                "codex-hepta-context-compiler",
+                "codex-hepta-intelligence",
+                "codex-hepta-objective",
+                "codex-hepta-ndu",
+                "codex-hepta-operations",
+            ):
+                self.assertIn(("-p", package), pairs)
 
-    def test_sqlite_measurement_requires_candidate_process_and_distributions(self) -> None:
+    def test_sqlite_measurement_requires_candidate_process_and_distributions(
+        self,
+    ) -> None:
         distribution = {"p50_us": 1, "p95_us": 2, "p99_us": 3}
         value = {
             "schema": full.SQLITE_CAPACITY_SCHEMA,

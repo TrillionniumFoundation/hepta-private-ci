@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "Destination dedupe fixtures must fail the test if temporary schemas, fixed operation identities, or expected atomic receipts are unavailable"
+)]
+
 use super::*;
 
 use codex_hepta_types::Digest32;

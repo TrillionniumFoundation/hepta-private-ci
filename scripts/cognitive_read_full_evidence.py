@@ -199,13 +199,17 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
 
     # Include every touched production package in format and all-target lint,
     # including the existing learning owner rather than just its dependency lib.
-    format_packages = (
-        *base.PACKAGES,
+    additional_packages = (
+        "codex-hepta-agent-protocol",
         "codex-hepta-learning-ledger",
         "codex-hepta-compact-engine",
         "codex-hepta-context-compiler",
         "codex-hepta-intelligence",
+        "codex-hepta-objective",
+        "codex-hepta-ndu",
+        "codex-hepta-operations",
     )
+    format_packages = (*base.PACKAGES, *additional_packages)
     result["rust-format"] = [
         "cargo",
         "fmt",
@@ -215,12 +219,6 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "--",
         "--check",
     ]
-    additional_packages = (
-        "codex-hepta-learning-ledger",
-        "codex-hepta-compact-engine",
-        "codex-hepta-context-compiler",
-        "codex-hepta-intelligence",
-    )
     for label in ("all-target-check", "strict-clippy"):
         argv = result[label]
         position = argv.index("--") if "--" in argv else len(argv)

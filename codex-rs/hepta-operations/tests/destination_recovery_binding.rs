@@ -4,6 +4,11 @@
 //! This is local store qualification, not a signed topology, remote-effect or
 //! full Agentd deployment/longitudinal-efficacy receipt.
 
+#![allow(
+    clippy::expect_used,
+    reason = "Fixtures fail fast when identities, child processes or atomic owner evidence cannot be constructed or read."
+)]
+
 use std::path::Path;
 use std::process::Command;
 use std::process::Stdio;
@@ -38,6 +43,10 @@ fn operation(payload: &[u8]) -> DestinationOperationIdentity {
     }
 }
 
+#[allow(
+    clippy::disallowed_methods,
+    reason = "This test injects owner rows and checks WAL through an existing-only writable pool; the recovery opener is disabled."
+)]
 async fn pool(path: &Path) -> SqlitePool {
     SqlitePoolOptions::new()
         .max_connections(1)

@@ -24,6 +24,14 @@ impl CognitivePreparationReceipt {
             return Err("cognitive preparation sequence must be positive".to_string());
         }
         for digest in [&self.event_digest, &self.chain_digest] {
+            // Check the wire width before cloning attacker-supplied metadata.
+            // Keep the existing canonical parser's diagnostic and other checks.
+            if digest.len() != 64 {
+                return Err(
+                    "SHA-256 digests must contain exactly 64 lowercase hexadecimal characters"
+                        .to_string(),
+                );
+            }
             Sha256Digest::parse(digest.clone())?;
             if digest.bytes().all(|byte| byte == b'0') {
                 return Err("cognitive preparation digest must be nonzero".to_string());

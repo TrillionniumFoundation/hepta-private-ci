@@ -91,6 +91,19 @@ Independent repeated source review found no further reproduced SQLite, receipt
 handoff or gate-parser defect after these repairs. This is bounded convergence on
 reproduced issues, not a proof that all possible defects or optimizations are absent.
 
+A final receipt review found that digest validation cloned malformed metadata
+before checking its 64-byte width. The RPC frame already bounds total input to
+64 KiB, so this was bounded duplicate allocation rather than an unbounded-input
+claim. The local receipt validator now checks width before cloning, preserving
+the canonical parser's exact diagnostic, zero-digest rejection and validation
+order. Its existing protocol regression now includes a 32 KiB malformed digest
+inside a valid-sized frame, serialization round-trip and oversized chain metadata.
+Independent source review accepted this repair. Targeted `just test --locked --offline`
+stopped while building the `time` dependency archive with ENOSPC, before the updated
+protocol case executed. No allocation benchmark or full-CI pass is claimed for
+this last change. This final review remains scoped to the examined receipts and
+caller bindings.
+
 ### Follow-through on the previous exact-head CI
 
 The retained old-candidate bundle was downloaded and its ZIP, tar and complete
@@ -132,6 +145,40 @@ successfully. The existing lockfile required no change. This closes dependency-l
 resolution for the current inputs; it does not establish Bazel compilation or test
 execution. Scoped second-iteration observations and the Python/prompt logs are
 retained in `qualification/cognitive-read/audit-20261001/SECOND_ITERATION_OBSERVATIONS.json`.
+
+### Final qualification follow-through
+
+The exact preparation protocol case was already an execution gate, but its package
+was absent from format/check/strict-lint selection. A shared package tuple now
+covers every changed production package, including protocol, objective, NDU and
+operations, without changing the five base test gates or adding synthetic passes.
+The complete cognitive Python suite passed 99 cases after this command change;
+its pre-format source identities and honest terminal-only output provenance are
+retained in `FINAL_PYTHON_99_OBSERVATION.json` in the scoped evidence directory.
+PR/push path filters also cover the contract and SQLite foundation dependencies.
+
+Protocol strict lint then exposed two existing operations pools bypassing the
+central SQLite entry point. Both now use the existing durable evidence shim:
+WAL, FULL synchronous durability, foreign keys and the five-second busy timeout
+remain. The common bounded pool permits five connections rather than the previous
+four; the actual database path and operations-owned migrations, verification and
+recovery stay with the original owner. The path utility already supports relative
+paths and avoids a cwd lookup for absolute paths. No new owner or recovery shortcut
+is introduced. Existing migration-tamper fixtures use the shim. Two raw-pool lint
+exceptions are confined to tests: the named per-connection SQLITE_FULL hook and
+an existing-only writable domain injection/checkpoint helper. The production
+existing-path recovery opener remains disabled; no test re-enables it.
+Both migration trees are now available to Bazel at compile time. Internal Cargo
+edges are updated; Bazel lock update and lock check passed again.
+
+The two targeted operations cases were attempted before lint/format but stopped
+building `zerocopy` with ENOSPC, without execution. Protocol test targets compiled
+through scoped `just fix`; this does not supersede the failed protocol execution
+attempt. Final combined `just fix` was attempted again after cleaning this task's
+build cache, but stopped in `libsqlite3-sys` before reaching the final sources:
+ENOSPC, then a linker bus error while the filesystem was full. It is not a final
+protocol/operations lint pass. Build observations and logs are retained in
+`FINAL_RUST_BUILD_OBSERVATIONS.json`; none are promoted to execution or acceptance.
 
 ### Revised remaining completion boundary
 
