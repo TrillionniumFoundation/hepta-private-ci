@@ -2,12 +2,16 @@ mod common;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use common::private_tempdir;
-use ed25519_dalek::{Signer as _, SigningKey};
+use ed25519_dalek::Signer as _;
+use ed25519_dalek::SigningKey;
 use hepta_native::model::sha256_hex;
-use hepta_native::security::{TrustedKeySet, now_unix_ms};
-use hepta_native::updater::{
-    PendingUpdateStatus, SignedUpdateManifestV1, UpdateManager, activate_staged_update, digest_file,
-};
+use hepta_native::security::TrustedKeySet;
+use hepta_native::security::now_unix_ms;
+use hepta_native::updater::PendingUpdateStatus;
+use hepta_native::updater::SignedUpdateManifestV1;
+use hepta_native::updater::UpdateManager;
+use hepta_native::updater::activate_staged_update;
+use hepta_native::updater::digest_file;
 use sha2::Digest as _;
 use std::path::Path;
 fn test_material(label: &str) -> [u8; 32] {

@@ -1,5 +1,8 @@
-use hepta_native::model::{OperationKey, PlatformPayload};
-use hepta_native::platform::{PlatformAdapter, PlatformPolicy, SystemPlatformAdapter};
+use hepta_native::model::OperationKey;
+use hepta_native::model::PlatformPayload;
+use hepta_native::platform::PlatformAdapter;
+use hepta_native::platform::PlatformPolicy;
+use hepta_native::platform::SystemPlatformAdapter;
 
 #[test]
 #[cfg(not(target_os = "linux"))]

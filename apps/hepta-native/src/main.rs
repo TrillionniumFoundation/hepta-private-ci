@@ -153,7 +153,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         config.state_dir.join("last-startup.json"),
         started,
         endpoint_digest,
-    ));
+    )?);
 
     let native_options = eframe::NativeOptions {
         renderer: eframe::Renderer::Glow,

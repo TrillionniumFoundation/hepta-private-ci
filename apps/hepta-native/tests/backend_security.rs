@@ -1,6 +1,8 @@
-use hepta_native::backend::{BackendAdapter, LoopbackGatewayBackend};
+use hepta_native::backend::BackendAdapter;
+use hepta_native::backend::LoopbackGatewayBackend;
 use hepta_native::model::EndpointManifest;
-use std::io::{Read as _, Write as _};
+use std::io::Read as _;
+use std::io::Write as _;
 use std::net::TcpListener;
 const KEY: &str = "test-keyring-secret-never-sent-to-listeners";
 

@@ -4,8 +4,12 @@ mod common;
 mod snapshot;
 
 use common::private_tempdir;
-use hepta_native::journal::{OperationJournal, OperationPhase, OperationRecord};
-use hepta_native::model::{OperationKey, PlatformAction, sha256_hex};
+use hepta_native::journal::OperationJournal;
+use hepta_native::journal::OperationPhase;
+use hepta_native::journal::OperationRecord;
+use hepta_native::model::OperationKey;
+use hepta_native::model::PlatformAction;
+use hepta_native::model::sha256_hex;
 
 fn unknown(id: &str) -> OperationRecord {
     OperationRecord {
