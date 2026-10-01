@@ -46,6 +46,11 @@ struct NativeExecutionAuthority<'a> {
     output_protector: Option<&'a dyn NativeOutputProtector>,
 }
 
+struct NativeRunBindings<'a> {
+    intelligence: Option<&'a NativeIntelligenceRunBinding>,
+    authority: Option<NativeExecutionAuthority<'a>>,
+}
+
 impl AppServerModelDriver {
     /// Compatibility profile for historical callers. It does not mint an exact
     /// quota/resource/model execution plan and therefore must not be selected by
@@ -63,8 +68,10 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            /*intelligence*/ None,
-            /*authority*/ None,
+            NativeRunBindings {
+                intelligence: None,
+                authority: None,
+            },
             cancellation,
         )
         .await
@@ -87,17 +94,23 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            None,
-            Some(NativeExecutionAuthority {
-                plan,
-                output_protector: None,
-            }),
+            NativeRunBindings {
+                intelligence: None,
+                authority: Some(NativeExecutionAuthority {
+                    plan,
+                    output_protector: None,
+                }),
+            },
             cancellation,
         )
         .await
     }
 
     /// Production execution with a host-selected KMS/vault output protector.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "Preserve the public execution-plan, output-protector, and cancellation API"
+    )]
     pub async fn run_authorized_with_output_protector(
         &self,
         control: &mut dyn NativeControlPort,
@@ -113,11 +126,13 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            None,
-            Some(NativeExecutionAuthority {
-                plan,
-                output_protector: Some(output_protector),
-            }),
+            NativeRunBindings {
+                intelligence: None,
+                authority: Some(NativeExecutionAuthority {
+                    plan,
+                    output_protector: Some(output_protector),
+                }),
+            },
             cancellation,
         )
         .await
@@ -140,14 +155,20 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            Some(&intelligence),
-            None,
+            NativeRunBindings {
+                intelligence: Some(&intelligence),
+                authority: None,
+            },
             cancellation,
         )
         .await
     }
 
     /// Exact-plan production spelling for an Agentd intelligence handoff.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "Preserve the public execution-plan, output-protector, and cancellation API"
+    )]
     pub async fn run_intelligence_authorized(
         &self,
         control: &mut dyn NativeControlPort,
@@ -164,11 +185,13 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            Some(&intelligence),
-            Some(NativeExecutionAuthority {
-                plan,
-                output_protector,
-            }),
+            NativeRunBindings {
+                intelligence: Some(&intelligence),
+                authority: Some(NativeExecutionAuthority {
+                    plan,
+                    output_protector,
+                }),
+            },
             cancellation,
         )
         .await
@@ -180,10 +203,13 @@ impl AppServerModelDriver {
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
-        intelligence: Option<&NativeIntelligenceRunBinding>,
-        authority: Option<NativeExecutionAuthority<'_>>,
+        bindings: NativeRunBindings<'_>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
+        let NativeRunBindings {
+            intelligence,
+            authority,
+        } = bindings;
         // Compatibility spelling remains source-compatible but cannot perform
         // reservations, RPCs or effects in the production library.
         if authority.is_none() && !cfg!(test) {

@@ -290,5 +290,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 #[cfg(test)]
+#[path = "control_actor_signed_fixture.rs"]
+mod signed_fixture;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;

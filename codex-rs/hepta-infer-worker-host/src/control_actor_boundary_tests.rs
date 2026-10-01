@@ -196,7 +196,7 @@ async fn dropped_accepted_sender_is_not_pre_admission_closed() {
     );
 }
 
-use super::signed_fixture as signed;
+use crate::signed_fixture as signed;
 
 #[tokio::test]
 async fn signed_post_effect_terminal_reply_loss_keeps_exact_durable_result() {

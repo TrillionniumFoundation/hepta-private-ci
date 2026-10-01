@@ -1480,7 +1480,7 @@ mod tests {
         assert_eq!(plan.manifest().model_digest, "1".repeat(64));
         assert_eq!(plan.authenticated_keys().len(), 4);
 
-        let mut drifted = signed.clone();
+        let mut drifted = signed;
         drifted.bundle.manifest.tokenizer_digest = "9".repeat(64);
         assert_eq!(
             verify_execution_plan(NOW, &trust, &drifted),
@@ -1740,7 +1740,7 @@ mod tests {
         missing_key.encryption_key_id = None;
         let mut wrong_key = protected.clone();
         wrong_key.encryption_key_id = Some("other-key".into());
-        let mut wrong_expiry = protected.clone();
+        let mut wrong_expiry = protected;
         wrong_expiry.delete_after_unix_ms += 1;
         for drifted in [
             missing_reference,

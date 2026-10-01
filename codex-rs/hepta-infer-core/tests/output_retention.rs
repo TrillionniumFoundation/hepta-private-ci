@@ -40,6 +40,10 @@ struct Paths {
 }
 
 impl Paths {
+    #[allow(
+        clippy::unwrap_used,
+        reason = "This helper prepares a test fixture and must fail on invalid setup"
+    )]
     fn new() -> Self {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -91,6 +95,10 @@ fn signature(key_id: &str, signer_id: &str, key: &SigningKey, message: &[u8]) ->
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn signed_plan() -> (
     ControlTrustStore,
     SignedExecutionAuthorityBundle,

@@ -56,6 +56,10 @@ struct TestJournal {
 }
 
 impl TestJournal {
+    #[allow(
+        clippy::unwrap_used,
+        reason = "This helper prepares a test fixture and must fail on invalid setup"
+    )]
     fn new(label: &str) -> Self {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -79,6 +83,10 @@ impl Drop for TestJournal {
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn fixture(request_id: &str) -> Fixture {
     let manifest_key = SigningKey::from_bytes(&[1; 32]);
     let quota_key = SigningKey::from_bytes(&[2; 32]);
@@ -276,6 +284,10 @@ fn signature(key_id: &str, signer_id: &str, key: &SigningKey, message: &[u8]) ->
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn prepare_indeterminate(
     control: &mut DurableInferenceControl,
     fixture: &Fixture,
@@ -502,7 +514,7 @@ fn fresh_rotated_dual_control_retirement_releases_after_lease_expiry() {
         .find(|key| key.key_id == "operator-key-b-v2")
         .unwrap()
         .verifying_key = fixture.operator_a.verifying_key().to_bytes();
-    let mut aliased_signed = signed.clone();
+    let mut aliased_signed = signed;
     aliased_signed.approvals[1].signature = aliased_signed.approvals[0].signature.clone();
     assert_eq!(
         verify_recovery_retirement(
@@ -524,11 +536,19 @@ fn fresh_rotated_dual_control_retirement_releases_after_lease_expiry() {
     );
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn dispatch_digest(dispatch: &NativeDispatch) -> String {
     let bytes = serde_json::to_vec(dispatch).unwrap();
     digest_bytes(b"hepta.inference-control.native-dispatch.v1\0", &bytes)
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn digest_json<T: Serialize>(domain: &[u8], value: &T) -> String {
     digest_bytes(domain, &serde_json::to_vec(value).unwrap())
 }

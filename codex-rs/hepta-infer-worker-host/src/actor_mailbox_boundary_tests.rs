@@ -63,19 +63,19 @@ fn terminal_traffic_cannot_steal_ordinary_quota_or_overtake_it() {
 #[test]
 fn concurrent_producers_are_bounded_and_all_accepted_commands_precede_shutdown() {
     let (sender, mut receiver) = channel_with_terminal_capacity(8, 8).unwrap();
-    let producers: Vec<_> = (0..32)
-        .map(|id| {
-            let sender = sender.clone();
-            std::thread::spawn(move || {
-                let result = if id % 2 == 0 {
-                    sender.send(id)
-                } else {
-                    sender.send_terminal(id)
-                };
-                result.is_ok().then_some(id)
-            })
-        })
-        .collect();
+    // Start every producer before joining so admission remains concurrent.
+    let mut producers = Vec::with_capacity(32);
+    for id in 0..32 {
+        let sender = sender.clone();
+        producers.push(std::thread::spawn(move || {
+            let result = if id % 2 == 0 {
+                sender.send(id)
+            } else {
+                sender.send_terminal(id)
+            };
+            result.is_ok().then_some(id)
+        }));
+    }
     let mut accepted: Vec<_> = producers
         .into_iter()
         .filter_map(|join| join.join().unwrap())

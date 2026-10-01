@@ -16,7 +16,7 @@ use ed25519_dalek::SigningKey;
 use sha2::Digest;
 use sha2::Sha256;
 
-use super::signed_fixture as signed;
+use crate::signed_fixture as signed;
 
 #[tokio::test]
 async fn writer_rejects_cached_terminal_capability_expired_after_verification() {

@@ -13,8 +13,7 @@ use codex_hepta_infer_core::control_contracts::verify_execution_plan;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
-#[path = "control_actor_signed_fixture.rs"]
-mod signed;
+use crate::signed_fixture as signed;
 
 #[derive(Default)]
 struct ProtectionFixture {
