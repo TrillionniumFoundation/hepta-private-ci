@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "e8734a0382a057a632e2ca5e7ab4dd35efec31fd",
+    "tree": "db7d78eece785294d58a80ab86c5f57604723a4b"
   },
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "e8734a0382a057a632e2ca5e7ab4dd35efec31fd",
+    "tree": "db7d78eece785294d58a80ab86c5f57604723a4b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -591,15 +591,23 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "546f7d01354e4774bdd1d68332cc3ec01b5e9e40"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "4f25f9d81eef9931f46ebabc01778cec297f5dee"
+      "object": "54f71747bec37f6be80dd2db84ca1d21b35105be"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "50a7937aedf41c2b05fcd1c89d2f4c61f5314a1b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs",
+      "object": "2a077cbda42179ef6af5b8d729d1d8857e65d40e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+      "object": "f6431d79368a3cdc1e1aa3035756fd855a7ccf57"
     },
     {
       "path": "codex-rs/hepta-context-compiler",
@@ -611,7 +619,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "02d76e5eb1f6ec8b1f2bad31592785c2a04f4e40"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
@@ -638,8 +646,12 @@
       "object": "8ea881cf551be8e8e0ca7b34d94f6162bead8b47"
     },
     {
+      "path": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
+      "object": "88b9b49f8382b3ccf9745c6728f1e1a9f4a6cde7"
+    },
+    {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+      "object": "b60bbf037d84eb510d03f04cff4a841466799840"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -711,7 +723,11 @@
     },
     {
       "path": "codex-rs/hepta-intuition",
-      "object": "719c1187f7f810de7613b7e1b52f9b7c106d34a9"
+      "object": "119c35197c168b80e3955bdaf10d4f0f1c343ff8"
+    },
+    {
+      "path": "codex-rs/hepta-intuition/src/production.rs",
+      "object": "6c86c45c66a985ffe06c28a710d4c3bb5b4e9ea0"
     },
     {
       "path": "codex-rs/hepta-ndu",
