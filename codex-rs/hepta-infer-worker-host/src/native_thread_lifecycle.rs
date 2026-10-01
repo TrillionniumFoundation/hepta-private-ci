@@ -8,13 +8,20 @@ use std::time::Duration;
 use codex_app_server_client::RemoteAppServerRequestHandle;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ThreadEphemeralDisposalParams;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
 use codex_app_server_protocol::ThreadUnsubscribeResponse;
+use codex_app_server_protocol::ThreadUnsubscribeStatus;
 use tokio::time::Instant;
 
+use crate::native_app_server::NativeWorkerConfig;
 use crate::native_app_server::Result;
+use crate::native_app_server::cleanup_claim_matches_control;
+use crate::native_app_server::cleanup_operation_id;
+use crate::native_app_server::terminal_cleanup_eligible;
 use crate::native_cleanup_store::CleanupObligation;
 use crate::native_cleanup_store::NativeCleanupStore;
+use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 
 static CLEANUP_ATTEMPTS: AtomicU64 = AtomicU64::new(0);
 static CLEANUP_FAILURES: AtomicU64 = AtomicU64::new(0);
@@ -77,6 +84,8 @@ impl NativeThreadGuard {
 
     pub(crate) async fn recover_pending(
         store: &NativeCleanupStore,
+        control: &DurableInferenceControl,
+        config: &NativeWorkerConfig,
         handle: RemoteAppServerRequestHandle,
         deadline: Instant,
     ) -> Result<()> {
@@ -89,7 +98,22 @@ impl NativeThreadGuard {
                 store
                     .fail(&claim, "cleanup recovery budget elapsed")
                     .await?;
-                break;
+                continue;
+            }
+            match cleanup_claim_matches_control(control, config, &claim) {
+                Ok(true) => {}
+                Ok(false) => {
+                    store
+                        .fail(&claim, "original control cut does not authorize disposal")
+                        .await?;
+                    continue;
+                }
+                Err(error) => {
+                    store
+                        .fail(&claim, "original control receipt unavailable or corrupt")
+                        .await?;
+                    return Err(error);
+                }
             }
             cleanup_claim(store.clone(), handle.clone(), claim, deadline).await;
         }
@@ -102,10 +126,42 @@ impl NativeThreadGuard {
         Ok(())
     }
 
-    // Called only AFTER settle_native/reject_native_before_start or a proved
-    // cross-owner pre-effect abort durably committed the matching record.
-    pub(crate) async fn terminal_persisted(&mut self) -> Result<()> {
-        self.obligation = self.store.mark_terminal_durable(&self.obligation).await?;
+    // Readiness comes from the original complete control record, not an
+    // inference that a rejection or ordinary unsubscribe meant terminality.
+    pub(crate) async fn terminal_persisted(
+        &mut self,
+        control: &DurableInferenceControl,
+    ) -> Result<()> {
+        let request_id = self
+            .obligation
+            .operation_id
+            .strip_prefix("native.request.v1:")
+            .ok_or("cleanup omitted its original request identity")?;
+        let record = control
+            .native_record_resolved(request_id)?
+            .ok_or("original terminal control record missing")?;
+        if !terminal_cleanup_eligible(&record) {
+            return Ok(());
+        }
+        let dispatch = record.dispatch.as_ref().ok_or("cleanup dispatch missing")?;
+        if self.obligation.operation_id != cleanup_operation_id(&record.request.request_id)
+            || dispatch.thread_id != self.obligation.thread_id
+            || dispatch.codex_session_id.as_deref() != Some(self.obligation.session_id.as_str())
+        {
+            return Err("cleanup differs from the original control session".into());
+        }
+        let current = self
+            .store
+            .obligation(&self.obligation.operation_id)
+            .await?
+            .ok_or("original cleanup obligation missing before terminal readiness")?;
+        if current.thread_id != self.obligation.thread_id
+            || current.session_id != self.obligation.session_id
+            || current.revision < self.obligation.revision
+        {
+            return Err("original cleanup session changed before terminal readiness".into());
+        }
+        self.obligation = self.store.mark_terminal_durable(&current).await?;
         self.phase = Phase::TerminalDurable;
         Ok(())
     }
@@ -198,6 +254,9 @@ async fn cleanup_claim(
                 claim.fence, claim.operation_id
             )),
             params: ThreadUnsubscribeParams {
+                ephemeral_disposal: Some(ThreadEphemeralDisposalParams {
+                    expected_session_id: claim.session_id.clone(),
+                }),
                 thread_id: claim.thread_id.clone(),
             },
         });
@@ -207,11 +266,22 @@ async fn cleanup_claim(
     )
     .await;
     match response {
-        Ok(Ok(_)) => {
-            if store.complete(&claim).await.is_err() {
-                CLEANUP_FAILURES.fetch_add(1, Ordering::Relaxed);
+        Ok(Ok(response)) => match response.status {
+            ThreadUnsubscribeStatus::EphemeralDisposed | ThreadUnsubscribeStatus::NotLoaded => {
+                if store.complete(&claim).await.is_err() {
+                    CLEANUP_FAILURES.fetch_add(1, Ordering::Relaxed);
+                }
             }
-        }
+            ThreadUnsubscribeStatus::Unsubscribed | ThreadUnsubscribeStatus::NotSubscribed => {
+                CLEANUP_FAILURES.fetch_add(1, Ordering::Relaxed);
+                let _ = store
+                    .fail(
+                        &claim,
+                        "unsubscribe did not acknowledge exact ephemeral disposal",
+                    )
+                    .await;
+            }
+        },
         Ok(Err(error)) => {
             CLEANUP_FAILURES.fetch_add(1, Ordering::Relaxed);
             let _ = store.fail(&claim, &error.to_string()).await;
@@ -222,3 +292,7 @@ async fn cleanup_claim(
         }
     }
 }
+
+#[cfg(test)]
+#[path = "native_thread_lifecycle_tests.rs"]
+mod tests;

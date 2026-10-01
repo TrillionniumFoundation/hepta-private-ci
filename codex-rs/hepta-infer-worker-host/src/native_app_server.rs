@@ -3,6 +3,12 @@
 //! This profile observes real turn events and token usage. It makes no claim
 //! about local weights, accelerator memory, artifact selection or training.
 
+#[path = "native_cleanup_authorization.rs"]
+mod cleanup_authorization;
+pub(crate) use cleanup_authorization::cleanup_claim_matches_control;
+pub(crate) use cleanup_authorization::cleanup_operation_id;
+pub(crate) use cleanup_authorization::terminal_cleanup_eligible;
+
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
@@ -900,10 +906,10 @@ impl AppServerModelDriver {
             return Err("pending native terminal no longer matches its exact owner".into());
         }
         let Some(publication) = record.terminal_publication else {
-            return Ok(());
+            return self.mark_cleanup_after_ack(control, request_id).await;
         };
         if !publication.pending() {
-            return Ok(());
+            return self.mark_cleanup_after_ack(control, request_id).await;
         }
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),
@@ -917,7 +923,7 @@ impl AppServerModelDriver {
                     &publication.publication_digest,
                     owner_revision,
                 )?;
-                Ok(())
+                self.mark_cleanup_after_ack(control, request_id).await
             }
             Err(error) => {
                 let error_digest = Digest32::of_bytes(error.to_string().as_bytes()).to_string();

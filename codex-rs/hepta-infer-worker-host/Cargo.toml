@@ -44,7 +44,10 @@ sqlx = { workspace = true }
 [dev-dependencies]
 codex-utils-cargo-bin = { workspace = true }
 codex-hepta-agentd = { workspace = true }
+futures = { workspace = true }
+pretty_assertions = { workspace = true }
 rand = { workspace = true }
+tokio-tungstenite = { workspace = true }
 
 core_test_support = { workspace = true }
 

@@ -3,7 +3,9 @@
 //! A row is created immediately after thread/start is observed. Before the
 //! physical turn effect becomes possible the row is moved to `effect_possible`;
 //! recovery never unsubscribes that state. Only a proved pre-effect stop or a
-//! durably committed terminal/rejection makes an obligation cleanable.
+//! durably committed terminal makes an obligation cleanable. Where an
+//! Intelligence terminal owner exists its exact outbox ACK must be durable;
+//! an Indeterminate rejection and an ordinary unsubscribe are never cleanup ACKs.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -97,10 +99,11 @@ pub(crate) struct CleanupObligation {
 pub(crate) struct CleanupClaim {
     pub(crate) operation_id: String,
     pub(crate) thread_id: String,
+    pub(crate) session_id: String,
     pub(crate) revision: u64,
     pub(crate) fence: u64,
     pub(crate) worker_id: String,
-    resume_state: CleanupState,
+    pub(crate) resume_state: CleanupState,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -474,6 +477,7 @@ impl NativeCleanupStore {
         Ok(Some(CleanupClaim {
             operation_id: current.operation_id,
             thread_id: current.thread_id,
+            session_id: current.session_id,
             revision: next_revision,
             fence,
             worker_id,

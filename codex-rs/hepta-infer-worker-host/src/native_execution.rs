@@ -154,11 +154,13 @@ impl AppServerModelDriver {
             .min(Duration::from_millis(500));
         crate::native_thread_lifecycle::NativeThreadGuard::recover_pending(
             &cleanup_store,
+            control,
+            &self.config,
             client.request_handle(),
             Instant::now() + recovery_budget,
         )
         .await?;
-        let cleanup_operation_id = format!("native:{}", Digest32::of_bytes(request_id.as_bytes()));
+        let cleanup_operation_id = cleanup_operation_id(request_id);
         let mut thread_guard = await_before_effect(
             &execution_clock,
             RPC_TIMEOUT,
@@ -346,6 +348,10 @@ impl AppServerModelDriver {
         } else {
             None
         };
+        // Publish the cleanup hold before either original dispatch can acquire
+        // terminal authority. A lost cross-owner abort ACK must not leave a
+        // Prepared guard whose Drop can dispose an AbortPending session.
+        thread_guard.effect_entered().await?;
         let (_, pre_effect_abort) = match terminal_owner {
             Some(owner_binding) => control.dispatch_native_with_pre_effect_abort_bound(
                 request_id,
@@ -483,7 +489,6 @@ impl AppServerModelDriver {
                     intelligence_revision.unwrap_or(prepared_revision),
                     request_receipt.request_digest,
                 )?;
-            thread_guard.effect_entered().await?;
             if cancellation.is_cancelled() {
                 return Err("cancelled after durable preparation before model dispatch".into());
             }
@@ -518,7 +523,7 @@ impl AppServerModelDriver {
                         .map_err(Into::into),
                 };
                 stopped?;
-                thread_guard.terminal_persisted().await?;
+                thread_guard.terminal_persisted(control).await?;
                 thread_guard.cleanup().await;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(error);
@@ -560,7 +565,7 @@ impl AppServerModelDriver {
                                 retry_safe_before_admission,
                             },
                         )?;
-                        thread_guard.terminal_persisted().await?;
+                        thread_guard.terminal_persisted(control).await?;
                         thread_guard.cleanup().await;
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Err(format!("turn/start rejected by App Server: {reason}").into());
@@ -811,7 +816,12 @@ impl AppServerModelDriver {
                     .ok_or("terminal correlation missing")?
                     .parse()?,
             )?;
-            thread_guard.terminal_persisted().await?;
+            // A real Intelligence outbox ACK precedes disposal readiness. On
+            // failure the original EffectPossible obligation and thread remain
+            // available; the same publisher promotes it on exact-cut recovery.
+            self.publish_pending_intelligence_terminal(control, request_id)
+                .await?;
+            thread_guard.terminal_persisted(control).await?;
             thread_guard.cleanup().await;
         }
         thread_guard.cleanup().await;
