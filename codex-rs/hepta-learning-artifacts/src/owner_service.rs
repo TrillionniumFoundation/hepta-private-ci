@@ -290,6 +290,28 @@ impl LearningArtifactOwnerService {
             request.expected_registry_predecessor_head,
             request.now,
         )?;
+        let written = checkpoint
+            .as_ref()
+            .and_then(|recovery| recovery.checkpoint.registry_receipt)
+            .map(|receipt| self.host.recover_registry_by_head(receipt.head_digest))
+            .transpose()?;
+        if let Some(recovery) = checkpoint {
+            if let Some(written) = &written {
+                transaction.validate_registry_projection(written)?;
+            }
+            transaction = rebuild_transaction(
+                transaction,
+                written.as_ref().unwrap_or(&predecessor),
+                &self.withdrawal_registry,
+                request,
+                &recovery.checkpoint,
+            )?;
+            transaction = self
+                .host
+                .resume_publication(transaction.snapshot(), request.now)?;
+        }
+        // State changes require this owner's exact durable phase, including on
+        // recovery. Authenticate that phase before reconstructing the suffix.
         self.host
             .stage_compatibility_registration(&transaction, &mut staged, request.now)?;
         self.host.stage_publication_state_changes(
@@ -298,26 +320,11 @@ impl LearningArtifactOwnerService {
             state_changes,
             request.now,
         )?;
-
-        if let Some(recovery) = checkpoint {
-            if let Some(receipt) = recovery.checkpoint.registry_receipt {
-                let written = self.host.recover_registry_by_head(receipt.head_digest)?;
-                transaction.validate_registry_projection(&written)?;
-                if written.records() != staged.records() {
-                    return Err(LearningArtifactOwnerServiceError::RequestMismatch);
-                }
-                staged = written;
+        if let Some(written) = written {
+            if written.records() != staged.records() {
+                return Err(LearningArtifactOwnerServiceError::RequestMismatch);
             }
-            transaction = rebuild_transaction(
-                transaction,
-                &staged,
-                &self.withdrawal_registry,
-                request,
-                &recovery.checkpoint,
-            )?;
-            transaction = self
-                .host
-                .resume_publication(transaction.snapshot(), request.now)?;
+            staged = written;
         }
 
         if transaction.phase() == ArtifactPublicationPhaseV1::Prepared {

@@ -185,3 +185,12 @@ retries = 0
 filter = 'package(codex-hepta-fleet) & test(durable_local_renewal::tests)'
 test-group = 'hepta_durable_capacity'
 retries = 0
+
+# Eight real process-death cuts each wait for fully synced physical storage.
+# Bound the entire matrix separately; every worker is killed and reaped even
+# when its marker is absent. Product leases and durability checks are unchanged.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-artifacts) & test(owner_host_process_kill_reopen_matrix)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 10 }
+retries = 0

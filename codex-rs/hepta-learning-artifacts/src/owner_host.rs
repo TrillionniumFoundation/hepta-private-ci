@@ -2165,18 +2165,25 @@ mod tests {
         worker_stage(&root, &stage);
     }
 
-    fn wait_for_worker_marker(child: &mut std::process::Child, root: &Path, stage: &str) {
+    fn wait_for_worker_marker(
+        child: &mut std::process::Child,
+        root: &Path,
+        stage: &str,
+    ) -> Result<(), String> {
         let marker = root.join(format!("worker-{stage}.ready"));
-        for _ in 0..500 {
+        let deadline = std::time::Instant::now() + Duration::from_secs(30);
+        while std::time::Instant::now() < deadline {
             if marker.is_file() {
-                return;
+                return Ok(());
             }
             if child.try_wait().fixture("poll worker").is_some() {
-                panic!("owner worker exited before durable marker at stage {stage}");
+                return Err(format!(
+                    "owner worker exited before durable marker: {stage}"
+                ));
             }
             thread::sleep(Duration::from_millis(10));
         }
-        panic!("owner worker did not reach stage marker: {stage}");
+        Err(format!("owner worker did not reach stage marker: {stage}"))
     }
 
     #[test]
@@ -2218,9 +2225,12 @@ mod tests {
                 .stderr(Stdio::null())
                 .spawn()
                 .fixture("spawn owner worker");
-            wait_for_worker_marker(&mut child, &directory.0, stage);
-            child.kill().fixture("kill owner worker");
+            let marker = wait_for_worker_marker(&mut child, &directory.0, stage);
+            if child.try_wait().fixture("poll owner worker").is_none() {
+                child.kill().fixture("kill owner worker");
+            }
             child.wait().fixture("reap owner worker");
+            marker.fixture("reach durable process fault cut");
 
             let key = signer();
             let scope_digest = withdrawal_scope().digest();

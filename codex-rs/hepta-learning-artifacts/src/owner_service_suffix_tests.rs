@@ -121,6 +121,11 @@ fn actual_suffix_registry_fsync_crash_resumes_same_owner_and_exact_ack() {
         .resume_publication(snapshot, 20)
         .fixture("validate complete durable suffix on resume");
     assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::RegistryDurable);
+    assert!(
+        recovered.publish(request.clone()).is_err(),
+        "recovery cannot omit the original durable revocation suffix"
+    );
+    assert_eq!(recovered.recovery_required(), Some(&request.operation_id));
     let receipt = recovered
         .publish_with_state_changes(request.clone(), &changes)
         .fixture("resume original operation");
