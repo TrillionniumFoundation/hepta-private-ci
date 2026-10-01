@@ -1459,3 +1459,7 @@ mod integrity_tests;
 #[cfg(test)]
 #[path = "canonical_signed_pricing_tests.rs"]
 mod signed_pricing_tests;
+
+#[cfg(test)]
+#[path = "canonical_temporal_tests.rs"]
+mod temporal_tests;
