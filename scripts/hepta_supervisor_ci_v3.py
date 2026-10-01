@@ -41,6 +41,19 @@ CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
     "supervisor::tests::constructor_absence_recovery_tests::constructor_cancels_orphan_lineage_without_a_restart_budget",
     "supervisor::tests::constructor_absence_recovery_tests::constructor_restores_pending_budget_without_control_or_lineage",
     "supervisor::tests::constructor_absence_recovery_tests::constructor_keeps_terminal_release_transaction_in_owner_metadata",
+    "supervisor::constructor_hydration::tests::initial_idle_record_survives_complete_fleet_revalidation",
+    "supervisor::constructor_hydration::tests::empty_observation_does_not_read_an_unrelated_corrupt_fleet",
+    "supervisor::constructor_hydration::tests::empty_release_cas_generation_change_cannot_hide_behind_absent_run_witnesses",
+    "supervisor::constructor_hydration::tests::observed_idle_record_still_requires_unrelated_agent_global_validation",
+    "supervisor::constructor_hydration::tests::every_new_durable_witness_forces_fresh_recovery_without_changing_the_fleet_record",
+    "supervisor::constructor_hydration::tests::missing_observed_agent_forces_fresh_recovery",
+    "supervisor::constructor_hydration::tests::missing_or_non_directory_run_parent_is_never_an_idle_observation",
+    "supervisor::constructor_hydration::tests::symlink_parent_and_special_file_witnesses_are_never_absence",
+    "supervisor::tests::constructor_hydration_recovery_tests::final_fleet_error_retains_and_fences_previously_owned_main_and_matrix",
+    "supervisor::tests::constructor_hydration_recovery_tests::changed_observation_never_readopts_an_already_owned_pair",
+    "supervisor::tests::constructor_hydration_recovery_tests::generation_only_release_change_runs_fresh_fallback_and_updates_snapshot",
+    "supervisor::tests::constructor_hydration_recovery_tests::new_corrupt_signed_witness_runs_fresh_validation_and_denies_recovery",
+    "supervisor::tests::release_retry_tests::admission::cached_catalog_start_is_readmitted_before_any_lifecycle_or_process_effect",
     "unix::peer_identity_tests::kernel_peer_identity_accepts_the_actual_socket_pair_process",
     "unix::peer_identity_tests::kernel_peer_identity_rejects_a_different_live_process_and_invalid_pid",
     "unix::peer_identity_tests::forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child",
@@ -58,6 +71,7 @@ FLEET_PACKAGE = "codex-hepta-fleet"
 CURRENT_FLEET_LIBRARY_REQUIREMENTS = (
     "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
     "release::publish_tests::interrupted_directory_seal_cannot_admit_or_overwrite_the_release",
+    "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
 )
 CURRENT_INTEGRATION_REQUIREMENTS = {
     "restart_budget": (

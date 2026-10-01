@@ -400,6 +400,26 @@ Do not edit or delete journals to make readiness pass; restoration of independen
 validated durable evidence requires operational recovery, followed by a fresh
 Supervisor recovery. No ordinary API clears this denial.
 
+Constructor hydration has a narrow deferred observation for a newly registered,
+Stopped generation-zero Agent whose release state is also generation zero with
+no current or previous release. It requires an empty owner/scheduling slot,
+physical main and Matrix run directories, and confirmed absence of both process
+leases, control intent, restart budget/lineage, release transaction and signed
+intent/recovery records. Identity-bearing lease reads, independent main/Matrix
+ownership acquisition and the original durable codecs still run.
+
+Only the duplicate pure release-metadata hydration may be deferred. Before
+returning, a nonempty observation is settled with one fresh complete Fleet read,
+comparison of each complete Agent record, and fresh physical witness checks.
+Changed records or new evidence enter the original fresh recovery path only
+while the slot remains empty. A slot that acquired an owner or pending/denied
+state is denied and retains its exact handles; ownership acquisition is never
+replayed over an existing owner. A failed complete Fleet read denies the
+observed slots and is reported without discarding independently acquired main
+or Matrix owners. The observation is bounded to 256 Agents, constructor-local,
+and unavailable to control admission, tick or release selection. It is neither
+a mutation cache nor an atomic multiwriter snapshot.
+
 A transient driver failure retrying an exact durable control is distinct from
 damaged evidence: recovery retains its control kind, process binding and original
 deadline. Independent signed-intent recovery still runs when a release Drain
@@ -464,6 +484,16 @@ Repository `supervisor_hol_qualification` remains useful source-level evidence
 for lock telemetry and fault-wave mechanics, but its simulated driver is not a
 substitute for 256 real target-host processes.
 
+For a fresh, unchanged 256-Agent Fleet with the empty state described above,
+the deferred constructor hydration reduces source-counted complete Fleet loads
+before socket binding from 260 to 5. The count includes Fleet open/migration,
+roster-limit validation, the initial recovery snapshot, final consistency check
+and first read projection. Changed, active or evidence-bearing Agents retain
+fresh validation and may require additional reads. This is a source operation
+count, not measured startup latency or a target-host SLO result. Existing
+directory durability acknowledgements and complete Fleet validation remain in
+place.
+
 ## 13. Observability and overload behavior
 
 Scheduler diagnostics record completed owner work, pre-admission busy rejection,
@@ -505,6 +535,20 @@ identity, minimum and named tests, binary-qualified nextest identities, exact
 Git commit/tree/parents, log length and digest, clean source before and after,
 and complete source blob bindings. Applicable failed, cancelled, missing or
 skipped lanes reject the aggregate job.
+
+The current mandatory named library inventory includes all constructor
+observation regressions, cached-release re-admission, all five kernel socket
+peer-identity tests and the Fleet workspace-isolation sweep oracle. Their
+filesystem fixtures use canonical workspace roots, short Unix socket paths and
+an explicitly writable rename phase before restoring the sealed release mode.
+Those fixture changes preserve the original assertions and production peer,
+catalog and workspace checks. Short socket paths remove a Darwin pathname-length
+risk; the earlier EINVAL log lacked path context and does not prove that risk
+was its sole cause. Default and production product lanes retain the
+256-Agent roster test and the ten-second startup bound; startup success requires
+ready health and the expected registered count, with an exited child reported
+as failure. The R4 audit binds the observed failures of the earlier source to
+their actual CI receipts. New source must acquire its own receipts.
 
 Python validator execution has its own positive, source-bound unittest inventory
 and strict verbose transcript grammar. Every named case must pass exactly once
@@ -550,6 +594,7 @@ The following is source navigation, not a pass receipt:
 | Signed mutation | external grant verifier | `src/signed_authority.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs` |
 | Signed recovery | decision verification and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
+| Constructor recovery | retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/constructor_hydration.rs`, `src/recovery.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs` |
 | Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
 | Per-Agent status reuse | fresh complete epoch/record/runtime comparison | `src/daemon_read_projection.rs`, `src/daemon_read_view.rs` | `src/daemon_read_projection_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |

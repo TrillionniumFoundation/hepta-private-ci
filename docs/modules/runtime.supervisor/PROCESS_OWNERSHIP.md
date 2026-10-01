@@ -194,6 +194,48 @@ even when semantic preparation fails; a release hydration error cannot suppress
 that ownership attempt. Unreadable/undecodable lease bytes still cannot supply a
 process identity or authorize a signal.
 
+## Deferred empty constructor hydration
+
+`constructor_hydration.rs` may retain a constructor-local observation only for
+a Stopped generation-zero Agent with a generation-zero empty release state.
+Its slot must have no main/Matrix owner, recovery blocker, pending control,
+restart, release, cleanup or signed state. Both run parents must be physical
+directories; both process leases and all control, restart, release and signed
+witnesses must be absent. A symlink, FIFO, missing parent or inspection error
+is not absence. Initial semantic preparation and independent lease-bound main
+and Matrix recovery remain in their original order.
+
+The observation skips only a duplicate pure metadata hydration. It retains the
+first complete Agent record, cannot overwrite that record on re-observation,
+and is bounded to 256 Agents. `constructor_recovery.rs` settles every nonempty
+observation with one fresh complete Fleet read, whole-record equality and new
+witness checks. A release CAS that advances an empty release generation is
+therefore detected even though it creates no run witness. Corruption in an
+unrelated Agent still fails complete Fleet validation.
+
+An observed slot whose record or evidence changed re-enters fresh original
+recovery while still empty. If it has since acquired an owner, pending work or
+a denial, settlement retains the exact handles and denies serving instead of
+replaying adoption over them. A final Fleet read failure similarly reports
+faults and denies observed slots without returning an error that would drop
+the recovered Supervisor and its other owners. Control admission, ordinary tick
+and release selection never consume this observation. The repeated reads and
+absence checks are not an atomic multiwriter transaction or a replacement for
+the required production recovery-observation envelope.
+
+`supervisor::constructor_hydration::tests` uses real Fleet records and file
+changes to cover release-generation drift, unrelated corruption, missing
+Agents, each new durable witness and unsafe parent/file types.
+`constructor_hydration_recovery_tests.rs` exercises the actual settlement and
+denial orchestration with real Fleet files and the existing explicit process
+driver doubles: final-read failure retains both owners, changed observations do
+not re-adopt an owned pair, generation-only drift takes fresh recovery, and new
+corrupt signed evidence denies recovery. These are named mandatory library
+cases in the current CI plan. They are not real-child or target-host receipts.
+Their source presence does not
+establish current-head execution or startup latency. The source-counted empty
+256-Agent reduction and its limits are recorded in `TECHNICAL.md`.
+
 ## Stop/Kill completion and restart cancellation cuts
 
 The existing two owner records retain their formats and authority. Before an

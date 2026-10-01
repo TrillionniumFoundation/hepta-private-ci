@@ -9,7 +9,7 @@ source-head 与 prospective-merge 的独立原生 CI 入口。目标主机、独
 
 审计从 PR #1306 的 `e78095abf8df069d5dc9496f6e362f9ed27e3978` 开始，
 PR base 为 `e8f8f2d0ca399b0a68abba4da90a3be5114d0735`。
-本轮最终源码为 `5489fb84cee5a51e4baa30ecfc665302e68742e7`，
+首次修复源码为 `5489fb84cee5a51e4baa30ecfc665302e68742e7`，
 tree 为 `b0813e63eddf49863fd49f38d9383ca4c60299f2`。
 首次发布的后续提交只增加当前源码导航和未签名观察材料。
 原 `sourceBase` AA68 是不可变集成来源，不是本轮执行身份。
@@ -119,9 +119,9 @@ fix/fmt 后没有重跑测试，遵循 AGENTS。160 个 Rust 文件的生产内�
 全仓库另有其它模块的非祖先 source observation 等继承失败，本轮没有替它们重绑定
 源码或隐去失败。
 
-本报告冻结时，新候选的无过滤双平台 source/merge CI 尚待实际收据。目标主机、
-独立安全/代码/运维验收、activation 和 release 继续未建立。最终源码交叉复审没有
-再发现新的可复现实现缺陷；这是一轮限定范围的停止条件，不是所有未来优化均不存在的证明。
+首次发布后的真实 CI 又发现下面列出的具体缺陷，因此先前源码复审不能作为最终
+闭环结果。目标主机、独立安全/代码/运维验收、activation 和 release 继续未建立。
+补修后的执行须绑定实际新 head；限定范围的复审停止也不证明所有未来优化均不存在。
 
 ## 发布后的 CI 导航与前置补修
 
@@ -142,6 +142,8 @@ Robrix canonical cross-parser corpus 与本轮原始归档。按既有政策给�
 添加用途、大小和 SHA-256 注释的 allowlist，保留 generator/parity 与归档证据原字节；
 全局限额、扫描范围和其它路径检查不变。`FileTests` 改为 `EvidenceFileTests` 以通过
 拼写检查，全部方法和断言保持。该命名变化不回写旧具名执行 inventory。
+历史收据和修复指南中真实出现的旧 identifier 则通过精确 `filetests` 词项保留；
+没有删除这些材料或重写历史测试名称。
 
 Fleet release 修复和 test-only authority helper 还使 `runtime.fleet` 与
 `kernel.authority` 的旧 path-only 观察发生真实源码漂移。仅这两份相关 map
@@ -149,3 +151,59 @@ Fleet release 修复和 test-only authority helper 还使 `runtime.fleet` 与
 全部操作语义和 false claims；Authority 的 16 条历史 witness 全保留，只有实际
 变化的 helper blob 更新。没有重绑其它模块的非祖先来源，也没有借本轮 Fleet
 测试建立 Kernel/Fleet 产品执行或生产资格。补修源码观察为 `da13c201fccfae2b16856b10ee71310138c329a9`。
+
+
+## 首次发布的真实原生 CI 与第二次补修
+
+首次发布 `7c4e0ab6` 的 supplemental recovery PR 四 lanes、push 两 lanes
+全部完成且失败。六份官方 ZIP 和 90 条独立 record 的日志字节数及 SHA-256
+均已核对。PR lanes 的 base 是 e8；push lanes 的 base 是 e780。两个 prospective
+merge lane 测试 b9f，与 deep 的 51df 不同；二者都不能证明 main c6 的集成。
+完整身份、官方 artifact ID 和 digest 见 [首次发布远端观察](REMOTE_CI_OBSERVATION_20261001_7C4E.json)。
+
+| 实际范围 | Ubuntu 三 lanes | macOS 三 lanes |
+| --- | --- | --- |
+| 默认 / 生产 library | 369/369 | 365/369 |
+| qualification library | 374/374 | 370/374 |
+| Fleet library | 42/42 | 41/42 |
+| 默认 products | 14/15 | 14/15 |
+| 完整 products | 25/26 | 25/26 |
+
+六 lanes 的五对真实进程和新增 typed Drain protocol 都通过，两个 Fleet
+copy/seal 回归也全部通过。HOL256、实际 SIGKILL parent 和 authority-distribution
+均通过。deep 两 Linux lanes 成功，但未执行全部 products，不能替代上述失败。
+
+共同失败是实际 256 Agent daemon 在原 10 秒等待内未绑定 Socket。首次 absence
+优化仍在纯空闲 constructor 执行 260 次完整 Fleet 读取，约 66,560 次 load_agent。
+补修仅将重复、无副作用的空闲 hydration 记录为至多 256 项临时观察，在 constructor
+结束时再做一次完整 Fleet 校验、比较完整 AgentRecord，并重新检查全部八类恢复
+witness 及物理 parent。空 release CAS 即使只增加 generation、没有 run 文件，也会
+触发原 fresh 路径；无关 Agent 的损坏仍导致拒绝。发现新的所有权或 pending/denial
+状态时保留 exact owner 并拒绝，不二次 adopt；全局读取失败不以 Err 丢弃既有 owner。
+纯空闲 256 路径的完整读取从 260 降至 5 是源码调用计数，不是已建立的目标启动 SLO。
+混合 / 非空闲恢复仍保留原全局校验，不将局部缓存用于任何 admission 或 mutation。
+产品等待也强化为 ready=true、精确注册数量及进程仍存活；保持原 10 秒和零重试。
+
+macOS 的四个 Supervisor library 失败是 cached-catalog 测试移动只读目录出现
+EACCES，以及三个真实 peer 负例绑定临时 Socket 路径出现 EINVAL。后者改短以消除
+Darwin 路径长度风险，原日志尚不能独立证明该风险是唯一原因。前者只在测试
+rename 前临时开放原 root，再恢复 exact permissions；后者使用短 /tmp parent 并在
+bind 错误中保留具体路径。全部真实 peer/PID、零 request bytes、未 signal unrelated
+child，以及未 spawn / 未 lease / 未修改 lifecycle 的断言保留。新执行才能确认补修。
+Fleet 唯一失败是 /tmp symlink 导致 oracle fixture 的 workspace 输入非 canonical；
+测试创建后先 canonicalize，保留全部 256 subsets、双身份排序与 oracle 比较。
+
+全仓库 CI 另外发现 16 处 Supervisor anonymous literal 参数缺注释，以及 Fleet
+Bazel compile_data 未包含 include_str 使用的 MODULES.json。前者只加匹配 callee 的
+参数注释；后者声明单一 catalog filegroup、可见范围只限 Fleet，不引入依赖或宽 glob。
+两个改动保留参数值、生产校验及 catalog 原字节。
+
+新增 eight-witness / CAS / 全局损坏等回归与最终 settlement 的真实文件系统回归
+均列入当前 v3 的精确 mandatory identities，拒绝同数量缺失、前缀和错 binary 的收据。
+本地补修执行编译、scoped fix 和完整 fmt；没有在 fix/fmt 后重跑本地测试。
+旧本地 inventory、manifest、归档和结果保持原绑定；补修测试交由新 head 的原生 CI。
+
+补修完成后，default Supervisor/Fleet 与 qualification/offline Supervisor 的
+all-target strict Clippy 均通过；完整 fmt 后 46 个无关 formatter-only 路径还原。
+新增测试曾在编译中发现宏导入歧义，显式导入 pretty_assertions 后纠正，原失败日志保留。
+两次独立源码复审未再发现具体实现缺陷；当前执行和验收状态保持 pending / false。

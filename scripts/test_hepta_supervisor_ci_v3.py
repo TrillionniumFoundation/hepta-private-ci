@@ -127,6 +127,14 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "supervisor::tests::constructor_absence_recovery_tests",
             ),
             ("unix_peer_identity_tests.rs", "unix::peer_identity_tests"),
+            (
+                "constructor_hydration_tests.rs",
+                "supervisor::constructor_hydration::tests",
+            ),
+            (
+                "constructor_hydration_recovery_tests.rs",
+                "supervisor::tests::constructor_hydration_recovery_tests",
+            ),
             ("control_intent_write_tests.rs", "control_intent::write_tests"),
         ):
             critical.extend(
