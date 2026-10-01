@@ -102,3 +102,11 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# These exhaustive neuron fault cuts also perform hundreds of real fsyncs.
+# Serialize only the named cases; 180s is a harness watchdog, not a runtime SLO.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-neuron) & (test(=journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor) | test(=journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence) | test(=journal::tests::complete_segment_recovery_never_repairs_a_missing_acknowledged_frame) | test(=journal::segment_tests::intermediate_successor_recovery_preserves_every_incomplete_boundary))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0

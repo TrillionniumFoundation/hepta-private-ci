@@ -87,6 +87,37 @@ fn resource_summary_rejects_mixed_host_profiles() {
 }
 
 #[test]
+fn resource_summary_rejects_envelopes_that_runtime_admission_rejects() {
+    let samples = [sample(/*index*/ 0)];
+    let mut invalid = envelope();
+    invalid.p95_latency_micros = 0;
+    let mut inverted = envelope();
+    inverted.p99_latency_micros = inverted.p95_latency_micros - 1;
+    let mut no_allocation = envelope();
+    no_allocation.transient_allocation_bytes = 0;
+    let mut no_checkpoint = envelope();
+    no_checkpoint.checkpoint_bytes = 0;
+    let mut too_little_amplification = envelope();
+    too_little_amplification.write_amplification_ppm = 999_999;
+    let mut too_much_amplification = envelope();
+    too_much_amplification.write_amplification_ppm = 4_000_001;
+
+    for candidate in [
+        invalid,
+        inverted,
+        no_allocation,
+        no_checkpoint,
+        too_little_amplification,
+        too_much_amplification,
+    ] {
+        assert_eq!(
+            summarize_resource_samples(&samples, &candidate),
+            Err(QualificationError::InvalidResourceEnvelope)
+        );
+    }
+}
+
+#[test]
 fn resource_sample_identity_is_invariant_to_tied_sample_order() {
     let first = sample(0);
     let mut second = first.clone();

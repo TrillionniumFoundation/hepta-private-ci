@@ -60,6 +60,7 @@ pub enum QualificationError {
     MixedHostProfile,
     MixedCandidate,
     InvalidObservationTime,
+    InvalidResourceEnvelope,
     Arithmetic,
     ShuffledModulatorRequiresTwoGroups,
 }
@@ -79,6 +80,9 @@ pub fn summarize_resource_samples(
     if !(1..=MAX_RESOURCE_SAMPLES).contains(&samples.len()) {
         return Err(QualificationError::SampleCountOutOfRange);
     }
+    envelope
+        .validate()
+        .map_err(|_| QualificationError::InvalidResourceEnvelope)?;
     let host = samples[0].host_profile_digest;
     let candidate = samples[0].exact_candidate_digest;
     if host.is_zero() {
