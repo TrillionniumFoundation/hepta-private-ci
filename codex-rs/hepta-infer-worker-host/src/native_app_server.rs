@@ -40,6 +40,7 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentRunPhase;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::COGNITIVE_CONTEXT_PREPARATION_CAPABILITY;
 use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
@@ -58,6 +59,7 @@ use codex_hepta_contracts::EnteredUseToken;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeCognitivePreparation;
 pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
@@ -448,6 +450,12 @@ impl AppServerModelDriver {
                     "owning Agent does not support final-use cognitive revalidation".into(),
                 );
             }
+            let supports_preparation = capabilities.capabilities.iter().any(|capability| {
+                capability.id == COGNITIVE_CONTEXT_PREPARATION_CAPABILITY && capability.major == 1
+            });
+            if !supports_preparation {
+                return Err("owning Agent does not support cognitive preparation handoff".into());
+            }
         }
         let mut intelligence_revision = match intelligence {
             Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
@@ -513,10 +521,20 @@ impl AppServerModelDriver {
         // preparatory provider I/O cannot leave an older context parked across
         // the final model-request attachment boundary.
         owner.session_ingress().await?;
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+        let prepared_context = match context_query {
+            Some(query) => Some(owner.prepare_cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
+        let cognitive_preparation = prepared_context
+            .as_ref()
+            .and_then(|prepared| prepared.preparation.as_ref())
+            .map(|preparation| NativeCognitivePreparation {
+                read_request_id: preparation.read_request_id,
+                sequence: preparation.sequence,
+                event_digest: preparation.event_digest.clone(),
+                chain_digest: preparation.chain_digest.clone(),
+            });
+        let context = prepared_context.map(|prepared| prepared.snapshot);
         let owner_context_digest = context
             .as_ref()
             .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
@@ -625,6 +643,7 @@ impl AppServerModelDriver {
                     &turn_params.additional_context,
                 )?),
                 owner_context_digest,
+                cognitive_preparation: cognitive_preparation.clone(),
                 codex_payload_digest: Some(payload_digest.to_string()),
                 codex_request_digest: Some(request_receipt.request_digest.to_string()),
                 app_server_version: Some(app_server_version.clone()),
@@ -655,6 +674,7 @@ impl AppServerModelDriver {
             &revocation_head_digest,
             &authority_witness,
             &app_server_version,
+            cognitive_preparation.as_ref(),
         )?;
 
         if let Some(binding) = intelligence {
@@ -1161,6 +1181,7 @@ fn verify_persisted_dispatch_binding(
     revocation_head_digest: &str,
     authority_witness: &str,
     app_server_version: &str,
+    cognitive_preparation: Option<&NativeCognitivePreparation>,
 ) -> Result<()> {
     let dispatch = control
         .native_record(request_id)
@@ -1183,6 +1204,7 @@ fn verify_persisted_dispatch_binding(
         && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
         && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
         && dispatch.app_server_version.as_deref() == Some(app_server_version)
+        && dispatch.cognitive_preparation.as_ref() == cognitive_preparation
         && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
     if !exact {
         return Err("durable runtime.codex dispatch binding changed before physical send".into());

@@ -57,6 +57,7 @@ fn dispatch() -> NativeDispatch {
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
         owner_context_digest: Some(context_digest().to_string()),
+        cognitive_preparation: None,
         codex_payload_digest: Some("e".repeat(64)),
         codex_request_digest: Some("d".repeat(64)),
         app_server_version: Some("1.2.3".to_string()),
@@ -312,3 +313,6 @@ fn observed_server_rejection_does_not_claim_the_payload_was_not_sent() {
         Some(CognitiveContextDeliveryStateV1::RejectedBeforeTurn)
     );
 }
+
+#[path = "cognitive_preparation_tests.rs"]
+mod preparation_tests;

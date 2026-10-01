@@ -31,6 +31,53 @@ pub struct NativeIntelligenceRunBinding {
 }
 
 impl AppServerModelDriver {
+    /// Inspect one ordinary read through the preparation receipt persisted
+    /// before physical send. The exact native request is independently pinned
+    /// by the host. This read grants neither training nor future-use authority.
+    pub fn inspect_owner_cognitive_preparation(
+        &self,
+        control: &DurableInferenceControl,
+        learning: &codex_hepta_agentd::CognitiveRetrievalLearningSink,
+        expected_request: &NativeRequest,
+        expected_context_digest: codex_hepta_types::Digest32,
+    ) -> Result<(
+        codex_hepta_infer_core::CognitiveContextDeliveryStateV1,
+        codex_hepta_types::Digest32,
+    )> {
+        if expected_request.principal_id != self.config.agent_id.as_str()
+            || expected_request.worker_generation != self.config.generation
+            || expected_request.model != self.config.model
+        {
+            return Err("cognitive delivery request belongs to another driver".into());
+        }
+        let delivery = control
+            .cognitive_context_delivery(expected_request, expected_context_digest)?
+            .ok_or("no context-bound native dispatch was observed")?;
+        let preparation = delivery
+            .preparation()
+            .ok_or("native dispatch has no owner-issued cognitive preparation")?;
+        learning
+            .with_owner_preparation(
+                &self.config.agent_id,
+                self.config.generation,
+                preparation.read_request_id,
+                preparation.sequence,
+                preparation.event_digest.parse()?,
+                preparation.chain_digest.parse()?,
+                expected_context_digest,
+                |assignment, record| {
+                    let mut bytes = b"hepta.native.cognitive-preparation-join.v1".to_vec();
+                    bytes.extend_from_slice(record.event_digest.as_array());
+                    bytes.extend_from_slice(record.chain_digest.as_array());
+                    bytes.extend_from_slice(&record.sequence.get().to_be_bytes());
+                    bytes.extend_from_slice(assignment.support_digest.as_array());
+                    bytes.extend_from_slice(delivery.binding_digest().as_array());
+                    Ok((delivery.state(), codex_hepta_types::Digest32::of_bytes(&bytes)))
+                },
+            )
+            .map_err(Into::into)
+    }
+
     /// Correlate an exact read-RPC preparation with this driver's existing
     /// native journal, without dispatching, rewriting either ledger, or granting
     /// training access. The host independently pins both request identities.

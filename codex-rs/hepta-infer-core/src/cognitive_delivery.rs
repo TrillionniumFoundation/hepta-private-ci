@@ -11,6 +11,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 use crate::durable_control::DurableInferenceControl;
+use crate::durable_control::native::NativeCognitivePreparation;
 use crate::durable_control::native::NativeRequest;
 use crate::durable_control::native::NativeRunRecord;
 
@@ -68,6 +69,15 @@ impl CognitiveContextDeliveryV1<'_> {
     /// Identifies the exact native attempt; it is not a cross-request permit.
     pub fn request(&self) -> &NativeRequest {
         &self.record.request
+    }
+
+    /// The persisted ordinary-read identity. Missing historical receipts do
+    /// not establish absence of exposure or permit an owner preparation join.
+    pub fn preparation(&self) -> Option<&NativeCognitivePreparation> {
+        self.record
+            .dispatch
+            .as_ref()
+            .and_then(|dispatch| dispatch.cognitive_preparation.as_ref())
     }
 
     pub fn turn_id(&self) -> Option<&str> {
