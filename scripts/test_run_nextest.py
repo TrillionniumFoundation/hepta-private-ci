@@ -148,6 +148,38 @@ class ScopedNextestTests(unittest.TestCase):
         self.assertIn("--cargo-metadata", self.commands[-1])
         self.assertIn("no tests to run", (self.root / "output.log").read_text())
 
+    def test_explicit_manifest_runs_the_selected_workspace_and_preserves_failures(self):
+        alternate = self.root / "alternate"
+        (alternate / "src").mkdir(parents=True)
+        manifest = alternate / "Cargo.toml"
+        manifest.write_text(
+            '[package]\nname="hepta-nextest-alternate-fixture"\nversion="0.1.0"\nedition="2024"\n[features]\nnegative=[]\n[workspace]\n'
+        )
+        (alternate / "src/lib.rs").write_text(
+            '#[test]\nfn alternate_test() { assert!(!cfg!(feature = "negative")); }\n'
+        )
+        for manifest_args in (
+            ["--manifest-path", str(manifest)],
+            [f"--manifest-path={manifest}"],
+        ):
+            with self.subTest(manifest_args=manifest_args):
+                args = [
+                    "-p",
+                    "hepta-nextest-alternate-fixture",
+                    *manifest_args,
+                    "--offline",
+                    "--lib",
+                    "--retries",
+                    "0",
+                ]
+                self.assertEqual(RUNNER.run(args), 0)
+                self.assertIn("--cargo-metadata", self.commands[-1])
+                self.assertNotEqual(RUNNER.run([*args, "--features", "negative"]), 0)
+                self.assertIn("--cargo-metadata", self.commands[-1])
+        output = (self.root / "output.log").read_text()
+        self.assertIn("hepta-nextest-alternate-fixture", output)
+        self.assertIn("1 failed", output)
+
     def test_pure_filters_preserve_real_selection_and_feature_failure(self):
         for option in (
             ["-E", "package(hepta-nextest-fixture) & test(actual_test)"],
@@ -231,7 +263,17 @@ class ScopedNextestTests(unittest.TestCase):
                 ),
                 0,
             )
-            self.assertNotIn("--cargo-metadata", self.commands[-1])
+            self.assertIn("--cargo-metadata", self.commands[-1])
+        for args in (
+            ["--manifest-path"],
+            ["--manifest-path", "--", "actual_test"],
+            ["--manifest-path", "--offline"],
+        ):
+            with self.subTest(args=args):
+                self.assertNotEqual(
+                    RUNNER.run(["-p", "hepta-nextest-fixture", *args]), 0
+                )
+                self.assertNotIn("--cargo-metadata", self.commands[-1])
 
     def test_reused_metadata_is_forwarded_and_full_path_can_be_forced(self):
         metadata = self.root / "provided.json"
