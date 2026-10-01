@@ -300,3 +300,38 @@ fn tiny_supported_weights_retain_exact_ess() {
     assert_eq!(result.ips.raw(), 2);
     assert_eq!(result.snips, FixedQ32::ONE);
 }
+
+#[test]
+fn original_propensities_determine_ess_even_when_rounded_weights_match() {
+    let (mut plan, template) = fixture();
+    plan.minimum_rows = 400;
+    plan.minimum_ess = FixedQ32::from_raw(400 << 32);
+    let mut rows: Vec<_> = (0..400).map(|index| {
+        let mut row = template[0].clone();
+        row.decision_id = id(&format!("true-ratio-{index}"));
+        let behavior = if index % 2 == 0 { 3 << 30 } else { 3 << 29 };
+        let evaluation = if index % 2 == 0 { 1 << 31 } else { 1 << 30 };
+        set_chosen_propensities(&mut row, behavior, evaluation);
+        row
+    }).collect();
+    // Both encodings are exactly 2/3. A conservative interval alone cannot
+    // certify ESS=400, so exact Cauchy equality must preserve this legal tie.
+    assert_eq!(must(estimate_ope(&plan, &rows)).effective_sample_size, plan.minimum_ess);
+    let rounded = must(round_ratio((1_i128 << 31) * SCALE, 3 << 30));
+    assert_eq!(rounded, must(round_ratio(((1_i128 << 31) + 1) * SCALE, (3 << 30) + 1)));
+    set_chosen_propensities(&mut rows[0], /*behavior*/ (3 << 30) + 1, /*evaluation*/ (1 << 31) + 1);
+    // True ESS is 400 minus 133/5534023225553134289431. The two
+    // rounded Q32 weights coincide, but exact ESS cannot reach 400.
+    assert_eq!(estimate_ope(&plan, &rows), Err(OpeError::InsufficientSupport));
+    plan.minimum_ess = FixedQ32::from_raw((400 << 32) - 1);
+    assert_eq!(estimate_ope(&plan, &rows), Err(OpeError::NumericalSupportGap));
+    plan.minimum_ess = FixedQ32::from_raw(399 << 32);
+    assert_eq!(must(estimate_ope(&plan, &rows)).effective_sample_size.raw(), 400 << 32);
+}
+
+fn set_chosen_propensities(row: &mut OpeRow, behavior: u64, evaluation: u64) {
+    row.actions[0].behavior_probability = must(ProbabilityQ32::from_raw(behavior));
+    row.actions[0].evaluation_probability = must(ProbabilityQ32::from_raw(evaluation));
+    row.actions[1].behavior_probability = must(ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - behavior));
+    row.actions[1].evaluation_probability = must(ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - evaluation));
+}

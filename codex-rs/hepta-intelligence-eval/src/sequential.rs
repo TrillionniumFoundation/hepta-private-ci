@@ -12,6 +12,11 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 use crate::ope::scaled_ratio;
+use crate::ope::support::PropensityRatio;
+use crate::ope::support::RatioProductEquality;
+use crate::ope::support::SupportAccumulator;
+use crate::ope::support::SupportCertification;
+use crate::ope::support::WeightBounds;
 use crate::push_id;
 
 const SCALE: i128 = 1_i128 << 32;
@@ -53,6 +58,8 @@ mod confidence;
 /// V(H) is the evaluation-policy average of supplied Q(H,a), avoiding inconsistent
 /// independently supplied V values. Unsupported, censored or low-support data
 /// rejects the complete estimate; no rows are silently omitted or weights clipped.
+/// ESS reports use numerical cumulative weights; admission certifies the original
+/// propensity products. Uncertified near-boundary ESS is a numerical evidence gap.
 pub fn estimate_sequential(
     plan: &SequentialPlan,
     trajectories: &[Trajectory],
@@ -110,14 +117,16 @@ pub fn estimate_sequential(
     let mut decisions = BTreeSet::new();
     let mut clusters = BTreeSet::new();
     let mut estimates = Vec::with_capacity(ordered.len());
+    let mut original_bounds = Vec::with_capacity(ordered.len());
     for trajectory in ordered {
         if !identities.insert(&trajectory.trajectory_id) {
             return Err(SequentialError::DuplicateIdentity);
         }
         clusters.insert(&trajectory.cluster_id);
-        let (estimate, digest) = estimate_trajectory(plan, trajectory, &mut decisions)?;
+        let (estimate, digest, bounds) = estimate_trajectory(plan, trajectory, &mut decisions)?;
         bytes.extend_from_slice(digest.as_array());
         estimates.push(estimate);
+        original_bounds.push(bounds);
     }
     let count = estimates.len() as i128;
     let floor = match plan.estimand.scope {
@@ -127,6 +136,7 @@ pub fn estimate_sequential(
             .max(((count + 9) / 10) * SCALE),
     };
     let mut depth_support = Vec::with_capacity(horizon);
+    let mut equal_prefixes = None;
     for depth in 0..horizon {
         let weights: Vec<_> = estimates
             .iter()
@@ -139,8 +149,23 @@ pub fn estimate_sequential(
             return insufficient(SequentialEvidenceGap::DepthSupport);
         }
         let ess = scaled_ratio(sum * sum, squares).map_err(|_| SequentialError::Arithmetic)?;
-        if ess.floor < floor {
-            return insufficient(SequentialEvidenceGap::DepthSupport);
+        let mut support = SupportAccumulator::default();
+        for bounds in &original_bounds {
+            support.add(bounds[depth]).map_err(|_| SequentialError::Arithmetic)?;
+        }
+        let unresolved = match support.certify(floor).map_err(|_| SequentialError::Arithmetic)? {
+            SupportCertification::Supported => None,
+            SupportCertification::Insufficient => return insufficient(SequentialEvidenceGap::DepthSupport),
+            SupportCertification::RequiresEquality => Some(SequentialEvidenceGap::DepthSupport),
+            SupportCertification::Unresolved => Some(SequentialEvidenceGap::NumericalSupportGap),
+        };
+        if let Some(gap) = unresolved {
+            if equal_prefixes.is_none() {
+                equal_prefixes = Some(equal_positive_prefixes(trajectories)?);
+            }
+            if !equal_prefixes.as_ref().ok_or(SequentialError::Arithmetic)?[depth] {
+                return insufficient(gap);
+            }
         }
         depth_support.push(DepthSupport {
             depth: depth as u16,
@@ -172,7 +197,7 @@ fn estimate_trajectory<'a>(
     plan: &SequentialPlan,
     row: &'a Trajectory,
     decisions: &mut BTreeSet<&'a StableId>,
-) -> Result<(TrajectoryEstimate, Digest32), SequentialError> {
+) -> Result<(TrajectoryEstimate, Digest32, Vec<WeightBounds>), SequentialError> {
     if row.steps.len() != usize::from(plan.estimand.horizon) || row.initial_history.is_zero() {
         return insufficient(SequentialEvidenceGap::IncompleteHistory);
     }
@@ -197,12 +222,13 @@ fn estimate_trajectory<'a>(
     let mut expected_history = row.initial_history;
     let mut histories = BTreeSet::from([row.initial_history]);
     let mut cumulative = SCALE;
-    let mut cumulative_upper = SCALE;
+    let mut cumulative_bounds = WeightBounds::UNIT;
     let mut cumulative_numeric_upper = SCALE;
     let mut discount = SCALE;
     let mut pdis = 0_i128;
     let mut values = Vec::with_capacity(row.steps.len());
     let mut weights = Vec::with_capacity(row.steps.len());
+    let mut original_bounds = Vec::with_capacity(row.steps.len());
     for (depth, step) in row.steps.iter().enumerate() {
         if !decisions.insert(&step.decision_id) {
             return Err(SequentialError::DuplicateIdentity);
@@ -237,19 +263,17 @@ fn estimate_trajectory<'a>(
         // The point estimate rounds each factor to nearest. Admission instead
         // carries an outward envelope from the original propensity ratios, so
         // earlier rounding cannot hide a later cumulative ceiling breach.
-        cumulative_upper = divide_upper(
-            cumulative_upper
-                .checked_mul(evaluation)
-                .ok_or(SequentialError::Arithmetic)?,
-            behavior,
-        )?;
+        cumulative_bounds = cumulative_bounds.advance(PropensityRatio {
+            evaluation: u64::try_from(evaluation).map_err(|_| SequentialError::Arithmetic)?,
+            behavior: u64::try_from(behavior).map_err(|_| SequentialError::Arithmetic)?,
+        }).map_err(|_| SequentialError::Arithmetic)?;
         cumulative_numeric_upper = divide_upper(
             cumulative_numeric_upper
                 .checked_mul(rho)
                 .ok_or(SequentialError::Arithmetic)?,
             SCALE,
         )?;
-        if cumulative_upper > i128::from(plan.maximum_cumulative_ratio.raw())
+        if cumulative_bounds.upper > i128::from(plan.maximum_cumulative_ratio.raw())
             || cumulative_numeric_upper > i128::from(plan.maximum_cumulative_ratio.raw())
             || cumulative * rho > i128::from(plan.maximum_cumulative_ratio.raw()) * SCALE
         {
@@ -263,6 +287,7 @@ fn estimate_trajectory<'a>(
         let gamma = i128::from(step.discount.raw());
         discount = multiply_nonzero(discount, gamma)?;
         weights.push(fixed(cumulative)?);
+        original_bounds.push(cumulative_bounds);
         values.push((rho, q, v, reward, gamma));
     }
     pdis = pdis
@@ -290,7 +315,32 @@ fn estimate_trajectory<'a>(
             cumulative_weights: weights,
         },
         Digest32::of_bytes(&bytes),
+        original_bounds,
     ))
+}
+
+fn chosen_ratio(step: &TrajectoryStep) -> Result<PropensityRatio, SequentialError> {
+    let action = step.actions.iter().find(|action| action.action_id == step.chosen_action)
+        .ok_or(SequentialError::Arithmetic)?;
+    Ok(PropensityRatio {
+        evaluation: action.evaluation_probability.raw(),
+        behavior: action.behavior_probability.raw(),
+    })
+}
+
+fn equal_positive_prefixes(rows: &[Trajectory]) -> Result<Vec<bool>, SequentialError> {
+    let reference = rows.first().ok_or(SequentialError::Arithmetic)?;
+    let reference_ratios: Vec<_> = reference.steps.iter().map(chosen_ratio).collect::<Result<_, _>>()?;
+    let mut equal = vec![true; reference_ratios.len()];
+    for row in rows.iter().skip(1) {
+        let mut products = RatioProductEquality::new();
+        for (depth, step) in row.steps.iter().enumerate() {
+            products.advance(chosen_ratio(step)?, reference_ratios[depth])
+                .map_err(|_| SequentialError::Arithmetic)?;
+            equal[depth] &= products.equal_positive();
+        }
+    }
+    Ok(equal)
 }
 
 #[cfg(test)]
