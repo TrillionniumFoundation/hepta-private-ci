@@ -9,8 +9,6 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
@@ -590,11 +588,10 @@ async fn migration_checksum_tamper_fails_reopen() {
     let path = directory.path().join("operations.sqlite3");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.close().await;
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(&path))
-        .await
-        .expect("raw open");
+    let pool =
+        open_durable_evidence_pool_with_capacity(&path, DurableSqlitePoolCapacity::FourConnections)
+            .await
+            .expect("raw open");
     sqlx::query("UPDATE _sqlx_migrations SET checksum = X'00' WHERE version = 1")
         .execute(&pool)
         .await
@@ -612,11 +609,10 @@ async fn future_migration_lineage_blocks_old_binary_reopen() {
     let path = directory.path().join("operations.sqlite3");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.close().await;
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(&path))
-        .await
-        .expect("raw open");
+    let pool =
+        open_durable_evidence_pool_with_capacity(&path, DurableSqlitePoolCapacity::FourConnections)
+            .await
+            .expect("raw open");
     sqlx::query(
         "INSERT INTO _sqlx_migrations
          (version, description, success, checksum, execution_time)

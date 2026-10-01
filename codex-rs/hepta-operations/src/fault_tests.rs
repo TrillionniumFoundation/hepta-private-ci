@@ -33,7 +33,7 @@ fn intent(index: usize) -> OperationIntentV1 {
 async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
-    let mut store = DurableOperationStore::open(&path).await.expect("open");
+    let store = DurableOperationStore::open(&path).await.expect("open");
 
     sqlx::query("VACUUM")
         .execute(&store.pool)
@@ -45,34 +45,27 @@ async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
         .expect("page count");
     assert!(pages > 0);
     // The cap belongs to a connection, not to the pool or database file.
-    // Install it in every new connection's options while retaining the real
-    // four-connection owner store. A one-off PRAGMA on an arbitrary pooled
+    // Retain the production four-connection owner pool and hold every writer
+    // before installing the fault. A one-off PRAGMA on an arbitrary pooled
     // connection lets another writer silently evade the fault.
-    let options = store
-        .pool
-        .connect_options()
-        .as_ref()
-        .clone()
-        .pragma("max_page_count", pages.to_string());
-    store.pool.close().await;
-    store.pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .max_connections(4)
-        .min_connections(4)
-        .connect_with(options)
-        .await
-        .expect("reopen owner pool with per-connection fault");
     let mut held = Vec::new();
     for _ in 0..4 {
-        let mut connection = store.pool.acquire().await.expect("fault connection");
+        held.push(store.pool.acquire().await.expect("fault connection"));
+    }
+    let page_cap = format!("PRAGMA max_page_count = {pages}");
+    for connection in &mut held {
+        sqlx::query(&page_cap)
+            .execute(&mut **connection)
+            .await
+            .expect("set per-connection page cap");
         let capped: i64 = sqlx::query_scalar("PRAGMA max_page_count")
-            .fetch_one(&mut *connection)
+            .fetch_one(&mut **connection)
             .await
             .expect("read back page cap");
         assert_eq!(
             capped, pages,
             "every writer must have the disk-full fault armed"
         );
-        held.push(connection);
     }
     drop(held);
 
