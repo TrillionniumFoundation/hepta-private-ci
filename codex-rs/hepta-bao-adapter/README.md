@@ -262,7 +262,7 @@ nonce to make an expired operation pass. `original-status` reads the durable
 original begin tuple. The first `begin_original` service response is distinct
 from historical Status and is the only response allowed to precede a new
 runtime attempt. An unknown or lost response cannot be recovered into another
-effect attempt. Actual runtime/provider/consumer settlement IPC is a separate
+effect attempt. The protected runtime described below consumes these role ports; Agentd composition is a separate
 composition stage and remains incomplete here.
 
 The issuer persists the governed revocation head separately from the runtime's
@@ -295,4 +295,76 @@ All authority IPC and consumer endpoint connections happen before final-use entr
 
 One source-order gate covers independent time sampling through its FULL persisted floor; it never covers credential authentication. Repeated identical signed metadata is read idempotently rather than causing a unique-index failure. Evidence history and preparation tables are bounded and immutable. Cancellation after a submitted SQL transaction fences new writes and retains original Status. `settle_observed` takes a fresh independent time sample after the consumer has signed, so it does not validate a later signature against an earlier sample.
 
-The receipt stage has passed 124 package cases and fourteen real UID982/981/983/992 checks on the Linux host, including direct Agent UID986/969 rejection, FULL signed ACK, fixed-tuple settlement, four concurrent evidence requests, explicit 2000ms ticket expiry and physical restart/drain. The 4000ms Root limits follow a measured 1203ms protected-time RPC; separate real SSD FULL probes took 2601ms, 1784ms and 772ms. The budget change does not lengthen an original grant or operation and does not alter the existing 2000ms automation tests. The supplied `deployment/hepta-secrets-consumer.service` is an instantiable UID983 template, alongside authority UID982 and operator UID981. These concrete SDK/role services and native tests do not yet compose the installed Agentd workload with the non-dev provider or qualify all 13 secret capabilities. The full runtime remains `not_composed` until that actual caller and provider/ACK/AuthBus run is qualified.
+The receipt stage has passed 124 package cases and fourteen real UID982/981/983/992 checks on the Linux host, including direct Agent UID986/969 rejection, FULL signed ACK, fixed-tuple settlement, four concurrent evidence requests, explicit 2000ms ticket expiry and physical restart/drain. The 4000ms Root limits follow a measured 1203ms protected-time RPC; separate real SSD FULL probes took 2601ms, 1784ms and 772ms. The budget change does not lengthen an original grant or operation and does not alter the existing 2000ms automation tests. The supplied `deployment/hepta-secrets-consumer.service` is an instantiable UID983 template, alongside authority UID982 and operator UID981. These receipt-stage checks preceded the complete protected daemon qualification below. Installed Agentd composition and all 13 secret capabilities remain unfinished.
+
+
+### Single protected runtime and enrolled Agent client
+
+`hepta-secrets-runtime serve-runtime /etc/hepta-secrets/runtime.json` runs the
+single effect owner as UID 992. Its factory in `src/runtime_service.rs` composes
+the existing Bao 400-series SQLite owner, the AuthBus authority/checkpoint,
+the independent authority/operator SDK, a signed protected clock, the exact
+pinned-TLS KV v2 request, and the receipt-bound UID 983 consumer. The supplied
+`deployment/hepta-secrets-runtime.service` is the concrete Linux template.
+It adds no signing role or SQLite crate. The provider remains UID 993; issuer,
+operator and consumer remain UID 982, UID 981 and UID 983 respectively.
+
+Root installs four JSON configurations under `/etc/hepta-secrets`, as regular
+files with mode 0640, owner 0/group 976 and Root-owned, non-writable ancestors.
+The existing authority/operator/consumer configurations retain their separate
+purpose keys and public pins. Each role keeps its own private 0700 state and
+0600 key files. All four service processes use primary IPC group 976, with no
+supplementary groups. Agent processes keep their original private groups;
+they receive an explicit ACL on only the runtime socket parent and socket.
+The runtime validates `SO_PEERCRED` against the sorted exact Root UID map;
+ACL membership cannot replace that check. Private signing endpoints reject
+the enrolled Agent UIDs.
+
+The strict `SecretsRuntimeServiceConfig` in `src/runtime_config.rs` consumes:
+
+| Field | Root-installed value or relationship |
+| --- | --- |
+| `schema_version`, `service` | 1; runtime UID 992, GID976, `/run/hepta-secrets-runtime/runtime.sock`, exact allowed peers `[969,986]`. New-operation request budget 30000ms and drain 35000ms. |
+| `agents` | Original UUID per kernel UID:986=`3ad2bb64-09ba-4811-b892-466c5fd952df`,969=`10b204bc-ec72-48a2-a2c2-cf5d2f5ed730`. |
+| `roles`, `evidence` | Existing independent SDK configurations with exact issuer/approval/time/revocation/ACK/settlement public pins. Role RPC 4000ms, hard maximum 5000ms; consumer preparation 4000ms. |
+| `revocation_distributor_id`, `revocation_verifying_key` | Independent operator distributor and its public pin; no model/evaluator key. |
+| `provider_endpoint`, `provider_token_file`, `provider_ca_file`, `provider_timeout_ms` | Frozen local TLS endpoint; UID 992-owned0600 readonly-provider token and original CA certificate, read in place;4000ms provider limit. Correct CA:FALSE server leaf is signed by that unchanged CA. |
+| `request` | Exact `BaoReadRequest`: namespace, mount, path, field, version, expected credential digest and receipt-bound consumer configuration digest. Its canonical provider/request/scope binding must equal the Root role policies. |
+| `owner_database`, `authbus_database`, `authbus_checkpoint`, `final_use_state` | Separate original stores under `/var/lib/hepta-secrets-runtime`; AuthBus checkpoint in its own private `frontier/` parent, distinct from the SQL parent. Existing floors and history remain in place. |
+| `authbus_owner_id`, `policy_id`, `policy_not_before_ms`, `policy_expires_at_ms` | Fixed original owner and absolute policy validity. Restart compares the complete existing policy; it never extends or recreates it. Expired policy permits original Status/Recover and refuses new issuance. |
+| `quota_period_id`, `quota_limit`, `maximum_clock_age_ms` | Fixed quota coordinates and limit; protected signed-clock maximum age 5000ms. Existing consumed quota is not reset on restart. |
+
+Each Agent receives a separate Root-owned client configuration containing
+`schema_version:1`, its actual `agent_uid`/`agent_id`, `runtime_uid:992`, the
+runtime socket path and `operation_timeout_ms:30000`. The concrete
+`SecretsRuntimeClient` verifies the actual UID and original Agent UUID.
+`consume-original CLIENT_JSON AGENT_UUID ORIGINAL_ID BUDGET_MS`,
+`runtime-status CLIENT_JSON AGENT_UUID ORIGINAL_ID`, and
+`recover-original CLIENT_JSON AGENT_UUID ORIGINAL_ID` invoke that same client.
+These commands are qualification and operational callers; wiring the SDK into
+Agentd's capability/taskflow entry remains a separate product integration.
+
+The 30s budget belongs only to a newly admitted complete daemon operation and
+comes from the Root service and enrolled client configuration. Every role RPC
+and preparation is clipped to 4000ms and the remaining original budget; expiry
+is the minimum of that original deadline, the original grant and the frozen
+Root policy. Original 2000ms tickets and automation budgets are unchanged.
+A lost response retains the deterministic original operation and Unknown.
+`IssueOnce` refuses an already issued original, including expired grants and
+lost replies; it cannot mint a replacement nonce. Status and Recover observe
+only that original retained ACK/reservation and never redispatch provider or
+credential effects. SIGTERM stops admission, fences new effects and physically
+joins the owned requests and stores before endpoint release.
+
+The Linux qualification completed eleven checks using actual UID 982/981/983/992
+services, both original Agent identities, non-dev OpenBao KV v2 version1,
+Rust TLS validation, and private canonical `/var/lib` state backed by a real
+ext4 SSD. Both Agents completed only after the independent consumer's FULL
+signed ACK and exact AuthBus settlement. Repeated original calls, ten-second
+revocation-feed expiry, four-role restart, short-budget Unknown, and real
+Root-policy expiry retained the same grant, ACK and quota history. The fixture
+policy used a deliberately short 30s validity to exercise actual expiry; it is
+not a default installed policy or permission to change existing tickets.
+No installed Fleet or signing policy was replaced. Actual Agentd integration,
+provider-native dynamic issue/renew/revoke and the remaining capability matrix
+remain closed/unqualified; module `productCallerState` stays `not_composed`.

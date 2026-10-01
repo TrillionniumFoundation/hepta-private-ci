@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a91e9fbfe711c7649ce35390771734cc716a634f",
-    "tree": "2bb0c9450aa817a1e99fb84cbb7e5cc9aa24e41b"
+    "commit": "d5ca702448e14f1538313f5fb15a14a6e41a6d0c",
+    "tree": "431f6748e4cb73dae06879c132b66179613d9a67"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -21,8 +21,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "roleServiceState": "concrete_role_services_and_issuance_cli_wired_runtime_saga_ipc_pending",
-  "productionWriterState": "native_full_sql_original_receipt_ack_and_settlement_owners_qualified_under_enrolled_uids_runtime_saga_ipc_pending",
+  "productionWriterState": "native_full_sql_protected_daemon_real_nondev_kv2_original_receipt_ack_and_authbus_settlement_qualified_under_enrolled_uids_agentd_pending",
   "operations": [
     {
       "operation": "consume_kv_v2",
@@ -269,12 +268,65 @@
       "designOperation": "consumer_evidence_sdk",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "serve_runtime",
+      "nativeSymbol": "serve_secrets_runtime",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_uid_provider_policy_and_independent_roles",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/runtime_clock_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serve_runtime",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "consume_original",
+      "nativeSymbol": "SecretsRuntimeClient::consume_original",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "exact_enrolled_kernel_uid_original_agent_identity_and_operation_budget",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "consume_original",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "original_status_and_recovery",
+      "nativeSymbol": "SecretsRuntimeOwner::status/recover",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "original_independent_full_ack_and_exact_authbus_reservation_no_redispatch",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "original_status_and_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "original_effect_clock",
+      "nativeSymbol": "RuntimeProtectedClock::begin_original_deadline",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_clock.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "verified_independent_time_floor_and_original_monotonic_budget",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/runtime_clock_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "original_effect_clock",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Finish actual runtime daemon and Agentd capability composition across the Root-frozen KV version, AuthBus owner and the qualified prepared external consumer/ACK-backed settlement SDK. Real role IPC and signatures do not yet prove installed provider execution.",
+    "Connect the actual Agentd capability/taskflow entry to the qualified enrolled SecretsRuntimeClient and validate installed lifecycle using the original Agent identities and durable history. CLI qualification is not the Agentd product caller.",
     "Qualify provider-native dynamic lease issue/renew/revoke and the remaining capability matrix individually; these endpoints remain closed.",
-    "Complete actual installed Fleet caller wiring and lifecycle validation using the original identities and durable history."
+    "Install the qualified protected services with Root-frozen exact provider/role configuration and socket ACLs, then validate the complete installed Fleet caller."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -310,5 +362,24 @@
     "rootPreparationMs": 4000,
     "explicitExpiryTicketMs": 2000
   },
-  "roleServiceState": "concrete_issuer_operator_consumer_services_and_original_receipt_ack_settlement_sdk_qualified_runtime_saga_ipc_pending"
+  "roleServiceState": "concrete_issuer_operator_consumer_and_single_protected_runtime_services_qualified_agentd_caller_pending",
+  "protectedRuntimeQualification": {
+    "actualChecks": 11,
+    "authorityUid": 982,
+    "operatorUid": 981,
+    "runtimeUid": 992,
+    "consumerUid": 983,
+    "agentUids": [
+      986,
+      969
+    ],
+    "provider": "non-dev OpenBao KV v2 exact version1 with Rust pinned TLS",
+    "durability": "FULL SQL and independent original ACK/settlement on Root canonical /var/lib namespace backed by actual ext4 SSD",
+    "scope": "Same-ID repetition, expired revocation feed refresh, short-budget Unknown, four-role original-store restart and actual fixed Root policy expiry preserve original nonce, ACK and settled quota. Installed Agentd and dynamic capabilities not composed.",
+    "newRuntimeOperationBudgetMs": 30000,
+    "roleRpcMs": 4000,
+    "roleHardMaximumMs": 5000,
+    "rootPreparationMs": 4000,
+    "originalGrantAndPolicyExpiryUnchanged": true
+  }
 }
