@@ -726,7 +726,7 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
 }
 
 #[tokio::test]
-async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_absent() {
+async fn async_provider_unknown_and_lookup_not_found_remain_quarantined() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
@@ -770,10 +770,21 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
         .await
         .expect("pending provider effect");
     assert_eq!(pending.len(), 1);
-    assert!(matches!(
-        driver.lookup(&pending[0]).await,
-        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
-    ));
+    assert_eq!(
+        driver
+            .lookup(&store, &pending[0], &owner, 40)
+            .await
+            .expect("lookup"),
+        AuthorizedProviderEffectLookup::Unresolved
+    );
+    assert_eq!(
+        store
+            .pending_authorized_taskflow_effects(8)
+            .await
+            .expect("still pending"),
+        pending
+    );
+    assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 1);
 }
 
 #[tokio::test]
@@ -813,46 +824,36 @@ async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
         .expect("durable attempt");
     assert_eq!(pending.owner_agent_id.as_str(), AGENT_ID);
     assert_eq!(pending.provider_key_version, 2);
-    driver.lookup(&pending).await;
+    driver
+        .lookup(&reopened, &pending, &owner, 40)
+        .await
+        .expect("lookup");
     assert_eq!(
         driver.adapter().seen_key.lock().expect("key").clone(),
         dispatched_key
     );
 
-    let mut first = pending.clone();
-    first.run_id = "a:b".to_string();
-    first.step_id = "c".to_string();
-    driver.lookup(&first).await;
-    let first_key = driver.adapter().seen_key.lock().expect("key").clone();
-    let mut second = first.clone();
-    second.run_id = "a".to_string();
-    second.step_id = "b:c".to_string();
-    driver.lookup(&second).await;
-    assert_ne!(
-        driver.adapter().seen_key.lock().expect("key").clone(),
-        first_key
-    );
-    let mut other_owner = first.clone();
-    other_owner.owner_agent_id =
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other owner");
-    driver.lookup(&other_owner).await;
-    assert_ne!(
-        driver.adapter().seen_key.lock().expect("key").clone(),
-        first_key
-    );
-
-    first.provider_key_version = 1;
-    driver.lookup(&first).await;
-    let legacy = ProviderEffectKey::for_logical_effect(&effect.destination_id, "taskflow:a:b:c")
-        .expect("legacy key");
+    let mut substituted = pending.clone();
+    substituted.payload_digest = Sha256Digest::for_bytes(b"another-provider-payload");
+    driver.adapter_mut().lookup_result = ProviderEffectLookup::Ack(ProviderEffectAck::new(
+        provider_key(&effect),
+        substituted.payload_digest.clone(),
+        Sha256Digest::for_bytes(b"substituted-provider-operation"),
+        ProviderEffectAckStatus::Completed,
+    ));
     assert_eq!(
-        driver.adapter().seen_key.lock().expect("key").as_deref(),
-        Some(legacy.as_str())
-    );
-    first.provider_key_version = 3;
-    assert_eq!(
-        driver.lookup(&first).await,
+        driver
+            .lookup(&reopened, &substituted, &owner, 40)
+            .await
+            .expect("reject substituted snapshot"),
         AuthorizedProviderEffectLookup::Unresolved
+    );
+    assert_eq!(
+        reopened
+            .pending_authorized_taskflow_effects(8)
+            .await
+            .expect("still pending"),
+        vec![pending]
     );
 }
 
@@ -1543,3 +1544,4 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+

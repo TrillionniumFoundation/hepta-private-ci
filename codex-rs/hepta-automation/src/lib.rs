@@ -46,6 +46,7 @@ pub use authorized_effect::AuthorizedEffectProviderReceipt;
 pub use authorized_effect::AuthorizedEffectRecovery;
 pub use authorized_effect::AuthorizedEffectRecoveryResult;
 pub use authorized_effect::AuthorizedEffectRequest;
+pub use authorized_effect::AuthorizedProviderDispatchStatus;
 pub use authorized_effect::AuthorizedProviderEffectLookup;
 pub use authorized_effect::AuthorizedProviderEffectRequest;
 pub use authorized_effect::ProviderEffectTaskFlowDriver;
@@ -152,4 +153,4 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 22;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 23;

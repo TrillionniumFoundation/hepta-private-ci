@@ -45,6 +45,7 @@ use crate::TaskFlowTransition;
 use crate::effect_dispatch_ledger::EffectDispatchAttempt;
 use crate::effect_dispatch_ledger::EffectDispatchObservationKind;
 use crate::effect_dispatch_ledger::EffectDispatchStart;
+use crate::effect_dispatch_ledger::EffectProviderObservation;
 
 const MAX_AUTHORIZED_EFFECT_DEPENDENCIES: usize = 128;
 const MAX_EFFECT_ID_BYTES: usize = 256;
@@ -210,6 +211,9 @@ pub struct AuthorizedEffectPending {
     /// Immutable optional adapter configuration identity, recorded before
     /// contact. Legacy and configuration-independent drivers leave it absent.
     pub provider_contract_binding: Option<Sha256Digest>,
+    /// Initial typed dispatch status, upgraded permanently when a later
+    /// provider lookup durably proves admission. Absence is legacy ambiguity.
+    pub provider_dispatch_status: Option<AuthorizedProviderDispatchStatus>,
     pub run_id: String,
     pub step_id: String,
     pub attempt: u32,
@@ -228,6 +232,7 @@ impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
             owner_agent_id: value.owner_agent_id,
             provider_key_version: value.provider_key_version,
             provider_contract_binding: value.provider_contract_binding,
+            provider_dispatch_status: value.provider_dispatch_status,
             run_id: value.run_id,
             step_id: value.step_id,
             attempt: value.attempt,
@@ -247,6 +252,57 @@ pub enum AuthorizedEffectOutcome {
     Succeeded,
     Failed,
     Indeterminate,
+}
+
+/// Provider facts admitted by the registered adapter. `Unknown` records an
+/// explicit uncertain dispatch; an absent witness records no such fact.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AuthorizedProviderDispatchStatus {
+    Unknown,
+    Accepted,
+    Completed,
+    Rejected,
+}
+
+impl AuthorizedProviderDispatchStatus {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Unknown => "unknown",
+            Self::Accepted => "accepted",
+            Self::Completed => "completed",
+            Self::Rejected => "rejected",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, TaskFlowError> {
+        match value {
+            "unknown" => Ok(Self::Unknown),
+            "accepted" => Ok(Self::Accepted),
+            "completed" => Ok(Self::Completed),
+            "rejected" => Ok(Self::Rejected),
+            _ => Err(TaskFlowError::Corrupt(
+                "unknown provider dispatch status".to_string(),
+            )),
+        }
+    }
+
+    fn outcome(self) -> AuthorizedEffectOutcome {
+        match self {
+            Self::Unknown | Self::Accepted => AuthorizedEffectOutcome::Indeterminate,
+            Self::Completed => AuthorizedEffectOutcome::Succeeded,
+            Self::Rejected => AuthorizedEffectOutcome::Failed,
+        }
+    }
+}
+
+impl From<ProviderEffectAckStatus> for AuthorizedProviderDispatchStatus {
+    fn from(value: ProviderEffectAckStatus) -> Self {
+        match value {
+            ProviderEffectAckStatus::Accepted => Self::Accepted,
+            ProviderEffectAckStatus::Completed => Self::Completed,
+            ProviderEffectAckStatus::Rejected => Self::Rejected,
+        }
+    }
 }
 
 impl AuthorizedEffectOutcome {
@@ -335,6 +391,12 @@ pub trait AsyncAuthorizedEffectDriver {
         None
     }
 
+    /// Consume the registered adapter's typed fact from this dispatch only.
+    /// Drivers reset it before dispatch and retain no witness after this call.
+    fn take_provider_dispatch_status(&mut self) -> Option<AuthorizedProviderDispatchStatus> {
+        None
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
@@ -355,6 +417,7 @@ pub enum AuthorizedProviderEffectLookup {
 pub struct ProviderEffectTaskFlowDriver<A> {
     provider_scope: String,
     adapter: A,
+    dispatch_status: Option<AuthorizedProviderDispatchStatus>,
 }
 
 impl<A> ProviderEffectTaskFlowDriver<A>
@@ -367,6 +430,7 @@ where
         Ok(Self {
             provider_scope,
             adapter,
+            dispatch_status: None,
         })
     }
 
@@ -378,14 +442,33 @@ where
         &mut self.adapter
     }
 
+    /// Observe through the owning store and persist admission/terminal facts
+    /// before returning. This consumes no grant and never dispatches an effect.
     pub async fn lookup(
         &self,
+        store: &AutomationStore,
         pending: &AuthorizedEffectPending,
-    ) -> AuthorizedProviderEffectLookup {
+        fence: &TaskFlowFence,
+        observed_at_ms: u64,
+    ) -> Result<AuthorizedProviderEffectLookup, AuthorizedEffectError> {
         if pending.destination_id != self.provider_scope
+            || pending.provider_contract_binding != self.provider_contract_binding()
             || self.adapter.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
         {
-            return AuthorizedProviderEffectLookup::Unresolved;
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
+        }
+        let Some(durable) = store
+            .authorized_taskflow_effect_attempt(&pending.run_id, &pending.step_id, pending.attempt)
+            .await?
+        else {
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
+        };
+        // Admission may have advanced since the caller's scan. All provider
+        // identity and payload bytes must still match the owning store.
+        let mut provided = pending.clone();
+        provided.provider_dispatch_status = durable.provider_dispatch_status;
+        if durable != provided {
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
         }
         let Ok(key) = taskflow_provider_key(
             &pending.owner_agent_id,
@@ -394,25 +477,45 @@ where
             &pending.step_id,
             pending.provider_key_version,
         ) else {
-            return AuthorizedProviderEffectLookup::Unresolved;
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
         };
         let provider_intent = ProviderEffectIntent::new(key, pending.payload_digest.clone());
         match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
                 if ack.validate_for(&provider_intent).is_err() {
-                    return AuthorizedProviderEffectLookup::Unresolved;
+                    return Ok(AuthorizedProviderEffectLookup::Unresolved);
                 }
-                match provider_receipt_from_ack(&ack) {
-                    Some(receipt) => AuthorizedProviderEffectLookup::Observed(receipt),
-                    None => AuthorizedProviderEffectLookup::Unresolved,
+                let receipt = provider_receipt_from_ack(&ack);
+                let recovered = store
+                    .recover_authorized_taskflow_effect(
+                        &pending.run_id,
+                        &pending.step_id,
+                        pending.attempt,
+                        fence,
+                        AuthorizedEffectRecovery::ProviderObserved {
+                            receipt: receipt.clone(),
+                            status: ack.status,
+                        },
+                        observed_at_ms,
+                    )
+                    .await;
+                match recovered {
+                    Ok(_) if ack.status == ProviderEffectAckStatus::Accepted => {
+                        Ok(AuthorizedProviderEffectLookup::Unresolved)
+                    }
+                    Ok(_) => Ok(AuthorizedProviderEffectLookup::Observed(receipt)),
+                    Err(AuthorizedEffectError::TaskFlow(TaskFlowError::Conflict(_))) => {
+                        Ok(AuthorizedProviderEffectLookup::Unresolved)
+                    }
+                    Err(error) => Err(error),
                 }
             }
-            ProviderEffectLookup::NotFound => AuthorizedProviderEffectLookup::ProvenAbsent {
-                proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
-            },
-            ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
-                AuthorizedProviderEffectLookup::Unresolved
-            }
+            // Status absence cannot prove that an earlier send will never
+            // arrive. Only an explicit provider-owner absence proof can
+            // authorize a new TaskFlow attempt.
+            ProviderEffectLookup::NotFound
+            | ProviderEffectLookup::Conflict { .. }
+            | ProviderEffectLookup::Unknown => Ok(AuthorizedProviderEffectLookup::Unresolved),
         }
     }
 }
@@ -421,11 +524,16 @@ impl<A> AsyncAuthorizedEffectDriver for ProviderEffectTaskFlowDriver<A>
 where
     A: ProviderEffectAdapter,
 {
+    fn take_provider_dispatch_status(&mut self) -> Option<AuthorizedProviderDispatchStatus> {
+        self.dispatch_status.take()
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
     ) -> AuthorizedEffectFuture<'a> {
         Box::pin(async move {
+            self.dispatch_status = None;
             if request.intent.destination_id != self.provider_scope
                 || self.adapter.capability()
                     != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
@@ -438,6 +546,15 @@ where
                 .adapter
                 .dispatch_with_payload(&provider_intent, wire_payload)
                 .await;
+            self.dispatch_status = match &dispatch {
+                ProviderEffectDispatch::Ack(ack) if ack.validate_for(&provider_intent).is_ok() => {
+                    Some(ack.status.into())
+                }
+                ProviderEffectDispatch::Unknown => Some(AuthorizedProviderDispatchStatus::Unknown),
+                ProviderEffectDispatch::Ack(_)
+                | ProviderEffectDispatch::Rejected { .. }
+                | ProviderEffectDispatch::NotDispatched { .. } => None,
+            };
             provider_dispatch_receipt(&provider_intent, dispatch)
         })
     }
@@ -524,16 +641,16 @@ fn provider_dispatch_receipt(
     }
 }
 
-fn provider_receipt_from_ack(ack: &ProviderEffectAck) -> Option<AuthorizedEffectProviderReceipt> {
+fn provider_receipt_from_ack(ack: &ProviderEffectAck) -> AuthorizedEffectProviderReceipt {
     let outcome = match ack.status {
-        ProviderEffectAckStatus::Accepted => return None,
+        ProviderEffectAckStatus::Accepted => AuthorizedEffectOutcome::Indeterminate,
         ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
         ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
     };
-    Some(AuthorizedEffectProviderReceipt {
+    AuthorizedEffectProviderReceipt {
         outcome,
         receipt_digest: provider_ack_digest(ack),
-    })
+    }
 }
 
 fn provider_ack_digest(ack: &ProviderEffectAck) -> Sha256Digest {
@@ -582,6 +699,12 @@ pub enum AuthorizedEffectRecovery {
     /// The provider owner reports the already-observed outcome. This never
     /// dispatches; it only appends evidence and repairs TaskFlow projection.
     Observed(AuthorizedEffectProviderReceipt),
+    /// Validated provider-protocol status. Admission is retained separately
+    /// from generic execution failure, which need not imply provider rejection.
+    ProviderObserved {
+        receipt: AuthorizedEffectProviderReceipt,
+        status: ProviderEffectAckStatus,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -760,7 +883,7 @@ impl AutomationStore {
             };
         }
 
-        self.check_effect_admission(&intent.run_id, fence, command_id, now_ms)
+        self.check_effect_admission(intent, fence, command_id, now_ms)
             .await?;
         let token = authority
             .claim(signed_grant, expected_binding)
@@ -825,6 +948,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         now_ms,
+                        None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -843,6 +967,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         now_ms,
+                        None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -858,6 +983,7 @@ impl AutomationStore {
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
                 now_ms,
+                None,
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
@@ -986,7 +1112,7 @@ impl AutomationStore {
         if let Some(digest) = &provider_contract_binding {
             validate_nonzero_digest(digest, "provider_contract_binding")?;
         }
-        self.check_effect_admission(&intent.run_id, fence, command_id, now_ms)
+        self.check_effect_admission(intent, fence, command_id, now_ms)
             .await?;
         let token = authority
             .claim(signed_grant, expected_binding)
@@ -1054,6 +1180,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         now_ms,
+                        None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1069,6 +1196,7 @@ impl AutomationStore {
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
                         now_ms,
+                        None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1076,6 +1204,25 @@ impl AutomationStore {
             }
         };
         validate_receipt_digest(&provider.receipt_digest)?;
+        let provider_status = driver.take_provider_dispatch_status();
+        if provider_status.is_some_and(|status| status.outcome() != provider.outcome) {
+            return Err(TaskFlowError::Conflict(
+                "provider dispatch status differs from its receipt".to_string(),
+            )
+            .into());
+        }
+        if provider_status == Some(AuthorizedProviderDispatchStatus::Accepted) {
+            // Keep admission even if another recovery observer has already
+            // appended a different indeterminate dispatch receipt.
+            self.record_effect_provider_acceptance(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                &provider.receipt_digest,
+                now_ms,
+            )
+            .await?;
+        }
         let durable = self
             .record_effect_dispatch_observation(
                 &intent.run_id,
@@ -1084,6 +1231,7 @@ impl AutomationStore {
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
                 now_ms,
+                provider_status.map(EffectProviderObservation::Dispatch),
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
@@ -1113,7 +1261,7 @@ impl AutomationStore {
 
     async fn check_effect_admission(
         &self,
-        run_id: &str,
+        intent: &AuthorizedEffectIntent,
         fence: &TaskFlowFence,
         command_id: &str,
         now_ms: u64,
@@ -1130,8 +1278,29 @@ impl AutomationStore {
                 TaskFlowError::Invalid("invalid effect recording command".to_string()).into(),
             );
         }
+        let command_exists: bool = sqlx::query_scalar(
+            "SELECT EXISTS (
+                SELECT 1 FROM taskflow_step_outbox
+                WHERE owner_agent_id = ? AND run_id = ? AND step_id = ?
+                  AND attempt = ? AND command_id = ?
+            )",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(&intent.run_id)
+        .bind(&intent.step_id)
+        .bind(i64::from(intent.attempt))
+        .bind(command_id)
+        .fetch_one(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if command_exists {
+            return Err(TaskFlowError::Conflict(
+                "effect recording command is already bound in step outbox".to_string(),
+            )
+            .into());
+        }
         let run = self
-            .taskflow_run(run_id)
+            .taskflow_run(&intent.run_id)
             .await?
             .ok_or_else(|| TaskFlowError::Conflict("effect run is missing".to_string()))?;
         if run.state != TaskFlowRunState::Running
@@ -1178,14 +1347,48 @@ impl AutomationStore {
             )
             .into());
         }
-        let (kind, evidence) = match recovery {
+        let (kind, evidence, provider) = match recovery {
             AuthorizedEffectRecovery::ProvenAbsent { proof_digest } => {
                 validate_receipt_digest(&proof_digest)?;
-                (EffectDispatchObservationKind::ProvenAbsent, proof_digest)
+                (
+                    EffectDispatchObservationKind::ProvenAbsent,
+                    proof_digest,
+                    None,
+                )
             }
             AuthorizedEffectRecovery::Observed(receipt) => {
                 validate_receipt_digest(&receipt.receipt_digest)?;
-                (receipt.outcome.ledger_kind(), receipt.receipt_digest)
+                (receipt.outcome.ledger_kind(), receipt.receipt_digest, None)
+            }
+            AuthorizedEffectRecovery::ProviderObserved { receipt, status } => {
+                validate_receipt_digest(&receipt.receipt_digest)?;
+                if AuthorizedProviderDispatchStatus::from(status).outcome() != receipt.outcome {
+                    return Err(TaskFlowError::Invalid(
+                        "provider lookup status differs from its receipt".to_string(),
+                    )
+                    .into());
+                }
+                if status == ProviderEffectAckStatus::Accepted {
+                    let admitted = self
+                        .record_effect_provider_acceptance(
+                            run_id,
+                            step_id,
+                            attempt,
+                            &receipt.receipt_digest,
+                            observed_at_ms,
+                        )
+                        .await?;
+                    // Preserve the original dispatch evidence while retaining
+                    // the separately discovered admission across restarts.
+                    if admitted.observation.is_some() {
+                        return self.settle_effect_dispatch_attempt(&admitted, fence).await;
+                    }
+                }
+                (
+                    receipt.outcome.ledger_kind(),
+                    receipt.receipt_digest,
+                    Some(EffectProviderObservation::Lookup(status)),
+                )
             }
         };
         let durable = self
@@ -1196,6 +1399,7 @@ impl AutomationStore {
                 kind,
                 &evidence,
                 observed_at_ms,
+                provider,
             )
             .await?;
         self.settle_effect_dispatch_attempt(&durable, fence).await
@@ -1720,5 +1924,25 @@ mod intent_tests {
         let mut value = intent();
         value.dependencies = vec![dependency("step.2", b"self")];
         assert!(matches!(value.digest(), Err(TaskFlowError::Invalid(_))));
+    }
+    #[test]
+    fn provider_keys_frame_components_scope_agents_and_preserve_version_one() {
+        let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+        let other = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other owner");
+        let first = taskflow_provider_key(&owner, "provider:test", "a:b", "c", 2).expect("key");
+        assert_ne!(
+            first,
+            taskflow_provider_key(&owner, "provider:test", "a", "b:c", 2).expect("key")
+        );
+        assert_ne!(
+            first,
+            taskflow_provider_key(&other, "provider:test", "a:b", "c", 2).expect("key")
+        );
+        assert_eq!(
+            taskflow_provider_key(&owner, "provider:test", "a:b", "c", 1).expect("legacy key"),
+            ProviderEffectKey::for_logical_effect("provider:test", "taskflow:a:b:c")
+                .expect("legacy contract")
+        );
+        assert!(taskflow_provider_key(&owner, "provider:test", "a:b", "c", 3).is_err());
     }
 }

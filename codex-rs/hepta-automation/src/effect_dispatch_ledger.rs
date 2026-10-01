@@ -6,13 +6,49 @@
 //! fact. Keeping both immutable lets recovery repair the TaskFlow step without
 //! ever inferring terminality from process-local control flow.
 
+use crate::AuthorizedProviderDispatchStatus;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
 use crate::AutomationStore;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
+
+// Observation and projection are separate crash cuts. An independently
+// settled step must not be contradicted by newly appended immutable evidence.
+const TERMINAL_STEP_OBSERVATION_GUARD: &str = "WHERE NOT EXISTS (
+       SELECT 1 FROM taskflow_step_outbox s
+       WHERE s.owner_agent_id = ? AND s.run_id = ? AND s.step_id = ? AND s.attempt = ?
+         AND (s.final_outcome IS NOT NULL OR s.observation IN ('succeeded', 'failed'))
+         AND (s.receipt_digest != ? OR
+              CASE WHEN s.final_outcome = 'cancelled' THEN 'proven_absent'
+                   ELSE COALESCE(s.final_outcome, s.observation) END != ?)
+         AND NOT EXISTS (
+           SELECT 1 FROM taskflow_step_outbox n
+           WHERE n.owner_agent_id = s.owner_agent_id AND n.run_id = s.run_id
+             AND n.step_id = s.step_id AND n.attempt = s.attempt AND n.event_seq > s.event_seq
+         )
+     )";
+
+// Serialize acceptance versus rejection/absence in the same SQLite write.
+const PROVIDER_CONTINUITY_GUARD: &str = "AND NOT EXISTS (
+    SELECT 1 FROM taskflow_effect_dispatch_attempts a
+    LEFT JOIN taskflow_effect_dispatch_observations o
+      USING (owner_agent_id, run_id, step_id, attempt)
+    LEFT JOIN taskflow_effect_provider_acceptances w
+      USING (owner_agent_id, run_id, step_id, attempt)
+    WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ? AND a.attempt = ?
+      AND ((? AND (w.run_id IS NOT NULL OR o.provider_dispatch_status = 'accepted'))
+           OR (? AND COALESCE(o.provider_dispatch_status, '') != 'unknown'))
+)";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum EffectProviderObservation {
+    Dispatch(AuthorizedProviderDispatchStatus),
+    Lookup(ProviderEffectAckStatus),
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum EffectDispatchObservationKind {
@@ -57,6 +93,7 @@ pub(crate) struct EffectDispatchAttempt {
     pub(crate) owner_agent_id: AgentId,
     pub(crate) provider_key_version: u32,
     pub(crate) provider_contract_binding: Option<Sha256Digest>,
+    pub(crate) provider_dispatch_status: Option<AuthorizedProviderDispatchStatus>,
     pub(crate) run_id: String,
     pub(crate) step_id: String,
     pub(crate) attempt: u32,
@@ -123,6 +160,10 @@ impl AutomationStore {
                        AND n.step_id = s.step_id AND n.attempt = s.attempt
                        AND n.event_seq > s.event_seq
                    )
+               ) AND NOT EXISTS (
+                 SELECT 1 FROM taskflow_step_outbox
+                 WHERE owner_agent_id = ? AND run_id = ? AND step_id = ?
+                   AND attempt = ? AND command_id = ?
                )",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
@@ -152,6 +193,11 @@ impl AutomationStore {
         .bind(i64::from(attempt))
         .bind(intent_digest.as_str())
         .bind(payload_digest.as_str())
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .bind(record_command_id)
         .execute(self.taskflow_pool())
         .await;
 
@@ -206,7 +252,9 @@ impl AutomationStore {
             "SELECT a.*,
                     COALESCE(r.observation, o.observation) AS observation,
                     COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
-                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms
+                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms,
+                    CASE WHEN w.run_id IS NOT NULL THEN 'accepted'
+                         ELSE o.provider_dispatch_status END AS provider_dispatch_status
              FROM taskflow_effect_dispatch_attempts a
              LEFT JOIN taskflow_effect_dispatch_observations o
                ON o.owner_agent_id = a.owner_agent_id
@@ -218,6 +266,9 @@ impl AutomationStore {
               AND r.run_id = a.run_id
               AND r.step_id = a.step_id
               AND r.attempt = a.attempt
+             LEFT JOIN taskflow_effect_provider_acceptances w
+               ON w.owner_agent_id = a.owner_agent_id AND w.run_id = a.run_id
+              AND w.step_id = a.step_id AND w.attempt = a.attempt
              WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
                AND a.attempt = ?",
         )
@@ -244,7 +295,9 @@ impl AutomationStore {
             "SELECT a.*,
                     COALESCE(r.observation, o.observation) AS observation,
                     COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
-                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms
+                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms,
+                    CASE WHEN w.run_id IS NOT NULL THEN 'accepted'
+                         ELSE o.provider_dispatch_status END AS provider_dispatch_status
              FROM taskflow_effect_dispatch_attempts a
              LEFT JOIN taskflow_effect_dispatch_observations o
                ON o.owner_agent_id = a.owner_agent_id
@@ -256,6 +309,9 @@ impl AutomationStore {
               AND r.run_id = a.run_id
               AND r.step_id = a.step_id
               AND r.attempt = a.attempt
+             LEFT JOIN taskflow_effect_provider_acceptances w
+               ON w.owner_agent_id = a.owner_agent_id AND w.run_id = a.run_id
+              AND w.step_id = a.step_id AND w.attempt = a.attempt
              WHERE a.owner_agent_id = ?
                AND r.run_id IS NULL
                AND (o.run_id IS NULL OR o.observation = 'indeterminate')
@@ -273,6 +329,46 @@ impl AutomationStore {
         rows.into_iter().map(effect_attempt_from_row).collect()
     }
 
+    pub(crate) async fn record_effect_provider_acceptance(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        evidence: &Sha256Digest,
+        observed_at_ms: u64,
+    ) -> Result<EffectDispatchAttempt, TaskFlowError> {
+        let result = sqlx::query("INSERT OR IGNORE INTO taskflow_effect_provider_acceptances
+            (owner_agent_id, run_id, step_id, attempt, evidence_digest, observed_at_ms)
+            SELECT a.owner_agent_id, a.run_id, a.step_id, a.attempt, ?, ?
+            FROM taskflow_effect_dispatch_attempts a
+            LEFT JOIN taskflow_effect_dispatch_observations o USING(owner_agent_id, run_id, step_id, attempt)
+            LEFT JOIN taskflow_effect_dispatch_reconciliations r USING(owner_agent_id, run_id, step_id, attempt)
+            WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ? AND a.attempt = ?
+              AND (o.observation IS NULL OR o.observation = 'indeterminate') AND r.run_id IS NULL
+              AND NOT EXISTS (SELECT 1 FROM taskflow_step_outbox s
+                WHERE s.owner_agent_id = a.owner_agent_id AND s.run_id = a.run_id
+                  AND s.step_id = a.step_id AND s.attempt = a.attempt
+                  AND (s.final_outcome IS NOT NULL OR s.observation IN ('succeeded', 'failed')))")
+            .bind(evidence.as_str()).bind(to_i64(observed_at_ms)?)
+            .bind(self.taskflow_owner_agent_id().as_str()).bind(run_id).bind(step_id).bind(i64::from(attempt))
+            .execute(self.taskflow_pool()).await.map_err(|_| TaskFlowError::Unavailable)?;
+        let current = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
+            })?;
+        if result.rows_affected() == 0
+            && current.provider_dispatch_status != Some(AuthorizedProviderDispatchStatus::Accepted)
+        {
+            return Err(TaskFlowError::Conflict(
+                "provider acceptance contradicts terminal evidence".to_string(),
+            ));
+        }
+        Ok(current)
+    }
+
+    #[allow(clippy::too_many_arguments)]
     pub(crate) async fn record_effect_dispatch_observation(
         &self,
         run_id: &str,
@@ -281,6 +377,7 @@ impl AutomationStore {
         kind: EffectDispatchObservationKind,
         evidence_digest: &Sha256Digest,
         observed_at_ms: u64,
+        provider: Option<EffectProviderObservation>,
     ) -> Result<EffectDispatchAttempt, TaskFlowError> {
         let current = self
             .effect_dispatch_attempt(run_id, step_id, attempt)
@@ -289,6 +386,32 @@ impl AutomationStore {
                 TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
             })?;
 
+        let forbids_accepted = kind == EffectDispatchObservationKind::ProvenAbsent
+            || matches!(
+                provider,
+                Some(
+                    EffectProviderObservation::Lookup(ProviderEffectAckStatus::Rejected)
+                        | EffectProviderObservation::Dispatch(
+                            AuthorizedProviderDispatchStatus::Rejected
+                        )
+                )
+            );
+        let needs_unknown = matches!(
+            provider,
+            Some(EffectProviderObservation::Lookup(
+                ProviderEffectAckStatus::Rejected
+            ))
+        );
+        if (forbids_accepted
+            && current.provider_dispatch_status == Some(AuthorizedProviderDispatchStatus::Accepted))
+            || (needs_unknown
+                && current.provider_dispatch_status
+                    != Some(AuthorizedProviderDispatchStatus::Unknown))
+        {
+            return Err(TaskFlowError::Conflict(
+                "provider rejection or absence contradicts admission evidence".to_string(),
+            ));
+        }
         if let Some(observation) = &current.observation {
             if observation.kind == kind && observation.evidence_digest == *evidence_digest {
                 return Ok(current);
@@ -302,21 +425,42 @@ impl AutomationStore {
                 ));
             }
 
-            let inserted = sqlx::query(
+            let query = format!(
                 "INSERT INTO taskflow_effect_dispatch_reconciliations (
                     owner_agent_id, run_id, step_id, attempt, observation,
                     evidence_digest, observed_at_ms
-                 ) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            )
-            .bind(self.taskflow_owner_agent_id().as_str())
-            .bind(run_id)
-            .bind(step_id)
-            .bind(i64::from(attempt))
-            .bind(kind.as_str())
-            .bind(evidence_digest.as_str())
-            .bind(to_i64(observed_at_ms)?)
-            .execute(self.taskflow_pool())
-            .await;
+                 ) SELECT ?, ?, ?, ?, ?, ?, ? {TERMINAL_STEP_OBSERVATION_GUARD} {PROVIDER_CONTINUITY_GUARD}",
+            );
+            // Only static SQL guards are concatenated; every identity and
+            // evidence value is supplied through a bind parameter.
+            let inserted = sqlx::query(sqlx::AssertSqlSafe(query))
+                .bind(self.taskflow_owner_agent_id().as_str())
+                .bind(run_id)
+                .bind(step_id)
+                .bind(i64::from(attempt))
+                .bind(kind.as_str())
+                .bind(evidence_digest.as_str())
+                .bind(to_i64(observed_at_ms)?)
+                .bind(self.taskflow_owner_agent_id().as_str())
+                .bind(run_id)
+                .bind(step_id)
+                .bind(i64::from(attempt))
+                .bind(evidence_digest.as_str())
+                .bind(kind.as_str())
+                .bind(self.taskflow_owner_agent_id().as_str())
+                .bind(run_id)
+                .bind(step_id)
+                .bind(i64::from(attempt))
+                .bind(forbids_accepted)
+                .bind(needs_unknown)
+                .execute(self.taskflow_pool())
+                .await;
+
+            if matches!(&inserted, Ok(result) if result.rows_affected() == 0) {
+                return Err(TaskFlowError::Conflict(
+                    "effect reconciliation contradicts terminal step evidence".to_string(),
+                ));
+            }
 
             let refreshed = self
                 .effect_dispatch_attempt(run_id, step_id, attempt)
@@ -345,21 +489,45 @@ impl AutomationStore {
             };
         }
 
-        let inserted = sqlx::query(
+        let query = format!(
             "INSERT INTO taskflow_effect_dispatch_observations (
                 owner_agent_id, run_id, step_id, attempt, observation,
-                evidence_digest, observed_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        )
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(run_id)
-        .bind(step_id)
-        .bind(i64::from(attempt))
-        .bind(kind.as_str())
-        .bind(evidence_digest.as_str())
-        .bind(to_i64(observed_at_ms)?)
-        .execute(self.taskflow_pool())
-        .await;
+                evidence_digest, observed_at_ms, provider_dispatch_status
+             ) SELECT ?, ?, ?, ?, ?, ?, ?, ? {TERMINAL_STEP_OBSERVATION_GUARD} {PROVIDER_CONTINUITY_GUARD}",
+        );
+        // Only static SQL guards are concatenated; data remains parameterized.
+        let inserted = sqlx::query(sqlx::AssertSqlSafe(query))
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .bind(step_id)
+            .bind(i64::from(attempt))
+            .bind(kind.as_str())
+            .bind(evidence_digest.as_str())
+            .bind(to_i64(observed_at_ms)?)
+            .bind(match provider {
+                Some(EffectProviderObservation::Dispatch(status)) => Some(status.as_str()),
+                _ => None,
+            })
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .bind(step_id)
+            .bind(i64::from(attempt))
+            .bind(evidence_digest.as_str())
+            .bind(kind.as_str())
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .bind(step_id)
+            .bind(i64::from(attempt))
+            .bind(forbids_accepted)
+            .bind(needs_unknown)
+            .execute(self.taskflow_pool())
+            .await;
+
+        if matches!(&inserted, Ok(result) if result.rows_affected() == 0) {
+            return Err(TaskFlowError::Conflict(
+                "effect observation contradicts terminal step evidence".to_string(),
+            ));
+        }
 
         let refreshed = self
             .effect_dispatch_attempt(run_id, step_id, attempt)
@@ -440,6 +608,11 @@ fn effect_attempt_from_row(
         )
         .map_err(|_| TaskFlowError::Corrupt("effect provider key version".to_string()))?,
         provider_contract_binding,
+        provider_dispatch_status: row
+            .try_get::<Option<String>, _>("provider_dispatch_status")
+            .map_err(|_| TaskFlowError::Corrupt("provider dispatch status".to_string()))?
+            .map(|status| AuthorizedProviderDispatchStatus::parse(&status))
+            .transpose()?,
         run_id: row
             .try_get("run_id")
             .map_err(|_| TaskFlowError::Corrupt("effect run id".to_string()))?,
@@ -676,6 +849,7 @@ mod tests {
                 EffectDispatchObservationKind::Indeterminate,
                 &unknown,
                 22,
+                None,
             )
             .await
             .expect("record indeterminate");
@@ -723,6 +897,7 @@ mod tests {
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 30,
+                None,
             )
             .await
             .expect("terminal reconciliation");
@@ -753,6 +928,7 @@ mod tests {
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 31,
+                None,
             )
             .await
             .expect("terminal replay");
@@ -766,10 +942,98 @@ mod tests {
                     EffectDispatchObservationKind::Failed,
                     &Sha256Digest::for_bytes(b"different-terminal"),
                     32,
+                    None,
                 )
                 .await,
             Err(TaskFlowError::Conflict(_))
         ));
         reopened.close().await;
+    }
+    #[tokio::test]
+    async fn concurrent_acceptance_and_rejection_are_serialized_and_acceptance_is_immutable() {
+        let (_temp, _layout, store, fence) = prepared_store().await;
+        let digest = Sha256Digest::for_bytes(b"ledger-race");
+        store
+            .begin_effect_dispatch_attempt(
+                "effect-run",
+                "work",
+                1,
+                &Sha256Digest::for_bytes(b"effect-intent"),
+                &Sha256Digest::for_bytes(b"effect-payload"),
+                &digest,
+                "provider:test",
+                1,
+                "race-grant",
+                &digest,
+                "race-record",
+                21,
+                &fence,
+                None,
+            )
+            .await
+            .expect("start");
+        store
+            .record_effect_dispatch_observation(
+                "effect-run",
+                "work",
+                1,
+                EffectDispatchObservationKind::Indeterminate,
+                &digest,
+                22,
+                Some(EffectProviderObservation::Dispatch(
+                    AuthorizedProviderDispatchStatus::Unknown,
+                )),
+            )
+            .await
+            .expect("unknown");
+        let accepted = Sha256Digest::for_bytes(b"accepted");
+        let rejected = Sha256Digest::for_bytes(b"rejected");
+        let (admission, rejection) = tokio::join!(
+            store.record_effect_provider_acceptance("effect-run", "work", 1, &accepted, 23),
+            store.record_effect_dispatch_observation(
+                "effect-run",
+                "work",
+                1,
+                EffectDispatchObservationKind::Failed,
+                &rejected,
+                23,
+                Some(EffectProviderObservation::Lookup(
+                    ProviderEffectAckStatus::Rejected
+                ))
+            )
+        );
+        assert_ne!(
+            admission.is_ok(),
+            rejection.is_ok(),
+            "contradictory facts cannot both commit"
+        );
+        if admission.is_ok() {
+            store
+                .record_effect_provider_acceptance("effect-run", "work", 1, &rejected, 24)
+                .await
+                .expect("later accepted lookup retains first witness");
+            let row: (i64, String) = sqlx::query_as(
+                "SELECT COUNT(*), evidence_digest FROM taskflow_effect_provider_acceptances",
+            )
+            .fetch_one(store.taskflow_pool())
+            .await
+            .expect("accepted witness");
+            assert_eq!(row, (1, accepted.as_str().to_string()));
+            assert!(
+                sqlx::query("UPDATE taskflow_effect_provider_acceptances SET evidence_digest = ?")
+                    .bind(rejected.as_str())
+                    .execute(store.taskflow_pool())
+                    .await
+                    .is_err()
+            );
+            assert!(
+                sqlx::query("DELETE FROM taskflow_effect_provider_acceptances")
+                    .execute(store.taskflow_pool())
+                    .await
+                    .is_err()
+            );
+            assert!(sqlx::query("UPDATE taskflow_effect_dispatch_observations SET provider_dispatch_status = 'accepted'")
+                .execute(store.taskflow_pool()).await.is_err());
+        }
     }
 }
