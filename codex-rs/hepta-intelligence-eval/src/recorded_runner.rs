@@ -24,7 +24,6 @@ use crate::ProductEvaluationAttemptJournalV1;
 use crate::ProductEvaluationAttemptPhaseV1;
 use crate::ProductEvaluationAttemptTransitionV1;
 use crate::ProductEvaluationError;
-use crate::ProductEvaluationRunnerV1;
 use crate::ProductFrozenEvaluationPlanV1;
 use crate::ProductProviderErrorV1;
 use crate::ProductQualificationContextV1;
@@ -35,6 +34,7 @@ use crate::ProductTimingEvidenceV1;
 use crate::SignedEvaluationEvidenceV1;
 use crate::TemporalComparisonInputsV1;
 use crate::TemporalEvaluationPlan;
+use crate::product_runner::ProductEvaluationRunnerV1;
 use crate::recorded_publication::RecordedPublicationSinkV1;
 
 #[path = "recorded_failure.rs"]

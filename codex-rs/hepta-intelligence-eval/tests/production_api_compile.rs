@@ -58,10 +58,23 @@ fn raw_decision_and_runner_are_private_in_default_builds() {
         "#[cfg(feature = \"trusted-inprocess-eval\")]\n\
          pub use product_runner::ProductEvaluationRunnerV1;"
     ));
-    assert!(source.contains(
-        "#[cfg(not(feature = \"trusted-inprocess-eval\"))]\n\
-         pub(crate) use product_runner::ProductEvaluationRunnerV1;"
-    ));
+    assert!(
+        source
+            .lines()
+            .any(|line| line.trim() == "mod product_runner;")
+    );
+    assert!(
+        !source
+            .lines()
+            .any(|line| { line.trim() == "pub mod product_runner;" })
+    );
+    assert_eq!(
+        source
+            .lines()
+            .filter(|line| line.trim() == "pub use product_runner::ProductEvaluationRunnerV1;")
+            .count(),
+        1,
+    );
     assert!(source.contains("pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"));
     assert!(!source.lines().any(|line| {
         line.trim() == "pub use signed_evaluation::decide_with_signed_evidence_v2;"

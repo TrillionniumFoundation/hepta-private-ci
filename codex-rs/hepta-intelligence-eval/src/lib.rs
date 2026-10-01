@@ -169,8 +169,6 @@ pub use product_runner::FinalHoldoutProviderV1;
 pub use product_runner::ProductEvaluationError;
 #[cfg(feature = "trusted-inprocess-eval")]
 pub use product_runner::ProductEvaluationRunnerV1;
-#[cfg(not(feature = "trusted-inprocess-eval"))]
-pub(crate) use product_runner::ProductEvaluationRunnerV1;
 pub use product_runner::ProductEvidenceSinkErrorV1;
 pub use product_runner::ProductFrozenEvaluationPlanV1;
 pub use product_runner::ProductMetricSourceContractV1;

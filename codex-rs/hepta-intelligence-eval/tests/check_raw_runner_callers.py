@@ -101,8 +101,7 @@ def main() -> int:
     required = (
         '#[cfg(feature = "trusted-inprocess-eval")]\n'
         'pub use product_runner::ProductEvaluationRunnerV1;',
-        '#[cfg(not(feature = "trusted-inprocess-eval"))]\n'
-        'pub(crate) use product_runner::ProductEvaluationRunnerV1;',
+        'mod product_runner;',
         'pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;',
     )
     missing = [snippet for snippet in required if snippet not in lib]
@@ -112,7 +111,16 @@ def main() -> int:
             print(f"  - {snippet!r}")
         return 1
 
-    if PUBLIC_LOW_LEVEL.search(strip_comments_and_literals(lib)):
+    code = strip_comments_and_literals(lib)
+    if (
+        not re.search(r"(?m)^\s*mod\s+product_runner\s*;", code)
+        or re.search(r"(?m)^\s*pub(?:\([^)]*\))?\s+mod\s+product_runner\s*;", code)
+        or len(re.findall(r"(?m)^\s*pub\s+use\s+product_runner::ProductEvaluationRunnerV1\s*;", code)) != 1
+    ):
+        print("raw runner must remain in a private module with only its gated compatibility export")
+        return 1
+
+    if PUBLIC_LOW_LEVEL.search(code):
         print("low-level signed decision primitive is publicly exported")
         return 1
 
