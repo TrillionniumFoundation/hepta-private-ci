@@ -67,7 +67,7 @@ function canonicalValue(value, depth = 0) {
   if (typeof value === "number") {
     if (!Number.isSafeInteger(value))
       throw new TypeError("worker frame numbers must be safe integers");
-    return value;
+    return value === 0 ? 0 : value;
   }
   if (Array.isArray(value))
     return Array.from(value, (item) => canonicalValue(item, depth + 1));
@@ -83,7 +83,21 @@ function canonicalValue(value, depth = 0) {
 }
 
 export function canonicalWorkerJson(value) {
-  return JSON.stringify(canonicalValue(value));
+  return writeCanonical(canonicalValue(value));
+}
+
+// v1 orders object keys by UTF-8 bytes, matching the Rust serializers.
+// Writing fields directly avoids JSON.stringify's numeric-property reordering.
+function writeCanonical(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(writeCanonical).join(",") + "]";
+  const keys = Object.keys(value).map((key) => ({
+    key,
+    bytes: Buffer.from(key, "utf8"),
+  }));
+  keys.sort((left, right) => Buffer.compare(left.bytes, right.bytes));
+  return "{" + keys.map(({ key }) =>
+    JSON.stringify(key) + ":" + writeCanonical(value[key])).join(",") + "}";
 }
 
 export function workerPayloadDigest(payload) {
