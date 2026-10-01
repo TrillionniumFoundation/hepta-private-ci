@@ -74,6 +74,8 @@ pub use crate::native_authority_port::TurnStartAuthorizer;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_denial.rs"]
+mod denial;
 #[path = "native_input.rs"]
 mod input;
 #[path = "native_intelligence.rs"]
@@ -82,8 +84,10 @@ mod intelligence_owner;
 mod observation;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use denial::persist_denied_observation;
 use input::app_server_version_valid;
 use input::bounded_diagnostic;
+use input::bounded_utf8_prefix;
 use intelligence_owner::IntelligenceObservation;
 use intelligence_owner::apply_intelligence_failure;
 use intelligence_owner::commit_intelligence_terminal;
@@ -102,11 +106,14 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+// Conform to Agentd lane_b_runtime::MAX_CANCEL_REASON_BYTES (512 bytes),
+// whose existing owner policy is private and is not a worker API export.
+const MAX_OWNER_CANCEL_REASON_BYTES: usize = 512;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
-const LOCAL_CANCELLED: &str = "cancelled";
-const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
+use intelligence_owner::receipt::LOCAL_CANCELLED;
+use intelligence_owner::receipt::LOCAL_DEADLINE_ELAPSED;
 
 #[cfg(test)]
 struct FinalRevalidationTestHook {
@@ -982,6 +989,9 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
+            // Commit the denied boundary and observed prefix before any awaited
+            // owner cancellation or interrupt. A crash cannot erase this cause.
+            let denial_recorded = persist_denied_observation(control, request_id, &output);
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
                 && !(reason == LOCAL_CANCELLED
                     && intelligence_revision != dispatched_intelligence_revision)
@@ -989,25 +999,14 @@ impl AppServerModelDriver {
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
-                        reason.chars().take(512).collect(),
+                        bounded_utf8_prefix(&reason, MAX_OWNER_CANCEL_REASON_BYTES).to_string(),
                     )
                     .await
             {
                 intelligence_revision = Some(cancelled.receipt.revision);
             }
-            // Persist cancellation intent, but still interrupt if that write
-            // fails. A failed journal write fences later admission/settlement.
-            // Commit observed authority loss before waiting for interruption:
-            // a process crash must not erase it from a later settlement.
-            let loss_recorded =
-                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
-                } else {
-                    Ok(())
-                };
-            let cancel_recorded = control.cancel_native(request_id);
+            // Journal failures are retained, but physical interruption is still
+            // attempted before returning them. Unknown reservations remain held.
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
             let _ = self
@@ -1020,8 +1019,7 @@ impl AppServerModelDriver {
                     &binding,
                 )
                 .await;
-            loss_recorded?;
-            cancel_recorded?;
+            denial_recorded?;
             if !output.terminal_observed
                 && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
                 && let Err(error) = owner

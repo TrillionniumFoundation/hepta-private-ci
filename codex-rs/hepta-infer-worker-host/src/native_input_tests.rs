@@ -134,3 +134,22 @@ fn bounded_diagnostic_caps_unicode_across_display_chunks_without_suffix() {
         "😀".repeat(1024)
     );
 }
+
+#[test]
+fn utf8_prefix_respects_protocol_byte_limits_at_multibyte_boundaries() {
+    let text = format!("{}😀suffix", "a".repeat(510));
+    assert_eq!(
+        bounded_utf8_prefix(&text, /*maximum_bytes*/ 512),
+        "a".repeat(510)
+    );
+    assert_eq!(
+        bounded_utf8_prefix("😀".repeat(200).as_str(), /*maximum_bytes*/ 512),
+        "😀".repeat(128)
+    );
+    assert_eq!(
+        bounded_utf8_prefix("short说明", /*maximum_bytes*/ 512),
+        "short说明"
+    );
+    assert_eq!(bounded_utf8_prefix("😀", /*maximum_bytes*/ 3), "");
+    assert_eq!(bounded_utf8_prefix("😀", /*maximum_bytes*/ 0), "");
+}

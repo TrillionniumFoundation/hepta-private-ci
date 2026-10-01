@@ -21,6 +21,7 @@ pub struct NativeAdmission {
 }
 
 pub use super::input::NativeIntelligenceRunBinding;
+use super::input::bounded_diagnostic;
 pub(super) use super::input::digest;
 use super::input::native_source_payload_digest;
 
@@ -183,7 +184,7 @@ impl AppServerModelDriver {
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.
-                    let reason: String = error.to_string().chars().take(1024).collect();
+                    let reason = bounded_diagnostic(format_args!("{error}"));
                     control.stop_native_before_dispatch(&request_id, reason)?;
                 }
                 Err(error)

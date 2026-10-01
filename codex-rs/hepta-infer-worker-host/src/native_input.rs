@@ -19,6 +19,15 @@ pub(super) fn app_server_version_valid(version: &str) -> bool {
         && !version.bytes().any(|byte| byte.is_ascii_control())
 }
 
+/// Borrow a prefix within a declared byte budget without splitting UTF-8.
+pub(super) fn bounded_utf8_prefix(text: &str, maximum_bytes: usize) -> &str {
+    let mut end = text.len().min(maximum_bytes);
+    while !text.is_char_boundary(end) {
+        end -= 1;
+    }
+    &text[..end]
+}
+
 /// Retain the existing diagnostic prefix while formatting, before an oversized
 /// service message or Display implementation can allocate an entire copy.
 pub(super) fn bounded_diagnostic(arguments: std::fmt::Arguments<'_>) -> String {
