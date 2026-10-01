@@ -43,6 +43,7 @@ production-cognitive-write = ["server"]
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
 qualification-legacy-learning-write = ["server", "codex-hepta-agent-components/qualification-legacy-learning-write"]
+qualification-unverified-operator-input = ["server", "codex-hepta-agent-components/qualification-unverified-operator-input"]
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -114,7 +115,7 @@ codex-hepta-evidence = { path = "../hepta-evidence", default-features = false }
 [dev-dependencies]
 # Restore the qualification-only ledger writer for Agentd tests through the
 # composition boundary; production Agentd keeps the feature disabled.
-codex-hepta-agent-components = { workspace = true, features = ["qualification-legacy-learning-write"] }
+codex-hepta-agent-components = { workspace = true, features = ["qualification-legacy-learning-write", "qualification-unverified-operator-input"] }
 rand = { workspace = true }
 
 codex-hepta-operations = { workspace = true }

@@ -238,6 +238,14 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Verify the retained root-signed distribution before owner work.
+    pub fn revalidate_trust_at(
+        &self,
+        now: u64,
+    ) -> Result<(), crate::LearningTrustDistributionError> {
+        self.trust.revalidate_at(now)
+    }
+
     #[must_use]
     pub fn trust_distribution_digest(&self) -> Digest32 {
         self.trust.distribution_digest()

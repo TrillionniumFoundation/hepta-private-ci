@@ -70,6 +70,43 @@ fn resign(root_key: &SigningKey, signed: &mut SignedLearningTrustDistributionV1)
 }
 
 #[test]
+fn admitted_distribution_retains_activation_clock_and_strict_expiry_at_owner_use() {
+    let key = SigningKey::from_bytes(&[99; 32]);
+    let signed = signed_distribution(
+        &key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("current-original-distribution"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(7, 1),
+        },
+    );
+    assert!(
+        activate_learning_trust(
+            &root(&key),
+            signed.clone(),
+            /*previous*/ None,
+            /*now*/ 90
+        )
+        .is_err()
+    );
+    let admitted =
+        activate_learning_trust(&root(&key), signed, /*previous*/ None, /*now*/ 50).unwrap();
+    assert_eq!(admitted.revalidate_at(50), Ok(()));
+    assert_eq!(admitted.revalidate_at(89), Ok(()));
+    assert_eq!(
+        admitted.revalidate_at(49),
+        Err(LearningTrustDistributionError::ClockRegression)
+    );
+    assert_eq!(
+        admitted.revalidate_at(90),
+        Err(LearningTrustDistributionError::DistributionWindow)
+    );
+    assert!(!admitted.is_current_at(49));
+    assert!(!admitted.is_current_at(90));
+}
+
+#[test]
 fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = root(&root_key);
@@ -108,7 +145,8 @@ fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     assert_eq!(second.generation(), 2);
     assert_eq!(first.root_id(), &id("root"));
     assert_eq!(first.expires_at(), 90);
-    assert!(first.is_current_at(90));
+    assert!(first.is_current_at(89));
+    assert!(!first.is_current_at(90));
     assert!(!first.is_current_at(91));
     assert_ne!(first.root_digest(), Digest32::ZERO);
     assert_ne!(first.distribution_digest(), second.distribution_digest());
@@ -245,7 +283,8 @@ fn trust_distribution_cannot_outlive_scheduled_root_revocation() {
     resign(&root_key, &mut bounded);
     let activated = activate_learning_trust(&root, bounded, None, 50).unwrap();
     assert_eq!(activated.expires_at(), 59);
-    assert!(activated.is_current_at(59));
+    assert!(activated.is_current_at(58));
+    assert!(!activated.is_current_at(59));
     assert!(!activated.is_current_at(60));
 }
 
