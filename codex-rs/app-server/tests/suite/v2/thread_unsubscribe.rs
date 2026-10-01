@@ -60,6 +60,7 @@ async fn thread_unsubscribe_keeps_thread_loaded_until_idle_timeout() -> Result<(
         .request(|request_id| ClientRequest::ThreadUnsubscribe {
             request_id,
             params: ThreadUnsubscribeParams {
+                ephemeral_disposal: None,
                 thread_id: thread_id.clone(),
             },
         })
@@ -200,6 +201,7 @@ async fn thread_unsubscribe_during_turn_keeps_turn_running() -> Result<()> {
         .request(|request_id| ClientRequest::ThreadUnsubscribe {
             request_id,
             params: ThreadUnsubscribeParams {
+                ephemeral_disposal: None,
                 thread_id: thread_id.clone(),
             },
         })
@@ -294,6 +296,7 @@ async fn thread_unsubscribe_preserves_cached_status_before_idle_unload() -> Resu
         .request(|request_id| ClientRequest::ThreadUnsubscribe {
             request_id,
             params: ThreadUnsubscribeParams {
+                ephemeral_disposal: None,
                 thread_id: thread_id.clone(),
             },
         })
@@ -348,6 +351,7 @@ async fn thread_unsubscribe_reports_not_subscribed_before_idle_unload() -> Resul
         .request(|request_id| ClientRequest::ThreadUnsubscribe {
             request_id,
             params: ThreadUnsubscribeParams {
+                ephemeral_disposal: None,
                 thread_id: thread_id.clone(),
             },
         })
@@ -360,7 +364,10 @@ async fn thread_unsubscribe_reports_not_subscribed_before_idle_unload() -> Resul
     let second_unsubscribe: ThreadUnsubscribeResponse = mcp
         .request(|request_id| ClientRequest::ThreadUnsubscribe {
             request_id,
-            params: ThreadUnsubscribeParams { thread_id },
+            params: ThreadUnsubscribeParams {
+                thread_id,
+                ephemeral_disposal: None,
+            },
         })
         .await?;
     assert_eq!(

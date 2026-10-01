@@ -1,3 +1,6 @@
+#[path = "ephemeral_disposal.rs"]
+mod ephemeral_disposal;
+
 use super::persisted_resume_settings::PersistedResumeSettings;
 use super::persisted_resume_settings::latest_persisted_resume_settings;
 use super::thread_enrichment::enrich_loaded_threads;
@@ -1119,6 +1122,11 @@ impl ThreadRequestProcessor {
     ) -> Result<ThreadUnsubscribeResponse, JSONRPCErrorError> {
         let thread_id = ThreadId::from_string(&params.thread_id)
             .map_err(|err| invalid_request(format!("invalid thread id: {err}")))?;
+        if let Some(disposal) = params.ephemeral_disposal {
+            return self
+                .dispose_ephemeral(thread_id, connection_id, disposal)
+                .await;
+        }
 
         if self.thread_manager.get_thread(thread_id).await.is_err() {
             self.finalize_thread_teardown(thread_id).await;

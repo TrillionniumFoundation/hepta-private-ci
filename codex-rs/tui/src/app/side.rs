@@ -482,6 +482,7 @@ impl App {
                 .request_typed::<ThreadUnsubscribeResponse>(ClientRequest::ThreadUnsubscribe {
                     request_id: unsubscribe_request_id,
                     params: ThreadUnsubscribeParams {
+                        ephemeral_disposal: None,
                         thread_id: thread_id.to_string(),
                     },
                 })

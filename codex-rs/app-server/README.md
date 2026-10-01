@@ -2710,3 +2710,18 @@ For server-initiated request payloads, annotate the field the same way so schema
    ```bash
    just test -p codex-app-server-protocol
    ```
+
+### Disposing an idle ephemeral runtime
+
+`thread/unsubscribe` keeps its usual unsubscribe and idle-cache behavior when
+`ephemeralDisposal` is omitted or null. A client that owns a disposable ephemeral
+run can explicitly pass `ephemeralDisposal: { "expectedSessionId": "..." }`.
+The server refuses persistent threads, another session, active turns, and other
+subscribers. Only successful shutdown of the exact session and removal of its
+live runtime returns `ephemeralDisposed`; `notLoaded` permits idempotent cleanup.
+Shutdown failure or timeout returns an error and leaves the runtime fenced for
+an exact-session retry. No archive, history deletion, or RSS reclamation is
+implied. Native workers retain their durable cleanup obligation until this
+acknowledgement and must first settle the original control record and any
+Intelligence terminal-publication outbox. Ordinary unsubscribe statuses cannot
+acknowledge ephemeral disposal.

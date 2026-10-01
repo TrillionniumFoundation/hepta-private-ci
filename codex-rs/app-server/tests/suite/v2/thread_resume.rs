@@ -3929,6 +3929,7 @@ async fn thread_resume_defers_updated_at_until_turn_start() -> Result<()> {
 
     let unsubscribe_id = mcp
         .send_thread_unsubscribe_request(ThreadUnsubscribeParams {
+            ephemeral_disposal: None,
             thread_id: thread_id.clone(),
         })
         .await?;
