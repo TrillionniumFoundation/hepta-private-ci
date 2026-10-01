@@ -130,7 +130,7 @@ ESS 数值认证不是无限精度有理数 ESS 求解器。`S=2^32`，单步使
 
 本节修复已拆成可审查的连续提交，格式化与行为修改分开。详细开发文档已同步迁移及边界；需要最终 source observation、执行记录和可信 control-plane bootstrap/restack 来完成后续资格。独立 scoped 复审没有发现本节范围内未处理的可复现模块缺陷，但这不代表没有未知缺陷。
 
-最终远端 head 的首次规范离线检查中，13 项通过，source-status 实际发现归档写入的旧映射仍为 `qualification_archive.rs::Archive::persist`。实现已经迁移至 `prepared_qualification_archive.rs::PreparedArchive::persist`；本轮同步修正实现映射和必需符号清单，并重新绑定最终候选执行记录。该失败没有被记作通过，也没有放宽源码检查。
+最终远端 head 的首次规范离线检查中，13 项通过，source-status 实际发现归档写入的旧映射仍为 `qualification_archive.rs::Archive::persist`。实现已经迁移至 `prepared_qualification_archive.rs::PreparedArchive::persist`；本轮同步修正实现映射、手写 native mapping 和必需符号清单，并重新绑定最终候选执行记录。该失败没有被记作通过，也没有放宽源码检查。
 
 ## 7. 有代表性的对抗回归
 
@@ -174,7 +174,7 @@ ESS 数值认证不是无限精度有理数 ESS 求解器。`S=2^32`，单步使
 | 核心源码 | point/cluster/sequential/temporal、多 outcome、signed V2/V3、fenced holdout、durable seven-phase journal、typed cold recovery、checkpoint 与 cursor 均有具体实现 | 最终 SHA 的编译、owner/consumer/API/fault/lint/coverage 资格 |
 | 仓库消费者 composition | Agentd、evaluated shadow、governed plasticity 有明确 source bindings；本轮加强 distribution 当前性与实际 sink 时效 | named host 上的真实 provider/publication/supervisor 调用与部署测量 |
 | 本地执行 | 七包最终 882 项加 Agentd 六项，共 888 项通过；先前 State 216 项保留历史身份 | 它们不能冒充最终 exact-head、merge、覆盖率或完整 workspace 证据 |
-| 完整源码资格 | 尚未闭合 | Core/ContextCompiler 三处早期依赖 lint 阻断及下游既有 warnings、覆盖率至少 85%、exact head 和 ordered-parent synthetic merge 的 retained artifacts |
+| 完整源码资格 | 尚未闭合 | 本次 Core 首个依赖 lint 阻断、前次 ContextCompiler 两处未证明关闭及下游既有 warnings、覆盖率至少 85%、exact head 和 ordered-parent synthetic merge 的 retained artifacts |
 | target-host qualification | 未闭合 | authenticated host、独立管理员 anchor、实际 lock/CAS/fsync/目录/断电语义、provider/publication/cursor topology 和 recovery SLO |
 | 真实长期学习与独立接受 | 未闭合 | real future-calendar windows、独立 snapshots/measurement、power、shift、retention、subgroup/privacy、unlearning、backup non-resurrection 和独立 semantic/operator acceptance |
 | selection/activation/release | 未授权 | 各自独立的 gate 与 authority；当前继续 `NO_GO` |
@@ -228,7 +228,7 @@ ESS 数值认证不是无限精度有理数 ESS 求解器。`S=2^32`，单步使
 | 文档文件/heading-anchor 检查 | **首轮通过（15 documents）**，含本报告及索引链接 |
 | `learning.eval` strict all-target Clippy | **通过，零警告**；129 处 fixture `expect` 按 Result/Option 分别替换为保留失败上下文的显式 panic，全部断言保留，没有放宽 lint |
 | evaluator/intelligence/Agentd 三包 Rust formatting | **通过**；既有格式整理为独立机械提交，随后按 CI 原范围执行 `cargo fmt -- --check` |
-| evaluator/intelligence/Agentd 三包 strict all-target Clippy | **首轮未通过**：operations SQLite 构造和 collapsible-if；第二轮已引入保留四/五连接政策的中央 factory，当前首先阻断于上表 Core/ContextCompiler 三处，下游更多 warnings 另行记录 |
+| evaluator/intelligence/Agentd 三包 strict all-target Clippy | **首轮未通过**：operations SQLite 构造和 collapsible-if；第二轮已引入保留四/五连接政策的中央 factory。本次首先阻断于上表 Core 一处，前次 ContextCompiler 两处未证明关闭；下游更多 warnings 另行记录 |
 | Shadow strict all-target Clippy | **首轮未通过**：NDU deprecated re-export；第二轮保留兼容 wrapper 并修正内部调用边界，未放宽 warning gate |
 | 完整 workspace 测试 | 未作为本次 scoped 结果宣称通过 |
 | default-production measured coverage >=85% | 待最终候选的覆盖率证据 |

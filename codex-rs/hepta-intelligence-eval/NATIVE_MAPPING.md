@@ -92,7 +92,7 @@ target-host SLO or observed passing result.
 
 | Operation | Native symbol | Source | Semantics |
 |---|---|---|---|
-| canonical archive encode/verify/persist | `Archive::persist` | `src/qualification_archive.rs` and codec/model/store children | archive is generated from actual typed receipt/context/evidence/timing inputs; create-only; journal-bound |
+| canonical archive encode/verify/persist | `Archive::prepare`, `PreparedArchive::persist` | `src/prepared_qualification_archive.rs`; codec/model/store children of `src/qualification_archive.rs` | archive is generated from actual typed receipt/context/evidence/timing inputs; one canonical encoding shared by phase 4 and final use; create-only; journal-bound |
 | archive recovery | `qualification_archive::recover` | `src/qualification_archive.rs` | reloads exact bytes, decodes canonical typed objects and performs current V2/V3 verification inside the module |
 | single-outcome selected-host qualification | `RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host` | `src/selected_host_facade.rs` | shared typed archive and publication store |
 | multi-outcome selected-host qualification | `RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist_on_selected_host` | `src/selected_host_facade.rs` | same archive/store semantics, full multi-channel execution digest |
