@@ -297,6 +297,8 @@ In `codex-rs`, run `just test -p codex-hepta-kg`. The command is a test invocati
 
 The latest scoped local checks passed all-target strict Clippy with `-D warnings` for knowledge.graph, prompt.registry and prompt.optimizer. `just fix` completed for five scoped crates and formatting completed. The broader memory/Agentd scope still reports existing warnings; these local results do not establish complete final-HEAD/merge or workspace-wide warning-clean qualification.
 
+CI exposed line wrapping in the newly registered test-only `codex-rs/hepta-agentd/src/runtime_executable.rs`; the correction is at `b3b14c25821896eda3c27aaade20196d93b24aee`, tree `b22babb0050f74e4b27d4ac6ef1518f38f98aee7`, with scoped `just fmt --base a89e97a1` passing. `856dbd4f5c` is the earlier formatting observation; capacity execution remains bound to `be4004a11e`, without renewing test, capacity or final-HEAD/merge qualification.
+
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages

@@ -286,6 +286,19 @@
     "formattedCodeObservation": {
       "commit": "856dbd4f5c358803e58f83f902746a2390a13c30",
       "tree": "2fdc044cb58572f13e170a43ac03d48a532d9ea5"
+    },
+    "additionalCiFormattingRepair": {
+      "componentCodeObservation": {
+        "commit": "b3b14c25821896eda3c27aaade20196d93b24aee",
+        "tree": "b22babb0050f74e4b27d4ac6ef1518f38f98aee7"
+      },
+      "path": "codex-rs/hepta-agentd/src/runtime_executable.rs",
+      "reason": "Newly registered test-only module exposes one previously unreachable Rustfmt layout discrepancy.",
+      "changes": "Line wrapping and an optional trailing comma only; no behavior change.",
+      "justFmtBase": "a89e97a1b9c4b2b0ceaff16e55d2e41302926f5e",
+      "justFmtExitCode": 0,
+      "ciEquivalentWholeWorkspaceRustFormatCheckExitCode": 0,
+      "noRustTestsRerun": true
     }
   },
   "finalSourceIdentity": {
@@ -480,5 +493,104 @@
       }
     ],
     "claim": "navigation_and_source_identity_only_not_product_or_release_qualification"
+  },
+  "freshCiObservation": {
+    "observedHead": "a89e97a1b9c4b2b0ceaff16e55d2e41302926f5e",
+    "runs": {
+      "blocking": 36890948343,
+      "architecture": 36890947819,
+      "v8": 36890947959
+    },
+    "snapshotOnly": true,
+    "notFinalRepairedHeadQualification": true,
+    "formatFailure": {
+      "rust": {
+        "path": "codex-rs/hepta-agentd/src/runtime_executable.rs",
+        "status": "repaired_in_component_observation_b3b14c",
+        "repoJob": {
+          "jobId": 110466350461,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36890948343/job/110466350461",
+          "logSha256": "e53d4551c7fde83d27020cfc660a2c1e677527eae619c9239dd0f7ca8164155b"
+        }
+      },
+      "python": {
+        "status": "unchanged_main_baseline",
+        "checkedHead": "a89e97a1b9c4b2b0ceaff16e55d2e41302926f5e",
+        "checkedMain": "997e7beef8151160065df36b024bc8da5c989e93",
+        "allListedPathsHaveIdenticalGitBlob": true,
+        "paths": [
+          ".github/scripts/check_ci_results.py",
+          ".github/scripts/hepta_final_materializer.py",
+          ".github/scripts/llvm_header_parser_smoke.py",
+          ".github/scripts/macos-signing/notarize_with_akv.py",
+          ".github/scripts/macos-signing/test_notarize_with_akv.py",
+          ".github/scripts/run_bazel_with_buildbuddy.py",
+          ".github/scripts/test_llvm_header_parser_smoke.py",
+          ".github/scripts/test_run_bazel_ci.py",
+          ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+          ".github/scripts/test_run_bazel_windows_fallback.py",
+          ".github/scripts/test_rusty_v8_bazel.py",
+          ".github/scripts/v8_canary_changes.py",
+          ".github/scripts/verify_tui_core_boundary.py",
+          "scripts/hepta-readiness.py",
+          "scripts/hepta_ci_candidate.py",
+          "scripts/hepta_ci_scope.py",
+          "scripts/hepta_integration_diagnostics.py",
+          "scripts/hepta_ledger_scale.py",
+          "scripts/hepta_main_protection.py",
+          "scripts/hepta_workflow_commands.py",
+          "scripts/test_hepta_ci_cargo_entrypoints.py",
+          "scripts/test_hepta_ci_dependency_scaling.py",
+          "scripts/test_hepta_ci_exec_deadline.py",
+          "scripts/test_hepta_ci_module_inputs.py",
+          "scripts/test_hepta_ci_nested_inputs.py",
+          "scripts/test_hepta_ci_opaque_inputs.py",
+          "scripts/test_hepta_ci_owner_transitions.py",
+          "scripts/test_hepta_ci_scope_roots.py",
+          "scripts/test_hepta_cleanup_consumers.py",
+          "scripts/test_hepta_document_inventory.py",
+          "scripts/test_hepta_implementation_git_environment.py",
+          "scripts/test_hepta_implementation_identity.py",
+          "scripts/test_hepta_implementation_maps.py",
+          "scripts/test_hepta_integration_feedback.py",
+          "scripts/test_hepta_ledger_scale.py",
+          "scripts/test_hepta_main_protection.py",
+          "scripts/test_hepta_main_protection_freshness.py",
+          "scripts/test_hepta_module_projection_membership.py",
+          "scripts/test_hepta_preflight_logging.py",
+          "scripts/test_hepta_readiness_semantics.py",
+          "scripts/test_hepta_repository_controls.py",
+          "scripts/test_hepta_rust_ci_feedback.py",
+          "scripts/test_hepta_workflow_commands.py",
+          "scripts/test_hepta_workspace.py",
+          "scripts/test_hepta_workspace_inheritance.py",
+          "scripts/test_hepta_workspace_ownership.py",
+          "scripts/test_verify_cargo_lock.py",
+          "scripts/tests/test_hepta_ci_candidate.py",
+          "scripts/tests/test_hepta_ci_dependencies.py",
+          "scripts/tests/test_hepta_ci_scope.py",
+          "scripts/tests/test_hepta_repository_controls.py"
+        ]
+      }
+    },
+    "pythonSdkFailure": {
+      "jobId": 110466350527,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36890948343/job/110466350527",
+      "logSha256": "150a8427ce1671b507532d8a64ea290ebed8bc840a476ea56169a5aa044984d4",
+      "passed": 127,
+      "failed": 4,
+      "skipped": 38,
+      "attribution": "Unchanged root formatter assertions and python:3.12-slim container lacking git; relevant formatter, tests, workflow and dependency configuration equal reviewed main.",
+      "kgBehaviorClaim": false
+    },
+    "windowsBazelClippy": {
+      "jobId": 110466351453,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36890948343/job/110466351453",
+      "logSha256": "06c4b2cab38bd0bcc5152e1283bc6a6008452c27e21850b1cbd158558d240ec8",
+      "phase": "analysis_wrapper_before_any_compilation_result",
+      "error": "/usr/bin/env: 'python3': Argument list too long",
+      "claim": "No Rust clippy action failure is evidenced by this job."
+    },
+    "remainingNativeJobs": "in_progress_at_observation; no complete HEAD_or_merge_qualification_claim"
   }
 }

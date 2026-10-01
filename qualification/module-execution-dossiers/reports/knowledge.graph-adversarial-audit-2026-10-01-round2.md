@@ -5,8 +5,8 @@
 `ef72561919df90202bb10f42a7e9c816d4a32695`。
 本轮继续修复同一个 [draft PR #1314](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1314)。
 第一、第二修复阶段均已完成，已获得的定向执行结果如下。
-最终组件源码观测：`856dbd4f5c358803e58f83f902746a2390a13c30`，
-tree `2fdc044cb58572f13e170a43ac03d48a532d9ea5`。
+最终组件源码观测：`b3b14c25821896eda3c27aaade20196d93b24aee`，
+tree `b22babb0050f74e4b27d4ac6ef1518f38f98aee7`。
 完整容量重试与最终修复/格式化门禁已完成；真实产品 E2E 的宿主阻塞如下。
 局部执行结果不计为完整 HEAD/synthetic merge、目标宿主或发布资格。
 
@@ -213,3 +213,17 @@ KG 的 manifest 覆盖 70 个源码/见证对象。40 个模块的开发文档�
 开发模式 map 导航通过；全仓 qualification 模式仍明确失败于 21 个
 其他 owner 的既有失效锚点。以上只证明源码身份和文档导航，不能代替
 本候选的产品执行或验收资格。具体锚点、对象数和失败列表见本地执行 JSON。
+
+最终 draft 推送 `a89e97a1` 后，新 CI 揭示一个本轮接入 test-only 模块
+才暴露的 Rustfmt 差异：`runtime_executable.rs` 的一处换行。已在
+`b3b14c25821896eda3c27aaade20196d93b24aee` 修正布局及可选尾逗号，
+限定 `just fmt` 和 CI 同款全 workspace Rust format check 均通过；
+没有重跑 Rust 测试或改变行为。此前 `856dbd` 的格式化观察保持为历史记录。
+
+同一 CI 的 Python formatter 另报告 51 个旧文件，逐个核对与审阅 main
+的 Git blob 完全相同；没有全仓刷格式。Python SDK 127 通过/4 失败/38
+跳过，四失败来自旧 root formatter 断言和未安装 git 的 slim 容器；
+相关测试、formatter、workflow 和依赖配置与 main 相同。Windows Bazel
+Clippy 在 wrapper 报 `python3: Argument list too long`，尚无 Rust action
+失败证据。其余 native 作业仍在运行，base-merge success 的作业跳过了
+native 执行；此 CI 观察不构成修复后完整 HEAD/merge 或生产资格。
