@@ -12,7 +12,6 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
-import time
 
 from .control_plane import (
     EngineeringError,
@@ -182,9 +181,6 @@ def issue_signed_work_envelope(
     now_ns: int | None = None,
 ) -> WorkEnvelope:
     """Remote-service admission path using a signed canonical-source receipt."""
-    now = time.time_ns() if now_ns is None else now_ns
-    if type(now) is not int or now < 0:
-        raise EngineeringError("invalid_time")
     envelope = _validate_envelope(envelope)
     if not isinstance(source, CanonicalSourceReceipt):
         raise EngineeringError("invalid_source_receipt")
@@ -209,7 +205,6 @@ def issue_signed_work_envelope(
         type(source.observed_unix_ns) is int
         and type(source.expires_unix_ns) is int
         and source.observed_unix_ns >= 0
-        and source.observed_unix_ns <= now < source.expires_unix_ns
     ):
         raise EngineeringError("source_receipt_stale")
     if envelope.expires_unix_ns > source.expires_unix_ns:
@@ -218,7 +213,11 @@ def issue_signed_work_envelope(
         source, source.issuer, source.signing_identity, source.signature
     ):
         raise EngineeringError("source_receipt_signature")
-    return store.issue_work_envelope(envelope, now_ns=now)
+    with store._transaction():
+        now = store._now(now_ns)
+        if not source.observed_unix_ns <= now < source.expires_unix_ns:
+            raise EngineeringError("source_receipt_stale")
+        return store.issue_work_envelope(envelope, now_ns=now)
 
 
 def _verify_completion(
@@ -356,9 +355,6 @@ def plan_engineering_work(
     now_ns: int | None = None,
 ) -> EngineeringPlan:
     """Atomically publish the exact resource-aware assignment generation."""
-    now = time.time_ns() if now_ns is None else now_ns
-    if type(now) is not int or now < 0:
-        raise EngineeringError("invalid_time")
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("invalid_engineering_store")
     checked_id(generation_id, "generation_id")
@@ -502,7 +498,6 @@ def plan_engineering_work(
         input_bytes += len(canonical_json(asdict(receipt)))
         if input_bytes > MAX_PLAN_INPUT_BYTES:
             raise EngineeringError("orchestration_input_byte_limit")
-        _verify_completion(receipt, envelope, store, trust_store, now)
         completed[receipt.package_id] = receipt
 
     completed_ids = frozenset(completed)
@@ -512,7 +507,10 @@ def plan_engineering_work(
     )
 
     with store._transaction():
+        now = store._now(now_ns)
         persisted = _require_envelope_binding(store, envelope, now)
+        for receipt in receipt_values:
+            _verify_completion(receipt, envelope, store, trust_store, now)
 
         store._expire_leases(now)
         active_rows = store._active_lease_rows(now)

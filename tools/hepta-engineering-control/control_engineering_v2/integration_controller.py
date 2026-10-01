@@ -602,8 +602,8 @@ def observe_integration_stage(
         raise EngineeringError("integration_stage_receipt_required")
     checked_id(queue_generation_id, "queue_generation_id")
     checked_id(package_id, "package_id")
-    now = store._now(now_ns)
     with store._transaction():
+        now = store._now(now_ns)
         binding = integration_context_binding(store, queue_generation_id, package_id)
         if (
             receipt.stage not in _STAGE_ISSUERS
@@ -687,9 +687,8 @@ def reconcile_integration_item(
         and terminal_outcome != terminal_receipt.outcome
     ):
         raise EngineeringError("integration_terminal_receipt_binding")
-    now = store._now(now_ns)
-
     with store._transaction():
+        now = store._now(now_ns)
         generation = store.connection.execute(
             "SELECT * FROM integration_queue_generations WHERE queue_generation_id=?",
             (queue_generation_id,),
