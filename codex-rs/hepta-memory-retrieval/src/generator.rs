@@ -30,6 +30,7 @@ use crate::RetrievalChannelCandidateV1;
 use crate::RetrievalChannelV1;
 use crate::RetrievalPolicyV1;
 use crate::build_candidate_union;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 use crate::recall;
 
 pub const MAX_RETRIEVAL_GENERATORS: usize = 8;
@@ -506,6 +507,7 @@ pub fn build_candidate_union_from_generated(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn recall_generated_with_engram(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
@@ -563,6 +565,7 @@ pub fn recall_generated_with_engram_controlled(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn recall_generated(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,

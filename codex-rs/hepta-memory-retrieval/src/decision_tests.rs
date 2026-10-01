@@ -457,7 +457,18 @@ fn hnmf_assignment_preserves_both_owner_dynamics_contradiction_postures() {
     let mut batches = input.batches;
     for batch in &mut batches {
         for candidate in &mut batch.candidates {
-            candidate.contradiction_group_digest = Some(digest("shared-contradiction"));
+            candidate.contradiction_group_digest = Some(
+                crate::ContradictionEvidenceV2::new(
+                    digest("shared-contradiction"),
+                    cue.snapshot_key.vector_digest,
+                    if candidate.record.record_id == id("memory:1") {
+                        crate::PropositionPolarityV2::Affirmed
+                    } else {
+                        crate::PropositionPolarityV2::Denied
+                    },
+                )
+                .expect("same proposition and generation with opposite polarities"),
+            );
         }
     }
     let input = GeneratedCandidateInputV1::new(batches).expect("contradictory input");

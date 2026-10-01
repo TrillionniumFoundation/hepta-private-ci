@@ -47,6 +47,7 @@ impl RecallWorkControlV1 {
 
     /// Only compatibility entrypoints use this; named product callers supply a
     /// bounded control. Existing result bytes are not changed by this adapter.
+    #[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
     pub(crate) fn compatibility() -> Self {
         Self {
             state: Arc::new(WorkState {
