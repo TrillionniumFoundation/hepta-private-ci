@@ -186,7 +186,6 @@ def use_scoped_metadata(args, cwd):
         "--binaries-metadata",
         "--archive-file",
         "--workspace-remap",
-        "--manifest-path",
         "--config-file",
         "--tool-config-file",
         "--user-config-file",
@@ -196,9 +195,14 @@ def use_scoped_metadata(args, cwd):
         "-h",
         "--unit-graph",
     }
-    for arg in args[: args.index("--") if "--" in args else len(args)]:
+    cargo_args = args[: args.index("--") if "--" in args else len(args)]
+    for index, arg in enumerate(cargo_args):
         option = arg.split("=", 1)[0]
         if option in full_metadata_options or arg.startswith("-Z"):
+            return False
+        if arg == "--manifest-path" and (
+            index + 1 == len(cargo_args) or cargo_args[index + 1].startswith("-")
+        ):
             return False
     # Graph-based overrides need resolved dependencies, even without -E.
     repo_config = Path(__file__).resolve().parents[1] / "codex-rs/.config/nextest.toml"
@@ -249,6 +253,20 @@ def run(args):
         # ordinary selection semantics rather than approximating them here.
         if not all(package in names for package in scoped_packages(args)):
             return subprocess.call(command)
+        # Nextest derives its build manifest from the supplied metadata and
+        # rejects combining --manifest-path with --cargo-metadata. Keep the
+        # original arguments for fallback; remove only this resolved selector.
+        build_args = []
+        arguments = iter(args)
+        for arg in arguments:
+            if arg == "--":
+                build_args.extend([arg, *arguments])
+                break
+            if arg == "--manifest-path":
+                next(arguments)
+            elif not arg.startswith("--manifest-path="):
+                build_args.append(arg)
+        command = ["cargo", "nextest", "run", "--no-fail-fast", *build_args]
         separator = command.index("--") if "--" in command else len(command)
         command[separator:separator] = ["--cargo-metadata", str(metadata_path)]
         return subprocess.call(command)
