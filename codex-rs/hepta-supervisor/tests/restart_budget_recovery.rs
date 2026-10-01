@@ -31,6 +31,9 @@ use codex_hepta_supervisor::TickReport;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
+#[path = "restart_budget_recovery/loss_cases.rs"]
+mod loss_cases;
+
 #[derive(Clone, Default)]
 struct FakeControl {
     world: Arc<Mutex<FakeWorld>>,
@@ -133,13 +136,17 @@ impl ProcessDriver for FakeDriver {
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         let world = self.world.lock().expect("fake world lock");
-        let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
-            state.agent_id == spec.agent_id
-                && state.identity == spec.identity
-                && state.exit.is_none()
-        }) else {
+        let id = spec.identity.system_id();
+        let Some(state) = world
+            .processes
+            .get(&id)
+            .filter(|state| state.exit.is_none())
+        else {
             return Ok(Adoption::Missing);
         };
+        if state.agent_id != spec.agent_id || state.identity != spec.identity {
+            return Ok(Adoption::Rejected);
+        }
         Ok(Adoption::Adopted(FakeProcess {
             id,
             world: self.world.clone(),
