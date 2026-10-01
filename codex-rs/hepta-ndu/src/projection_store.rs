@@ -406,6 +406,19 @@ fn persist_image(
         .map_err(|_| NduProjectionStoreError::Indeterminate)
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "projection_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+mod unsupported_platform_tests {
+    use super::*;
+
+    #[test]
+    fn unsupported_durability_profile_is_rejected_before_touching_paths() {
+        assert!(matches!(
+            NduProjectionStoreV1::open(Path::new("never-created-unsupported-ndu-profile")),
+            Err(NduProjectionStoreError::UnsupportedPlatform)
+        ));
+    }
+}
