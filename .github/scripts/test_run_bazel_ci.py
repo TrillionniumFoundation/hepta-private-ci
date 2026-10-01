@@ -18,6 +18,19 @@ import os
 import sys
 from pathlib import Path
 
+raw_args = sys.argv[1:]
+if os.environ.get('BAZEL_PROBE_TRANSPORT_LOG'):
+    with Path(os.environ['BAZEL_PROBE_TRANSPORT_LOG']).open('a', encoding='utf-8') as output:
+        output.write(json.dumps(raw_args) + '\\n')
+if os.environ.get('BAZEL_PROBE_ARGV_LIMIT') and sum(len(arg.encode('utf-16-le')) // 2 + 3 for arg in raw_args) > int(os.environ['BAZEL_PROBE_ARGV_LIMIT']):
+    print('recorded native command line exceeded the Windows argument limit')
+    sys.exit(126)
+
+patterns = next((arg for arg in raw_args if arg.startswith('--target_pattern_file=')), None)
+if patterns:
+    targets = Path(patterns.split('=', 1)[1]).read_text(encoding='utf-8').splitlines()
+    sys.argv[1:] = [arg for arg in raw_args if arg != patterns] + ['--', *targets]
+
 with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
     output.write(json.dumps(sys.argv[1:]) + '\\n')
 command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
@@ -50,7 +63,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         probe.write_text(PROBE, encoding="utf-8")
         if os.name == "nt":
             executable = self.root / "bazel.cmd"
-            executable.write_text(f'@"{sys.executable}" "{probe}" %*\n', encoding="utf-8")
+            executable.write_text(
+                f'@"{sys.executable}" "{probe}" %*\n', encoding="utf-8"
+            )
             git_bash = (
                 Path(os.environ.get("ProgramFiles", "C:/Program Files"))
                 / "Git/bin/bash.exe"
@@ -59,7 +74,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         else:
             executable = self.root / "bazel"
             executable.write_text(
-                f"#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(probe))} \"$@\"\n",
+                f'#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(probe))} "$@"\n',
                 encoding="utf-8",
             )
             executable.chmod(0o755)
@@ -130,6 +145,88 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
 
+    def test_large_windows_build_preserves_all_targets_without_a_large_native_command(
+        self,
+    ) -> None:
+        targets = [
+            f"//long_package_{index:04d}/native_component:clippy_target"
+            for index in range(900)
+        ]
+        targets.extend(["-//excluded:target", "//路径 with spaces:target"])
+        arguments = ["--", "build", "--config=clippy", "--", *targets]
+        invocation = self.root / "ci-arguments.nul"
+        invocation.write_bytes(
+            b"\0".join(arg.encode("utf-8") for arg in arguments) + b"\0"
+        )
+        driver = self.root / "driver.sh"
+        driver.write_text(
+            'mapfile -d "" -t ci_args < "$1"\nsource "$2" "${ci_args[@]}"\n',
+            encoding="utf-8",
+        )
+        physical = self.root / "physical-arguments.jsonl"
+        self.env.update(
+            BAZEL_PROBE_TRANSPORT_LOG=str(physical),
+            BAZEL_PROBE_ARGV_LIMIT="32767",
+        )
+        result = subprocess.run(
+            [self.bash, str(driver), str(invocation), str(SCRIPTS / "run-bazel-ci.sh")],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        calls = [
+            json.loads(line)
+            for line in self.log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(calls[0][calls[0].index("--") + 1 :], targets)
+        self.assertIn("--config=clippy", calls[0])
+        native_args = json.loads(physical.read_text(encoding="utf-8").splitlines()[0])
+        self.assertLess(
+            sum(len(arg.encode("utf-16-le")) // 2 + 3 for arg in native_args), 32767
+        )
+        pattern_file = next(
+            arg.split("=", 1)[1]
+            for arg in native_args
+            if arg.startswith("--target_pattern_file=")
+        )
+        self.assertFalse(
+            Path(pattern_file).exists(), "retired Bazel must release its target file"
+        )
+
+    def test_windows_target_files_preserve_test_and_coverage_failures(self) -> None:
+        self.env["BAZEL_PROBE_FAIL"] = "1"
+        physical = self.root / "physical-arguments.jsonl"
+        self.env["BAZEL_PROBE_TRANSPORT_LOG"] = str(physical)
+        targets = ["//fake:target", "-//excluded:target", "//路径 with spaces:target"]
+        for command in ("test", "coverage"):
+            with self.subTest(command=command):
+                if self.log.exists():
+                    self.log.unlink()
+                if physical.exists():
+                    physical.unlink()
+                result, calls = self.run_wrapper(
+                    "--", command, "--keep_going", "--", *targets
+                )
+                self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+                self.assertIn(command, calls[0])
+                self.assertIn("--keep_going", calls[0])
+                self.assertEqual(calls[0][calls[0].index("--") + 1 :], targets)
+                native_args = json.loads(
+                    physical.read_text(encoding="utf-8").splitlines()[0]
+                )
+                pattern_file = next(
+                    arg.split("=", 1)[1]
+                    for arg in native_args
+                    if arg.startswith("--target_pattern_file=")
+                )
+                self.assertFalse(
+                    Path(pattern_file).exists(),
+                    "failed Bazel must release its target file",
+                )
+
     def test_native_windows_forwards_required_msvc_environment(self) -> None:
         result, calls = self.run_wrapper(
             "--windows-msvc-host-platform",
@@ -151,9 +248,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         ):
             self.assertIn(f"--action_env={name}", args)
             self.assertIn(f"--host_action_env={name}", args)
-        self.assertIn(
-            f"--action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args
-        )
+        self.assertIn(f"--action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertIn(
             f"--host_action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args
         )
@@ -220,7 +315,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("--skip_incompatible_explicit_targets", build)
         self.assertEqual(build[build.index("--") + 1 :], ["//codex-rs/fake:library"])
 
-    def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(self) -> None:
+    def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
+        self,
+    ) -> None:
         self.env["BUILDBUDDY_API_KEY"] = "test-only-token"
         result, calls = self.run_wrapper(
             "--windows-cross-compile", "--", "build", "--", "//fake:target"
