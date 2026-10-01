@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "test-only drain fixtures deliberately fail on invalid durable owner setup or recovery assertions"
+)]
+
 use super::*;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationTaskDraft;

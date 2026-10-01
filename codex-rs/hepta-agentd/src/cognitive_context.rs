@@ -483,6 +483,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 }
 
 #[cfg(test)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the test convenience wrapper forwards the complete existing context revalidation contract"
+)]
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,

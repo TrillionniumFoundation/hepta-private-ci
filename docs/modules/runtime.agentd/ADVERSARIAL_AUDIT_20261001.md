@@ -96,15 +96,16 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | 本轮检查 | 已观察结果 | 证据边界 |
 |---|---|---|
 | Objective scoped nextest | 61 passed，2 个原有 ignored 未执行，退出 0 | 修正 JSON fixture 与 owner 的空 legal action set 合约矛盾；没有放宽 validator |
-| 全部 `scripts/test_hepta_*.py` | guards 修复阶段 710/710 passed；后续一次全量重跑出现 subprocess timeout，相关子集 9/9 passed；再跑因共享磁盘满失败 | 当前最终全量仍须重新验证；子集成功不代替全量 |
+| 全部 `scripts/test_hepta_*.py` | 最终全量 710/710 passed，32.947s，退出 0；先前 timeout 和共享磁盘满的失败记录保留 | 全量命令真实完成；相关子集成功没有替代全量；不等于原生或产品验收 |
 | learning.eval 原生 library / scoped Clippy | 116 passed、0 skipped，nextest 与 `just fix -p codex-hepta-intelligence-eval` 均退出 0 | 真正执行 sealed receipt、原证据时效与 scheduled revocation 回归；不代替整个 Agentd 验证 |
 | Fleet / NDU scoped native libraries | 初次 134 passed / 1 failed；修正 UID fixture 前提后 135 cases passed，nextest 0 skipped | Fleet 58 项完整行为通过；跨 UID root case 因仅映射 UID 0 明示 capability-unexecuted，不算跨 UID owner 验证；NDU 76/76 实际通过 |
 | Intelligence / Automation scoped native libraries | 初次 106 passed / 1 failed；拆开两个证据到期前提后 107/107 passed、0 skipped | 精确断言 qualification 与 candidate expiry 错误，保留 0 ports / 0 append / disk unchanged；没有放宽生产校验 |
 | Agentd CI wiring Python | 15/15 passed，退出 0 | 检查 source/merge、平台、依赖与终态 gate 接线，不代替实际 native jobs |
 | Lane B path guard / truth | 11 modules、62 operations、20 delegated owners、86 bindings 对齐 | canonical 全局 owner 解析；仍拒绝未注册、重复、重叠和歧义根 |
 | Lane E closure verify | `findingCount=0`、`ok=true`、退出 0 | 静态边界验收；不等于 native/product execution qualification |
-| Fleet dependency / Bazel lock | 完整 Cargo metadata 更新实际 dependency graph；官方 `just bazel-lock-update` 两次退出 0，MODULE.bazel.lock 无漂移 | 原 workspace 已有依赖，Cargo.lock 保留真实新增关系；未手工伪造 lock |
-| Agentd native / scoped Clippy | 完整 nextest 在 dependency codegen 被 SIGKILL，退出 101；第一次 `just fix` 因磁盘满退出 101；后续 metadata 编译发现 PathBuf 类型与测试依赖导入错误，均已修复；最终 scoped Clippy 进行中 | 两次失败均无 Agentd test execution；未完成的命令不记为通过 |
+| Fleet / Rollout dependency 与 Bazel lock | 完整 Cargo metadata 更新实际 dependency graph；官方 `just bazel-lock-update` 三次退出 0，MODULE.bazel.lock 无漂移 | 原 workspace 已有 libc / State，Cargo.lock 保留真实新增关系；未手工伪造 lock |
+| Agentd native / scoped Clippy | 完整 nextest 在 dependency codegen 被 SIGKILL，退出 101；第一次 `just fix` 因磁盘满退出 101；实际 PathBuf 类型与测试依赖导入错误均已修复；最终 `just fix` 和 qualification-cognitive-write / all-targets / no-deps / `-D warnings` scoped Clippy 均退出 0 | 编译覆盖生产、library 与 integration test targets；没有 Agentd 原生 test execution，通过编译不等于行为通过 |
+| State / Rollout focused native 与 Rollout scoped Clippy | 第一次 native dependency codegen SIGKILL、退出 101，未执行测试；清理本任务缓存后最终 scoped `just fix` 与 no-deps/all-targets/`-D warnings` Clippy 均退出 0，针对性 native 重跑进行中 | 不把失败或未完成的命令计为通过；普通 unbounded reader 保持原合约 |
 | 格式 / workspace preflight / 精确源码绑定 | `just fmt` 和 diff 检查已执行；preflight 193 manifests、0 errors；最终 source observation 刷新进行中 | canonical maps 一处已删除的 Rust 测试引用在严格迁移时被拒绝，已按真实 owner 回归修正文档，未放宽 validator |
 
 原生测试、编译、文档导航、真实产品组成与目标部署验收分别记账。后续最终结果必须绑定实际发布源码对象，不能把历史成功或 skipped job 归入当前候选。
@@ -119,6 +120,7 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | macOS 不允许 rename 已不可写的 staging directory | rename 前保留 owner write，发布后封存和 fsync。精确 pending retry 校验完整 manifest/files/digest/program/args；一般 admission 拒绝未封存根。rename 后 seal/fsync 失败保留 destination，不删除可能已被认可的 release；故障注入覆盖这些窗口 |
 | App Server drain 关闭原 RPC，automation 无法获得后续历史终态 | 原 owner Rust capability 只持 SQLite SELECT owner 与 QueueStore，不持 dispatcher/manager/event sink。后台任务与线程真实 join 才开放；timeout 不 ack。当前 rollout pointer 前后纯 SELECT、完整绑定 thread/client/payload/turn；禁止 repair、resume、start、reserve、wake |
 | 新 observer 若使用普通 thread read 会隐藏写入；旧 Indeterminate 可饿死后续 drain blocker；历史 JSONL 可无界分配/解压 | 使用无 repair 的 current pointer；专用 selector 优先 admitted/running；每 record 1MiB、扫描 32MiB/65536 lines/4s、zstd window 32MiB，完整扫描才接受 terminal。超界/截断/未知保留 uncertainty，Missing unknown dispatch 不重新派发 |
+| 历史 rollout 在 regular metadata 预检后被替换为 FIFO，4 秒 caller deadline 返回后 blocking open 线程仍可能永久等待 | Unix 同 fd `O_NOFOLLOW | O_NONBLOCK` 打开并验证 regular/dev/ino/len/mtime/ctime，完整 EOF 再验 retained handle 与 selected path；任何变化保留 Unknown。plain/zstd 与稳定父目录 alias 兼容，拒绝 leaf symlink；真实 FIFO 故障窗口回归带受控清理。该修复不承诺强取消任意 kernel/networkFS I/O |
 | TaskFlow 历史终态恢复曾混用 spawn generation，且 RPC→history receipt 与恢复 claim 后崩溃不能稳定重放 | Running/Draining 共用 owner API；核验已 Reconciled 的真实 step intent/payload/outcome，复用不可覆写 canonical receipt。有效 lease 使用原 TaskFlow fence，过期才用 owner counter 与完整原行 CAS claim；不得 dispatch、续租或改物理执行身份 |
 | public 低层 evaluation V2 让 Agentd/plasticity 绕过 fenced holdout、sealed estimator 与 durable publication；receipt seal 漏 disposition/baseline/failed metrics | V2 收为 crate-internal；两个消费者和 evaluated-shadow 统一消费真实 ProductEvaluationRunner 封存回执。新封印绑定完整 decision；当前 owner verifier 重验原 Generator/Evaluator/Observer 窗口与 scheduled revocation，另验证精确 use signature。没有公共 unsigned wrapper |
 | CI 文档与 fixture 漂移，包括 operation counts、跨 lane owner、NDU/Objective/migration fixture、陈旧源字符串测试 | 按正式 registry、owner 合约、真实 runner 和原生行为同步。global outbox capacity fixture 分散 issuer 以保留原 per-issuer 512 限额；不扩大容量或删除 replay/active-row保护。原始七份历史来源快照保持不变 |
@@ -140,6 +142,6 @@ Fleet 全目录防护与正常 drain 历史观察的源代码 P1 已有实现及
 
 ## 10. 迭代停止标准
 
-本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA 和实际编译接线错误。收口需在最终冻结源码上完成适当验证、严格源码绑定与独立复审；仍有确证问题则继续修复。
+本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换和实际编译接线错误。最后两轮只读独立复审已核验 Agentd lint 变更和 Rollout fd/EOF 窄修，未发现新的具体问题；其结论只覆盖静态审阅范围。最终源码绑定与实际执行结果仍按第 7 节分别记录；仍有确证问题则继续修复。
 
 停止代表在已审边界与既定可信 operator/root 模型内，当前轮没有新的可独立修补发现。它不代表所有未来风险为零，也不能把第 9 节缺失的产品或部署证据改成已完成。

@@ -12,6 +12,10 @@ use codex_hepta_agentd::RuntimeTasks;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
+#[expect(
+    clippy::expect_used,
+    reason = "the test host fixture must be valid before exercising shutdown outcomes"
+)]
 fn host(cancellation: CancellationToken) -> RuntimeTasks {
     RuntimeTasks::new(cancellation, Duration::from_millis(50)).expect("host")
 }

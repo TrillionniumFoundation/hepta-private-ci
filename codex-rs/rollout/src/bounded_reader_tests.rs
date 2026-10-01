@@ -63,3 +63,140 @@ async fn a_later_incomplete_record_invalidates_an_earlier_complete_prefix() {
         io::ErrorKind::InvalidData
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn a_fifo_replacement_after_preflight_cannot_strand_the_open_worker() {
+    use std::ffi::CString;
+    use std::os::unix::ffi::OsStrExt;
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    let directory = tempfile::tempdir().unwrap();
+    for suffix in ["jsonl", "jsonl.zst"] {
+        let path = directory.path().join(format!("rollout.{suffix}"));
+        std::fs::write(&path, b"original\n").unwrap();
+        let expected = std::fs::symlink_metadata(&path).unwrap();
+        std::fs::remove_file(&path).unwrap();
+        let fifo_path = CString::new(path.as_os_str().as_bytes()).unwrap();
+        // SAFETY: the owned CString is a valid nul-terminated pathname.
+        assert_eq!(
+            unsafe {
+                libc::mkfifo(fifo_path.as_ptr(), /*mode*/ 0o600)
+            },
+            0
+        );
+
+        let opening_path = path.clone();
+        let (done, received) = mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            let _ = done.send(open_regular_rollout(&opening_path, &expected));
+        });
+        let first = received.recv_timeout(Duration::from_secs(1));
+        let finished_without_writer = first.is_ok();
+        // If NONBLOCK regresses, a controlled reader/writer wakes the actual
+        // blocked open before the failing assertion. The test never awaits an
+        // unbounded Tokio blocking-task shutdown or joins before completion.
+        let _cleanup_keeper = (!finished_without_writer).then(|| {
+            std::fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(libc::O_NONBLOCK | libc::O_NOFOLLOW)
+                .open(&path)
+                .unwrap()
+        });
+        let result = first.unwrap_or_else(|_| {
+            received
+                .recv_timeout(Duration::from_secs(1))
+                .expect("FIFO cleanup must release the open worker")
+        });
+        worker.join().unwrap();
+        assert!(
+            finished_without_writer,
+            "opening a replacement FIFO waited for a writer"
+        );
+        assert_eq!(result.unwrap_err().kind(), io::ErrorKind::InvalidData);
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn stable_parent_aliases_preserve_plain_and_compressed_observation() {
+    let directory = tempfile::tempdir().unwrap();
+    let actual = directory.path().join("actual");
+    let alias = directory.path().join("alias");
+    std::fs::create_dir(&actual).unwrap();
+    std::os::unix::fs::symlink(&actual, &alias).unwrap();
+    for suffix in ["jsonl", "jsonl.zst"] {
+        let bytes = if suffix.ends_with("zst") {
+            zstd::stream::encode_all(b"complete\n".as_slice(), /*level*/ 0).unwrap()
+        } else {
+            b"complete\n".to_vec()
+        };
+        std::fs::write(actual.join(format!("rollout.{suffix}")), bytes).unwrap();
+        let mut reader = open_bounded_rollout_line_reader(
+            &alias.join(format!("rollout.{suffix}")),
+            /*max_line_bytes*/ 32,
+        )
+        .await
+        .unwrap();
+        assert_eq!(
+            reader.next_line().await.unwrap(),
+            Some("complete".to_string())
+        );
+        assert_eq!(reader.next_line().await.unwrap(), None);
+        std::fs::remove_file(actual.join(format!("rollout.{suffix}"))).unwrap();
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn a_leaf_symlink_never_supplies_historical_evidence() {
+    let directory = tempfile::tempdir().unwrap();
+    let actual = directory.path().join("actual.jsonl");
+    let alias = directory.path().join("alias.jsonl");
+    std::fs::write(&actual, b"complete\n").unwrap();
+    std::os::unix::fs::symlink(&actual, &alias).unwrap();
+    let result = open_bounded_rollout_line_reader(&alias, /*max_line_bytes*/ 32).await;
+    assert_eq!(result.err().unwrap().kind(), io::ErrorKind::InvalidData);
+}
+
+#[tokio::test]
+async fn a_changed_file_or_selected_path_invalidates_a_complete_prefix() {
+    let directory = tempfile::tempdir().unwrap();
+    for suffix in ["jsonl", "jsonl.zst"] {
+        for replace_path in [false, true] {
+            let path = directory.path().join(format!("rollout.{suffix}"));
+            let bytes = if suffix.ends_with("zst") {
+                zstd::stream::encode_all(b"complete\n".as_slice(), /*level*/ 0).unwrap()
+            } else {
+                b"complete\n".to_vec()
+            };
+            std::fs::write(&path, &bytes).unwrap();
+            let mut reader = open_bounded_rollout_line_reader(&path, /*max_line_bytes*/ 32)
+                .await
+                .unwrap();
+            assert_eq!(
+                reader.next_line().await.unwrap(),
+                Some("complete".to_string())
+            );
+            if replace_path {
+                std::fs::rename(&path, path.with_extension("old")).unwrap();
+                std::fs::write(&path, &bytes).unwrap();
+            } else {
+                std::fs::OpenOptions::new()
+                    .append(true)
+                    .open(&path)
+                    .unwrap()
+                    .write_all(b"changed")
+                    .unwrap();
+            }
+            assert_eq!(
+                reader.next_line().await.unwrap_err().kind(),
+                io::ErrorKind::InvalidData
+            );
+            std::fs::remove_file(&path).unwrap();
+        }
+    }
+}

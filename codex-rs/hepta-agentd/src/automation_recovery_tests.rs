@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "test-only recovery fixtures deliberately fail on invalid durable owner setup or recovery assertions"
+)]
+
 use std::future::pending;
 use std::sync::Arc;
 

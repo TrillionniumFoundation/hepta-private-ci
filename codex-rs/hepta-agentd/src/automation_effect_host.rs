@@ -773,6 +773,10 @@ fn hex_nibble(value: u8) -> Option<u8> {
 }
 
 #[cfg(all(test, unix))]
+#[allow(
+    clippy::expect_used,
+    reason = "test-only effect owner fixtures deliberately fail on invalid setup or unexpected owner results"
+)]
 mod tests {
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;

@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "0625d1a21d921752c09d4050bc110ba2ed995fec",
-    "tree": "067ec48f79e6ae51f4c99897ba25b6824e525921"
+    "commit": "a2fb6021f66ab70525fd3d6ae9efc2fecedf3ee7",
+    "tree": "b94e48383ad8cfe4e5535a252473ee613f7b14dc"
   },
   "observedAtHead": {
-    "commit": "0625d1a21d921752c09d4050bc110ba2ed995fec",
-    "tree": "067ec48f79e6ae51f4c99897ba25b6824e525921"
+    "commit": "a2fb6021f66ab70525fd3d6ae9efc2fecedf3ee7",
+    "tree": "b94e48383ad8cfe4e5535a252473ee613f7b14dc"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -29,7 +29,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "named_agentd_runner_present_daemon_route_not_composed",
+  "productCallerState": "configured_agentd_daemon_source_route_composed_physical_codex_execution_pending",
   "productionWriterState": "none_by_design_composition_facade",
   "operations": [
     {
@@ -39,7 +39,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_named_runner_not_daemon_routed",
+      "state": "source_implemented_configured_agentd_daemon_route_composed_physical_codex_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
@@ -89,7 +89,7 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ],
-      "state": "source_implemented_named_runner_not_daemon_routed",
+      "state": "source_implemented_configured_agentd_daemon_route_composed_physical_codex_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs",
@@ -104,7 +104,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_named_runner_not_daemon_routed",
+      "state": "source_implemented_configured_agentd_daemon_route_composed_physical_codex_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
@@ -118,7 +118,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_named_runner_not_daemon_routed",
+      "state": "source_implemented_configured_agentd_daemon_route_composed_physical_codex_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
@@ -132,7 +132,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_named_runner_not_daemon_routed",
+      "state": "source_implemented_configured_agentd_daemon_route_composed_physical_codex_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs",
@@ -406,6 +406,35 @@
       "authority": "none"
     },
     {
+      "operation": "plasticity_evaluation_signing_payload_v1",
+      "designOperation": "plasticity_evaluation_signing_payload_v1",
+      "nativeSymbol": "plasticity_evaluation_signing_payload_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_evaluation.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_implemented_sealed_qualification_current_governed_use_payload_not_qualification_or_append_authority",
+      "inputs": [
+        "learning.eval-owned sealed ProductQualificationReceiptV1",
+        "exact PlasticityAdmissionEvidenceV1"
+      ],
+      "outputs": [
+        "domain-separated Evaluator signing payload or qualification integrity error"
+      ],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
+      ],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::durable_v2_evaluation_digest_binds_governed_admission_context",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_tampered_qualification_and_stale_evaluator_use_before_append",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_changed_current_trust_before_append"
+      ],
+      "authority": "none"
+    },
+    {
       "operation": "prepare_prompt_delivery_v1",
       "designOperation": "prepare_prompt_delivery_v1",
       "nativeSymbol": "prepare_prompt_delivery_v1",
@@ -569,15 +598,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "e607bf513120b99e4ef1ab8e87e28f9ef37b25f6"
+      "object": "1755d48b1e0a08d8ade85e89d836b9b298fdefe7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "0171557a342293d466081e38cc8e085aeeceebf9"
+      "object": "1b514efcd40ee72e1c651398df92c10093c0f478"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "c26d92a4e2b1258f149487dc4d9bb9c54d4d7850"
+      "object": "e21951f756e6612c8bd602bd62a70548929fb34e"
     },
     {
       "path": "codex-rs/hepta-context-compiler",
@@ -589,11 +618,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "c832600eccdde7f926256b36a47be6b93bce4633"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "52ab5dd3324d037475b41d258c3e75c2bcb08165"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
@@ -605,11 +634,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "object": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
+      "object": "4c0ac5034a7ce4e34857318cbd8c8b7b7f565aba"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
-      "object": "80996b19831da4b6a88b1282157ca82ec526e8d8"
+      "object": "d04cfd9ae0aee0ef3d3207d32f04984865872b3a"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
@@ -617,7 +646,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+      "object": "ebee472eb82b08b2433b3dafaa014ee6df811a6a"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -657,7 +686,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "object": "128016bddabb5bdb6a0262d07c7b9327ffb7a8ee"
+      "object": "d1bb257b21f3c07044b7b84c5cedc93159f07499"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
@@ -693,7 +722,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "3b76f35bd19a481b6e18b17692320c2198ac0f81"
     },
     {
       "path": "codex-rs/hepta-neuron",
@@ -701,7 +730,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "b189ee1fa70517ff43d860ee80c392f57f1c94b2"
+      "object": "ec50d3b38e7dda9ab34df8b62799e3ab06e863e1"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",

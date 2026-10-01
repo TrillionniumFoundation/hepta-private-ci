@@ -379,11 +379,23 @@ The historical scanner binds the owning thread, exact client ID and payload.
 Only matching `TurnComplete` / `TurnAborted` records prove a terminal outcome;
 recovery-unready and restart records clear an older terminal observation. Plain
 and compressed scans require a complete record stream and are bounded at 1 MiB
-per record, 32 MiB of scanned bytes, 65,536 lines and four seconds. A partial or
-over-limit scan returns `Unknown` instead of trusting a terminal record from a
+per record, 32 MiB of scanned bytes and 65,536 lines. The four-second caller
+deadline bounds waiting; it cannot cancel arbitrary kernel or network-filesystem
+I/O. A partial or over-limit scan returns `Unknown` instead of trusting a terminal record from a
 prefix. Agentd uses this capability for settlement while Draining, rechecks
 Running admission before each subsequent dispatch, and never requeues an unknown
 effect. Unresolved history does not starve later admitted drain blockers.
+
+The bounded Rollout reader opens Unix files with `O_NOFOLLOW | O_NONBLOCK`,
+requires a regular opened handle, and compares its device/inode, length and
+nanosecond modification/change times with the selected path snapshot. At complete
+EOF it rechecks both the retained handle and selected path; drift invalidates the
+scan. This closes the local FIFO-replacement blocking-open leak. Plain and zstd
+history retain stable parent-alias compatibility; a leaf symlink is rejected.
+[Reader source regressions](../../../codex-rs/rollout/src/bounded_reader_tests.rs)
+cover FIFO replacement with bounded cleanup, parent aliases, leaf symlinks and
+completed-prefix invalidation after append or path replacement. These source
+cases still require exact-candidate execution evidence.
 
 This closes the missing source observation path after normal RPC shutdown.
 Native and full socket/daemon drain execution evidence remain separate;
@@ -728,7 +740,7 @@ This receipt records repository source bindings for the current documentation ca
 | Configured canonical admission / durable binding | `start_canonical_intelligence`, `prepare_for_run_start` | `codex-rs/hepta-agentd/src/state.rs`, `intelligence_product_runner.rs` | `intelligence_objective_ingress_tests.rs` defines signed Running admission and mixed-tuple rejection; execution receipts and physical provider qualification remain separate |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- `currentSourceEvidence` retains the historical lifecycle/projection provenance anchor. It is not an exact-head execution receipt or a claim that later Objective/canonical source is included in that anchor. Current `sourceObjects` and the qualification workflow's actual candidate identity must be checked separately; the legacy repository-wide `sourceBase` remains a common baseline until repository-wide migration.
+- `currentSourceEvidence` retains the historical lifecycle/projection provenance anchor. It is not an exact-head execution receipt or a claim that later Objective/canonical source is included in that anchor. Strict migration rebinds `sourceBase` and `sourceObjects` to the actual committed source observation; verification checks that mapped bytes still match the candidate. The qualification workflow's executed candidate identity and results remain separate evidence.
 - The map's `implementedOperationMappingComplete` refers only to its explicit inventory. `nativeSourceMappingComplete=false` and `closedWorldPublicFunctions=false` avoid asserting whole-crate API coverage.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Daemon composition and the explicitly configured preparation path have source callsites. Full canonical product execution, production implementation, deployment qualification, independent acceptance, activation and release remain unestablished until their separate evidence gates pass.

@@ -19,15 +19,10 @@ use crate::PlasticityRuntimeHandleV1;
 ///
 /// It contains only the bounded runtime handle and cannot access proposal
 /// writers, anchor stores, trust roots or authoritative owner stores.
+/// The upstream self-iteration production trigger is not yet composed; lifetime
+/// qualification exercises this retained producer through AgentdState.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "retained producer capability; the upstream self-iteration coordinator is not yet product-composed"
-        )
-    )]
     handle: PlasticityRuntimeHandleV1,
 }
 
@@ -36,13 +31,6 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "the named parameter producer is exercised by lifetime qualification; its production trigger is not yet composed"
-        )
-    )]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -51,13 +39,6 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "the named topology producer is exercised by lifetime qualification; its production trigger is not yet composed"
-        )
-    )]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
