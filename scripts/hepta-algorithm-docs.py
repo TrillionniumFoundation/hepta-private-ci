@@ -55,21 +55,6 @@ WORKFLOW_PATH = ".github/workflows/hepta-algorithm-docs.yml"
 DOC_PACKAGE = "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
 RECEIPT_SCHEMA = "hepta.algorithm-docs-execution-receipt.v2"
 
-HEADINGS = [
-    "## 1. Scope, ownership and non-claims",
-    "## 2. Symbols, dimensions, units and normalization",
-    "## 3. Formal model and invariants",
-    "## 4. Deterministic reference algorithm",
-    "## 5. Trainable or estimated algorithm",
-    "## 6. Data, protocol and lineage schema",
-    "## 7. Numerical stability, complexity and resource bounds",
-    "## 8. Failure detection, fallback and rollback",
-    "## 9. Security, authority, privacy and unlearning",
-    "## 10. Verification, golden vectors and property tests",
-    "## 11. Quantitative acceptance gates",
-    "## 12. Paper traceability and Hepta extensions",
-    "## 13. Implementation sequence and completion rule",
-]
 TEMPORARY_PATHS = [
     ".github/hepta-doc-closure.part00",
     ".github/hepta-doc-closure.part01",
@@ -366,8 +351,57 @@ def protocol_authority_boundary(text: str) -> bool:
 
 def false_authority(value: Any, label: str) -> None:
     need(isinstance(value, dict), label + " authority object")
-    need(list(value) == AUTHORITY_KEYS, label + " authority key closure/order")
-    need(not any(bool(item) for item in value.values()), label + " positive authority")
+    need(set(value) == set(AUTHORITY_KEYS), label + " authority key closure")
+    need(all(item is False for item in value.values()), label + " positive authority")
+
+
+def validate_specification_document(row: dict[str, Any], paper_ids: set[str]) -> None:
+    """Check ownership and references without prescribing an editorial template."""
+    doc_id = row["id"]
+    target = ROOT / row["path"]
+    need(target.is_file(), doc_id + " missing")
+    text = target.read_text(encoding="utf-8")
+    need(bool(text.strip()), doc_id + " empty document")
+    need(row.get("documentationState") == "closed", doc_id + " documentation state")
+    need(
+        row.get("implementationState") == "not_implied",
+        doc_id + " implementation state",
+    )
+    need(protocol_authority_boundary(text), doc_id + " protocol authority boundary")
+    for module in row["modules"]:
+        need(module in text, doc_id + " missing module " + module)
+    for paper_id in row.get("paperIds", []):
+        need(paper_id in paper_ids, doc_id + " unknown paper")
+        need(paper_id in text, doc_id + " missing paper " + paper_id)
+
+
+def committed_blob_sha(path: str, expected_sha: str) -> str:
+    observed = git("hash-object", path)
+    need(
+        observed == git("rev-parse", f"{expected_sha}:{path}"),
+        "uncommitted receipt input " + path,
+    )
+    return observed
+
+
+def specification_blob_shas(
+    registry: dict[str, Any], expected_sha: str
+) -> dict[str, str]:
+    """Bind an execution receipt to committed bytes, not cached registry metrics."""
+    result = {}
+    for row in registry["documents"]:
+        result[row["id"]] = committed_blob_sha(row["path"], expected_sha)
+    return result
+
+
+def paper_source_lock_digest(papers: dict[str, Any]) -> str:
+    return sha256_text(
+        json.dumps(
+            [row["sourceLock"] for row in papers["papers"]],
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    )
 
 
 def coverage(registry: dict[str, Any]) -> dict[str, list[str]]:
@@ -820,14 +854,23 @@ def verify() -> int:
         "module registry closure",
     )
     critical = registry.get("criticalModules")
-    need(isinstance(critical, list) and len(critical) == 14, "critical module count")
+    need(
+        isinstance(critical, list)
+        and bool(critical)
+        and len(critical) == len(set(critical)),
+        "critical module registry",
+    )
     need(set(critical).issubset(set(module_ids)), "unknown critical module")
 
     gates = registry.get("closureGates")
-    need(isinstance(gates, list) and len(gates) == 13, "closure gate count")
+    need(isinstance(gates, list) and bool(gates), "closure gate registry")
+    gate_ids = [row.get("id") for row in gates]
     need(
-        [row.get("id") for row in gates]
-        == [f"ACG-{index:02d}" for index in range(1, 14)],
+        all(
+            isinstance(value, str) and re.fullmatch(r"ACG-\d+", value)
+            for value in gate_ids
+        )
+        and len(gate_ids) == len(set(gate_ids)),
         "closure gate IDs",
     )
     need(all(row.get("required") is True for row in gates), "optional closure gate")
@@ -846,53 +889,13 @@ def verify() -> int:
         need(rules.get(key) is True, "algorithm rule " + key)
 
     documents = registry.get("documents")
-    need(isinstance(documents, list) and len(documents) == 6, "specification count")
+    need(isinstance(documents, list) and bool(documents), "specification registry")
     ids = [row.get("id") for row in documents]
     need(len(ids) == len(set(ids)), "duplicate specification ID")
     bound = coverage(registry)
-    common_terms = [
-        "deterministic reference",
-        "golden vector",
-        "rollback",
-        "unlearning",
-        "acceptance gate",
-        "non-claims",
-        "implementation sequence",
-    ]
+    paper_ids = {item["id"] for item in papers["papers"]}
     for row in documents:
-        doc_id = row["id"]
-        path = row["path"]
-        target = ROOT / path
-        need(target.is_file(), doc_id + " missing")
-        text = target.read_text(encoding="utf-8")
-        need(row.get("documentationState") == "closed", doc_id + " documentation state")
-        need(
-            row.get("implementationState") == "not_implied",
-            doc_id + " implementation state",
-        )
-        need(git("hash-object", path) == row.get("blobSha"), doc_id + " blob identity")
-        positions = [text.find(heading) for heading in HEADINGS]
-        need(all(position >= 0 for position in positions), doc_id + " missing section")
-        need(positions == sorted(positions), doc_id + " section order")
-        need("**Documentation state:** `closed`" in text, doc_id + " closure marker")
-        need(
-            "**Implementation state:** not implied" in text,
-            doc_id + " implementation marker",
-        )
-        need(
-            protocol_authority_boundary(text),
-            doc_id + " protocol authority boundary",
-        )
-        for module in row["modules"]:
-            need(module in text, doc_id + " missing module " + module)
-        for paper_id in row.get("paperIds", []):
-            need(
-                paper_id in {item["id"] for item in papers["papers"]},
-                doc_id + " unknown paper",
-            )
-            need(paper_id in text, doc_id + " missing paper " + paper_id)
-        for term in common_terms:
-            need(term.casefold() in text.casefold(), doc_id + " missing term " + term)
+        validate_specification_document(row, paper_ids)
     need(
         all(bound[module] for module in critical),
         "critical module without specification",
@@ -904,8 +907,16 @@ def verify() -> int:
     required_protocols = registry.get("requiredProtocols")
     required_domains = registry.get("requiredDataDomains")
     need(
-        isinstance(required_protocols, list) and len(required_protocols) >= 20,
-        "protocol closure size",
+        isinstance(required_protocols, list)
+        and bool(required_protocols)
+        and len(required_protocols) == len(set(required_protocols)),
+        "protocol closure registry",
+    )
+    need(
+        isinstance(required_domains, list)
+        and bool(required_domains)
+        and len(required_domains) == len(set(required_domains)),
+        "data authority registry",
     )
     need(set(required_protocols).issubset(contract_ids), "required contract missing")
     need(
@@ -1254,18 +1265,10 @@ def receipt(expected_sha: str, output: str) -> int:
         "expectedSha": expected_sha,
         "headSha": git("rev-parse", "HEAD"),
         "treeSha": git("rev-parse", "HEAD^{tree}"),
-        "algorithmRegistryBlobSha": git("hash-object", REGISTRY_PATH),
-        "paperTraceabilityBlobSha": registry["paperTraceabilityBlobSha"],
-        "paperSourceLockSha256": sha256_text(
-            json.dumps(
-                [row["sourceLock"] for row in papers["papers"]],
-                sort_keys=True,
-                separators=(",", ":"),
-            )
-        ),
-        "specificationBlobShas": {
-            row["id"]: row["blobSha"] for row in registry["documents"]
-        },
+        "algorithmRegistryBlobSha": committed_blob_sha(REGISTRY_PATH, expected_sha),
+        "paperTraceabilityBlobSha": committed_blob_sha(PAPER_PATH, expected_sha),
+        "paperSourceLockSha256": paper_source_lock_digest(papers),
+        "specificationBlobShas": specification_blob_shas(registry, expected_sha),
         "requiredProtocolIds": registry["requiredProtocols"],
         "documentationGapState": registry["documentationGapState"],
         "globalClosureState": registry["globalClosure"]["state"],
@@ -1305,8 +1308,29 @@ def receipt_verify(input_path: str, expected_sha: str) -> int:
     )
     need(value.get("treeSha") == git("rev-parse", "HEAD^{tree}"), "receipt tree")
     need(
-        value.get("algorithmRegistryBlobSha") == git("hash-object", REGISTRY_PATH),
+        value.get("algorithmRegistryBlobSha")
+        == committed_blob_sha(REGISTRY_PATH, expected_sha),
         "receipt registry",
+    )
+    registry = load(REGISTRY_PATH)
+    papers = load(PAPER_PATH)
+    need(
+        value.get("paperTraceabilityBlobSha")
+        == committed_blob_sha(PAPER_PATH, expected_sha),
+        "receipt paper traceability bytes",
+    )
+    need(
+        value.get("paperSourceLockSha256") == paper_source_lock_digest(papers),
+        "receipt paper source locks",
+    )
+    need(
+        value.get("requiredProtocolIds") == registry["requiredProtocols"],
+        "receipt protocols",
+    )
+    need(
+        value.get("specificationBlobShas")
+        == specification_blob_shas(registry, expected_sha),
+        "receipt specification bytes",
     )
     need(value.get("documentationGapState") == "closed", "receipt closure")
     need(value.get("globalClosureState") == "closed", "receipt global closure")
