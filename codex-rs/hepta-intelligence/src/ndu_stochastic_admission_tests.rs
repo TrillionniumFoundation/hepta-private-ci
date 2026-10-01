@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::fs::File;
 use std::path::PathBuf;
 
@@ -65,8 +66,32 @@ use ed25519_dalek::SigningKey;
 
 use super::*;
 
+/// Extracts trusted test fixtures while retaining the failure context.
+/// Implementations must fail immediately when a fixture cannot be constructed.
+trait FixtureValue<T> {
+    fn fixture(self, context: &str) -> T;
+}
+
+impl<T, E: Debug> FixtureValue<T> for Result<T, E> {
+    fn fixture(self, context: &str) -> T {
+        match self {
+            Ok(value) => value,
+            Err(error) => panic!("{context}: {error:?}"),
+        }
+    }
+}
+
+impl<T> FixtureValue<T> for Option<T> {
+    fn fixture(self, context: &str) -> T {
+        match self {
+            Some(value) => value,
+            None => panic!("{context}: missing fixture value"),
+        }
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    StableId::new(value).fixture("id")
 }
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -108,7 +133,7 @@ fn evidence_verifier() -> (LearningEvidenceVerifierV1, SigningKey, SigningKey) {
             },
         ],
     })
-    .expect("trust");
+    .fixture("trust");
     (verifier, producer_key, evaluator_key)
 }
 
@@ -151,55 +176,25 @@ struct Fixture {
     well_posedness: codex_hepta_intelligence_eval::NduWellPosednessCertificateV1,
 }
 
+#[derive(Clone, Copy, Debug)]
+enum ProjectionFixtureCase {
+    Canonical,
+    ObjectiveMismatch,
+    SupportMismatch,
+    LineageMismatch,
+    MultiplePredecessors,
+}
+
 fn fixture() -> Fixture {
-    let dir = tempfile::tempdir().expect("tempdir");
+    fixture_with_projection(ProjectionFixtureCase::Canonical)
+}
+
+fn fixture_with_projection(case: ProjectionFixtureCase) -> Fixture {
+    let dir = tempfile::tempdir().fixture("tempdir");
     let snapshot_path = dir.path().join("registry.snapshot");
     let payload_path = dir.path().join("candidate.payload");
     let payload = b"ndu-coefficient-bytes-v1";
     let artifact_id = id("ndu-coefficients");
-
-    let v1_manifest = ArtifactManifest {
-        artifact_id: artifact_id.clone(),
-        kind: ArtifactKind::Parameters,
-        generation: Generation::new(1).expect("generation"),
-        predecessor_id: None,
-        content_digest: Digest32::of_bytes(payload),
-        objective_digest: digest("objective-exact"),
-        support_digest: digest("artifact-support"),
-        producer_id: id("artifact-producer"),
-        compatibility_digest: digest("ndu-runtime-compatibility"),
-        encoded_size_bytes: payload.len() as u64,
-    };
-    let mut registry = ArtifactRegistry::new();
-    registry
-        .append(ArtifactEvent::Register {
-            event_id: id("register-ndu-coefficients"),
-            manifest: v1_manifest.clone(),
-        })
-        .expect("register");
-    let snapshot_receipt = write_registry_snapshot(
-        CreateOnlyArtifactFile::create(&snapshot_path).expect("snapshot create"),
-        &registry,
-        digest("artifact-registry-binding"),
-    )
-    .expect("snapshot");
-    write_candidate_payload(
-        CreateOnlyArtifactFile::create(&payload_path).expect("payload create"),
-        &registry,
-        &artifact_id,
-        payload,
-    )
-    .expect("payload");
-    let loaded = load_pinned_candidate(
-        File::open(&snapshot_path).expect("snapshot open"),
-        File::open(&payload_path).expect("payload open"),
-        PinnedCandidateSpec {
-            registry_receipt: snapshot_receipt,
-            manifest: v1_manifest,
-        },
-    )
-    .expect("pinned candidate");
-    let candidate = RevalidatingCandidate::new(loaded);
 
     let dataset_digest = digest("training-dataset");
     let withdrawal_registry = DatasetWithdrawalRegistry::new_scoped(
@@ -209,10 +204,10 @@ fn fixture() -> Fixture {
             scope_id: id("ndu-training"),
         },
     );
-    let v2_manifest = LearningArtifactManifestV2 {
-        artifact_id,
+    let mut v2_manifest = LearningArtifactManifestV2 {
+        artifact_id: artifact_id.clone(),
         kind: ArtifactKind::Parameters,
-        generation: Generation::new(1).expect("generation"),
+        generation: Generation::new(2).fixture("generation"),
         provenance_mode: ProvenanceModeV1::DatasetDerived,
         source_dataset_digests: vec![dataset_digest],
         lineage_digests: vec![digest("dataset-lineage")],
@@ -231,13 +226,85 @@ fn fixture() -> Fixture {
         created_at: 10,
         expires_at: 100,
     };
+    if matches!(case, ProjectionFixtureCase::MultiplePredecessors) {
+        v2_manifest.predecessor_ids = vec![id("parent-a"), id("parent-b")];
+    }
     let artifact_admission = admit_manifest_at_withdrawal_head_v3(
         &withdrawal_registry,
         withdrawal_registry.snapshot().head_digest,
         v2_manifest,
         50,
     )
-    .expect("artifact admission");
+    .fixture("artifact admission");
+
+    let validated = &artifact_admission.validated_manifest;
+    let manifest = &validated.manifest;
+    let mut v1_manifest = ArtifactManifest {
+        artifact_id: manifest.artifact_id.clone(),
+        kind: manifest.kind,
+        generation: manifest.generation,
+        predecessor_id: manifest.predecessor_ids.first().cloned(),
+        content_digest: manifest.bytes_digest,
+        objective_digest: manifest.objective_class_digest,
+        support_digest: validated.manifest_digest,
+        producer_id: manifest.producer_id.clone(),
+        compatibility_digest: manifest.compatibility_digest,
+        encoded_size_bytes: manifest.encoded_size_bytes,
+    };
+    match case {
+        ProjectionFixtureCase::Canonical | ProjectionFixtureCase::MultiplePredecessors => {}
+        ProjectionFixtureCase::ObjectiveMismatch => {
+            v1_manifest.objective_digest = digest("another-objective");
+        }
+        ProjectionFixtureCase::SupportMismatch => {
+            v1_manifest.support_digest = digest("unrelated-manifest-support");
+        }
+        ProjectionFixtureCase::LineageMismatch => {
+            v1_manifest.predecessor_id = Some(id("unrelated-parent"));
+        }
+    }
+    let mut registry = ArtifactRegistry::new();
+    if let Some(predecessor) = &v1_manifest.predecessor_id {
+        let mut parent = v1_manifest.clone();
+        parent.artifact_id = predecessor.clone();
+        parent.generation = Generation::new(1).fixture("parent generation");
+        parent.predecessor_id = None;
+        registry
+            .append(ArtifactEvent::Register {
+                event_id: id("register-parent"),
+                manifest: parent,
+            })
+            .fixture("register eligible parent");
+    }
+    registry
+        .append(ArtifactEvent::Register {
+            event_id: id("register-ndu-coefficients"),
+            manifest: v1_manifest.clone(),
+        })
+        .fixture("register");
+    let snapshot_receipt = write_registry_snapshot(
+        CreateOnlyArtifactFile::create(&snapshot_path).fixture("snapshot create"),
+        &registry,
+        digest("artifact-registry-binding"),
+    )
+    .fixture("snapshot");
+    write_candidate_payload(
+        CreateOnlyArtifactFile::create(&payload_path).fixture("payload create"),
+        &registry,
+        &artifact_id,
+        payload,
+    )
+    .fixture("payload");
+    let loaded = load_pinned_candidate(
+        File::open(&snapshot_path).fixture("snapshot open"),
+        File::open(&payload_path).fixture("payload open"),
+        PinnedCandidateSpec {
+            registry_receipt: snapshot_receipt,
+            manifest: v1_manifest,
+        },
+    )
+    .fixture("pinned candidate");
+    let candidate = RevalidatingCandidate::new(loaded);
 
     let covariance = admit_covariance_profile(NduCovarianceProfileV1 {
         units_digest: digest("driver-units"),
@@ -250,7 +317,7 @@ fn fixture() -> Fixture {
         maximum_absolute_z: 100.0,
         maximum_relative_residual: 1e-10,
     })
-    .expect("covariance");
+    .fixture("covariance");
     let z_conversion = admit_z_conversion_profile(NduZConversionProfileV1 {
         units_digest: digest("driver-units"),
         driver_dimension: 2,
@@ -259,7 +326,7 @@ fn fixture() -> Fixture {
         whitening_lower: Vec::new(),
         maximum_absolute_z: 100.0,
     })
-    .expect("z conversion");
+    .fixture("z conversion");
     let coefficient_profile = admit_ndu_coefficient_profile(
         NduCoefficientProfileV1 {
             artifact_manifest_digest: artifact_admission.validated_manifest.manifest_digest,
@@ -275,7 +342,7 @@ fn fixture() -> Fixture {
         &covariance,
         &z_conversion,
     )
-    .expect("coefficient profile");
+    .fixture("coefficient profile");
     let estimate = ZEstimateV1 {
         z: vec![vec![3.0, -1.0]],
         covariance_profile_digest: covariance.digest(),
@@ -287,10 +354,10 @@ fn fixture() -> Fixture {
     };
     let projection =
         project_z_estimate_to_coefficient_q24(&estimate, &coefficient_profile, &z_conversion, 50)
-            .expect("q24 projection");
+            .fixture("q24 projection");
     let solver_digest =
         canonical_ndu_stochastic_solver_digest_v1(&coefficient_profile, &projection)
-            .expect("solver digest");
+            .fixture("solver digest");
 
     let convergence_evidence = NduConvergenceEvidenceV1 {
         certificate_id: id("convergence"),
@@ -368,7 +435,7 @@ fn fixture() -> Fixture {
         &verifier,
         50,
     )
-    .expect("convergence");
+    .fixture("convergence");
 
     let well_producer = sign(
         &verifier,
@@ -393,7 +460,7 @@ fn fixture() -> Fixture {
         &verifier,
         50,
     )
-    .expect("well posedness");
+    .fixture("well posedness");
 
     Fixture {
         _dir: dir,
@@ -416,7 +483,7 @@ fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistry
     let scope = fixture
         .withdrawal_registry
         .scope_digest()
-        .expect("scoped registry");
+        .fixture("scoped registry");
     let signer = TrustedArtifactSignerV1 {
         signer_id: signer_id.clone(),
         verifying_key: key.verifying_key().to_bytes(),
@@ -429,16 +496,16 @@ fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistry
     let verifier = ArtifactOwnerVerifierV1::new(ArtifactOwnerTrustV1 {
         registry_id: id("artifact-registry"),
         withdrawal_scope_digest: scope,
-        minimum_registry_generation: Generation::new(1).expect("generation"),
+        minimum_registry_generation: Generation::new(1).fixture("generation"),
         genesis_predecessor_head_digest: Digest32::ZERO,
         minimum_authority_epoch: 1,
         writer_signers: vec![signer.clone()],
         head_signers: vec![signer],
     })
-    .expect("artifact owner verifier");
+    .fixture("artifact owner verifier");
     let witness = RegistryHeadWitnessV1 {
         registry_id: id("artifact-registry"),
-        generation: Generation::new(1).expect("generation"),
+        generation: Generation::new(1).fixture("generation"),
         head_digest: fixture.snapshot_receipt.head_digest,
         predecessor_head_digest: Digest32::ZERO,
         authority_epoch: 1,
@@ -456,18 +523,18 @@ fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistry
     signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
     verifier
         .verify_current_registry_view(
-            File::open(&fixture.snapshot_path).expect("current snapshot"),
+            File::open(&fixture.snapshot_path).fixture("current snapshot"),
             fixture.snapshot_receipt,
             &signed,
             &RegistryHeadRequirementV1 {
                 registry_id: id("artifact-registry"),
-                minimum_generation: Generation::new(1).expect("generation"),
+                minimum_generation: Generation::new(1).fixture("generation"),
                 expected_predecessor_head_digest: Digest32::ZERO,
                 minimum_authority_epoch: 1,
                 now,
             },
         )
-        .expect("verified current registry view")
+        .fixture("verified current registry view")
 }
 
 #[test]
@@ -487,7 +554,7 @@ fn current_artifact_and_independent_evidence_compose_to_deny_all_admission() {
     };
     let candidate = &mut fixture.candidate;
     let receipt = admit_ndu_stochastic_candidate_v1(candidate, current_view, request, 50)
-        .expect("stochastic admission");
+        .fixture("stochastic admission");
 
     assert_eq!(
         receipt.artifact_manifest_digest,
@@ -520,7 +587,7 @@ fn withdrawal_frontier_change_invalidates_previously_admitted_artifact() {
             authority_epoch: 2,
             issued_at: 51,
         })
-        .expect("withdrawal");
+        .fixture("withdrawal");
 
     let current_view = verified_current_view(&fixture, 52);
     let request = NduStochasticAdmissionRequestV1 {
@@ -541,4 +608,55 @@ fn withdrawal_frontier_change_invalidates_previously_admitted_artifact() {
             codex_hepta_learning_artifacts::ArtifactAdmissionError::WithdrawalHeadChanged
         ))
     ));
+}
+
+fn require_projection_rejection(case: ProjectionFixtureCase) {
+    // Each case has a valid signed CURRENT, exact pinned payload and
+    // independently signed numeric evidence for the unmodified V2 admission.
+    // Only the actual registered V1 projection differs or loses an ancestor.
+    let mut fixture = fixture_with_projection(case);
+    let current_view = verified_current_view(&fixture, 50);
+    let request = NduStochasticAdmissionRequestV1 {
+        artifact_admission: &fixture.artifact_admission,
+        current_withdrawal_head: fixture.withdrawal_registry.snapshot().head_digest,
+        coefficient_profile: &fixture.coefficient_profile,
+        projection: &fixture.projection,
+        convergence: &fixture.convergence,
+        well_posedness: &fixture.well_posedness,
+        objective_class_digest: digest("objective-class"),
+        operating_domain_digest: digest("operating-domain"),
+        expected_compatibility_digest: digest("ndu-runtime-compatibility"),
+    };
+    pretty_assertions::assert_eq!(
+        admit_ndu_stochastic_candidate_v1(
+            &mut fixture.candidate,
+            current_view,
+            request,
+            /*now*/ 50,
+        ),
+        Err(NduStochasticAdmissionError::ArtifactMismatch(
+            "pinned manifest"
+        )),
+        "{case:?}",
+    );
+}
+
+#[test]
+fn stochastic_admission_rejects_authenticated_registry_objective_drift() {
+    require_projection_rejection(ProjectionFixtureCase::ObjectiveMismatch);
+}
+
+#[test]
+fn stochastic_admission_rejects_authenticated_registry_support_drift() {
+    require_projection_rejection(ProjectionFixtureCase::SupportMismatch);
+}
+
+#[test]
+fn stochastic_admission_rejects_authenticated_registry_lineage_drift() {
+    require_projection_rejection(ProjectionFixtureCase::LineageMismatch);
+}
+
+#[test]
+fn stochastic_admission_rejects_lossy_multiple_predecessor_projection() {
+    require_projection_rejection(ProjectionFixtureCase::MultiplePredecessors);
 }
