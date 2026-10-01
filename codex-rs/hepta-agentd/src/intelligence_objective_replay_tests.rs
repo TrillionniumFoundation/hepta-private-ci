@@ -126,8 +126,12 @@ fn live_fixture(now: u64) -> (Fixture, ActivatedLearningTrustV1) {
     .expect("live utility");
     value.inputs.neural_tick.objective_digest = objective_digest;
     value.inputs.neural_tick.ndu_digest = utility.evaluation_digest_v2;
-    let (_, neural) = sparse_tick(&value.inputs.neural_config, &value.inputs.neural_tick, None)
-        .expect("live neural receipt");
+    let (_, neural) = sparse_tick(
+        &value.inputs.neural_config,
+        &value.inputs.neural_tick,
+        /*previous*/ None,
+    )
+    .expect("live neural receipt");
     value.inputs.prompt_request.objective_digest = objective_digest;
     value.inputs.intuition_request.objective_digest = objective_digest;
     value.inputs.intuition_request.state_digest = neural.checkpoint_after;
@@ -142,7 +146,7 @@ fn live_fixture(now: u64) -> (Fixture, ActivatedLearningTrustV1) {
     value.request.snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
         objective_digest,
         authority_epoch: snapshot.authority_epoch(),
-        body_generation: generation(1),
+        body_generation: generation(/*value*/ 1),
         configuration_digest: snapshot.configuration_digest(),
         revocation_frontier_digest: snapshot.revocation_frontier_digest(),
         owner_bindings: value.owners.clone(),
@@ -229,7 +233,7 @@ fn policy_trust(objective: Digest32, now: u64) -> (ActivatedLearningTrustV1, [Si
         .sign(&signed.signing_bytes().expect("root payload"))
         .to_bytes();
     (
-        activate_learning_trust(&root, signed, None, now).expect("root admission"),
+        activate_learning_trust(&root, signed, /*previous*/ None, now).expect("root admission"),
         keys,
     )
 }
@@ -278,7 +282,7 @@ impl AgentdIntelligenceInvocationProviderV1 for ChangingProvider {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
-        self.calls.fetch_add(1, Ordering::AcqRel);
+        self.calls.fetch_add(/*val*/ 1, Ordering::AcqRel);
         let value = self
             .fixtures
             .lock()
@@ -305,17 +309,17 @@ impl AgentdIntelligenceInvocationProviderV1 for ChangingProvider {
         };
         let completeness = self.signed(
             LearningEvidenceRoleV1::Generator,
-            0,
+            /*index*/ 0,
             &canonical_completeness_evidence_payload_v1(request).expect("completeness payload"),
         );
         let qualification = self.signed(
             LearningEvidenceRoleV1::Evaluator,
-            1,
+            /*index*/ 1,
             &canonical_profile_qualification_payload_v1(&profile).expect("profile payload"),
         );
         let runtime = self.signed(
             LearningEvidenceRoleV1::Observer,
-            2,
+            /*index*/ 2,
             &canonical_runtime_commitment_payload_v2(request, &profile, &scoring, &assignment)
                 .expect("runtime payload"),
         );
@@ -341,7 +345,13 @@ impl AgentdIntelligenceInvocationProviderV1 for ChangingProvider {
         let decision_evidence = prepared
             .decision_signing_payload()
             .expect("Decision payload")
-            .map(|payload| self.signed(LearningEvidenceRoleV1::Generator, 0, &payload));
+            .map(|payload| {
+                self.signed(
+                    LearningEvidenceRoleV1::Generator,
+                    /*index*/ 0,
+                    &payload,
+                )
+            });
         Ok(AgentdIntelligenceInvocationV1 {
             request: value.request,
             inputs: value.inputs,
@@ -394,10 +404,18 @@ impl RunningFixture {
         .expect("manifest");
         let registered = registry.register(manifest).expect("register");
         registry
-            .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
+            .compare_and_transition(
+                &agent_id,
+                /*expected_generation*/ 0,
+                AgentLifecycle::Starting,
+            )
             .expect("Starting 1");
         registry
-            .compare_and_transition(&agent_id, 1, AgentLifecycle::Running)
+            .compare_and_transition(
+                &agent_id,
+                /*expected_generation*/ 1,
+                AgentLifecycle::Running,
+            )
             .expect("Running 2");
         let identity = AgentdIdentity {
             agent_id,
@@ -416,7 +434,7 @@ impl RunningFixture {
         let state = AgentdState::new_with_intuition_profile(
             identity.clone(),
             registry,
-            32,
+            /*event_capacity*/ 32,
             ServingProfile::Production,
         )
         .expect("default Production composition");
@@ -486,7 +504,12 @@ impl RunningFixture {
         let ledger_binding = digest("objective-replay-ledger");
         let parent = File::open(&root).expect("owner directory handle");
         let writer = LedgerWriter::from_durable(
-            DurableLedger::create(open_rw(&ledger_path), ledger_binding, 16).expect("ledger owner"),
+            DurableLedger::create(
+                open_rw(&ledger_path),
+                ledger_binding,
+                /*max_records*/ 16,
+            )
+            .expect("ledger owner"),
             LedgerWitnessStore::create(open_rw(&witness_path), ledger_binding)
                 .expect("independent witness"),
             trust,
@@ -528,7 +551,7 @@ impl RunningFixture {
         scope.extend_from_slice(identity.agent_id.as_str().as_bytes());
         let claims = SignedMessageClaims {
             issuer_id: id("issuer.objective"),
-            key_epoch: generation(1),
+            key_epoch: generation(/*value*/ 1),
             message_id: id("objective-replay-request"),
             subject_id: id(identity.agent_id.as_str()),
             scope_digest: Digest32::of_bytes(&scope),
@@ -543,7 +566,7 @@ impl RunningFixture {
         let mut journal = DurableRunStartJournal::create(
             open_rw(&root.join("run-start-journal")),
             digest("objective-replay-runstart-owner"),
-            16,
+            /*max_records*/ 16,
         )
         .expect("RunStart owner");
         compile_and_publish_objective_run_v1(
@@ -569,8 +592,10 @@ impl RunningFixture {
                 artifact_set_digest: digest("artifacts"),
                 authority_epoch: first.request.snapshot.authority_epoch(),
                 generation: state.current_generation().expect("current lifecycle"),
-                fence_digest: Digest32::from_str(&crate::state::objective_run_fence(&identity, 2))
-                    .expect("lifecycle fence"),
+                fence_digest: Digest32::from_str(&crate::state::objective_run_fence(
+                    &identity, /*current_generation*/ 2,
+                ))
+                .expect("lifecycle fence"),
                 expected_run_start_head: Digest32::ZERO,
             },
             &mut journal,
@@ -584,7 +609,7 @@ impl RunningFixture {
         let provider = Arc::new(ChangingProvider {
             fixtures: Mutex::new(VecDeque::from([first, second])),
             head: Mutex::new(Digest32::ZERO),
-            calls: AtomicU64::new(0),
+            calls: AtomicU64::default(),
             host,
             verifier,
             keys,
@@ -656,7 +681,7 @@ async fn stale_runstart_rejects_before_rebuilding_owner_invocation() {
             CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
                 objective_digest: snapshot.objective_digest(),
                 authority_epoch: snapshot.authority_epoch(),
-                body_generation: generation(2),
+                body_generation: generation(/*value*/ 2),
                 configuration_digest: snapshot.configuration_digest(),
                 revocation_frontier_digest: snapshot.revocation_frontier_digest(),
                 owner_bindings: first.owners.clone(),
@@ -752,7 +777,7 @@ async fn exact_runstart_replay_rejects_changed_policy_material_before_append() {
     let ledger = DurableLedger::recover(
         open_rw(&ledger_path),
         ledger_binding,
-        16,
+        /*max_records*/ 16,
         LedgerRecovery::Acknowledged(LedgerAnchor {
             sequence: anchor.sequence,
             chain_digest: anchor.chain_digest,
@@ -763,3 +788,6 @@ async fn exact_runstart_replay_rejects_changed_policy_material_before_append() {
     assert_eq!(records.len(), 1);
     assert!(records.iter().all(|stored| matches!(&stored.event, LedgerEvent::AuthenticatedDecisionV2(decision) if decision.episode_id == record.snapshot.run_id)));
 }
+
+#[path = "intelligence_objective_host_replay_tests.rs"]
+mod host_replay;
