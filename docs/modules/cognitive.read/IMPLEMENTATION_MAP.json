@@ -168,6 +168,14 @@
   "sourceIdentityMode": "repository_baseline_plus_exact_head_objects",
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "34807f98151fe072df26715b3f5239d07cd6677b"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "6134c87fba905909425cec7e5aae6138e9a56538"
+    },
+    {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "object": "2379d7a33ac80ccb60fa381373537b5dcfac6b54"
     },
@@ -268,12 +276,16 @@
       "object": "94422ac7f6ac92064608f178d4a6b7879bd8c9ba"
     },
     {
+      "path": "codex-rs/utils/private-state",
+      "object": "71ef7976242e38ce1651cca711cfbb695109b76a"
+    },
+    {
       "path": "docs/modules/cognitive.read/TECHNICAL.md",
-      "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
+      "object": "38f37f3f39be42ee12c8749decf3a9b8e4edd3c8"
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "2b2d3071b82c73b965e3cd66ded398ae69d9d35b"
+      "object": "86b0d3bcf2683fd8537e0c3f89bfcc2c0612af59"
     }
   ],
   "productCallers": [
@@ -320,8 +332,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "082f89f44ed0577320cca304061b96425ecb657e",
-    "tree": "032d03150bb62f5ad6883cb0c1d1f8cfc4955565"
+    "commit": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+    "tree": "9fa335e95a577c642683252b00d7f6d23708f5d7"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -340,6 +352,34 @@
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-cognitive-read"
-  ]
+    "codex-rs/hepta-agent-protocol/src/lib.rs",
+    "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+    "codex-rs/hepta-agentd/src/test_support.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "codex-rs/hepta-cognitive-read",
+    "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+    "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/ids.rs",
+    "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/lib.rs",
+    "codex-rs/hepta-cognitive-read/src/v2.rs",
+    "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_control.rs",
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+    "codex-rs/utils/private-state",
+    "docs/modules/cognitive.read/TECHNICAL.md",
+    "scripts/hepta-implementation-maps.py"
+  ],
+  "mappingSourceIdentityMode": "exact_blob"
 }

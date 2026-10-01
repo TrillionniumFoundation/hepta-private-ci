@@ -5,19 +5,41 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-当前普通源码为 `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`，tree 为
-`304aeb469d13f24341052cf10fef89016aff90fb`，仍是未完整验收候选。本次只修 retirement-failure 夹具：
-用现有 private JSON helper 新建 head 并明确断言 Unix0600，保留 conflict-directory、
-compaction error、owner fence、active bytes 和 restart/retired_count。Darwin ACL/
-ownership、NONBLOCK、typed registrar 及前次 root-replacement 断言均保持。
+当前普通源码为 `d5445993e9ac96626bf9314053df77eeedb90e4d`，tree为
+`4f56b2375ff2a24a07a9edff0fee4135b785581d`，仍是未完整验收候选。新增 Windows 私有原子写入检查覆盖旧目标、
+暂存句柄首字节前/提交前，以及私有更新源；utility replace 先检查源/旧目标再
+释放禁止删除共享的校验句柄并提交，保持严格 owner/DACL/身份与适用的单链接要求。
+不修改不可信文件 ACL、不覆盖原证据，外部安装输入/目标仍按自己的策略处理。
+取消后的迟到 ACK 仅允许 BrokenPipe 调度分支，其他发送错误继续失败，原回滚
+断言保留。资格 merge 构造/重建统一固定 LF 字节，不放宽 SHA/父提交/workflow/run。
 
-冻结 inventory 为415 Git blobs、32 selection paths、16 本地 Cargo依赖，
-SHA256 `d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f`。production/deployment/release保持false。
-冻结新源 Linux just test/nextest243/243通过（2.167s，三项独立scale ignored），
-strict all-target/all-feature Clippy通过（4.65s）。locked/offline三个release
-binary构建检查通过（0.71s，复用未改变的生产artifact），self-test与七项实际
-child-fault通过，effect/activation/release授权false。Python实际238项：237通过、
-一项Windows-only真实NTFS junction在Linux跳过（15.645s）；完整跨平台资格待执行。
+冻结 inventory为417 Git blobs、32 selection paths、16 本地 Cargo依赖，SHA256
+`8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`。新源 Linux243/243通过（2.467s，三独立scale ignored），
+strict Clippy通过（4.59s）；Python239项238通过/一Windows NTFS skip（17.416s）。
+locked/offline三个release二进制及self-test、七actualchild-fault通过，复用未变化
+的Linux生产artifact；Windows生产路径修复仍须新源目标执行。production/deployment/
+release及effect/activation授权均false。15项新增Windows测试定义不是通过证据。
+此处为完整CI结束前的提交时元数据快照，最新精确run记录见[PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308)。
+导航guard和共享指南修正另在9ca0e42e/tree9fa335提交，位于冻结native产品闭包之外；
+CI仍严格绑定完整candidate提交，不转移历史结果。
+
+历史89/candidate8c/run36832001532的七个producer全部实际成功，Mac两个主体各执行
+32ACL+2FIFO，Linux storage48trace及原硬预算通过；aggregate整体仍失败。
+实际Windows merge为b09d1a4b409537432dec6b8876e4e63843b5cd0c，Linux/Mac为
+6a3cd7ea61a6e718c1065d323ec7022b9b3d68bd；相同tree/parents仅消息末尾CRLF/LF
+不同，原始Git字节复构精确匹配。此为可修复身份错误，不能归类为实体验收门槛。
+旧Windows回归未覆盖新增atomic入口；本轮源码审计发现漏检，不虚构旧CI曾复现。
+精确18项localAudit、三平台真实子记录和aggregate失败/字节证明见
+[89不可变记录](history/20261001-89c64-verification.json)，不得继承给新源。
+
+中间403源复测242通过/1失败：取消已持久化后子进程退出，父测试发送迟到ACK时
+错误unwrap BrokenPipe；原失败日志保留在[403记录](history/20261001-403df-verification.json)。
+EE6夹具修复后243通过，独立[EE6记录](history/20261001-ee6a1-verification.json)保留，
+两者没有已完成的metadata review workflow。十一份受共享Cargo/contracts/utility变更
+影响的owner地图只更新当前导航观察，保留历史sourceBase、操作/测试/委托/caller
+与全部权限声明。迁移器明确识别模块专有执行/主机/发布资格字段，严格校验bool，
+发现旧源执行证明即在写入前拒绝；源码/结构完成事实继续独立。两个既有NDU源码
+漂移保留为全项目阻塞，不重绑定其历史执行声明或降低检查。
 
 历史B537源 `b5378e29d0fe191225abe853d848b498552f5850` 的candidate58/run36830035079两Mac
 实际通过前两个修正夹具、library 145/145和native14ACL。后续retirement恢复
@@ -167,7 +189,7 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 | --- | --- | --- |
 | 产品实现 | 主调用链、MAC v2 网关、内核最终使用、WAL、历史分页及更新协调已经落地；基线仍有构建/协议缺陷 | 本轮修复与回归，不等同生产完成 |
 | 功能覆盖 | Linux Open/Reveal 使用验证 FD；macOS/Windows 等价能力适配器仍缺失并拒绝执行 | 各目标平台的真实资源能力适配与测试 |
-| 仓库验收 | 703 的 Linux head/merge/storage 与两个 macOS 主体成功，两个 Windows 主体及 aggregate 失败；新增 Darwin/FIFO/typed probe 源待完整同次 CI | 同一 head/base/workflow/run/attempt 的完整成功证据 |
+| 仓库验收 | 历史89七producer成功但aggregate因Windows CRLF身份失败；本轮Windows atomic/ACK/LF修复待新源完整同次CI | 同一 head/base/workflow/run/attempt 的完整成功证据 |
 | 实体桌面 | 无完整 Windows/macOS/X11/Wayland、IME、DPI、无障碍及安装验收 | 对应实体主机执行记录 |
 | 发布资格 | 未完成独立签名、供应链接受、审批与保护规则 | 独立负责人提供并审核，授权标志保持 false |
 
@@ -179,6 +201,10 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 
 | 严重度 | 基线问题及触发 | 修订 |
 | --- | --- | --- |
+| P1 | map迁移只识别通用执行声明，漏掉requestLocalReadOnlyProductExecutionProved等实际模块专有资格，可跨源码迁移旧证明 | 明确执行/主机/发布字段集合并严格bool；旧证明源码漂移在任何写入前拒绝，false导航及源码事实保持可用；原执行记录不迁移 |
+| P1 | Windows atomic快照/私有copy只验证父root，旧child或temp DACL漂移可未经拒绝即写入/替换 | 提交前检查旧目标与同temp句柄，保留原bytes/ACL；source-root copy重验源，utility replace先验证再释放校验句柄；新增15 Windows回归定义 |
+| P2 | 持久取消后child先退出，迟到ACK pipe已关闭，测试错误unwrap BrokenPipe | 仅cancelled+BrokenPipe允许；成功ACK、退出状态、RollbackStarted/恢复/RolledBack及前驱字节继续严格断言 |
+| P2 | Windows文本管道将确定merge消息LF变CRLF，同tree/parents产生foreign SHA而aggregate正确拒绝 | producer/helper固定binary LF stdin、ASCII解码输出；真实Git字节与旧实现红回归验证，不放宽身份比较 |
 | P1 | WAL/锁先跟随路径打开，再做软链接检查；悬空 WAL 链接可能创建根外目标 | 同句柄验证、NOFOLLOW/NONBLOCK、根目录能力与替换回归 |
 | P1 | 私有目录只检查权限和属主；替换成同样 0700 的目录仍通过 | 持有原目录句柄并绑定目录身份；拒绝稳定替换 |
 | P1 | 更新前驱检查后再复制备份；复制内容未在原子替换前绑定签名摘要 | 对实际复制句柄流计算摘要，候选/备份/回滚均在发布前验证 |

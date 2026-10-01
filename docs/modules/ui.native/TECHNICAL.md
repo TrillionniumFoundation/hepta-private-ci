@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`
-**Implementation tree:** `304aeb469d13f24341052cf10fef89016aff90fb`
+**Immutable implementation source:** `d5445993e9ac96626bf9314053df77eeedb90e4d`
+**Implementation tree:** `4f56b2375ff2a24a07a9edff0fee4135b785581d`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -56,7 +56,10 @@ The convergence chain is a normal Git history:
 12. historical Unix executable/Windows authority fixture repair `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`;
 13. historical Darwin private-permissions, Unix authority FIFO and Windows typed registrar-probe repair `a1abe5b2a083213c095cdabaf4b3048144e3cad0`;
 14. historical Darwin private-state fixture admission repair `b5378e29d0fe191225abe853d848b498552f5850`;
-15. current private retirement-fixture baseline repair `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`.
+15. historical private retirement-fixture baseline repair `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`;
+16. Windows private atomic-publication repair `403df62a7bf3ac065f2b0ad21661d08b66b32731`;
+17. cancelled late-ACK fixture repair `ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4`;
+18. current deterministic merge LF identity repair `d5445993e9ac96626bf9314053df77eeedb90e4d`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -80,7 +83,15 @@ same opened handle, including child ACL drift beneath a still-private root.
 The shared utility's read/write `open_file` also requires one hardlink; shared
 contract callers cannot bypass mutable-file checks by using that entry point.
 Native write, append, lock and create opens reject multiple hardlinks on Unix
-and Windows. Native Unix Read opens do not chmod private owner-only files
+and Windows. Windows private snapshots and update staging also check the exact
+atomic temporary before first bytes and before publication, reject an existing
+destination with an unsafe DACL, and recheck private copy sources. Shared utility
+replace validates the staging file and existing target first, releases its
+non-delete-sharing verifier handles, rechecks the held root, then renames and
+verifies the published child. A trusted owner can change children between the
+validation/close and rename steps; this protocol is not a filesystem CAS fence.
+Fifteen new Windows tests retain original bytes/ACLs and cover safe publication,
+same-handle temporary drift, existing target drift, source drift and hardlinks. Native Unix Read opens do not chmod private owner-only files
 (including modes 0400, 0500, 0600 and 0700), and linked immutable migration inputs
 remain readable subject to content and identity validation. A trusted principal
 can still add a link after validation; these checks do not create domain
@@ -497,25 +508,69 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The current ordinary implementation source is `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`, tree
-`304aeb469d13f24341052cf10fef89016aff90fb`. It retains the Darwin same-descriptor ACL/ownership checks,
-nonblocking Unix authority-file admission, typed Windows registrar probe and
-the prior root-replacement fixture corrections. The retirement-failure fixture
-now creates its baseline head through the existing private JSON helper and
-asserts Unix mode 0600. Conflict-directory, compaction-error, owner fencing,
-active-record preservation and restart/retired-count assertions remain enforced.
+The current ordinary implementation source is `d5445993e9ac96626bf9314053df77eeedb90e4d`, tree
+`4f56b2375ff2a24a07a9edff0fee4135b785581d`. Windows private atomic snapshot/copy publication now validates
+the existing destination and same temporary descriptor before private bytes and
+before commit. Private-source copies recheck their retained source descriptor;
+external installer inputs/targets keep their own policy. The shared Windows
+utility validates staging and existing destinations before replacement, then
+closes its non-delete-sharing verifier handles before the actual rename.
+Checks reject unsafe evidence without repairing its ACL or replacing its bytes.
 
-CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16 local Cargo
-dependencies, inventory SHA256 `d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f`. Production, deployment
-and release flags remain false; this fixture-only repair needs fresh qualification.
+The cancelled-ACK fixture accepts BrokenPipe only after durable cancellation;
+successful ACK delivery, candidate exit, rollback and predecessor-byte assertions
+remain enforced. Qualification merge construction and reconstruction now send
+fixed UTF-8 LF bytes to Git, producing the same ordered-parent commit on every
+OS. The strict source/tree/parent/workflow/run/attempt checks remain unchanged.
+Darwin same-descriptor ACL/ownership, Unix NONBLOCK admission, typed Windows
+registrar and the three macOS baseline fixture corrections are retained.
 
-Fresh frozen-source Linux application just test/nextest passed 243/243 in 2.167 s
-(three separate scale entries ignored); strict all-target/all-feature Clippy
-passed in 4.65 s. A locked/offline three-binary release build passed in 0.71 s,
-reusing unchanged production artifacts; self-test and seven actual child-fault
-checks passed. Effect, activation and release authority remain false. Python
-ran 238 tests in 15.645 s: 237 passed and one Windows-only real NTFS junction was
-skipped on Linux. Complete target-host qualification still needs execution.
+CURRENT_SOURCE.json binds 417 Git blobs, 32 selection paths and 16 local Cargo
+dependencies, inventory SHA256 `8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`. Production, deployment
+and release flags remain false. Fifteen new Windows regression definitions
+(nine native and six utility) need actual execution on this current source.
+
+Fresh frozen-source Linux just test/nextest passed 243/243 in 2.467 s (three
+independent scale entries ignored); strict all-target/all-feature Clippy passed
+in 4.59 s. Python ran 239 tests in 17.416 s: 238 passed and one Windows-only
+real NTFS junction case was skipped. The locked/offline three-binary release
+build completed in 0.54 s and reuses unchanged Linux production artifacts; self-test and seven actual
+child-fault checks passed with effect, activation and release authority false.
+Complete same-run current-source platform/storage qualification remains pending.
+This is the publication-time metadata capture, before the final workflow completes.
+The current exact-run receipts are attached to [draft PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308).
+The separately committed navigation guard and owner-guide precision repairs are
+`9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9`, tree
+`9fa335e95a577c642683252b00d7f6d23708f5d7`; these scripts and guides are outside
+the frozen native product closure. CI still binds the complete candidate commit.
+
+Historical source89/candidate8c/run36832001532 actually passed all seven producer
+subjects: both Linux/Windows/macOS head and merge suites plus 48 storage traces
+and unchanged hard budgets. Each macOS subject executed all 32 ACL and both
+Unix FIFO cases. Aggregate nevertheless failed: the Windows merge's CRLF commit
+message produced b09d1a4b409537432dec6b8876e4e63843b5cd0c instead of canonical
+LF merge6a3cd7ea61a6e718c1065d323ec7022b9b3d68bd, with identical tree and ordered
+parents. Exact Git bytes prove the difference. This is an executable identity
+defect, not a physical-host gate. Old tests also omitted the newly repaired
+Windows atomic-publication calls. See [20261001-89c64-verification.json](history/20261001-89c64-verification.json); its original
+18 localAudit fields and all three platform children remain historical only.
+
+Intermediate source403's local suite passed242/failed1: the cancelled child had
+already exited when the parent incorrectly unwrapped BrokenPipe. Its failed
+raw log is preserved in 20261001-403df-verification.json. SourceEE6 repaired that
+fixture and passed243; 20261001-ee6a1-verification.json retains those diagnostics
+separately. Neither source had a completed metadata review workflow and their
+results cannot qualify this new source.
+
+Eleven affected shared-owner maps refresh complete current source observations
+after the shared Cargo/contracts/utility changes. Historical sourceBase, operation
+states, tests, delegates, callers, receipts and execution/acceptance/activation/
+release claims remain unchanged. Navigation does not establish product execution.
+The migration guard explicitly recognizes module-specific executable, host and
+release qualification fields, requires actual bool values, and rejects stale
+execution proof before metadata writes. Source and structural completion facts
+remain distinct. Two pre-existing NDU source drifts remain whole-project blockers;
+this work preserves their historical claims rather than rebinding those receipts.
 
 Historical B537 source `b5378e29d0fe191225abe853d848b498552f5850` in candidate58/run36830035079
 passed both earlier corrected fixtures, library 145/145 and all 14 native ACL

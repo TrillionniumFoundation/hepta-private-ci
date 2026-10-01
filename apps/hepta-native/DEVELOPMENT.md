@@ -1,24 +1,68 @@
 # hepta-native developer guide
 
-The current ordinary implementation source is `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`, tree
-`304aeb469d13f24341052cf10fef89016aff90fb`. It retains the Darwin same-descriptor ACL/ownership checks,
-nonblocking Unix authority-file admission, typed Windows registrar probe and
-the prior root-replacement fixture corrections. The retirement-failure fixture
-now creates its baseline head through the existing private JSON helper and
-asserts Unix mode 0600. Conflict-directory, compaction-error, owner fencing,
-active-record preservation and restart/retired-count assertions remain enforced.
+The current ordinary implementation source is `d5445993e9ac96626bf9314053df77eeedb90e4d`, tree
+`4f56b2375ff2a24a07a9edff0fee4135b785581d`. Windows private atomic snapshot/copy publication now validates
+the existing destination and same temporary descriptor before private bytes and
+before commit. Private-source copies recheck their retained source descriptor;
+external installer inputs/targets keep their own policy. The shared Windows
+utility validates staging and existing destinations before replacement, then
+closes its non-delete-sharing verifier handles before the actual rename.
+Checks reject unsafe evidence without repairing its ACL or replacing its bytes.
 
-CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16 local Cargo
-dependencies, inventory SHA256 `d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f`. Production, deployment
-and release flags remain false; this fixture-only repair needs fresh qualification.
+The cancelled-ACK fixture accepts BrokenPipe only after durable cancellation;
+successful ACK delivery, candidate exit, rollback and predecessor-byte assertions
+remain enforced. Qualification merge construction and reconstruction now send
+fixed UTF-8 LF bytes to Git, producing the same ordered-parent commit on every
+OS. The strict source/tree/parent/workflow/run/attempt checks remain unchanged.
+Darwin same-descriptor ACL/ownership, Unix NONBLOCK admission, typed Windows
+registrar and the three macOS baseline fixture corrections are retained.
 
-Fresh frozen-source Linux application just test/nextest passed 243/243 in 2.167 s
-(three separate scale entries ignored); strict all-target/all-feature Clippy
-passed in 4.65 s. A locked/offline three-binary release build passed in 0.71 s,
-reusing unchanged production artifacts; self-test and seven actual child-fault
-checks passed. Effect, activation and release authority remain false. Python
-ran 238 tests in 15.645 s: 237 passed and one Windows-only real NTFS junction was
-skipped on Linux. Complete target-host qualification still needs execution.
+CURRENT_SOURCE.json binds 417 Git blobs, 32 selection paths and 16 local Cargo
+dependencies, inventory SHA256 `8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`. Production, deployment
+and release flags remain false. Fifteen new Windows regression definitions
+(nine native and six utility) need actual execution on this current source.
+
+Fresh frozen-source Linux just test/nextest passed 243/243 in 2.467 s (three
+independent scale entries ignored); strict all-target/all-feature Clippy passed
+in 4.59 s. Python ran 239 tests in 17.416 s: 238 passed and one Windows-only
+real NTFS junction case was skipped. The locked/offline three-binary release
+build completed in 0.54 s and reuses unchanged Linux production artifacts; self-test and seven actual
+child-fault checks passed with effect, activation and release authority false.
+Complete same-run current-source platform/storage qualification remains pending.
+This is the publication-time metadata capture, before the final workflow completes.
+The current exact-run receipts are attached to [draft PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308).
+The separately committed navigation guard and owner-guide precision repairs are
+`9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9`, tree
+`9fa335e95a577c642683252b00d7f6d23708f5d7`; these scripts and guides are outside
+the frozen native product closure. CI still binds the complete candidate commit.
+
+Historical source89/candidate8c/run36832001532 actually passed all seven producer
+subjects: both Linux/Windows/macOS head and merge suites plus 48 storage traces
+and unchanged hard budgets. Each macOS subject executed all 32 ACL and both
+Unix FIFO cases. Aggregate nevertheless failed: the Windows merge's CRLF commit
+message produced b09d1a4b409537432dec6b8876e4e63843b5cd0c instead of canonical
+LF merge6a3cd7ea61a6e718c1065d323ec7022b9b3d68bd, with identical tree and ordered
+parents. Exact Git bytes prove the difference. This is an executable identity
+defect, not a physical-host gate. Old tests also omitted the newly repaired
+Windows atomic-publication calls. See [20261001-89c64-verification.json](../../docs/modules/ui.native/history/20261001-89c64-verification.json); its original
+18 localAudit fields and all three platform children remain historical only.
+
+Intermediate source403's local suite passed242/failed1: the cancelled child had
+already exited when the parent incorrectly unwrapped BrokenPipe. Its failed
+raw log is preserved in 20261001-403df-verification.json. SourceEE6 repaired that
+fixture and passed243; 20261001-ee6a1-verification.json retains those diagnostics
+separately. Neither source had a completed metadata review workflow and their
+results cannot qualify this new source.
+
+Eleven affected shared-owner maps refresh complete current source observations
+after the shared Cargo/contracts/utility changes. Historical sourceBase, operation
+states, tests, delegates, callers, receipts and execution/acceptance/activation/
+release claims remain unchanged. Navigation does not establish product execution.
+The migration guard explicitly recognizes module-specific executable, host and
+release qualification fields, requires actual bool values, and rejects stale
+execution proof before metadata writes. Source and structural completion facts
+remain distinct. Two pre-existing NDU source drifts remain whole-project blockers;
+this work preserves their historical claims rather than rebinding those receipts.
 
 Historical B537 source `b5378e29d0fe191225abe853d848b498552f5850` in candidate58/run36830035079
 passed both earlier corrected fixtures, library 145/145 and all 14 native ACL
