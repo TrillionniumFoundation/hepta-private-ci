@@ -1,0 +1,27 @@
+{
+  "name": "seven-owner-final-default",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-types",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-intelligence",
+    "--lib"
+  ],
+  "exitCode": 100,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/seven-owner-final-default.log",
+  "sha256": "cb41e82c8aaad96a8fd60a054c846a228521b62ca1676ceb9767d7ff0a585ebd",
+  "bytes": 111659
+}

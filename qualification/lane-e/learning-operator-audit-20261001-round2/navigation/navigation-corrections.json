@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.learning-operator-navigation-audit.v1",
+  "sourceCandidate": {
+    "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+    "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+  },
+  "purpose": "Navigation metadata correction only. Historical unmerged anchors remain in original byte archives; these archives are diagnostics and confer no execution, scientific, activation or release qualification. Strict ancestry checker and immutable exact_blob provenance are unchanged.",
+  "normalMigrationModules": [
+    "platform.types",
+    "kernel.authority",
+    "kernel.operations",
+    "runtime.supervisor",
+    "runtime.agentd",
+    "context.compiler",
+    "intelligence.control",
+    "memory.retrieval",
+    "knowledge.graph",
+    "learning.operator",
+    "learning.eval",
+    "learning.plasticity"
+  ],
+  "normalMigrationCommand": "python3 scripts/hepta-implementation-maps.py migrate with the 12 explicit --module selections",
+  "pathOnlyCorrections": [
+    {
+      "module": "learning.ledger",
+      "mapPath": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "kind": "new_current_path_only_navigation_correction",
+      "oldMap": "learning.ledger.before.IMPLEMENTATION_MAP.json",
+      "oldMapSha256": "7a1d37e3dc18838252e82f0dd06d11f064248bc8f1e60518a389e91b8d60d903",
+      "oldSourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "newSourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "oldAnchorRelationship": {
+        "status": "diverged",
+        "aheadBy": 176,
+        "behindBy": 10,
+        "basis": "GitHub compare result obtained independently by the audit lead; old anchor is not an ancestor of this source commit"
+      },
+      "authority": "none",
+      "executionScienceActivationBooleanFactsUnchanged": true,
+      "historicalExecutionEvidenceTransferred": false,
+      "oldSourceAncestryClaimed": false
+    },
+    {
+      "module": "learning.artifacts",
+      "mapPath": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "kind": "new_current_path_only_navigation_correction",
+      "oldMap": "learning.artifacts.before.IMPLEMENTATION_MAP.json",
+      "oldMapSha256": "ee44426b33f3783940ce639f2b0d9a041af85ec82042b43952bbc76fd21a84b4",
+      "oldSourceBase": {
+        "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+        "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+      },
+      "newSourceBase": {
+        "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+        "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+      },
+      "oldAnchorRelationship": {
+        "status": "diverged",
+        "aheadBy": 176,
+        "behindBy": 6,
+        "basis": "GitHub compare result obtained independently by the audit lead; old anchor is not an ancestor of this source commit"
+      },
+      "authority": "none",
+      "executionScienceActivationBooleanFactsUnchanged": true,
+      "historicalExecutionEvidenceTransferred": false,
+      "oldSourceAncestryClaimed": false
+    }
+  ],
+  "unchangedImmutableProvenance": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+  "verificationScope": "Current source identity projections; global verification remains a separate clean-candidate gate and can still fail on pre-existing unrelated invalid anchors."
+}

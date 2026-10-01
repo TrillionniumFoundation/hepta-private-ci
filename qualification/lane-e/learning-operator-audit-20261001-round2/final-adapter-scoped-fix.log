@@ -1,0 +1,45 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking libc v0.2.186
+    Checking linux-raw-sys v0.12.1
+    Checking once_cell v1.21.4
+    Checking codex-hepta-learning-artifacts v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-learning-artifacts)
+    Checking rustix v1.1.4
+    Checking getrandom v0.4.2
+    Checking tempfile v3.27.0
+    Checking learning-operator-coordinator-source-check v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final)
+warning: function `evaluate` is never used
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-agentd/src/product_qualification_test_support.rs:115:15
+    |
+115 | pub(super) fn evaluate(
+    |               ^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated functions `new` and `sign` are never used
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-agentd/src/learning_operator_test_support.rs:21:19
+    |
+ 20 | impl LearningFixture {
+    | -------------------- associated functions in this implementation
+ 21 |     pub(crate) fn new() -> Self {
+    |                   ^^^
+...
+187 |     pub(crate) fn sign(
+    |                   ^^^^
+
+warning: this function has too many arguments (8/7)
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-agentd/src/learning_operator_shadow_loader.rs:146:5
+    |
+146 | /     fn predict_with_clock(
+147 | |         &mut self,
+148 | |         owner: &LearningArtifactOwnerService,
+149 | |         training_ledger: &LedgerWriter,
+...   |
+154 | |         clock: impl Fn() -> Result<u64, LearningOperatorPublicationErrorV1>,
+155 | |     ) -> Result<TabularOperatorPredictionV1, LearningOperatorPublicationErrorV1> {
+    | |________________________________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: `learning-operator-coordinator-source-check` (lib test) generated 3 warnings
+    Finished `dev` profile [unoptimized] target(s) in 2.17s

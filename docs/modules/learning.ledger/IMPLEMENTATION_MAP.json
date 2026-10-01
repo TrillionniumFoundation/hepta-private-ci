@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+    "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -67,7 +67,7 @@
           "symbol": "LearningEvidenceVerifierV1"
         }
       ],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "append_outcome",
@@ -83,7 +83,7 @@
       "designOperation": "append_outcome",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "append_credit_batch",
@@ -100,7 +100,7 @@
       "designOperation": "append_credit_batch",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "append_unlearning",
@@ -116,7 +116,7 @@
       "designOperation": "append_unlearning",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "freeze_dataset",
@@ -131,7 +131,7 @@
       "designOperation": "freeze_dataset",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "revalidate_dataset_snapshot",
@@ -146,7 +146,7 @@
       "designOperation": "revalidate_dataset_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "rotate_segment",
@@ -162,7 +162,7 @@
       "designOperation": "rotate_segment",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "ledger_witness_store",
@@ -206,7 +206,7 @@
           "symbol": "LearningEvidenceVerifierV1"
         }
       ],
-      "sourceBlob": "4a077f8f9601b0ca1dc5973c044da2201b8c6686"
+      "sourceBlob": "6617d997da9cdc353a9078c890d4ce34ea712a73"
     },
     {
       "operation": "canonical_protocol_adapters",
@@ -266,7 +266,7 @@
       "designOperation": "sync_directory_handle",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "LedgerWriter::rotate_trust",
@@ -280,7 +280,7 @@
         "codex-rs/hepta-learning-ledger/src/production_tests.rs"
       ],
       "delegatedCallees": [],
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "operation": "measure_ledger_recovery_work",
@@ -309,7 +309,7 @@
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
       "sourcePathExists": true,
-      "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "sourceBlob": "ea828233976824aa50230435954b9fe855210f74"
     }
   ],
   "repositoryControlledGaps": [
@@ -400,7 +400,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "fe7ee25b8a7cbc0ce28ef80701a25fec63cbc258"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
@@ -420,7 +420,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+      "object": "5b4d816b0334250022acf0682c4a31abfdc474b7"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -448,7 +448,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production.rs",
-      "object": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+      "object": "ea828233976824aa50230435954b9fe855210f74"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
@@ -480,15 +480,15 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
-      "object": "61d8f2b30d97b6134b17f604d67f5940391ba0e5"
+      "object": "b1b3c83e6713c446a27e9f8776f3a852193a5e11"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
-      "object": "4a077f8f9601b0ca1dc5973c044da2201b8c6686"
+      "object": "6617d997da9cdc353a9078c890d4ce34ea712a73"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs",
-      "object": "f41835aab0932243991c8df5e2e7cb25a28caadd"
+      "object": "3bd7d8d9b3aa67b4a592c6f67a323af75e21c938"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/witness.rs",

@@ -1,0 +1,18 @@
+{
+  "name": "contracts-round2-feature-final",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--features",
+    "serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value",
+    "learning_operator_protocol"
+  ],
+  "exitCode": 0,
+  "log": "/workspace/scratch/99c8d2276f89/contracts-round2-feature-final.log",
+  "sha256": "936b52ab6615308d85b455b5019e9afae972657cf6eb719b98b2a14933f41d91",
+  "bytes": 3313
+}

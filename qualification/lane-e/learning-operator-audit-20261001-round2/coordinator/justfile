@@ -1,0 +1,3 @@
+set positional-arguments
+test *args:
+    RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"

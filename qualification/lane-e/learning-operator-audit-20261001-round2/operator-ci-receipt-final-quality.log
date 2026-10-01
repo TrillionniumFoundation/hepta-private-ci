@@ -1,0 +1,11 @@
+["/workspace/scratch/99c8d2276f89/tooling/bin/uv", "run", "--offline", "--frozen", "--project", "scripts", "ruff", "format", "--check", "scripts/hepta-learning-operator-contract.py", "scripts/hepta-learning-operator-map.py", "scripts/hepta-learning-operator-receipt.py", "scripts/test_hepta_learning_operator_evidence.py"]
+4 files already formatted
+["/workspace/scratch/99c8d2276f89/tooling/bin/uv", "run", "--offline", "--frozen", "--project", "scripts", "ruff", "check", "scripts/hepta-learning-operator-contract.py", "scripts/hepta-learning-operator-map.py", "scripts/hepta-learning-operator-receipt.py", "scripts/test_hepta_learning_operator_evidence.py"]
+All checks passed!
+["bash", "-n", "scripts/hepta-learning-operator-authoritative.sh"]
+["python3", "-c", "from pathlib import Path\nfor p in ['scripts/hepta-learning-operator-contract.py', 'scripts/hepta-learning-operator-map.py', 'scripts/hepta-learning-operator-receipt.py', 'scripts/test_hepta_learning_operator_evidence.py']:\n    compile(Path(p).read_text(),p,'exec')\nprint('Python compile passed')\n"]
+Python compile passed
+["python3", "-c", "import yaml\nfrom pathlib import Path\nfor p in ['.github/workflows/learning-operator-authoritative.yml', '.github/workflows/hepta-learning-operator-audit.yml']:\n    value=yaml.safe_load(Path(p).read_text())\n    print(p,sorted(value['jobs']))\n"]
+.github/workflows/learning-operator-authoritative.yml ['qualification-result']
+.github/workflows/hepta-learning-operator-audit.yml ['cross-owner', 'native', 'owner']
+["git", "diff", "--check", "--", ".github/workflows/learning-operator-authoritative.yml", ".github/workflows/hepta-learning-operator-audit.yml", "scripts/hepta-learning-operator-authoritative.sh", "scripts/hepta-learning-operator-contract.py", "scripts/hepta-learning-operator-map.py", "scripts/hepta-learning-operator-receipt.py", "scripts/test_hepta_learning_operator_evidence.py"]

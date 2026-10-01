@@ -1,0 +1,147 @@
+{
+  "checks": [
+    {
+      "bytes": 127,
+      "command": [
+        "python3",
+        "../scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-ci-receipt-final-evidence.log",
+      "name": "operator-ci-receipt-final-evidence",
+      "sha256": "40b774f316cb5685969b14969e3aa41d7d6756b028b1456ae05e653cc68c2336"
+    },
+    {
+      "bytes": 114,
+      "command": [
+        "python3",
+        "../scripts/test_hepta_lane_e_closure.py"
+      ],
+      "exitCode": 0,
+      "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-ci-receipt-final-lane-e.log",
+      "name": "operator-ci-receipt-final-lane-e",
+      "sha256": "245ab8afafb9d49132d3d475d56f471a60ac309aef6076b5a5235ace5b424a36"
+    },
+    {
+      "bytes": 104,
+      "command": [
+        "python3",
+        "../scripts/test_hepta_ci_v8.py"
+      ],
+      "exitCode": 0,
+      "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-ci-receipt-final-v8.log",
+      "name": "operator-ci-receipt-final-v8",
+      "sha256": "8750d4b5acdce1e4d680a3a27eb5d68370ed8b7d37b619aa32e9e0049f881dae"
+    },
+    {
+      "bytes": 68,
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-contract.py",
+        "verify"
+      ],
+      "exitCode": 0,
+      "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-ci-receipt-final-contract.log",
+      "name": "operator-ci-receipt-final-contract",
+      "sha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69"
+    }
+  ],
+  "previousQualityInvocationError": {
+    "path": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-ci-receipt-final-quality-invocation-error.log",
+    "reason": "validator invocation had an unclosed list in transient Python -c; source files unchanged",
+    "sha256": "1cb0003be554f960c5723bc663b23340b6cd482b655352f2d5a767f41037b3fc"
+  },
+  "qualityChecks": [
+    {
+      "command": [
+        "/workspace/scratch/99c8d2276f89/tooling/bin/uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts/hepta-learning-operator-contract.py",
+        "scripts/hepta-learning-operator-map.py",
+        "scripts/hepta-learning-operator-receipt.py",
+        "scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/99c8d2276f89/tooling/bin/uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "scripts/hepta-learning-operator-contract.py",
+        "scripts/hepta-learning-operator-map.py",
+        "scripts/hepta-learning-operator-receipt.py",
+        "scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "scripts/hepta-learning-operator-authoritative.sh"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path\nfor p in ['scripts/hepta-learning-operator-contract.py', 'scripts/hepta-learning-operator-map.py', 'scripts/hepta-learning-operator-receipt.py', 'scripts/test_hepta_learning_operator_evidence.py']:\n    compile(Path(p).read_text(),p,'exec')\nprint('Python compile passed')\n"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-c",
+        "import yaml\nfrom pathlib import Path\nfor p in ['.github/workflows/learning-operator-authoritative.yml', '.github/workflows/hepta-learning-operator-audit.yml']:\n    value=yaml.safe_load(Path(p).read_text())\n    print(p,sorted(value['jobs']))\n"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        ".github/workflows/learning-operator-authoritative.yml",
+        ".github/workflows/hepta-learning-operator-audit.yml",
+        "scripts/hepta-learning-operator-authoritative.sh",
+        "scripts/hepta-learning-operator-contract.py",
+        "scripts/hepta-learning-operator-map.py",
+        "scripts/hepta-learning-operator-receipt.py",
+        "scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "qualityLog": {
+    "path": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-ci-receipt-final-quality.log",
+    "sha256": "5a4845a0bcd2aa4cce5042aef41bc5d7f2562f6f756268ee9e82b24922c5fa0e"
+  },
+  "schema": "hepta.learning-operator-control-regressions.v1",
+  "sourceFileSha256": {
+    ".github/workflows/hepta-learning-operator-audit.yml": "1457e8f1c4614d9efe5f829542afc8c28aa4efbb9e63aeb1a653fcb512f3a21c",
+    ".github/workflows/learning-operator-authoritative.yml": "53738825c9661836db8cf418f9531ac5f28e59f7673e6d626812f016878a579f",
+    "scripts/hepta-learning-operator-authoritative.sh": "1d675bfd3f3d5449cd22b0f184922a1767ecbddb07bb774032489a9194302b5b",
+    "scripts/hepta-learning-operator-contract.py": "368fe5297d248688122b428a4b391a6c0d2f8d5b6626fd31fe864659ae0fc112",
+    "scripts/hepta-learning-operator-map.py": "94e471bdcef30337d040312501c962fd4779372ae66db7e18e04dd4a82b08743",
+    "scripts/hepta-learning-operator-receipt.py": "36bbce95bf2d2fca8a952f82f8d3f85fc1d61406b8f00859a0ba5ab268a582f8",
+    "scripts/test_hepta_learning_operator_evidence.py": "573472103e8ba3698081c3dbc0c6eb7bc3839a3bbaaa680e272e87d531099fad"
+  },
+  "sourceHeadAtObservation": "831be9ed2ac480039eb0f229dd423effff3315a7",
+  "sourceQualificationIssued": false
+}

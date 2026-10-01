@@ -1,0 +1,20 @@
+{
+  "name": "final-operator-strict-compat",
+  "command": [
+    "cargo",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "--all-targets",
+    "--features",
+    "qualification-unverified-input",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exitCode": 0,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/final-operator-strict-compat.log",
+  "sha256": "9d7dcf18da8b945ccc4140b781e798bf0b04fb3af5c2fa4608442c0625d6651e",
+  "bytes": 187
+}

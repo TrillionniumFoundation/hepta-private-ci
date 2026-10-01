@@ -1,0 +1,10 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-hepta-bellman-operator v0.0.0 (/dev/shm/hepta-round2-99c8d2276f89/checkout/codex-rs/hepta-bellman-operator)
+    Finished `test` profile [unoptimized] target(s) in 2.73s
+────────────
+ Nextest run ID cb06e2e6-1bf9-469f-a703-7badcd06215f with nextest profile: local
+    Starting 1 test across 1 binary (126 tests skipped)
+        PASS [   0.122s] codex-hepta-bellman-operator legacy::dataset_bound::owner_tests::full_v3_qualification_path_profile
+────────────
+     Summary [   0.124s] 1 test run: 1 passed, 126 skipped

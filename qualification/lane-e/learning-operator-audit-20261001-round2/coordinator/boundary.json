@@ -1,0 +1,38 @@
+{
+  "checkout": "/dev/shm/hepta-round2-99c8d2276f89/checkout",
+  "harness": "/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final",
+  "test_result": "35 passed, 0 skipped",
+  "nextest_run_id": "e4c2fdde-91f7-48b8-a581-eb69b8735e8d",
+  "command": "just --justfile /dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/justfile test --manifest-path /dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/Cargo.toml --locked --offline",
+  "counts": {
+    "coordinator": 12,
+    "real_persistence": 8,
+    "evaluated_loader": 9,
+    "source_bounds": 2,
+    "shared_monotonic_host_clock": 4
+  },
+  "scope": "Exact Agentd core adapter sources compiled against real path dependencies from the same memory checkout. Locked CAS/fsync ProductRunner, dual real ledgers, root-signed trust, actual owner fsync and signed independent selections are used in private fixtures.",
+  "test_only_feature": "operator qualification-unverified-input is enabled only as the existing Agentd dev fixture signing support; final-use candidates are obtained from actual production opaque capabilities.",
+  "not_proven": [
+    "actual Agentd ProductRunner host class and default library/V8 chain compilation",
+    "real daemon process qualification",
+    "fresh-process learning.operator round trip",
+    "durable coordinator rollback composition",
+    "external scientific efficacy and deployment receipts"
+  ],
+  "artifact_unit_test": {
+    "result": "94 passed, 1 skipped",
+    "command": "just test --locked --offline -p codex-hepta-learning-artifacts --lib --test-threads=2 --no-tests=fail",
+    "nextest_run_id": "a28db507-15be-4a9a-8b1e-0f263daa8f2c",
+    "skip": "Existing owner_host_process_fault_worker is only invoked inside the passing process kill/reopen matrix; its standalone execution is intentionally ignored."
+  },
+  "historical_evidence": "pre-tail-* preserve24; pre-release-* preserve29; pre-clock-* preserve30; pre-actor-* preserve34; actor-before-format.log records pre-format35. final.log and source-sha256.json alone refer to the final formatted source35 run. Artifacts-final.log is the real94-pass/1-worker-skipped package run before global formatting; artifact production API code was not semantically changed afterwards.",
+  "clock_regression": "Private clock keeps raw highwater and rebases only forward raw observations beyond effective elapsed time. Frozen/equal raw samples retain the monotonic anchor, including fractional microseconds. Deterministic private Instant tests verify 50s\u219275s then frozen+6s\u219281s rejects a genuine 80s storage selection, explicit host/Instant regression and overflow. The existing prediction boundary fixture now checks direct API inclusive expiry, a 1s successful-use margin, and mandatory refusal after actual elapsed time crosses expiry.",
+  "source_identity": {
+    "state": "root just fmt and scoped adapter just fix completed before this final run",
+    "at_run_hashed_inputs": 230,
+    "real_local_path_packages": 8,
+    "unchanged_during_final_run": true
+  },
+  "publication_actor_boundary": "Third complete validation is followed by actual owner CURRENT refresh, exact ack/request head and real witness binding. The full registry view is dropped before the fourth sample; its immutable verified actor/head/revocation window is revalidated at release. Expired or revoked actor returns PersistedButNotCurrent with the exact known ack. A historical retry after CURRENT has advanced is not a fresh-current result; read-only historical reconciliation remains available."
+}

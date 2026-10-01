@@ -1,0 +1,12 @@
+{
+  "name": "final-python-syntax",
+  "command": [
+    "python3",
+    "-c",
+    "import subprocess; commands=[[\"python3\",\"-m\",\"py_compile\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"],[\"/root/.cache/uv/archive-v0/lKcnMBEJBVjTWfWo/ruff-0.16.9.data/scripts/ruff\",\"check\",\"--isolated\",\"--select\",\"E9,F\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"],[\"bash\",\"-n\",\"../scripts/hepta-learning-operator-authoritative.sh\"]]; [subprocess.run(c,check=True) for c in commands]"
+  ],
+  "exitCode": 0,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/final-python-syntax.log",
+  "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+  "bytes": 19
+}

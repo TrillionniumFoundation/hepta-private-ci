@@ -1,0 +1,17 @@
+{
+  "name": "operator-final-compatibility",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "--features",
+    "qualification-unverified-input",
+    "--lib"
+  ],
+  "exitCode": 0,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-final-compatibility.log",
+  "sha256": "605da4fed66053bb139bd21c40ccb01fb2dd346903fbd6a82f0e5e4d8dad2080",
+  "bytes": 18406
+}

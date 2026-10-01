@@ -1,0 +1,1787 @@
+{
+  "schema": "hepta.learning-operator-local-audit-round2.v1",
+  "module": "learning.operator",
+  "baselineRemoteSha": "831be9ed2ac480039eb0f229dd423effff3315a7",
+  "sourceCode": {
+    "remoteSha": "84c633367fa5452f241d4ff5254e0c12ee19d939",
+    "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f",
+    "githubTreeMatchedLocal": true
+  },
+  "latestMainObserved": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "latestEvalBranchObserved": "3714b7e1c2513e0e79ad8560a80fda480aca9471",
+  "engineeringQualified": false,
+  "scientificallyAccepted": false,
+  "activation": false,
+  "release": false,
+  "claimBoundary": "Scoped local tests and independent API/source-harness observations only. No complete Agentd/Bazel/default-loop, protected merge, scientific, host-capacity or deployment qualification. Historical failed attempts are retained alongside their corrections. Final source hashes below are materialized after the checks, not fabricated per-run receipts.",
+  "toolchain": {
+    "rust": "1.95.0",
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "debugInfo": false,
+    "incremental": false
+  },
+  "observations": [
+    {
+      "name": "agentd-final-all-targets",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--all-targets"
+      ],
+      "exitCode": 101,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/agentd-final-all-targets.log",
+      "rawLogSha256": "3e31d7aeae8f57b7c6ee4f3259ac1758be1515ba05eccf921aa29f9717932632",
+      "bytes": 10911
+    },
+    {
+      "name": "artifacts-final-window-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/artifacts-final-window-tests.log",
+      "rawLogSha256": "abfe7f7da216078220a72dbc52c10f51180e7aade39b7b6a0ce0efa188c5e9d7",
+      "bytes": 12950,
+      "observedCount": 94,
+      "passedCount": 94,
+      "skippedCount": 1
+    },
+    {
+      "name": "artifacts-round2-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/artifacts-round2-final.log",
+      "rawLogSha256": "9356f7a72e947acd67b3c926c2d1c97f700e47c1c42def0fb6cd7672bb4d0a84",
+      "bytes": 13696,
+      "observedCount": 93,
+      "passedCount": 93,
+      "skippedCount": 1
+    },
+    {
+      "name": "clean-final-owned-cache",
+      "command": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-types",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-ndu",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-optimizer"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/clean-final-owned-cache.log",
+      "rawLogSha256": "93636a4f62f177d69089e2fd90377c66568cf20475d7e1dd985b5c15dfeb3f73",
+      "bytes": 39
+    },
+    {
+      "name": "contracts-round2-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-default.log",
+      "rawLogSha256": "4fc2937f679b55d7eb8839d33f36b43c34e6d734cccbfbce918492fb1147c1b9",
+      "bytes": 24695,
+      "observedCount": 185,
+      "passedCount": 185,
+      "skippedCount": 0
+    },
+    {
+      "name": "contracts-round2-feature-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--features",
+        "serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value",
+        "learning_operator_protocol"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-feature-final.log",
+      "rawLogSha256": "936b52ab6615308d85b455b5019e9afae972657cf6eb719b98b2a14933f41d91",
+      "bytes": 3313,
+      "observedCount": 12,
+      "passedCount": 12,
+      "skippedCount": 174
+    },
+    {
+      "name": "contracts-round2-feature",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--features",
+        "serde_json/preserve_order,serde_json/arbitrary_precision",
+        "-E",
+        "test(learning_operator_protocol::tests)"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-feature.log",
+      "rawLogSha256": "81245b16799721359e7723dcf8123b9a51ff11601bf4a17599b515c4f7c8e97b",
+      "bytes": 3128,
+      "observedCount": 11,
+      "passedCount": 11,
+      "skippedCount": 174
+    },
+    {
+      "name": "contracts-round2-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-final.log",
+      "rawLogSha256": "bb3856362b7c27b53265a793c47e1c46729321d69de3dec757f52bd105fd0279",
+      "bytes": 24848,
+      "observedCount": 186,
+      "passedCount": 186,
+      "skippedCount": 0
+    },
+    {
+      "name": "eval-intelligence-round2-complete",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-intelligence-round2-complete.log",
+      "rawLogSha256": "f3280949a111a0d387c5d27c9edb866864821d81ace1f20a9b7f8afc6cdc86cc",
+      "bytes": 3016
+    },
+    {
+      "name": "eval-intelligence-round2-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-intelligence-round2-final.log",
+      "rawLogSha256": "f85df982bc82bc287ddbf38d0abe0a5edcad74520df627dc0174b08ab83a910f",
+      "bytes": 6380
+    },
+    {
+      "name": "eval-intelligence-round2-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-intelligence-round2-fixed.log",
+      "rawLogSha256": "c669574702c449c3a993610fe67a6dd2fd1fff45bfbcd2ec81de7f0f4e7937f8",
+      "bytes": 5761
+    },
+    {
+      "name": "evidence-round2-final",
+      "command": [
+        "python3",
+        "/workspace/scratch/99c8d2276f89/hepta-private-ci/scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/evidence-round2-final.log",
+      "rawLogSha256": "17284bb7ebac3e82bc2222bb62040daebfdd88fc928260615ac57a40c43fbd5b",
+      "bytes": 121,
+      "observedCount": 21
+    },
+    {
+      "name": "final-adapter-scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--manifest-path",
+        "/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/Cargo.toml",
+        "--locked",
+        "-p",
+        "learning-operator-coordinator-source-check"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-adapter-scoped-fix.log",
+      "rawLogSha256": "598b2698a1d78239b28e9330f06015d6a633e3142f84ad0cb72527e6f417e6b7",
+      "bytes": 2168
+    },
+    {
+      "name": "final-core-owner-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-core-owner-tests.log",
+      "rawLogSha256": "f57befc358101aadcd0275dd7d9db97422068b841a3dad9f785be309d726ac85",
+      "bytes": 48163,
+      "observedCount": 324,
+      "passedCount": 324,
+      "skippedCount": 2
+    },
+    {
+      "name": "final-eight-owner-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-types",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-eight-owner-default.log",
+      "rawLogSha256": "8d1544afca336a8e89283485b09c0f4b24c93f7fb49c6d3c4e057011b8707ec4",
+      "bytes": 108613,
+      "observedCount": 811,
+      "passedCount": 811,
+      "skippedCount": 4
+    },
+    {
+      "name": "final-eval-focused",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-eval-focused.log",
+      "rawLogSha256": "49c4943a6af96247b8ef29cabca6f18e41167f46245c2b1fc2148f1f0ed61f68",
+      "bytes": 17391,
+      "observedCount": 118,
+      "passedCount": 118,
+      "skippedCount": 0
+    },
+    {
+      "name": "final-evidence-tests",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-evidence-tests.log",
+      "rawLogSha256": "13eb0d53c6e7078c9325f808d5f9f4d980790dccd76f627aa5585ba228e260da",
+      "bytes": 122,
+      "observedCount": 22
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-format.log",
+      "rawLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "final-lane-e-tests",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_lane_e_closure.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-lane-e-tests.log",
+      "rawLogSha256": "d24ff9b892334f47df2f700b87ab58423c92c0b2dc694f524c3fc4683e611a82",
+      "bytes": 114,
+      "observedCount": 15
+    },
+    {
+      "name": "final-module-doc-indexes",
+      "command": [
+        "python3",
+        "../scripts/hepta-module-docs.py",
+        "refresh-indexes"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-module-doc-indexes.log",
+      "rawLogSha256": "9308721c795a127b26e43f4240cd8b84cd1a636a96ed1f838022d76e93f2d845",
+      "bytes": 130
+    },
+    {
+      "name": "final-module-doc-verify",
+      "command": [
+        "python3",
+        "../scripts/hepta-module-docs.py",
+        "verify"
+      ],
+      "exitCode": 1,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-module-doc-verify.log",
+      "rawLogSha256": "3daf2d3a6e26f2ace9df9139e8a3ec46cca22a16a68c5a4a4d7e3d241bc5c480",
+      "bytes": 151
+    },
+    {
+      "name": "final-operator-strict-compat",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--all-targets",
+        "--features",
+        "qualification-unverified-input",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-operator-strict-compat.log",
+      "rawLogSha256": "9d7dcf18da8b945ccc4140b781e798bf0b04fb3af5c2fa4608442c0625d6651e",
+      "bytes": 187
+    },
+    {
+      "name": "final-operator-strict-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-operator-strict-default.log",
+      "rawLogSha256": "07ae64a783f0a67b26aae4d21f0fc6e938bec1bf00d467efef9cfc3ab2950dac",
+      "bytes": 782
+    },
+    {
+      "name": "final-python-static",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[[\"/root/.cache/uv/archive-v0/lKcnMBEJBVjTWfWo/ruff-0.16.9.data/scripts/ruff\",\"check\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"],[\"bash\",\"-n\",\"../scripts/hepta-learning-operator-authoritative.sh\"]]; [subprocess.run(c,check=True) for c in commands]"
+      ],
+      "exitCode": 1,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-python-static.log",
+      "rawLogSha256": "73ef4e980aea4999b0cb0f859a5448a97dd4c2921222ef34e3d6dd911b813401",
+      "bytes": 6772
+    },
+    {
+      "name": "final-python-syntax",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[[\"python3\",\"-m\",\"py_compile\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"],[\"/root/.cache/uv/archive-v0/lKcnMBEJBVjTWfWo/ruff-0.16.9.data/scripts/ruff\",\"check\",\"--isolated\",\"--select\",\"E9,F\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"],[\"bash\",\"-n\",\"../scripts/hepta-learning-operator-authoritative.sh\"]]; [subprocess.run(c,check=True) for c in commands]"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-python-syntax.log",
+      "rawLogSha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "name": "final-scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--locked"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-scoped-fix.log",
+      "rawLogSha256": "c24f22a71bd02059d05a0a43ba573c00e07a502b25439282bfd3a8eeb73e5eec",
+      "bytes": 36870
+    },
+    {
+      "name": "final-scoped-format-check",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[[\"cargo\",\"fmt\",\"--\",\"--check\",\"--config\",\"imports_granularity=Item\"],[\"../scripts/.venv/bin/ruff\",\"format\",\"--check\",\"../scripts/hepta-learning-operator-api-surface.py\",\"../scripts/hepta-learning-operator-contract.py\",\"../scripts/hepta-learning-operator-map.py\",\"../scripts/hepta-learning-operator-readiness.py\",\"../scripts/hepta-learning-operator-receipt.py\",\"../scripts/test_hepta_learning_operator_evidence.py\"]]; [subprocess.run(c,check=True) for c in commands]"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-scoped-format-check.log",
+      "rawLogSha256": "2dedc330e2c50c4ba8c45e5202f51d401f52c9a095dd56ab6eb22dd6ee70cbe6",
+      "bytes": 44228
+    },
+    {
+      "name": "final-shadow-qualification-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-shadow-qualification-fixed.log",
+      "rawLogSha256": "41e81dbf61039c2ebc20524ca98589d75ac868d6b12c6c47089d37ee0d9578cb",
+      "bytes": 5087,
+      "observedCount": 32,
+      "passedCount": 32,
+      "skippedCount": 0
+    },
+    {
+      "name": "final-shadow-qualification",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-shadow-qualification.log",
+      "rawLogSha256": "7e20a9ccf643e52306a0eaeb9a4c6297bc270e4f61d4988c9c838c9b0ecbf555",
+      "bytes": 6769
+    },
+    {
+      "name": "free-types-round2-test",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-types"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/free-types-round2-test.log",
+      "rawLogSha256": "8185521b010231728b948098f7db6f7ba0fa000e77bbdbd7247c2ad63e332583",
+      "bytes": 7658,
+      "observedCount": 54,
+      "passedCount": 54,
+      "skippedCount": 0
+    },
+    {
+      "name": "operator-api-surface-final",
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-api-surface.py",
+        "--output",
+        "/dev/shm/hepta-round2-99c8d2276f89/logs/operator-api-surface-cases.json"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-api-surface-final.log",
+      "rawLogSha256": "3eed9e97d5e951e47a0b225b0862ab532da2988f23457ccaaa0ed1f1a2635188",
+      "bytes": 18072
+    },
+    {
+      "name": "operator-ci-receipt-final-contract",
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-contract.py",
+        "verify"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-contract.log",
+      "rawLogSha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69",
+      "bytes": 68
+    },
+    {
+      "name": "operator-ci-receipt-final-evidence",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-evidence.log",
+      "rawLogSha256": "40b774f316cb5685969b14969e3aa41d7d6756b028b1456ae05e653cc68c2336",
+      "bytes": 127,
+      "observedCount": 27
+    },
+    {
+      "name": "operator-ci-receipt-final-lane-e",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_lane_e_closure.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-lane-e.log",
+      "rawLogSha256": "245ab8afafb9d49132d3d475d56f471a60ac309aef6076b5a5235ace5b424a36",
+      "bytes": 114,
+      "observedCount": 15
+    },
+    {
+      "name": "operator-ci-receipt-final-v8",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_ci_v8.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-v8.log",
+      "rawLogSha256": "8750d4b5acdce1e4d680a3a27eb5d68370ed8b7d37b619aa32e9e0049f881dae",
+      "bytes": 104,
+      "observedCount": 6
+    },
+    {
+      "name": "operator-final-compatibility",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--features",
+        "qualification-unverified-input",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-final-compatibility.log",
+      "rawLogSha256": "605da4fed66053bb139bd21c40ccb01fb2dd346903fbd6a82f0e5e4d8dad2080",
+      "bytes": 18406,
+      "observedCount": 125,
+      "passedCount": 125,
+      "skippedCount": 2
+    },
+    {
+      "name": "operator-final-owner-profile",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--lib",
+        "-E",
+        "test(full_v3_qualification_path_profile)",
+        "--run-ignored",
+        "ignored-only",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-final-owner-profile.log",
+      "rawLogSha256": "0590f2bcd889c4e94f612e1b1abfe4f841dee69cd7764142a8c212dc0f9ec18b",
+      "bytes": 773
+    },
+    {
+      "name": "operator-ledger-round2-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "--lib"
+      ],
+      "exitCode": 100,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ledger-round2-final.log",
+      "rawLogSha256": "093f0247c7c1e7f9370fd9c87e979748a7f93ab89304500e1eac7a98ba0278ef",
+      "bytes": 38700,
+      "observedCount": 241,
+      "passedCount": 239,
+      "skippedCount": 3
+    },
+    {
+      "name": "operator-round2-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-round2-default.log",
+      "rawLogSha256": "704d3575ce36c7471c974cd71bc7e36874a00d0150db195e03c0d1c0c4366d02",
+      "bytes": 18160,
+      "observedCount": 117,
+      "passedCount": 117,
+      "skippedCount": 2
+    },
+    {
+      "name": "seven-owner-final-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib"
+      ],
+      "exitCode": 100,
+      "status": "failed-attempt",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/seven-owner-final-default.log",
+      "rawLogSha256": "cb41e82c8aaad96a8fd60a054c846a228521b62ca1676ceb9767d7ff0a585ebd",
+      "bytes": 111659,
+      "observedCount": 776,
+      "passedCount": 773,
+      "skippedCount": 4
+    },
+    {
+      "name": "agentd-final-openssl-env",
+      "command": [
+        "see raw command/context log"
+      ],
+      "status": "resource-blocked",
+      "exitCode": null,
+      "reason": "No space left on device while checking codex-app-server; wrapper could not persist cargo exit",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/agentd-final-openssl-env.log",
+      "rawLogSha256": "f8121d84fdf77581dbce19d0fb2defbb69b4b59a5aa854bad6132a9ede7f64d8",
+      "bytes": 44431
+    },
+    {
+      "name": "operator-request-default-final",
+      "command": [
+        "see raw command/context log"
+      ],
+      "status": "resource-blocked",
+      "exitCode": null,
+      "reason": "wrapper/source filesystem capacity failure before a completed recorded test result",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-request-default-final.log",
+      "rawLogSha256": "881345cb69c17a65da64077126c1b3fec73d731ca82ab797b6b04e0fe9670fd8",
+      "bytes": 2023
+    },
+    {
+      "name": "operator-ci-receipt-final-evidence",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_learning_operator_evidence.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-evidence.log",
+      "rawLogSha256": "40b774f316cb5685969b14969e3aa41d7d6756b028b1456ae05e653cc68c2336",
+      "bytes": 127,
+      "observedCount": 27
+    },
+    {
+      "name": "operator-ci-receipt-final-lane-e",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_lane_e_closure.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-lane-e.log",
+      "rawLogSha256": "245ab8afafb9d49132d3d475d56f471a60ac309aef6076b5a5235ace5b424a36",
+      "bytes": 114,
+      "observedCount": 15
+    },
+    {
+      "name": "operator-ci-receipt-final-v8",
+      "command": [
+        "python3",
+        "../scripts/test_hepta_ci_v8.py"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-v8.log",
+      "rawLogSha256": "8750d4b5acdce1e4d680a3a27eb5d68370ed8b7d37b619aa32e9e0049f881dae",
+      "bytes": 104,
+      "observedCount": 6
+    },
+    {
+      "name": "operator-ci-receipt-final-contract",
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-contract.py",
+        "verify"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-contract.log",
+      "rawLogSha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69",
+      "bytes": 68
+    }
+  ],
+  "rawLogs": [
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/agentd-final-all-targets.log",
+      "sha256": "3e31d7aeae8f57b7c6ee4f3259ac1758be1515ba05eccf921aa29f9717932632",
+      "bytes": 10911
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/agentd-final-openssl-env.log",
+      "sha256": "f8121d84fdf77581dbce19d0fb2defbb69b4b59a5aa854bad6132a9ede7f64d8",
+      "bytes": 44431
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/artifacts-final-window-tests.log",
+      "sha256": "abfe7f7da216078220a72dbc52c10f51180e7aade39b7b6a0ce0efa188c5e9d7",
+      "bytes": 12950
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/artifacts-round2-final.log",
+      "sha256": "9356f7a72e947acd67b3c926c2d1c97f700e47c1c42def0fb6cd7672bb4d0a84",
+      "bytes": 13696
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/clean-final-owned-cache.log",
+      "sha256": "93636a4f62f177d69089e2fd90377c66568cf20475d7e1dd985b5c15dfeb3f73",
+      "bytes": 39
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-default.log",
+      "sha256": "4fc2937f679b55d7eb8839d33f36b43c34e6d734cccbfbce918492fb1147c1b9",
+      "bytes": 24695
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-feature-final.log",
+      "sha256": "936b52ab6615308d85b455b5019e9afae972657cf6eb719b98b2a14933f41d91",
+      "bytes": 3313
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-feature.log",
+      "sha256": "81245b16799721359e7723dcf8123b9a51ff11601bf4a17599b515c4f7c8e97b",
+      "bytes": 3128
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/contracts-round2-final.log",
+      "sha256": "bb3856362b7c27b53265a793c47e1c46729321d69de3dec757f52bd105fd0279",
+      "bytes": 24848
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/artifacts-final.log",
+      "sha256": "79db3e4d2f1e816c1ebfa71f407a23f3c61fc278748ebddece02e991118b5438",
+      "bytes": 12950
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/final.log",
+      "sha256": "f492cf16681a1df85ea8f468daa2db8ca47fae9ea36986fc06c28f2bfa13cc3b",
+      "bytes": 7780
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/pre-actor-final.log",
+      "sha256": "4b2f8d2e89c55879660d1425c78fade81de5958629fd451b58ae641d366b9a41",
+      "bytes": 7336
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/pre-clock-final.log",
+      "sha256": "fc0d95c720f58da37351d9bc8235aacf79884bf06b7b15cbc8c44832ae433f26",
+      "bytes": 6759
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/pre-release-final.log",
+      "sha256": "ea45580d67db0c44399b5f57bf70e2d84c375af2485a9958fe78dd3855b9f437",
+      "bytes": 7518
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/pre-tail-final.log",
+      "sha256": "b71ba171829e1d2c87f919fccfc6952e2d02ef0dcf45c88614298272cac92787",
+      "bytes": 6622
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/release-setup.log",
+      "sha256": "3310714f8187fa74f90c98d49fa558928c7d3dc5ade8a2d6d29e530b7308afab",
+      "bytes": 278
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/tail-config.log",
+      "sha256": "06f21545fa923cbcc01f17a8fcf061437f374bff3657cbcc3612aaf5a9571996",
+      "bytes": 3678
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/tail-setup.log",
+      "sha256": "5d605b9b5495e42b0dcab541c8a6805881c4ef98456134b1358b1abd6850efed",
+      "bytes": 212
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-intelligence-round2-complete.log",
+      "sha256": "f3280949a111a0d387c5d27c9edb866864821d81ace1f20a9b7f8afc6cdc86cc",
+      "bytes": 3016
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-intelligence-round2-final.log",
+      "sha256": "f85df982bc82bc287ddbf38d0abe0a5edcad74520df627dc0174b08ab83a910f",
+      "bytes": 6380
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-intelligence-round2-fixed.log",
+      "sha256": "c669574702c449c3a993610fe67a6dd2fd1fff45bfbcd2ec81de7f0f4e7937f8",
+      "bytes": 5761
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/eval-round2-test.log",
+      "sha256": "d2949840713e4631b67b0ff0ca13c778df0f3e4e00c6368d4dc43477d8482b1a",
+      "bytes": 16579
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/evidence-round2-final.log",
+      "sha256": "17284bb7ebac3e82bc2222bb62040daebfdd88fc928260615ac57a40c43fbd5b",
+      "bytes": 121
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-adapter-scoped-fix.log",
+      "sha256": "598b2698a1d78239b28e9330f06015d6a633e3142f84ad0cb72527e6f417e6b7",
+      "bytes": 2168
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-core-owner-tests.log",
+      "sha256": "f57befc358101aadcd0275dd7d9db97422068b841a3dad9f785be309d726ac85",
+      "bytes": 48163
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-eight-owner-default.log",
+      "sha256": "8d1544afca336a8e89283485b09c0f4b24c93f7fb49c6d3c4e057011b8707ec4",
+      "bytes": 108613
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-eval-focused.log",
+      "sha256": "49c4943a6af96247b8ef29cabca6f18e41167f46245c2b1fc2148f1f0ed61f68",
+      "bytes": 17391
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-evidence-tests.log",
+      "sha256": "13eb0d53c6e7078c9325f808d5f9f4d980790dccd76f627aa5585ba228e260da",
+      "bytes": 122
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-lane-e-tests.log",
+      "sha256": "d24ff9b892334f47df2f700b87ab58423c92c0b2dc694f524c3fc4683e611a82",
+      "bytes": 114
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-module-doc-indexes.log",
+      "sha256": "9308721c795a127b26e43f4240cd8b84cd1a636a96ed1f838022d76e93f2d845",
+      "bytes": 130
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-module-doc-verify.log",
+      "sha256": "3daf2d3a6e26f2ace9df9139e8a3ec46cca22a16a68c5a4a4d7e3d241bc5c480",
+      "bytes": 151
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-operator-strict-compat.log",
+      "sha256": "9d7dcf18da8b945ccc4140b781e798bf0b04fb3af5c2fa4608442c0625d6651e",
+      "bytes": 187
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-operator-strict-default.log",
+      "sha256": "07ae64a783f0a67b26aae4d21f0fc6e938bec1bf00d467efef9cfc3ab2950dac",
+      "bytes": 782
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-python-static.log",
+      "sha256": "73ef4e980aea4999b0cb0f859a5448a97dd4c2921222ef34e3d6dd911b813401",
+      "bytes": 6772
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-python-syntax.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-scoped-fix.log",
+      "sha256": "c24f22a71bd02059d05a0a43ba573c00e07a502b25439282bfd3a8eeb73e5eec",
+      "bytes": 36870
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-scoped-format-check.log",
+      "sha256": "2dedc330e2c50c4ba8c45e5202f51d401f52c9a095dd56ab6eb22dd6ee70cbe6",
+      "bytes": 44228
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-shadow-qualification-fixed.log",
+      "sha256": "41e81dbf61039c2ebc20524ca98589d75ac868d6b12c6c47089d37ee0d9578cb",
+      "bytes": 5087
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-shadow-qualification.log",
+      "sha256": "7e20a9ccf643e52306a0eaeb9a4c6297bc270e4f61d4988c9c838c9b0ecbf555",
+      "bytes": 6769
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/free-types-round2-test.log",
+      "sha256": "8185521b010231728b948098f7db6f7ba0fa000e77bbdbd7247c2ad63e332583",
+      "bytes": 7658
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/intelligence-round2-test.log",
+      "sha256": "71707c485ef2d0b13cf1935bc13779fe2c9250ce8026fc3a8d017e9bb35e89df",
+      "bytes": 14723
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-api-surface-final.log",
+      "sha256": "3eed9e97d5e951e47a0b225b0862ab532da2988f23457ccaaa0ed1f1a2635188",
+      "bytes": 18072
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-contract.log",
+      "sha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69",
+      "bytes": 68
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-evidence.log",
+      "sha256": "40b774f316cb5685969b14969e3aa41d7d6756b028b1456ae05e653cc68c2336",
+      "bytes": 127
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-lane-e.log",
+      "sha256": "245ab8afafb9d49132d3d475d56f471a60ac309aef6076b5a5235ace5b424a36",
+      "bytes": 114
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-quality-invocation-error.log",
+      "sha256": "1cb0003be554f960c5723bc663b23340b6cd482b655352f2d5a767f41037b3fc",
+      "bytes": 1852
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-quality.log",
+      "sha256": "5a4845a0bcd2aa4cce5042aef41bc5d7f2562f6f756268ee9e82b24922c5fa0e",
+      "bytes": 1908
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ci-receipt-final-v8.log",
+      "sha256": "8750d4b5acdce1e4d680a3a27eb5d68370ed8b7d37b619aa32e9e0049f881dae",
+      "bytes": 104
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-final-compatibility.log",
+      "sha256": "605da4fed66053bb139bd21c40ccb01fb2dd346903fbd6a82f0e5e4d8dad2080",
+      "bytes": 18406
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-final-owner-profile.log",
+      "sha256": "0590f2bcd889c4e94f612e1b1abfe4f841dee69cd7764142a8c212dc0f9ec18b",
+      "bytes": 773
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-ledger-round2-final.log",
+      "sha256": "093f0247c7c1e7f9370fd9c87e979748a7f93ab89304500e1eac7a98ba0278ef",
+      "bytes": 38700
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-request-default-final.log",
+      "sha256": "881345cb69c17a65da64077126c1b3fec73d731ca82ab797b6b04e0fe9670fd8",
+      "bytes": 2023
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/operator-round2-default.log",
+      "sha256": "704d3575ce36c7471c974cd71bc7e36874a00d0150db195e03c0d1c0c4366d02",
+      "bytes": 18160
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/seven-owner-final-default.log",
+      "sha256": "cb41e82c8aaad96a8fd60a054c846a228521b62ca1676ceb9767d7ff0a585ebd",
+      "bytes": 111659
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/bash-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/evidence-tests.log",
+      "sha256": "0ca8740e7436af4b20f98acb17bc956746cef6ce167c3782c38d46496ec26da9",
+      "bytes": 121
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/lane-e-self-test.log",
+      "sha256": "6b38eac44a1caa287b7adfee7722e631eed4efe6e64ba3d01823f5d2f199b921",
+      "bytes": 210
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/lane-e-tests.log",
+      "sha256": "3541f69aa65dda8ed27d17140e2dc40e048251b1fec60193cef651c517bf00de",
+      "bytes": 114
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/python-compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/ruff.log",
+      "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de",
+      "bytes": 26
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/typed-projection-test.log",
+      "sha256": "2299339565fdc7c4fedeb54e99b181ba53b821f77194926422cc7df3301ba0ee",
+      "bytes": 98
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/verification/yaml.log",
+      "sha256": "435aee8d3036ccc2950672e37372cecd9ed898b8c55c54ddcb636c7d6707a1ca",
+      "bytes": 130
+    }
+  ],
+  "finalMaterializedSourceCommitments": [
+    {
+      "path": ".gitattributes",
+      "sha256": "66c19a999bfc91737f0e67d53ec123c564e74523c9ddd7bdea5ec56bfd68902d",
+      "bytes": 912
+    },
+    {
+      "path": ".github/workflows/hepta-learning-operator-audit.yml",
+      "sha256": "1457e8f1c4614d9efe5f829542afc8c28aa4efbb9e63aeb1a653fcb512f3a21c",
+      "bytes": 7341
+    },
+    {
+      "path": ".github/workflows/learning-operator-authoritative.yml",
+      "sha256": "53738825c9661836db8cf418f9531ac5f28e59f7673e6d626812f016878a579f",
+      "bytes": 3655
+    },
+    {
+      "path": "BUILD.bazel",
+      "sha256": "e77fdffda8530db4ba4a8f49210d2f2e65371bdacab1c89de88fae78df171d95",
+      "bytes": 3055
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "sha256": "01a3db1b0231ab994f70d1689f4c0e50f8a9a7de90480aa53f76ef774645bd4e",
+      "bytes": 11873
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs",
+      "sha256": "58e584d22cb65439bd3b6cb2c514e1eb2b3d46cf93dc35a8395e5a2e3c9a86b9",
+      "bytes": 16970
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "sha256": "6cfb2e0f681a140e6537610018890a0720385c734e0128450d9a3a8ba92248b1",
+      "bytes": 7604
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "sha256": "bd788556f149d748bace8c3b5774b94be82cf15adcf53fd5ed73e013980a82f7",
+      "bytes": 13803
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "sha256": "3f52b83390b8bd493f560d4953475b9065f671d23edc72ed266a0881da11e12b",
+      "bytes": 28544
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_artifact_owner.rs",
+      "sha256": "329f9786fe4c65dbac1c1cf8d497dcd16d23de67ff42f28b36ab358cdf929f13",
+      "bytes": 16750
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_artifact_owner_tests.rs",
+      "sha256": "ad2f47f768a1a0473f8e865cd5f1cc3f9a3e7a5bcb988299fbb4a58d7ecf1716",
+      "bytes": 14312
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_artifact_test_support.rs",
+      "sha256": "072bddfe9584bfdb0f08193383d8403459c958fbc8f8f12c93ccc168de643e0e",
+      "bytes": 19288
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_clock.rs",
+      "sha256": "d6b8ef92f37a60e40c37850dbed4e7e9bfb22af193d9b54d14e2f27f554dc0aa",
+      "bytes": 1781
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_clock_tests.rs",
+      "sha256": "b6150bebe023ee8ca4d78282533634a92b2e384176fc979b17f22a2cad38bf7a",
+      "bytes": 2917
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_product_persistence.rs",
+      "sha256": "6aa68bf051563a4f49efed73ca6eb64e47edaba7bf3e8b730717e4b64d57d522",
+      "bytes": 1940
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_shadow_loader.rs",
+      "sha256": "62b655cb43895867237c2fbac0dc7380c16d6145056475b86b9ca2d4bf357a2e",
+      "bytes": 16924
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_shadow_loader_tests.rs",
+      "sha256": "e92a118af8b5687438a51ff03781d6edd2db4988d2551a616bda384fad41b904",
+      "bytes": 12998
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_source_binding.rs",
+      "sha256": "365b2303cadcca9eaa8f507a1c3cf1a0db6ca88e21e71c9e9b7a3dac7d3d74f0",
+      "bytes": 1442
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_source_binding_tests.rs",
+      "sha256": "004f4c3f2224f1c509519a22d78cbea8161ec09201b976269c53bd949ca0cb40",
+      "bytes": 1471
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_operator_test_support.rs",
+      "sha256": "b267ab3273be986004afe6c9d11cdd887028381b0682a28c87da8b759ed32a94",
+      "bytes": 16836
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "78c439befcd5eb105bf3c16a16d4da27bfe7bd88b0f3a8ffa18bbc0495b4717b",
+      "bytes": 12647
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "sha256": "d8df70017d8fd1e447514246d47c386674fbb5608a19d0c43e926db03d7b4740",
+      "bytes": 9303
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "sha256": "f43e4a51c4b9f4ea667d3156f76f61a33ae987c2ed5a11e2270da55bae818588",
+      "bytes": 48666
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "sha256": "c758872d4ed9b0a7c1ae9e6c43b1f69c86bd91b62dcf0d8e72ed857db402d985",
+      "bytes": 40793
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "sha256": "dd4b71fbea2cfab2b9a7711b9c12abd31bd65d5f55b2f5b05e51dd44ec6d5aaf",
+      "bytes": 13869
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime_clock.rs",
+      "sha256": "5f3915aa1963265aefe6edff9395055e26234de62e344a692756a0d3916bdc2a",
+      "bytes": 2857
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs",
+      "sha256": "2ed41d11b7925479b25e6c4c6e308cbee3fbe2a1d6d244e8f86b52f4ba72a87e",
+      "bytes": 432
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
+      "sha256": "268926f516efa1a3b4acc70c45db82ecfe9175cffc97959c4d149a4e4a672209",
+      "bytes": 39608
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/product_qualification_test_support.rs",
+      "sha256": "3e3b96d19fc031e664b45cfbaacee8b0cdae95e6ec8ef1b1f4213290e81e6219",
+      "bytes": 10441
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "sha256": "c51be4e16f7a4883ce8aeae11778a17543ddeb78f339a7664156a03356b3ae02",
+      "bytes": 21586
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
+      "sha256": "e7704533b75b38d7047478180a034d786a14b5372545812687b77da0bc0cb562",
+      "bytes": 22751
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/authoritative_lib.rs",
+      "sha256": "71e7f02bf3fce6c5c16d86c672d29bfa09f9b4db216a28428492a15c21e839a7",
+      "bytes": 11859
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
+      "sha256": "0461e0ca9fe2d794a8f28595640832668e5b6d1085c8fabc35bb10a078be1c72",
+      "bytes": 18940
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use.rs",
+      "sha256": "0ac94b4a9eb85c639e88998d65f6969308b02d3122890aa39797eec7605c6932",
+      "bytes": 40358
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
+      "sha256": "d54feea9df328254f8a6653b1650604999e582737d40e13193df260057ba7977",
+      "bytes": 13910
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_issued.rs",
+      "sha256": "c8fe0004c925983a498bc06335aadb36809165fd7582e466d7333cd581b20801",
+      "bytes": 2391
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_publication.rs",
+      "sha256": "79098d8d9106efbdf1f69cfab3d59918ebd03669dfbfbe74dbe59c070815e345",
+      "bytes": 2699
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_request_tests.rs",
+      "sha256": "cb29aa1a0ec60f79722e6e7db2971de42519b3184ee402b22f94655310c4bdda",
+      "bytes": 5825
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_selected.rs",
+      "sha256": "b51bf91405e730665d1a0267711fcb53dc111df1c97585700305c803d5f21039",
+      "bytes": 6707
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_selected_tests.rs",
+      "sha256": "cd218162700f8248f4b2656b880c499872d888d76cf230041500f85a65a35c76",
+      "bytes": 2457
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_tests.rs",
+      "sha256": "8018f01c9fc52cce1065e24c41c371c3a8d3c17715dbe6d7c6aa0939b0046374",
+      "bytes": 7916
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
+      "sha256": "470b0d36ae41d7e5ed5e8a50915a3e2d65a29f8bc079a9d6f20a3e2c94aa65ec",
+      "bytes": 14552
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_capability_issuance_tests.rs",
+      "sha256": "ca115958276f619900077b221902006a5cdb0762949186a934173aac917a592d",
+      "bytes": 6050
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_dataset_expiry_tests.rs",
+      "sha256": "6eef01e3cb026179abcb2ed4ab810404c0a8fdf12dd684526be49321096b17be",
+      "bytes": 6708
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_dataset_tests.rs",
+      "sha256": "003311a3200cadacf7cdb727f1096f492ef602b9d56b6590492cdc0f1051c74d",
+      "bytes": 23354
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+      "sha256": "6b5fea47a56cd216765692da8348f3e56b79d6c2a09f3f6ddde9bddcbbc13e47",
+      "bytes": 12308
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_terminal_trust_tests.rs",
+      "sha256": "7cca54df23244dc65d40fd573eec878c0dceaa3fb6b4ee21198c03e5567d3e35",
+      "bytes": 5699
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_trust_window_tests.rs",
+      "sha256": "c34f095928a705cb510cb21cc75ad345e5847ea2e2ff53c9cc852c448587f4b7",
+      "bytes": 9604
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/terminal_v3.rs",
+      "sha256": "ae9a7096fc6874cb2e37b29aefe1b3c625a9728e46fd9590905ac83bfb9a2866",
+      "bytes": 10030
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/training_preflight.rs",
+      "sha256": "35160c2c83788a93b82ec6540e666c3e15592a9076ef8b1a5875a314d7c11080",
+      "bytes": 2861
+    },
+    {
+      "path": "codex-rs/hepta-contracts/BUILD.bazel",
+      "sha256": "64aba463c807bec13f109c4aa6bbb14d5aedab9fbecc1f21fe3891a95cab831c",
+      "bytes": 4698
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+      "bytes": 30454
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/learning_operator_protocol.rs",
+      "sha256": "ee9ef852b912a008609d1bca39c2ab8563acd4b93e8ddc53b1f3aca70da6457f",
+      "bytes": 14154
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/learning_operator_protocol_tests.rs",
+      "sha256": "138445ed0ce3bd6cc0d5c9a96090a8a03da380532abeb321602f4ab9c835c1e5",
+      "bytes": 18261
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/lib.rs",
+      "sha256": "b530275e45e92cf90e6559917600706698bf0f962cb8ed3ee7773b07ff737e06",
+      "bytes": 13310
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha256": "813120d75627bdb1e7af01e0a7cb30db58cfa6e163dfe2a1645392cbaa94f1b6",
+      "bytes": 14797
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+      "sha256": "37cc7ad96a1d89d448a90f5c24ab5ae0f4078526147ce901678fd4be05f6d65b",
+      "bytes": 8740
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_observed_cohort.rs",
+      "sha256": "974b21065c9f8605cc8c71aeed0e327ba56b973aa55f9c8be465c3666e027659",
+      "bytes": 12279
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification.rs",
+      "sha256": "4ff7b8da40dff190e08d1fbc76166d31d284d92e0c5f7e25b0c853fae99ed79e",
+      "bytes": 3392
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha256": "d143a92b92db601345b89f42c5d6c23678b58ead2e4d8fc6f91add9a6f4aeb4e",
+      "bytes": 39284
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "sha256": "e1a59f8aff37c94ba3796efabeaf4e310208d62ac90891a7c2b7c4eaae047c20",
+      "bytes": 36995
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "sha256": "5d5a0a842beafe5476385814d19625e4b218b84270aee228de98b877489aff9a",
+      "bytes": 29787
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+      "sha256": "d6163fb9cb9f9bea45daff2de6b6d29bef10012f664b86a542daf5c8c3d976ae",
+      "bytes": 9115
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "sha256": "5a021dea3a48c42af0b6dfaf63df5a20266524ed005347de55b092c69d6fa075",
+      "bytes": 23060
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/lib.rs",
+      "sha256": "9e96eb262e77fd694b66d3a2e64908bdc17a3f6ccf1b36996345976e2d9c16d6",
+      "bytes": 12427
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "sha256": "62ea8c03595daa2eed8f51ec296668394f963316c2b22e14da294e325293ac06",
+      "bytes": 30202
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "sha256": "d6ac50f86ca7879230973443c8e27486ab66c87d05b82be0c0d35c2801bf261e",
+      "bytes": 24297
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/product_qualification_test_support.rs",
+      "sha256": "f05d1d2742434b966afcb01bc02222aabe447fade12260764ab8f1049dcf4326",
+      "bytes": 9897
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "sha256": "2c8f4f24936853112c7c815dff76e5a4974f8befabbcb7ac3c426c5b93b887bf",
+      "bytes": 6764
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "sha256": "524f4611a4387f32c3815715e9fb5c06b92ec9089017650b189adf64443e7726",
+      "bytes": 89083
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "sha256": "634166d7626619095aaa17f115fa65ddfb01a961f1de8400e08899ad5a71ec89",
+      "bytes": 25262
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_currentness_tests.rs",
+      "sha256": "39074df0905ee72bd2ad1acc6b0bae0eacb72f0e613800a8a6cdac4ae7cbf7df",
+      "bytes": 6793
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_status.rs",
+      "sha256": "7905fc0c63e9f5e94a6b879a35a612253e2f433bb25098f3a9b49c6c04b46a4a",
+      "bytes": 3189
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_status_tests.rs",
+      "sha256": "378e7d8f5cd502feb2f3516d32664af0a9afec31b701051df3354d4de4afb81e",
+      "bytes": 4233
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "sha256": "b69691ee1e07c34b43976eb8e5542b67a4020414162047aec107a2cb08b7d7ff",
+      "bytes": 10664
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned_currentness.rs",
+      "sha256": "6f02ceebe05f3306c9407d0b386544e91fd01a872b2cf89d58d009f31dd4fd52",
+      "bytes": 1806
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+      "sha256": "26a55e6a182dcd58c186c9acb4e6fc759ebc1b69d4170e9d48a8dba667d99e69",
+      "bytes": 13703
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "sha256": "418b56085b224a41bdb2ea6ffc63fc3f2719772d95ab997acaaf0a603e9e0d11",
+      "bytes": 30135
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection_currentness.rs",
+      "sha256": "9e2974c2ed2f0355c7e048ae4198952c83797b7a8defd0547d2cfa87dcfb3ab3",
+      "bytes": 3194
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "sha256": "8f9162f13413ab2457370eba53d1411c7d23b95cb82aaea54bc480bc31595bf1",
+      "bytes": 48583
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "sha256": "68f97959b0c0fe2423266b45d0c5f497f015e1df98e533466cde7318a8ebcbbb",
+      "bytes": 10920
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs",
+      "sha256": "8191f76708f3907544321e7fb493a4f768dbf1ed82bdadd6023b67febc71b97b",
+      "bytes": 10807
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+      "sha256": "3b4fab9a4e6bb613f04b57ed79a73d2790f942dcd9a3aa6f71c308b4e2f03e9f",
+      "bytes": 28000
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
+      "sha256": "79ed07af6507e41ebc3c82a453e3e515a60feb9bdd1f84f65829f4024feb7ce0",
+      "bytes": 21084
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "sha256": "354ddba14eef8feabb9dc4cafad86702a181d39a05f41960cdbcd5e4fedbfc1e",
+      "bytes": 13566
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity_tests.rs",
+      "sha256": "9e4bce496a01623eb81b9ecbaff470776690a4b455c48cd68a3c9306370d5f90",
+      "bytes": 6382
+    },
+    {
+      "path": "docs/modules/MODULE_DOCS.json",
+      "sha256": "ea57c3f2325c80c45496a0c9c09f93d3ccff88277fe3fc4927a12fa14af423fe",
+      "bytes": 111932
+    },
+    {
+      "path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+      "sha256": "c7dca902ae280e00f73a5990e0376b24bdcaef329ce03c71c9b4799a580f156d",
+      "bytes": 10201
+    },
+    {
+      "path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+      "sha256": "1eedd17a08590d625f04a7e0eb04076b49687ae239f7266f601806dc90855ba6",
+      "bytes": 27379
+    },
+    {
+      "path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+      "sha256": "2a60643543c15f7e64ab1180533be292a609023cce257ca2fe41fff77535bea8",
+      "bytes": 11357
+    },
+    {
+      "path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+      "sha256": "2729881bfdbc86d1b05f9da4f081b37798833378a3c4ac4e9432d96aaacaf3b6",
+      "bytes": 15534
+    },
+    {
+      "path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+      "sha256": "d56a9a552a8f0ecd3452373d6380d2588c215aaab504a1c180affc6a00f90834",
+      "bytes": 12925
+    },
+    {
+      "path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "sha256": "ea66c699ca1886997ed3a75c7e64d344162a61b68cf4ee709c53c7020d083616",
+      "bytes": 20322
+    },
+    {
+      "path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+      "sha256": "00c709ebe54922f5d6682ecb4bc1d81b3217326639b58a1a5e3a5e351a6c6ad3",
+      "bytes": 15234
+    },
+    {
+      "path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "sha256": "e11e2a80a22b578aff11bfdfbf7a4db14a63e220e469fd2f475c3b81e7cd1807",
+      "bytes": 20360
+    },
+    {
+      "path": "docs/modules/learning.operator/ADMISSION_CONTRACT.md",
+      "sha256": "6e8cbd7082b8b1f6d7f1d33707bd84e7681a66cf53a2377671c7fcd6f1e16fe3",
+      "bytes": 9860
+    },
+    {
+      "path": "docs/modules/learning.operator/COMPATIBILITY_RESOURCE_AND_SHADOW_POLICY.md",
+      "sha256": "3a002a02a0f943e647ef0f575fca54d445a2af99dd29879f3b46ac7ea0530bd2",
+      "bytes": 4797
+    },
+    {
+      "path": "docs/modules/learning.operator/DEVELOPER_GUIDE.md",
+      "sha256": "8a3e985151ea80c841587cb33fc2181c5f19aee19194a9dc2e7b03a296ec3951",
+      "bytes": 7009
+    },
+    {
+      "path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+      "sha256": "c28983daf982b99debc281635a350470e7ede908ec8d61e479c14f78b1455cb3",
+      "bytes": 46267
+    },
+    {
+      "path": "docs/modules/learning.operator/OPERATIONS_RUNBOOK.md",
+      "sha256": "45846a28bfd2a75c8c14dcf59b77b69c50488089429bb12c588afa40981b92e5",
+      "bytes": 5956
+    },
+    {
+      "path": "docs/modules/learning.operator/STATUS.json",
+      "sha256": "976deea77b31e936ed87f6738fd8ef00d86bf9ba03c3ad18d25c8bbcbec65927",
+      "bytes": 2044
+    },
+    {
+      "path": "docs/modules/learning.operator/STATUS.schema.json",
+      "sha256": "96eadff698806e86549640e400d033d6777081cfddd8cb1a24724dc0de704435",
+      "bytes": 3449
+    },
+    {
+      "path": "docs/modules/learning.operator/TECHNICAL.md",
+      "sha256": "59154077f2e094dfb552a4eb2dee6454e4d54737e1f01c30ba0386095bc0ac5f",
+      "bytes": 29841
+    },
+    {
+      "path": "docs/modules/learning.plasticity/CURRENT_STATE.json",
+      "sha256": "5927e33420d0984151885a97472af64511eef611d4ccf4d509ab535fdad4158e",
+      "bytes": 18302
+    },
+    {
+      "path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+      "sha256": "d70eddfa58150062950a5216174f460e298afb0802bf4d3a43969ff61a32f119",
+      "bytes": 36985
+    },
+    {
+      "path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+      "sha256": "11a9edee3ee2e5a12022fb38521f5b4fb86acb24b44356e7a308c53d7b38e9fb",
+      "bytes": 12397
+    },
+    {
+      "path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "sha256": "91499132093a96edd0f2b07e532a85fccab6ea63c31f1d450b6184fd88b6a797",
+      "bytes": 9635
+    },
+    {
+      "path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "sha256": "66a4abc0032e22c49196e2581bc299c3142220b377b0b7ec656958b16c18855b",
+      "bytes": 17344
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "sha256": "352755afa1b56293d66276e5024bb951e9ece7c4358da3731091dbdc0a09c3fd",
+      "bytes": 17941
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-adversarial-audit-20261001.md",
+      "sha256": "ebfd4d2a8dee2f78e581f8f6071cbabbdd77badce89213d64c624db9746307bb",
+      "bytes": 16317
+    },
+    {
+      "path": "qualification/module-execution-dossiers/DETAILS.json",
+      "sha256": "12fbc8bd8a30948c1082a5d65558aeaee1513e1f554b917f7a9cfab93b1be2e0",
+      "bytes": 18491
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/learning.operator.md",
+      "sha256": "6494a59e2f55249b5223cb367786a81c51a04394898b030f62a8a61c26b76f0a",
+      "bytes": 12690
+    },
+    {
+      "path": "scripts/hepta-learning-operator-api-surface.py",
+      "sha256": "2365a68529e81fce9a3b79b5ab4c0afbb5f02603e12fbdbcfd3dea1622628fad",
+      "bytes": 12387
+    },
+    {
+      "path": "scripts/hepta-learning-operator-authoritative.sh",
+      "sha256": "1d675bfd3f3d5449cd22b0f184922a1767ecbddb07bb774032489a9194302b5b",
+      "bytes": 22544
+    },
+    {
+      "path": "scripts/hepta-learning-operator-contract.py",
+      "sha256": "368fe5297d248688122b428a4b391a6c0d2f8d5b6626fd31fe864659ae0fc112",
+      "bytes": 22786
+    },
+    {
+      "path": "scripts/hepta-learning-operator-map.py",
+      "sha256": "94e471bdcef30337d040312501c962fd4779372ae66db7e18e04dd4a82b08743",
+      "bytes": 15404
+    },
+    {
+      "path": "scripts/hepta-learning-operator-readiness.py",
+      "sha256": "6762dcd26de79c3f07e893f0fd62741ad827755275fcba05edc18c6ef5d9f1ec",
+      "bytes": 19868
+    },
+    {
+      "path": "scripts/hepta-learning-operator-receipt.py",
+      "sha256": "36bbce95bf2d2fca8a952f82f8d3f85fc1d61406b8f00859a0ba5ab268a582f8",
+      "bytes": 21203
+    },
+    {
+      "path": "scripts/test_hepta_learning_operator_evidence.py",
+      "sha256": "573472103e8ba3698081c3dbc0c6eb7bc3839a3bbaaa680e272e87d531099fad",
+      "bytes": 38159
+    }
+  ],
+  "blocked": [
+    "Full Agentd all-target compilation exhausted filesystem capacity after OpenSSL configuration was resolved.",
+    "Full Bazel and workspace qualification not obtained.",
+    "Configured full default loop, fresh-process shadow/rollback in that loop, complete algorithm/protocol specification, independent scientific and target-host acceptance remain unfinished."
+  ],
+  "finalExactSourceHarness": {
+    "count": 35,
+    "skipped": 0,
+    "sourceInputs": 230,
+    "sourceHashStableBeforeAndAfter": true,
+    "boundaryIndex": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/boundary.json",
+    "sourceHashIndex": "qualification/lane-e/learning-operator-audit-20261001-round2/coordinator/source-sha256.json",
+    "scope": "Component source harness after formatting; full Agentd host compilation and configured default loop remain unproved."
+  },
+  "baselineNavigationBlockers": [
+    {
+      "oldAnchor": "41b2da214f5541da09e0313e7b8576add6ed3839",
+      "compareStatus": "diverged",
+      "aheadBy": 176,
+      "behindBy": 10
+    },
+    {
+      "oldAnchor": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+      "compareStatus": "diverged",
+      "aheadBy": 176,
+      "behindBy": 6
+    },
+    {
+      "oldAnchor": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
+      "compareStatus": "diverged",
+      "aheadBy": 176,
+      "behindBy": 16
+    }
+  ],
+  "formatScope": "just fmt completed; 46 unrelated Python formatter-only changes were restored to baseline. All Rust and the six changed Python source/test files passed the scoped format check. No full Python lint gate is claimed; its broad attempted lint failure remains in raw logs.",
+  "finalReadonlyReview": "Independent reviewers found no further actionable counterexample in the implemented bounded scope after forward-clock, CURRENT actor and strict receipt type fixes. Unknown future owner/revocation/stop changes still require host refresh and an exclusive effect fence."
+}

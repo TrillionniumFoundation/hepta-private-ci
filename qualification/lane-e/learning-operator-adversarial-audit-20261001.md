@@ -2,6 +2,8 @@
 
 审计日期：2026-09-30（执行环境日期）；文件与分支的 `20261001` 命名保留。
 范围：`learning.operator`、关联开发文档、Agentd 只读消费边界及资格证据链。
+
+> 历史报告。2026-10-01 第二轮已继续修复本报告中的 raw signed 资格 blocker，并增加真实持久化/只读加载组件；当前结果、完成矩阵及剩余缺口见[第二轮报告](learning-operator-adversarial-audit-20261001-round2.md)。下方保留第一轮原始观察与执行证据。
 本报告供独立 reviewer 评估已核实的源码行为、执行证据、修复和真实剩余工作。
 代码来源整合 `audit/learning-operator-20261001` 与 `codex/learning-operator-authoritative-convergence-20260930`。
 保留离线算法修复与 owner-bound 能力，未以删除功能、清空真实 blocker 或降低验收条件来取得闭合。

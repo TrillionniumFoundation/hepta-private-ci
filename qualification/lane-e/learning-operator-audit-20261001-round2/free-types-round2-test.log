@@ -1,0 +1,66 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-types)
+    Finished `test` profile [unoptimized] target(s) in 1.30s
+────────────
+ Nextest run ID 15a661e3-c2a0-4093-a597-127eb729152a with nextest profile: local
+    Starting 54 tests across 1 binary
+        PASS [   0.003s] codex-hepta-types bounded::tests::empty_nul_and_zero_maximum_fail_closed
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::canonical_container_depth_is_exactly_bounded
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_invalid_bool_and_unknown_tag
+        PASS [   0.004s] codex-hepta-types canonical_digest::tests::canonical_byte_validator_accepts_frozen_bytes_and_returns_same_digest
+        PASS [   0.004s] codex-hepta-types bounded::tests::text_and_bytes_enforce_exact_bound
+        PASS [   0.006s] codex-hepta-types canonical_digest::tests::canonical_v1_does_not_apply_unicode_normalization
+        PASS [   0.006s] codex-hepta-types bounded::tests::borrowed_constructors_validate_before_copy_and_count_utf8_bytes
+        PASS [   0.006s] codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_truncation_and_trailing_bytes
+        PASS [   0.004s] codex-hepta-types canonical_digest::tests::frozen_cross_language_vector_matches_exact_bytes_and_digest
+        PASS [   0.004s] codex-hepta-types canonical_digest::tests::field_and_map_order_are_canonical_but_array_order_is_semantic
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::malformed_canonical_inputs_fail_closed
+        PASS [   0.005s] codex-hepta-types canonical_digest::tests::integer_boundaries_unicode_and_empty_containers_are_frozen
+        PASS [   0.003s] codex-hepta-types digest::stream_tests::stream_error_never_returns_a_partial_digest
+        PASS [   0.003s] codex-hepta-types digest::tests::uppercase_and_wrong_length_fail_closed
+        PASS [   0.003s] codex-hepta-types digest::tests::sha256_round_trip_is_canonical
+        PASS [   0.005s] codex-hepta-types digest::stream_tests::unbounded_reader_stops_after_one_overflow_byte
+        PASS [   0.006s] codex-hepta-types digest::tests::digest_parser_deterministic_fuzz_corpus_is_total_and_strict
+        PASS [   0.004s] codex-hepta-types fixed::tests::arithmetic_boundaries_reject_overflow_and_division_by_zero
+        PASS [   0.003s] codex-hepta-types fixed::tests::checked_arithmetic_rejects_overflow_and_zero_division
+        PASS [   0.004s] codex-hepta-types fixed::tests::multiplication_and_division_are_deterministic
+        PASS [   0.007s] codex-hepta-types digest::tests::multipart_hash_matches_exact_concatenation
+        PASS [   0.006s] codex-hepta-types fixed::tests::explicit_toward_zero_methods_match_legacy_compatibility_methods
+        PASS [   0.004s] codex-hepta-types identity::tests::authority_flags_round_trip_only_as_untrusted_wire_bits
+        PASS [   0.004s] codex-hepta-types identity::tests::authority_posture_rejects_grants_at_raw_wire_ingress
+        PASS [   0.004s] codex-hepta-types fixed::tests::probability_and_clamp_fail_closed
+        PASS [   0.003s] codex-hepta-types identity::tests::id_profiles_and_namespaces_are_explicit_and_canonical
+        PASS [   0.004s] codex-hepta-types identity::tests::identity_bounds_and_monotonic_overflow_fail_closed
+        PASS [   0.006s] codex-hepta-types identity::tests::non_authorizing_posture_is_structurally_deny_only
+        PASS [   0.004s] codex-hepta-types numeric_conversion::tests::checked_scaling_rejects_overflow_without_mutating_input
+        PASS [   0.004s] codex-hepta-types identity::tests::stable_id_and_generation_are_strict
+        PASS [   0.004s] codex-hepta-types identity::tests::owned_stable_id_discards_spare_capacity_without_changing_admission
+        PASS [   0.004s] codex-hepta-types identity::tests::stable_profile_exhaustively_matches_the_v1_ascii_alphabet
+        PASS [   0.004s] codex-hepta-types numeric_conversion::tests::digest_binds_numerical_profile_shape_range_units_and_normalization
+        PASS [   0.003s] codex-hepta-types numeric_conversion::tests::q24_to_q32_is_exact_and_legacy_multiply_keeps_toward_zero
+        PASS [   0.003s] codex-hepta-types numeric_conversion::tests::ppm_q24_roundtrip_reports_exact_error_instead_of_byte_equality
+        PASS [   0.021s] codex-hepta-types digest::stream_tests::bounded_stream_digest_matches_bytes_at_buffer_boundaries
+        PASS [   0.005s] codex-hepta-types numeric_conversion::tests::incompatible_units_normalization_shape_and_ranges_reject
+        PASS [   0.005s] codex-hepta-types numeric_conversion::tests::signed_half_ties_round_to_even_target_bins
+        PASS [   0.007s] codex-hepta-types numeric_conversion::tests::malformed_shape_and_unknown_profile_cannot_enter_conversion
+        PASS [   0.008s] codex-hepta-types numeric_conversion::tests::registered_conversion_requires_normalization_and_both_profile_definitions
+        PASS [   0.004s] codex-hepta-types numeric_profile::tests::profile_definition_binds_identity_version_scale_and_rounding
+        PASS [   0.003s] codex-hepta-types prompt_delivery::tests::delivered_and_rejected_are_mutually_exclusive
+        PASS [   0.005s] codex-hepta-types numeric_profile::tests::q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility
+        PASS [   0.004s] codex-hepta-types prompt_delivery::tests::rejection_reason_is_open_but_bounded
+        PASS [   0.003s] codex-hepta-types registry::tests::immutable_registry_resolves_exact_definition_and_numeric_profile
+        PASS [   0.015s] codex-hepta-types identity::tests::stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation
+        PASS [   0.004s] codex-hepta-types registry::tests::registry_digest_is_insertion_order_independent_and_definition_sensitive
+        PASS [   0.004s] codex-hepta-types prompt_delivery::tests::token_positions_are_optional_bounded_and_canonical
+        PASS [   0.004s] codex-hepta-types prompt_delivery::tests::semantic_digest_is_deterministic_and_field_complete
+        PASS [   0.005s] codex-hepta-types registry::tests::definition_kind_is_bound_to_identifier_namespace
+        PASS [   0.004s] codex-hepta-types topology::tests::related_module_bounds_are_checked_before_digest_allocation
+        PASS [   0.004s] codex-hepta-types topology::tests::split_requires_individually_bound_add_participants
+        PASS [   0.005s] codex-hepta-types topology::tests::selected_digest_cannot_hide_substituted_delta_content
+        PASS [   0.012s] codex-hepta-types registry::tests::registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_bytes
+────────────
+     Summary [   0.042s] 54 tests run: 54 passed, 0 skipped

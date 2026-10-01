@@ -1,0 +1,165 @@
+EXE001 Shebang is present but file is not executable
+ --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-api-surface.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """Compile independent consumers against the default and compatibility surfaces."""
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-api-surface.py:4:1
+   |
+ 2 |   """Compile independent consumers against the default and compatibility surfaces."""
+ 3 |
+ 4 | / from __future__ import annotations
+ 5 | |
+ 6 | | import argparse
+ 7 | | import hashlib
+ 8 | | import json
+ 9 | | import subprocess
+10 | | import tempfile
+11 | | import tomllib
+12 | | from pathlib import Path
+   | |________________________^
+13 |
+14 |   ROOT = Path(__file__).resolve().parents[1]
+   |
+help: Organize imports
+   |
+10 | import tempfile
+   - import tomllib
+11 | from pathlib import Path
+12 |
+13 + import tomllib
+14 +
+15 | ROOT = Path(__file__).resolve().parents[1]
+   |
+
+UP022 Prefer `capture_output` over sending `stdout` and `stderr` to `PIPE`
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-api-surface.py:189:22
+    |
+187 |           # Permit that projection offline, then reject any dependency pin drift
+188 |           # before compiling the consumer under --locked.
+189 |           projection = subprocess.run(
+    |  ______________________^
+190 | |             [
+191 | |                 "cargo",
+192 | |                 "metadata",
+193 | |                 "--offline",
+194 | |                 "--format-version",
+195 | |                 "1",
+196 | |                 "--manifest-path",
+197 | |                 str(root / "Cargo.toml"),
+198 | |             ],
+199 | |             cwd=ROOT,
+200 | |             text=True,
+201 | |             stdout=subprocess.PIPE,
+202 | |             stderr=subprocess.PIPE,
+203 | |             check=False,
+204 | |         )
+    | |_________^
+205 |           if projection.returncode != 0:
+206 |               return projection
+    |
+help: Replace with `capture_output` keyword argument
+
+UP022 Prefer `capture_output` over sending `stdout` and `stderr` to `PIPE`
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-api-surface.py:222:16
+    |
+220 |                       stderr=f"consumer dependency differs from workspace Cargo.lock: {package_identity(package)!r}\n",
+221 |                   )
+222 |           return subprocess.run(
+    |  ________________^
+223 | |             [
+224 | |                 "cargo",
+225 | |                 "check",
+226 | |                 "--quiet",
+227 | |                 "--offline",
+228 | |                 "--locked",
+229 | |                 "--manifest-path",
+230 | |                 str(root / "Cargo.toml"),
+231 | |             ],
+232 | |             cwd=ROOT,
+233 | |             text=True,
+234 | |             stdout=subprocess.PIPE,
+235 | |             stderr=subprocess.PIPE,
+236 | |             check=False,
+237 | |         )
+    | |_________^
+help: Replace with `capture_output` keyword argument
+
+EXE001 Shebang is present but file is not executable
+ --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-map.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """Generate and verify the exact-source learning.operator implementation map.
+  |
+
+TRY004 Prefer `TypeError` exception for invalid type
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-map.py:279:9
+    |
+277 |     source = value.get("source")
+278 |     if not isinstance(source, dict):
+279 |         raise ValueError("implementation projection source identity absent")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+280 |     source_sha = source.get("sha")
+281 |     source_tree = source.get("tree")
+    |
+
+TRY004 Prefer `TypeError` exception for invalid type
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-map.py:283:9
+    |
+281 |     source_tree = source.get("tree")
+282 |     if not isinstance(source_sha, str) or not isinstance(source_tree, str):
+283 |         raise ValueError("implementation projection source identity malformed")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+284 |     require_sha(source_sha, "source SHA")
+285 |     require_sha(source_tree, "source tree")
+    |
+
+TRY004 Prefer `TypeError` exception for invalid type
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-map.py:318:9
+    |
+316 |     entries = value.get("sourceObjects")
+317 |     if not isinstance(entries, list):
+318 |         raise ValueError("source object manifest absent")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+319 |     by_path: dict[str, dict[str, str]] = {}
+320 |     for entry in entries:
+    |
+
+TRY004 Prefer `TypeError` exception for invalid type
+   --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-map.py:322:13
+    |
+320 |     for entry in entries:
+321 |         if not isinstance(entry, dict):
+322 |             raise ValueError("source object entry malformed")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+323 |         object_path = entry.get("path")
+324 |         object_sha = entry.get("object")
+    |
+
+EXE001 Shebang is present but file is not executable
+ --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/hepta-learning-operator-readiness.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """Emit and verify readiness against retained stages, logs and Git identities.
+  |
+
+EXE001 Shebang is present but file is not executable
+ --> /dev/shm/hepta-round2-99c8d2276f89/checkout/scripts/test_hepta_learning_operator_evidence.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """Adversarial regressions for retained operator execution witnesses."""
+  |
+
+Found 11 errors.
+[*] 1 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/root/.cache/uv/archive-v0/lKcnMBEJBVjTWfWo/ruff-0.16.9.data/scripts/ruff', 'check', '../scripts/hepta-learning-operator-api-surface.py', '../scripts/hepta-learning-operator-contract.py', '../scripts/hepta-learning-operator-map.py', '../scripts/hepta-learning-operator-readiness.py', '../scripts/test_hepta_learning_operator_evidence.py']' returned non-zero exit status 1.

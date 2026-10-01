@@ -1,0 +1,59 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.default.overrides at index 2
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-app-server-protocol) & (test(typescript_schema_fixtures_match_generated) | test(json_schema_fixtures_match_generated) | test(generate_ts_with_experimental_api_retains_experimental_entries) | test(generated_ts_optional_nullable_fields_only_in_params) | test(generate_json_filters_experimental_fields_and_methods))
+   ·         ────────────┬────────────
+   ·                     ╰── no packages matched this
+   ╰────
+
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.default.overrides at index 3
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-app-server) & kind(test)
+   ·         ────────┬───────
+   ·                 ╰── no packages matched this
+   ╰────
+
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.default.overrides at index 4
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-core) & kind(test) & test(apply_patch_cli)
+   ·         ─────┬────
+   ·              ╰── no packages matched this
+   ╰────
+
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.default.overrides at index 5
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-windows-sandbox) & test(legacy_)
+   ·         ──────────┬──────────
+   ·                   ╰── no packages matched this
+   ╰────
+
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.default.overrides at index 8
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)
+   ·         ─────────────┬─────────────
+   ·                      ╰── no packages matched this
+   ╰────
+
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.default.overrides at index 9
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-hepta-learning-ledger) & test(signed_product_history_curve_append_lookup_reopen_and_exact_retry)
+   ·         ─────────────┬─────────────
+   ·                      ╰── no packages matched this
+   ╰────
+
+error: for config file `/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/.config/nextest.toml`, failed to parse profile.local.overrides at index 0
+  error: operator didn't match any packages
+   ╭────
+ 1 │ package(codex-app-server) & kind(test)
+   ·         ────────┬───────
+   ·                 ╰── no packages matched this
+   ╰────
+
+error: recipe `test` failed on line 3 with exit code 96

@@ -1,0 +1,18 @@
+{
+  "name": "final-operator-strict-default",
+  "command": [
+    "cargo",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exitCode": 0,
+  "log": "/dev/shm/hepta-round2-99c8d2276f89/logs/final-operator-strict-default.log",
+  "sha256": "07ae64a783f0a67b26aae4d21f0fc6e938bec1bf00d467efef9cfc3ab2950dac",
+  "bytes": 782
+}

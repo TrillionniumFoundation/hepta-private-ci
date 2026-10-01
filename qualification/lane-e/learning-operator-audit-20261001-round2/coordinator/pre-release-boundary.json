@@ -1,0 +1,24 @@
+{
+  "checkout": "/dev/shm/hepta-round2-99c8d2276f89/checkout",
+  "harness": "/dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final",
+  "test_result": "29 passed, 0 skipped",
+  "nextest_run_id": "3bdfea04-786b-4437-857d-014382e3c783",
+  "command": "just --justfile /dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/justfile test --manifest-path /dev/shm/hepta-round2-99c8d2276f89/coordinator-harness-final/Cargo.toml --locked --offline",
+  "counts": {
+    "coordinator": 12,
+    "real_persistence": 6,
+    "evaluated_loader": 9,
+    "source_bounds": 2
+  },
+  "scope": "Exact Agentd core adapter sources compiled against real path dependencies from the same memory checkout. Locked CAS/fsync ProductRunner, dual real ledgers, root-signed trust, actual owner fsync and signed independent selections are used in private fixtures.",
+  "test_only_feature": "operator qualification-unverified-input is enabled only as the existing Agentd dev fixture signing support; final-use candidates are obtained from actual production opaque capabilities.",
+  "not_proven": [
+    "actual Agentd ProductRunner host class and default library/V8 chain compilation",
+    "real daemon process qualification",
+    "fresh-process learning.operator round trip",
+    "durable coordinator rollback composition",
+    "external scientific efficacy and deployment receipts"
+  ],
+  "artifact_unit_test": "owner_service_currentness_tests is a separate real artifact package test, not counted in these 29; root runs the complete artifact package.",
+  "historical_evidence": "pre-tail-final.log and pre-tail-source-sha256.json retain the previous 24-test checkout evidence. tail-setup.log and tail-config.log record corrected nextest configuration failures before compilation."
+}
