@@ -3,8 +3,9 @@
 //! The pure PromptRegistry remains the deterministic domain core. This wrapper
 //! applies a mutation to a clone and publishes atomic metadata only after new
 //! immutable payload extents are durable. Existing payload bytes are not rewritten
-//! on metadata changes. V1/V2 storage migrates at open; validated V3 reopen does
-//! not rewrite metadata. Hot state and metadata remain size-dependent.
+//! on metadata changes. V1/V2 storage migrates at open; validated V3/V4 reopen
+//! does not rewrite metadata. The next mutation upgrades V3 to V4, which also
+//! preserves factor relations. Hot state and metadata remain size-dependent.
 
 #[cfg(test)]
 use std::cell::Cell;
@@ -32,6 +33,7 @@ use crate::Lifecycle;
 use crate::LifecycleEvent;
 use crate::LifecycleEventKind;
 use crate::PromptFactor;
+use crate::PromptFactorRelation;
 use crate::PromptModelTupleV2;
 use crate::PromptRealization;
 use crate::PromptRealizationBindingV2;
@@ -53,6 +55,9 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+
+#[path = "durable_relations.rs"]
+mod relations;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -84,6 +89,9 @@ impl DurablePromptRegistry {
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
+            Some(StoredAny::V4(state, relations)) => {
+                restore_state(state, maximum_records, relations)?
+            }
             None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
         };
         if store.payloads.is_initialized() {
@@ -138,6 +146,15 @@ impl DurablePromptRegistry {
         factor: PromptFactor,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.commit(|registry| registry.register_factor(factor))
+    }
+
+    /// Persists a relation under this registry's existing exclusive writer.
+    /// The domain core requires both endpoints to have independent admission.
+    pub fn register_factor_relation(
+        &mut self,
+        relation: PromptFactorRelation,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.commit(|registry| registry.register_factor_relation(relation))
     }
 
     #[cfg(test)]
@@ -442,6 +459,15 @@ struct StoredV2 {
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
+struct StoredV4 {
+    schema: u32,
+    state: StoredV2,
+    payload_references: Vec<payloads::PayloadReference>,
+    relations: Vec<relations::StoredRelation>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 struct StoredV1 {
     schema: u32,
     revision: u64,
@@ -654,6 +680,14 @@ fn restore_v2(
     stored: StoredV2,
     maximum_records: usize,
 ) -> Result<PromptRegistry, DurableRegistryError> {
+    restore_state(stored, maximum_records, Vec::new())
+}
+
+fn restore_state(
+    stored: StoredV2,
+    maximum_records: usize,
+    stored_relations: Vec<relations::StoredRelation>,
+) -> Result<PromptRegistry, DurableRegistryError> {
     if stored.schema != STORE_SCHEMA || stored.maximum_records == 0 || maximum_records == 0 {
         return Err(DurableRegistryError::Corrupt);
     }
@@ -732,13 +766,14 @@ fn restore_v2(
         lifecycle_events.push(event);
     }
 
+    let relations = relations::decode(stored_relations, &factors)?;
     let registry = PromptRegistry {
         factors,
         realizations,
         realization_bindings,
         realization_payloads,
         realization_supersessions,
-        relations: BTreeMap::new(),
+        relations,
         lifecycle_events,
         revision,
         lifecycle_frontier: stored.lifecycle_frontier,
@@ -882,6 +917,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             .factors
             .len()
             .saturating_add(registry.realizations.len())
+            .saturating_add(registry.relations.len())
             > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
@@ -1227,6 +1263,7 @@ fn decode_role(value: u8) -> Result<PromptRoleV2, DurableRegistryError> {
 enum StoredAny {
     V1(StoredV1),
     V2(StoredV2),
+    V4(StoredV2, Vec<relations::StoredRelation>),
 }
 
 struct Store {
@@ -1290,6 +1327,25 @@ impl Store {
                 store.payloads = payloads;
                 StoredAny::V2(state)
             }
+            4 => {
+                let manifest: StoredV4 =
+                    serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
+                if manifest.schema != 4 || manifest.relations.len() > crate::MAX_RECORDS {
+                    return Err(DurableRegistryError::Corrupt);
+                }
+                // Reuse the unchanged extent verifier. Full V4 semantic digest
+                // validation includes relations after hydration, before any trim.
+                let (payloads, state) = payloads::PayloadState::hydrate(
+                    &store.root,
+                    payloads::StoredV3 {
+                        schema: 3,
+                        state: manifest.state,
+                        payload_references: manifest.payload_references,
+                    },
+                )?;
+                store.payloads = payloads;
+                StoredAny::V4(state, manifest.relations)
+            }
             _ => return Err(DurableRegistryError::Corrupt),
         };
         Ok((store, Some(stored)))
@@ -1297,10 +1353,11 @@ impl Store {
 
     fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
         let successor = self.payloads.successor(registry)?;
-        let bytes = serde_json::to_vec(&payloads::StoredV3 {
-            schema: 3,
+        let bytes = serde_json::to_vec(&StoredV4 {
+            schema: 4,
             state: stored_metadata(registry),
             payload_references: successor.references(),
+            relations: relations::encode(registry),
         })
         .map_err(|_| DurableRegistryError::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
@@ -2811,3 +2868,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "durable_payloads_tests.rs"]
 mod payload_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_relations_tests.rs"]
+mod relation_tests;
