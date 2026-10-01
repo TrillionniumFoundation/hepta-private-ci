@@ -17,6 +17,9 @@ use crate::ProcessState;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+#[path = "signed_effect_boundary_tests.rs"]
+mod effect_boundary_tests;
+
 struct Driver;
 
 struct Process {

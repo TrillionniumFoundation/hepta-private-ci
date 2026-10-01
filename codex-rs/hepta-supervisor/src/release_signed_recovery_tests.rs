@@ -204,7 +204,10 @@ fn signed_explicit_rollback_source_restoration_can_recover_without_new_dispatch(
                     /*now_unix_seconds*/ 150,
                 )
             });
-            assert!(failed.is_err(), "{drift}");
+            assert!(
+                matches!(failed, Err(SupervisorError::SignedMutationIndeterminate(ref agent)) if agent == &fleet.first),
+                "{drift}"
+            );
             assert!(
                 recovered.production_recovery_required(&fleet.first)?,
                 "{drift}"
