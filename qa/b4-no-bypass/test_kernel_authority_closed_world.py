@@ -180,33 +180,39 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
-        sources = self.rust_sources()
-        for row in self.inventory():
+        rows = self.inventory()
+        type_markers = {str(row["typeMarker"]) for row in rows}
+        # Read each physical source once. Repeating this scan for every
+        # boundary adds I/O while proving exactly the same closed set.
+        sources = []
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if any(fragment in f"/{relative}" for fragment in ignored):
+                continue
+            raw = path.read_text(encoding="utf-8")
+            if any(marker in raw for marker in type_markers):
+                code = CALLER_PROOF._strip_cfg_test_items(
+                    CALLER_PROOF._strip_rust_non_code(raw)
+                )
+                sources.append((relative, raw, code))
+        for row in rows:
             boundary_id = str(row["id"])
             type_marker = str(row["typeMarker"])
             definition = str(row["definitionPath"])
             patterns = [re.compile(str(value)) for value in row["callPatterns"]]
             expected = {str(value) for value in row["allowedCallers"]}
             observed: set[str] = set()
-            for path in sources:
-                relative = path.relative_to(ROOT).as_posix()
-                if relative == definition or any(
-                    fragment in f"/{relative}" for fragment in ignored
-                ):
+            for relative, raw, code in sources:
+                if relative == definition or type_marker not in raw:
                     continue
-                raw = path.read_text(encoding="utf-8")
-                if type_marker not in raw:
-                    continue
-                code = CALLER_PROOF._strip_cfg_test_items(
-                    CALLER_PROOF._strip_rust_non_code(raw)
-                )
                 if any(pattern.search(code) for pattern in patterns):
                     observed.add(relative)
-            self.assertEqual(
-                observed,
-                expected,
-                f"{boundary_id}: independent kernel.authority caller set drifted",
-            )
+            with self.subTest(boundary=boundary_id):
+                self.assertEqual(
+                    observed,
+                    expected,
+                    f"{boundary_id}: independent kernel.authority caller set drifted",
+                )
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 use super::*;
+use crate::runtime::test_support::create_private_test_directory;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
@@ -82,7 +83,8 @@ fn sqlite_error_detail_classifies_corruption_and_lock_errors() {
 async fn runtime_db_path_for_corruption_error_returns_failed_database_path() -> std::io::Result<()>
 {
     let sqlite_home = unique_temp_dir();
-    tokio::fs::create_dir_all(sqlite_home.as_path()).await?;
+    create_private_test_directory(sqlite_home.as_path())?;
+    let sqlite_home = sqlite_home.canonicalize()?;
     let path = crate::SqliteConfig::new_for_testing(sqlite_home.as_path().abs()).state_db_path();
     tokio::fs::write(path.as_path(), b"not sqlite").await?;
 
@@ -96,7 +98,11 @@ async fn runtime_db_path_for_corruption_error_returns_failed_database_path() -> 
         Err(err) => err,
     };
 
-    assert_eq!(runtime_db_path_for_corruption_error(&err), Some(path));
+    assert_eq!(
+        runtime_db_path_for_corruption_error(&err),
+        Some(path),
+        "{err:#}"
+    );
     Ok(())
 }
 

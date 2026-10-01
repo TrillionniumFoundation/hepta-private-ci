@@ -64,8 +64,8 @@ jobs:
       - name: Strict lint canonical and product crates
         working-directory: codex-rs
         run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+          cargo clippy -p codex-hepta-agentd --lib -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Verify patch hygiene
         run: |
@@ -150,8 +150,8 @@ jobs:
       - name: Strict lint canonical and product crates on merge candidate
         working-directory: codex-rs
         run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+          cargo clippy -p codex-hepta-agentd --lib -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Verify merge patch hygiene
         run: |

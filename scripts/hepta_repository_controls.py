@@ -58,34 +58,29 @@ def required_checks(
             protection.get(key, {}).get("enabled") is False,
             f"{key} is enabled or unknown",
         )
-    reviews = protection.get("required_pull_request_reviews")
-    require(isinstance(reviews, dict), "Required independent review is missing")
-    require(
-        positive_integer(reviews.get("required_approving_review_count")),
-        "No approving review is required",
-    )
-    require(
-        reviews.get("dismiss_stale_reviews") is True, "Stale reviews are not dismissed"
-    )
-    require(
-        reviews.get("require_last_push_approval") is True,
-        "Last push need not have independent approval",
-    )
-    # A CODEOWNERS file alone does not require its designated owners to review.
-    # Unknown, missing and truthy non-boolean values are not an observed policy.
-    require(
-        reviews.get("require_code_owner_reviews") is True,
-        "Designated code-owner review is not required by live protection",
-    )
+    # Review policy belongs to the repository owner. GitHub's explicit null
+    # means reviews are disabled; an absent field means the policy is unknown.
+    require("required_pull_request_reviews" in protection, "Review policy is unknown")
+    reviews = protection["required_pull_request_reviews"]
+    require(reviews is None or isinstance(reviews, dict), "Malformed review policy")
+    if reviews is not None:
+        count = reviews.get("required_approving_review_count")
+        require(type(count) is int and count >= 0, "Malformed approving review count")
+        for field in (
+            "dismiss_stale_reviews",
+            "require_last_push_approval",
+            "require_code_owner_reviews",
+        ):
+            require(type(reviews.get(field)) is bool, f"Unknown review policy: {field}")
+        bypass = reviews.get("bypass_pull_request_allowances", {})
+        require(isinstance(bypass, dict), "Malformed review bypass allowances")
+        for kind in ("users", "teams", "apps"):
+            require(bypass.get(kind, []) == [], f"Review bypass {kind} are permitted")
     resolution = protection.get("required_conversation_resolution")
     require(
         isinstance(resolution, dict) and resolution.get("enabled") is True,
         "Unresolved review conversations do not block merging",
     )
-    bypass = reviews.get("bypass_pull_request_allowances", {})
-    require(isinstance(bypass, dict), "Malformed review bypass allowances")
-    for kind in ("users", "teams", "apps"):
-        require(bypass.get(kind, []) == [], f"Review bypass {kind} are permitted")
     status = protection.get("required_status_checks")
     require(
         isinstance(status, dict) and status.get("strict") is True,

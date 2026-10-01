@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationStore;

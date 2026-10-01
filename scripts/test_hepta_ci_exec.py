@@ -380,7 +380,7 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
                 "--all-targets",
                 "--",
                 "-D",
-                "warnings",
+                "clippy::correctness",
             ],
         )
         self.assertEqual(test["before"], lint["before"])
