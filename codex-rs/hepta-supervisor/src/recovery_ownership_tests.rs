@@ -302,6 +302,49 @@ fn rejected_main_identity_preserves_lease_and_unresolved_control() -> Result<()>
             .is_err()
     );
     f.assert_no_spawn();
+    // Constructor recovery publishes Failed and retains the denied lease;
+    // both that state and later registry drift must remain observable.
+    let (recovered, _) = Supervisor::recover(
+        f.registry.clone(),
+        f.driver.clone(),
+        SupervisorConfig::local_default(),
+        f.now,
+    )?;
+    let record = f.record()?;
+    let epoch = crate::SupervisorEpoch::new();
+    let failed = crate::daemon::status_from(&epoch, &record, recovered.snapshot(&f.agent))?;
+    let starting = f.registry.compare_and_transition(
+        &f.agent,
+        record.lifecycle.generation,
+        AgentLifecycle::Starting,
+    )?;
+    f.registry
+        .compare_and_transition(&f.agent, starting.generation, AgentLifecycle::Running)?;
+    let running = crate::daemon::status_from(&epoch, &f.record()?, recovered.snapshot(&f.agent))?;
+    for (status, lifecycle) in [
+        (failed, AgentLifecycle::Failed),
+        (running, AgentLifecycle::Running),
+    ] {
+        assert_eq!(status.lifecycle, lifecycle);
+        assert!(!status.active && !status.healthy);
+        crate::robrix_protocol::validate_agent_status(&status)?;
+        let request = crate::RobrixSupervisordRequest::new(
+            /*request_id*/ 41,
+            crate::RobrixSupervisordMethod::Snapshot {
+                agent_id: f.agent.clone(),
+            },
+        );
+        crate::RobrixSupervisordResponse::try_from(crate::SupervisordResponse {
+            schema_version: crate::SUPERVISORD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            payload: crate::SupervisordPayload::Agent(status),
+        })?
+        .validate_for(&request)?;
+    }
+    assert!(read_lease(record.layout.run_root())?.is_some());
+    assert!(control_intent::has_unresolved(record.layout.run_root())?);
+    assert_eq!(f.driver.main.lock().expect("main state").signals, 0);
+    f.assert_no_spawn();
     Ok(())
 }
 

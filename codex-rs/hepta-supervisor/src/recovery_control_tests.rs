@@ -337,6 +337,55 @@ fn failed_recovery_kill_retains_exact_handle_and_retries() -> Result<()> {
     assert!(!supervisor.production_recovery_required(&f.agent)?);
     f.assert_owned(&supervisor);
     assert!(f.control_events(&supervisor).is_empty());
+    // Durable Stopped is not evidence that the exact adopted process exited.
+    // The failed Kill must remain observable without advertising serving health.
+    let epoch = crate::SupervisorEpoch::new();
+    let record = f.registry.load_agent(&f.agent)?;
+    let status = crate::daemon::status_from(&epoch, &record, supervisor.snapshot(&f.agent))?;
+    assert_eq!(status.lifecycle, AgentLifecycle::Stopped);
+    assert!(status.active && !status.healthy);
+    crate::robrix_protocol::validate_agent_status(&status)?;
+    let read_request = crate::RobrixSupervisordRequest::new(
+        /*request_id*/ 41,
+        crate::RobrixSupervisordMethod::Snapshot {
+            agent_id: f.agent.clone(),
+        },
+    );
+    crate::RobrixSupervisordResponse::try_from(crate::SupervisordResponse {
+        schema_version: crate::SUPERVISORD_CONTROL_SCHEMA_VERSION,
+        request_id: read_request.request_id,
+        payload: crate::SupervisordPayload::Agent(status.clone()),
+    })?
+    .validate_for(&read_request)?;
+    assert!(
+        crate::SupervisordRequest::new(
+            /*request_id*/ 42,
+            crate::SupervisordMethod::Kill {
+                fence: status.control_fence.clone(),
+            },
+        )
+        .validate()
+        .is_ok()
+    );
+    assert!(
+        crate::SupervisordRequest::new(
+            /*request_id*/ 43,
+            crate::SupervisordMethod::Start {
+                fence: status.control_fence,
+                release_id: ReleaseId::parse("unversioned")?,
+            },
+        )
+        .validate()
+        .is_err()
+    );
+    assert!(matches!(
+        supervisor.start(
+            &f.agent,
+            crate::AgentCommand::new(f._temp.path().join("unused-agentd"), Vec::new())?,
+            f.now,
+        ),
+        Err(crate::SupervisorError::AlreadyActive(agent_id)) if agent_id == f.agent
+    ));
     f.process.lock().expect("process state").fail = None;
     assert!(supervisor.tick(f.now).faults.is_empty());
     assert_eq!(f.process.lock().expect("process state").signals, [0, 0, 2]);
