@@ -179,7 +179,14 @@ fn helper_acknowledgement_is_durable_before_success() {
             assert!(manager.cancel_unconfirmed_restart(&handoff).unwrap());
         }
         if send_ack {
-            pipe.write_all(b"C").unwrap();
+            match pipe.write_all(b"C") {
+                Ok(()) => {}
+                // Cancellation can make the candidate reject readiness and
+                // exit before the helper attempts its deliberately late ACK.
+                // A closed pipe is valid only after that durable cancellation.
+                Err(error) if cancelled && error.kind() == std::io::ErrorKind::BrokenPipe => {}
+                Err(error) => panic!("ACK write failed in scenario={scenario}: {error}"),
+            }
         }
         drop(pipe);
         // Startup verifies the entire debug test executable before readiness.
