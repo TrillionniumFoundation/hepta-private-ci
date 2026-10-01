@@ -17,6 +17,6 @@ rust_library(
     crate_name = "codex_hepta_learning_ledger",
     crate_root = "src/lib.rs",
     edition = "2024",
-    visibility = ["//codex-rs/hepta-shadow-qualification:__pkg__"],
+    visibility = ["//codex-rs:__subpackages__"],
     deps = all_crate_deps(),
 )

@@ -1,11 +1,21 @@
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+
+_UNIT_TEST_DEPENDENCIES = {
+    "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+    "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+    "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+    "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+}
 
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
+    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
 
 # Compile the local writer qualification separately from the default product
@@ -20,7 +30,7 @@ rust_library(
     crate_root = "src/lib.rs",
     edition = "2024",
     visibility = ["//visibility:private"],
-    deps = all_crate_deps(),
+    deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
 )
 
 rust_test(
@@ -33,8 +43,8 @@ rust_test(
     ],
     tags = ["manual"],
     visibility = ["//visibility:private"],
-    deps = all_crate_deps(
-        normal = True,
+    deps = rust_test_dependencies(
+        _UNIT_TEST_DEPENDENCIES,
         normal_dev = True,
     ),
 )
