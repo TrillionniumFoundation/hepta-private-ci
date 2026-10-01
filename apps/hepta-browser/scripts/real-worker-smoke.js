@@ -23,27 +23,36 @@ const driver = new SubprocessBrowserDriver({
   launcher: new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" }),
 });
 const digest = "1".repeat(64);
+let processId = null;
 
 try {
-  const started = await driver.start({
-    profileId: "profile.smoke",
-    principalId: "principal.smoke",
-    manifestDigest: digest,
-    grantDigest: digest,
-    generation: 1,
-    allowedOrigins: [],
-  });
+  const started = await driver.start(
+    {
+      profileId: "profile.smoke",
+      principalId: "principal.smoke",
+      manifestDigest: digest,
+      grantDigest: digest,
+      generation: 1,
+      allowedOrigins: [],
+    },
+    { signal: AbortSignal.timeout(30_000) },
+  );
+  processId = started.processId;
   if (
     typeof started.processId !== "string" ||
     !started.processId.startsWith("servo.pid.")
   ) {
     throw new Error("worker did not return a process identity");
   }
-  const stopped = await driver.stop({
-    profileId: "profile.smoke",
-    processId: started.processId,
-    generation: 1,
-  });
+  const stopped = await driver.stop(
+    {
+      profileId: "profile.smoke",
+      processId: started.processId,
+      generation: 1,
+    },
+    { signal: AbortSignal.timeout(10_000) },
+  );
+  processId = null;
   if (stopped.stopped !== true)
     throw new Error("worker did not stop terminally");
   process.stdout.write(
@@ -56,5 +65,13 @@ try {
     }) + "\n",
   );
 } finally {
+  if (processId !== null) {
+    await driver
+      .stop(
+        { profileId: "profile.smoke", processId, generation: 1 },
+        { signal: AbortSignal.timeout(10_000) },
+      )
+      .catch(() => {});
+  }
   await rm(root, { recursive: true, force: true });
 }

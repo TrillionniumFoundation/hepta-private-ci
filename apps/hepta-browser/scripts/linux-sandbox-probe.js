@@ -18,12 +18,21 @@ import { LinuxBubblewrapLauncher } from "../src/worker-driver.js";
 function waitForExit(child) {
   return new Promise((resolve, reject) => {
     let stderr = "";
+    const timeout = setTimeout(() => {
+      child.kill("SIGKILL");
+      reject(new Error("sandbox probe exceeded 10 seconds"));
+    }, 10_000);
+    timeout.unref();
     child.stderr?.setEncoding("utf8");
     child.stderr?.on("data", (chunk) => {
-      stderr += chunk;
+      stderr = (stderr + chunk).slice(-4096);
     });
-    child.once("error", reject);
+    child.once("error", (error) => {
+      clearTimeout(timeout);
+      reject(error);
+    });
     child.once("exit", (code, signal) => {
+      clearTimeout(timeout);
       if (code === 0) resolve({ code, signal, stderr });
       else
         reject(
@@ -41,55 +50,63 @@ const probeSource = join(root, "probe.c");
 const probePath = join(root, "probe");
 const hostSecret = `/var/tmp/hepta-browser-host-secret-${randomUUID()}`;
 
-await writeFile(hostSecret, "must-not-be-visible\n", { mode: 0o600 });
-await writeFile(
-  probeSource,
-  `#include <arpa/inet.h>\n` +
-    `#include <errno.h>\n` +
-    `#include <fcntl.h>\n` +
-    `#include <netinet/in.h>\n` +
-    `#include <stdlib.h>\n` +
-    `#include <string.h>\n` +
-    `#include <sys/socket.h>\n` +
-    `#include <sys/stat.h>\n` +
-    `#include <sys/types.h>\n` +
-    `#include <unistd.h>\n` +
-    `int main(void) {\n` +
-    `  const char *secret = ${JSON.stringify(hostSecret)};\n` +
-    `  const char *home = getenv("HOME");\n` +
-    `  const char *tmp = getenv("TMPDIR");\n` +
-    `  if (access(secret, F_OK) == 0) return 10;\n` +
-    `  if (!home || strcmp(home, "/hepta-profile") != 0) return 11;\n` +
-    `  if (!tmp || strcmp(tmp, "/tmp") != 0) return 12;\n` +
-    `  if (access("/usr/bin/sh", F_OK) == 0 || access("/usr/bin/python3", F_OK) == 0) return 13;\n` +
-    `  int sock = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);\n` +
-    `  if (sock < 0) return 14;\n` +
-    `  struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));\n` +
-    `  addr.sin_family = AF_INET; addr.sin_port = htons(53);\n` +
-    `  if (inet_pton(AF_INET, "1.1.1.1", &addr.sin_addr) != 1) return 15;\n` +
-    `  if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == 0) return 16;\n` +
-    `  close(sock);\n` +
-    `  int out = open("/hepta-profile/sandbox-probe.ok", O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);\n` +
-    `  if (out < 0) return 17;\n` +
-    `  const char marker[] = "isolated\\n";\n` +
-    `  if (write(out, marker, sizeof(marker) - 1) != (ssize_t)(sizeof(marker) - 1)) return 18;\n` +
-    `  if (fsync(out) != 0) return 19;\n` +
-    `  close(out);\n` +
-    `  return 0;\n` +
-    `}\n`,
-  { mode: 0o600 },
-);
-const compiled = spawnSync(
-  "/usr/bin/cc",
-  ["-O2", "-fPIE", "-pie", "-Wl,-z,relro,-z,now", "-o", probePath, probeSource],
-  { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
-);
-if (compiled.status !== 0) {
-  throw new Error(`sandbox probe compilation failed: ${compiled.stderr}`);
-}
-await chmod(probePath, 0o500);
-
 try {
+  await writeFile(hostSecret, "must-not-be-visible\n", { mode: 0o600 });
+  await writeFile(
+    probeSource,
+    `#include <arpa/inet.h>\n` +
+      `#include <errno.h>\n` +
+      `#include <fcntl.h>\n` +
+      `#include <netinet/in.h>\n` +
+      `#include <stdlib.h>\n` +
+      `#include <string.h>\n` +
+      `#include <sys/socket.h>\n` +
+      `#include <sys/stat.h>\n` +
+      `#include <sys/types.h>\n` +
+      `#include <unistd.h>\n` +
+      `int main(void) {\n` +
+      `  const char *secret = ${JSON.stringify(hostSecret)};\n` +
+      `  const char *home = getenv("HOME");\n` +
+      `  const char *tmp = getenv("TMPDIR");\n` +
+      `  if (access(secret, F_OK) == 0) return 10;\n` +
+      `  if (!home || strcmp(home, "/hepta-profile") != 0) return 11;\n` +
+      `  if (!tmp || strcmp(tmp, "/tmp") != 0) return 12;\n` +
+      `  if (access("/usr/bin/sh", F_OK) == 0 || access("/usr/bin/python3", F_OK) == 0) return 13;\n` +
+      `  int sock = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);\n` +
+      `  if (sock < 0) return 14;\n` +
+      `  struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));\n` +
+      `  addr.sin_family = AF_INET; addr.sin_port = htons(53);\n` +
+      `  if (inet_pton(AF_INET, "1.1.1.1", &addr.sin_addr) != 1) return 15;\n` +
+      `  if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == 0) return 16;\n` +
+      `  close(sock);\n` +
+      `  int out = open("/hepta-profile/sandbox-probe.ok", O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);\n` +
+      `  if (out < 0) return 17;\n` +
+      `  const char marker[] = "isolated\\n";\n` +
+      `  if (write(out, marker, sizeof(marker) - 1) != (ssize_t)(sizeof(marker) - 1)) return 18;\n` +
+      `  if (fsync(out) != 0) return 19;\n` +
+      `  close(out);\n` +
+      `  return 0;\n` +
+      `}\n`,
+    { mode: 0o600 },
+  );
+  const compiled = spawnSync(
+    "/usr/bin/cc",
+    [
+      "-O2",
+      "-fPIE",
+      "-pie",
+      "-Wl,-z,relro,-z,now",
+      "-o",
+      probePath,
+      probeSource,
+    ],
+    { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 10_000 },
+  );
+  if (compiled.status !== 0) {
+    throw new Error(`sandbox probe compilation failed: ${compiled.stderr}`);
+  }
+  await chmod(probePath, 0o500);
+
   const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
   await mkdir(profileDir, { mode: 0o700 });
   const child = launcher.spawn({ workerPath: probePath, profileDir });

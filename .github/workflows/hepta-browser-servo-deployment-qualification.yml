@@ -110,17 +110,13 @@ jobs:
           test -s worker-evidence/hepta-servo-worker
           actual="$(sha256sum worker-evidence/hepta-servo-worker | awk '{print $1}')"
           test "$actual" = "$EXPECTED_WORKER_SHA256"
-          python3 - <<'PY'
-          import json, os, pathlib
-          receipt = json.loads(pathlib.Path('worker-evidence/build-receipt.json').read_text())
-          assert receipt['sourceSha'] == os.environ['SOURCE_SHA']
-          assert receipt['workerSha256'] == os.environ['EXPECTED_WORKER_SHA256']
-          assert receipt['reproducibleIndependentBuilds'] is True
-          assert receipt['linuxSandboxProbe']['externalNetworkDenied'] is True
-          assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
-          assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
-          assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
-          PY
+          python3 apps/hepta-browser/scripts/verify-worker-evidence.py \
+            --topology docs/modules/browser.servo/SERVO_CURRENT_PIN_TOPOLOGY.json \
+            --pin-manifest third_party/servo-patches/MANIFEST.json \
+            --worker-manifest apps/hepta-browser/servo-worker/Cargo.toml \
+            --receipt-root worker-evidence --source-sha "$SOURCE_SHA" \
+            --source-tree "$(git rev-parse HEAD^{tree})" \
+            --worker-sha "$EXPECTED_WORKER_SHA256"
           chmod 0555 worker-evidence/hepta-servo-worker
           cp worker-evidence/build-receipt.json deployment-evidence/source-build-receipt.json
           sha256sum worker-evidence/hepta-servo-worker \

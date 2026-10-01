@@ -83,11 +83,11 @@ jobs:
             > worker-evidence/cargo-metadata.json
           cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features \
             > worker-evidence/cargo-tree-features.txt
-          if grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' worker-evidence/cargo-tree-features.txt; then
-            echo 'webdriver_server entered the worker dependency graph' >&2
-            exit 1
-          fi
-          grep -F "$SERVO_PIN" worker-evidence/cargo-metadata.json
+          python3 apps/hepta-browser/scripts/verify-worker-evidence.py \
+            --topology docs/modules/browser.servo/SERVO_CURRENT_PIN_TOPOLOGY.json \
+            --pin-manifest third_party/servo-patches/MANIFEST.json \
+            --worker-manifest "$WORKER_MANIFEST" \
+            --metadata worker-evidence/cargo-metadata.json
 
       - name: Check current-pin worker
         shell: bash
