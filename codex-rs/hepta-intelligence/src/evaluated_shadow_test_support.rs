@@ -462,10 +462,10 @@ impl Fixture {
     }
 
     pub fn trust_activation(&self) -> ActivatedLearningTrustV1 {
-        self.trust_activation_until(/*expires_at*/ 90)
+        self.trust_activation_until(/*expires_at*/ 90, /*now*/ 50)
     }
 
-    pub fn trust_activation_until(&self, expires_at: u64) -> ActivatedLearningTrustV1 {
+    pub fn trust_activation_until(&self, expires_at: u64, now: u64) -> ActivatedLearningTrustV1 {
         let root_key = SigningKey::from_bytes(&[99; 32]);
         let root = LearningTrustRootV1 {
             root_id: id("evaluated-shadow-test-root"),
@@ -493,7 +493,7 @@ impl Fixture {
                     panic!("evaluated shadow trust signing bytes: {error:?}")
                 }))
                 .to_bytes();
-        activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50)
+        activate_learning_trust(&root, signed, /*previous*/ None, now)
             .unwrap_or_else(|error| panic!("evaluated shadow trust activation: {error:?}"))
     }
 

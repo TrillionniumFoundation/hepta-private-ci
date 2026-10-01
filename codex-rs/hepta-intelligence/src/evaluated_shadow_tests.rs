@@ -153,7 +153,7 @@ fn ledger_at_with_trust(path: &std::path::Path, trust: ActivatedLearningTrustV1)
 #[test]
 fn expired_owner_distribution_blocks_evaluated_shadow_before_ports_or_durable_writes()
 -> Result<(), Box<dyn std::error::Error>> {
-    for now in [50, 51] {
+    for now in [49, 50, 51] {
         let fixture = Fixture::new();
         let candidate_payload = evaluated_candidate_signing_payload_v2(
             &fixture.qualification,
@@ -183,13 +183,15 @@ fn expired_owner_distribution_blocks_evaluated_shadow_before_ports_or_durable_wr
         )?;
         let temp = tempfile::tempdir()?;
         let path = temp.path().join("ledger");
-        let mut ledger =
-            ledger_at_with_trust(&path, fixture.trust_activation_until(/*expires_at*/ 50));
+        let mut ledger = ledger_at_with_trust(
+            &path,
+            fixture.trust_activation_until(/*expires_at*/ 50, /*now*/ 49),
+        );
         let mut ports = Ports::new(&fixture);
         let before = (fs::read(&path)?, fs::read(witness_path(&path))?);
         let frontier = ledger.witness_frontier()?;
         let result = run_evaluated_shadow_v1(request, &mut ledger, &mut ports, now);
-        if now == 50 {
+        if now == 49 {
             assert!(result?.learning.is_some());
             assert_eq!(ports.calls.len(), 7);
             assert_eq!(ledger.records()?.len(), 1);
@@ -439,7 +441,7 @@ fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
         let now = if case == 2 { 95 } else { 50 };
         // Keep owner authority current so this case still isolates the expired
         // candidate signature, independently of distribution expiry admission.
-        let trust = fixture.trust_activation_until(/*expires_at*/ 100);
+        let trust = fixture.trust_activation_until(/*expires_at*/ 100, /*now*/ 50);
         assert!(trust.is_current_at(now));
         let mut ledger = ledger_at_with_trust(&temp.path().join("ledger"), trust);
         let result = run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, now);
