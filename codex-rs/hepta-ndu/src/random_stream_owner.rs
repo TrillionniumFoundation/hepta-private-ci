@@ -3,9 +3,12 @@
 use std::error::Error;
 use std::fmt;
 
+use codex_hepta_types::BoundedText;
 use codex_hepta_types::CanonicalFieldV1;
 use codex_hepta_types::CanonicalValueV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::MAX_MANIFEST_ENUM_BYTES_V1;
+use codex_hepta_types::MAX_MANIFEST_VERSION_BYTES_V1;
 use codex_hepta_types::NonAuthorizingPosture;
 use codex_hepta_types::RandomStreamManifestV1;
 use codex_hepta_types::StableId;
@@ -13,10 +16,10 @@ use codex_hepta_types::canonical_digest_v1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduRandomStreamPolicyV1 {
-    algorithm_namespace: String,
+    algorithm_namespace: BoundedText<MAX_MANIFEST_ENUM_BYTES_V1>,
     root_seed_digest: Digest32,
-    generator_id: String,
-    generator_version: String,
+    generator_id: BoundedText<MAX_MANIFEST_ENUM_BYTES_V1>,
+    generator_version: BoundedText<MAX_MANIFEST_VERSION_BYTES_V1>,
     maximum_counter_span: u64,
     policy_digest: Digest32,
 }
@@ -29,28 +32,27 @@ impl NduRandomStreamPolicyV1 {
         generator_version: &str,
         maximum_counter_span: u64,
     ) -> Result<Self, NduRandomStreamOwnerErrorV1> {
-        if algorithm_namespace.is_empty()
-            || root_seed_digest.is_zero()
-            || generator_id.is_empty()
-            || generator_version.is_empty()
-            || maximum_counter_span == 0
-        {
+        if root_seed_digest.is_zero() || maximum_counter_span == 0 {
             return Err(NduRandomStreamOwnerErrorV1::InvalidPolicy);
         }
+        let algorithm_namespace = bounded_manifest_enum(algorithm_namespace)?;
+        let generator_id = bounded_manifest_enum(generator_id)?;
+        let generator_version = BoundedText::try_from_str(generator_version)
+            .map_err(|_| NduRandomStreamOwnerErrorV1::InvalidPolicy)?;
         let type_id = StableId::new("utility.ndu:random-stream-policy-v1")
             .map_err(|_| NduRandomStreamOwnerErrorV1::InvalidPolicy)?;
         let fields = [
             CanonicalFieldV1 {
                 name: "algorithm_namespace",
-                value: CanonicalValueV1::Text(algorithm_namespace),
+                value: CanonicalValueV1::Text(algorithm_namespace.as_str()),
             },
             CanonicalFieldV1 {
                 name: "generator_id",
-                value: CanonicalValueV1::Text(generator_id),
+                value: CanonicalValueV1::Text(generator_id.as_str()),
             },
             CanonicalFieldV1 {
                 name: "generator_version",
-                value: CanonicalValueV1::Text(generator_version),
+                value: CanonicalValueV1::Text(generator_version.as_str()),
             },
             CanonicalFieldV1 {
                 name: "maximum_counter_span",
@@ -64,10 +66,10 @@ impl NduRandomStreamPolicyV1 {
         let policy_digest = canonical_digest_v1(&type_id, 1, &fields)
             .map_err(|_| NduRandomStreamOwnerErrorV1::InvalidPolicy)?;
         Ok(Self {
-            algorithm_namespace: algorithm_namespace.to_owned(),
+            algorithm_namespace,
             root_seed_digest,
-            generator_id: generator_id.to_owned(),
-            generator_version: generator_version.to_owned(),
+            generator_id,
+            generator_version,
             maximum_counter_span,
             policy_digest,
         })
@@ -82,6 +84,25 @@ impl NduRandomStreamPolicyV1 {
     pub const fn policy_digest(&self) -> Digest32 {
         self.policy_digest
     }
+}
+
+fn bounded_manifest_enum(
+    value: &str,
+) -> Result<BoundedText<MAX_MANIFEST_ENUM_BYTES_V1>, NduRandomStreamOwnerErrorV1> {
+    let bytes = value.as_bytes();
+    if bytes.is_empty()
+        || bytes.len() > MAX_MANIFEST_ENUM_BYTES_V1
+        || !bytes[0].is_ascii_lowercase()
+        || !bytes[bytes.len() - 1].is_ascii_alphanumeric()
+        || bytes.iter().any(|byte| {
+            !(byte.is_ascii_lowercase()
+                || byte.is_ascii_digit()
+                || matches!(byte, b'.' | b'_' | b'-' | b':'))
+        })
+    {
+        return Err(NduRandomStreamOwnerErrorV1::InvalidPolicy);
+    }
+    BoundedText::try_from_str(value).map_err(|_| NduRandomStreamOwnerErrorV1::InvalidPolicy)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -153,10 +174,10 @@ pub fn admit_ndu_random_stream_manifest_v1(
     manifest
         .validate()
         .map_err(|_| NduRandomStreamOwnerErrorV1::InvalidManifest)?;
-    if manifest.algorithm_namespace() != policy.algorithm_namespace
+    if manifest.algorithm_namespace() != policy.algorithm_namespace.as_str()
         || manifest.root_seed_digest() != policy.root_seed_digest
-        || manifest.generator_id() != policy.generator_id
-        || manifest.generator_version() != policy.generator_version
+        || manifest.generator_id() != policy.generator_id.as_str()
+        || manifest.generator_version() != policy.generator_version.as_str()
     {
         return Err(NduRandomStreamOwnerErrorV1::PolicyMismatch);
     }
@@ -215,6 +236,76 @@ mod tests {
 
     fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn assert_policy_matches_manifest(
+        algorithm_namespace: &str,
+        generator_id: &str,
+        generator_version: &str,
+    ) {
+        let seed = digest("seed");
+        let policy = NduRandomStreamPolicyV1::new(
+            algorithm_namespace,
+            seed,
+            generator_id,
+            generator_version,
+            /*maximum_counter_span*/ 8,
+        );
+        let manifest = RandomStreamManifestV1::new(
+            id("manifest"),
+            seed,
+            algorithm_namespace,
+            id("episode"),
+            id("decision"),
+            id("stream"),
+            /*counter_start*/ 0,
+            /*counter_end_exclusive*/ 8,
+            generator_id,
+            generator_version,
+        );
+        assert_eq!(policy.is_ok(), manifest.is_ok());
+        if let (Ok(policy), Ok(manifest)) = (policy, manifest) {
+            let admitted = admit_ndu_random_stream_manifest_v1(
+                &policy,
+                &manifest,
+                &id("episode"),
+                &id("decision"),
+            )
+            .expect("matching manifest admission");
+            assert_eq!(admitted.policy_digest(), policy.policy_digest());
+        }
+    }
+
+    #[test]
+    fn policy_enum_rules_and_byte_limits_match_native_manifest() {
+        for token in [
+            "", "7", "UPPER", "_g", "g-", "g:", "g g", "g\0", "g1", "g:g", "g", "é",
+        ] {
+            assert_policy_matches_manifest(token, "g", "1");
+            assert_policy_matches_manifest("utility.ndu", token, "1");
+        }
+        for length in [63, 64, 65] {
+            let token = "g".repeat(length);
+            assert_policy_matches_manifest(&token, "g", "1");
+            assert_policy_matches_manifest("utility.ndu", &token, "1");
+        }
+    }
+
+    #[test]
+    fn policy_version_utf8_bounds_match_native_manifest_without_enum_rules() {
+        for version in ["", "\0", "1\0", "1\n", " ", "e\u{301}"] {
+            assert_policy_matches_manifest("utility.ndu", "g", version);
+        }
+        for length in [63, 64, 65] {
+            assert_policy_matches_manifest("utility.ndu", "g", &"v".repeat(length));
+        }
+        for version in [
+            "🧪".repeat(15) + "abc",
+            "🧪".repeat(16),
+            "🧪".repeat(16) + "a",
+        ] {
+            assert_policy_matches_manifest("utility.ndu", "g", &version);
+        }
     }
 
     #[test]

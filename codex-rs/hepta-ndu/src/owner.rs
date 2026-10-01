@@ -9,6 +9,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::CanonicalFieldV1;
 use codex_hepta_types::CanonicalValueV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::NumericProfileV1;
 use codex_hepta_types::NumericSignalV1;
 use codex_hepta_types::StableId;
 use codex_hepta_types::canonical_digest_v1;
@@ -227,6 +228,18 @@ impl NduAuthenticatedOwnerV1 {
         numeric_snapshot: Option<RegistrySnapshotIdentityV1>,
     ) -> Result<Self, NduOwnerError> {
         validate_context(&context)?;
+        if let Some(registry) = &numeric_registry {
+            crate::numeric_admission::validate_utility_axis_order(&policy.utility_profile)
+                .map_err(|_| NduOwnerError::InvalidContext("numeric axis order"))?;
+            registry
+                .registry()
+                .require_normalization(policy.utility_profile.normalization_manifest_digest)
+                .map_err(|_| NduOwnerError::InvalidContext("numeric normalization"))?;
+            registry
+                .registry()
+                .require_numeric_profile(NumericProfileV1::SignedQ32NearestTiesEven)
+                .map_err(|_| NduOwnerError::InvalidContext("numeric target profile"))?;
+        }
         let production_policy_digest = match (numeric_registry.as_ref(), numeric_snapshot) {
             (Some(registry), Some(snapshot)) => {
                 numeric_snapshot::snapshot_policy_digest(&policy, registry, snapshot)?

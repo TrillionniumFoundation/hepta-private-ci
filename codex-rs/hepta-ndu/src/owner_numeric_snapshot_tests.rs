@@ -311,6 +311,183 @@ fn invalid_snapshot_fails_before_opening_store() -> TestResult {
 }
 
 #[test]
+fn registered_owners_reject_same_policy_axis_alias_before_store_open() -> TestResult {
+    let fixture = fixture(/*generation*/ 7)?;
+    let mut canonical = fixture.owner.policy.clone();
+    canonical.utility_profile.dimensions = vec![
+        (id("quality")?, AxisDirection::Maximize),
+        (id("success")?, AxisDirection::Maximize),
+    ];
+    canonical
+        .evaluation_policy
+        .utility_rules
+        .push(AxisAggregationRule {
+            axis: id("quality")?,
+            operator: AggregationOperator::Sum,
+        });
+    canonical
+        .evaluation_policy
+        .uncertainty_rules
+        .push(AxisAggregationRule {
+            axis: id("quality")?,
+            operator: AggregationOperator::Maximum,
+        });
+    canonical
+        .evaluation_policy
+        .pareto_absolute_tolerances
+        .push(AxisValue {
+            axis: id("quality")?,
+            value: FixedQ32::ZERO,
+        });
+    let mut aliased = canonical.clone();
+    aliased.utility_profile.dimensions.reverse();
+    assert_eq!(
+        super::super::production_policy_digest(&canonical)?,
+        super::super::production_policy_digest(&aliased)?
+    );
+
+    let snapshot = fixture
+        .owner
+        .numeric_registry_snapshot()
+        .ok_or("missing snapshot")?;
+    let canonical_root = fixture.root.path().join("canonical-axes");
+    std::fs::create_dir_all(&canonical_root)?;
+    let canonical_owner = NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot(
+        &canonical_root,
+        fixture.authority.clone(),
+        fixture.owner.context().clone(),
+        canonical.clone(),
+        fixture.registry.clone(),
+        snapshot,
+    )?;
+    let mut source = fixture.source.clone();
+    source.schema.shape = vec![2];
+    source.values = vec![-250_000, 500_000];
+    let issued = canonical_owner.admit_utility_signal_v2(&source)?;
+    let verified = canonical_owner.verify_utility_signal_v2(&source, issued.admission())?;
+    assert_eq!(issued, verified);
+    assert_eq!(
+        issued.axis_values(),
+        &[
+            AxisValue {
+                axis: id("quality")?,
+                value: FixedQ32::from_raw(-(1_i64 << 30))
+            },
+            AxisValue {
+                axis: id("success")?,
+                value: FixedQ32::from_raw(1_i64 << 31)
+            },
+        ]
+    );
+    assert!(utility_target_schema(&aliased.utility_profile, &source).is_err());
+
+    let root = fixture.root.path().join("must-not-open-aliased-v2");
+    assert!(matches!(
+        NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot(
+            &root,
+            fixture.authority.clone(),
+            fixture.owner.context().clone(),
+            aliased.clone(),
+            fixture.registry.clone(),
+            snapshot,
+        ),
+        Err(NduOwnerError::InvalidContext("numeric axis order"))
+    ));
+    assert!(!root.exists());
+    let root = fixture.root.path().join("must-not-open-aliased-v1");
+    assert!(matches!(
+        NduAuthenticatedOwnerV1::open_with_numeric_registry(
+            &root,
+            fixture.authority.clone(),
+            fixture.owner.context().clone(),
+            aliased.clone(),
+            fixture.registry.clone(),
+        ),
+        Err(NduOwnerError::InvalidContext("numeric axis order"))
+    ));
+    assert!(!root.exists());
+
+    // The registry-less named-axis evaluator retains its existing semantics.
+    let legacy_root = fixture.root.path().join("legacy-named-axes");
+    std::fs::create_dir_all(&legacy_root)?;
+    let legacy = NduAuthenticatedOwnerV1::open(
+        &legacy_root,
+        fixture.authority.clone(),
+        fixture.owner.context().clone(),
+        aliased,
+    )?;
+    let mut input = contributions()?;
+    for contribution in &mut input.contributions {
+        contribution.utility.push(AxisValue {
+            axis: id("quality")?,
+            value: FixedQ32::ZERO,
+        });
+        contribution.uncertainty.push(AxisValue {
+            axis: id("quality")?,
+            value: FixedQ32::ZERO,
+        });
+    }
+    legacy.evaluate(input)?;
+    Ok(())
+}
+
+#[test]
+fn registered_owner_configuration_is_checked_before_opening_store() -> TestResult {
+    let fixture = fixture(/*generation*/ 7)?;
+    let original = fixture.registry.registry();
+    let missing_normalization =
+        NduNumericRegistryV1::new(ContractRegistryV1::new_with_numeric_profiles(
+            Vec::new(),
+            original.numeric_profiles().to_vec(),
+        )?)?;
+    let missing_target = NduNumericRegistryV1::new(ContractRegistryV1::new_with_numeric_profiles(
+        original.entries().to_vec(),
+        vec![NumericProfileDefinitionV1::canonical(
+            NumericProfileV1::HnmfPpmTowardZero,
+        )?],
+    )?)?;
+    for (registry, label, expected_error) in [
+        (
+            missing_normalization,
+            "missing-normalization",
+            "numeric normalization",
+        ),
+        (missing_target, "missing-target", "numeric target profile"),
+    ] {
+        let snapshot = RegistrySnapshotIdentityV1::from_registry(
+            Generation::new(/*value*/ 7)?,
+            registry.registry(),
+        )?;
+        let root = fixture.root.path().join(format!("{label}-v2"));
+        assert!(matches!(
+            NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot(
+                &root,
+                fixture.authority.clone(),
+                fixture.owner.context().clone(),
+                fixture.owner.policy.clone(),
+                registry.clone(),
+                snapshot,
+            ),
+            Err(NduOwnerError::InvalidContext(error)) if error == expected_error
+        ));
+        assert!(!root.exists());
+        let root = fixture.root.path().join(format!("{label}-v1"));
+        assert!(matches!(
+            NduAuthenticatedOwnerV1::open_with_numeric_registry(
+                &root,
+                fixture.authority.clone(),
+                fixture.owner.context().clone(),
+                fixture.owner.policy.clone(),
+                registry,
+            ),
+            Err(NduOwnerError::InvalidContext(error)) if error == expected_error
+        ));
+        assert!(!root.exists());
+    }
+    Ok(())
+}
+
+#[test]
 fn explicit_v2_owner_cannot_silently_downgrade_and_legacy_stays_v1() -> TestResult {
     let fixture = fixture(/*generation*/ 7)?;
     assert!(matches!(

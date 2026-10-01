@@ -22,7 +22,8 @@ The implementation must preserve these invariants:
 - digest values are exactly 32 bytes and expose byte identity without mutable aliasing;
 - bounded bytes, text, collections, registries, and nested values reject oversize input;
 - generations and versions use checked, monotone representations where monotonicity is required;
-- numeric profiles bind scale, rounding, range, shape, unit, normalization, and registry identity;
+- numeric profile definitions bind profile identity, definition version, scale and rounding; signal schemas bind that profile together with range, shape, unit and normalization; registered admission receipts bind the registry content, and V2 receipts additionally bind an explicit snapshot generation that the owner must independently pin and verify;
+- owners projecting labeled values into positional numeric signals define one canonical label-to-position mapping; NDU registered numeric admission requires utility dimensions in strictly increasing `StableId` order, with each signal value in its matching dimension position;
 - constructors do not silently normalize an invalid value into a different valid value;
 - public types do not carry ambient authority.
 
@@ -73,7 +74,7 @@ Validation happens both before expensive allocation where possible and after dec
 
 ## 6. Bounds
 
-Every externally influenced allocation or traversal has a named limit. Limits cover at least:
+Every externally influenced allocation or traversal at a semantic admission or decoding boundary has a named limit. Limits cover at least:
 
 - raw input bytes;
 - canonical encoded bytes;
@@ -86,6 +87,8 @@ Every externally influenced allocation or traversal has a named limit. Limits co
 - generated binding and test-vector size.
 
 A limit increase is a specification change and requires compatibility review and new boundary tests. Implementations must stop reading once an input is known to exceed a limit.
+
+Borrowed text is checked against its hard byte bound before content scanning. Raw content-hash primitives do not inherit semantic value-length limits; their callers supply the resource policy, with `Digest32::of_reader` enforcing its explicit read limit.
 
 ## 7. Protocol catalog
 
@@ -109,7 +112,7 @@ Compatibility is explicit, not inferred from successful parsing.
 - additive changes are compatible only when the active schema reserves or explicitly permits them;
 - removing, renaming, retyping, or changing the meaning or bound of a field is breaking;
 - changing canonical bytes or a digest domain is breaking unless introduced under a new version/domain;
-- legacy APIs may exist only as documented, time-bounded shims;
+- temporary compatibility shims must be documented and time-bounded; explicitly versioned, frozen V1 protocol read compatibility is a supported contract and is not subject to a temporary shim deadline;
 - owners must not silently downgrade a V2 value, receipt, snapshot, or protocol exchange to V1;
 - compatibility claims must be represented in the generated compatibility matrix and tested in positive and negative fixtures.
 
@@ -131,6 +134,8 @@ At minimum, errors distinguish:
 - authority required or final-use denied at the owner boundary.
 
 Error classification must not depend on unstable human-readable strings from a third-party parser when a structured decoder path can provide the distinction.
+
+For inputs violating several rules, cross-language conformance does not require identical first-error categories or priority unless explicitly specified. Admission decisions and semantic digests for admitted values must agree.
 
 ## 10. Generated and supporting artifacts
 

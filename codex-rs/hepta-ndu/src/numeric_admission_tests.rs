@@ -63,8 +63,8 @@ fn profile(normalization_manifest_digest: Digest32) -> UtilityProfile {
         axis_registry_digest: Digest32::of_bytes(b"axis-registry"),
         normalization_manifest_digest,
         dimensions: vec![
-            (id("success"), AxisDirection::Maximize),
             (id("quality"), AxisDirection::Maximize),
+            (id("success"), AxisDirection::Maximize),
         ],
         risk_ceilings: Vec::new(),
         resource_ceilings: Vec::new(),
@@ -84,7 +84,7 @@ fn signal(normalization_digest: Digest32) -> NumericSignalV1 {
             maximum_raw: 1_000_000,
             normalization_digest,
         },
-        values: vec![500_000, -250_000],
+        values: vec![-250_000, 500_000],
     }
 }
 
@@ -103,10 +103,62 @@ fn registered_utility_signal_binds_registry_normalization_and_axis_order() {
         registry.registry_digest()
     );
     assert!(!admitted.admission.admission_digest.is_zero());
-    assert_eq!(admitted.axis_values[0].axis, id("success"));
-    assert_eq!(admitted.axis_values[0].value.raw(), 1_i64 << 31);
-    assert_eq!(admitted.axis_values[1].axis, id("quality"));
-    assert_eq!(admitted.axis_values[1].value.raw(), -(1_i64 << 30));
+    assert_eq!(admitted.axis_values[0].axis, id("quality"));
+    assert_eq!(admitted.axis_values[0].value.raw(), -(1_i64 << 30));
+    assert_eq!(admitted.axis_values[1].axis, id("success"));
+    assert_eq!(admitted.axis_values[1].value.raw(), 1_i64 << 31);
+}
+
+#[test]
+fn registered_admission_rejects_same_identity_axis_reinterpretation() {
+    let (registry, normalization) = registry_with_extra(false);
+    let canonical = profile(normalization);
+    let mut reordered = canonical.clone();
+    reordered.dimensions.reverse();
+    assert_eq!(
+        crate::canonical_utility_profile_digest(&canonical).expect("canonical profile"),
+        crate::canonical_utility_profile_digest(&reordered).expect("reordered profile")
+    );
+    let source = signal(normalization);
+    let admitted = registry
+        .admit_utility_signal(&canonical, &source)
+        .expect("admission");
+    let target = utility_target_schema(&canonical, &source).expect("target schema");
+    let unchanged = codex_hepta_types::numeric_registry_v2::rescale_signal_registered_receipt_v1(
+        &source,
+        &target,
+        registry.registry(),
+    )
+    .expect("historical receipt");
+    assert_eq!((admitted.signal, admitted.admission), unchanged);
+    assert_eq!(
+        registry.admit_utility_signal(&reordered, &source),
+        Err(NduNumericAdmissionErrorV1::AxisIdentityMismatch)
+    );
+    let mut duplicated = canonical;
+    duplicated.dimensions[1] = duplicated.dimensions[0].clone();
+    assert_eq!(
+        registry.admit_utility_signal(&duplicated, &source),
+        Err(NduNumericAdmissionErrorV1::AxisIdentityMismatch)
+    );
+}
+
+#[test]
+fn registered_admission_enforces_utility_axis_count_bound() {
+    let (registry, normalization) = registry_with_extra(false);
+    let mut utility = profile(normalization);
+    let mut source = signal(normalization);
+    for count in [0, 9] {
+        utility.dimensions = (0..count)
+            .map(|index| (id(&format!("axis-{index}")), AxisDirection::Maximize))
+            .collect();
+        source.schema.shape = vec![count];
+        source.values = vec![0; count];
+        assert_eq!(
+            registry.admit_utility_signal(&utility, &source),
+            Err(NduNumericAdmissionErrorV1::AxisCountMismatch)
+        );
+    }
 }
 
 #[test]

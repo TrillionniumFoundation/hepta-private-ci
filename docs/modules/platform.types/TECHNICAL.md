@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered source root is `codex-rs/hepta-types`. Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1`, pure and registry-admitted numeric conversion, prompt-delivery and topology contracts, and the three owned manifest contracts. The public ownership projection is intentionally narrower than the complete rustdoc API. The canonical encoding and cross-language vectors remain frozen in `CANONICAL_DIGEST_V1.md` and `CANONICAL_V1_CONFORMANCE.json`. Source callsites exist in Codex/Agentd, Learning Ledger, Runtime Supervisor and the authenticated NDU owner; they are source-composition evidence, not target-host qualification or external acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md).
+The registered source root is `codex-rs/hepta-types`. Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1`, pure and registry-admitted numeric conversion, prompt-delivery and topology contracts, and the three owned manifest contracts. The public ownership projection is intentionally narrower than the complete rustdoc API. The canonical encoding and cross-language vectors remain frozen in `CANONICAL_DIGEST_V1.md` and `CANONICAL_V1_CONFORMANCE.json`. Source callsites exist in Codex/Agentd, Learning Ledger, Runtime Supervisor and the authenticated NDU owner; they are source-composition evidence, not target-host qualification or external acceptance. The [source-composition dossier](../../../qualification/module-execution-dossiers/detail/platform.types.md#3-product-wire-and-owner-composition) and [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) provide source navigation and evidence provenance. They do not override the three current authoritative entry points or establish current qualification.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -135,6 +135,8 @@ The three canonically owned protocols `RandomStreamManifestV1`, `ExternalSystemM
 
 V2 numeric receipt integrity is not current-generation evidence by itself. `verify_for_snapshot` additionally compares the exact independently pinned generation/digest. Authentication, publication and advancement of that pin remain owner responsibilities. NDU owners opened with `open_with_numeric_registry_snapshot` consume V2 registered admission through the ordinary `evaluate` entrypoint and reject V1 admission. Owners opened with `open_with_numeric_registry` retain explicit V1 compatibility. This source composition does not prove daemon provisioning, external snapshot authentication or target-host qualification.
 
+Both registered NDU numeric owner modes require utility dimensions in strictly increasing `StableId` order. Each positional signal value belongs to the dimension at the same index. Their policy normalization and signed-Q32 profile are checked before the owner opens its projection store; this is consumer-owned preflight, not persistence authority in the type library. Registry-less legacy-owner behavior and the V1 utility-profile digest algorithm remain unchanged. See `MIGRATION_V1_TO_V2.md` for label-preserving dimension/value reordering and receipt reissuance.
+
 ## 7. Runtime, concurrency and transaction model
 
 The native library is stateless. There are no locks, owner transactions, retry loops or background workers. Every operation completes synchronously over supplied values and bounded allocations. Product owners may cache immutable registry generations, but that cache is outside `platform.types` and must bind the exact generation/digest it serves. No current authorization, freshness or final-use decision is cached by these optimizations.
@@ -144,6 +146,8 @@ The native library is stateless. There are no locks, owner transactions, retry l
 Failure is input rejection: invalid bounds/IDs, malformed canonical bytes, arithmetic overflow, unresolved definition/profile or attempted authority widening. There is no partial durable commit and no recovery/reconciler. Rollback restores code plus the compatible frozen contract version; V1 bytes/profile identities must never be silently reinterpreted.
 
 Rejected-input checks prioritize bounded work. HPTC text whose tag, length and payload exceed the remaining encoded-byte budget returns `TooLarge` before scanning for NUL. Field/map labels are checked against their 128-byte grammar bound before sorting, so an invalid label rejects before duplicate/order checks. These priorities affect only inputs violating multiple conditions; accepted canonical bytes and digests remain frozen.
+
+Namespace qualification checks the total 128-byte identity budget before scanning local text for `:`; a local value violating both conditions returns `TooLarge`. Manifest enum tokens check their 64-byte bound before grammar scanning. Multiple-invalid-input error priority need not be identical across languages unless explicitly specified; admission decisions and admitted semantic digests must agree. Raw content hashes retain caller-selected resource limits rather than acquiring semantic value-length limits.
 
 The Prompt admission correction is explicitly behavior-narrowing for previously uncommittable V2 inputs. It does not destroy larger V1 observations. A larger HPTC-backed representation needs a new version, not an increase to the frozen global HPTC limit.
 
@@ -627,6 +631,10 @@ on the ordinary owner entrypoint, not only through a separately called helper.
 Each bounded utility-axis vector is admitted in its existing signed-Q32
 representation, with exact axis identity and normalization. This is representation
 admission, not a reinterpretation of FixedQ32 multiplication or division rounding.
+Registered numeric profiles have one canonical positional axis mapping:
+strictly increasing `StableId` dimensions, with values matched to those labels
+before projection into a raw vector. A matching profile digest or numeric receipt
+cannot authorize a different interpretation of the vector's positions.
 A canonical support envelope binds the original support and the configured
 registered admission before the existing V2 evaluator runs. Snapshot-configured
 owners use the V2 envelope and receipt with the pinned generation/digest; V1

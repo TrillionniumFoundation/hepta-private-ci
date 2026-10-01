@@ -523,11 +523,24 @@ fn ordinary_owner_evaluate_consumes_registered_admission_and_binds_support() {
 #[test]
 fn ordinary_owner_evaluate_rejects_missing_registry_definition() {
     let (registry, _) = numeric_registry();
-    let fixture = fixture_with_registry(registry, digest("unregistered-normalization"));
+    let fixture = fixture();
+    let root = fixture
+        ._store_dir
+        .path()
+        .join("must-not-open-invalid-registry");
+    let mut policy = policy();
+    policy.utility_profile.normalization_manifest_digest = digest("unregistered-normalization");
     assert!(matches!(
-        fixture.owner.evaluate(contributions()),
-        Err(NduOwnerError::InvalidContext("numeric admission"))
+        NduAuthenticatedOwnerV1::open_with_numeric_registry(
+            &root,
+            fixture.authority.clone(),
+            fixture.owner.context().clone(),
+            policy,
+            registry,
+        ),
+        Err(NduOwnerError::InvalidContext("numeric normalization"))
     ));
+    assert!(!root.exists());
 }
 
 #[test]

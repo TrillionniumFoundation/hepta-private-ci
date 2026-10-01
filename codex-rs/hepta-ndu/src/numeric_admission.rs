@@ -114,10 +114,30 @@ impl NduNumericRegistryV1 {
 }
 
 // Shared V1/V2 projection rules; neither path implements another converter.
+pub(crate) fn validate_utility_axis_order(
+    profile: &UtilityProfile,
+) -> Result<(), NduNumericAdmissionErrorV1> {
+    if profile.dimensions.is_empty() || profile.dimensions.len() > 8 {
+        return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
+    }
+    // The utility-profile commitment treats these named axes as a canonical
+    // set, while NumericSignalV1 carries positional values without axis IDs.
+    // Reject ambiguous configuration; never silently reorder received values.
+    if profile
+        .dimensions
+        .windows(2)
+        .any(|pair| pair[0].0 >= pair[1].0)
+    {
+        return Err(NduNumericAdmissionErrorV1::AxisIdentityMismatch);
+    }
+    Ok(())
+}
+
 pub(crate) fn utility_signal_from_axes(
     profile: &UtilityProfile,
     axes: &[AxisValue],
 ) -> Result<NumericSignalV1, NduNumericAdmissionErrorV1> {
+    validate_utility_axis_order(profile)?;
     if axes.len() != profile.dimensions.len() || axes.len() > 8 {
         return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
     }
@@ -149,6 +169,7 @@ pub(crate) fn utility_target_schema(
     utility_profile: &UtilityProfile,
     source: &NumericSignalV1,
 ) -> Result<NumericSignalSchemaV1, NduNumericAdmissionErrorV1> {
+    validate_utility_axis_order(utility_profile)?;
     if source.schema.normalization_digest != utility_profile.normalization_manifest_digest {
         return Err(NduNumericAdmissionErrorV1::NormalizationMismatch);
     }

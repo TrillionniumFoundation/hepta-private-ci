@@ -29,11 +29,11 @@ A shim is allowed only when all of the following are recorded:
 - the earliest release in which it may be removed;
 - an accountable owner and removal issue.
 
-Shims are adapters, not alternate execution paths. New product code must use the current API. Internal workspace consumers should be migrated in the same commit as a breaking API change; a deprecated alias is a last resort, not the default fix.
+This policy applies to temporary adapters, not explicitly versioned, frozen V1 protocol read compatibility. Retaining a frozen V1 contract does not permit reinterpreting its bytes or silently downgrading a V2 owner. New product code must use the current API. Internal workspace consumers should be migrated in the same commit as a breaking API change; a deprecated alias is a last resort, not the default fix.
 
 ## Mandatory consumer ledger
 
-The exact list is generated from the workspace and implementation map. At minimum, qualification covers:
+The declared source-consumer list is maintained in [`CONSUMER_QUALIFICATION_V1.json`](../../../codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json). The compatibility matrix classifies its mandatory and optional consumers; the source-consumer verifier checks the declared paths and source anchors, and the qualification runner executes the required checks. This is an explicit maintained ledger, not automatic discovery of every workspace use. `IMPLEMENTATION_MAP.json` supplies source and owner navigation. The table below summarizes the declared boundaries:
 
 | Consumer/boundary | Required V2 posture | Current ledger posture |
 |---|---|---|
@@ -42,7 +42,7 @@ The exact list is generated from the workspace and implementation map. At minimu
 | `codex-hepta-ndu` | numeric snapshot generation/digest binding and current `Digest32` API | migration repaired in the candidate; mandatory test must pass |
 | generated protocol bindings | deterministic output from the active catalog | regeneration and clean-tree check required |
 | legacy fixtures/consumers | self-contained positive and negative fixtures tied to exact source | closure evidence required |
-| product owners listed in `IMPLEMENTATION_MAP.json` | no hidden V1 fallback at final use | generated ledger and owner tests required |
+| product owners listed in `IMPLEMENTATION_MAP.json` | no hidden V1 fallback at final use | declared consumer ledger, compatibility classification and owner tests required |
 
 “Implemented” does not mean “qualified.” The generated exact-source status artifact is authoritative for pass/fail.
 
@@ -53,6 +53,31 @@ Candidate evidence is self-contained by construction. Qualification evidence pat
 The V2 protocol catalog is the field-level source of truth for identity-bearing wire paths. Existing identity fields retain the legacy `stable-v1` grammar in this migration so catalog ownership does not silently tighten or reinterpret accepted identifiers. Product decoders resolve the profile from the catalog before constructing `StableId`; a missing protocol/path mapping fails closed. Any future move to `module-v1`, `execution-id-v1`, or another stricter profile is a versioned compatibility change with its own schema and migration evidence.
 
 ## Consumer migration procedure
+
+### NDU canonical positional numeric mapping
+
+Registered NDU numeric admission now requires `UtilityProfile.dimensions` to be
+strictly increasing by `StableId`. A raw signal's value at index `i` belongs to
+the dimension at the same index. Both the V1 registered owner and V2
+snapshot-configured owner reject a noncanonical dimension order; they also
+preflight the policy's normalization definition and signed-Q32 numeric profile
+before opening the projection store. Registry-less legacy owners retain their
+existing behavior, and the V1 utility-profile digest algorithm is unchanged.
+
+This narrows previously accepted numeric inputs because the profile digest sorts
+dimensions while a positional signal followed their supplied order. The same
+profile digest and numeric receipt could therefore give the same raw vector a
+different axis interpretation. A digest match alone cannot close this ambiguity.
+
+To migrate, retain the original axis labels and reorder each complete dimension
+entry together with its matching source value into strictly increasing axis
+order. Recompute and reissue admission receipts against that canonical mapping;
+do not reuse a receipt under a different axis interpretation. Sorting only the
+old raw vector, or sorting dimensions without moving their associated values,
+is invalid. If the original value-to-axis association is unavailable, obtain a
+new labeled source rather than guessing the mapping.
+
+### General procedure
 
 For each public API or wire change:
 

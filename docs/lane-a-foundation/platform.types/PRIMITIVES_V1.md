@@ -79,15 +79,28 @@ admits only the exact semantics of:
 Changing scale or rounding under the same V1 profile identity rejects.
 `rescale_signal_registered` requires the source profile, target profile and
 normalization digest to resolve in the same explicitly supplied immutable
-registry generation. It returns `RegisteredNumericConversionReceiptV1`, whose
-registry and admission digests are separate from the embedded pure arithmetic
-receipt. Authentication/provisioning of that generation belongs to the product
-owner and is a separate composition gate.
+registry. For source compatibility it still returns the pure
+`NumericConversionReceiptV1`; that return value does not carry registry admission
+evidence. Call `numeric_registry_v2::rescale_signal_registered_receipt_v1` for
+`RegisteredNumericConversionReceiptV1`, whose registry and admission digests are
+separate from the embedded pure arithmetic receipt. Generation-sensitive owners
+use `numeric_registry_v2::rescale_signal_registered_v2` and verify received
+evidence against an independently pinned snapshot with `verify_for_snapshot`.
+Authentication/provisioning of that snapshot belongs to the product owner and
+is a separate composition gate.
 
 `utility.ndu::NduNumericRegistryV1` is the first named native consumer. An
 `NduAuthenticatedOwnerV1` opened with that registry freezes the registry digest
 into its production-policy identity before admitting a utility signal. An owner
 opened without a registry cannot claim registered admission.
+
+Registered NDU numeric profiles require dimensions in strictly increasing
+`StableId` order, and each positional signal value is associated with the
+dimension at the same index. Migration must reorder dimension entries and their
+matching source values together by axis label, then recompute admission receipts;
+sorting an old unlabeled raw vector cannot establish that mapping. The existing
+V1 utility-profile digest algorithm and registry-less owner behavior remain
+unchanged.
 
 
 ## Shared observation and topology contracts
