@@ -5,6 +5,8 @@
 //! are checked before publication, and checkpoint publication is derived from
 //! committed owner state rather than caller-supplied semantic fields.
 
+#[path = "protocol_receipt_validation.rs"]
+mod receipt_validation;
 #[path = "protocol_timestamp.rs"]
 mod timestamp;
 
@@ -584,6 +586,7 @@ pub fn decode_neuron_tick_input_v1(
 pub fn canonical_tick_receipt_v1(
     value: &NeuronTickReceiptV1,
 ) -> Result<NeuronTickReceiptProtocolV1, NeuronProtocolError> {
+    receipt_validation::validate_tick_receipt_fields(value.into())?;
     let projected = NeuronTickReceiptProtocolV1 {
         tick_id: value.tick_id.clone(),
         checkpoint_before: value.checkpoint_before,
@@ -603,7 +606,6 @@ pub fn canonical_tick_receipt_v1(
         saturation_count: value.resource_receipt.saturation_count,
         queue_age_micros: value.resource_receipt.queue_age_micros,
     };
-    validate_tick_receipt(&projected)?;
     Ok(projected)
 }
 
@@ -814,34 +816,7 @@ fn inhibition_digest_v1(native: &crate::SparseConfig) -> Result<Digest32, Neuron
 }
 
 fn validate_tick_receipt(value: &NeuronTickReceiptProtocolV1) -> Result<(), NeuronProtocolError> {
-    for (field, digest) in [
-        ("checkpointAfter", value.checkpoint_after),
-        ("activationDigest", value.activation_digest),
-        ("thresholdDigest", value.threshold_digest),
-        ("eligibilityDigest", value.eligibility_digest),
-    ] {
-        if digest.is_zero() {
-            return Err(NeuronProtocolError::InvalidDigest(field));
-        }
-    }
-    if value.active_indices.len() > MAX_ACTIVE_INDICES
-        || value
-            .active_indices
-            .iter()
-            .any(|index| *index >= MAX_ACTIVATION_DIMENSION)
-        || value
-            .active_indices
-            .windows(2)
-            .any(|pair| pair[0] >= pair[1])
-        || value.sparsity_ppm > PPM
-        || value.confidence_ppm > PPM
-        || value.ood_ppm > PPM
-        || !(0..=2 * Q24_LIMIT).contains(&value.prediction_error_q24)
-        || value.checkpoint_bytes == 0
-    {
-        return Err(NeuronProtocolError::InvalidField("tick receipt"));
-    }
-    Ok(())
+    receipt_validation::validate_tick_receipt_fields(value.into())
 }
 
 fn validate_signal(value: &NeuronSignalReceiptV1) -> Result<(), NeuronProtocolError> {
@@ -890,6 +865,7 @@ fn validate_checkpoint(value: &NeuronCheckpointV1) -> Result<(), NeuronProtocolE
             .any(|index| *index >= MAX_ACTIVATION_DIMENSION)
         || indices.windows(2).any(|pair| pair[0] >= pair[1])
         || value.activation_summary.sparsity_ppm > PPM
+        || indices.is_empty() != (value.activation_summary.sparsity_ppm == 0)
         || (value.logical_sequence == 1) != value.predecessor_id.is_none()
     {
         return Err(NeuronProtocolError::InvalidField("checkpoint"));

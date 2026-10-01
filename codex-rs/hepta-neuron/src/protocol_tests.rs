@@ -683,3 +683,149 @@ fn tick_receipt_scalar_boundaries_do_not_authenticate_owner_measurements() {
         value
     );
 }
+
+fn inconsistent_activation_activity() -> [(Vec<u32>, u32); 2] {
+    [(Vec::new(), PPM), (vec![0], 0)]
+}
+
+#[test]
+fn canonical_tick_projection_rejects_inconsistent_activation_activity() {
+    let (_, _, mut tick) = committed();
+    for (indices, sparsity) in inconsistent_activation_activity() {
+        tick.active_indices = indices;
+        tick.sparsity_ppm = sparsity;
+        assert_eq!(
+            canonical_tick_receipt_v1(&tick),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "indices {:?}, sparsity {sparsity}",
+            tick.active_indices
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_encoder_rejects_inconsistent_activation_activity() {
+    let (_, _, tick) = committed();
+    let mut value = checked(canonical_tick_receipt_v1(&tick));
+    for (indices, sparsity) in inconsistent_activation_activity() {
+        value.active_indices = indices;
+        value.sparsity_ppm = sparsity;
+        assert_eq!(
+            encode_neuron_tick_receipt_v1(&value),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "indices {:?}, sparsity {sparsity}",
+            value.active_indices
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_decoder_rejects_inconsistent_activation_activity() {
+    let (_, _, tick) = committed();
+    let value = checked(canonical_tick_receipt_v1(&tick));
+    let bytes = checked(encode_neuron_tick_receipt_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    for (indices, sparsity) in inconsistent_activation_activity() {
+        json["activeIndices"] = serde_json::json!(indices);
+        json["sparsityPpm"] = serde_json::json!(sparsity);
+        assert_eq!(
+            decode_neuron_tick_receipt_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "indices {indices:?}, sparsity {sparsity}"
+        );
+    }
+}
+
+#[test]
+fn checkpoint_encoder_rejects_inconsistent_activation_activity() {
+    let mut value = checkpoint_protocol();
+    for (indices, sparsity) in inconsistent_activation_activity() {
+        value.activation_summary.active_indices = indices;
+        value.activation_summary.sparsity_ppm = sparsity;
+        assert_eq!(
+            encode_neuron_checkpoint_v1(&value),
+            Err(NeuronProtocolError::InvalidField("checkpoint")),
+            "indices {:?}, sparsity {sparsity}",
+            value.activation_summary.active_indices
+        );
+    }
+}
+
+#[test]
+fn checkpoint_decoder_rejects_inconsistent_activation_activity() {
+    let value = checkpoint_protocol();
+    let bytes = checked(encode_neuron_checkpoint_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    for (indices, sparsity) in inconsistent_activation_activity() {
+        json["activationSummary"]["activeIndices"] = serde_json::json!(indices);
+        json["activationSummary"]["sparsityPpm"] = serde_json::json!(sparsity);
+        assert_eq!(
+            decode_neuron_checkpoint_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("checkpoint")),
+            "indices {indices:?}, sparsity {sparsity}"
+        );
+    }
+}
+
+#[test]
+fn zero_activation_activity_roundtrips_through_projection_and_codecs() {
+    let (_, _, mut tick) = committed();
+    // These global representation checks do not authenticate this fixture's
+    // actual activation digest or selected native width.
+    tick.active_indices.clear();
+    tick.sparsity_ppm = 0;
+    let value = checked(canonical_tick_receipt_v1(&tick));
+    assert_eq!(
+        checked(decode_neuron_tick_receipt_v1(&checked(
+            encode_neuron_tick_receipt_v1(&value),
+        ))),
+        value
+    );
+    let mut value = checkpoint_protocol();
+    value.activation_summary.active_indices.clear();
+    value.activation_summary.sparsity_ppm = 0;
+    assert_eq!(
+        checked(decode_neuron_checkpoint_v1(&checked(
+            encode_neuron_checkpoint_v1(&value),
+        ))),
+        value
+    );
+}
+
+#[test]
+fn canonical_tick_input_rejects_zero_present_body_generation() {
+    let mut value = crate::NeuronTickInputV1 {
+        tick_id: id("tick.input.body-generation"),
+        subject_id: id("subject.protocol.1"),
+        logical_sequence: 1,
+        monotonic_time_micros: 42,
+        checkpoint_digest: Digest32::ZERO,
+        input_feature_digest: crate::canonical_feature_vector_digest_v1(&[Q, 0, -Q]),
+        feature_vector_q24: vec![Q, 0, -Q],
+        objective_digest: Digest32::of_bytes(b"objective"),
+        ndu_snapshot_digest: Digest32::of_bytes(b"ndu"),
+        body_generation: None,
+        modulator_digest: None,
+    };
+    for body_generation in [None, Some(1), Some(u64::MAX)] {
+        value.body_generation = body_generation;
+        assert_eq!(
+            checked(decode_neuron_tick_input_v1(&checked(
+                encode_neuron_tick_input_v1(&value),
+            ))),
+            value
+        );
+    }
+    let bytes = checked(encode_neuron_tick_input_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    json["bodyGeneration"] = serde_json::json!(0);
+    assert_eq!(
+        decode_neuron_tick_input_v1(&checked(serde_json::to_vec(&json))),
+        Err(NeuronProtocolError::InvalidField("tick input"))
+    );
+    value.body_generation = Some(0);
+    assert_eq!(
+        encode_neuron_tick_input_v1(&value),
+        Err(NeuronProtocolError::InvalidField("tick input"))
+    );
+}

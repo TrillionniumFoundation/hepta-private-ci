@@ -186,6 +186,8 @@ pub struct NeuronTickInputV1 {
     pub feature_vector_q24: Vec<i64>,
     pub objective_digest: Digest32,
     pub ndu_snapshot_digest: Digest32,
+    /// A supplied body generation must be positive. `None` is the absent-body
+    /// binding; zero remains its reserved V1 digest sentinel, not a generation.
     pub body_generation: Option<u64>,
     pub modulator_digest: Option<Digest32>,
 }
@@ -485,6 +487,7 @@ pub(crate) fn validate_tick_input(input: &NeuronTickInputV1) -> Result<(), Neuro
             .any(|value| !(-H_Q24..=H_Q24).contains(value))
         || input.objective_digest.is_zero()
         || input.ndu_snapshot_digest.is_zero()
+        || input.body_generation == Some(0)
         || input.modulator_digest.is_some_and(Digest32::is_zero)
     {
         return Err(NeuronRuntimeError::InvalidInput);

@@ -1136,3 +1136,33 @@ fn owner_rollover_rejects_existing_tail_without_replacing_acknowledged_state() {
     checked(recovered.tick(&mut model, input(4, third_anchor.checkpoint_digest)));
     assert_eq!(model.calls, 4);
 }
+
+#[test]
+fn zero_body_generation_cannot_alias_an_absent_body_binding() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::for_config(&config);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 4,
+        config,
+        witness.clone(),
+    ));
+    let mut model = FakeModel::new();
+    let mut first_input = input(1, Digest32::ZERO);
+    first_input.body_generation = None;
+    let first = checked(runtime.tick(&mut model, first_input));
+    let anchor = checked(runtime.current_anchor());
+    let mut zero_body = input(2, first.tick.checkpoint_after);
+    zero_body.body_generation = Some(0);
+    assert_eq!(
+        runtime.tick(&mut model, zero_body),
+        Err(NeuronRuntimeError::InvalidInput)
+    );
+    assert_eq!(model.calls, 1);
+    assert_eq!(checked(runtime.current_anchor()), anchor);
+    assert_eq!(checked(witness.current()), anchor);
+}
