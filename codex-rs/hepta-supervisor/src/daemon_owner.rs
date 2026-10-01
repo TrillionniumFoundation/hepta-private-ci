@@ -14,6 +14,8 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
+use codex_hepta_paths::HeptaFleetRoot;
+
 use crate::SupervisorError;
 
 /// Never unlink this file on release: a new inode would be a second lock domain.
@@ -24,6 +26,29 @@ pub(super) struct SingleInstanceLock {
 }
 
 impl SingleInstanceLock {
+    /// Validate existing fleet geometry without writing, then own every startup
+    /// mutation, including the legacy-directory migration in registry opening.
+    pub(super) fn acquire_for_fleet(fleet_root: &HeptaFleetRoot) -> Result<Self, SupervisorError> {
+        let layout = fleet_root.layout();
+        for path in [
+            fleet_root.as_path(),
+            layout.state_root(),
+            layout.run_root(),
+            layout.releases_root(),
+            layout.agents_root(),
+        ] {
+            let metadata = std::fs::symlink_metadata(path)?;
+            if !metadata.is_dir() || metadata.file_type().is_symlink() {
+                return Err(Error::new(
+                    ErrorKind::InvalidInput,
+                    "supervisord fleet roots must be existing physical directories",
+                )
+                .into());
+            }
+        }
+        Self::acquire(layout.supervisor_lock())
+    }
+
     pub(super) fn acquire(path: &Path) -> Result<Self, SupervisorError> {
         let file = OpenOptions::new()
             .create(true)

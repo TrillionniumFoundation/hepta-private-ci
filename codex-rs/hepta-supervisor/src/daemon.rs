@@ -199,6 +199,9 @@ async fn run_supervisord_inner(
 ) -> Result<(), SupervisorError> {
     // Cancelling/dropping the outer future must also stop the ticker and server.
     let _shutdown = cancellation.clone().drop_guard();
+    // Opening an existing registry may migrate legacy Matrix directories. The
+    // exact kernel owner must therefore precede opening, not only recovery.
+    let instance = SingleInstanceLock::acquire_for_fleet(&fleet_root)?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -208,7 +211,6 @@ async fn run_supervisord_inner(
         )));
     }
     let layout = registry.layout().clone();
-    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (supervisor, recovery) = Supervisor::recover(
@@ -1868,6 +1870,10 @@ mod platform_tests;
 #[cfg(all(test, unix))]
 #[path = "daemon_shutdown_tests.rs"]
 mod shutdown_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_startup_tests.rs"]
+mod startup_tests;
 
 #[cfg(all(test, unix))]
 #[path = "daemon_authority_tests.rs"]
