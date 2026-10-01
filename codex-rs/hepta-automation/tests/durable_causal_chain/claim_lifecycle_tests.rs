@@ -11,31 +11,59 @@ async fn first_dispatch_intent_requires_live_both_leases_but_unknown_replay_does
         let task = draft(
             "019153a4-3088-7000-a56a-9b1964f75122",
             AutomationSchedule::Once,
-            100,
+            /*due*/ 100,
         );
         store.create_task(&task).await.unwrap();
         let lease = store
-            .claim_due(100, 1, timer_lease_ms)
+            .claim_due(/*now_ms*/ 100, /*generation*/ 1, timer_lease_ms)
             .await
             .unwrap()
             .unwrap();
-        let occurrence = store.materialize_occurrence(&lease, 100).await.unwrap();
+        let occurrence = store
+            .materialize_occurrence(&lease, /*now_ms*/ 100)
+            .await
+            .unwrap();
         store
-            .prepare_occurrence_taskflow(&occurrence, &lease, 100, taskflow_lease_ms)
+            .prepare_occurrence_taskflow(
+                &occurrence,
+                &lease,
+                /*now_ms*/ 100,
+                taskflow_lease_ms,
+            )
             .await
             .unwrap();
         assert_eq!(
-            store.record_dispatch_uncertain(&lease, 110).await,
+            store
+                .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 110)
+                .await,
             Err(AutomationError::Conflict)
         );
-        assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
-        store.record_dispatch_uncertain(&lease, 109).await.unwrap();
+        assert_eq!(
+            store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+            Vec::new()
+        );
         store
-            .record_dispatch_uncertain(&lease, 200_000)
+            .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 109)
             .await
             .unwrap();
-        assert_eq!(store.uncertain_dispatches(1).await.unwrap().len(), 1);
-        assert_eq!(store.claim_due(200_000, 2, 30_000).await.unwrap(), None);
+        store
+            .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 200_000)
+            .await
+            .unwrap();
+        assert_eq!(
+            store.uncertain_dispatches(/*limit*/ 1).await.unwrap().len(),
+            1
+        );
+        assert_eq!(
+            store
+                .claim_due(
+                    /*now_ms*/ 200_000, /*generation*/ 2,
+                    /*lease_duration_ms*/ 30_000
+                )
+                .await
+                .unwrap(),
+            None
+        );
         store.close().await;
     }
 }
@@ -47,13 +75,27 @@ async fn first_dispatch_intent_rejects_a_quarantined_taskflow_run() {
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75124",
         AutomationSchedule::Once,
-        100,
+        /*due*/ 100,
     );
     store.create_task(&task).await.unwrap();
-    let lease = store.claim_due(100, 1, 30_000).await.unwrap().unwrap();
-    let occurrence = store.materialize_occurrence(&lease, 100).await.unwrap();
+    let lease = store
+        .claim_due(
+            /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 30_000,
+        )
+        .await
+        .unwrap()
+        .unwrap();
+    let occurrence = store
+        .materialize_occurrence(&lease, /*now_ms*/ 100)
+        .await
+        .unwrap();
     let dispatch = store
-        .prepare_occurrence_taskflow(&occurrence, &lease, 100, 30_000)
+        .prepare_occurrence_taskflow(
+            &occurrence,
+            &lease,
+            /*now_ms*/ 100,
+            /*lease_duration_ms*/ 30_000,
+        )
         .await
         .unwrap();
     store
@@ -66,17 +108,22 @@ async fn first_dispatch_intent_rejects_a_quarantined_taskflow_run() {
                 TaskFlowTransition::Indeterminate {
                     reason: "quarantined before provider contact".to_string(),
                 },
-                101,
+                /*now_ms*/ 101,
             )
             .unwrap(),
         )
         .await
         .unwrap();
     assert_eq!(
-        store.record_dispatch_uncertain(&lease, 102).await,
+        store
+            .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 102)
+            .await,
         Err(AutomationError::Conflict)
     );
-    assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
+    assert_eq!(
+        store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+        Vec::new()
+    );
     store.close().await;
 }
 
@@ -87,26 +134,53 @@ async fn expired_pre_dispatch_claim_settles_its_old_step_before_attempt_rollover
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75121",
         AutomationSchedule::Once,
-        100,
+        /*due*/ 100,
     );
     store.create_task(&task).await.unwrap();
-    let old = store.claim_due(100, 1, 10).await.unwrap().unwrap();
-    let original = store.materialize_occurrence(&old, 100).await.unwrap();
-    let dispatch = store
-        .prepare_occurrence_taskflow(&original, &old, 100, 10)
+    let old = store
+        .claim_due(
+            /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 10,
+        )
+        .await
+        .unwrap()
+        .unwrap();
+    let original = store
+        .materialize_occurrence(&old, /*now_ms*/ 100)
         .await
         .unwrap();
-    let reclaimed = store.claim_due(111, 1, 30_000).await.unwrap().unwrap();
+    let dispatch = store
+        .prepare_occurrence_taskflow(
+            &original, &old, /*now_ms*/ 100, /*lease_duration_ms*/ 10,
+        )
+        .await
+        .unwrap();
+    let reclaimed = store
+        .claim_due(
+            /*now_ms*/ 111, /*generation*/ 1, /*lease_duration_ms*/ 30_000,
+        )
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(reclaimed.occurrence, old.occurrence);
     assert_eq!(
-        store.record_dispatch_uncertain(&old, 111).await,
+        store
+            .record_dispatch_uncertain(&old, /*observed_at_ms*/ 111)
+            .await,
         Err(AutomationError::Conflict)
     );
-    let next = store.materialize_occurrence(&reclaimed, 111).await.unwrap();
+    let next = store
+        .materialize_occurrence(&reclaimed, /*now_ms*/ 111)
+        .await
+        .unwrap();
     assert_eq!(next.occurrence_id, original.occurrence_id);
     assert_eq!(next.step_attempt, 2);
     let old_step = store
-        .read_taskflow_step(&original.taskflow_run_id, "codex_turn", 1, &dispatch.fence)
+        .read_taskflow_step(
+            &original.taskflow_run_id,
+            "codex_turn",
+            /*attempt*/ 1,
+            &dispatch.fence,
+        )
         .await
         .unwrap()
         .unwrap();
@@ -116,11 +190,13 @@ async fn expired_pre_dispatch_claim_settles_its_old_step_before_attempt_rollover
         Some(TaskFlowReconcileOutcome::Cancelled)
     );
     store
-        .prepare_occurrence_taskflow(&next, &reclaimed, 111, 30_000)
+        .prepare_occurrence_taskflow(
+            &next, &reclaimed, /*now_ms*/ 111, /*lease_duration_ms*/ 30_000,
+        )
         .await
         .unwrap();
     store
-        .record_dispatch_uncertain(&reclaimed, 111)
+        .record_dispatch_uncertain(&reclaimed, /*observed_at_ms*/ 111)
         .await
         .unwrap();
     store
@@ -130,14 +206,14 @@ async fn expired_pre_dispatch_claim_settles_its_old_step_before_attempt_rollover
                 queued_submission_id: "expired.claim.retry".to_string(),
                 client_user_message_id: reclaimed.client_user_message_id.clone(),
             },
-            112,
+            /*admitted_at_ms*/ 112,
         )
         .await
         .unwrap();
     store.close().await;
     let reopened = AutomationStore::open(&fixture.layout).await.unwrap();
     let admitted = reopened
-        .automation_occurrence(task.task_id, 1)
+        .automation_occurrence(task.task_id, /*occurrence*/ 1)
         .await
         .unwrap()
         .unwrap();
@@ -153,36 +229,45 @@ async fn disabling_a_requeued_pre_step_crash_settles_its_local_policy_freeze() {
     let template = draft(
         "019153a4-3088-7000-a56a-9b1964f75125",
         AutomationSchedule::Once,
-        100,
+        /*due*/ 100,
     );
     store.create_task(&template).await.unwrap();
     let scheduler = AutomationScheduler::new(
         store.clone(),
         Arc::new(SuccessQueue),
-        1,
+        /*generation*/ 1,
         Duration::from_secs(30),
         Duration::from_secs(2),
     )
     .unwrap();
-    scheduler.tick(100).await.unwrap();
+    scheduler.tick(/*now_ms*/ 100).await.unwrap();
     let definition = store
-        .taskflow_definition("hepta.automation.codex-turn", 1)
+        .taskflow_definition("hepta.automation.codex-turn", /*version*/ 1)
         .await
         .unwrap()
         .unwrap();
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75126",
         AutomationSchedule::Once,
-        200,
+        /*due*/ 200,
     );
     store.create_task(&task).await.unwrap();
-    let lease = store.claim_due(200, 1, 30_000).await.unwrap().unwrap();
-    let occurrence = store.materialize_occurrence(&lease, 200).await.unwrap();
+    let lease = store
+        .claim_due(
+            /*now_ms*/ 200, /*generation*/ 1, /*lease_duration_ms*/ 30_000,
+        )
+        .await
+        .unwrap()
+        .unwrap();
+    let occurrence = store
+        .materialize_occurrence(&lease, /*now_ms*/ 200)
+        .await
+        .unwrap();
     let fence = TaskFlowFence::new(
         lease.task.owner_agent_id.clone(),
         format!("automation.scheduler:{}", task.task_id),
-        1,
-        1,
+        /*owner_epoch*/ 1,
+        /*generation*/ 1,
         lease.lease_token.clone(),
     )
     .unwrap();
@@ -193,12 +278,17 @@ async fn disabling_a_requeued_pre_step_crash_settles_its_local_policy_freeze() {
             definition.version,
             definition.definition_digest(),
             THREAD_ID,
-            200,
+            /*created_at_ms*/ 200,
         )
         .await
         .unwrap();
     let run = store
-        .claim_taskflow_run(&occurrence.taskflow_run_id, &fence, 200, 30_000)
+        .claim_taskflow_run(
+            &occurrence.taskflow_run_id,
+            &fence,
+            /*now_ms*/ 200,
+            /*lease_duration_ms*/ 30_000,
+        )
         .await
         .unwrap();
     store
@@ -209,13 +299,19 @@ async fn disabling_a_requeued_pre_step_crash_settles_its_local_policy_freeze() {
                 fence.clone(),
                 run.revision,
                 TaskFlowTransition::Start,
-                200,
+                /*now_ms*/ 200,
             )
             .unwrap(),
         )
         .await
         .unwrap();
-    assert_eq!(store.recover_stale_generation(2, 201).await.unwrap(), 1);
+    assert_eq!(
+        store
+            .recover_stale_generation(/*current_generation*/ 2, /*now_ms*/ 201)
+            .await
+            .unwrap(),
+        1
+    );
     assert_eq!(
         store
             .taskflow_run(&occurrence.taskflow_run_id)
@@ -227,18 +323,28 @@ async fn disabling_a_requeued_pre_step_crash_settles_its_local_policy_freeze() {
     );
     assert_eq!(
         store
-            .read_taskflow_step(&occurrence.taskflow_run_id, "codex_turn", 1, &fence)
+            .read_taskflow_step(
+                &occurrence.taskflow_run_id,
+                "codex_turn",
+                /*attempt*/ 1,
+                &fence
+            )
             .await
             .unwrap(),
         None
     );
     store
-        .set_enabled(task.task_id, false, None, 202)
+        .set_enabled(
+            task.task_id,
+            /*enabled*/ false,
+            /*resume_at_ms*/ None,
+            /*now_ms*/ 202,
+        )
         .await
         .unwrap();
     assert_eq!(
         store
-            .automation_occurrence(task.task_id, 1)
+            .automation_occurrence(task.task_id, /*occurrence*/ 1)
             .await
             .unwrap()
             .unwrap()
@@ -258,10 +364,10 @@ async fn disabling_a_requeued_pre_step_crash_settles_its_local_policy_freeze() {
         store
             .set_schedule_policy(
                 task.task_id,
-                1,
+                /*expected_revision*/ 1,
                 AutomationMissedRunPolicy::Coalesce,
                 AutomationOverlapPolicy::Allow,
-                203,
+                /*now_ms*/ 203,
             )
             .await
             .unwrap()
@@ -282,36 +388,69 @@ async fn schedule_retirement_before_dispatch_intent_revokes_provider_admission()
         let task = draft(
             "019153a4-3088-7000-a56a-9b1964f75120",
             AutomationSchedule::Once,
-            100,
+            /*due*/ 100,
         );
         store.create_task(&task).await.unwrap();
-        let lease = store.claim_due(100, 1, 30_000).await.unwrap().unwrap();
-        let occurrence = store.materialize_occurrence(&lease, 100).await.unwrap();
+        let lease = store
+            .claim_due(
+                /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 30_000,
+            )
+            .await
+            .unwrap()
+            .unwrap();
+        let occurrence = store
+            .materialize_occurrence(&lease, /*now_ms*/ 100)
+            .await
+            .unwrap();
         store
-            .prepare_occurrence_taskflow(&occurrence, &lease, 100, 30_000)
+            .prepare_occurrence_taskflow(
+                &occurrence,
+                &lease,
+                /*now_ms*/ 100,
+                /*lease_duration_ms*/ 30_000,
+            )
             .await
             .unwrap();
         match retirement {
             AutomationTaskState::Disabled => {
                 store
-                    .set_enabled(task.task_id, false, None, 101)
+                    .set_enabled(
+                        task.task_id,
+                        /*enabled*/ false,
+                        /*resume_at_ms*/ None,
+                        /*now_ms*/ 101,
+                    )
                     .await
                     .unwrap();
             }
             AutomationTaskState::Cancelled => {
-                store.cancel_task(task.task_id, 101).await.unwrap();
+                store
+                    .cancel_task(task.task_id, /*now_ms*/ 101)
+                    .await
+                    .unwrap();
             }
             AutomationTaskState::Enabled | AutomationTaskState::Completed => unreachable!(),
         }
         assert_eq!(
-            store.record_dispatch_uncertain(&lease, 102).await,
+            store
+                .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 102)
+                .await,
             Err(AutomationError::Conflict)
         );
-        assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
-        assert_eq!(store.recover_stale_generation(2, 103).await.unwrap(), 1);
+        assert_eq!(
+            store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+            Vec::new()
+        );
         assert_eq!(
             store
-                .automation_occurrence(task.task_id, 1)
+                .recover_stale_generation(/*current_generation*/ 2, /*now_ms*/ 103)
+                .await
+                .unwrap(),
+            1
+        );
+        assert_eq!(
+            store
+                .automation_occurrence(task.task_id, /*occurrence*/ 1)
                 .await
                 .unwrap()
                 .unwrap()
@@ -334,20 +473,23 @@ async fn absence_recovery_rejects_occurrence_claim_fence_drift_before_step_mutat
         let task = draft(
             "019153a4-3088-7000-a56a-9b1964f75130",
             AutomationSchedule::Once,
-            100,
+            /*due*/ 100,
         );
         store.create_task(&task).await.expect("task");
         let scheduler = AutomationScheduler::new(
             store.clone(),
             Arc::new(UnknownQueue),
-            1,
+            /*generation*/ 1,
             Duration::from_secs(30),
             Duration::from_secs(2),
         )
         .expect("scheduler");
-        scheduler.tick(100).await.expect("unknown dispatch");
+        scheduler
+            .tick(/*now_ms*/ 100)
+            .await
+            .expect("unknown dispatch");
         let occurrence = store
-            .automation_occurrence(task.task_id, 1)
+            .automation_occurrence(task.task_id, /*occurrence*/ 1)
             .await
             .expect("read")
             .expect("occurrence");
@@ -374,10 +516,10 @@ async fn absence_recovery_rejects_occurrence_claim_fence_drift_before_step_mutat
             store
                 .reconcile_uncertain_occurrence_absent(
                     task.task_id,
-                    1,
+                    /*occurrence*/ 1,
                     &occurrence.client_user_message_id,
                     &Sha256Digest::for_bytes(b"queue absence"),
-                    101
+                    /*observed_at_ms*/ 101
                 )
                 .await,
             Err(AutomationError::Conflict)
@@ -400,20 +542,23 @@ async fn queue_absence_cannot_cancel_an_independently_started_provider_effect() 
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75131",
         AutomationSchedule::Once,
-        100,
+        /*due*/ 100,
     );
     store.create_task(&task).await.expect("task");
     let scheduler = AutomationScheduler::new(
         store.clone(),
         Arc::new(UnknownQueue),
-        1,
+        /*generation*/ 1,
         Duration::from_secs(30),
         Duration::from_secs(2),
     )
     .expect("scheduler");
-    scheduler.tick(100).await.expect("unknown dispatch");
+    scheduler
+        .tick(/*now_ms*/ 100)
+        .await
+        .expect("unknown dispatch");
     let occurrence = store
-        .automation_occurrence(task.task_id, 1)
+        .automation_occurrence(task.task_id, /*occurrence*/ 1)
         .await
         .expect("read")
         .expect("occurrence");
@@ -449,10 +594,10 @@ async fn queue_absence_cannot_cancel_an_independently_started_provider_effect() 
         store
             .reconcile_uncertain_occurrence_absent(
                 task.task_id,
-                1,
+                /*occurrence*/ 1,
                 &occurrence.client_user_message_id,
                 &queue_proof,
-                101
+                /*observed_at_ms*/ 101
             )
             .await,
         Err(AutomationError::Conflict)
@@ -478,10 +623,10 @@ async fn queue_absence_cannot_cancel_an_independently_started_provider_effect() 
         store
             .reconcile_uncertain_occurrence_absent(
                 task.task_id,
-                1,
+                /*occurrence*/ 1,
                 &occurrence.client_user_message_id,
                 &queue_proof,
-                103
+                /*observed_at_ms*/ 103
             )
             .await,
         Err(AutomationError::Conflict)
@@ -489,10 +634,10 @@ async fn queue_absence_cannot_cancel_an_independently_started_provider_effect() 
     store
         .reconcile_uncertain_occurrence_absent(
             task.task_id,
-            1,
+            /*occurrence*/ 1,
             &occurrence.client_user_message_id,
             &provider_proof,
-            104,
+            /*observed_at_ms*/ 104,
         )
         .await
         .expect("matching provider proof permits requeue");
