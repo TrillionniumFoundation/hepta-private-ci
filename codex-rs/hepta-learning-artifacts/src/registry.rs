@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
@@ -25,6 +24,7 @@ const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 struct ArtifactEntry {
     manifest: ArtifactManifest,
     state: ArtifactState,
+    lineage_eligible: bool,
 }
 
 /// Immutable lineage registry. It can classify candidates as eligible but has
@@ -34,6 +34,7 @@ pub struct ArtifactRegistry {
     records: Vec<ArtifactRecord>,
     event_digests: BTreeMap<StableId, Digest32>,
     artifacts: BTreeMap<StableId, ArtifactEntry>,
+    children: BTreeMap<StableId, Vec<StableId>>,
 }
 
 impl ArtifactRegistry {
@@ -121,10 +122,10 @@ impl ArtifactRegistry {
     ) -> Vec<&ArtifactManifest> {
         self.artifacts
             .iter()
-            .filter(|(artifact_id, entry)| {
+            .filter(|(_, entry)| {
                 entry.manifest.kind == kind
                     && entry.manifest.objective_digest == objective_digest
-                    && self.lineage_is_eligible(artifact_id)
+                    && entry.lineage_eligible
             })
             .map(|(_, entry)| &entry.manifest)
             .collect()
@@ -253,21 +254,9 @@ impl ArtifactRegistry {
     }
 
     fn lineage_is_eligible(&self, artifact_id: &StableId) -> bool {
-        let mut current = Some(artifact_id);
-        let mut visited = BTreeSet::new();
-        while let Some(id) = current {
-            if !visited.insert(id.clone()) {
-                return false;
-            }
-            let Some(entry) = self.artifacts.get(id) else {
-                return false;
-            };
-            if entry.state != ArtifactState::Candidate {
-                return false;
-            }
-            current = entry.manifest.predecessor_id.as_ref();
-        }
-        true
+        self.artifacts
+            .get(artifact_id)
+            .is_some_and(|entry| entry.lineage_eligible)
     }
 
     fn index_record(&mut self, record: &ArtifactRecord) -> Result<(), ArtifactRegistryError> {
@@ -275,11 +264,21 @@ impl ArtifactRegistry {
             .insert(record.event.event_id().clone(), record.event_digest);
         match &record.event {
             ArtifactEvent::Register { manifest, .. } => {
+                // Validation admits only a previously eligible predecessor.
+                // Registration adds an immutable forward edge; cycles and
+                // adding children to an ineligible subtree are impossible.
+                if let Some(predecessor) = &manifest.predecessor_id {
+                    self.children
+                        .entry(predecessor.clone())
+                        .or_default()
+                        .push(manifest.artifact_id.clone());
+                }
                 self.artifacts.insert(
                     manifest.artifact_id.clone(),
                     ArtifactEntry {
                         manifest: manifest.clone(),
                         state: ArtifactState::Candidate,
+                        lineage_eligible: true,
                     },
                 );
             }
@@ -296,6 +295,24 @@ impl ArtifactRegistry {
                     .get_mut(&change.artifact_id)
                     .ok_or(ArtifactRegistryError::InternalInvariant)?;
                 entry.state = ArtifactState::Revoked;
+            }
+        }
+        if let ArtifactEvent::Quarantine(change) | ArtifactEvent::Revoke(change) = &record.event {
+            let mut pending = vec![change.artifact_id.clone()];
+            while let Some(artifact) = pending.pop() {
+                let entry = self
+                    .artifacts
+                    .get_mut(&artifact)
+                    .ok_or(ArtifactRegistryError::InternalInvariant)?;
+                // Eligibility is monotonic. An already excluded entry has
+                // an excluded subtree and cannot acquire new children.
+                if !entry.lineage_eligible {
+                    continue;
+                }
+                entry.lineage_eligible = false;
+                if let Some(children) = self.children.get(&artifact) {
+                    pending.extend(children.iter().cloned());
+                }
             }
         }
         Ok(())
@@ -409,3 +426,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 #[cfg(test)]
 #[path = "registry_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "registry_cache_tests.rs"]
+mod cache_tests;
