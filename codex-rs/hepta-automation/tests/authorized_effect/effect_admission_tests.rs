@@ -53,7 +53,7 @@ async fn effect_writer_wait_cannot_backdate_lease_admission(async_dispatch: bool
                         &signed,
                         &expected,
                         "writer-wait-record",
-                        770,
+                        /*now_ms*/ 770,
                     )
                     .await
             } else {
@@ -67,7 +67,7 @@ async fn effect_writer_wait_cannot_backdate_lease_admission(async_dispatch: bool
                         &signed,
                         &expected,
                         "writer-wait-record",
-                        770,
+                        /*now_ms*/ 770,
                     )
                     .await
             }
@@ -169,7 +169,7 @@ async fn effect_checks_lease_inside_the_authorized_consumer(async_dispatch: bool
                 &signed,
                 &expected,
                 "consumer-clock-record",
-                770,
+                /*now_ms*/ 770,
             )
             .await
     } else {
@@ -183,7 +183,7 @@ async fn effect_checks_lease_inside_the_authorized_consumer(async_dispatch: bool
                 &signed,
                 &expected,
                 "consumer-clock-record",
-                770,
+                /*now_ms*/ 770,
             )
             .await
     };
@@ -205,7 +205,7 @@ async fn effect_checks_lease_inside_the_authorized_consumer(async_dispatch: bool
     );
     assert!(
         store
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("settled absence")
             .is_empty()

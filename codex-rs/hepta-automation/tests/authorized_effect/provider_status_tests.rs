@@ -31,12 +31,12 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
             &signed,
             &expected,
             "admission-dispatch",
-            30,
+            /*now_ms*/ 30,
         )
         .await
         .expect("dispatch unknown");
     let pending = store
-        .pending_authorized_taskflow_effects(8)
+        .pending_authorized_taskflow_effects(/*limit*/ 8)
         .await
         .expect("pending")
         .remove(0);
@@ -46,7 +46,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     );
     assert_eq!(
         driver
-            .lookup(&store, &pending, &owner, 40)
+            .lookup(&store, &pending, &owner, /*observed_at_ms*/ 40)
             .await
             .expect("accepted lookup"),
         AuthorizedProviderEffectLookup::Unresolved
@@ -56,7 +56,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
         .await
         .expect("reopen");
     let pending = reopened
-        .pending_authorized_taskflow_effects(8)
+        .pending_authorized_taskflow_effects(/*limit*/ 8)
         .await
         .expect("pending")
         .remove(0);
@@ -70,7 +70,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     ));
     assert_eq!(
         driver
-            .lookup(&reopened, &pending, &owner, 50)
+            .lookup(&reopened, &pending, &owner, /*observed_at_ms*/ 50)
             .await
             .expect("rejected lookup quarantined"),
         AuthorizedProviderEffectLookup::Unresolved
@@ -85,7 +85,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
                 AuthorizedEffectRecovery::ProvenAbsent {
                     proof_digest: Sha256Digest::for_bytes(b"contradictory-absence")
                 },
-                51
+                /*observed_at_ms*/ 51
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -94,7 +94,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     ));
     assert_eq!(
         reopened
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("still pending"),
         vec![pending.clone()]
@@ -107,7 +107,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     ));
     assert!(matches!(
         driver
-            .lookup(&reopened, &pending, &owner, 60)
+            .lookup(&reopened, &pending, &owner, /*observed_at_ms*/ 60)
             .await
             .expect("completed lookup"),
         AuthorizedProviderEffectLookup::Observed(AuthorizedEffectProviderReceipt {
@@ -117,7 +117,7 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     ));
     assert!(
         reopened
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("settled")
             .is_empty()
@@ -164,7 +164,7 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
                     &signed,
                     &expected,
                     "initial-dispatch",
-                    30,
+                    /*now_ms*/ 30,
                 )
                 .await
                 .expect("typed dispatch");
@@ -181,19 +181,19 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
                     &signed,
                     &expected,
                     "initial-dispatch",
-                    30,
+                    /*now_ms*/ 30,
                 )
                 .await
                 .expect("opaque legacy dispatch");
         }
         let pending = store
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("pending")
             .remove(0);
         assert_eq!(pending.provider_dispatch_status, initial);
         let result = driver
-            .lookup(&store, &pending, &owner, 40)
+            .lookup(&store, &pending, &owner, /*observed_at_ms*/ 40)
             .await
             .expect("lookup");
         if initial == Some(AuthorizedProviderDispatchStatus::Unknown) {
@@ -206,7 +206,7 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
             ));
             assert!(
                 store
-                    .pending_authorized_taskflow_effects(8)
+                    .pending_authorized_taskflow_effects(/*limit*/ 8)
                     .await
                     .expect("settled")
                     .is_empty()
@@ -215,7 +215,7 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
             assert_eq!(result, AuthorizedProviderEffectLookup::Unresolved);
             assert_eq!(
                 store
-                    .pending_authorized_taskflow_effects(8)
+                    .pending_authorized_taskflow_effects(/*limit*/ 8)
                     .await
                     .expect("still pending"),
                 vec![pending]
@@ -233,7 +233,7 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
                             outcome: AuthorizedEffectOutcome::Failed,
                             receipt_digest: Sha256Digest::for_bytes(b"execution-failed")
                         }),
-                        50
+                        /*observed_at_ms*/ 50
                     )
                     .await
                     .expect("execution failure"),
@@ -266,7 +266,7 @@ async fn existing_step_command_ids_reject_before_contact_and_preserve_grant() {
                     &signed,
                     &expected,
                     command_id,
-                    30
+                    /*now_ms*/ 30
                 )
                 .await,
             Err(AuthorizedEffectError::TaskFlow(
@@ -288,7 +288,7 @@ async fn existing_step_command_ids_reject_before_contact_and_preserve_grant() {
                     &signed,
                     &expected,
                     command_id,
-                    30
+                    /*now_ms*/ 30
                 )
                 .await,
             Err(AuthorizedEffectError::TaskFlow(
@@ -314,7 +314,7 @@ async fn existing_step_command_ids_reject_before_contact_and_preserve_grant() {
             &signed,
             &expected,
             "fresh-effect-record",
-            31,
+            /*now_ms*/ 31,
         )
         .await
         .expect("rejected command must preserve grant for valid dispatch");
@@ -337,7 +337,7 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
             &signed,
             &expected,
             "terminal-step-dispatch",
-            30,
+            /*now_ms*/ 30,
         )
         .await
         .expect("dispatch");
@@ -353,7 +353,7 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
             "independent-step-terminal",
             &terminal,
             TaskFlowReconcileOutcome::Succeeded,
-            31,
+            /*now_ms*/ 31,
         )
         .await
         .expect("settle step first");
@@ -375,7 +375,7 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
                         outcome,
                         receipt_digest,
                     }),
-                    32
+                    /*observed_at_ms*/ 32
                 )
                 .await,
             Err(AuthorizedEffectError::TaskFlow(
@@ -384,7 +384,7 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
         ));
         assert_eq!(
             store
-                .pending_authorized_taskflow_effects(1)
+                .pending_authorized_taskflow_effects(/*limit*/ 1)
                 .await
                 .expect("pending")
                 .len(),
@@ -401,7 +401,7 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
                 outcome: AuthorizedEffectOutcome::Succeeded,
                 receipt_digest: terminal,
             }),
-            33,
+            /*observed_at_ms*/ 33,
         )
         .await
         .expect("matching evidence remains recoverable");
@@ -432,12 +432,12 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
             &signed,
             &expected,
             "pinned-dispatch",
-            30,
+            /*now_ms*/ 30,
         )
         .await
         .expect("pinned dispatch");
     let pending = store
-        .pending_authorized_taskflow_effects(8)
+        .pending_authorized_taskflow_effects(/*limit*/ 8)
         .await
         .expect("pending")
         .remove(0);
@@ -454,7 +454,7 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
         ProviderEffectTaskFlowDriver::new(effect.destination_id.clone(), adapter).expect("bridge");
     assert_eq!(
         bridge
-            .lookup(&store, &pending, &owner, 40)
+            .lookup(&store, &pending, &owner, /*observed_at_ms*/ 40)
             .await
             .expect("foreign contract remains unresolved"),
         AuthorizedProviderEffectLookup::Unresolved
@@ -472,7 +472,7 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
     forged.provider_contract_binding = None;
     assert_eq!(
         bridge
-            .lookup(&store, &forged, &owner, 41)
+            .lookup(&store, &forged, &owner, /*observed_at_ms*/ 41)
             .await
             .expect("forged pin remains unresolved"),
         AuthorizedProviderEffectLookup::Unresolved
@@ -487,7 +487,7 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
     );
     assert_eq!(
         store
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("still pending"),
         vec![pending]

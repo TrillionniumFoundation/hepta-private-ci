@@ -772,14 +772,14 @@ async fn async_provider_unknown_and_lookup_not_found_remain_quarantined() {
     assert_eq!(pending.len(), 1);
     assert_eq!(
         driver
-            .lookup(&store, &pending[0], &owner, 40)
+            .lookup(&store, &pending[0], &owner, /*observed_at_ms*/ 40)
             .await
             .expect("lookup"),
         AuthorizedProviderEffectLookup::Unresolved
     );
     assert_eq!(
         store
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("still pending"),
         pending
@@ -808,7 +808,7 @@ async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
             &signed,
             &expected,
             "identity-dispatch",
-            30,
+            /*now_ms*/ 30,
         )
         .await
         .expect("dispatch");
@@ -818,14 +818,14 @@ async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
         .await
         .expect("reopen");
     let pending = reopened
-        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 1)
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, /*attempt*/ 1)
         .await
         .expect("attempt")
         .expect("durable attempt");
     assert_eq!(pending.owner_agent_id.as_str(), AGENT_ID);
     assert_eq!(pending.provider_key_version, 2);
     driver
-        .lookup(&reopened, &pending, &owner, 40)
+        .lookup(&reopened, &pending, &owner, /*observed_at_ms*/ 40)
         .await
         .expect("lookup");
     assert_eq!(
@@ -843,14 +843,14 @@ async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
     ));
     assert_eq!(
         driver
-            .lookup(&reopened, &substituted, &owner, 40)
+            .lookup(&reopened, &substituted, &owner, /*observed_at_ms*/ 40)
             .await
             .expect("reject substituted snapshot"),
         AuthorizedProviderEffectLookup::Unresolved
     );
     assert_eq!(
         reopened
-            .pending_authorized_taskflow_effects(8)
+            .pending_authorized_taskflow_effects(/*limit*/ 8)
             .await
             .expect("still pending"),
         vec![pending]
@@ -874,7 +874,7 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
                 &signed,
                 &expected,
                 "invalid\ncommand",
-                30
+                /*now_ms*/ 30
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -892,7 +892,7 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
                 &signed,
                 &expected,
                 "lease-dispatch",
-                1_020
+                /*now_ms*/ 1_020
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -919,7 +919,7 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
                 &signed,
                 &expected,
                 "lease-dispatch",
-                1_020
+                /*now_ms*/ 1_020
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -935,7 +935,7 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
     );
     assert!(
         store
-            .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 1)
+            .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, /*attempt*/ 1)
             .await
             .expect("attempt read")
             .is_none()
@@ -967,7 +967,7 @@ async fn provider_contract_binding_is_durable_before_dispatch_and_survives_reope
             &signed,
             &expected,
             "provider-contract-dispatch",
-            30,
+            /*now_ms*/ 30,
         )
         .await
         .expect("dispatch");
@@ -1000,7 +1000,7 @@ async fn stale_recovery_fence_cannot_append_terminal_provider_evidence() {
             &signed,
             &expected,
             "recovery-dispatch",
-            30,
+            /*now_ms*/ 30,
         )
         .await
         .expect("dispatch");
@@ -1018,7 +1018,7 @@ async fn stale_recovery_fence_cannot_append_terminal_provider_evidence() {
                 effect.attempt,
                 &stale,
                 recovery,
-                31
+                /*observed_at_ms*/ 31
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -1031,7 +1031,7 @@ async fn stale_recovery_fence_cannot_append_terminal_provider_evidence() {
     });
     assert!(
         matches!(store.recover_authorized_taskflow_effect(&effect.run_id, &effect.step_id,
-        effect.attempt, &owner, terminal, 32).await.expect("current owner can still recover"),
+        effect.attempt, &owner, terminal, /*observed_at_ms*/ 32).await.expect("current owner can still recover"),
         AuthorizedEffectRecoveryResult::Observed(receipt)
             if receipt.final_outcome == Some(TaskFlowReconcileOutcome::Failed))
     );
@@ -1550,3 +1550,6 @@ mod provider_status_tests;
 
 #[path = "authorized_effect/effect_admission_tests.rs"]
 mod effect_admission_tests;
+
+#[path = "authorized_effect/effect_recovery_tests.rs"]
+mod effect_recovery_tests;
