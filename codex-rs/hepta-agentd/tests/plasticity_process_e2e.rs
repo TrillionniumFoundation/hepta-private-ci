@@ -1,6 +1,8 @@
 #![cfg(unix)]
 
 mod support;
+#[path = "../src/plasticity_learning_fixture.rs"]
+mod learning_fixture;
 
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -16,9 +18,7 @@ use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::EpisodeDecision;
-use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
@@ -111,10 +111,11 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
 
     let ledger_path = root.join("learning-ledger");
     let ledger_binding = digest("plasticity-process-ledger-binding");
-    let mut ledger = DurableLedger::create(new_rw(&ledger_path), ledger_binding, 32)?;
-    ledger.append_qualification(
-        Digest32::ZERO,
-        LedgerEvent::Decision(EpisodeDecision {
+    let ledger = learning_fixture::seed_authenticated_decision(
+        &ledger_path,
+        ledger_binding,
+        /*maximum_records*/ 32,
+        EpisodeDecision {
             record_id: id("decision:plasticity-process"),
             episode_id: id("episode:plasticity-process"),
             objective_digest,
@@ -124,8 +125,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
             completeness: CandidateSetCompleteness::Complete,
             support_digest: digest("plasticity-process-decision-support"),
-        }),
-    )?;
+        },
+    );
     let ledger_snapshot = ledger.snapshot()?;
     let ledger_head = ledger_snapshot.head_digest;
     let ledger_records = u64::try_from(ledger_snapshot.records().len())?;

@@ -3,4 +3,7 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-infer-worker-host",
     crate_name = "codex_hepta_infer_worker_host",
+    unit_test_runfile_env = {
+        "//codex-rs/cli:codex": "CARGO_BIN_EXE_codex",
+    },
 )
