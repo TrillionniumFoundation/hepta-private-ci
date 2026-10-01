@@ -269,6 +269,58 @@ pub(super) struct SigningFixture {
     keys: [SigningKey; 3],
 }
 impl SigningFixture {
+    pub(super) fn with_selector(
+        mut self,
+        shared_controller: bool,
+        revoked_at: Option<u64>,
+    ) -> (Self, SigningKey, AuthenticatedPrincipalV1) {
+        let key = SigningKey::from_bytes(&[75; 32]);
+        let principal = AuthenticatedPrincipalV1 {
+            principal_id: id("fixture-selector"),
+            credential_chain_digest: digest("fixture-selector-credential"),
+            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+            scope_digest: digest("paired-objective-scope"),
+            authority_epoch: 1,
+            authenticated_at: 1,
+            expires_at: 1_000,
+        };
+        let mut signers: Vec<_> = (0..3)
+            .map(|index| TrustedLearningSignerV1 {
+                principal: self.principals[index].clone(),
+                controller_id: id(&format!("fixture-controller-{index}")),
+                verifying_key: self.keys[index].verifying_key().to_bytes(),
+                roles: vec![match index {
+                    0 => LearningEvidenceRoleV1::Generator,
+                    1 => LearningEvidenceRoleV1::Observer,
+                    _ => LearningEvidenceRoleV1::Evaluator,
+                }],
+                revoked_at: None,
+            })
+            .collect();
+        signers.push(TrustedLearningSignerV1 {
+            principal: principal.clone(),
+            controller_id: id(if shared_controller {
+                "fixture-controller-2"
+            } else {
+                "fixture-selector-controller"
+            }),
+            verifying_key: key.verifying_key().to_bytes(),
+            roles: vec![LearningEvidenceRoleV1::Selector],
+            revoked_at,
+        });
+        self.trust = Self::activate(
+            LearningEvidenceTrustV1 {
+                scope_digest: principal.scope_digest,
+                objective_digest: digest("paired-objective"),
+                authority_epoch: 1,
+                signers,
+            },
+            800,
+        );
+        self.verifier = self.trust.verifier().clone();
+        (self, key, principal)
+    }
+
     pub(super) fn new(shared_controller: bool) -> Self {
         let keys = [
             SigningKey::from_bytes(&[71; 32]),

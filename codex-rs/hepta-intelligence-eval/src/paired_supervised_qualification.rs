@@ -227,7 +227,7 @@ fn roles(execution: &ProductPairedEvaluationReceiptV1) -> Vec<MetricRoleContract
         .collect()
 }
 
-fn paired_bundle(
+pub(crate) fn paired_bundle(
     execution: &ProductPairedEvaluationReceiptV1,
     context: &ProductQualificationContextV1,
 ) -> Result<IndependentEvaluationBundleV1, PairedSupervisedErrorV1> {
