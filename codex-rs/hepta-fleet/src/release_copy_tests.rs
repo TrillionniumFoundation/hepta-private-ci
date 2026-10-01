@@ -21,6 +21,19 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
         Vec::new(),
     )?;
     let matrixd = installed.matrixd.as_ref().ok_or("missing matrixd")?;
+    let release_root = installed
+        .program
+        .parent()
+        .and_then(Path::parent)
+        .ok_or("release root")?;
+    for path in [release_root.to_path_buf(), release_root.join("bin")] {
+        validate_physical_directory(&path, /*immutable*/ true)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            assert_eq!(std::fs::metadata(path)?.permissions().mode() & 0o777, 0o555);
+        }
+    }
     for path in [&source, &installed.program, &matrixd.program] {
         assert_eq!(std::fs::read(path)?, content);
         validate_immutable_regular_file(path, /*executable*/ true)?;
@@ -32,13 +45,7 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
     ));
     assert_eq!(std::fs::read(&installed.program)?, content);
     // Windows read-only attributes also affect cleanup; restore only fixtures.
-    make_tree_removable(
-        installed
-            .program
-            .parent()
-            .and_then(Path::parent)
-            .ok_or("release root")?,
-    );
+    make_tree_removable(release_root);
     set_mode(&source, /*mode*/ 0o700)?;
     Ok(())
 }

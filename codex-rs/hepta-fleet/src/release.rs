@@ -257,6 +257,7 @@ impl FleetRegistry {
         ));
         std::fs::create_dir(&staging)?;
         let result = (|| {
+            set_mode(&staging, /*mode*/ 0o700)?;
             let bin_root = staging.join("bin");
             std::fs::create_dir(&bin_root)?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
@@ -293,12 +294,19 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
+            // Darwin rejects renaming a write-disabled directory even within
+            // one parent. The renamed root remains inadmissible until sealed:
+            // resolve_catalog_release rejects every writable release root.
             std::fs::rename(&staging, &final_root)?;
+            set_mode(&final_root, /*mode*/ 0o555)?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
         if let Err(error) = result {
+            // Never repair or delete a renamed catalog identity implicitly.
+            // An interrupted seal leaves an inadmissible writable orphan for
+            // administrator quarantine; an already sealed release is retained.
             make_tree_removable(&staging);
             let _ = std::fs::remove_dir_all(&staging);
             return Err(error);
@@ -1332,3 +1340,7 @@ mod tests {
 #[cfg(test)]
 #[path = "release_copy_tests.rs"]
 mod copy_tests;
+
+#[cfg(test)]
+#[path = "release_publish_tests.rs"]
+mod publish_tests;
