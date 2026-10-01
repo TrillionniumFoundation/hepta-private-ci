@@ -261,6 +261,9 @@ fn snapshot_parent_replacement_cannot_redirect_committed_bytes() {
         );
         let expected = match replacement_boundary {
             Boundary::ParentVerified => b"old committed snapshot",
+            // Darwin rechecks private permissions on the pinned root before
+            // publishing, so root replacement stops this write before commit.
+            Boundary::FileSynced if cfg!(target_os = "macos") => b"old committed snapshot",
             Boundary::FileSynced => b"new committed snapshot",
             Boundary::Opened
             | Boundary::Written

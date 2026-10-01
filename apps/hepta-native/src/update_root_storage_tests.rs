@@ -108,7 +108,13 @@ fn staged_destination_parent_replacement_never_publishes_to_either_directory() {
         std::fs::write(&source, b"signed candidate").unwrap();
         let destination = root.path().join("candidate.package");
         std::fs::write(&destination, b"old staging record").unwrap();
+        std::fs::set_permissions(&destination, std::fs::Permissions::from_mode(0o600)).unwrap();
+        assert_eq!(
+            destination.metadata().unwrap().permissions().mode() & 0o777,
+            0o600
+        );
         let original = temp.path().join("original");
+        let mut observed_cut = false;
         let result = copy_at_boundaries(
             &source,
             &destination,
@@ -117,6 +123,7 @@ fn staged_destination_parent_replacement_never_publishes_to_either_directory() {
             Some(&root),
             |boundary| {
                 if boundary == cut {
+                    observed_cut = true;
                     let _replacement = replace(&root, &original);
                     std::fs::write(&destination, b"replacement staging sentinel")?;
                 }
@@ -124,6 +131,7 @@ fn staged_destination_parent_replacement_never_publishes_to_either_directory() {
             },
         );
         assert!(result.is_err());
+        assert!(observed_cut, "requested replacement cut was not reached");
         assert_eq!(
             std::fs::read(original.join("candidate.package")).unwrap(),
             b"old staging record"
