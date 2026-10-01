@@ -59,6 +59,9 @@ mod payloads;
 #[path = "durable_relations.rs"]
 mod relations;
 
+#[path = "durable_input_validation.rs"]
+mod input_validation;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -85,14 +88,16 @@ impl DurablePromptRegistry {
         directory: &Path,
         maximum_records: usize,
     ) -> Result<Self, DurableRegistryError> {
-        let (mut store, stored) = Store::open(directory)?;
+        let empty_registry =
+            PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?;
+        let (mut store, stored) = Store::open(directory, maximum_records)?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
             Some(StoredAny::V4(state, relations)) => {
                 restore_state(state, maximum_records, relations)?
             }
-            None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
+            None => empty_registry,
         };
         if store.payloads.is_initialized() {
             store.payloads.discard_unselected_tail(&store.root)?;
@@ -221,6 +226,10 @@ impl DurablePromptRegistry {
         supersedes_realization_id: Option<StableId>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.ensure_available()?;
+        // Impossible payloads must not consume a nonce or trigger payload hashing.
+        if payload.is_empty() || payload.len() > crate::MAX_REALIZATION_PAYLOAD_BYTES {
+            return Err(DurableRegistryError::Core(Error::PayloadTooLarge));
+        }
         let factor = self
             .registry
             .factor(&binding.factor_id)
@@ -688,13 +697,16 @@ fn restore_state(
     maximum_records: usize,
     stored_relations: Vec<relations::StoredRelation>,
 ) -> Result<PromptRegistry, DurableRegistryError> {
-    if stored.schema != STORE_SCHEMA || stored.maximum_records == 0 || maximum_records == 0 {
-        return Err(DurableRegistryError::Corrupt);
-    }
-    let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
+    let revision = input_validation::metadata_bounds(&stored, maximum_records)?;
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
-    if stored.maximum_records != configured_maximum {
-        return Err(DurableRegistryError::ConfigurationMismatch);
+    if stored
+        .factors
+        .len()
+        .saturating_add(stored.realizations.len())
+        .saturating_add(stored_relations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
     }
     let mut factors = BTreeMap::new();
     for stored_factor in stored.factors {
@@ -798,6 +810,18 @@ fn migrate_v1(
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
     if stored.maximum_records != configured_maximum {
         return Err(DurableRegistryError::ConfigurationMismatch);
+    }
+    // Legacy images obey the same budget before decoding and synthetic events.
+    if stored
+        .factors
+        .len()
+        .saturating_add(stored.realizations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
+    }
+    if stored.bindings.len() > stored.realizations.len() {
+        return Err(DurableRegistryError::Corrupt);
     }
     let mut factors = BTreeMap::new();
     let migration_actor =
@@ -1277,7 +1301,10 @@ struct Store {
 }
 
 impl Store {
-    fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
+    fn open(
+        directory: &Path,
+        maximum_records: usize,
+    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
         let root = prepare_directory(directory)?;
         let initialized = entry_exists(&root, "registry.lock")?;
         let lock = open_private(&root, "registry.lock", Access::Create)?;
@@ -1323,7 +1350,8 @@ impl Store {
             3 => {
                 let manifest =
                     serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
-                let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
+                let (payloads, state) =
+                    payloads::PayloadState::hydrate(&store.root, manifest, maximum_records)?;
                 store.payloads = payloads;
                 StoredAny::V2(state)
             }
@@ -1342,6 +1370,7 @@ impl Store {
                         state: manifest.state,
                         payload_references: manifest.payload_references,
                     },
+                    maximum_records,
                 )?;
                 store.payloads = payloads;
                 StoredAny::V4(state, manifest.relations)
@@ -2872,3 +2901,7 @@ mod payload_tests;
 #[cfg(all(test, unix))]
 #[path = "durable_relations_tests.rs"]
 mod relation_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_input_bounds_tests.rs"]
+mod input_bounds_tests;
