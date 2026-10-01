@@ -4,8 +4,9 @@
 
 Base: `997e7beef8151160065df36b024bc8da5c989e93` on repository `main`.
 The reviewed source is `codex-rs/hepta-bellman-operator`, with explicit
-cross-owner integration scope limited to Agentd cognitive ranking, the shared
-Replay terminal adapter and their regression fixtures. No durable writer or selection authority is
+cross-owner integration scope limited to Agentd cognitive ranking and control
+publication, the existing learning-ledger publication contract, the shared Replay
+terminal adapter and their regression fixtures. No durable writer or selection authority is
 introduced. The candidate branch and Git commits identify the delivered revision;
 this report does not attempt a self-referential current-commit hash.
 
@@ -53,6 +54,13 @@ work, finite-design geometry and already existing explicit consumers.
 | Duplicate issuance interference | Two attempts could share a live receipt; failure of one retracted the other successful attempt | A live receipt cannot be issued a second time, and rejection leaves the original record intact |
 | CURRENT drift during deferred publication | Moving delivery append beyond the earlier CURRENT check left a new unchecked publication window | Real owner/issuer/ranker/retrieval revalidation surrounds deferred ledger I/O |
 | Claimed index absent from consumer | The guide described indexed owner admission, but two candidate passes still scanned every admitted record | Both passes share one borrowed record-ID index and retain the original live/revision/hash/scope checks |
+| Empty model application | Empty candidate batches were labelled learned-policy applied even for unseen queries | Empty batches abstain after CURRENT verification; metadata no longer attributes a nonexistent ranking |
+| Late admission cost | Invalid native grid/sample sizes reached receipt verification; impossible loaded sample/sensor/action totals were rejected only after full collection | Shared scalar bounds precede dataset verification; single-pass loaded validation rejects limits immediately |
+| Protocol field drift | Deleting rollback or changing required/type semantics could pass generic schema checks | Generic design-field declarations enforce all 14 fields through algorithm and global verifiers, with mutation regressions |
+| False late exposure | A late lifecycle/CURRENT/deadline/transport failure could leave a durable true exposure assertion | The production transport writes intent before bytes and confirms only a complete host write; legacy assertions remain legacy |
+| Reused client correlation ID | Independent clients restart request IDs, causing durable identity conflicts | V2 identity binds the complete canonical intent, including causal assignment and exact frame, in a new domain |
+| Wrong transport frame | A private pending handle could be paired with another frame by an internal caller | Full digest and length are checked before the first write |
+| Detached append queue | Connection timeout released its permit while non-cancellable blocking appends could accumulate | A separate 32-slot reservation follows the actual worker and pending confirmation until completion/drop |
 
 The tests cover equal-output/different-input digest changes, canonical permutation,
 integer extrema and half ties, malformed mutable artifacts, forged but correctly
@@ -71,7 +79,7 @@ uses current main and does not import the old branch wholesale.
 | Development documentation | Detailed guides, current algorithms/limits/trust tiers and operation/caller mappings; all four Bellman design protocols are registered; design targets remain explicit |
 | Native offline baseline | Target arithmetic, sensor design, complete tabular fitting, action-conditioned world model, signed qualification, pinned persistence and owner-derived terminal profile are implemented |
 | Explicit integration | Cognitive read consumer and shared replay terminal consumer with signed-owner training exist; neither is a default autonomous learning loop |
-| Delivery evidence | Early issuance/CURRENT refusal appends no exposure fact; late rejection after append can still misrecord exposure and requires a versioned confirmation protocol |
+| Delivery evidence | Owner-native intent and linked host full-write confirmation use the existing witnessed writer; missing confirmation is Unknown; peer/model attachment and stronger consumer ACK remain separate evidence |
 | Canonical wire integration | Native reference records do not implement the full canonical certificate/manifest JSON schema; adapter and conformance coverage remain repository work |
 | Default composition | Freeze → train → independent evaluation → selection → new-process load remains repository integration work through existing owners |
 | Extended operator profile | Model-backed simulation/interpolation, continuous-domain coverage and optional neural/tensor training require separate implementations and qualification |
@@ -103,17 +111,19 @@ local read rejection and never evicts a still-usable receipt. A new process has
 no previous issuance records and requires a fresh read. Duplicate live issuance
 rejects without changing the first record. This integrity check is
 host-owned ephemeral metadata, not a durable model registry or new authority.
-Learning delivery is committed only after successful issuance. A subsequent
-owner, deadline, lifecycle or transport failure can still prevent use after the
-append. The existing ledger contract says `context_exposed` proves a published
-response; recording it before possible late rejection can therefore assert a
-false fact. Calling it an intent does not change that contract. This remains an
-integration defect requiring a separately designed staged event/consumer
-confirmation protocol. Neither an append nor this audit proves actual exposure.
+Production learning publication now uses owner-native intent and host-write
+confirmation. Preparation/issuance alone writes neither event. After bounded
+serialization, intent and its independent witness precede the first success-frame
+byte. Actual owner/CURRENT/issuer/lifecycle checks run after the append, and only
+complete `write_all` permits confirmation. Partial writes and late pre-write
+rejection leave Unknown. Confirmation failures close the connection and disable
+subsequent learning-required publication pending safe writer recovery. A private
+32-slot reservation bounds blocking work even after connection timeout. Legacy
+exposure assertions retain their original meaning and are never upgraded.
 
 Canonical artifact registration defines the full 14-field design contract, not
 merely the narrower tabular native payload. Registration verifies field shape,
-bounds and required protocol coverage; it does not implement the JSON adapter,
+bounds, all 14 declared design-field semantics and required protocol coverage; it does not implement the JSON adapter,
 execute every numeric invariant or establish production/scientific acceptance.
 
 Independent CURRENT providers authenticate their own call-time observations.
@@ -122,33 +132,39 @@ and after deferred I/O strengthens the existing interface; it cannot promise
 that every owner remains unchanged until subsequent use. A stronger guarantee
 requires an explicit common epoch/lease protocol, not an unbounded retry loop.
 
-### Delivery protocol gate before production learning
+### Delivery protocol and remaining consumer evidence
 
-Do not treat existing exposure rows as confirmed publication evidence. With the
-current single-stage durable-before-response ordering, a concurrent transition
-to Draining after the append can fail the host's final fence and return only an
-error while the ledger retains an active `context_exposed=true` row. Expiry,
-owner withdrawal or transport failure can produce the same mismatch. Private
-issuance retraction does not retract a durable fact, and changing the same
-record ID from false to true later is rejected as an identity conflict.
+The staged native protocol is specified in
+[`RETRIEVAL_PUBLICATION.md`](../hepta-learning-ledger/RETRIEVAL_PUBLICATION.md).
+One intent retains the full causal assignment and planned subset, without an
+exposure flag; a separate event links the exact intent ID/event digest and
+complete response-frame digest/length. Complete-content identity handles
+client-local request-ID reuse and query/policy changes producing the same frame.
+Exact retries are idempotent and do not establish physical write counts.
 
-Closing this gate needs a versioned intent plus confirmed-delivery event through
-the existing LedgerWriter, linked by owner/body/request and exact response
-digest, with destination deduplication, crash recovery and reconciliation.
-Codec compatibility and old single-stage rows require explicit migration;
-only confirmed records may support delivered-subset efficacy claims. An
-owner-side successful socket write proves IPC publication, while actual model
-attachment still requires the existing inference/native-started evidence.
-Moving the existing append after the socket write would remove the false
-publication assertion but introduce an unrecorded-exposure failure/crash window
-and change the current fail-closed durability policy. This audit preserves that
-policy and reports the unresolved protocol defect instead of silently changing
-the ledger contract. No current direct learner of `context_exposed` was found;
-that does not make the retained false fact acceptable for future learning.
+The typed projection exposes LegacyOwnerAsserted, Unknown or
+HostTransportWriteCompleted, with separate current-lineage and independent
+witness eligibility. A withdrawal cannot erase an already observed historical
+write. Generic active source membership or a dataset freeze does not prove
+publication. Existing inference/native-started evidence remains necessary for
+actual turn/start attachment; neither socket completion nor attachment proves
+model token use or causal policy improvement.
+
+A send-to-confirm crash can still leave Unknown even if the peer received bytes.
+A blocking confirmation started after a full write may finish after cancellation;
+canonical history determines the resulting state. Single-frame IPC cannot make
+consumer visibility and fsync atomic. A stronger consumer acknowledgement/gate,
+target-host failure qualification and independent learning acceptance remain
+separate requirements. Existing tag-9 exposure rows cannot satisfy the new
+transport-confirmation contract.
 
 ## Compatibility and rollback
 
-No persisted payload layout changes. Independently admitted predecessor tabular
+Tabular payload layout is unchanged. Retrieval journals add native event tags
+10/11; tags 0..9, framing and original digest preimages retain their meaning.
+New readers replay mixed journals, while older readers reject new tags. Rollback
+must use readers supporting the complete journal and may not discard new records
+or reinterpret old assertions. Independently admitted predecessor tabular
 payloads remain structurally loadable under current lineage and revocation checks.
 New candidates must be refitted and independently repinned: half-LSB targets,
 conservative geometry and expanded reference/learner/world digest preimages can
@@ -209,6 +225,72 @@ candidate identities. The exact OOD comparison restores a valid boundary value.
   default debug profile and a serialized zero-debug retry. Both failed from
   shared disk exhaustion in dependencies, before completing the package.
   This is a resource-blocked package check, not a successful Agentd result.
+
+### Fourth review: current execution and CI attribution
+
+- Direct original-source library manifests executed **184 passed**: all **51
+  operator** and **133 Ledger** library regressions. One existing opt-in
+  target-host signed growth measurement was skipped. The minimal manifests use
+  the real library entrypoints and transitive crates; they omit package examples
+  and do not establish a full-workspace result. The new protocol's **15 cases**
+  cover core/codec/checkpoint, durable recovery, segmented rotation and witnessed
+  product admission. An initial test compilation exposed three ambiguous macro
+  imports; explicit `pretty_assertions::assert_eq` imports fixed them before the
+  successful run. No source behavior failure was suppressed.
+- The native-source consumer manifest executed **38 passed, 0 skipped**,
+  including seven new transport/worker-budget regressions and real SQLite
+  ranking. Ranker and learning-sink production files were copied byte-for-byte;
+  context, issuer and delivery modules were direct native source paths. The
+  ranker test prefix was bytes `0..17510`, SHA-256
+  `6deda5e77dac297bb1ca155dfe8f8ae67f89162f6a2576555156465f48e27ac7`.
+  Only bytes `86..170` of the sink test registration were omitted: the full
+  AgentdState/control socket registration, not a rewritten test implementation.
+  The new seven-case helper source SHA-256 was
+  `49e8a804c7e2d8b03d2692d65cc53bb13220b13f05815169516b95520a58d44f`.
+  These hashes identify the executed pre-format source. Complete ranges and
+  hashes are retained in the local `PROVENANCE.json`. The initial build lacked
+  `pkg-config`; specifying the already installed OpenSSL headers and library
+  directories allowed the real dependencies to compile. This manifest does not
+  compile the complete Agentd package or execute its real socket case.
+- A final independent review found legal/selected bridge lengths were checked
+  only after native observation validation. Both bounds now reject before its
+  scans/sets. The additional named native Ledger regression **1 passed** in a
+  new validation cycle; its other 134 cases were outside that filter. The
+  protocol now has **16 cases**. Existing suites were not repeated for this
+  change; final package fix/format follows this last behavior check.
+- Bellman/schema plus existing algorithm/workflow/module/Lane-E Python suites:
+  **32 passed**. Workflow/execution-record tests: **44 passed**. The first root
+  Python invocation used an incorrect workflow test-module name; the corrected
+  six-case module passed. Development documentation and algorithm verifiers
+  passed before final documentation refresh. These are metadata/behavior checks,
+  not wire-conformance, production or scientific acceptance receipts.
+- Remote architecture source-head job [110409107021](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36873960166/job/110409107021)
+  executed commit `b693ef879854701c0c12cadaeae4db5c7c56a89c` and did compile the
+  actual Agentd package: the named generation/reload/rollback regression **1
+  passed**. Ledger **118 passed**, evaluation closure **17 passed**, self-evolution
+  selection **3 passed** and independent selector admission **1 passed** also
+  executed. This supersedes the earlier absence of full Agentd compilation
+  evidence for that old head; it does not execute this review's new publication
+  code. The workflow failed later because the independent `runtime_executable`
+  filter observed zero passing tests despite command exit zero. That gate was
+  preserved. Same-tree synthetic-merge reuse is not a second executed native run.
+- The automatic learning qualification step now adds separate transport-fault,
+  named real-socket and Ledger publication receipts with minimum **7 / 1 / 16**
+  passing cases, while preserving existing commands and gates. Configuration and
+  test source alone do not establish execution; the new delivered head must
+  complete these remote package and socket checks.
+- Native `just fix -p codex-hepta-bellman-operator -p
+  codex-hepta-learning-ledger` and the real-source consumer manifest fix passed.
+  The complete original `codex-hepta-agentd` package's `just fix --tests` also
+  passed, including compilation of the new real socket case. The final three-
+  package fix after the additional bound regression passed. Existing package
+  warnings remain; this is not a strict warning-free result or socket execution.
+  The two new socket test guard warnings were addressed with lexical scopes,
+  without changing assertions. Clippy's equivalent `inspect_err` rewrite was
+  retained. Final Agentd fix, `just fmt` and `git diff --check` passed; the two
+  new guard warnings are gone. No functional tests were repeated after final
+  fix/format. The final independent scoped review found no further concrete
+  defect; the external integration and acceptance limits above remain open.
 
 ### Previously executed operator and owner qualification
 

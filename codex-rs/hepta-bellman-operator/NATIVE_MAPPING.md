@@ -251,6 +251,9 @@ ordered context response to private process/body issuance. Altering ordering and
 recomputing a public digest is insufficient. Full JSON stays within four items
 and 8 KiB, including the plan and escaped text. Owner currentness is rechecked
 after provider awaits. These host checks provide bounded integrity, not selection
-authority or evidence of model efficacy. Deferred learning delivery appends after issuance. Its existing exposure fact
-can still be false after a later rejection or transport failure; a staged
-confirmation protocol is required to close that separate integration gap.
+authority or evidence of model efficacy. The production control boundary commits
+an exact-frame publication intent before writing and records host full-write
+confirmation afterwards through the existing LedgerWriter. Intent alone remains
+unknown; old exposure assertions do not upgrade. The [native protocol](../hepta-learning-ledger/RETRIEVAL_PUBLICATION.md)
+defines complete intent identity, retries, cancellation and recovery. A full
+socket write does not establish model attachment or policy efficacy.

@@ -44,6 +44,15 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification are source qualification requirements; their configuration is not an execution receipt. Executed scoped results and remaining checks for the reviewed candidate are recorded in the [audit record](../../../codex-rs/hepta-bellman-operator/AUDIT.md). This status does not activate `learning.operator`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+The native tabular path checks sensor/action/sample bounds before signed dataset
+membership work and rejects cumulative limits while loading. An empty ranking
+batch abstains after current-registry validation. Shared metadata verification
+now checks all 14 declared Bellman artifact fields for type, required status and
+byte-bound drift. Retrieval publication evidence belongs to Agentd and Ledger,
+with exact-frame intent and host-write confirmation documented in the
+[native publication contract](../../../codex-rs/hepta-learning-ledger/RETRIEVAL_PUBLICATION.md);
+it does not prove model consumption or confer authority on this module.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
