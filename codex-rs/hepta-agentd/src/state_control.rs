@@ -643,7 +643,10 @@ impl AgentdState {
                     admission_open,
                     fenced,
                 )?;
-                let Some(store) = automation.as_ref() else {
+                let Some(store) = automation
+                    .as_ref()
+                    .or_else(|| self.automation_recovery_store())
+                else {
                     return self.response_with_payload(
                         request_id,
                         current_generation,

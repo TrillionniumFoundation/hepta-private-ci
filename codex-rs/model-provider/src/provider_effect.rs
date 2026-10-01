@@ -319,9 +319,22 @@ impl HttpProviderEffectAdapter {
         &self.config
     }
 
-    async fn body(response: codex_http_client::HttpResponse) -> Option<Vec<u8>> {
-        let bytes = response.bytes().await.ok()?;
-        (bytes.len() <= 65_536).then(|| bytes.to_vec())
+    async fn body(mut response: codex_http_client::HttpResponse) -> Option<Vec<u8>> {
+        const MAX_BODY_BYTES: usize = 65_536;
+        if response
+            .content_length()
+            .is_some_and(|length| length > MAX_BODY_BYTES as u64)
+        {
+            return None;
+        }
+        let mut bytes = Vec::new();
+        while let Some(chunk) = response.chunk().await.ok()? {
+            if chunk.len() > MAX_BODY_BYTES.saturating_sub(bytes.len()) {
+                return None;
+            }
+            bytes.extend_from_slice(&chunk);
+        }
+        Some(bytes)
     }
 
     async fn dispatch_http(
@@ -632,6 +645,9 @@ mod tests {
     use codex_hepta_contracts::Sha256Digest;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use pretty_assertions::assert_eq;
+    use tokio::io::AsyncReadExt;
+    use tokio::io::AsyncWriteExt;
     use wiremock::Mock;
     use wiremock::MockServer;
     use wiremock::ResponseTemplate;
@@ -704,6 +720,47 @@ mod tests {
         )
         .expect("key");
         ProviderEffectIntent::new(key, Sha256Digest::for_bytes(b"payload"))
+    }
+
+    #[tokio::test]
+    async fn oversized_chunked_ack_is_rejected_without_waiting_for_eof() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+            .await
+            .expect("listen");
+        let uri = format!("http://{}", listener.local_addr().expect("listen address"));
+        let (close, keep_open) = tokio::sync::oneshot::channel::<()>();
+        let server = tokio::spawn(async move {
+            let (mut stream, _) = listener.accept().await.expect("provider connection");
+            let mut request = [0; 4096];
+            assert!(stream.read(&mut request).await.expect("provider request") > 0);
+            stream
+                .write_all(b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n10001\r\n")
+                .await
+                .expect("chunked response headers");
+            stream
+                .write_all(&vec![b'x'; 65_537])
+                .await
+                .expect("oversized chunk");
+            stream.write_all(b"\r\n").await.expect("chunk end");
+            // No final chunk or EOF: the size bound must terminate the read.
+            keep_open.await.expect("close signal");
+        });
+        let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
+            &uri,
+            "oversized-ack-contract",
+            1,
+            13,
+        ))
+        .expect("fixture adapter");
+        let dispatch = tokio::time::timeout(
+            Duration::from_secs(1),
+            adapter.dispatch_with_payload(&intent(), b"payload"),
+        )
+        .await
+        .expect("oversized body must stop before provider deadline or EOF");
+        assert_eq!(dispatch, ProviderEffectDispatch::Unknown);
+        close.send(()).expect("close provider");
+        server.await.expect("provider server");
     }
 
     #[test]
