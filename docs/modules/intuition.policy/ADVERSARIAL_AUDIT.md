@@ -24,9 +24,11 @@
 | P1 | 准备阶段丢弃原始三方签名材料，提交使用锁前时间；等待 writer 后可能继续消费已过期或已撤销资格。 | 保留原始请求、profile、承诺及签名；`commit_v4` 在唯一 writer 锁内取得新鲜 owner 时间，复验信任、签名、角色分离、有效期、完整 pins 和实际决策后再写入。 |
 | P1 | 激活信任时检查分布有效期，后续使用可能继续消费过期分布或已到期的根撤销状态；评估路径也存在租约遗漏。 | 激活记录保留根签发分布租约和预定根撤销；ledger 使用及 Agentd 最终提交复验租约，评估使用边界同步复验。加入预定签名者撤销、分布到期及信任轮换回归。 |
 | P1 | canonical owner 计算沿历史政策入口，而认证提交使用产品 V4 profile，合法产品请求可能因语义不一致被拒绝。 | 产品组合向纯计算传入认证调用使用的同一不可变 profile；显式开发兼容路径保留既有语义，新增产品路由回归。 |
-| P1 | 政策证据在 writer 内复验，但 canonical 七 owner 快照、所选运行的评估信任租约与 RunStart 权限可能在 writer 等待期间改变；回调 I/O 还可能跨越资格有效期。 | 每种 disposition 在 writer 锁内、append 前复查签名快照与 RunStart；所选运行额外查评估租约；回调后重采时间并重验政策资格，final admission 再次复验。回调仅接收只读 clock 接口。新增 owner 代际、entitlement、回调期间资格过期及评估租约回归；仍不代替持久交接。 |
+| P1 | 政策证据在 writer 内复验，但 canonical 七 owner 快照、所选运行的评估信任租约与 RunStart 权限可能在 writer 等待期间改变；回调 I/O 还可能跨越资格或 RunStart 签名有效期。 | 每种 disposition 在 writer 锁内、append 前复查签名快照与 RunStart；所选运行额外查评估租约；selected evaluation 验证后以最后新鲜 callback 时间检查所有 disposition 的 RunStart 签名有效期；callback 后重采时间并重验政策资格，final admission 在验证工作后再次采时检查认证及 deadline。回调仅接收只读 clock 接口。新增 owner 代际、entitlement、回调期间资格过期及评估租约回归；仍不代替持久交接。 |
 | P1 | 原始 evaluation 三份签名材料在 Ready 生成后被消费丢弃，只复查较长的 root lease 可能放过较早的 proof expiry 或预定 signer revocation。 | selected preparation 保留原 session、三证明和 exact input/candidate/receipt；final-use 与 admission 重新 evaluate 全部证据，并绑定既有 context/snapshot/candidate/receipt。新增三份合法短签名与预定撤销用例，尚需新候选执行。 |
+| P1 | retained evaluator session 从独立 learning.eval 读取构造，较早的合法签名 manifest 可提供不属于请求快照的 signer key/key epoch。 | 构造 session 前以一份签名 manifest 验证请求七 owner 的全部 pins，再从同一不可变视图取 evaluator；新增 pre-worker typed stale-owner 与签名 B→A 替换后的实际 evaluation 拒绝回归，尚需新候选执行。 |
 | P1 | RunStart entitlement 和政策资格仍有效时，writer 等待可能跨越原请求或 canonical run 的 deadline。 | 每种 disposition 检查原 RunStart deadline，selected 额外查 canonical deadline；采用 checked 微秒向毫秒向上取整，沿已有 coordinator 的 InvalidDeadline 语义拒绝。新增实际签名输入的 deadline 等待 fixture，不宣称真实 daemon journal 验证。 |
+| P1 | canonical ingress 把冻结 body/spawn generation 与 Fleet 当前 lifecycle generation 相等校验；Starting→Running 递增后，合法生产 RunStart 全部被拒绝。 | body 只绑定 identity.spawn_generation；durable RunStart 由当前 Fleet lifecycle 和 launch/current objective fence 验证，并在 provider.build 前执行。保留后续 commit/admission 复验；真实 Running fixture 回归正在补齐，不声称 restart 或 typed-domain 全部闭合。 |
 | P2 | 纯内核允许 128 个真实候选，但产品学习记录还需一个 abstain 项，超过 ledger 的 128 项上限。 | Agentd 产品准备最多允许 127 个真实候选，提前返回稳定错误；内核仍允许 128，不截断完整集、不扩大 ledger 上限。覆盖 127 个候选加 abstain 的持久往返和 128 个产品候选的提前拒绝。 |
 | P2 | ingress 和 canonical runner 在 host 的 127 预检之前已复制候选/ID 或占用 worker。 | raw legal/intuition 两类数量在复制或 worker 使用前 O(1) 校验，product 127、compatibility 128，数量不一致拒绝；Busy fixture 仅证明边界可到 worker，不宣称产品请求已认证成功。 |
 | P2 | 多个候选承诺入口在数量校验之前分配并哈希候选内容。 | 在承诺入口共享执行 1..128 预检，保持已接受历史字节与 digest 不变。 |
@@ -40,7 +42,7 @@
 
 版本兼容边界仍须保留：V2 评分与分配承诺分别编码，但历史生成者 completeness V1 签名仍绑定含 utility、confidence、OOD 和 assignment probability 的 V1 候选 digest。本轮明确记录这种耦合，未改写已有签名字节；彻底分离需要新版本及生产者、消费者迁移。
 
-严格 lint 的联动修正保留公开服务的完整已确认回执、ledger 的 pending 尾部及现有 V1 参数合同；大错误/枚举与较多参数的例外只限这些有原因说明的边界。learning.plasticity 中尚未接线的 self-iteration 字段使用明确标注的保留例外，没有伪造调用链或改写其完成状态。无调用者的 private helper 和校验完成后冗余的字段按实际使用清理；这些修改仍须新候选严格 CI 验证。
+严格 lint 的联动修正保留公开服务的完整已确认回执、ledger 的 pending 尾部及现有 V1 参数合同；大错误/枚举与较多参数的例外只限这些有原因说明的边界。learning.plasticity 中尚未接线的 self-iteration 字段使用明确标注的保留例外，没有伪造调用链或改写其完成状态。无调用者的 private helper 和校验完成后冗余的字段按实际使用清理；automation 的大 private effect 使用 Box 并在 consumer 取回原值，公开 Product/AdmittedOutcome payload 保持兼容。已取得旧候选完整十五项 lint 明细并逐项映射修正；这些修改仍须新候选严格 CI 验证。
 
 ## 验证与证据限制
 
@@ -54,6 +56,8 @@
 | 完整 Agentd 本地执行遭 SIGKILL；磁盘 ENOSPC 后已释放空间 | 这些运行不能计为通过；清理空间不产生执行成功证据。 |
 | hosted 完整 Agentd suite 仍观察到独立失败，新增产品安全回归尚待运行 | 聚焦政策测试与完整产品 suite 是不同证据；不能把全部失败归因于已经修正的两个 boundary fixture。当前精确失败明细和结果属于 PR/run。 |
 | 当前严格 CI 与 source／synthetic-merge／independent 工件协议 | 仍待完整精确候选结果；旧提交结果、本地测试和工作流定义不能替代新候选资格。 |
+
+新增 Rust 源码回归包括 canonical final-use 四个测试函数／十五个攻击案例、两个签名 manifest coherence 测试、三个 bounded-read 测试、两个 candidate-bound 测试及两个 evaluation-owner-pin 测试；本报告不把其存在计为执行通过。
 
 分配下降是局部实测优化；性能 gate 的成功与失败均应保留。不得把独立 CI 执行改称独立语义评估接受，也不得把干净关闭后重开改称进程崩溃恢复。
 

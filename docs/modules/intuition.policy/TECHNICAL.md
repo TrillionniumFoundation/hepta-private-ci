@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `1706bdf37df7e87efcab2f308b0908657db60690f931fba54107d53341b64f86`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `a787e99f607e3cbb0197114f4e16a56328d036a44b45737e70304d436b7e7997`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,8 +13,8 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness, RunStart authority and source deadline after writer waits; selected runs reverify original evaluation proofs and canonical deadline; receipt remains in process and outward V1 is unchanged. |
-| `authority_read` | `source_present` | Owner files use bounded checked-handle reads; each full final-use fence authenticates one immutable signed manifest for all seven owners, without caching across boundaries or changing live-stage freshness. |
+| `admission_receipt` | `source_partial` | Canonical dispositions recheck seven owners, RunStart authority and deadlines after writer waits; selected runs retain original evaluation proofs; body/launch and Fleet lifecycle generations remain distinct; outward V1 is unchanged. |
+| `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
 | `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
@@ -52,11 +52,13 @@ This stable document is the implementation guide for `intuition.policy`. Normati
 
 **Current source boundary:** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, the canonical serving hook and in-process receipt binding exist in source. Final-use `commit_v4` retains the original signed qualification and samples the owner clock only after acquiring the sole learning-writer lock; it revalidates the root-signed trust lease, current trust generation, signatures, controller separation, lifetime and host pins before append. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish source, execution and production acceptance; no production acceptance or promotion is asserted here.
 
-The canonical Agentd composition also rechecks its frozen seven-owner snapshot and current RunStart authority for every disposition after the writer wait, before policy append. Selected runs additionally recheck their evaluation trust lease. The sink samples time again and revalidates policy qualification after the reject-only callback; callback I/O cannot reuse an earlier qualification time. Currentness is repeated before final run/context admission. These checks do not constitute a durable cross-owner transaction or restart journal.
+The canonical Agentd composition also rechecks its frozen seven-owner snapshot and current RunStart authority for every disposition after the writer wait, before policy append. Selected runs additionally recheck their evaluation trust lease. The sink samples time again and revalidates policy qualification after the reject-only callback; callback I/O cannot reuse an earlier qualification time. The callback checks RunStart signature expiry for every disposition at its last fresh sample, after selected evaluation verification. Currentness is repeated before final run/context admission, with authentication/source-deadline time sampled again after validation work. These checks do not constitute a durable cross-owner transaction or restart journal.
 
-Selected preparation retains the original signed evaluation session and exact input, candidate and receipt in `PreparedEvaluationUseV1`. Final use and final admission repeat full evaluation verification, including each signed proof's expiry and scheduled signer revocation, and bind it to the unchanged envelope's context, snapshot, candidate and receipt. A root distribution lease cannot extend a shorter proof's validity.
+Selected preparation retains the original signed evaluation session and exact input, candidate and receipt in `PreparedEvaluationUseV1`. Final use and final admission repeat full evaluation verification, including each signed proof's expiry and scheduled signer revocation, and bind it to the unchanged envelope's context, snapshot, candidate and receipt. A root distribution lease cannot extend a shorter proof's validity. Evaluator-session construction validates all seven current owner bindings against the immutable request snapshot, then obtains learning.eval from those same authenticated manifest bytes. Owner identity, generation, implementation, signer key/key epoch, authority epoch and revocation frontier cannot come from an independently current predecessor manifest.
 
 The same boundaries enforce the original RunStart deadline for every disposition and the canonical run deadline for selected results. The source deadline is converted from microseconds to milliseconds with checked ceiling arithmetic and uses the existing coordinator's elapsed-deadline rejection. Holding a valid entitlement or policy qualification does not extend the request's deadline.
+
+Canonical body generation identifies the process launch and must equal AgentdIdentity.spawn_generation. Durable RunStart generation identifies the current Fleet lifecycle: Starting → Running advances that generation. The daemon rechecks current RunStart authority and the launch/current objective fence before the trusted provider builds owner inputs; it does not equate the lifecycle counter with body/launch identity. Restart and complete typed-domain migration remain separate gaps.
 
 ## 1. Identity, mission and ownership
 
@@ -282,7 +284,10 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
 - `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`: signed host append, idempotent replay and durable reopen.
 - `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`: cross-profile prepared values, evidence expiry, clock rollback, writer-wait expiry, concurrent attempts and current-trust rotation fences before append.
-- `codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs`: changed signed owner generations or RunStart entitlement during writer wait, and expired evaluation distributions before prepared-product reuse.
+- `codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs`: four test functions with fifteen attack cases for writer-wait owner/RunStart/deadline drift, callback-time expiry, retained evaluation proofs and scheduled signer revocation.
+- `codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs` and `intelligence_authority_snapshot_tests.rs`: bounded file reads and two authenticated-manifest coherence/next-boundary tests.
+- `codex-rs/hepta-agentd/src/intelligence_evaluation_owner_pin_tests.rs`: two actual-consumer regressions for pre-worker stale-owner rejection and a signed manifest replacement that cannot launder an earlier evaluator key.
+- `codex-rs/hepta-agentd/src/intelligence_candidate_bound_tests.rs`: product/compatibility raw-count preflight before cloning or worker use.
 - `scripts/intuition_golden_vectors.py`: five independent Python digest encodings and 512 seeded owner-separation mutations over the deterministic fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.

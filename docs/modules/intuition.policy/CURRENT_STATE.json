@@ -47,7 +47,7 @@
     },
     {
       "id": "admission_receipt",
-      "summary": "All canonical dispositions recheck owner currentness, RunStart authority and source deadline after writer waits; selected runs reverify original evaluation proofs and canonical deadline; receipt remains in process and outward V1 is unchanged.",
+      "summary": "Canonical dispositions recheck seven owners, RunStart authority and deadlines after writer waits; selected runs retain original evaluation proofs; body/launch and Fleet lifecycle generations remain distinct; outward V1 is unchanged.",
       "state": "source_partial",
       "source": "codex-rs/hepta-agentd/src/state.rs",
       "symbol": "start_canonical_intelligence",
@@ -57,19 +57,20 @@
         "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
         "codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs"
       ],
-      "evidence": "Signed writer-wait owner/RunStart, callback-time, each retained evaluation proof expiry and scheduled signer-revocation regressions; real request, durable recovery and delivery evidence remain required."
+      "evidence": "Signed writer-wait owner/RunStart, post-I/O authentication/deadline, callback-time, retained evaluation proof expiry and signer-revocation regressions; real request, durable recovery and delivery evidence remain required."
     },
     {
       "id": "authority_read",
-      "summary": "Owner files use bounded checked-handle reads; each full final-use fence authenticates one immutable signed manifest for all seven owners, without caching across boundaries or changing live-stage freshness.",
+      "summary": "Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input.",
       "state": "source_present",
       "source": "codex-rs/hepta-agentd/src/intelligence_authority.rs",
       "symbol": "fn read_manifest",
       "tests": [
         "codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs",
-        "codex-rs/hepta-agentd/src/intelligence_authority_snapshot_tests.rs"
+        "codex-rs/hepta-agentd/src/intelligence_authority_snapshot_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_evaluation_owner_pin_tests.rs"
       ],
-      "evidence": "Canonical intelligence_product logs for bounded growth/read guards, signed-manifest switching and fresh next-boundary reads; target-host owner-file admission still requires execution artifacts."
+      "evidence": "Canonical intelligence_product logs for bounded growth, coherent signed-manifest fences and snapshot-pinned evaluator ownership; target-host owner-file admission still requires execution artifacts."
     },
     {
       "id": "startup_profile",
@@ -186,7 +187,7 @@
     {
       "name": "PreparedAgentdIntelligenceRunV1 / PreparedEvaluationUseV1",
       "layer": "Canonical selected-run preparation",
-      "status": "Original signed evaluation session, exact input, candidate and receipt retained for final-use revalidation; private in-process state, not durable recovery or outward transport."
+      "status": "Snapshot-pinned original signed evaluation session, exact input, candidate and receipt retained for final-use revalidation; private in-process state, not durable recovery or outward transport."
     },
     {
       "name": "CanonicalIntuitionAdmissionV2",

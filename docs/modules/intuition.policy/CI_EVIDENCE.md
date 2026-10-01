@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `1706bdf37df7e87efcab2f308b0908657db60690f931fba54107d53341b64f86`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `a787e99f607e3cbb0197114f4e16a56328d036a44b45737e70304d436b7e7997`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,8 +13,8 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness, RunStart authority and source deadline after writer waits; selected runs reverify original evaluation proofs and canonical deadline; receipt remains in process and outward V1 is unchanged. |
-| `authority_read` | `source_present` | Owner files use bounded checked-handle reads; each full final-use fence authenticates one immutable signed manifest for all seven owners, without caching across boundaries or changing live-stage freshness. |
+| `admission_receipt` | `source_partial` | Canonical dispositions recheck seven owners, RunStart authority and deadlines after writer waits; selected runs retain original evaluation proofs; body/launch and Fleet lifecycle generations remain distinct; outward V1 is unchanged. |
+| `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
 | `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
