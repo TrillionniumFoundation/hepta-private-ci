@@ -55,7 +55,7 @@ impl ReadView {
         let mut agents = BTreeMap::new();
         let mut ownership_ready = true;
         for (agent_id, record) in snapshot.agents {
-            let runtime = supervisor.snapshot(&agent_id);
+            let runtime = supervisor.metadata_snapshot(&agent_id);
             ownership_ready &= crate::recovery::process_ownership_ready(&record, runtime.as_ref())?;
             let status = status_from(epoch, &record, runtime)?;
             agents.insert(agent_id, status);

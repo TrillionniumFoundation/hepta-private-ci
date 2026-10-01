@@ -2351,3 +2351,6 @@ mod release_retry_tests;
 
 #[path = "matrix_budget_tests.rs"]
 mod matrix_budget_tests;
+
+#[path = "supervisor_snapshot_tests.rs"]
+mod snapshot_tests;
