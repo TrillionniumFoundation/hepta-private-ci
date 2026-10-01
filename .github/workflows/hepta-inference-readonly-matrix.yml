@@ -110,6 +110,7 @@ jobs:
           record 04-lane-b 0 python3 scripts/hepta-lane-b-truth.py verify
           record 05-maps 0 python3 scripts/hepta-implementation-maps.py verify
           record 06-metadata 0 cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1
+          record 06a-worker-helper-build 0 cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-exec --bin codex-exec
           record 07-tests 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-types
           record 08-crash 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --test process_crash_recovery -- --test-threads=1
           record 09-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-types --all-targets --all-features -- -D warnings

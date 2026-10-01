@@ -1,4 +1,11 @@
 impl DurableInferenceControl {
+    fn ensure_native_writer_available(&self) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        Ok(())
+    }
+
     /// The first admission pins the local slot limit for this journal. A
     /// duplicate binds every request field and never reserves a second slot.
     pub fn reserve_native(
@@ -53,6 +60,7 @@ impl DurableInferenceControl {
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         plan.assert_valid_at(now_unix_ms)
             .map_err(|_| Error::InvalidTime)?;
         let record = self
@@ -109,6 +117,7 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         self.ensure_native_dispatch_space()?;
         self.commit_native(
             request_id,
@@ -127,6 +136,7 @@ impl DurableInferenceControl {
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         plan.assert_valid_at(now_unix_ms)
             .map_err(|_| Error::InvalidTime)?;
         self.assert_native_plan_binding(request_id, plan, now_unix_ms)?;
@@ -145,6 +155,7 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        self.ensure_native_writer_available()?;
         if let Some(binding) = self
             .native
             .records
@@ -177,6 +188,7 @@ impl DurableInferenceControl {
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                owner: std::sync::Arc::downgrade(&self.native_owner),
             },
         ))
     }
@@ -189,12 +201,14 @@ impl DurableInferenceControl {
         plan: &VerifiedExecutionPlan,
         now_unix_ms: u64,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        self.ensure_native_writer_available()?;
         let record = self.dispatch_native_authorized(request_id, dispatch, plan, now_unix_ms)?;
         Ok((
             record.clone(),
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                owner: std::sync::Arc::downgrade(&self.native_owner),
             },
         ))
     }
@@ -207,6 +221,14 @@ impl DurableInferenceControl {
         token: NativePreEffectAbortToken,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
+        if !token
+            .owner
+            .upgrade()
+            .is_some_and(|owner| std::sync::Arc::ptr_eq(&owner, &self.native_owner))
+        {
+            return Err(Error::InvalidTransition);
+        }
         let record = self
             .native
             .records
@@ -235,6 +257,7 @@ impl DurableInferenceControl {
         request_id: &str,
         turn_id: String,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         self.commit_native(
             request_id,
             Event::Started {
@@ -252,6 +275,7 @@ impl DurableInferenceControl {
         request_id: &str,
         rejection: NativeDispatchRejection,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         self.commit_native(
             request_id,
             Event::RejectBeforeStart {
@@ -263,6 +287,7 @@ impl DurableInferenceControl {
 
     /// This records intent only: an interrupt acknowledgement never frees a slot.
     pub fn cancel_native(&mut self, request_id: &str) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         let record = self
             .native
             .records
@@ -284,6 +309,7 @@ impl DurableInferenceControl {
         request_id: &str,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         self.commit_native(
             request_id,
             Event::Stop {
@@ -301,6 +327,7 @@ impl DurableInferenceControl {
         token: NativePreEffectAbortToken,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         self.abort_native_before_effect(token, reason)
     }
 }

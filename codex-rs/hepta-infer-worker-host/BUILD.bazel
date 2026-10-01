@@ -1,6 +1,31 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("//:defs.bzl", "codex_rust_crate", "workspace_root_test")
+
+_FINAL_USE_TEST = "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
 
 codex_rust_crate(
     name = "hepta-infer-worker-host",
     crate_name = "codex_hepta_infer_worker_host",
+    unit_test_args = [
+        "--skip",
+        _FINAL_USE_TEST,
+    ],
+)
+
+workspace_root_test(
+    name = "hepta-infer-worker-host-cognitive-final-use-test",
+    timeout = "long",
+    args = [
+        _FINAL_USE_TEST,
+        "--exact",
+    ],
+    runfile_env = {
+        "//codex-rs/exec:codex-exec": "CARGO_BIN_EXE_codex-exec",
+    },
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "@platforms//os:macos": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    test_bin = ":hepta-infer-worker-host-unit-tests-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )

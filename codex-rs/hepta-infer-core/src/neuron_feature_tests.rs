@@ -105,3 +105,50 @@ fn non_success_status_cannot_smuggle_numerical_output() {
     ));
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
 }
+
+#[test]
+fn non_success_observations_preserve_exact_encoder_and_head_binding() {
+    let request = request();
+    for status in [
+        NeuronFeatureTerminalStatusV1::Failed,
+        NeuronFeatureTerminalStatusV1::Cancelled,
+        NeuronFeatureTerminalStatusV1::Indeterminate,
+    ] {
+        let mut observed = observation();
+        observed.status = status;
+        observed.drive_q24.clear();
+        observed.prediction_q24.clear();
+        let receipt = checked(build_neuron_feature_receipt_v1(
+            &request,
+            runtime(),
+            observed.clone(),
+        ));
+        checked(verify_neuron_feature_receipt_v1(&request, &receipt));
+        for drift in [Digest32::ZERO, Digest32::of_bytes(b"other-model")] {
+            let mut encoder_drift = observed.clone();
+            encoder_drift.encoder_digest = drift;
+            assert_eq!(
+                build_neuron_feature_receipt_v1(&request, runtime(), encoder_drift),
+                Err(NeuronFeatureContractError::OutputIdentityMismatch)
+            );
+            let mut head_drift = observed.clone();
+            head_drift.head_digest = drift;
+            assert_eq!(
+                build_neuron_feature_receipt_v1(&request, runtime(), head_drift),
+                Err(NeuronFeatureContractError::OutputIdentityMismatch)
+            );
+            let mut forged = receipt.clone();
+            forged.encoder_digest = drift;
+            assert_eq!(
+                verify_neuron_feature_receipt_v1(&request, &forged),
+                Err(NeuronFeatureContractError::OutputIdentityMismatch)
+            );
+            let mut forged = receipt.clone();
+            forged.head_digest = drift;
+            assert_eq!(
+                verify_neuron_feature_receipt_v1(&request, &forged),
+                Err(NeuronFeatureContractError::OutputIdentityMismatch)
+            );
+        }
+    }
+}

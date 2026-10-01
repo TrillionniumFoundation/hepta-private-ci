@@ -348,10 +348,12 @@
   "repositoryControlledGaps": [
     "obtain green exact-source-head and deterministic base-merge receipts for the final commit",
     "retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
-    "complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof",
-    "export runtime metrics to the selected telemetry backend and qualify alert delivery",
+    "complete signed output-vault deletion confirmation and archive retention/transfer lifecycle rather than treating a maintenance receipt as deletion proof",
+    "export last-published, queue and owner runtime metrics to the selected telemetry backend and qualify alert delivery; cached observations are not authority",
     "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
-    "deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority"
+    "compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model",
+    "connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations",
+    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
@@ -371,43 +373,43 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-infer-core",
-      "object": "b8317ee8e47ca3fbbd3da63ee95688ecf8eafdc0"
+      "object": "fe48c95557d683990b94328b0357e1e1825aa338"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/control_contracts.rs",
-      "object": "b15b233bf084a4282af93b8be1a49eb3d1cf56ed"
+      "object": "7304fc6b4044ad126eae5f43a891331b9f9f0897"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
-      "object": "21a8da6f0e401b699acce96b475c8a0ce6fcf50e"
+      "object": "fa1cae33b44de4be0c8dc681c8d7bc43dec4cccb"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
-      "object": "6b41a073fa51fedd08ece5d4c5f5ffb5aced26bc"
+      "object": "5c06ec43410dffcda61a2c41b72e01af90b858d2"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
-      "object": "f09713c5de7ba74e7e89ed7baa662e9acf854b6d"
+      "object": "7b8c25fb664d3ffc536c5eb43894356d773d14e2"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
-      "object": "02b6f853341bcfda8ec537d9340995da4f0029d4"
+      "object": "8e03bf23e4a9439869e0118e1800bf371ead7be8"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/recovery_contracts.rs",
-      "object": "0abaf016d814214a6cbe041b64673a0220c4d287"
+      "object": "c3cc547de1ce7036909ae3827f46edbdb869a831"
     },
     {
       "path": "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
-      "object": "f8214e7f27960a626defdaa55f18c96851836acd"
+      "object": "a11b1caafa007a2c8da533f5e411c4f1686c0cf9"
     },
     {
       "path": "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs",
-      "object": "9e7c534abcf2afe1407f847a76f10b88303e8d9f"
+      "object": "7c34e0624ff7fdeed0da1540cbc4477513970f95"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host",
-      "object": "f47f6d4fe4ca88ddccd0512db354f9b066e6dfaf"
+      "object": "547c57b6d18c6902f9f865738a4f1fefb796dda3"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs",
@@ -415,7 +417,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs",
-      "object": "76dd7e648f82d32a9c79ed86737829bd0e117ce8"
+      "object": "6250d56441cd66d0927d630c3a6ff58c71f72902"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs",
@@ -431,23 +433,23 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
-      "object": "c61b31fa4c2589f093854feb2356f4db9398a8ce"
+      "object": "f1c79ddfe34c9ec3bb19a220a8762e534f00ac2c"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs",
-      "object": "3c8a6eb2d9b9b6bddac6cbdbae62178f8923f5a6"
+      "object": "ea172e7be4f31e10edbbf13928ea4a4f8ceeb12c"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs",
-      "object": "155a905646c9d608a1797ba6e2f6b55cd6716540"
+      "object": "44caa3de330e9a5f1954a46bd7ad3f917f7c2bd5"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "e96da1855228f1bb27c3aec7431631e5018e89ac"
+      "object": "f06ba0eaf06bbb1ad4cb7411f0a6dcf4f9a30730"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "object": "00ea489d22150c16399b9807f12a201d16cc0e20"
+      "object": "99f6975462167c5a4dfa91f8603d61ecd98bc6f1"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs",
@@ -467,7 +469,7 @@
     },
     {
       "path": "docs/modules/inference.control/TECHNICAL.md",
-      "object": "dc551107a335eb1b594465b75dcf5e2a10aadc5e"
+      "object": "85591db7d5cd501a0a7b8211c7d01a9a7ea5c6c5"
     },
     {
       "path": "scripts/test_hepta_inference_current_state.py",

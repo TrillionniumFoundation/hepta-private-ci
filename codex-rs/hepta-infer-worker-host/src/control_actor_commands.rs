@@ -147,11 +147,13 @@ impl Command {
             Self::BindExecution {
                 request_id,
                 plan,
-                now_unix_ms,
+                now_unix_ms: _caller_now_unix_ms,
                 reply,
             } => send_result(
                 reply,
-                control.bind_native_execution(&request_id, &plan, now_unix_ms),
+                writer_application_time().and_then(|now_unix_ms| {
+                    control.bind_native_execution(&request_id, &plan, now_unix_ms)
+                }),
             ),
             Self::PrepareDispatch {
                 request_id,
@@ -177,16 +179,18 @@ impl Command {
                 request_id,
                 dispatch,
                 plan,
-                now_unix_ms,
+                now_unix_ms: _caller_now_unix_ms,
                 reply,
             } => send_result(
                 reply,
-                control.dispatch_native_authorized_with_pre_effect_abort(
-                    &request_id,
-                    dispatch,
-                    &plan,
-                    now_unix_ms,
-                ),
+                writer_application_time().and_then(|now_unix_ms| {
+                    control.dispatch_native_authorized_with_pre_effect_abort(
+                        &request_id,
+                        dispatch,
+                        &plan,
+                        now_unix_ms,
+                    )
+                }),
             ),
             Self::AbortBeforeEffect {
                 token,
@@ -225,19 +229,21 @@ impl Command {
             Self::SettleAuthorized {
                 request_id,
                 plan,
-                now_unix_ms,
+                now_unix_ms: _caller_now_unix_ms,
                 output,
                 protected_output,
                 reply,
             } => send_result(
                 reply,
-                control.settle_native_authorized(
-                    &request_id,
-                    &plan,
-                    now_unix_ms,
-                    output,
-                    protected_output,
-                ),
+                writer_application_time().and_then(|now_unix_ms| {
+                    control.settle_native_authorized(
+                        &request_id,
+                        &plan,
+                        now_unix_ms,
+                        output,
+                        protected_output,
+                    )
+                }),
             ),
             Self::ReconcileRecovery {
                 request_id,
@@ -246,7 +252,9 @@ impl Command {
                 reply,
             } => send_result(
                 reply,
-                control.reconcile_native_recovery(&request_id, &plan, &verified),
+                writer_application_time().and_then(|now_unix_ms| {
+                    control.reconcile_native_recovery(&request_id, &plan, now_unix_ms, &verified)
+                }),
             ),
             Self::RetireRecovery {
                 request_id,
@@ -255,7 +263,14 @@ impl Command {
                 reply,
             } => send_result(
                 reply,
-                control.retire_native_indeterminate_recovery(&request_id, &plan, &verified),
+                writer_application_time().and_then(|now_unix_ms| {
+                    control.retire_native_indeterminate_recovery(
+                        &request_id,
+                        &plan,
+                        now_unix_ms,
+                        &verified,
+                    )
+                }),
             ),
             Self::Record { request_id, reply } => {
                 let _ = reply.send(control.native_record(&request_id).cloned());
@@ -286,6 +301,18 @@ impl Command {
             successful_reply_lost,
         }
     }
+}
+
+fn writer_application_time() -> Result<u64, codex_hepta_infer_core::durable_control::Error> {
+    #[cfg(test)]
+    if let Some(now_unix_ms) = super::recovery_tests::writer_application_time_override() {
+        return Ok(now_unix_ms);
+    }
+    let elapsed = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| codex_hepta_infer_core::durable_control::Error::InvalidTime)?;
+    u64::try_from(elapsed.as_millis())
+        .map_err(|_| codex_hepta_infer_core::durable_control::Error::InvalidTime)
 }
 
 fn send_result<T>(

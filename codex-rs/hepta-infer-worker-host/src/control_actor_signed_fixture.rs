@@ -102,11 +102,28 @@ fn signature(key_id: &str, signer_id: &str, key: &SigningKey, message: &[u8]) ->
 }
 
 pub(super) fn plan(request_id: &str, now: u64) -> VerifiedExecutionPlan {
+    let (trust_keys, signed) = execution_authority(request_id, now);
+    let trust = ControlTrustStore::new(trust_keys).unwrap();
+    verify_execution_plan(now, &trust, &signed).unwrap()
+}
+
+pub(super) fn execution_authority(
+    request_id: &str,
+    now: u64,
+) -> (Vec<TrustKey>, SignedExecutionAuthorityBundle) {
+    execution_authority_until(request_id, now, now + 60_000)
+}
+
+pub(super) fn execution_authority_until(
+    request_id: &str,
+    now: u64,
+    valid_until: u64,
+) -> (Vec<TrustKey>, SignedExecutionAuthorityBundle) {
     let manifest_key = SigningKey::from_bytes(&[1; 32]);
     let quota_key = SigningKey::from_bytes(&[2; 32]);
     let resource_key = SigningKey::from_bytes(&[3; 32]);
     let data_key = SigningKey::from_bytes(&[4; 32]);
-    let trust = ControlTrustStore::new(vec![
+    let trust_keys = vec![
         trust_key(
             "manifest-key",
             "manifest-authority",
@@ -131,8 +148,7 @@ pub(super) fn plan(request_id: &str, now: u64) -> VerifiedExecutionPlan {
             TrustRole::DataAuthority,
             &data_key,
         ),
-    ])
-    .unwrap();
+    ];
 
     let manifest = ExecutionManifest {
         schema_version: 1,
@@ -176,7 +192,7 @@ pub(super) fn plan(request_id: &str, now: u64) -> VerifiedExecutionPlan {
             maximum_output_tokens: 200,
             maximum_cost_microunits: 50_000,
             valid_from_unix_ms: now - 10,
-            valid_until_unix_ms: now + 60_000,
+            valid_until_unix_ms: valid_until,
         },
         resource_lease: ResourceLease {
             schema_version: 1,
@@ -192,7 +208,7 @@ pub(super) fn plan(request_id: &str, now: u64) -> VerifiedExecutionPlan {
             accelerator_count: 1,
             accelerator_profile_digest: "8".repeat(64),
             valid_from_unix_ms: now - 10,
-            valid_until_unix_ms: now + 60_000,
+            valid_until_unix_ms: valid_until,
         },
         output_policy: OutputDataPolicy {
             schema_version: 1,
@@ -202,7 +218,7 @@ pub(super) fn plan(request_id: &str, now: u64) -> VerifiedExecutionPlan {
             classification: OutputClassification::Internal,
             storage_mode: OutputStorageMode::DigestOnly,
             maximum_retention_ms: 120_000,
-            delete_after_unix_ms: now + 60_000,
+            delete_after_unix_ms: valid_until,
             encryption_key_id: None,
             encrypted_store_namespace: None,
         },
@@ -227,5 +243,5 @@ pub(super) fn plan(request_id: &str, now: u64) -> VerifiedExecutionPlan {
             signature("data-key", "data-authority", &data_key, &message),
         ],
     };
-    verify_execution_plan(now, &trust, &signed).unwrap()
+    (trust_keys, signed)
 }

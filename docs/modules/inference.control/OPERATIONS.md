@@ -24,6 +24,9 @@ status remains authoritative for qualification claims:
    request acceptance, an interrupt acknowledgement, or a health check.
 8. Never treat repository CI, this runbook, or a module owner as independent
    acceptance, activation, promotion, or release authority.
+9. Preserve the stable lifecycle sidecar lock file after shutdown and checkpoint
+   replacement. Deleting it can split ownership. A poisoned owner must exit
+   before a normal verified reopen; never remove the sidecar to force startup.
 
 ## 2. Production inputs
 
@@ -53,10 +56,19 @@ ID, Agent principal, model ID, or worker generation.
 | `Running` | Exact provider thread and turn are durable. | Held | terminal observation or signed reconciliation |
 | `Cancelling` | Cancellation intent is durable; terminality is unknown. | Held | terminal observation or signed reconciliation |
 | `Indeterminate` | The effect may have happened but no trusted terminal state exists. | Held | fresh signed reconciliation or two-person retirement |
-| `Released` | Trusted terminality, safe pre-effect abort, explicit safe rejection, or audited retirement. | Released | immutable except checkpoint/archive maintenance |
+| `Released` | Trusted terminality, safe pre-effect abort, explicit safe rejection, or audited retirement. | Released | matching monotonic late usage may lower qualification; checkpoint/archive maintenance |
 
 A process restart can recreate none of the in-memory pre-effect abort proof. A
 recovered `Dispatching` record therefore remains reconcile-only.
+
+When exact binding and current output policy admit a matching terminal observation,
+actual token usage or reported signed cost above the pre-effect quota is retained,
+the terminal slot releases, and qualification becomes `Quarantined`. This is no
+excess-payment authorization. Matching monotonic late usage can lower qualification
+but cannot turn a denied success into success. Expired output policy or failed
+protection still requires the independent recovery path; terminality does not
+bypass those checks. The worker returns the durable qualification after settlement,
+so its live provider observation cannot overwrite a quota quarantine.
 
 ## 4. Observe the owner
 
@@ -117,7 +129,8 @@ The command:
 6. writes and fsyncs a replacement active generation containing the checkpoint
    reference;
 7. atomically renames the replacement and fsyncs the parent directory;
-8. keeps the replacement file descriptor as the only locked writer.
+8. retains the stable lifecycle sidecar lock acquired before journal open/replay,
+   together with the replacement generation's locked file descriptor.
 
 The receipt identifies the generation, archive segment digest, archive-chain
 digest, checkpoint digest, active bytes, record count, and expired encrypted
@@ -127,7 +140,27 @@ If the command fails before rename, reopening must recover the predecessor
 journal. If it fails after rename, reopening must recover one complete new
 checkpoint generation. Never guess which generation won; reopen through
 `DurableInferenceControl`, which verifies the digest, filename, schema,
-permissions, generation, capacity, and every record invariant.
+permissions, generation, capacity, and every record invariant. Checkpoint content
+and recorded archive-segment/chain bindings are checked; reopen does not traverse
+and rehash all predecessor archive files.
+
+### Compatibility upgrade and conservative recovery
+
+New checkpoints use schema 2. Reopen accepts schema 1 and 2, validates complete
+state/observation/audit semantics and requires actual release evidence. Other
+schemas fail closed. A schema-1 signed-reconciliation record whose old
+`ObservedReady` lacks independent host readiness evidence loads as `Unverified`;
+provider terminality, usage, protected output and capacity state remain retained,
+and the unsupported success qualification is denied.
+
+New retirement audits retain domain-separated digests of the actual verification
+public keys. An older retirement audit with only operator/key IDs cannot prove
+two independent keys: reopen retains its audit and holds the execution as
+`Indeterminate`. Obtain a fresh revision-bound dual-control approval with distinct
+actual keys to replace it. If conservative recovered holds exceed the pinned
+in-flight limit, startup fails closed. Preserve all files and obtain independent
+reconciliation; do not delete sidecars, truncate records or increase the budget
+by editing history. Existing archive/checkpoint paths remain part of that history.
 
 ### Expired encrypted output references
 
@@ -168,7 +201,18 @@ The verifier permits the original dispatch lease to be expired, because it
 cannot authorize another effect. It re-verifies the historical four-authority
 bundle for identity and verifies the fresh receipt against the current rotated
 issuer key window. A stale, revoked, mismatched, non-monotonic, unsigned, or
-wrong-dispatch receipt is rejected.
+wrong-dispatch receipt is rejected. Proof freshness is rechecked when the durable
+owner applies the mutation. The recovery actor samples its own current wall clock,
+so a proof expiring while queued requires new fresh evidence. Exact-plan bind, authorized dispatch and settlement commands
+also sample the writer application time, rather than trusting a time captured
+before queue admission.
+
+A signed receipt proves provider terminality and usage, not owner readiness.
+Settlement retains historical owner authority or `Unverified` when absent; it
+cannot mint `ObservedReady`, erase prior authority loss or make denied success
+qualified. Protected-output metadata must match the signed policy at consumption,
+including required external reference, cipher digest and encryption key identity.
+These checks alone do not prove actual vault encryption or deletion.
 
 ## 7. Retire an unrecoverable execution
 
@@ -188,8 +232,10 @@ hepta-infer-recovery retire \
 ```
 
 The tool rejects one-person approval, repeated key IDs, repeated signer IDs,
-expired/revoked keys, stale record revisions, and any execution or dispatch
-mismatch. The durable record retains both operator and key identities, the
+repeated actual verification public keys, expired/revoked keys, stale record
+revisions, and any execution or dispatch mismatch. Proof freshness is checked
+again at durable consumption; different key labels cannot count one public key
+as two independent approvals. The durable record retains both operator and key identities, the
 reason code, reason, and retirement digest.
 
 ## 8. Key rotation and revocation
@@ -223,7 +269,9 @@ reason code, reason, and retirement digest.
 A malformed line, incomplete non-newline tail, checkpoint digest mismatch,
 unsafe checkpoint permission, content-address collision, or writer I/O failure
 fails closed. The writer is poisoned after an uncertain write/maintenance
-failure.
+failure. A poisoned owner refuses mutation and capability issuance, including
+idempotent calls. Preserve the files, let the owner exit, and use normal verified
+reopen.
 
 1. Stop the service without deleting any file.
 2. Capture filesystem metadata and immutable copies of the active journal,

@@ -8,6 +8,7 @@ impl DurableInferenceControl {
         dispatch: NativeDispatch,
         now_unix_ms: u64,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        self.ensure_native_writer_available()?;
         let record = self
             .native
             .records
@@ -30,6 +31,7 @@ impl DurableInferenceControl {
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                owner: std::sync::Arc::downgrade(&self.native_owner),
             },
         ))
     }

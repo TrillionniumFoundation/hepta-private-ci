@@ -1,8 +1,8 @@
 # inference.control technical development guide
 
-Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
+Current operation, source and qualification facts come from [CURRENT_STATE_SOURCE.json](CURRENT_STATE_SOURCE.json) and its [generated implementation status](TECHNICAL_STATUS.generated.md). Use the [operator runbook](OPERATIONS.md), [writer boundaries](WRITER_BOUNDARIES.md) and [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md) for operating and integration details.
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The V2 development candidate composes one durable writer actor with four execution authorities signed by distinct actual verification keys, final-use verification, protected-output settlement, signed recovery and checkpoint/archive maintenance. Provider execution runs outside the writer. Signed quota/resource declarations do not establish physical capacity, actual billing or independent acceptance. The earlier main baseline `a126987b` implements a smaller subset; source and CI evidence from these revisions cannot be interchanged.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -33,11 +33,13 @@ Plane `domain`, kind `service`, state model `stateful` and architecture role `ex
 Declared exclusive target roots:
 
 - `codex-rs/hepta-infer-core`
+- `codex-rs/hepta-infer-worker-host`
 - `codex-rs/hepta-inferd`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-infer-core`
+- `codex-rs/hepta-infer-worker-host`
 - `codex-rs/hepta-inferd`
 
 Non-authoritative implementation evidence roots:
@@ -52,7 +54,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs); observed identifiers include `InferenceLedger`, `InferenceRequest`, `RequestRecord`, `submit`, `reserve`, `complete`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs). Its `InferenceLedger` is an in-memory compatibility state machine with authority-denied receipts. The durable state owner is [durable_control.rs](../../../codex-rs/hepta-infer-core/src/durable_control.rs), and the exact-plan product caller and writer actor live under `hepta-infer-worker-host`. Use [generated implementation status](TECHNICAL_STATUS.generated.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) for actual symbols, caller boundaries and remaining work; target signatures in the [implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) are not a second current API registry.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -175,7 +177,21 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md).
+The implemented surfaces have different roles:
+
+| Surface | Current implementation | Composition boundary |
+| --- | --- | --- |
+| `InferenceLedger` | In-memory request/reservation state machine with `DENY_ALL` authority | No durable owner or provider caller |
+| Legacy durable/native compatibility | Historical journal transitions and compatibility receipts | Production actor denies legacy execution paths |
+| V2 exact-plan owner and actor | Signed bindings, write-ahead dispatch, protected settlement, recovery, retirement and checkpoints | One durable writer; cloned handles submit bounded commands to its FIFO |
+| `hepta-inferd::plan` | Pure digest/deadline planner | Real enrolled-worker scheduling and daemon composition remain required |
+| Neuron feature contract | Exact bounded typed request/receipt; worker projection and neuron verification | Real control port, selected worker and Agentd lifecycle composition remain required |
+
+The actor acquires a stable lifecycle sidecar lock before opening/replaying the active journal, and retains the active generation's inode lock for compatibility. The sidecar remains owned across checkpoint replacement; never delete it to force startup. Mutations validate, append and sync before publishing state. Uncertain storage or replacement failure poisons the owner.
+
+For native record events, `commit_native` stages only the target record through the same replay reducer instead of cloning the complete `NativeJournal`. Reservation first validates identity, the pinned budget and held-slot capacity against the complete retained map. Event serialization, the complete candidate, its return receipt and insertion key are prepared before append; only after append, flush and `sync_all` succeed does the owner install that target and its maximum-in-flight value. Rejected staging leaves authoritative state and journal bytes unchanged; uncertain append failure poisons the owner without installing the candidate. `CheckpointReference` is rejected on this path: compaction still stages the complete checkpoint separately. Reserve retains an O(retained identities) capacity scan, and the 16384 distinct-record ceiling remains; this change does not make every mutation constant-time or establish a measured throughput improvement.
+
+Provider execution runs outside the writer. Cloning an actor handle does not open another durable owner. Separate ordinary and completion quotas feed one FIFO, with one reserved shutdown barrier. Accepted response timeout/loss does not cancel an admitted command or authorize retry/release. Immutable published metrics expose observation age and remain non-authoritative. See [writer boundaries](WRITER_BOUNDARIES.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -203,10 +219,22 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native worker opens DurableInferenceControl with an absolute private journal, stable request ID and explicit in-flight budget. The journal writer fence is held only for replay or one durable mutation; provider/model execution does not hold it, so concurrent handles share the same journal budget without stale writes. Before new admission near the active-journal headroom threshold, the worker compacts current records into replayable checkpoints and preserves the complete prior event stream in a content-addressed sibling archive. A possibly dispatched record remains held/indeterminate across compaction and restart. Archive retention/transfer policy and authenticated post-crash provider reconciliation remain separate owner/operations work; deleting the journal is never recovery.
+The native worker opens one `NativeJournalWriterActor` over an absolute private journal, stable request ID and explicit pinned in-flight budget. Its lifecycle owner lock remains held while provider execution runs outside the actor. Before new admission near the byte-headroom threshold, the owner checkpoints current state and preserves predecessor journal bytes in a content-addressed archive. Indeterminate capacity remains held across compaction and restart. Released request identities also remain retained: compaction recovers byte headroom but does not remove the 16384 distinct-record ceiling.
+
+The native worker assembles assistant text by message item identity from streamed deltas and authoritative completed snapshots. A completion replaces that item's partial text and supplies missing suffixes without duplicating already streamed text. The collector keeps bounded item metadata and output bytes, ignores foreign thread/turn events, and rejects changes after item completion; it is shared with the interruption grace path.
+
+Exact-plan production journals store protected-output metadata rather than plaintext. Historical compatibility records and predecessor archives may contain plaintext and retain their governed privacy/retention obligations. Signed recovery requires fresh independent evidence; exceptional retirement requires revision-bound dual control. Checkpoint replay validates checkpoint content and recorded archive bindings, but does not traverse and rehash the complete predecessor archive history. Archive retention/transfer, signed vault deletion confirmation, deployed issuers, telemetry delivery and target-host qualification remain separate work. Journal deletion or a new request ID is never recovery.
+
+Verified reconciliation/retirement proofs are rechecked for expiry at durable consumption; the recovery actor samples its own current wall clock. Retirement requires distinct actual verification public keys as well as signer/key IDs. When exact binding and current output policy admit a matching terminal observation, tokens or reported signed cost above the pre-effect quota remain recorded, capacity releases and qualification becomes `Quarantined`; this is no excess-payment authorization. Monotonic late usage can lower qualification but cannot upgrade a previously denied success. A signed terminal receipt preserves historical owner authority, or `Unverified` when absent; it cannot mint `ObservedReady` or erase prior authority loss. Protected-output metadata is revalidated against signed policy, including required reference/cipher/key fields; metadata checks do not prove actual encryption or deletion. A poisoned owner refuses mutation and capability issuance, including idempotent calls.
+
+The writer samples application time for exact-plan bind, authorized dispatch and settlement as well as recovery commands; a time captured before queue admission cannot preserve expired authority. Checkpoint loading validates state/observation/audit consistency and real release evidence, in addition to content hashes.
+
+New checkpoints use schema 2; schema 1 remains readable. A schema-1 signed-reconciliation record whose `ObservedReady` was manufactured without independent host evidence is downgraded to `Unverified`, retaining provider terminality/usage/output and denying that success claim. New retirement audits retain domain-separated fingerprints of the actual verification public keys. Historical retirement audits lacking those fingerprints retain their audit but hold capacity as `Indeterminate` until a fresh revision-bound independent dual-control approval replaces them. If recovered held slots exceed the pinned budget, startup fails closed and requires independent reconciliation; never edit history to make it fit. Unsupported checkpoint schemas are rejected.
 
 Current operating and state-format references:
 
+- [OPERATIONS.md](OPERATIONS.md).
+- [CURRENT_STATE.json](CURRENT_STATE.json).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
@@ -215,10 +243,18 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+The four regressions in [native_record_staging_tests.rs](../../../codex-rs/hepta-infer-core/src/native_record_staging_tests.rs) cover full-map held-slot admission across compaction/reopen, a late reducer failure without publication, actual append failure for existing and first-admission candidates, and identity/checkpoint rejection before append. They are source cases, not performance measurements or candidate pass receipts.
+
 - [codex-rs/hepta-infer-core/src/durable_control_tests.rs](../../../codex-rs/hepta-infer-core/src/durable_control_tests.rs); named case: `reopens_exact_committed_state`.
 - [codex-rs/hepta-infer-core/src/lib_tests.rs](../../../codex-rs/hepta-infer-core/src/lib_tests.rs); named case: `request_lifecycle_is_fenced_and_authority_free`.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
+- [codex-rs/hepta-infer-core/src/native_control_v2_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_v2_tests.rs).
+- [codex-rs/hepta-infer-core/tests/process_crash_recovery.rs](../../../codex-rs/hepta-infer-core/tests/process_crash_recovery.rs).
+- [codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs).
+
+The embedded Agentd/App Server regression uses a real local `codex-exec` helper with loopback mock Responses. First build it with `cargo build --locked -p codex-exec --bin codex-exec` in `codex-rs`; this compiles the helper without launching a provider. The inference CI command sets and consolidated owner lane perform the same prerequisite build. The fixture allows up to 120 seconds for complete cold startup and the normal initialize/home-binding probe, then checks control health separately within 10 seconds; the exact nextest case has a 180-second watchdog. Worker RPC and provider deadlines remain unchanged. Bazel splits the cognitive final-use fixture into a dedicated wrapper with the helper runfile; run both worker test wrappers (or the package `:all`) to retain complete coverage.
+
+In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd`. Explicitly select the ignored `post_compaction_multi_generation_curve` maintenance soak when checking compaction longevity; its exact nextest override permits up to 600 seconds for 1024 identities across 16 real compactions and reopens, without changing request latency budgets. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

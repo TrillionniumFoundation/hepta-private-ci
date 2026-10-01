@@ -1,0 +1,300 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:178:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+178 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+195 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+    Finished `test` profile [unoptimized] target(s) in 1.41s
+────────────
+ Nextest run ID 1f868234-a2e8-4570-9300-fc48f0e76eb8 with nextest profile: local
+    Starting 207 tests across 13 binaries (3 tests skipped)
+        PASS [   0.009s] (  1/207) codex-hepta-infer-core control_contracts::tests::confidential_output_requires_external_encryption_metadata
+        PASS [   0.009s] (  2/207) codex-hepta-infer-core durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success
+        PASS [   0.011s] (  3/207) codex-hepta-infer-core control_contracts::tests::deserialized_protected_metadata_is_checked_before_marker_hashing
+        PASS [   0.013s] (  4/207) codex-hepta-infer-core durable_control::native::storage_sync_tests::identical_reuse_requires_a_successful_real_file_flush
+        PASS [   0.031s] (  5/207) codex-hepta-infer-core control_contracts::tests::four_authority_aliases_cannot_reuse_one_execution_signing_key
+        PASS [   0.072s] (  6/207) codex-hepta-infer-core control_contracts::tests::distinct_operator_aliases_cannot_reuse_one_retirement_key
+        PASS [   0.087s] (  7/207) codex-hepta-infer-core control_contracts::tests::four_independent_authorities_bind_one_exact_execution
+        PASS [   0.107s] (  8/207) codex-hepta-infer-core control_contracts::tests::key_rotation_window_and_revocation_are_enforced
+        PASS [   0.111s] (  9/207) codex-hepta-infer-core control_contracts::tests::retirement_requires_two_distinct_operators
+        PASS [   0.114s] ( 10/207) codex-hepta-infer-core control_contracts::tests::signed_reconciliation_is_exact_and_rotation_bound
+        PASS [   1.557s] ( 11/207) codex-hepta-infer-core durable_control::tests::invalid_event_is_rejected_before_append
+        PASS [   1.669s] ( 12/207) codex-hepta-infer-core durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation
+        PASS [   1.983s] ( 13/207) codex-hepta-infer-core durable_control::native::storage_sync_tests::identical_content_addressed_reuse_preserves_the_existing_object
+        PASS [   0.011s] ( 14/207) codex-hepta-infer-core durable_control::tests::replay_revalidates_event_semantics_and_terminal_bindings
+        PASS [   2.911s] ( 15/207) codex-hepta-infer-core durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once
+        PASS [   3.060s] ( 16/207) codex-hepta-infer-core durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven
+        PASS [   3.061s] ( 17/207) codex-hepta-infer-core durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen
+        PASS [   3.061s] ( 18/207) codex-hepta-infer-core durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness
+        PASS [   1.428s] ( 19/207) codex-hepta-infer-core durable_control::tests::one_writer_is_held_until_owner_drop
+        PASS [   3.082s] ( 20/207) codex-hepta-infer-core durable_control::native::v2_tests::retained_pre_effect_abort_token_cannot_release_reopened_owner
+        PASS [   3.212s] ( 21/207) codex-hepta-infer-core durable_control::tests::missing_terminal_observation_becomes_indeterminate
+        PASS [   1.456s] ( 22/207) codex-hepta-infer-core durable_control::tests::reservation_rejects_request_that_expired_after_submission
+        PASS [   3.450s] ( 23/207) codex-hepta-infer-core durable_control::tests::failed_append_fences_legacy_idempotent_commands_until_reopen
+        PASS [   3.557s] ( 24/207) codex-hepta-infer-core durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal
+        PASS [   3.470s] ( 25/207) codex-hepta-infer-core durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage
+        PASS [   3.557s] ( 26/207) codex-hepta-infer-core durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success
+        PASS [   3.557s] ( 27/207) codex-hepta-infer-core durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead
+        PASS [   3.547s] ( 28/207) codex-hepta-infer-core durable_control::native::v2_tests::locally_aborted_dispatch_cannot_be_resurrected_by_observation
+        PASS [   3.549s] ( 29/207) codex-hepta-infer-core durable_control::native::v2_tests::pre_effect_abort_token_cannot_release_another_journal
+        PASS [   0.010s] ( 30/207) codex-hepta-infer-core tests::completion_requires_reservation
+        PASS [   0.010s] ( 31/207) codex-hepta-infer-core tests::conflicting_identity_is_rejected
+        PASS [   0.011s] ( 32/207) codex-hepta-infer-core neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority
+        PASS [   0.011s] ( 33/207) codex-hepta-infer-core neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected
+        PASS [   0.010s] ( 34/207) codex-hepta-infer-core tests::request_lifecycle_is_fenced_and_authority_free
+        PASS [   0.012s] ( 35/207) codex-hepta-infer-core neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output
+        PASS [   0.014s] ( 36/207) codex-hepta-infer-core neuron_feature::tests::non_success_observations_preserve_exact_encoder_and_head_binding
+        PASS [   0.008s] ( 37/207) codex-hepta-infer-core tests::stale_digest_cannot_reserve
+        PASS [   0.050s] ( 38/207) codex-hepta-infer-worker-host actor_latency::tests::nearest_rank_percentiles_and_window_are_bounded
+        PASS [   1.980s] ( 39/207) codex-hepta-infer-core durable_control::tests::reopens_exact_committed_state
+        PASS [   0.088s] ( 40/207) codex-hepta-infer-core::recovery_after_expiry historical_four_authority_aliases_cannot_reuse_one_execution_signing_key
+        PASS [   0.039s] ( 41/207) codex-hepta-infer-worker-host actor_mailbox::boundary_tests::concurrent_producers_are_bounded_and_all_accepted_commands_precede_shutdown
+        PASS [   0.514s] ( 42/207) codex-hepta-infer-core durable_control::writer_lock::tests::compaction_rejects_journal_growth_and_fences_the_stale_owner
+        PASS [   0.030s] ( 43/207) codex-hepta-infer-worker-host actor_mailbox::boundary_tests::terminal_reserve_preserves_fifo_and_shutdown_when_every_quota_is_full
+        PASS [   0.030s] ( 44/207) codex-hepta-infer-worker-host actor_mailbox::boundary_tests::terminal_traffic_cannot_steal_ordinary_quota_or_overtake_it
+        PASS [   4.120s] ( 45/207) codex-hepta-infer-core durable_control::native::v2_tests::authorized_settlement_never_persists_raw_output
+        PASS [   4.120s] ( 46/207) codex-hepta-infer-core durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome
+        PASS [   4.120s] ( 47/207) codex-hepta-infer-core durable_control::native::v2_tests::ambiguous_native_append_fences_idempotent_mutations
+        PASS [   0.488s] ( 48/207) codex-hepta-infer-worker-host actor_mailbox::tests::disconnected_receiver_never_looks_like_overload
+        PASS [   0.463s] ( 49/207) codex-hepta-infer-worker-host actor_mailbox::tests::shutdown_is_admitted_when_full_and_fences_every_clone
+        PASS [   0.474s] ( 50/207) codex-hepta-infer-worker-host actor_mailbox::tests::saturation_rejects_before_delivery_and_recovers_capacity
+        PASS [   0.032s] ( 51/207) codex-hepta-infer-worker-host control_actor::boundary_tests::dropped_accepted_sender_is_not_pre_admission_closed
+        PASS [   4.336s] ( 52/207) codex-hepta-infer-core durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal
+        PASS [   4.265s] ( 53/207) codex-hepta-infer-core durable_control::native::v2_tests::terminal_usage_refinement_cannot_clear_success_denial
+        PASS [   4.336s] ( 54/207) codex-hepta-infer-core durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success
+        PASS [   0.676s] ( 55/207) codex-hepta-infer-worker-host actor_mailbox::tests::more_than_one_hundred_thousand_mailbox_lifecycles_remain_bounded
+        PASS [   4.516s] ( 56/207) codex-hepta-infer-core durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
+        PASS [   4.516s] ( 57/207) codex-hepta-infer-core durable_control::native::v2_tests::indeterminate_retirement_is_revision_bound_and_dual_controlled
+        PASS [   1.456s] ( 58/207) codex-hepta-infer-core durable_control::tests::settlement_enforces_request_token_limit_before_append_and_on_replay
+        PASS [   4.518s] ( 59/207) codex-hepta-infer-core durable_control::native::economic_tests::host_observed_overrun_releases_slot_and_preserves_denial_reason
+        PASS [   0.033s] ( 60/207) codex-hepta-infer-worker-host final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner
+        PASS [   0.030s] ( 61/207) codex-hepta-infer-worker-host model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest
+        PASS [   0.028s] ( 62/207) codex-hepta-infer-worker-host model_worker::tests::loads_runs_and_unloads_exact_model_tuple
+        PASS [   0.028s] ( 63/207) codex-hepta-infer-worker-host model_worker::tests::lost_driver_terminality_is_indeterminate
+        PASS [   0.029s] ( 64/207) codex-hepta-infer-worker-host model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift
+        PASS [   0.030s] ( 65/207) codex-hepta-infer-worker-host model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt
+        PASS [   0.030s] ( 66/207) codex-hepta-infer-worker-host model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple
+        PASS [   4.981s] ( 67/207) codex-hepta-infer-core durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage
+        PASS [   4.982s] ( 68/207) codex-hepta-infer-core durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss
+        PASS [   1.921s] ( 69/207) codex-hepta-infer-core durable_control::tests::settlement_rejects_quota_overrun_and_same_digest_usage_drift
+        PASS [   0.805s] ( 70/207) codex-hepta-infer-worker-host control_actor::boundary_tests::shutdown_deadline_retains_lock_until_the_real_owner_exits
+        PASS [   0.832s] ( 71/207) codex-hepta-infer-worker-host control_actor::boundary_tests::published_metrics_are_immutable_stale_and_do_not_queue_reads
+        PASS [   0.840s] ( 72/207) codex-hepta-infer-worker-host control_actor::boundary_tests::caller_cancellation_after_admission_cannot_erase_the_owner_command
+        PASS [   0.034s] ( 73/207) codex-hepta-infer-worker-host native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity
+        PASS [   0.028s] ( 74/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::completed_message_supplies_text_without_streaming_deltas
+        PASS [   0.029s] ( 75/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::completed_snapshot_replaces_partial_text_and_is_idempotent
+        PASS [   0.035s] ( 76/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::completed_text_and_identity_limits_reject_without_mutating_output
+        PASS [   5.153s] ( 77/207) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_tampering_is_rejected_on_reopen
+        PASS [   0.085s] ( 78/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::empty_message_items_have_a_bounded_identity_budget
+        PASS [   0.030s] ( 79/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::interleaved_messages_keep_item_order_and_completed_text_once
+        PASS [   0.030s] ( 80/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::successive_tail_deltas_and_snapshot_preserve_the_prefix_once
+        PASS [   0.031s] ( 81/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::started_items_keep_order_when_messages_complete_in_reverse
+        PASS [   0.030s] ( 82/207) codex-hepta-infer-worker-host native_app_server::output_message_tests::unrelated_completed_items_do_not_change_output
+        PASS [   0.030s] ( 83/207) codex-hepta-infer-worker-host native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure
+        PASS [   0.029s] ( 84/207) codex-hepta-infer-worker-host native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift
+        PASS [   0.029s] ( 85/207) codex-hepta-infer-worker-host native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses
+        PASS [   0.029s] ( 86/207) codex-hepta-infer-worker-host native_app_server::tests::in_progress_is_not_a_terminal_observation
+        PASS [   0.030s] ( 87/207) codex-hepta-infer-worker-host native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary
+        PASS [   0.028s] ( 88/207) codex-hepta-infer-worker-host native_app_server::tests::only_the_bound_turn_can_complete_the_native_request
+        PASS [   0.030s] ( 89/207) codex-hepta-infer-worker-host native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread
+        PASS [   1.778s] ( 90/207) codex-hepta-infer-core::process_crash_recovery an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated
+        PASS [   5.338s] ( 91/207) codex-hepta-infer-core durable_control::native::v2_tests::protected_replay_tests::journal_replay_rejects_malformed_metadata_and_unbound_output_marker
+        PASS [   5.316s] ( 92/207) codex-hepta-infer-core durable_control::native::v2_tests::signed_reconciliation_releases_indeterminate_without_blind_replay
+        PASS [   2.562s] ( 93/207) codex-hepta-infer-core durable_control::tests::same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay
+        PASS [   0.131s] ( 94/207) codex-hepta-infer-worker-host native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner
+        PASS [   0.030s] ( 95/207) codex-hepta-infer-worker-host tests::payload_drift_is_rejected
+        PASS [   0.029s] ( 96/207) codex-hepta-infer-worker-host tests::revoked_lease_is_rejected
+        PASS [   0.030s] ( 97/207) codex-hepta-infer-worker-host tests::terminal_success_requires_exact_authority_binding
+        PASS [   0.029s] ( 98/207) codex-hepta-infer-worker-host tests::timeout_never_becomes_success
+        PASS [   5.538s] ( 99/207) codex-hepta-infer-core durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage
+        PASS [   0.194s] (100/207) codex-hepta-infer-worker-host native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success
+        PASS [   0.196s] (101/207) codex-hepta-infer-worker-host native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed
+        PASS [   0.195s] (102/207) codex-hepta-infer-worker-host native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success
+        PASS [   2.598s] (103/207) codex-hepta-infer-core durable_control::writer_lock::tests::a_dangling_journal_symlink_cannot_split_the_compaction_owner
+        PASS [   1.514s] (104/207) codex-hepta-infer-worker-host control_actor::boundary_tests::accepted_deadline_does_not_cancel_commit_or_license_duplicate_dispatch
+        PASS [   0.130s] (105/207) codex-hepta-infer-worker-host tests::token_limit_is_enforced
+        PASS [   0.127s] (106/207) codex-hepta-infer-worker-host tests::unobserved_terminal_state_is_indeterminate
+        PASS [   0.009s] (107/207) codex-hepta-inferd deadline_digest_tests::an_exact_retry_keeps_the_complete_dispatch_plan_stable
+        PASS [   0.009s] (108/207) codex-hepta-inferd deadline_digest_tests::deadline_is_bound_into_the_dispatch_plan_digest
+        PASS [   0.009s] (109/207) codex-hepta-inferd tests::exact_plan_grants_no_provider_authority
+        PASS [   0.008s] (110/207) codex-hepta-inferd tests::lease_drift_is_rejected
+        PASS [   0.009s] (111/207) codex-hepta-inferd tests::expired_dispatch_is_rejected
+        PASS [   0.007s] (112/207) codex-hepta-types bounded::tests::empty_nul_and_zero_maximum_fail_closed
+        PASS [   0.008s] (113/207) codex-hepta-types bounded::tests::text_and_bytes_enforce_exact_bound
+        PASS [   0.007s] (114/207) codex-hepta-types canonical_digest::tests::canonical_byte_validator_accepts_frozen_bytes_and_returns_same_digest
+        PASS [   0.012s] (115/207) codex-hepta-types bounded::tests::borrowed_constructors_validate_before_copy_and_count_utf8_bytes
+        PASS [   0.009s] (116/207) codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_invalid_bool_and_unknown_tag
+        PASS [   0.008s] (117/207) codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_truncation_and_trailing_bytes
+        PASS [   0.008s] (118/207) codex-hepta-types canonical_digest::tests::canonical_container_depth_is_exactly_bounded
+        PASS [   0.007s] (119/207) codex-hepta-types canonical_digest::tests::field_and_map_order_are_canonical_but_array_order_is_semantic
+        PASS [   0.008s] (120/207) codex-hepta-types canonical_digest::tests::canonical_v1_does_not_apply_unicode_normalization
+        PASS [   0.007s] (121/207) codex-hepta-types canonical_digest::tests::frozen_cross_language_vector_matches_exact_bytes_and_digest
+        PASS [   0.031s] (122/207) codex-hepta-infer-worker-host unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed
+        PASS [   0.007s] (123/207) codex-hepta-types canonical_digest::tests::integer_boundaries_unicode_and_empty_containers_are_frozen
+        PASS [   0.007s] (124/207) codex-hepta-types digest::stream_tests::stream_error_never_returns_a_partial_digest
+        PASS [   0.008s] (125/207) codex-hepta-types canonical_digest::tests::malformed_canonical_inputs_fail_closed
+        PASS [   0.011s] (126/207) codex-hepta-types digest::tests::digest_parser_deterministic_fuzz_corpus_is_total_and_strict
+        PASS [   0.009s] (127/207) codex-hepta-types digest::tests::multipart_hash_matches_exact_concatenation
+        PASS [   0.007s] (128/207) codex-hepta-types digest::tests::sha256_round_trip_is_canonical
+        PASS [   0.007s] (129/207) codex-hepta-types digest::tests::uppercase_and_wrong_length_fail_closed
+        PASS [   0.015s] (130/207) codex-hepta-types digest::stream_tests::unbounded_reader_stops_after_one_overflow_byte
+        PASS [   0.006s] (131/207) codex-hepta-types fixed::tests::arithmetic_boundaries_reject_overflow_and_division_by_zero
+        PASS [   0.007s] (132/207) codex-hepta-types fixed::tests::checked_arithmetic_rejects_overflow_and_zero_division
+        PASS [   0.007s] (133/207) codex-hepta-types fixed::tests::explicit_toward_zero_methods_match_legacy_compatibility_methods
+        PASS [   0.007s] (134/207) codex-hepta-types fixed::tests::multiplication_and_division_are_deterministic
+        PASS [   0.007s] (135/207) codex-hepta-types fixed::tests::probability_and_clamp_fail_closed
+        PASS [   0.006s] (136/207) codex-hepta-types identity::tests::authority_flags_round_trip_only_as_untrusted_wire_bits
+        PASS [   0.007s] (137/207) codex-hepta-types identity::tests::authority_posture_rejects_grants_at_raw_wire_ingress
+        PASS [   0.007s] (138/207) codex-hepta-types identity::tests::id_profiles_and_namespaces_are_explicit_and_canonical
+        PASS [   0.007s] (139/207) codex-hepta-types identity::tests::identity_bounds_and_monotonic_overflow_fail_closed
+        PASS [   0.008s] (140/207) codex-hepta-types identity::tests::non_authorizing_posture_is_structurally_deny_only
+        PASS [   0.008s] (141/207) codex-hepta-types identity::tests::stable_id_and_generation_are_strict
+        PASS [   0.008s] (142/207) codex-hepta-types identity::tests::stable_profile_exhaustively_matches_the_v1_ascii_alphabet
+        PASS [   0.007s] (143/207) codex-hepta-types numeric_conversion::tests::checked_scaling_rejects_overflow_without_mutating_input
+        PASS [   0.041s] (144/207) codex-hepta-types digest::stream_tests::bounded_stream_digest_matches_bytes_at_buffer_boundaries
+        PASS [   0.009s] (145/207) codex-hepta-types numeric_conversion::tests::digest_binds_numerical_profile_shape_range_units_and_normalization
+        PASS [   0.007s] (146/207) codex-hepta-types numeric_conversion::tests::malformed_shape_and_unknown_profile_cannot_enter_conversion
+        PASS [   0.007s] (147/207) codex-hepta-types numeric_conversion::tests::ppm_q24_roundtrip_reports_exact_error_instead_of_byte_equality
+        PASS [   0.010s] (148/207) codex-hepta-types numeric_conversion::tests::incompatible_units_normalization_shape_and_ranges_reject
+        PASS [   0.008s] (149/207) codex-hepta-types numeric_conversion::tests::q24_to_q32_is_exact_and_legacy_multiply_keeps_toward_zero
+        PASS [   0.008s] (150/207) codex-hepta-types numeric_conversion::tests::registered_conversion_requires_normalization_and_both_profile_definitions
+        PASS [   0.007s] (151/207) codex-hepta-types numeric_profile::tests::profile_definition_binds_identity_version_scale_and_rounding
+        PASS [   0.008s] (152/207) codex-hepta-types numeric_conversion::tests::signed_half_ties_round_to_even_target_bins
+        PASS [   0.007s] (153/207) codex-hepta-types numeric_profile::tests::q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility
+        PASS [   0.026s] (154/207) codex-hepta-types identity::tests::stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation
+        PASS [   0.007s] (155/207) codex-hepta-types prompt_delivery::tests::delivered_and_rejected_are_mutually_exclusive
+        PASS [   0.007s] (156/207) codex-hepta-types prompt_delivery::tests::rejection_reason_is_open_but_bounded
+        PASS [   0.007s] (157/207) codex-hepta-types prompt_delivery::tests::semantic_digest_is_deterministic_and_field_complete
+        PASS [   0.008s] (158/207) codex-hepta-types prompt_delivery::tests::token_positions_are_optional_bounded_and_canonical
+        PASS [   0.008s] (159/207) codex-hepta-types registry::tests::definition_kind_is_bound_to_identifier_namespace
+        PASS [   0.007s] (160/207) codex-hepta-types registry::tests::immutable_registry_resolves_exact_definition_and_numeric_profile
+        PASS [   0.011s] (161/207) codex-hepta-types topology::tests::selected_digest_cannot_hide_substituted_delta_content
+        PASS [   0.011s] (162/207) codex-hepta-types registry::tests::registry_digest_is_insertion_order_independent_and_definition_sensitive
+        PASS [   0.011s] (163/207) codex-hepta-types topology::tests::related_module_bounds_are_checked_before_digest_allocation
+        PASS [   0.012s] (164/207) codex-hepta-types topology::tests::split_requires_individually_bound_add_participants
+        PASS [   0.028s] (165/207) codex-hepta-types registry::tests::registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_bytes
+        PASS [   5.961s] (166/207) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::dispatched_request_survives_reopen_compaction_and_second_reopen
+        PASS [   0.305s] (167/207) codex-hepta-infer-worker-host unix_output_protector::boundary_tests::vault_config_rejects_symlinks_hardlinks_and_oversize_files
+        PASS [   6.181s] (168/207) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_pre_effect_abort_checkpoint_remains_released
+        PASS [   2.043s] (169/207) codex-hepta-infer-worker-host control_actor::boundary_tests::full_ordinary_queue_cannot_reject_terminal_transition_or_shutdown
+        PASS [   2.045s] (170/207) codex-hepta-infer-worker-host control_actor::boundary_tests::lost_terminal_reply_remains_durable_and_survives_restart
+        PASS [   6.326s] (171/207) codex-hepta-infer-core durable_control::native::v2_tests::compaction_preserves_indeterminate_capacity_and_exact_state
+        PASS [   6.336s] (172/207) codex-hepta-infer-core durable_control::native::v2_tests::legacy_retirement_holds_capacity_until_fresh_independent_approval
+        PASS [   6.537s] (173/207) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_signed_audit_shape_and_terminal_sequence
+        PASS [   6.715s] (174/207) codex-hepta-infer-core durable_control::native::storage_sync_tests::maintenance_retry_reuses_the_synced_archive_and_commits_one_generation
+        PASS [   2.199s] (175/207) codex-hepta-infer-worker-host final_use_authorizer::tests::forged_grant_never_reaches_effect_entry
+        PASS [   6.775s] (176/207) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::valid_checkpoint_reopens_and_retains_unknown_execution_capacity
+        PASS [   3.663s] (177/207) codex-hepta-infer-core durable_control::writer_lock::tests::detached_generation_lock_does_not_replace_the_lifecycle_lock
+        PASS [   3.365s] (178/207) codex-hepta-infer-core durable_control::writer_lock::tests::long_journal_names_and_existing_symlink_aliases_share_a_short_lock
+        PASS [   6.887s] (179/207) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_observation_assignment_identity
+        PASS [   6.949s] (180/207) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_reconciliation_checkpoint_denies_unsupported_readiness
+        PASS [   2.445s] (181/207) codex-hepta-infer-worker-host final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token
+        PASS [   3.734s] (182/207) codex-hepta-infer-core::recovery_after_expiry fresh_rotated_dual_control_retirement_releases_after_lease_expiry
+        PASS [   3.734s] (183/207) codex-hepta-infer-core::recovery_after_expiry fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry
+        PASS [   7.379s] (184/207) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_cannot_release_unknown_execution_without_terminal_evidence
+        PASS [   3.042s] (185/207) codex-hepta-infer-worker-host control_actor::recovery_tests::writer_rejects_cached_terminal_capability_expired_after_verification
+        PASS [   2.520s] (186/207) codex-hepta-infer-worker-host native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown
+        PASS [   7.640s] (187/207) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::current_schema_two_checkpoint_preserves_independently_observed_readiness
+        PASS [   2.848s] (188/207) codex-hepta-infer-worker-host native_app_server::control::authorized_settlement_tests::live_output_preserves_text_and_uses_durable_quota_denial
+        PASS [   2.849s] (189/207) codex-hepta-infer-worker-host native_app_server::control::authorized_settlement_tests::empty_nonterminal_has_no_protection_object_or_terminal_claim
+        PASS [   3.366s] (190/207) codex-hepta-infer-worker-host control_actor::boundary_tests::signed_post_effect_terminal_reply_loss_keeps_exact_durable_result
+        PASS [   3.775s] (191/207) codex-hepta-infer-worker-host final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back
+        PASS [   3.828s] (192/207) codex-hepta-infer-worker-host control_actor::recovery_tests::queued_authorized_commands_recheck_owner_clock_after_expiry
+        PASS [   3.307s] (193/207) codex-hepta-infer-worker-host native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider
+        PASS [   3.628s] (194/207) codex-hepta-infer-worker-host native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims
+        PASS [   8.803s] (195/207) codex-hepta-infer-core durable_control::native::v2_tests::protected_replay_tests::reconciled_checkpoint_revalidates_retained_partial_output_metadata
+        PASS [   4.352s] (196/207) codex-hepta-infer-worker-host control_actor::compatibility_tests::one_writer_owns_the_journal_and_effect_capability_is_one_shot
+        PASS [   5.769s] (197/207) codex-hepta-infer-core durable_control::writer_lock::tests::renamed_generation_failure_retains_ownership_until_the_owner_exits
+        PASS [   6.001s] (198/207) codex-hepta-infer-core::output_retention compaction_reports_expiry_without_manufacturing_vault_deletion
+        PASS [   3.912s] (199/207) codex-hepta-infer-worker-host::control_actor production_actor_denies_unsigned_dispatch_and_retains_one_writer
+        PASS [   9.935s] (200/207) codex-hepta-infer-core durable_control::native::economic_tests::signed_quota_overrun_preserves_terminal_usage_and_denies_success
+        PASS [  14.687s] (201/207) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::legacy_retirement_without_key_fingerprints_stays_held_in_both_checkpoint_versions
+        PASS [  10.097s] (202/207) codex-hepta-infer-worker-host native_app_server::control::authorized_settlement_tests::empty_encrypted_terminals_use_the_protector_and_release_capacity
+        PASS [  16.248s] (203/207) codex-hepta-infer-core durable_control::native::economic_tests::signed_terminal_preserves_prior_owner_authority_without_inventing_readiness
+        PASS [  22.556s] (204/207) codex-hepta-infer-core durable_control::native::v2_tests::every_compaction_failpoint_reopens_a_complete_generation
+        PASS [  25.249s] (205/207) codex-hepta-infer-core::process_crash_recovery sigkill_at_every_maintenance_boundary_recovers_one_complete_generation
+        SLOW [> 30.000s] (───────) codex-hepta-infer-core durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes
+        PASS [  48.997s] (206/207) codex-hepta-infer-core durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes
+        SLOW [> 60.000s] (───────) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+        PASS [  76.066s] (207/207) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+────────────
+     Summary [  81.416s] 207 tests run: 207 passed (2 slow), 3 skipped

@@ -6,6 +6,7 @@ impl DurableInferenceControl {
         request_id: &str,
         output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         let record = self
             .native
             .records
@@ -38,13 +39,8 @@ impl DurableInferenceControl {
         mut output: NativeRunOutput,
         protected_output: Option<ProtectedOutput>,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
         self.assert_native_plan_identity(request_id, plan)?;
-        if output
-            .observed_output_tokens
-            .is_some_and(|value| value > plan.quota_lease().maximum_output_tokens)
-        {
-            return Err(Error::AssignmentMismatch);
-        }
         let protected = if output.output.is_empty() && !output.terminal_observed {
             None
         } else {
@@ -58,6 +54,9 @@ impl DurableInferenceControl {
                 OutputStorageMode::ExternalEncrypted => protected_output
                     .ok_or(Error::InvalidIdentity("native encrypted output reference"))?,
             };
+            protected
+                .assert_matches_policy(now_unix_ms, plan.output_policy())
+                .map_err(|_| Error::InvalidIdentity("native protected output policy"))?;
             if protected.output_digest
                 != sha256_hex(
                     b"hepta.inference-control.output.v1\0",
@@ -84,26 +83,26 @@ impl DurableInferenceControl {
         )
     }
 
-    /// Apply only independently signed terminal evidence to a dispatched or
-    /// indeterminate record. Signed provider usage is still bounded by the
-    /// independently signed quota lease persisted before the provider effect.
+    /// Apply independently signed terminal evidence and monotonic usage
+    /// refinements. Actual usage above the pre-effect quota quarantines success
+    /// qualification without erasing terminal truth or authorizing excess pay.
     pub fn reconcile_native(
         &mut self,
         request_id: &str,
         plan: &VerifiedExecutionPlan,
-        _now_unix_ms: u64,
+        now_unix_ms: u64,
         verified: &VerifiedReconciliationReceipt,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
+        verified
+            .assert_valid_at(now_unix_ms)
+            .map_err(|_| Error::InvalidTime)?;
         self.assert_native_plan_identity(request_id, plan)?;
         let record = self
             .native
             .records
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
-        let binding = record
-            .execution_binding
-            .as_ref()
-            .ok_or(Error::InvalidIdentity("native execution binding"))?;
         let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         let dispatch_digest = native_dispatch_digest(dispatch)?;
         let receipt = verified.receipt();
@@ -112,12 +111,6 @@ impl DurableInferenceControl {
             || receipt.thread_id != dispatch.thread_id
             || receipt.provider_id != dispatch.model_provider
             || receipt.execution_binding_digest != plan.execution_binding_digest()
-            || receipt
-                .observed_output_tokens
-                .is_some_and(|value| value > binding.maximum_output_tokens)
-            || receipt
-                .usage_microunits
-                .is_some_and(|value| value > binding.maximum_cost_microunits)
         {
             return Err(Error::AssignmentMismatch);
         }
@@ -158,7 +151,12 @@ impl DurableInferenceControl {
             observed_output_tokens: receipt.observed_output_tokens,
             terminal_observed: true,
             stop_reason: None,
-            owner_authority: NativeOwnerAuthority::ObservedReady,
+            owner_authority: record
+                .observation
+                .as_ref()
+                .map_or(NativeOwnerAuthority::Unverified, |previous| {
+                    previous.owner_authority.clone()
+                }),
             codex_terminal_correlation_digest: Some(verified.receipt_digest().to_string()),
         };
         let audit = NativeReconciliationAudit {
@@ -185,9 +183,13 @@ impl DurableInferenceControl {
         &mut self,
         request_id: &str,
         plan: &VerifiedExecutionPlan,
-        _now_unix_ms: u64,
+        now_unix_ms: u64,
         verified: &VerifiedRetirement,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
+        verified
+            .assert_valid_at(now_unix_ms)
+            .map_err(|_| Error::InvalidTime)?;
         self.assert_native_plan_identity(request_id, plan)?;
         let record = self
             .native
@@ -210,10 +212,8 @@ impl DurableInferenceControl {
                 verified.operator_ids()[0].clone(),
                 verified.operator_ids()[1].clone(),
             ],
-            key_ids: [
-                verified.key_ids()[0].clone(),
-                verified.key_ids()[1].clone(),
-            ],
+            key_ids: [verified.key_ids()[0].clone(), verified.key_ids()[1].clone()],
+            independent_operator_key_digests: Some(verified.key_fingerprints().clone()),
             reason_code: retirement.reason_code.clone(),
             reason: retirement.reason.clone(),
         };
@@ -267,6 +267,7 @@ impl DurableInferenceControl {
     /// Atomically archive the complete predecessor stream and install a
     /// content-addressed checkpoint reference.
     pub fn compact_native_journal(&mut self) -> Result<NativeMaintenanceReceipt, Error> {
+        self.ensure_native_writer_available()?;
         let now_unix_ms = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_err(|_| Error::InvalidTime)?

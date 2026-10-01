@@ -6,7 +6,7 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
-fn binding() -> CodexTurnBinding {
+pub(super) fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
     CodexTurnBinding {
         intent: CodexOperationIntent {
@@ -32,7 +32,7 @@ fn binding() -> CodexTurnBinding {
     }
 }
 
-fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
+pub(super) fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
     RemoteAppServerObservedEvent::from_test_event(
         AppServerEvent::ServerNotification(Box::new(notification)),
         7,
@@ -46,10 +46,15 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut ObservedAgentMessages::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
-fn output() -> NativeRunOutput {
+pub(super) fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
         turn_id: "turn-a".to_string(),
@@ -163,6 +168,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut messages = ObservedAgentMessages::default();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +177,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    output_message_tests::observe_message(
+        &mut output,
+        &mut messages,
+        delta("unrelated", "discard".to_string()),
+    )
+    .unwrap();
+    output_message_tests::observe_message(
+        &mut output,
+        &mut messages,
+        delta("thread-a", "model output".to_string()),
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        output_message_tests::observe_message(
+            &mut output,
+            &mut messages,
+            delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -397,24 +418,29 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
+#[cfg(unix)]
+fn assert_durable_dispatch_before_final_revalidation(
+    journal: &std::path::Path,
+    request_id: &str,
+) -> Result<()> {
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+
+    // The live writer is paused at final revalidation. Replay an independent
+    // copy to verify the actual durable boundary without opening a second writer.
+    let snapshot_directory = tempfile::tempdir()?;
+    let snapshot_journal = snapshot_directory.path().join("dispatch.journal");
+    std::fs::copy(journal, &snapshot_journal)?;
+    let snapshot = DurableInferenceControl::open(&snapshot_journal, 8)?;
+    let record = snapshot
+        .native_record(request_id)
+        .ok_or("missing durably dispatched final-use request")?;
+    assert_eq!(record.state, NativeReservationState::Dispatching);
+    assert!(record.dispatch.is_some());
+    assert_eq!(record.turn_id, None);
+    assert_eq!(record.observation, None);
+    assert_eq!(record.pre_dispatch_stop, None);
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -450,8 +476,21 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Reuse the existing test-support resolver for a real local helper binary;
+    // constructing this command does not launch Codex or contact a provider.
+    let codex_self_exe = std::path::PathBuf::from(
+        core_test_support::test_codex_exec::test_codex_exec()
+            .cmd()
+            .get_program(),
+    );
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_self_exe,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -484,7 +523,20 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             Some("lemon".to_string()),
             &CancellationToken::new(),
         )
-        .await?;
+        .await;
+    if let Err(error) = &accepted {
+        let provider_requests = server
+            .received_requests()
+            .await
+            .unwrap_or_default()
+            .iter()
+            .map(|request| (request.method.to_string(), request.url.path().to_string()))
+            .collect::<Vec<_>>();
+        eprintln!(
+            "fresh-context worker failed: {error}; loopback provider requests: {provider_requests:?}"
+        );
+    }
+    let accepted = accepted?;
     assert!(
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
@@ -535,6 +587,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
     let mutation = async {
         hook.reached.notified().await;
+        assert_durable_dispatch_before_final_revalidation(&journal, RACE_REQUEST_ID)?;
+        assert_eq!(
+            server
+                .received_requests()
+                .await
+                .unwrap_or_default()
+                .iter()
+                .filter(|request| request.url.path().ends_with("/responses"))
+                .count(),
+            1,
+            "physical model use must wait for final cognitive revalidation",
+        );
         let result = host
             .tombstone(&race_memory, "revoked during final-use race")
             .await;
@@ -591,6 +655,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
     let correction = async {
         correction_hook.reached.notified().await;
+        assert_durable_dispatch_before_final_revalidation(&journal, CORRECTION_REQUEST_ID)?;
+        assert_eq!(
+            server
+                .received_requests()
+                .await
+                .unwrap_or_default()
+                .iter()
+                .filter(|request| request.url.path().ends_with("/responses"))
+                .count(),
+            1,
+            "physical model use must wait for final cognitive revalidation",
+        );
         let result = host.correct(&correction_memory, CORRECTED_MEMORY).await;
         correction_hook.release.notify_one();
         result

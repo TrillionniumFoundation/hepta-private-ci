@@ -46,6 +46,11 @@ struct NativeExecutionAuthority<'a> {
     output_protector: Option<&'a dyn NativeOutputProtector>,
 }
 
+struct NativeRunBindings<'a> {
+    intelligence: Option<&'a NativeIntelligenceRunBinding>,
+    authority: Option<NativeExecutionAuthority<'a>>,
+}
+
 impl AppServerModelDriver {
     /// Compatibility profile for historical callers. It does not mint an exact
     /// quota/resource/model execution plan and therefore must not be selected by
@@ -63,8 +68,10 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            /*intelligence*/ None,
-            /*authority*/ None,
+            NativeRunBindings {
+                intelligence: None,
+                authority: None,
+            },
             cancellation,
         )
         .await
@@ -87,17 +94,23 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            None,
-            Some(NativeExecutionAuthority {
-                plan,
-                output_protector: None,
-            }),
+            NativeRunBindings {
+                intelligence: None,
+                authority: Some(NativeExecutionAuthority {
+                    plan,
+                    output_protector: None,
+                }),
+            },
             cancellation,
         )
         .await
     }
 
     /// Production execution with a host-selected KMS/vault output protector.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "Preserve the public execution-plan, output-protector, and cancellation API"
+    )]
     pub async fn run_authorized_with_output_protector(
         &self,
         control: &mut dyn NativeControlPort,
@@ -113,11 +126,13 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            None,
-            Some(NativeExecutionAuthority {
-                plan,
-                output_protector: Some(output_protector),
-            }),
+            NativeRunBindings {
+                intelligence: None,
+                authority: Some(NativeExecutionAuthority {
+                    plan,
+                    output_protector: Some(output_protector),
+                }),
+            },
             cancellation,
         )
         .await
@@ -140,14 +155,20 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            Some(&intelligence),
-            None,
+            NativeRunBindings {
+                intelligence: Some(&intelligence),
+                authority: None,
+            },
             cancellation,
         )
         .await
     }
 
     /// Exact-plan production spelling for an Agentd intelligence handoff.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "Preserve the public execution-plan, output-protector, and cancellation API"
+    )]
     pub async fn run_intelligence_authorized(
         &self,
         control: &mut dyn NativeControlPort,
@@ -164,11 +185,13 @@ impl AppServerModelDriver {
             admission,
             prompt,
             context_query,
-            Some(&intelligence),
-            Some(NativeExecutionAuthority {
-                plan,
-                output_protector,
-            }),
+            NativeRunBindings {
+                intelligence: Some(&intelligence),
+                authority: Some(NativeExecutionAuthority {
+                    plan,
+                    output_protector,
+                }),
+            },
             cancellation,
         )
         .await
@@ -180,10 +203,13 @@ impl AppServerModelDriver {
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
-        intelligence: Option<&NativeIntelligenceRunBinding>,
-        authority: Option<NativeExecutionAuthority<'_>>,
+        bindings: NativeRunBindings<'_>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
+        let NativeRunBindings {
+            intelligence,
+            authority,
+        } = bindings;
         // Compatibility spelling remains source-compatible but cannot perform
         // reservations, RPCs or effects in the production library.
         if authority.is_none() && !cfg!(test) {
@@ -330,71 +356,8 @@ impl AppServerModelDriver {
                         })
                     }
                     Some(authority) => {
-                        let live_output = output.clone();
-                        let now_unix_ms = unix_time_ms()?;
-                        let protected_output = if output.output.is_empty() {
-                            None
-                        } else if authority.plan.output_policy().storage_mode
-                            == OutputStorageMode::ExternalEncrypted
-                        {
-                            let protector = authority
-                                .output_protector
-                                .ok_or("missing native output protector")?;
-                            match protector
-                                .protect(authority.plan, output.output.as_bytes(), now_unix_ms)
-                                .await
-                            {
-                                Ok(protected) => Some(protected),
-                                Err(error) => {
-                                    let quarantine = NativeRunOutput {
-                                        thread_id: output.thread_id.clone(),
-                                        turn_id: output.turn_id.clone(),
-                                        model: output.model.clone(),
-                                        model_provider: output.model_provider.clone(),
-                                        status: NativeRunStatus::Indeterminate,
-                                        boundary_status: NativeBoundaryStatus::Quarantined,
-                                        output: String::new(),
-                                        observed_output_tokens: output.observed_output_tokens,
-                                        terminal_observed: false,
-                                        owner_authority: NativeOwnerAuthority::Unverified,
-                                        stop_reason: Some(
-                                            format!(
-                                                "output protection failed after effect: {error}"
-                                            )
-                                            .chars()
-                                            .take(1024)
-                                            .collect(),
-                                        ),
-                                        codex_terminal_correlation_digest: None,
-                                    };
-                                    control
-                                        .settle_native_authorized(
-                                            &request_id,
-                                            authority.plan,
-                                            now_unix_ms,
-                                            quarantine,
-                                            None,
-                                        )
-                                        .await?;
-                                    return Err(format!(
-                                        "output protection failed after effect; execution quarantined: {error}"
-                                    )
-                                    .into());
-                                }
-                            }
-                        } else {
-                            None
-                        };
-                        control
-                            .settle_native_authorized(
-                                &request_id,
-                                authority.plan,
-                                now_unix_ms,
-                                output,
-                                protected_output,
-                            )
-                            .await?;
-                        Ok(live_output)
+                        settle_authorized_native_output(control, &request_id, authority, output)
+                            .await
                     }
                 }
             }
@@ -414,6 +377,80 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+async fn settle_authorized_native_output(
+    control: &mut dyn NativeControlPort,
+    request_id: &str,
+    authority: NativeExecutionAuthority<'_>,
+    output: NativeRunOutput,
+) -> Result<NativeRunOutput> {
+    let live_text = output.output.clone();
+    let now_unix_ms = unix_time_ms()?;
+    let protected_output = if output.output.is_empty() && !output.terminal_observed {
+        None
+    } else if authority.plan.output_policy().storage_mode == OutputStorageMode::ExternalEncrypted {
+        let protector = authority
+            .output_protector
+            .ok_or("missing native output protector")?;
+        match protector
+            .protect(authority.plan, output.output.as_bytes(), now_unix_ms)
+            .await
+        {
+            Ok(protected) => Some(protected),
+            Err(error) => {
+                let quarantine = NativeRunOutput {
+                    thread_id: output.thread_id.clone(),
+                    turn_id: output.turn_id.clone(),
+                    model: output.model.clone(),
+                    model_provider: output.model_provider.clone(),
+                    status: NativeRunStatus::Indeterminate,
+                    boundary_status: NativeBoundaryStatus::Quarantined,
+                    output: String::new(),
+                    observed_output_tokens: output.observed_output_tokens,
+                    terminal_observed: false,
+                    owner_authority: NativeOwnerAuthority::Unverified,
+                    stop_reason: Some(
+                        format!("output protection failed after effect: {error}")
+                            .chars()
+                            .take(1024)
+                            .collect(),
+                    ),
+                    codex_terminal_correlation_digest: None,
+                };
+                control
+                    .settle_native_authorized(
+                        request_id,
+                        authority.plan,
+                        now_unix_ms,
+                        quarantine,
+                        None,
+                    )
+                    .await?;
+                return Err(format!(
+                    "output protection failed after effect; execution quarantined: {error}"
+                )
+                .into());
+            }
+        }
+    } else {
+        None
+    };
+    let settled = control
+        .settle_native_authorized(
+            request_id,
+            authority.plan,
+            now_unix_ms,
+            output,
+            protected_output,
+        )
+        .await?;
+    // Return live text only after adopting the writer's final qualification.
+    let mut observed = settled
+        .observation
+        .ok_or("authorized settlement omitted its normalized observation")?;
+    observed.output = live_text;
+    Ok(observed)
 }
 
 fn native_source_payload_digest(
@@ -460,3 +497,7 @@ pub(super) fn digest(bytes: &[u8]) -> String {
 #[cfg(test)]
 #[path = "native_run_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_authorized_settlement_tests.rs"]
+mod authorized_settlement_tests;

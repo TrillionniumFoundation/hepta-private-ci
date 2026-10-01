@@ -13,6 +13,9 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use crate::control_port::NativeControlPort;
+
+#[path = "native_output_messages.rs"]
+mod output_messages;
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
@@ -70,6 +73,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use output_messages::ObservedAgentMessages;
 
 #[path = "native_run_control.rs"]
 mod control;
@@ -471,7 +475,8 @@ impl AppServerModelDriver {
                 /*event_channel_capacity*/ 256,
             ),
         )
-        .await??;
+        .await
+        .map_err(|_| "App Server initialize connection timed out before model dispatch")??;
         let codex_home = client
             .codex_home()
             .ok_or("App Server initialize response omitted codex home")?
@@ -501,7 +506,8 @@ impl AppServerModelDriver {
                 },
             }),
         )
-        .await??;
+        .await
+        .map_err(|_| "App Server thread/start timed out before model dispatch")??;
         if started.model != self.config.model {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
@@ -646,18 +652,20 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            PersistedDispatchExpectation {
+                payload_digest,
+                request_digest: request_receipt.request_digest,
+                source_admission_digest,
+                codex_home_digest,
+                connection_id,
+                session_id: &started.thread.session_id,
+                deadline_ms: adapter_intent.deadline_ms,
+                authority_epoch,
+                revocation_revision,
+                revocation_head_digest: &revocation_head_digest,
+                authority_witness: &authority_witness,
+                app_server_version: &app_server_version,
+            },
         )
         .await?;
 
@@ -930,10 +938,11 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut messages = ObservedAgentMessages::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                (&mut output, &mut messages),
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -943,17 +952,16 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -974,7 +982,7 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    (&mut output, &mut messages),
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -1038,7 +1046,7 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        (output, messages): (&mut NativeRunOutput, &mut ObservedAgentMessages),
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1060,7 +1068,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1177,21 +1185,25 @@ async fn send_authorized_turn_start(
         .await
 }
 
-async fn verify_persisted_dispatch_binding(
-    control: &dyn NativeControlPort,
-    request_id: &str,
+struct PersistedDispatchExpectation<'a> {
     payload_digest: Digest32,
     request_digest: Digest32,
     source_admission_digest: Digest32,
     codex_home_digest: Digest32,
     connection_id: u64,
-    session_id: &str,
+    session_id: &'a str,
     deadline_ms: u64,
     authority_epoch: u64,
     revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    revocation_head_digest: &'a str,
+    authority_witness: &'a str,
+    app_server_version: &'a str,
+}
+
+async fn verify_persisted_dispatch_binding(
+    control: &dyn NativeControlPort,
+    request_id: &str,
+    expected: PersistedDispatchExpectation<'_>,
 ) -> Result<()> {
     let record = control
         .native_record(request_id)
@@ -1201,23 +1213,24 @@ async fn verify_persisted_dispatch_binding(
         .dispatch
         .as_ref()
         .ok_or("runtime.codex dispatch binding was not durably published")?;
-    let payload_digest = payload_digest.to_string();
-    let request_digest = request_digest.to_string();
-    let source_admission_digest = source_admission_digest.to_string();
-    let codex_home_digest = codex_home_digest.to_string();
+    let payload_digest = expected.payload_digest.to_string();
+    let request_digest = expected.request_digest.to_string();
+    let source_admission_digest = expected.source_admission_digest.to_string();
+    let codex_home_digest = expected.codex_home_digest.to_string();
     let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
         && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
         && dispatch.codex_source_admission_digest.as_deref()
             == Some(source_admission_digest.as_str())
         && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-        && dispatch.codex_connection_id == Some(connection_id)
-        && dispatch.codex_session_id.as_deref() == Some(session_id)
-        && dispatch.codex_deadline_ms == Some(deadline_ms)
-        && dispatch.codex_authority_epoch == Some(authority_epoch)
-        && dispatch.codex_revocation_revision == Some(revocation_revision)
-        && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
-        && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
-        && dispatch.app_server_version.as_deref() == Some(app_server_version)
+        && dispatch.codex_connection_id == Some(expected.connection_id)
+        && dispatch.codex_session_id.as_deref() == Some(expected.session_id)
+        && dispatch.codex_deadline_ms == Some(expected.deadline_ms)
+        && dispatch.codex_authority_epoch == Some(expected.authority_epoch)
+        && dispatch.codex_revocation_revision == Some(expected.revocation_revision)
+        && dispatch.codex_revocation_head_sha256.as_deref()
+            == Some(expected.revocation_head_digest)
+        && dispatch.codex_authority_witness_sha256.as_deref() == Some(expected.authority_witness)
+        && dispatch.app_server_version.as_deref() == Some(expected.app_server_version)
         && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
     if !exact {
         return Err("durable runtime.codex dispatch binding changed before physical send".into());
@@ -1454,6 +1467,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut ObservedAgentMessages,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1464,10 +1478,21 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &started.item {
+                messages.start(&mut output.output, id, text)?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.complete(&mut output.output, id, text)?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1527,3 +1552,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_output_messages_tests.rs"]
+mod output_message_tests;

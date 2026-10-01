@@ -68,17 +68,15 @@ impl DurableInferenceControl {
     }
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
-        let mut next = self.native.clone();
-        next.apply(event.clone())?;
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
+        let (next, maximum_in_flight) = self.native.stage_record_event(request_id, event)?;
+        let next_id = next.request.request_id.clone();
+        let receipt = next.clone();
         self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
-        self.native = next;
-        self.native
-            .records
-            .get(request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+        self.native.records.insert(next_id, next);
+        self.native.maximum_in_flight = maximum_in_flight;
+        Ok(receipt)
     }
 
     fn compact_native_journal_inner(
@@ -86,7 +84,9 @@ impl DurableInferenceControl {
         now_unix_ms: u64,
         failpoint: &mut dyn NativeMaintenanceFailpoint,
     ) -> Result<NativeMaintenanceReceipt, Error> {
-        let current_bytes = fs::read(&self.path)?;
+        let current_bytes = read_bounded(&self.path, super::MAX_JOURNAL_BYTES).inspect_err(|_| {
+            self.poisoned = true;
+        })?;
         if current_bytes.len() as u64 != self.journal_bytes {
             return Err(Error::CorruptJournal("journal metadata drift"));
         }
@@ -209,23 +209,20 @@ impl DurableInferenceControl {
         failpoint.hit(NativeMaintenanceStage::AfterGenerationSync)?;
 
         fs::rename(&temp_path, &self.path)?;
-        failpoint.hit(NativeMaintenanceStage::AfterGenerationRename)
-            .map_err(|error| {
-                self.poisoned = true;
-                error
-            })?;
+        // The active path now names another generation. Any failure until the
+        // new descriptor and replayed state are installed fences this owner,
+        // including validation errors beyond the I/O errors handled outside.
+        self.poisoned = true;
+        failpoint.hit(NativeMaintenanceStage::AfterGenerationRename)?;
         sync_directory(&parent)?;
-        failpoint.hit(NativeMaintenanceStage::AfterParentSync)
-            .map_err(|error| {
-                self.poisoned = true;
-                error
-            })?;
+        failpoint.hit(NativeMaintenanceStage::AfterParentSync)?;
 
         let mut next = NativeJournal::default();
         next.apply(reference)?;
         self.file = replacement;
         self.native = next;
         self.journal_bytes = next_active.len() as u64;
+        self.poisoned = false;
 
         Ok(NativeMaintenanceReceipt {
             generation,

@@ -440,6 +440,7 @@ pub fn verify_execution_plan(
     ];
     let mut authenticated_keys = BTreeMap::new();
     let mut consumed_signatures = BTreeSet::new();
+    let mut consumed_public_keys = BTreeSet::new();
     for (role, signer_id) in required {
         let signature = signed
             .signatures
@@ -452,7 +453,15 @@ pub fn verify_execution_plan(
                         .is_some_and(|key| key.role == role)
             })
             .ok_or(ContractError::SignatureQuorum)?;
-        if !consumed_signatures.insert(signature.key_id.clone()) {
+        let public_key = trust
+            .keys
+            .get(&signature.key_id)
+            .ok_or(ContractError::UnknownTrustKey)?
+            .verifying_key
+            .to_bytes();
+        if !consumed_signatures.insert(signature.key_id.clone())
+            || !consumed_public_keys.insert(public_key)
+        {
             return Err(ContractError::SignatureQuorum);
         }
         trust.verify(
@@ -590,6 +599,16 @@ impl VerifiedReconciliationReceipt {
     pub fn authenticated_key_id(&self) -> &str {
         &self.authenticated_key_id
     }
+
+    /// Recheck the signed receipt window at the durable consumption boundary.
+    pub fn assert_valid_at(&self, now_unix_ms: u64) -> Result<(), ContractError> {
+        validate_time_window(
+            now_unix_ms,
+            self.receipt.issued_at_unix_ms,
+            self.receipt.expires_at_unix_ms,
+            MAX_RECEIPT_LIFETIME_MS,
+        )
+    }
 }
 
 /// Verify a signed terminal receipt against one exact execution plan.
@@ -670,6 +689,7 @@ pub struct VerifiedRetirement {
     retirement_digest: String,
     operator_ids: [String; 2],
     key_ids: [String; 2],
+    key_fingerprints: [String; 2],
 }
 
 impl VerifiedRetirement {
@@ -687,6 +707,21 @@ impl VerifiedRetirement {
 
     pub fn key_ids(&self) -> &[String; 2] {
         &self.key_ids
+    }
+
+    /// Domain-separated fingerprints of the two independently verified public keys.
+    pub fn key_fingerprints(&self) -> &[String; 2] {
+        &self.key_fingerprints
+    }
+
+    /// Recheck the signed approval window at the durable consumption boundary.
+    pub fn assert_valid_at(&self, now_unix_ms: u64) -> Result<(), ContractError> {
+        validate_time_window(
+            now_unix_ms,
+            self.retirement.issued_at_unix_ms,
+            self.retirement.expires_at_unix_ms,
+            MAX_RETIREMENT_LIFETIME_MS,
+        )
     }
 }
 
@@ -715,6 +750,17 @@ pub fn verify_indeterminate_retirement(
     if first.key_id == second.key_id || first.signer_id == second.signer_id {
         return Err(ContractError::SignatureQuorum);
     }
+    let first_key = trust
+        .keys
+        .get(&first.key_id)
+        .ok_or(ContractError::UnknownTrustKey)?;
+    let second_key = trust
+        .keys
+        .get(&second.key_id)
+        .ok_or(ContractError::UnknownTrustKey)?;
+    if first_key.verifying_key == second_key.verifying_key {
+        return Err(ContractError::SignatureQuorum);
+    }
     let signing_bytes = retirement.signing_bytes()?;
     trust.verify(
         TrustRole::RetirementOperator,
@@ -739,6 +785,16 @@ pub fn verify_indeterminate_retirement(
         retirement_digest,
         operator_ids: [first.signer_id.clone(), second.signer_id.clone()],
         key_ids: [first.key_id.clone(), second.key_id.clone()],
+        key_fingerprints: [
+            digest_domain(
+                b"hepta.inference-control.retirement-verifying-key.v1\0",
+                &first_key.verifying_key.to_bytes(),
+            )?,
+            digest_domain(
+                b"hepta.inference-control.retirement-verifying-key.v1\0",
+                &second_key.verifying_key.to_bytes(),
+            )?,
+        ],
     })
 }
 
@@ -759,6 +815,68 @@ pub struct ProtectedOutput {
 }
 
 impl ProtectedOutput {
+    /// Validate deserialized protection metadata against the signed data policy.
+    /// This binds metadata only; the vault adapter still owns actual encryption.
+    pub fn assert_matches_policy(
+        &self,
+        now_unix_ms: u64,
+        policy: &OutputDataPolicy,
+    ) -> Result<(), ContractError> {
+        validate_output_policy(now_unix_ms, policy)?;
+        self.validate_structure()?;
+        if self.classification != policy.classification
+            || self.storage_mode != policy.storage_mode
+            || self.delete_after_unix_ms != policy.delete_after_unix_ms
+            || self.encryption_key_id != policy.encryption_key_id
+        {
+            return Err(ContractError::InvalidDataPolicy);
+        }
+        Ok(())
+    }
+
+    // Structural validity is independent from wall time so expired historical
+    // references remain replayable for the separately verified deletion policy.
+    fn validate_structure(&self) -> Result<(), ContractError> {
+        validate_digest(&self.output_digest, "output")?;
+        if self.delete_after_unix_ms == 0 {
+            return Err(ContractError::InvalidDataPolicy);
+        }
+        match self.storage_mode {
+            OutputStorageMode::DigestOnly => {
+                if self.encrypted_reference.is_some()
+                    || self.ciphertext_digest.is_some()
+                    || self.encryption_key_id.is_some()
+                    || matches!(
+                        self.classification,
+                        OutputClassification::Confidential | OutputClassification::Restricted
+                    )
+                {
+                    return Err(ContractError::InvalidDataPolicy);
+                }
+            }
+            OutputStorageMode::ExternalEncrypted => {
+                validate_reference(
+                    self.encrypted_reference
+                        .as_deref()
+                        .ok_or(ContractError::InvalidDataPolicy)?,
+                )?;
+                validate_digest(
+                    self.ciphertext_digest
+                        .as_deref()
+                        .ok_or(ContractError::InvalidDataPolicy)?,
+                    "ciphertext",
+                )?;
+                validate_id(
+                    self.encryption_key_id
+                        .as_deref()
+                        .ok_or(ContractError::InvalidDataPolicy)?,
+                    "encryption key",
+                )?;
+            }
+        }
+        Ok(())
+    }
+
     /// Produce a digest-only representation. This is valid only for a policy
     /// which selected digest-only persistence.
     pub fn digest_only(
@@ -812,6 +930,7 @@ impl ProtectedOutput {
     }
 
     pub fn journal_marker(&self) -> Result<String, ContractError> {
+        self.validate_structure()?;
         let json = serde_json::to_vec(self).map_err(|_| ContractError::InvalidDataPolicy)?;
         Ok(format!(
             "hepta-protected-output-v1:{}",
@@ -1361,7 +1480,7 @@ mod tests {
         assert_eq!(plan.manifest().model_digest, "1".repeat(64));
         assert_eq!(plan.authenticated_keys().len(), 4);
 
-        let mut drifted = signed.clone();
+        let mut drifted = signed;
         drifted.bundle.manifest.tokenizer_digest = "9".repeat(64);
         assert_eq!(
             verify_execution_plan(NOW, &trust, &drifted),
@@ -1427,6 +1546,16 @@ mod tests {
         let verified = verify_reconciliation_receipt(NOW, &trust, &plan, &signed).unwrap();
         assert_eq!(verified.receipt().terminal_sequence, 7);
 
+        assert_eq!(verified.assert_valid_at(NOW), Ok(()));
+        assert_eq!(
+            verified.assert_valid_at(NOW - 2),
+            Err(ContractError::NotYetValid)
+        );
+        assert_eq!(
+            verified.assert_valid_at(NOW + 100),
+            Err(ContractError::Expired)
+        );
+
         let mut drifted = signed;
         drifted.receipt.turn_id = "turn-2".into();
         assert_eq!(
@@ -1472,10 +1601,99 @@ mod tests {
             &["operator-a".to_string(), "operator-b".to_string()]
         );
 
+        assert_eq!(
+            verified.key_fingerprints(),
+            &[
+                digest_domain(
+                    b"hepta.inference-control.retirement-verifying-key.v1\0",
+                    &keys.operator_a.verifying_key().to_bytes()
+                )
+                .unwrap(),
+                digest_domain(
+                    b"hepta.inference-control.retirement-verifying-key.v1\0",
+                    &keys.operator_b.verifying_key().to_bytes()
+                )
+                .unwrap(),
+            ]
+        );
+        assert_ne!(
+            verified.key_fingerprints()[0],
+            verified.key_fingerprints()[1]
+        );
+
+        assert_eq!(verified.assert_valid_at(NOW), Ok(()));
+        assert_eq!(
+            verified.assert_valid_at(NOW - 2),
+            Err(ContractError::NotYetValid)
+        );
+        assert_eq!(
+            verified.assert_valid_at(NOW + 100),
+            Err(ContractError::Expired)
+        );
+
         let mut one_person = signed;
         one_person.approvals[1] = one_person.approvals[0].clone();
         assert_eq!(
             verify_indeterminate_retirement(NOW, &trust, &plan, &one_person),
+            Err(ContractError::SignatureQuorum)
+        );
+    }
+
+    #[test]
+    fn four_authority_aliases_cannot_reuse_one_execution_signing_key() {
+        let mut keys = keys();
+        keys.quota = keys.manifest.clone();
+        keys.resource = keys.manifest.clone();
+        keys.data = keys.manifest.clone();
+        let trust = trust(&keys);
+        let signed = signed_bundle(&keys);
+        assert_eq!(
+            verify_execution_plan(NOW, &trust, &signed),
+            Err(ContractError::SignatureQuorum)
+        );
+    }
+
+    #[test]
+    fn distinct_operator_aliases_cannot_reuse_one_retirement_key() {
+        let mut keys = keys();
+        keys.operator_b = keys.operator_a.clone();
+        let trust = trust(&keys);
+        let plan = verify_execution_plan(NOW, &trust, &signed_bundle(&keys)).unwrap();
+        let retirement = IndeterminateRetirement {
+            schema_version: 1,
+            authority_epoch: 3,
+            request_id: plan.request_id().into(),
+            principal_id: plan.principal_id().into(),
+            execution_binding_digest: plan.execution_binding_digest().into(),
+            dispatch_digest: "a".repeat(64),
+            record_revision: 5,
+            reason_code: "provider_unrecoverable".into(),
+            reason: "provider has no independently recoverable terminal record".into(),
+            issued_at_unix_ms: NOW - 1,
+            expires_at_unix_ms: NOW + 100,
+        };
+        let signature = keys
+            .operator_a
+            .sign(&retirement.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        let signed = SignedIndeterminateRetirement {
+            retirement,
+            approvals: vec![
+                ControlSignature {
+                    key_id: "operator-key-a".into(),
+                    signer_id: "operator-a".into(),
+                    signature: signature.clone(),
+                },
+                ControlSignature {
+                    key_id: "operator-key-b".into(),
+                    signer_id: "operator-b".into(),
+                    signature,
+                },
+            ],
+        };
+        assert_eq!(
+            verify_indeterminate_retirement(NOW, &trust, &plan, &signed),
             Err(ContractError::SignatureQuorum)
         );
     }
@@ -1508,5 +1726,94 @@ mod tests {
         .unwrap();
         assert!(!protected.journal_marker().unwrap().contains("secret"));
         assert_eq!(protected.encryption_key_id.as_deref(), Some("key-1"));
+
+        assert_eq!(protected.assert_matches_policy(NOW, &policy), Ok(()));
+        assert_eq!(
+            protected.assert_matches_policy(NOW + 1_000, &policy),
+            Err(ContractError::InvalidDataPolicy)
+        );
+        let mut missing_reference = protected.clone();
+        missing_reference.encrypted_reference = None;
+        let mut missing_ciphertext = protected.clone();
+        missing_ciphertext.ciphertext_digest = None;
+        let mut missing_key = protected.clone();
+        missing_key.encryption_key_id = None;
+        let mut wrong_key = protected.clone();
+        wrong_key.encryption_key_id = Some("other-key".into());
+        let mut wrong_expiry = protected;
+        wrong_expiry.delete_after_unix_ms += 1;
+        for drifted in [
+            missing_reference,
+            missing_ciphertext,
+            missing_key,
+            wrong_key,
+            wrong_expiry,
+        ] {
+            assert_eq!(
+                drifted.assert_matches_policy(NOW, &policy),
+                Err(ContractError::InvalidDataPolicy)
+            );
+        }
+    }
+    #[test]
+    fn deserialized_protected_metadata_is_checked_before_marker_hashing() {
+        let valid = serde_json::json!({
+            "output_digest": "a".repeat(64),
+            "classification": "confidential",
+            "storage_mode": "external_encrypted",
+            "delete_after_unix_ms": 1,
+            "encrypted_reference": "vault://namespace/object",
+            "ciphertext_digest": "b".repeat(64),
+            "encryption_key_id": "key-1"
+        });
+        // Expired historical metadata remains structurally valid. Replay must
+        // retain its reference until separately authenticated deletion evidence.
+        let expired: ProtectedOutput = serde_json::from_value(valid.clone()).unwrap();
+        assert!(expired.journal_marker().is_ok());
+        for (field, value) in [
+            ("output_digest", serde_json::json!("0".repeat(64))),
+            ("delete_after_unix_ms", serde_json::json!(0)),
+            ("encrypted_reference", serde_json::Value::Null),
+            (
+                "encrypted_reference",
+                serde_json::json!("vault://bad\nreference"),
+            ),
+            (
+                "encrypted_reference",
+                serde_json::json!("r".repeat(MAX_REFERENCE_BYTES + 1)),
+            ),
+            ("ciphertext_digest", serde_json::Value::Null),
+            ("ciphertext_digest", serde_json::json!("0".repeat(64))),
+            ("encryption_key_id", serde_json::Value::Null),
+            ("encryption_key_id", serde_json::json!("")),
+            (
+                "encryption_key_id",
+                serde_json::json!("k".repeat(MAX_ID_BYTES + 1)),
+            ),
+            ("encryption_key_id", serde_json::json!("invalid key")),
+            ("storage_mode", serde_json::json!("digest_only")),
+        ] {
+            let mut malformed = valid.clone();
+            malformed[field] = value;
+            let decoded: ProtectedOutput = serde_json::from_value(malformed).unwrap();
+            assert!(
+                decoded.journal_marker().is_err(),
+                "accepted malformed {field}"
+            );
+        }
+        let mut digest_only = valid;
+        digest_only["storage_mode"] = serde_json::json!("digest_only");
+        for field in [
+            "encrypted_reference",
+            "ciphertext_digest",
+            "encryption_key_id",
+        ] {
+            digest_only[field] = serde_json::Value::Null;
+        }
+        let confidential: ProtectedOutput = serde_json::from_value(digest_only.clone()).unwrap();
+        assert!(confidential.journal_marker().is_err());
+        digest_only["classification"] = serde_json::json!("internal");
+        let valid_digest_only: ProtectedOutput = serde_json::from_value(digest_only).unwrap();
+        assert!(valid_digest_only.journal_marker().is_ok());
     }
 }

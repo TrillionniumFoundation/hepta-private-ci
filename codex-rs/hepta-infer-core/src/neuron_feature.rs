@@ -243,13 +243,13 @@ fn validate_observation(
     request: &NeuronFeatureRequestV1,
     observation: &NeuronFeatureObservationV1,
 ) -> Result<(), NeuronFeatureContractError> {
+    if observation.encoder_digest != request.encoder_digest
+        || observation.head_digest != request.head_digest
+    {
+        return Err(NeuronFeatureContractError::OutputIdentityMismatch);
+    }
     match observation.status {
         NeuronFeatureTerminalStatusV1::Succeeded => {
-            if observation.encoder_digest != request.encoder_digest
-                || observation.head_digest != request.head_digest
-            {
-                return Err(NeuronFeatureContractError::OutputIdentityMismatch);
-            }
             if observation.drive_q24.len() != request.expected_output_width
                 || observation.prediction_q24.len() != request.expected_output_width
                 || observation

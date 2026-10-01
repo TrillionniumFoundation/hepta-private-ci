@@ -15,6 +15,10 @@ struct TestJournal {
 }
 
 impl TestJournal {
+    #[allow(
+        clippy::unwrap_used,
+        reason = "This helper prepares a test fixture and must fail on invalid setup"
+    )]
     fn new() -> Self {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)

@@ -664,6 +664,7 @@
       "lane": "B",
       "declaredRoots": [
         "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-infer-worker-host",
         "codex-rs/hepta-inferd"
       ],
       "workPackages": [
@@ -674,7 +675,7 @@
       ],
       "guide": "docs/modules/inference.control/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/inference.control.md",
-      "implementationState": "specified_not_product_evidence",
+      "implementationState": "source_implemented_product_composed_requires_candidate_evidence",
       "apiContract": "reserve_request(request,modelManifest,quota); schedule(reservation,eligibleWorkers); cancel(id,expectedRevision); settle(observation,epoch). Request/lease/reservation must bind identical model/payload.",
       "stateAndEncoding": "Request principal,model,payload,deadline,state; reservation quota/resource/worker generation; receipt usage/output digest/finality. One owner persists assignment with dispatch outbox.",
       "linearizationAndRecovery": "Owner CAS resolves cancel/finish: terminal observation is recorded once; late actual usage is still charged. Worker cannot refund the owner reservation. Unknown consumption stays held/quarantined.",
@@ -686,28 +687,48 @@
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-            "symbol": "reserve_native"
+            "path": "codex-rs/hepta-infer-core/src/control_contracts.rs",
+            "symbol": "verify_execution_plan"
           },
           {
-            "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-            "symbol": "dispatch_native"
+            "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+            "symbol": "bind_native_execution"
           },
           {
-            "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-            "symbol": "settle_native"
+            "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+            "symbol": "settle_native_authorized"
+          },
+          {
+            "path": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
+            "symbol": "reconcile_native_recovery"
+          },
+          {
+            "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_c.rs",
+            "symbol": "compact_native_journal_inner"
+          },
+          {
+            "path": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+            "symbol": "NativeJournalWriterActor"
           }
         ],
-        "stateAndRecovery": "DurableInferenceControl owns one locked, synced journal with additive native-v1 records. A reservation is a local in-flight slot; unknown execution retains capacity, unknown token usage remains None, and replay never dispatches a replacement turn.",
+        "stateAndRecovery": "One writer actor owns DurableInferenceControl with a stable lifecycle sidecar lock acquired before journal open/replay and retained across checkpoint replacement. Provider execution runs outside it. Four signed exact-plan bindings, protected settlement and fresh signed recovery or revision-bound dual control are source-composed; replay never dispatches. Checkpoints preserve all request identities and unknown usage/held capacity. Signed terminal evidence preserves historical owner authority or Unverified when absent, never inventing ObservedReady. Legacy compatibility is not the production effect path. Schema-2 checkpoints and schema-1 compatibility loads validate state/observation/audit release evidence. Old unsupported signed-reconciliation readiness becomes Unverified; historical retirement without actual-key fingerprints stays held Indeterminate until fresh independent approval. Over-budget recovered holds fail closed.",
         "testFiles": [
-          "codex-rs/hepta-infer-core/src/native_control_tests.rs"
+          "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs",
+          "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
+          "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs"
         ],
         "runtimeDocuments": [
-          "docs/readiness/LANE_B_NATIVE_HOST.md",
+          "docs/modules/inference.control/CURRENT_STATE_SOURCE.json",
+          "docs/modules/inference.control/TECHNICAL_STATUS.generated.md",
+          "docs/modules/inference.control/OPERATIONS.md",
+          "docs/modules/inference.control/WRITER_BOUNDARIES.md",
           "docs/modules/inference.control/IMPLEMENTATION_MAP.json"
         ],
         "remainingWork": [
-          "Integrate economic quota/hardware capacity authorities and authenticated post-crash provider reconciliation. Add bounded archival under the same owner before the 64 MiB journal ceiling is reached."
+          "Current operation/test/status truth is generated from CURRENT_STATE_SOURCE.json. Exact-head, deterministic base-merge and native-host evidence remain required; no deployed or independently accepted capability is self-certified.",
+          "Complete signed vault deletion confirmation, archive retention/transfer and telemetry export/alert delivery. Compaction is implemented but preserves all distinct request identities and does not remove the 16384 retained-record ceiling.",
+          "Compose a real neuron feature control port in the Agentd daemon lifecycle and connect enrolled-worker scheduling, real capacity observers and provider usage/billing through their existing owners. Signed declared quota/resource leases alone do not establish those facts."
         ]
       }
     },

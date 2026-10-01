@@ -16,6 +16,29 @@ DurableInferenceControl owner. No provider await enters that writer, no second
 journal is introduced, and no recovered effect is automatically dispatched.
 The existing output-protection and signed-recovery paths remain in force.
 
+The owner acquires a stable lifecycle sidecar lock before active journal
+open/replay and retains it across checkpoint inode replacement. The active
+generation also retains an inode lock for compatibility. Do not remove the
+sidecar after shutdown or maintenance; its stable identity is part of the
+writer fence.
+
+## Native record staging and publication
+
+`commit_native` stages the event's single target record through the same reducer
+used for replay, retaining the owner's complete authoritative map. Reserve first
+checks identity, pinned maximum and held slots against that full map; a one-record
+projection alone cannot decide admission. Serialization, the complete candidate,
+its return receipt and insertion key are prepared before journal append. After
+append, flush and `sync_all` succeed, only the target record and maximum-in-flight
+value are installed. Validation failure leaves state and bytes unchanged; uncertain
+append failure poisons the owner without publishing the candidate.
+
+`CheckpointReference` cannot use this path. Compaction separately stages the full
+checkpoint and retains its existing replacement and poisoning rules. Reserve still
+scans retained identities for held capacity, and the 16384 distinct-record ceiling
+still applies. Avoiding the full-journal clone is not a claim that every mutation
+is O(1), nor a measured host-performance result.
+
 ## Admission and response are different outcomes
 
 `Overloaded` and `Closed` from admission mean the command was not delivered to
@@ -36,6 +59,10 @@ the source of truth. Unknown after dispatch retains its slot.
 Response and shutdown budgets are configurable independently. Neither is a
 filesystem syscall cancellation mechanism. A blocked writer retains its actual
 lifecycle lock until it exits. A shutdown timeout never certifies cleanup.
+
+Exact-plan bind, authorized dispatch and settlement, and signed recovery/retirement
+sample authority freshness at writer application time. A queued command cannot
+keep an expired proof live by supplying its earlier admission-time timestamp.
 
 ## Two admission quotas, one FIFO ordering
 
@@ -92,6 +119,16 @@ production qualification. A declared service bound must separately be tested
 against real disk faults, maintenance, scheduling and provider/vault workloads.
 
 ## Tests and evidence scope
+
+`native_record_staging_tests.rs` adds four source regressions:
+
+- `staged_admission_counts_all_held_records_and_preserves_compacted_history`: full-map capacity, retained unrelated records and checkpoint metadata survive staged commits and reopen.
+- `late_reducer_failure_does_not_install_mutated_target_or_append`: revision overflow after candidate mutation leaves authoritative state and journal bytes unchanged.
+- `actual_append_failure_discards_target_and_first_admission_candidates`: a real read-only journal descriptor fails append, retains old records/budget, poisons the owner and reopens the prior durable cut.
+- `mismatched_event_identity_and_checkpoint_are_rejected_before_append`: mismatched target identity and checkpoint events cannot reach this append path.
+
+These are test-source identities; passing candidate receipts and performance
+qualification remain separate evidence.
 
 `control_actor_boundary_tests.rs` drives the actual journal actor, including
 accepted timeout followed by commit, lost terminal reply and restart, exact-ID

@@ -24,6 +24,10 @@ struct TestJournal {
 }
 
 impl TestJournal {
+    #[allow(
+        clippy::unwrap_used,
+        reason = "This helper prepares a test fixture and must fail on invalid setup"
+    )]
     fn new(label: &str) -> Self {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -116,6 +120,10 @@ fn an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated() {
     assert!(after.len() > original.len());
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn seed_released_request(journal: &Path, label: &str) {
     let request_id = format!("request-{label}");
     let mut control = DurableInferenceControl::open(journal, 8).unwrap();
@@ -136,6 +144,10 @@ fn seed_released_request(journal: &Path, label: &str) {
         .unwrap();
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "This helper prepares a test fixture and must fail on invalid setup"
+)]
 fn wait_for_marker(marker: &Path, child: &mut std::process::Child) {
     let deadline = Instant::now() + Duration::from_secs(20);
     loop {
