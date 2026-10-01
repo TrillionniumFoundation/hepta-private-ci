@@ -61,6 +61,26 @@ pub fn config_overrides(cognitive_write_enabled: bool) -> CliConfigOverrides {
         ],
     }
 }
+
+fn relay_config_overrides(
+    cognitive_write_enabled: bool,
+    relay_enabled: bool,
+) -> CliConfigOverrides {
+    let mut overrides = config_overrides(cognitive_write_enabled);
+    if relay_enabled {
+        overrides.raw_overrides.extend([
+            "model_provider=\"hepta-relay\"".to_owned(),
+            "model_providers.hepta-relay.name=\"Hepta model authority\"".to_owned(),
+            "model_providers.hepta-relay.base_url=\"http://localhost/hepta/v1\"".to_owned(),
+            "model_providers.hepta-relay.wire_api=\"responses\"".to_owned(),
+            "model_providers.hepta-relay.requires_openai_auth=false".to_owned(),
+            "model_providers.hepta-relay.supports_websockets=false".to_owned(),
+            "model_providers.hepta-relay.request_max_retries=0".to_owned(),
+            "model_providers.hepta-relay.stream_max_retries=0".to_owned(),
+        ]);
+    }
+    overrides
+}
 pub fn runtime_options(
     options: HeptaAppServerHostOptions,
 ) -> std::io::Result<AppServerRuntimeOptions> {
@@ -101,13 +121,19 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
     options: HeptaAppServerHostOptions,
 ) -> std::io::Result<()> {
+    let relay_enabled = std::env::var_os("HEPTA_MODEL_RELAY_SOCKET").is_some();
+    if relay_enabled && options.credential_profile_home.is_some() {
+        return Err(std::io::Error::other(
+            "model relay cannot expose a credential profile to the workload",
+        ));
+    }
     let socket_path_raw = options.socket_path.clone();
     let socket_path = AbsolutePathBuf::from_absolute_path(&socket_path_raw)?;
     let cognitive_write_enabled = options.effective_cognitive_write();
     let runtime_options = runtime_options(options)?;
     codex_app_server::run_main_with_transport_options(
         arg0_paths,
-        config_overrides(cognitive_write_enabled),
+        relay_config_overrides(cognitive_write_enabled, relay_enabled),
         LoaderOverrides::default(),
         true,
         false,

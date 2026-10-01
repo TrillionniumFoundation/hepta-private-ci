@@ -21,6 +21,7 @@ fn config() -> Config {
         allowed_executable_paths: BTreeSet::from(["/usr/bin/sleep".into()]),
         grant_lifetime_ms: 30_000,
         request_timeout_ms: 2_000,
+        model_relay: None,
     }
 }
 

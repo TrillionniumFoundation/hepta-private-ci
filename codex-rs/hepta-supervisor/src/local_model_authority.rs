@@ -39,6 +39,17 @@ use tokio::net::UnixListener;
 use tokio::net::UnixStream;
 use zeroize::Zeroizing;
 
+#[cfg(feature = "local-model-relay")]
+#[path = "local_model_credentials.rs"]
+mod credentials;
+#[cfg(feature = "local-model-relay")]
+#[path = "local_model_relay.rs"]
+mod relay;
+#[path = "local_model_relay_policy.rs"]
+mod relay_policy;
+#[cfg(feature = "local-model-relay")]
+pub use credentials::run_credential_worker;
+
 #[path = "local_model_executable.rs"]
 mod executable;
 #[path = "local_model_authority_store.rs"]
@@ -70,6 +81,8 @@ struct Config {
     allowed_executable_paths: BTreeSet<PathBuf>,
     grant_lifetime_ms: u64,
     request_timeout_ms: u64,
+    #[serde(default)]
+    model_relay: Option<relay_policy::ModelRelayPolicy>,
 }
 
 impl Config {
@@ -133,6 +146,13 @@ impl Config {
                         .bytes()
                         .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
                 "invalid enrolled executable digest"
+            );
+        }
+        if let Some(relay) = &self.model_relay {
+            relay.validate(self.workload_uid)?;
+            anyhow::ensure!(
+                relay.socket != self.issuer_socket,
+                "model endpoints must be distinct"
             );
         }
         Ok(())
@@ -422,6 +442,16 @@ impl Issuer {
                 && request.binding.destination_id == format!("codex-app-server:{connection}"),
             "model destination does not identify a canonical connection"
         );
+        Self::sign_binding(config, signer, clock, request.binding, head)
+    }
+
+    fn sign_binding(
+        config: &Config,
+        signer: &SigningKey,
+        clock: &dyn AuthorityClock,
+        binding: codex_hepta_contracts::FinalUseBinding,
+        head: &FinalUseRevocations,
+    ) -> anyhow::Result<SignedFinalUseGrant> {
         let now = clock.now_unix_ms()?;
         let mut nonce = [0_u8; 32];
         nonce[..16].copy_from_slice(uuid::Uuid::new_v4().as_bytes());
@@ -432,7 +462,7 @@ impl Issuer {
             authority_epoch: head.authority_epoch,
             grant_id: format!("model-{}", uuid::Uuid::new_v4()),
             nonce,
-            binding: request.binding,
+            binding,
             not_before_unix_ms: now,
             expires_at_unix_ms: now
                 .checked_add(config.grant_lifetime_ms)
@@ -614,14 +644,16 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
         config.socket_gid,
     )?;
     let timeout = Duration::from_millis(config.request_timeout_ms);
-    let issuer = Issuer {
+    let issuer = Arc::new(Issuer {
         config,
         signer,
         clock,
         authority,
         verifier,
         executables,
-    };
+    });
+    #[cfg(feature = "local-model-relay")]
+    let relay_task = relay::start(issuer.clone()).await?;
     loop {
         tokio::select! {
             result = listener.accept() => {
@@ -632,7 +664,12 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
                     eprintln!("ordinary model issuer exchange timed out");
                 }
             }
-            signal = tokio::signal::ctrl_c() => { signal?; return Ok(()); }
+            signal = tokio::signal::ctrl_c() => {
+                signal?;
+                #[cfg(feature = "local-model-relay")]
+                if let Some(task) = relay_task { task.abort(); let _ = task.await; }
+                return Ok(());
+            }
         }
     }
 }

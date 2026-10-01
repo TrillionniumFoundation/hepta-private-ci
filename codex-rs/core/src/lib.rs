@@ -212,6 +212,7 @@ pub use exec_policy::format_exec_policy_error_with_source;
 pub use exec_policy::load_exec_policy;
 pub use installation_id::resolve_installation_id;
 pub mod compact;
+mod hepta_model_transport;
 mod memory_usage;
 mod model_provider_policy;
 pub use model_provider_policy::MemoryModelProviderPolicyHandle;

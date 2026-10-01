@@ -5,6 +5,15 @@ fn main() -> anyhow::Result<()> {
     #[cfg(target_os = "linux")]
     {
         let args: Vec<_> = std::env::args_os().skip(1).collect();
+        #[cfg(feature = "local-model-relay")]
+        if args.len() == 2 && args[0] == "--credential-worker" {
+            return tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()?
+                .block_on(codex_hepta_supervisor::run_credential_worker(
+                    std::path::Path::new(&args[1]),
+                ));
+        }
         if args.len() != 2 || args[0] != "--config" {
             anyhow::bail!("usage: hepta-model-authority --config ROOT_PROTECTED_JSON");
         }

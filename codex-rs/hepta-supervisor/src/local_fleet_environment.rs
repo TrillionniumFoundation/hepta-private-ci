@@ -16,11 +16,13 @@ use super::trust;
 use crate::ProcessDriverError;
 
 const PROFILE: &str = "HEPTA_MODEL_CREDENTIAL_PROFILE_HOME";
+const RELAY: &str = "HEPTA_MODEL_RELAY_SOCKET";
 const CONFIG: &str = "HEPTA_SELF_ITERATION_HOST_CONFIG";
 const PIN: &str = "HEPTA_SELF_ITERATION_HOST_CONFIG_DIGEST";
 
 pub(super) struct LaunchEnvironment {
     profile: Option<OsString>,
+    relay: Option<OsString>,
     legacy_config: Option<PathBuf>,
     legacy_pin: Option<OsString>,
 }
@@ -29,6 +31,7 @@ impl LaunchEnvironment {
     pub(super) fn capture() -> Self {
         Self {
             profile: std::env::var_os(PROFILE),
+            relay: std::env::var_os(RELAY),
             legacy_config: std::env::var_os(CONFIG).map(PathBuf::from),
             legacy_pin: std::env::var_os(PIN),
         }
@@ -40,6 +43,24 @@ impl LaunchEnvironment {
         agent: &AgentId,
     ) -> Result<Vec<(OsString, OsString)>, ProcessDriverError> {
         let mut environment = Vec::new();
+        if self.relay.is_some() && self.profile.is_some() {
+            return Err(ProcessDriverError::new(
+                "model relay and direct credential profile are mutually exclusive",
+            ));
+        }
+        if let Some(relay) = &self.relay {
+            let path = Path::new(relay);
+            if !path.is_absolute()
+                || path
+                    .components()
+                    .any(|part| matches!(part, std::path::Component::ParentDir))
+            {
+                return Err(ProcessDriverError::new(
+                    "model relay socket must be absolute and normalized",
+                ));
+            }
+            environment.push((OsString::from(RELAY), relay.clone()));
+        }
         if let Some(profile) = &self.profile {
             environment.push((OsString::from(PROFILE), profile.clone()));
         }

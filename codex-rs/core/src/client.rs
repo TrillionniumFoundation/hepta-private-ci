@@ -1366,6 +1366,9 @@ impl ModelClient {
         endpoint: &str,
     ) -> Result<ReqwestTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(client) = crate::hepta_model_transport::client(&request_url)? {
+            return Ok(ReqwestTransport::from_http_client(client));
+        }
         let client = create_client_for_route(
             &self.http_client_factory,
             &request_url,
@@ -1381,6 +1384,9 @@ impl ModelClient {
         endpoint: &str,
     ) -> Result<ReqwestTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(client) = crate::hepta_model_transport::client(&request_url)? {
+            return Ok(ReqwestTransport::from_http_client(client));
+        }
         let client = create_client_for_sensitive_route(
             &self.http_client_factory,
             &request_url,

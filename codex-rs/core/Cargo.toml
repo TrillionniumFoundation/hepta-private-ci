@@ -139,6 +139,9 @@ openssl-sys = { workspace = true, features = ["vendored"] }
 [target.'cfg(unix)'.dependencies]
 codex-shell-escalation = { workspace = true }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+reqwest = { workspace = true }
+
 [dev-dependencies]
 codex-arg0 = { path = "../arg0" }
 assert_cmd = { workspace = true }
