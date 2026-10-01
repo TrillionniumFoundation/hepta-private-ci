@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a7aa3dcece181eebb0dbf85085cf128a9e58ca60",
-    "tree": "8d69bba9ee2cc3cdf960cc49115d3a21a06cb122"
+    "commit": "a897c20aa50d2c97d5dfa0e7078f8f8ab05c577f",
+    "tree": "dd3b2bb14d7310929a8adf1291cd2ca7c0b16846"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -31,6 +31,11 @@
         {
           "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "manifest_and_resource_binding",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_memory_tests.rs",
+          "kind": "unknown_transient_accounting_and_terminal_cleanup",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
@@ -102,6 +107,11 @@
         {
           "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "drain_and_unload",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_memory_tests.rs",
+          "kind": "unknown_transient_accounting_and_terminal_cleanup",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
