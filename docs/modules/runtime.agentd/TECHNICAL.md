@@ -209,7 +209,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 `AgentdState` owns exactly one mutex-protected `AgentRunCoordinator` for the process generation. Its active-run ceiling is the supervisor/Fleet `ResourceBudget.max_concurrent_turns` for this Agent (within the supported local bound), and it retains at most 1024 records until the terminal consumer explicitly releases a closed record. The coordinator freezes request/objective/body/artifact digests together with authority epoch and deadline; context attachment must repeat that complete tuple exactly. Attachment and dispatch re-check the deadline, cancellation records a bounded reason, and the runtime monitor continuously advances deadlines. Post-dispatch cancellation has a 3-second acknowledgement deadline; if no terminal owner observation arrives, the run becomes `Indeterminate`. Terminal observations preserve the dispatch-boundary distinction, and `RunReleaseClosed` removes a closed record only with its exact expected revision. Existing identical operations are idempotent; reused identities with changed semantics conflict.
 
-The run map is intentionally ephemeral and is not a second durable execution ledger. After process loss an external durable execution owner may supply the exact prior snapshot/revision/context/receipt identity through the recovery method; Agentd rehydrates it only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
+The live run map is a bounded runtime projection, not a second authoritative execution ledger. Its schema-2 `runtime-codex-agent-runs-v1.json` preserves complete snapshots and closed-record tombstones under the native file lock, canonical content digest and exact revision CAS. An external execution owner may still supply the exact prior snapshot/revision/context/receipt identity through explicit recovery; Agentd rehydrates dispatched uncertainty only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -222,6 +222,32 @@ The daemon coordinator exposes the owner-internal `start_revalidated_run_start` 
 Run deadlines remain live after admission: expiration before dispatch becomes a local terminal cancellation; expiration after dispatch moves the run to `Cancelling` and still requires owner terminal observation. Shutdown closes new admission before teardown, converts pre-dispatch work to local cancellation, moves dispatched work to cancelling, and keeps the control path running for a bounded drain. After the drain deadline, unresolved dispatched/cancelling work becomes `Indeterminate`; a second bounded reconciliation window accepts exact terminal observations. If uncertainty remains, shutdown reports recovery-required rather than fabricating success/failure.
 
 Recovery after process loss is explicit and non-authoritative: a durable external owner must provide the exact prior operation identity, and the new Agentd process can only rehydrate it as `Indeterminate`; the recovery API cannot redispatch. The local control server also distinguishes saturation from disappearance by returning a typed overload/retry frame instead of dropping the connection. `run.lifecycle/1.1` adds explicit closed-record release and exposes the pending cancellation-ack deadline in receipts so callers can reconcile rather than guess.
+
+### Verified same-Agent process restart
+
+Normal daemon startup may advance this existing projection only through the private
+`AgentdConfig` restart admission. It retains the original exclusive writer file
+description and freshly checks the exact same Agent, roots, immutable manifest,
+resources, sockets and current Fleet `Starting` event. An older composition must
+match the original composition formula for a real historical `Starting` event in
+that Agent's complete validated lifecycle history. A stopped event, future or
+different Agent, changed configuration/ports/resources, replaced lock path, or
+stale current lifecycle cannot authorize migration. The public strict store-open
+API continues to reject mixed compositions.
+
+The same store advances by one revision with the actual previous canonical SHA
+as its predecessor, after rechecking the full original SHA/revision and current
+launch fence under the native store lock. Every snapshot and tombstone survives;
+dispatched/cancelling records become `Indeterminate` with their original tuple and
+dispatch bindings, and are never automatically dispatched again. Unsent records
+retain their original phase and identity. Both dispatch methods require the
+current ready runtime and the original receipt's current generation/fence.
+Same-generation reopen does not write another revision.
+
+The existing format retains the immediately preceding digest, not older revision
+preimages or an independently signed historical chain. Migration validates the
+actual complete current predecessor and does not claim to authenticate unavailable
+older preimages. This path adds no store, signer, reset, or new external wire API.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -261,6 +287,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs) covers complete frozen-tuple binding, post-admission deadlines, reasoned cancellation, drain and explicit indeterminate recovery.
 - [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs) exercises the lifecycle methods through the real daemon control dispatch and verifies capability advertisement and terminal reconciliation during drain.
+- [codex-rs/hepta-agentd/src/lane_b_restart_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_restart_tests.rs) covers verified failed-spawn restart, complete snapshot/tombstone preservation, stale writer rejection and unrelated predecessor refusal.
+- [codex-rs/hepta-agentd/src/run_store_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/run_store_dispatch_tests.rs) verifies both dispatch methods reject retained old-generation or wrong-fence receipts without changing durable bytes.
 - [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs) verifies that bounded shutdown keeps reconciliation live until terminal observation.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
