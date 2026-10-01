@@ -77,7 +77,7 @@ pub(super) fn validate_checkpoint(
 }
 
 pub(super) fn all_checkpoints(
-    owner: &LearningArtifactOwnerHost,
+    owner: &ArtifactOwnerReadContext<'_>,
 ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
     let mut checkpoints = Vec::new();
     for (index, entry) in fs::read_dir(owner.root.join("transactions"))?.enumerate() {
@@ -117,7 +117,7 @@ pub(super) fn all_checkpoints(
 }
 
 pub(super) fn recovery_required_operations(
-    owner: &LearningArtifactOwnerHost,
+    owner: &ArtifactOwnerReadContext<'_>,
 ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
     let mut latest = BTreeMap::<StableId, ArtifactOwnerPublicationCheckpointV1>::new();
     for checkpoint in all_checkpoints(owner)? {

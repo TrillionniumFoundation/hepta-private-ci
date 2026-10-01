@@ -35,7 +35,7 @@ pub(super) fn validate_intent_record(
     Ok(())
 }
 
-impl LearningArtifactOwnerHost {
+impl ArtifactOwnerReadContext<'_> {
     pub(super) fn validate_checkpoint_registry(
         &self,
         checkpoint: &ArtifactOwnerPublicationCheckpointV1,
@@ -50,7 +50,7 @@ impl LearningArtifactOwnerHost {
         self.validate_checkpoint_prefix(checkpoint, registry)
     }
 
-    fn validate_checkpoint_prefix(
+    pub(super) fn validate_checkpoint_prefix(
         &self,
         checkpoint: &ArtifactOwnerPublicationCheckpointV1,
         registry: &ArtifactRegistry,
