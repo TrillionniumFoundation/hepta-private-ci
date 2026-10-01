@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ee92c461dad49c00e7c417c9e87a81337cdb3348",
-    "tree": "667b4710043dc69314f55ad4f94c162a9e38b717"
+    "commit": "aec2f08822d9928871310344f957d542d577e536",
+    "tree": "c63a490b86049db205c77edeb2d843d3cd3881fa"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -372,9 +372,39 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "ee92c461dad49c00e7c417c9e87a81337cdb3348",
-    "tree": "667b4710043dc69314f55ad4f94c162a9e38b717",
+    "commit": "aec2f08822d9928871310344f957d542d577e536",
+    "tree": "c63a490b86049db205c77edeb2d843d3cd3881fa",
     "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-supervisor",
+      "object": "f2f0b4866e8f5ecd91df0d964c81d2291184e0cf"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "object": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+      "object": "f5767f7bd1b55df0a04317b444a7b40e114c5e35"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "object": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "object": "3da1a5c8d227c9fe615d5d0847a3e787b34597f8"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+      "object": "eb88a374cf9497fc794bba5b62b7c596a4a2200a"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
+      "object": "d94806d04f81f8ebc52b5ce7226b3f95a198bf7e"
+    }
+  ]
 }
