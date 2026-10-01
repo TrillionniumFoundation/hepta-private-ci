@@ -1,6 +1,8 @@
 use super::*;
 
 use std::collections::BTreeSet;
+use std::future::Future;
+use std::task::Poll;
 use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseGrant;
@@ -95,6 +97,128 @@ async fn exact_multiwriter_prepare_is_idempotent_and_payload_drift_conflicts() {
     assert!(matches!(
         first.prepare_intent(&changed).await,
         Err(DurableOperationError::Conflict(_))
+    ));
+}
+
+async fn wait_for_clock_after(timestamp: i64) {
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while now_millis().expect("clock") <= timestamp {
+            tokio::time::sleep(Duration::from_millis(1)).await;
+        }
+    })
+    .await
+    .expect("wall clock advances while writer is held");
+}
+
+#[tokio::test]
+async fn queued_prepare_samples_time_after_the_preceding_writer_commits() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let first = DurableOperationStore::open(&path)
+        .await
+        .expect("first owner");
+    let second = DurableOperationStore::open(&path)
+        .await
+        .expect("second owner");
+    let operation = intent(b"payload");
+    first
+        .prepare_intent(&operation)
+        .await
+        .expect("initial prepare");
+    let mut writer = first
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("hold writer");
+    let mut queued = std::pin::pin!(second.prepare_intent(&operation));
+    assert!(
+        std::future::poll_fn(|cx| Poll::Ready(queued.as_mut().poll(cx)))
+            .await
+            .is_pending()
+    );
+    let queued_at = now_millis().expect("queued clock");
+    wait_for_clock_after(queued_at).await;
+    sqlx::query("UPDATE operation_ledger SET updated_at_ms = ?")
+        .bind(now_millis().expect("preceding writer clock"))
+        .execute(&mut *writer)
+        .await
+        .expect("later writer timestamp");
+    writer.commit().await.expect("release writer");
+    assert_eq!(
+        queued.await.expect("queued exact replay").disposition,
+        PrepareDisposition::AlreadyPresent
+    );
+}
+
+#[tokio::test]
+async fn persisted_future_time_still_rejects_clock_rollback() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
+        .await
+        .expect("owner");
+    let operation = intent(b"payload");
+    store.prepare_intent(&operation).await.expect("prepare");
+    sqlx::query("UPDATE operation_ledger SET updated_at_ms = ?")
+        .bind(now_millis().expect("clock") + 60_000)
+        .execute(&store.pool)
+        .await
+        .expect("persist before clock rollback");
+    let before = store
+        .operation(&operation.scope_id, &operation.operation_id)
+        .await
+        .expect("before");
+    assert!(matches!(
+        store.prepare_intent(&operation).await,
+        Err(DurableOperationError::ClockRollback)
+    ));
+    assert_eq!(
+        store
+            .operation(&operation.scope_id, &operation.operation_id)
+            .await
+            .expect("after"),
+        before
+    );
+}
+
+#[tokio::test]
+async fn queued_renewal_rejects_a_lease_that_expires_before_writer_admission() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let first = DurableOperationStore::open(&path)
+        .await
+        .expect("first owner");
+    let second = DurableOperationStore::open(&path)
+        .await
+        .expect("second owner");
+    let operation = intent(b"payload");
+    first.prepare_intent(&operation).await.expect("prepare");
+    let claim = first
+        .claim_next(
+            &operation.destination,
+            &stable_id("worker:test"),
+            generation(1),
+            Duration::from_millis(500),
+        )
+        .await
+        .expect("claim")
+        .expect("ready");
+    let writer = first
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("hold writer");
+    let mut queued = std::pin::pin!(second.renew_claim(&claim, Duration::from_secs(1)));
+    assert!(
+        std::future::poll_fn(|cx| Poll::Ready(queued.as_mut().poll(cx)))
+            .await
+            .is_pending()
+    );
+    assert!(now_millis().expect("queued clock") < claim.expires_at_unix_ms as i64);
+    wait_for_clock_after(claim.expires_at_unix_ms as i64).await;
+    writer.commit().await.expect("release writer");
+    assert!(matches!(
+        queued.await,
+        Err(DurableOperationError::StaleLease)
     ));
 }
 
