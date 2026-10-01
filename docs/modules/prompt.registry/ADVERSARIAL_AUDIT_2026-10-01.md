@@ -715,3 +715,14 @@ found no further reproducible scoped defect after the two repairs. Host ingress,
 trusted recovery witness, live send-time revocation, actual tokenizer/P0 review,
 retention/compaction, benchmarks and deployment/independent acceptance remain
 explicitly unproved.
+
+The fourth-pass published source checkpoint is
+`a1a3576b515ddf09cfb72625ecfeced4f390f461`, tree
+`7f2c82922cbfad4b9bf05928930ecf8fe959a4d6`. Both repair commits and the document
+commit were uploaded with full local/remote tree equality checks. Only
+prompt.registry and knowledge.graph had new drift among valid source anchors;
+their maps were rebound to this real checkpoint. Exact JSON comparison confirms
+only sourceBase, observedAtHead and sourceObjects changes. All operation and
+execution/production/acceptance/activation/release fields, and the nine invalid
+historical anchors, are preserved. This navigation binding supplies no runtime
+receipt for the final metadata commit or its prospective merge.
