@@ -3811,7 +3811,9 @@ dependencies = [
  "codex-utils-cargo-bin",
  "core_test_support",
  "ed25519-dalek",
+ "futures",
  "libc",
+ "pretty_assertions",
  "rand 0.9.3",
  "rustix 1.1.4",
  "serde",
@@ -3820,6 +3822,7 @@ dependencies = [
  "sqlx",
  "tempfile",
  "tokio",
+ "tokio-tungstenite",
  "tokio-util",
 ]
 
