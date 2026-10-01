@@ -2,7 +2,6 @@
     clippy::unwrap_used,
     reason = "integration assertions and fixture setup must fail the test immediately"
 )]
-
 #![cfg(feature = "server")]
 
 use codex_hepta_agent_components::bellman_operator::*;
@@ -18,6 +17,8 @@ use std::fs::File;
 #[path = "support/terminal_cell_owner.rs"]
 mod support;
 use support::Fixture;
+use support::NOW;
+use support::TRUST_EXPIRES_AT;
 use support::decision;
 use support::digest;
 use support::id;
@@ -48,7 +49,7 @@ fn collect_with_support(
     );
     let predecessor = owner.witness_frontier().unwrap().anchor.chain_digest;
     let receipt = owner
-        .append_decision(predecessor, request, &signed, 50)
+        .append_decision(predecessor, request, &signed, NOW)
         .unwrap();
     let mut observed = outcome(
         &format!("{prefix}.result-record"),
@@ -64,7 +65,7 @@ fn collect_with_support(
         &outcome_signing_payload_v2(&observed),
     );
     owner
-        .append_outcome(receipt.chain_digest, observed, &signed, 50)
+        .append_outcome(receipt.chain_digest, observed, &signed, NOW)
         .unwrap();
 }
 
@@ -81,7 +82,7 @@ fn freeze(owner: &LedgerWriter, name: &str) -> DatasetSnapshotReceiptV3 {
         LearningEvidenceRoleV1::Evaluator,
         &payload,
     );
-    owner.freeze_dataset(plan, &signed, 50).unwrap()
+    owner.freeze_dataset(plan, &signed, NOW).unwrap()
 }
 
 fn profile(generation: u64) -> TerminalCellProfileV1 {
@@ -167,9 +168,15 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     collect(&mut owner, "initial-a", "read", 0);
     collect(&mut owner, "initial-stop", "abstain", 0);
     let initial = freeze(&owner, "dataset.initial");
-    let frozen = freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), 50).unwrap();
+    let frozen = freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), NOW).unwrap();
     assert_eq!(frozen.sample_count(), 2);
-    let trained = fit_terminal_cell_from_owner_v1(&owner, frozen, 50).unwrap();
+    let trained = fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), NOW).unwrap();
+    assert!(matches!(
+        fit_terminal_cell_from_owner_v1(&owner, frozen, TRUST_EXPIRES_AT),
+        Err(TerminalCellError::TrustDistribution(
+            LearningTrustDistributionError::DistributionWindow
+        ))
+    ));
     let mut registry = artifacts::ArtifactRegistry::new();
     let first = persist_reload(&fixture.root, &mut registry, &trained, None);
     for index in 0..5 {
@@ -183,14 +190,14 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     }
     let next = freeze(&owner, "dataset.next");
     assert_eq!(
-        freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(2), 50)
+        freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(2), NOW)
             .unwrap()
             .sample_count(),
         2,
         "new observations do not silently enter the old immutable dataset"
     );
-    let pending = freeze_terminal_cell_from_owner_v1(&owner, &next, profile(2), 50).unwrap();
-    let trained_next = fit_terminal_cell_from_owner_v1(&owner, pending.clone(), 50).unwrap();
+    let pending = freeze_terminal_cell_from_owner_v1(&owner, &next, profile(2), NOW).unwrap();
+    let trained_next = fit_terminal_cell_from_owner_v1(&owner, pending.clone(), NOW).unwrap();
     let second = persist_reload(
         &fixture.root,
         &mut registry,
@@ -224,8 +231,8 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     let heldout = freeze(&evaluator, "dataset.heldout");
     let target = fit_terminal_cell_from_owner_v1(
         &evaluator,
-        freeze_terminal_cell_from_owner_v1(&evaluator, &heldout, profile(3), 50).unwrap(),
-        50,
+        freeze_terminal_cell_from_owner_v1(&evaluator, &heldout, profile(3), NOW).unwrap(),
+        NOW,
     )
     .unwrap();
     assert!(
@@ -277,8 +284,10 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
         &outcome_signing_payload_v2(&correction),
     );
     let head = owner.witness_frontier().unwrap().anchor.chain_digest;
-    owner.append_outcome(head, correction, &signed, 50).unwrap();
-    assert!(fit_terminal_cell_from_owner_v1(&owner, pending, 50).is_err());
+    owner
+        .append_outcome(head, correction, &signed, NOW)
+        .unwrap();
+    assert!(fit_terminal_cell_from_owner_v1(&owner, pending, NOW).is_err());
     registry
         .append(artifacts::ArtifactEvent::Revoke(artifacts::StateChange {
             event_id: id("revoke.contaminated-parent"),
@@ -310,8 +319,8 @@ fn durable_owner_history_and_concurrent_training_profile() {
                 }
                 let t=Instant::now();
                 let data=freeze(&writer,&format!("profile.dataset.{agent}"));
-                let frozen=freeze_terminal_cell_from_owner_v1(&writer,&data,profile(1),50).unwrap();
-                let trained=fit_terminal_cell_from_owner_v1(&writer,frozen,50).unwrap();
+                let frozen=freeze_terminal_cell_from_owner_v1(&writer,&data,profile(1),NOW).unwrap();
+                let trained=fit_terminal_cell_from_owner_v1(&writer,frozen,NOW).unwrap();
                 let mut registry=artifacts::ArtifactRegistry::new();
                 let loaded=persist_reload(&fixture.root,&mut registry,&trained,None);
                 assert!(loaded.predict(&id("single-approved-state"),&id("read")).is_ok());
@@ -320,7 +329,7 @@ fn durable_owner_history_and_concurrent_training_profile() {
                 let bytes=std::fs::metadata(fixture.root.join("ledger")).unwrap().len();
                 let t=Instant::now();let recovered=fixture.recover_writer(4096,cut);let recovery_us=t.elapsed().as_micros();
                 assert_eq!(recovered.witness_frontier().unwrap().anchor.sequence, (pairs*2) as u64);
-                let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,50).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
+                let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,NOW).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
                 append_latencies.sort_unstable();
                 format!("OWNER_HISTORY_PROFILE agents={agents} agent={agent} records={} ledger_bytes={bytes} decision_outcome_p50_us={} p95_us={} p99_us={} fit_registry_reload_us={fit_and_reload_us} full_recovery_us={recovery_us} indexed_dataset_read_us={page_us} recovery_profile=complete_authenticated_history not_cold_compaction=true",pairs*2,append_latencies[pairs/2],append_latencies[(pairs*95/100).min(pairs-1)],append_latencies[(pairs*99/100).min(pairs-1)])
             })).collect::<Vec<_>>();
@@ -463,7 +472,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &ledger,
             &data,
             profile(1),
-            50
+            NOW
         )
         .await
         .is_err()
@@ -497,7 +506,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         &memory
     );
     assert!(
-        host.train(recall.policy_id(), &ledger, &data, profile(1), 50)
+        host.train(recall.policy_id(), &ledger, &data, profile(1), NOW)
             .await
             .is_err()
     );
@@ -545,7 +554,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         replay.source_support_digest()
     );
     assert!(matches!(
-        host.train(twin_use.policy_id(), &ledger, &data, profile(1), 50)
+        host.train(twin_use.policy_id(), &ledger, &data, profile(1), NOW)
             .await,
         Err(codex_hepta_agentd::SharedTerminalCellError::Binding(
             "decision source support"
@@ -555,14 +564,14 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     // records, writes through the artifact owner, and loads the resulting bytes.
     assert!(source.revalidate_shared_experience(&recall).await.is_err());
     let candidate = host
-        .train(replay.policy_id(), &ledger, &data, profile(1), 50)
+        .train(replay.policy_id(), &ledger, &data, profile(1), NOW)
         .await
         .unwrap();
     let mut registry = artifacts::ArtifactRegistry::new();
     let _ = persist_reload(&fixture.root, &mut registry, candidate.artifact(), None);
     let payload = std::fs::read(fixture.root.join("payload-1")).unwrap();
     let model = host
-        .load(candidate.clone(), &ledger, &registry, &payload, 50)
+        .load(candidate.clone(), &ledger, &registry, &payload, NOW)
         .await
         .unwrap();
     let read = host
@@ -572,7 +581,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("read"),
-            50,
+            NOW,
         )
         .await
         .unwrap();
@@ -583,7 +592,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("abstain"),
-            50,
+            NOW,
         )
         .await
         .unwrap();
@@ -595,7 +604,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     let mut tampered = payload.clone();
     tampered[0] ^= 1;
     assert!(
-        host.load(candidate.clone(), &ledger, &registry, &tampered, 50)
+        host.load(candidate.clone(), &ledger, &registry, &tampered, NOW)
             .await
             .is_err()
     );
@@ -608,7 +617,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     .unwrap();
     assert!(
         wrong_scope
-            .train(replay.policy_id(), &ledger, &data, profile(1), 50)
+            .train(replay.policy_id(), &ledger, &data, profile(1), NOW)
             .await
             .is_err()
     );
@@ -624,7 +633,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     .unwrap();
     assert!(
         wrong_workspace
-            .load(candidate.clone(), &ledger, &registry, &payload, 50)
+            .load(candidate.clone(), &ledger, &registry, &payload, NOW)
             .await
             .is_err()
     );
@@ -644,7 +653,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("read"),
-            50
+            NOW
         )
         .await
         .unwrap(),
@@ -668,7 +677,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &withdrawn,
             &id("single-approved-state"),
             &id("read"),
-            50
+            NOW
         )
         .await,
         Err(codex_hepta_agentd::SharedTerminalCellError::Binding(
@@ -701,13 +710,13 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("read"),
-            50
+            NOW
         )
         .await
         .is_err()
     );
     assert!(
-        host.load(candidate.clone(), &ledger, &registry, &payload, 50)
+        host.load(candidate.clone(), &ledger, &registry, &payload, NOW)
             .await
             .is_err()
     );

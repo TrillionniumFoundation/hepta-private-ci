@@ -17,6 +17,11 @@ use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+// Learning evidence uses microseconds. Cognitive fields explicitly named
+// unix_seconds retain their independent seconds domain.
+pub(super) const NOW: u64 = 50_000_000;
+pub(super) const TRUST_EXPIRES_AT: u64 = 90_000_000;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 pub(super) fn id(value: &str) -> StableId {
     StableId::new(value.to_owned()).unwrap()
@@ -44,8 +49,8 @@ fn trusted(
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
             scope_digest: digest("scope"),
             authority_epoch: 7,
-            authenticated_at: 10,
-            expires_at: 100,
+            authenticated_at: 10_000_000,
+            expires_at: 100_000_000,
         },
         controller_id: id(controller),
         verifying_key: key.verifying_key().to_bytes(),
@@ -113,24 +118,24 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         root_id: id("learning-root"),
         scope_digest: digest("scope"),
         verifying_key: root_key.verifying_key().to_bytes(),
-        valid_from: 1,
-        expires_at: 200,
+        valid_from: 1_000_000,
+        expires_at: 200_000_000,
         revoked_at: None,
     };
     let mut signed = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
             distribution_id: id("trust-distribution"),
             generation: 1,
-            effective_at: 20,
+            effective_at: 20_000_000,
             trust: trust(),
         },
         root_id: root.root_id.clone(),
-        issued_at: 15,
-        expires_at: 90,
+        issued_at: 15_000_000,
+        expires_at: TRUST_EXPIRES_AT,
         signature: [0; 64],
     };
     signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-    activate_learning_trust(&root, signed, None, 50).unwrap()
+    activate_learning_trust(&root, signed, None, NOW).unwrap()
 }
 
 fn seed(name: &str) -> u8 {
@@ -158,8 +163,8 @@ pub(super) fn sign(
         scope_digest: digest("scope"),
         objective_digest: digest("objective"),
         authority_epoch: 7,
-        issued_at: 20,
-        expires_at: 90,
+        issued_at: 20_000_000,
+        expires_at: TRUST_EXPIRES_AT,
         payload_digest: Digest32::of_bytes(payload),
         signature: [0; 64],
     };
@@ -290,17 +295,17 @@ pub(super) fn outcome(
         outcome_id: id(outcome),
         episode_id: id("episode"),
         observer: principal("observer"),
-        observed_at: Some(40),
+        observed_at: Some(40_000_000),
         value: Some(FixedQ32::from_raw(value)),
         unit_profile_digest: digest("reward-units"),
         support_digest: digest("outcome-support"),
         watermark: OutcomeWatermarkV1 {
-            latest_observable_at: 45,
+            latest_observable_at: 45_000_000,
             expected_delay_profile_digest: digest("delay-profile"),
             terminality: OutcomeTerminalityV1::Terminal,
             censoring_reason: None,
             correction_predecessor: predecessor.map(id),
-            finalized_at: Some(46),
+            finalized_at: Some(46_000_000),
         },
     }
 }
