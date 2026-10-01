@@ -803,3 +803,6 @@ pub(crate) fn now_seconds() -> Result<i64, CognitiveStoreError> {
 #[path = "cognitive_context_tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "cognitive_context_current_tests.rs"]
+mod current_tests;

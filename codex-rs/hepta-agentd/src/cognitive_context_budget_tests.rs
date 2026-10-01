@@ -240,6 +240,55 @@ fn escaping_contents() -> Vec<String> {
 }
 
 #[tokio::test]
+async fn final_use_rejects_oversized_current_owner_content_with_self_consistent_hashes() {
+    let (_directory, store, owner, items) =
+        stored_candidates(vec![format!("lemon {}", "x".repeat(/*n*/ 32 * 1024))]).await;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let cut = store
+        .lane_c_snapshot(
+            &access,
+            &CognitiveScope::AgentPrivate,
+            super::super::now_seconds().unwrap(),
+        )
+        .await
+        .unwrap();
+    let selected_read = super::super::read_selected_items(&cut, &items).unwrap();
+    let mut forged = crate::CognitiveContextSnapshot {
+        snapshot_digest: selected_read.snapshot_digest().to_string(),
+        read_digest: super::super::bind_selected_read(
+            &cut,
+            &selected_read,
+            /*retrieval_context*/ None,
+        )
+        .to_string(),
+        omitted_records: 0,
+        items,
+        plan: None,
+    };
+    let evaluated_context_digest =
+        Digest32::of_bytes(&serde_json::to_vec(&forged).unwrap()).to_string();
+    forged.plan = Some(crate::CognitiveContextPlan {
+        evaluated_context_digest,
+        plan_receipt_digest: hash("self-computed-plan").to_string(),
+        read_allowed: true,
+    });
+    assert!(matches!(
+        revalidate(
+            &store,
+            &owner,
+            &forged.snapshot_digest,
+            &forged.read_digest,
+            forged.omitted_records,
+            &forged.items,
+            forged.plan.as_ref(),
+            /*ranker*/ None,
+        )
+        .await,
+        Err(super::super::CognitiveContextError::ReadUnavailable(_))
+    ));
+}
+
+#[tokio::test]
 async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(

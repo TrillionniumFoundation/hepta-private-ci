@@ -389,6 +389,73 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
     assert!(ranked.plan.as_ref().unwrap().read_allowed);
+    let issuer = crate::cognitive_context_issuer::ContextPlanIssuer::default();
+    let planned = crate::cognitive_context::read_with_retrieval_context_and_learning(
+        &store,
+        &owner(),
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 2,
+        Some(&fixture.ranker),
+        /*current_retrieval*/ None,
+        /*learning_sink*/ None,
+        /*request_id*/ None,
+    )
+    .await
+    .unwrap();
+    let ranked_all = planned
+        .publish(
+            &store,
+            &owner(),
+            /*body_generation*/ 1,
+            &issuer,
+            Some(&fixture.ranker),
+            /*current_retrieval*/ None,
+        )
+        .await
+        .unwrap();
+    assert_eq!(ranked_all.items[0], baseline.items[1]);
+    crate::cognitive_context::revalidate_issued_context(
+        &store,
+        &owner(),
+        /*body_generation*/ 1,
+        &ranked_all,
+        Some(&fixture.ranker),
+        /*current_retrieval*/ None,
+        &issuer,
+    )
+    .await
+    .unwrap();
+    let receipt = ranked_all
+        .plan
+        .as_ref()
+        .unwrap()
+        .plan_receipt_digest
+        .clone();
+    let mut substituted = ranked_all.clone();
+    substituted.items.swap(0, 1);
+    substituted.plan = None;
+    let changed_digest = Digest32::of_bytes(&serde_json::to_vec(&substituted).unwrap()).to_string();
+    substituted.plan = ranked_all.plan.clone();
+    substituted.plan.as_mut().unwrap().evaluated_context_digest = changed_digest;
+    assert_eq!(
+        substituted.plan.as_ref().unwrap().plan_receipt_digest,
+        receipt
+    );
+    assert!(
+        crate::cognitive_context::revalidate_issued_context(
+            &store,
+            &owner(),
+            /*body_generation*/ 1,
+            &substituted,
+            Some(&fixture.ranker),
+            /*current_retrieval*/ None,
+            &issuer,
+        )
+        .await
+        .is_err(),
+        "a self-rehashed order substitution cannot reuse the actual issued receipt"
+    );
     // The read owner, not the learned ranker, remains authoritative on deletion.
     let selected_id = memory_ids
         .into_iter()
