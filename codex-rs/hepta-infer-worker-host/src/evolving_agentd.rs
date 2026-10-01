@@ -96,8 +96,9 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
     let control =
         DurableInferenceControl::open(&installed.native_journal, installed.native_record_capacity)
             .map_err(|error| invalid(error.to_string()))?;
+    let control = Arc::new(tokio::sync::Mutex::new(control));
     config.with_self_iteration_model_owner(move |cancellation| async move {
-        let mut model = AppServerSelfIterationModelPortV1::new(
+        let mut model = AppServerSelfIterationModelPortV1::new_shared(
             driver,
             control,
             installed.maximum_in_flight,

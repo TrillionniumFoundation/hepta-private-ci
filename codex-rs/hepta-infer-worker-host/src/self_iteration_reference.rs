@@ -37,7 +37,7 @@ impl AppServerSelfIterationModelPortV1 {
         request_id: &str,
     ) -> Result<bool, SelfIterationModelErrorV1> {
         self.control
-            .native_record_resolved(request_id)
+            .record(request_id)
             .map(|record| {
                 record.is_some_and(|record| {
                     record.state != NativeReservationState::Reserved || record.dispatch.is_some()
@@ -61,8 +61,15 @@ impl AppServerSelfIterationModelPortV1 {
         {
             return Err(SelfIterationModelErrorV1::InvalidRequest);
         }
-        let before = self
+        let remaining = original_deadline_ms
+            .checked_sub(reference_unix_ms()?)
+            .filter(|remaining| *remaining != 0)
+            .ok_or(SelfIterationModelErrorV1::TimedOut)?;
+        let mut control = self
             .control
+            .acquire(std::time::Duration::from_millis(remaining))
+            .await?;
+        let before = control
             .native_record_resolved(&request_id)
             .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?;
         let replayed = before.as_ref().is_some_and(|record| {
@@ -76,7 +83,7 @@ impl AppServerSelfIterationModelPortV1 {
         let result = self
             .driver
             .run_with_deadline(
-                &mut self.control,
+                &mut control,
                 NativeAdmission {
                     request_id: request_id.clone(),
                     maximum_in_flight: self.maximum_in_flight,
@@ -89,8 +96,7 @@ impl AppServerSelfIterationModelPortV1 {
         let elapsed = u64::try_from(started.elapsed().as_micros())
             .map_err(|_| SelfIterationModelErrorV1::InvalidResponse)?;
         let attempt_finished_at_ms = reference_unix_ms()?;
-        let record = self
-            .control
+        let record = control
             .native_record_resolved(&request_id)
             .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?;
         let diagnostic = result.as_ref().err().map(ToString::to_string);

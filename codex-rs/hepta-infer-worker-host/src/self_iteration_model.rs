@@ -18,6 +18,10 @@ use tokio_util::sync::CancellationToken;
 use crate::native_app_server::AppServerModelDriver;
 use crate::native_app_server::NativeAdmission;
 
+#[path = "model_control_owner.rs"]
+mod control_owner;
+use control_owner::ModelControlOwner;
+
 const NATIVE_PROMPT_LIMIT: usize = 32 * 1024;
 
 #[path = "self_iteration_reference.rs"]
@@ -29,7 +33,7 @@ pub use reference::NativeReferenceObservationV1;
 /// evaluation/selection evidence. The journal is retained across all roles.
 pub struct AppServerSelfIterationModelPortV1 {
     driver: AppServerModelDriver,
-    control: DurableInferenceControl,
+    control: ModelControlOwner,
     maximum_in_flight: usize,
     cancellation: CancellationToken,
     cleanup_maintenance_at: Option<std::time::Instant>,
@@ -42,12 +46,37 @@ impl AppServerSelfIterationModelPortV1 {
         maximum_in_flight: usize,
         cancellation: CancellationToken,
     ) -> Result<Self, SelfIterationModelErrorV1> {
+        Self::with_control(
+            driver,
+            std::sync::Arc::new(tokio::sync::Mutex::new(control)),
+            maximum_in_flight,
+            cancellation,
+        )
+    }
+
+    /// Installed CPU and model paths borrow this same journal. A cancelled
+    /// model future drops its async lease while the original journal stays owned.
+    pub fn new_shared(
+        driver: AppServerModelDriver,
+        control: std::sync::Arc<tokio::sync::Mutex<DurableInferenceControl>>,
+        maximum_in_flight: usize,
+        cancellation: CancellationToken,
+    ) -> Result<Self, SelfIterationModelErrorV1> {
+        Self::with_control(driver, control, maximum_in_flight, cancellation)
+    }
+
+    fn with_control(
+        driver: AppServerModelDriver,
+        control: std::sync::Arc<tokio::sync::Mutex<DurableInferenceControl>>,
+        maximum_in_flight: usize,
+        cancellation: CancellationToken,
+    ) -> Result<Self, SelfIterationModelErrorV1> {
         if maximum_in_flight == 0 {
             return Err(SelfIterationModelErrorV1::InvalidRequest);
         }
         Ok(Self {
             driver,
-            control,
+            control: ModelControlOwner(control),
             maximum_in_flight,
             cancellation,
             cleanup_maintenance_at: None,
@@ -62,6 +91,7 @@ impl AppServerSelfIterationModelPortV1 {
         budget: std::time::Duration,
     ) -> Result<NativeHistoryMaintenanceReceipt, SelfIterationModelErrorV1> {
         self.control
+            .try_acquire()?
             .maintain_native_history(maximum_records, budget)
             .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))
     }
@@ -73,8 +103,14 @@ impl AppServerSelfIterationModelPortV1 {
         budget: std::time::Duration,
     ) -> Result<crate::native_app_server::NativeControlMaintenanceReceipt, SelfIterationModelErrorV1>
     {
+        let started = std::time::Instant::now();
+        let mut control = self.control.acquire(budget).await?;
+        let remaining = budget
+            .checked_sub(started.elapsed())
+            .filter(|remaining| !remaining.is_zero())
+            .ok_or(SelfIterationModelErrorV1::TimedOut)?;
         self.driver
-            .maintain_native_control(&mut self.control, budget)
+            .maintain_native_control(&mut control, remaining)
             .await
             .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))
     }
@@ -110,10 +146,19 @@ impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
         // The native driver's clock owns timeout, interruption and quarantine.
         // Dropping an outer timeout future after possible effect would lose the
         // required durable observation, so this awaits native settlement.
+        let remaining = request
+            .deadline_ms
+            .checked_sub(now_ms()?)
+            .filter(|remaining| *remaining != 0)
+            .ok_or(SelfIterationModelErrorV1::TimedOut)?;
+        let mut control = self
+            .control
+            .acquire(std::time::Duration::from_millis(remaining))
+            .await?;
         let result = self
             .driver
             .run_with_deadline(
-                &mut self.control,
+                &mut control,
                 NativeAdmission {
                     request_id: native_request_id.clone(),
                     maximum_in_flight: self.maximum_in_flight,
@@ -128,8 +173,7 @@ impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
         }
         let output =
             result.map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?;
-        let record = self
-            .control
+        let record = control
             .native_record_resolved(&native_request_id)
             .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?
             .ok_or(SelfIterationModelErrorV1::InvalidResponse)?;
