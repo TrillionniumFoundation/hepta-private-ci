@@ -3,6 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "build:service": "node scripts/build-service.mjs"
+  },
+  "devDependencies": {
+    "acorn": "8.15.0",
+    "esbuild": "0.28.1"
   }
 }
