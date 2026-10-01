@@ -21,6 +21,7 @@ use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
+use codex_hepta_automation::AuthorizedEffectPending;
 use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
@@ -76,6 +77,10 @@ struct Fixture {
 
 impl Fixture {
     fn new() -> Self {
+        Self::for_agent(AGENT_ID)
+    }
+
+    fn for_agent(agent_id: &str) -> Self {
         let temp = tempfile::tempdir().expect("temp root");
         let root = temp.path().canonicalize().expect("canonical temp root");
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
@@ -84,7 +89,7 @@ impl Fixture {
         std::fs::create_dir(&workspace).expect("workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
         let manifest = AgentManifest::new(
-            AgentId::parse(AGENT_ID).expect("agent id"),
+            AgentId::parse(agent_id).expect("agent id"),
             WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
             ResourceBudget::local_default(),
         )
@@ -96,19 +101,19 @@ impl Fixture {
     }
 }
 
-fn definition() -> TaskFlowDefinition {
+fn definition_for(step_id: &str) -> TaskFlowDefinition {
     TaskFlowDefinition::new(
         "authorized-effect",
         1,
-        "effect",
+        step_id,
         vec![
-            TaskFlowNodeSpec::effect("effect", "matrix.send", "matrix-send-v1"),
+            TaskFlowNodeSpec::effect(step_id, "matrix.send", "matrix-send-v1"),
             TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
             TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
         ],
         vec![
-            TaskFlowEdgeSpec::new("effect", "success"),
-            TaskFlowEdgeSpec::new("effect", "failure"),
+            TaskFlowEdgeSpec::new(step_id, "success"),
+            TaskFlowEdgeSpec::new(step_id, "failure"),
         ],
         vec!["matrix.send".to_string()],
         Sha256Digest::for_bytes(b"authorized-effect-policy"),
@@ -244,15 +249,16 @@ async fn prepared_effect_store_for(
     let store = AutomationStore::open(&fixture.layout)
         .await
         .expect("open store");
-    let owner = fence();
-    let definition = definition();
+    let mut owner = fence();
+    owner.owner_agent_id = fixture.layout.agent_id().clone();
+    let definition = definition_for(&effect.step_id);
     store
         .register_taskflow_definition(&definition, &owner, 10)
         .await
         .expect("register definition");
     store
         .create_taskflow_run(
-            "authorized-effect-run",
+            &effect.run_id,
             &definition.workflow_id,
             definition.version,
             definition.definition_digest(),
@@ -262,13 +268,13 @@ async fn prepared_effect_store_for(
         .await
         .expect("create run");
     let claimed = store
-        .claim_taskflow_run("authorized-effect-run", &owner, 20, 1_000)
+        .claim_taskflow_run(&effect.run_id, &owner, 20, 1_000)
         .await
         .expect("claim run");
     let started = store
         .apply_taskflow_command(
             &TaskFlowCommand::new(
-                "authorized-effect-run",
+                &effect.run_id,
                 "authorized-effect-start",
                 owner.clone(),
                 claimed.revision,
@@ -388,7 +394,9 @@ impl AuthorizedEffectDriver for RecordingDriver {
 
 struct RecordingProviderEffectAdapter {
     dispatch_calls: AtomicUsize,
+    lookup_calls: AtomicUsize,
     seen_key: Mutex<Option<String>>,
+    lookup_key: Mutex<Option<String>>,
     dispatch_result: ProviderEffectDispatch,
     lookup_result: ProviderEffectLookup,
 }
@@ -397,7 +405,9 @@ impl RecordingProviderEffectAdapter {
     fn new(dispatch_result: ProviderEffectDispatch, lookup_result: ProviderEffectLookup) -> Self {
         Self {
             dispatch_calls: AtomicUsize::new(0),
+            lookup_calls: AtomicUsize::new(0),
             seen_key: Mutex::new(None),
+            lookup_key: Mutex::new(None),
             dispatch_result,
             lookup_result,
         }
@@ -428,7 +438,10 @@ impl ProviderEffectAdapter for RecordingProviderEffectAdapter {
         self.dispatch_calls.fetch_add(1, Ordering::Relaxed);
         *self.seen_key.lock().expect("seen key lock") = Some(intent.key.as_str().to_string());
         let expected_payload = intent.payload_sha256.clone();
-        let result = self.dispatch_result.clone();
+        let mut result = self.dispatch_result.clone();
+        if let ProviderEffectDispatch::Ack(ack) = &mut result {
+            ack.key = intent.key.clone();
+        }
         Box::pin(async move {
             assert_eq!(Sha256Digest::for_bytes(wire_payload), expected_payload);
             result
@@ -437,19 +450,306 @@ impl ProviderEffectAdapter for RecordingProviderEffectAdapter {
 
     fn lookup<'a>(
         &'a self,
-        _key: &'a ProviderEffectKey,
+        key: &'a ProviderEffectKey,
     ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        self.lookup_calls.fetch_add(1, Ordering::Relaxed);
+        *self.lookup_key.lock().expect("lookup key") = Some(key.as_str().to_string());
         let result = self.lookup_result.clone();
         Box::pin(async move { result })
     }
 
     fn lookup_for_intent<'a>(
         &'a self,
-        _intent: &'a ProviderEffectIntent,
+        intent: &'a ProviderEffectIntent,
     ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        self.lookup_calls.fetch_add(1, Ordering::Relaxed);
+        *self.lookup_key.lock().expect("lookup key") = Some(intent.key.as_str().to_string());
         let result = self.lookup_result.clone();
         Box::pin(async move { result })
     }
+}
+
+async fn unknown_provider_effect(
+    fixture: &Fixture,
+    effect: AuthorizedEffectIntent,
+) -> (
+    AutomationStore,
+    AuthorizedEffectPending,
+    ProviderEffectTaskFlowDriver<RecordingProviderEffectAdapter>,
+) {
+    let (store, owner, effect, expected) = prepared_effect_store_for(fixture, effect).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "identity-unknown");
+    let adapter = RecordingProviderEffectAdapter::new(
+        ProviderEffectDispatch::Unknown,
+        ProviderEffectLookup::NotFound,
+    );
+    let mut driver =
+        ProviderEffectTaskFlowDriver::new(effect.destination_id.clone(), adapter).expect("driver");
+    store
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "identity-dispatch",
+            30,
+        )
+        .await
+        .expect("unknown dispatch");
+    let pending = store
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 1)
+        .await
+        .expect("durable identity")
+        .expect("pending attempt");
+    assert_eq!(
+        driver
+            .adapter()
+            .seen_key
+            .lock()
+            .expect("seen key")
+            .as_deref(),
+        pending
+            .provider_effect_key
+            .as_ref()
+            .map(ProviderEffectKey::as_str)
+    );
+    (store, pending, driver)
+}
+
+#[tokio::test]
+async fn provider_identity_separates_delimiters_and_agent_owners() {
+    let first_fixture = Fixture::new();
+    let second_fixture = Fixture::new();
+    let mut first = intent();
+    first.run_id = "a:b".to_string();
+    first.step_id = "c".to_string();
+    let mut second = intent();
+    second.run_id = "a".to_string();
+    second.step_id = "b:c".to_string();
+    let (_, first_pending, _) = unknown_provider_effect(&first_fixture, first).await;
+    let (_, second_pending, _) = unknown_provider_effect(&second_fixture, second).await;
+    assert_ne!(
+        first_pending.provider_effect_key, second_pending.provider_effect_key,
+        "separate run/step tuples must not share provider completion"
+    );
+
+    let agent_one = Fixture::new();
+    let agent_two = Fixture::for_agent("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13");
+    let (_, first_pending, _) = unknown_provider_effect(&agent_one, intent()).await;
+    let (_, second_pending, _) = unknown_provider_effect(&agent_two, intent()).await;
+    assert_ne!(
+        first_pending.provider_effect_key, second_pending.provider_effect_key,
+        "per-Agent databases must not alias the same provider occurrence"
+    );
+}
+
+#[tokio::test]
+async fn provider_lookup_after_restart_uses_original_persisted_key() {
+    let fixture = Fixture::new();
+    let (store, original, driver) = unknown_provider_effect(&fixture, intent()).await;
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    let pending = reopened
+        .pending_authorized_taskflow_effects(8)
+        .await
+        .expect("pending");
+    assert_eq!(pending, vec![original.clone()]);
+    assert!(matches!(
+        driver.lookup(&pending[0]).await,
+        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
+    ));
+    assert_eq!(
+        driver
+            .adapter()
+            .lookup_key
+            .lock()
+            .expect("lookup key")
+            .as_deref(),
+        original
+            .provider_effect_key
+            .as_ref()
+            .map(ProviderEffectKey::as_str)
+    );
+    assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 1);
+}
+
+#[tokio::test]
+async fn provider_absence_reconciliation_allows_fenced_retry_with_original_key() {
+    let fixture = Fixture::new();
+    let (store, original, mut driver) = unknown_provider_effect(&fixture, intent()).await;
+    let owner = fence();
+    let mut next_owner = owner.clone();
+    next_owner.generation += 1;
+    next_owner.fencing_token = "effect-retry-fence".to_string();
+    assert!(
+        store
+            .claim_taskflow_run(&original.run_id, &next_owner, 31, 1_000)
+            .await
+            .is_err(),
+        "unresolved contact must not allow a new owner"
+    );
+    let AuthorizedProviderEffectLookup::ProvenAbsent { proof_digest } =
+        driver.lookup(&original).await
+    else {
+        panic!("fixture absence proof");
+    };
+    assert_eq!(
+        store
+            .recover_authorized_taskflow_effect(
+                &original.run_id,
+                &original.step_id,
+                1,
+                &owner,
+                AuthorizedEffectRecovery::ProvenAbsent { proof_digest },
+                32,
+            )
+            .await
+            .expect("requeue absent effect"),
+        AuthorizedEffectRecoveryResult::ProvenAbsent
+    );
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen absent run");
+    let claimed = reopened
+        .claim_taskflow_run(&original.run_id, &next_owner, 33, 1_000)
+        .await
+        .expect("reconciled absence permits takeover");
+    reopened
+        .apply_taskflow_command(
+            &TaskFlowCommand::new(
+                &original.run_id,
+                "retry-start",
+                next_owner.clone(),
+                claimed.revision,
+                TaskFlowTransition::Start,
+                34,
+            )
+            .expect("retry start"),
+        )
+        .await
+        .expect("start retry");
+    let mut effect = intent();
+    effect.attempt = 2;
+    let digest = effect.digest().expect("retry intent");
+    reopened
+        .prepare_taskflow_step(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+            &next_owner,
+            &digest,
+            &effect.payload_digest,
+            "retry-prepare",
+            35,
+        )
+        .await
+        .expect("prepare new attempt");
+    reopened
+        .claim_taskflow_step(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+            &next_owner,
+            &digest,
+            &effect.payload_digest,
+            "retry-claim",
+            36,
+        )
+        .await
+        .expect("claim new attempt");
+    let expected = binding(&effect);
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "proven-absent-retry");
+    reopened
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &next_owner,
+            &signed,
+            &expected,
+            "retry-dispatch",
+            37,
+        )
+        .await
+        .expect("safely retried send");
+    let retried = reopened
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 2)
+        .await
+        .expect("retry identity")
+        .expect("second attempt");
+    assert_eq!(retried.provider_effect_key, original.provider_effect_key);
+    assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 2);
+}
+
+#[tokio::test]
+async fn legacy_unscoped_identity_stays_quarantined_after_restart() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "legacy-unknown");
+    let mut legacy = RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"legacy");
+    store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut legacy,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "legacy-dispatch",
+            30,
+        )
+        .await
+        .expect("legacy unscoped dispatch");
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    let pending = reopened
+        .pending_authorized_taskflow_effects(8)
+        .await
+        .expect("legacy pending");
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].provider_effect_key, None);
+    let adapter = RecordingProviderEffectAdapter::new(
+        ProviderEffectDispatch::Unknown,
+        ProviderEffectLookup::NotFound,
+    );
+    let mut driver =
+        ProviderEffectTaskFlowDriver::new(effect.destination_id.clone(), adapter).expect("driver");
+    assert_eq!(
+        driver.lookup(&pending[0]).await,
+        AuthorizedProviderEffectLookup::Unresolved
+    );
+    let (authority, fresh, _fresh_dir) = final_use(expected.clone(), "legacy-retry");
+    assert!(matches!(
+        reopened
+            .execute_authorized_taskflow_effect_async(
+                &authority,
+                &mut driver,
+                &effect,
+                EFFECT_PAYLOAD,
+                &owner,
+                &fresh,
+                &expected,
+                "legacy-dispatch",
+                31,
+            )
+            .await,
+        Err(AuthorizedEffectError::RecoveryRequired)
+    ));
+    assert_eq!(driver.adapter().lookup_calls.load(Ordering::Relaxed), 0);
+    assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 0);
+    authority
+        .claim(&fresh, &expected)
+        .expect("quarantine must not burn a fresh grant");
 }
 
 struct RevocationRaceDriver {
@@ -599,9 +899,8 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-wire-binding");
-    let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
-    let key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
-        .expect("provider effect key");
+    let key = ProviderEffectKey::for_logical_effect(&effect.destination_id, "fixture-response")
+        .expect("fixture response key");
     let ack = ProviderEffectAck::new(
         key.clone(),
         effect.payload_digest.clone(),
@@ -656,6 +955,11 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
         Some(TaskFlowStepObservation::Succeeded)
     );
     assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 1);
+    let pending = store
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 1)
+        .await
+        .expect("durable provider identity")
+        .expect("attempt");
     assert_eq!(
         driver
             .adapter()
@@ -663,7 +967,10 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
             .lock()
             .expect("seen key")
             .as_deref(),
-        Some(key.as_str())
+        pending
+            .provider_effect_key
+            .as_ref()
+            .map(ProviderEffectKey::as_str)
     );
 }
 
@@ -672,9 +979,6 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
-    let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
-    let _key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
-        .expect("provider effect key");
     let adapter = RecordingProviderEffectAdapter::new(
         ProviderEffectDispatch::Unknown,
         ProviderEffectLookup::NotFound,

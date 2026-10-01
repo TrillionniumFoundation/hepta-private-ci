@@ -16,6 +16,9 @@ The optional ``call_pattern`` is a Python regular expression over Rust code with
 comments, literals and cfg-test items stripped. It exists for method syntax such
 as ``authority.claim(...)`` where a fully-qualified symbol does not appear at
 the call site. Rows without it retain the original exact-symbol behavior.
+An optional ``non_boundary_self_calls`` scope disambiguates a same-named method
+on an explicitly different inherent-impl receiver. Only that receiver's literal
+``self.method(...)`` calls are removed; other receivers and files remain scanned.
 """
 
 from __future__ import annotations
@@ -40,6 +43,13 @@ class VerificationFailure(RuntimeError):
 
 
 @dataclass(frozen=True)
+class NonBoundarySelfCall:
+    path: str
+    receiver_type: str
+    method: str
+
+
+@dataclass(frozen=True)
 class Boundary:
     identifier: str
     symbol: str
@@ -48,6 +58,7 @@ class Boundary:
     product_callers: tuple[str, ...]
     caller_markers: tuple[str, ...]
     call_pattern: str | None
+    non_boundary_self_calls: tuple[NonBoundarySelfCall, ...]
 
 
 def _load_manifest(path: Path) -> dict[str, Any]:
@@ -104,6 +115,39 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 raise VerificationFailure(
                     f"{identifier}: invalid call_pattern: {exc}"
                 ) from exc
+        scopes = row.get("non_boundary_self_calls", [])
+        if not isinstance(scopes, list):
+            raise VerificationFailure(f"{identifier}: self-call scopes must be a list")
+        self_calls: list[NonBoundarySelfCall] = []
+        for scope in scopes:
+            if not isinstance(scope, dict) or set(scope) != {
+                "path",
+                "receiver_type",
+                "method",
+            }:
+                raise VerificationFailure(f"{identifier}: invalid self-call scope")
+            path, receiver_type, method = (
+                scope["path"],
+                scope["receiver_type"],
+                scope["method"],
+            )
+            if (
+                not isinstance(path, str)
+                or not path
+                or not isinstance(receiver_type, str)
+                or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", receiver_type) is None
+                or not isinstance(method, str)
+                or "::" not in symbol
+                or method != symbol.rsplit("::", 1)[1]
+                or receiver_type == symbol.rsplit("::", 1)[0].rsplit("::", 1)[-1]
+            ):
+                raise VerificationFailure(
+                    f"{identifier}: self-call scope must name a different receiver "
+                    "type for the same method"
+                )
+            self_calls.append(NonBoundarySelfCall(path, receiver_type, method))
+        if len(self_calls) != len(set(self_calls)):
+            raise VerificationFailure(f"{identifier}: duplicate self-call scope")
         identifiers.add(identifier)
         symbols.add(symbol)
         boundaries.append(
@@ -115,6 +159,7 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 product_callers=_string_tuple(row, "product_callers"),
                 caller_markers=_string_tuple(row, "caller_markers"),
                 call_pattern=call_pattern,
+                non_boundary_self_calls=tuple(self_calls),
             )
         )
     return tuple(boundaries)
@@ -380,6 +425,95 @@ def _is_ignored(relative: str, fragments: tuple[str, ...]) -> bool:
     return any(fragment in normalized for fragment in fragments)
 
 
+def _strip_non_boundary_self_calls(relative: str, code: str, boundary: Boundary) -> str:
+    """Disambiguate only literal self calls in a declared other-type impl."""
+    output = list(code)
+    for scope in boundary.non_boundary_self_calls:
+        if scope.path != relative:
+            continue
+        receiver = re.escape(scope.receiver_type)
+        declarations = tuple(
+            re.finditer(r"\bstruct\s+" + receiver + r"\s*(?:\{|;|\()", code)
+        )
+        if not declarations:
+            raise VerificationFailure(
+                f"{boundary.identifier}: self-call receiver struct is missing: {relative}"
+            )
+        if len(declarations) != 1 or any(
+            code[: declarations[0].start()].count(opener)
+            != code[: declarations[0].start()].count(closer)
+            for opener, closer in (("{", "}"), ("(", ")"), ("[", "]"))
+        ):
+            raise VerificationFailure(
+                f"{boundary.identifier}: self-call receiver must be one top-level struct: {relative}"
+            )
+        blocks = tuple(re.finditer(r"\bimpl\s+" + receiver + r"\s*\{", code))
+        if not blocks:
+            raise VerificationFailure(
+                f"{boundary.identifier}: self-call receiver inherent impl is missing: {relative}"
+            )
+        for block in blocks:
+            if any(
+                code[: block.start()].count(opener)
+                != code[: block.start()].count(closer)
+                for opener, closer in (("{", "}"), ("(", ")"), ("[", "]"))
+            ):
+                raise VerificationFailure(
+                    f"{boundary.identifier}: self-call receiver impl must be top-level: {relative}"
+                )
+            opener = block.end() - 1
+            closer = _matching_delimiter(code, opener, "{", "}")
+            if closer is None:
+                raise VerificationFailure(
+                    f"{boundary.identifier}: self-call receiver impl is unbalanced: {relative}"
+                )
+            body = code[opener + 1 : closer]
+            # A nested impl can introduce another self type. Fail closed rather
+            # than treating that self as the configured outer receiver.
+            macro_spans = []
+            for macro in re.finditer(
+                r"(?:!\s*|#\s*)([({\[])",
+                body,
+            ):
+                macro_opener = macro.end() - 1
+                macro_closer = _matching_delimiter(
+                    body,
+                    macro_opener,
+                    body[macro_opener],
+                    {"(": ")", "{": "}", "[": "]"}[body[macro_opener]],
+                )
+                if macro_closer is None:
+                    raise VerificationFailure(
+                        f"{boundary.identifier}: self-call receiver macro is unbalanced: {relative}"
+                    )
+                macro_spans.append((macro_opener, macro_closer))
+            if re.search(r"\b(?:trait|macro_rules|macro)\b", body):
+                raise VerificationFailure(
+                    f"{boundary.identifier}: nested self-call receiver item is ambiguous: {relative}"
+                )
+            for token in re.finditer(r"\bimpl\b", body):
+                prefix = body[: token.start()].rstrip()
+                impl_trait = prefix.endswith("->") or (
+                    prefix.endswith(":") and not prefix.endswith("::")
+                )
+                if not impl_trait or any(
+                    start < token.start() < end for start, end in macro_spans
+                ):
+                    raise VerificationFailure(
+                        f"{boundary.identifier}: nested self-call receiver impl is ambiguous: {relative}"
+                    )
+            pattern = re.compile(r"\bself\s*\.\s*" + re.escape(scope.method) + r"\s*\(")
+            for call in pattern.finditer(body):
+                if any(start < call.start() < end for start, end in macro_spans):
+                    continue
+                start = opener + 1 + call.start()
+                end = opener + 1 + call.end()
+                for offset in range(start, end):
+                    if output[offset] != "\n":
+                        output[offset] = " "
+    return "".join(output)
+
+
 def _verify_boundary(
     root: Path,
     boundary: Boundary,
@@ -400,13 +534,23 @@ def _verify_boundary(
         call_pattern = re.compile(re.escape(boundary.symbol) + r"\s*\(")
     else:
         call_pattern = re.compile(boundary.call_pattern)
+    for scope in boundary.non_boundary_self_calls:
+        if (
+            scope.path not in source_index
+            or scope.path == boundary.definition_path
+            or _is_ignored(scope.path, ignored_fragments)
+        ):
+            raise VerificationFailure(
+                f"{boundary.identifier}: self-call scope is not a scanned other-type source"
+            )
     observed: set[str] = set()
     for relative, code in source_index.items():
         if relative == boundary.definition_path or _is_ignored(
             relative, ignored_fragments
         ):
             continue
-        if call_pattern.search(code):
+        scoped_code = _strip_non_boundary_self_calls(relative, code, boundary)
+        if call_pattern.search(scoped_code):
             observed.add(relative)
     expected = set(boundary.product_callers)
     if observed != expected:
@@ -432,6 +576,14 @@ def _verify_boundary(
         "symbol": boundary.symbol,
         "callPattern": boundary.call_pattern,
         "productCallers": sorted(observed),
+        "nonBoundarySelfCalls": [
+            {
+                "path": scope.path,
+                "receiverType": scope.receiver_type,
+                "method": scope.method,
+            }
+            for scope in boundary.non_boundary_self_calls
+        ],
     }
 
 
@@ -457,6 +609,22 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
             if marker in text:
                 raise VerificationFailure(
                     f"{relative}: forbidden marker present: {marker!r}"
+                )
+        patterns = (
+            _string_tuple(row, "forbidden_patterns")
+            if "forbidden_patterns" in row
+            else ()
+        )
+        for pattern in patterns:
+            try:
+                compiled = re.compile(pattern)
+            except re.error as exc:
+                raise VerificationFailure(
+                    f"{relative}: invalid forbidden pattern: {exc}"
+                ) from exc
+            if compiled.search(_strip_rust_non_code(text)):
+                raise VerificationFailure(
+                    f"{relative}: forbidden code pattern present: {pattern!r}"
                 )
         checked.append(relative)
     return checked

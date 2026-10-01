@@ -173,26 +173,7 @@ impl NeuralCircuitCandidateV1 {
         &self,
     ) -> Result<(TaskFlowDefinition, CircuitCompilationReceiptV1), TaskFlowError> {
         self.validate()?;
-        let nodes = self
-            .nodes
-            .iter()
-            .map(taskflow_node)
-            .collect::<Result<Vec<_>, _>>()?;
-        let edges = self
-            .edges
-            .iter()
-            .map(|edge| TaskFlowEdgeSpec::new(&edge.from, &edge.to))
-            .collect();
-        let policy_digest = compiled_policy_digest(self)?;
-        let definition = TaskFlowDefinition::new(
-            format!("circuit:{}", self.circuit_id),
-            self.version,
-            &self.entry_node,
-            nodes,
-            edges,
-            self.capability_set.clone(),
-            policy_digest,
-        )?;
+        let definition = self.compile_unchecked_taskflow()?;
         let receipt = CircuitCompilationReceiptV1 {
             circuit_id: self.circuit_id.clone(),
             circuit_version: self.version,
@@ -287,7 +268,12 @@ impl NeuralCircuitCandidateV1 {
             nodes,
             edges,
             self.capability_set.clone(),
-            compiled_policy_digest(self)?,
+            circuit_policy_digest(
+                &self.route_policy_digest,
+                &self.parameter_bundle_digest,
+                &self.resource_profile_digest,
+                &self.circuit_digest,
+            )?,
         )
     }
 
@@ -336,7 +322,7 @@ pub fn validate_circuit_successor_v1(
     if current.circuit_id != successor.circuit_id {
         return Err(invalid("circuit successor changes stable circuit identity"));
     }
-    if successor.version != current.version.saturating_add(1) {
+    if current.version.checked_add(1) != Some(successor.version) {
         return Err(invalid("circuit successor version is not monotone by one"));
     }
     if successor.predecessor_digest.as_ref() != Some(&current.circuit_digest) {
@@ -379,15 +365,18 @@ fn taskflow_node(node: &CircuitNodeV1) -> Result<TaskFlowNodeSpec, TaskFlowError
     Ok(compiled)
 }
 
-fn compiled_policy_digest(
-    candidate: &NeuralCircuitCandidateV1,
+pub(crate) fn circuit_policy_digest(
+    route_policy_digest: &Sha256Digest,
+    parameter_bundle_digest: &Sha256Digest,
+    resource_profile_digest: &Sha256Digest,
+    circuit_digest: &Sha256Digest,
 ) -> Result<Sha256Digest, TaskFlowError> {
     let mut bytes = b"hepta.neural-circuit.compiled-policy.v1\0".to_vec();
     for digest in [
-        &candidate.route_policy_digest,
-        &candidate.parameter_bundle_digest,
-        &candidate.resource_profile_digest,
-        &candidate.circuit_digest,
+        route_policy_digest,
+        parameter_bundle_digest,
+        resource_profile_digest,
+        circuit_digest,
     ] {
         validate_digest(digest, "compiled policy input")?;
         bytes.extend_from_slice(digest.as_str().as_bytes());
@@ -570,5 +559,17 @@ mod tests {
             digest("resources"),
         );
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn successor_version_cannot_repeat_when_current_version_is_exhausted() {
+        let mut current = v1();
+        current.version = u32::MAX;
+        current.predecessor_digest = Some(digest("previous"));
+        current.circuit_digest = current.compute_digest().expect("current digest");
+        let mut successor = current.clone();
+        successor.predecessor_digest = Some(current.circuit_digest.clone());
+        successor.circuit_digest = successor.compute_digest().expect("successor digest");
+        assert!(validate_circuit_successor_v1(&current, &successor).is_err());
     }
 }

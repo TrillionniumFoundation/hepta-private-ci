@@ -1,0 +1,253 @@
+{
+  "schema": "hepta.automation-taskflow-product-qualification.v1",
+  "schemaVersion": 1,
+  "module": "automation.taskflow",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "sourceCandidate": {
+    "commit": "95ffdf1718f0b18b22c2d1dc357fa670f66c6818",
+    "tree": "2c5986d4aa34f69b9950b1b32444c73a56e2fb5a",
+    "cargoLockBlob": "cd6650b68a815d69038166b7de50c2857f358641",
+    "sourceObjects": [
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "blob": "4356f0d46eec5b5cc6a575e375db67c830477569"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "blob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+        "blob": "dc6e7c4f9c0f3b9c99a545cace3ec77bfb5dc8af"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
+        "blob": "ff6103ecc7c952b232fb7bb0cac38f2b2bcae943"
+      },
+      {
+        "path": "codex-rs/hepta-automation/migrations/0020_neural_circuit_runtime.sql",
+        "blob": "1b2eb7be051c269b40d3e6a6a29c9292774419f2"
+      }
+    ],
+    "semantics": "historical exact source/test observation of the listed runtime objects; retained unchanged as provenance. Subsequent audit changes require fresh exact-candidate checks and are not covered by this observation."
+  },
+  "sourceComposition": {
+    "namedProductHost": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "controlSurface": [
+      "AgentdMethod::AutomationExecuteEffect",
+      "AgentdMethod::AutomationReconcileEffect",
+      "AgentdClient::automation_execute_effect",
+      "AgentdClient::automation_reconcile_effect"
+    ],
+    "providerBridge": "ProviderEffectTaskFlowDriver::new",
+    "asyncFinalUseFence": "FinalUseAuthority::with_verified_use_async",
+    "concreteProviderAdapter": "HttpProviderEffectAdapter",
+    "providerContractAttestation": "HttpProviderEffectContractAttestation::verify_signed",
+    "independentFinalUseTrust": "FinalUseAuthority::open_state_dir",
+    "revocationRefresh": "FinalUseAuthority::update_revocations",
+    "exactWireBinding": true,
+    "providerStableLogicalEffectKey": true,
+    "durableProviderAttempt": true,
+    "restartLookup": true,
+    "noBlindRedispatch": true,
+    "sourceCompositionComplete": true,
+    "durableOwnerScopedProviderIdentity": true,
+    "providerProfilePinnedBeforeAuthorityOpen": true,
+    "legacyKeylessAttemptsQuarantined": true,
+    "unpinnedInitializedAuthorityQuarantined": true,
+    "providerIdentitySemantics": "Before contact, persist the exact provider key derived from the length-framed owner Agent + TaskFlow run/step identity within the final-use-bound destination namespace. Reuse it and the stored payload digest across local attempts and restart lookup; legacy null keys remain unresolved and quarantined from lookup/retry without independent owner/provider isolation evidence."
+  },
+  "targetHostEvidence": {
+    "status": "required_not_embedded_in_repository",
+    "targetHostQualified": false,
+    "deploymentQualified": false,
+    "independentlyAccepted": false,
+    "activated": false,
+    "released": false,
+    "agentdArtifactSha256": null,
+    "automationArtifactSha256": null,
+    "tzdbIdentity": null,
+    "providerProfileIdentity": null,
+    "finalUseAuthorityTrustRoot": null,
+    "finalUseRevocationHead": null,
+    "hostIdentity": null,
+    "runId": null,
+    "occurrenceId": null,
+    "taskflowRunId": null,
+    "taskflowStepId": null,
+    "providerLogicalEffectKey": null,
+    "terminalObservation": null,
+    "restartRecoveryObservation": null
+  },
+  "requiredTargetHostScenarios": [
+    "dispatch_ack_loss_restart_lookup_terminal",
+    "dispatch_unknown_restart_remains_indeterminate_without_provider_evidence",
+    "provider_not_found_proves_absence_then_new_local_attempt_reuses_same_logical_effect_key",
+    "same_logical_effect_changed_payload_is_rejected_as_conflict",
+    "revocation_head_advances_between preparation_and_final_use",
+    "provider_contract_attestation_mismatch_fails_before_contact",
+    "agentd_generation_or_taskflow_fence_change_blocks_new_dispatch",
+    "terminal_observation_repairs_taskflow_step_and_occurrence_without_redispatch"
+  ],
+  "calendarQualificationReference": "docs/modules/automation.taskflow/CALENDAR_V2_FAULT_MATRIX.md",
+  "claimBoundary": {
+    "sourceComplete": true,
+    "productSourceComposed": true,
+    "productExecutionProved": false,
+    "targetHostQualified": false,
+    "deploymentQualified": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "sourceCompleteScope": [
+      "durable legacy/Calendar V2 schedule and occurrence ownership",
+      "Agentd/App Server stable queue and persisted terminal reconciliation",
+      "reference attestation-gated HTTP effect host and async final-use source composition",
+      "Neural Circuit candidate compiler and caller-supplied activation/choice metadata storage only"
+    ],
+    "neuralCircuitExecutionComplete": false,
+    "verifiedDecisionCellOrganProductCompositionComplete": false,
+    "fleetResourceAuthorityProductIntegrationComplete": false
+  },
+  "authorityGranted": false,
+  "note": "This file separates repository source composition from external target-host qualification. Null target-host fields are required evidence slots and must never be inferred from unit tests or source presence.",
+  "subsequentAudit": {
+    "status": "source_optimized_local_package_tests_passed_hosted_exact_candidate_validation_required",
+    "historicalSourceObservationRetained": true,
+    "runtimeSourceCommit": "117f7f5260600303e05bee3f877ded0c82a2aa23",
+    "runtimeSourceTree": "a1ab4cd4c6a3e81e23496edd85e6cb5a84215ce0",
+    "executionEvidenceOwner": "GitHub Actions checks for the published candidate and its main merge",
+    "localRustTestsPassed": true,
+    "localClippyPassed": false,
+    "localBuildBlocker": null,
+    "semantics": "This record separates local source/package verification from hosted exact-candidate evidence and product qualification. Historical source observations do not cover changed runtime objects. Hosted checks for the final published candidate and its main merge remain external evidence; no target-host, deployment, acceptance, activation or release qualification is granted.",
+    "localVerification": {
+      "automationDefault": {
+        "passed": 116,
+        "total": 116
+      },
+      "automationStructuralQualification": {
+        "passed": 121,
+        "total": 121,
+        "feature": "taskflow-structural-qualification"
+      },
+      "callerVerifier": {
+        "regressionsPassed": 28,
+        "selfTestPassed": true,
+        "fullClosurePassed": true,
+        "boundaries": 45,
+        "rustFiles": 4365
+      },
+      "independentReview": {
+        "reviewedBypassClasses": 7,
+        "newActionableFindingsInFinalReviewedScope": false
+      },
+      "moduleClippy": {
+        "command": "just clippy --locked --offline --no-deps -p codex-hepta-automation",
+        "status": "passed",
+        "passed": true,
+        "exitCode": 0,
+        "existingAdvisoryWarnings": 4,
+        "advisoryScope": "existing large-enum and argument-count warnings; no denied selected-module lints"
+      },
+      "scope": "Local automation/operations source/package, selected-module Clippy, formatting and caller-verifier validation bound to runtimeSourceCommit/runtimeSourceTree only; no local Agentd Rust test pass or dependency-inclusive strict Clippy pass is recorded. No target-host/provider execution or independent acceptance is established.",
+      "operations": {
+        "passed": 44,
+        "ignoredChildWorkerEntry": 1,
+        "ignoredEntryExecutedByParentTests": true
+      },
+      "fix": {
+        "entrypoint": "just fix",
+        "package": "codex-hepta-automation",
+        "exitCode": 0
+      },
+      "dependencyInclusiveClippy": {
+        "passed": false,
+        "blocker": "Existing upstream kernel.operations direct SQLite connection lint debt at destination_dedupe.rs:49 and durable_store.rs:93.",
+        "scope": "Dependency-inclusive strict Clippy failed in existing operations source; this is separate from selected automation module lint validation."
+      },
+      "agentd": {
+        "rustTestsPassed": false,
+        "requiredHostedExecution": true
+      },
+      "rustfmt": {
+        "scopedSourceOwnersPassed": true
+      },
+      "sourceReadback": {
+        "allSourceFollowupFilesMatchTestedContents": true,
+        "fileCount": 12
+      }
+    },
+    "historicalLocalBuildInterruption": "The first overlay build attempt exhausted workspace disk; subsequent actual default and structural package tests completed and passed.",
+    "localAgentdRustTestsPassed": false,
+    "localModuleClippyPassed": true,
+    "localDependencyInclusiveClippyPassed": false,
+    "localAgentdTestsPassed": false
+  },
+  "secondAudit": {
+    "status": "source_optimized_local_taskflow_host_tests_passed_full_agentd_socket_case_blocked_hosted_validation_required",
+    "reviewBaselineCommit": "b72ce251e3106e94d9063855baa7a0dde13b7dfd",
+    "runtimeSourceCommit": "a6edeeb61be3db83a44cb1bcd5fd683f008676eb",
+    "runtimeSourceTree": "947f5ff6b7314b4679b62063f3b1896ee1a8632b",
+    "localVerification": {
+      "agentdLibrary": {
+        "command": "just test --locked --offline -p codex-hepta-agentd --lib --test-threads=1",
+        "total": 172,
+        "passed": 171,
+        "failed": 1,
+        "skipped": 0,
+        "fullSuitePassed": false,
+        "taskflowRelatedPassed": 20,
+        "taskflowRelatedFailed": 0,
+        "blocker": {
+          "test": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+          "reason": "The environment denies Unix socket creation with EPERM; an independent socket-creation probe confirms the restriction."
+        }
+      },
+      "protectedFileRegressions": {
+        "passed": 3,
+        "total": 3
+      },
+      "expiredLeaseRestartRecovery": {
+        "passed": true,
+        "dispatchPosts": 1,
+        "lookupGets": 1,
+        "newDispatchAuthorizationGranted": false
+      },
+      "fix": {
+        "command": "just fix --locked --offline --no-deps -p codex-hepta-agentd --lib",
+        "exitCode": 0,
+        "existingWarningsRetained": true,
+        "strictClippyPassClaimed": false
+      },
+      "rustfmt": {
+        "passed": true
+      },
+      "diffCheck": {
+        "passed": true
+      },
+      "sourceAfterFix": {
+        "testedRustFilesUnchanged": true,
+        "fileCount": 3
+      },
+      "callerVerifier": {
+        "fullClosurePassed": true,
+        "boundaries": 45,
+        "rustFiles": 4366,
+        "authorityGranted": false
+      },
+      "implementationMap": {
+        "jsonValid": true,
+        "allReferencedPathsExist": true
+      },
+      "manualReview": {
+        "newActionableProductionLogicFindingsInReviewedScope": false,
+        "scope": "Protected-file handle/byte bounds, original-fence expired-lease recovery, provider identity/profile retention and the executed automation-related Agentd regressions."
+      }
+    },
+    "hostedExactSourceAndMainMergeValidationRequired": true,
+    "targetHostQualified": false,
+    "authorityGranted": false,
+    "semantics": "This supplements the retained first-audit observations. Scoped local TaskFlow host tests passed, while the complete Agentd library suite has one environment-blocked Unix-socket test. No complete hosted CI, actual provider/target-host execution, independent acceptance, deployment, activation or release qualification is inferred."
+  }
+}

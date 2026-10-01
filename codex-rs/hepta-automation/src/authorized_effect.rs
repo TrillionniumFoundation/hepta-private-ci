@@ -44,6 +44,7 @@ use crate::TaskFlowTransition;
 use crate::effect_dispatch_ledger::EffectDispatchAttempt;
 use crate::effect_dispatch_ledger::EffectDispatchObservationKind;
 use crate::effect_dispatch_ledger::EffectDispatchStart;
+use crate::effect_dispatch_ledger::EffectProviderIdentity;
 
 const MAX_AUTHORIZED_EFFECT_DEPENDENCIES: usize = 128;
 const MAX_EFFECT_ID_BYTES: usize = 256;
@@ -212,6 +213,10 @@ pub struct AuthorizedEffectPending {
     pub authority_epoch: u64,
     pub grant_id: String,
     pub started_at_ms: u64,
+    /// Owner-scoped key durably frozen before provider contact. `None` marks
+    /// an unscoped legacy attempt, whose original identity must be quarantined
+    /// rather than silently upgraded or attributed to another Agent.
+    pub provider_effect_key: Option<ProviderEffectKey>,
 }
 
 impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
@@ -227,6 +232,7 @@ impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
             authority_epoch: value.authority_epoch,
             grant_id: value.grant_id,
             started_at_ms: value.started_at_ms,
+            provider_effect_key: value.provider_effect_key,
         }
     }
 }
@@ -369,10 +375,7 @@ where
         {
             return AuthorizedProviderEffectLookup::Unresolved;
         }
-        let logical_effect_id = format!("taskflow:{}:{}", pending.run_id, pending.step_id);
-        let Ok(key) =
-            ProviderEffectKey::for_logical_effect(&pending.destination_id, &logical_effect_id)
-        else {
+        let Some(key) = pending.provider_effect_key.clone() else {
             return AuthorizedProviderEffectLookup::Unresolved;
         };
         let provider_intent = ProviderEffectIntent::new(key, pending.payload_digest.clone());
@@ -425,15 +428,26 @@ where
 fn provider_effect_intent(
     intent: &AuthorizedEffectIntent,
     wire_payload: &[u8],
+    key: ProviderEffectKey,
 ) -> Result<ProviderEffectIntent, AuthorizedEffectError> {
     let payload_digest = Sha256Digest::for_bytes(wire_payload);
     if payload_digest != intent.payload_digest {
         return Err(AuthorizedEffectError::BindingMismatch);
     }
-    let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
-    let key = ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
-        .map_err(|_| AuthorizedEffectError::BindingMismatch)?;
     Ok(ProviderEffectIntent::new(key, payload_digest))
+}
+
+fn owner_scoped_provider_key(
+    owner_agent_id: &str,
+    intent: &AuthorizedEffectIntent,
+) -> Result<ProviderEffectKey, AuthorizedEffectError> {
+    let mut bytes = b"hepta.automation.provider.logical-effect.v2\0".to_vec();
+    push_text(&mut bytes, owner_agent_id);
+    push_text(&mut bytes, &intent.run_id);
+    push_text(&mut bytes, &intent.step_id);
+    let logical_effect_id = format!("taskflow:v2:{}", Sha256Digest::for_bytes(&bytes).as_str());
+    ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+        .map_err(|_| AuthorizedEffectError::BindingMismatch)
 }
 
 fn provider_dispatch_receipt(
@@ -729,6 +743,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
+                /*provider_effect_key*/ None,
                 now_ms,
             )
             .await?;
@@ -875,7 +890,20 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
-        let provider_intent = provider_effect_intent(intent, wire_payload)?;
+        intent.validate()?;
+        let key = match self
+            .effect_provider_identity(&intent.run_id, &intent.step_id, &intent.destination_id)
+            .await?
+        {
+            EffectProviderIdentity::New => {
+                owner_scoped_provider_key(self.owner_agent_id().as_str(), intent)?
+            }
+            EffectProviderIdentity::OwnerScoped(key) => key,
+            EffectProviderIdentity::LegacyUnscoped => {
+                return Err(AuthorizedEffectError::RecoveryRequired);
+            }
+        };
+        let provider_intent = provider_effect_intent(intent, wire_payload, key.clone())?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
@@ -946,6 +974,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
+                Some(&key),
                 now_ms,
             )
             .await?;
