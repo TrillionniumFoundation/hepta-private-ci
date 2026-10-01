@@ -19,9 +19,7 @@ class NativeWindowsMsvcToolchainTest(unittest.TestCase):
             {"RUNNER_OS": "Windows"},
         )
 
-        self.assertIn(
-            "--extra_toolchains=//:local_windows_msvc_cc_toolchain", args
-        )
+        self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
         self.assertIn("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0", args)
         self.assertIn("--platforms=//:windows_x86_64_msvc", args)
         self.assertNotIn("--platforms=//:windows_x86_64_gnullvm", args)

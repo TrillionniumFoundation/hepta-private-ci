@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::Mutex;

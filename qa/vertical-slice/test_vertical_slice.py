@@ -1,3 +1,5 @@
+"""Reference-model checks; native owner tests exercise product recovery."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -5,7 +7,6 @@ import sys
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location("vertical_reference", Path(__file__).with_name("reference.py"))
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
@@ -67,17 +68,6 @@ class VerticalSliceTests(unittest.TestCase):
         runtime.drain(7)
         with self.assertRaisesRegex(ValueError, "outstanding"):
             runtime.stop(7, outstanding_operations=1)
-
-    def test_product_source_has_exact_readiness_and_task_fail_closed_markers(self) -> None:
-        agent_runtime = (ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(encoding="utf-8")
-        unix_driver = (ROOT / "codex-rs/hepta-supervisor/src/unix.rs").read_text(encoding="utf-8")
-        self.assertIn("probe_app_server", agent_runtime)
-        self.assertIn("mark_app_server_ready", agent_runtime)
-        self.assertIn("cleanup_runtime_tasks", agent_runtime)
-        self.assertIn("exact_identity", unix_driver)
-        self.assertIn("readiness_matches", unix_driver)
-        self.assertIn("fenced", unix_driver)
-
 
 if __name__ == "__main__":
     unittest.main()

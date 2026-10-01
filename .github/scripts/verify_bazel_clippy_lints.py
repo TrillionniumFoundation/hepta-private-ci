@@ -87,6 +87,16 @@ def load_workspace_clippy_lints(cargo_toml: Path) -> dict[str, str]:
     clippy_lints = workspace["lints"]["clippy"]
     parsed: dict[str, str] = {}
     for lint, level in clippy_lints.items():
+        if isinstance(level, dict):
+            if (
+                set(level) - {"level", "priority"}
+                or "level" not in level
+                or type(level.get("priority", 0)) is not int
+            ):
+                raise SystemExit(
+                    f"invalid lint table for clippy::{lint} in {cargo_toml}: {level!r}"
+                )
+            level = level["level"]
         if not isinstance(level, str):
             raise SystemExit(
                 f"expected string lint level for clippy::{lint} in {cargo_toml}, got {level!r}"

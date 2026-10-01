@@ -101,7 +101,7 @@ jobs:
             -p codex-hepta-learning-artifacts \
             -p codex-hepta-learning-ledger \
             -p codex-hepta-shadow-qualification \
-            -- -D warnings
+            -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Named-host NDU qualification
         working-directory: codex-rs

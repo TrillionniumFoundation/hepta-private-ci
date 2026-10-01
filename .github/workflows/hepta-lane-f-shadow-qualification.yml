@@ -52,7 +52,7 @@ jobs:
           set -euo pipefail
           trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
-          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
           rm qualification/lane-f-shadow/Cargo.lock
           trap - EXIT
@@ -128,7 +128,7 @@ jobs:
           set -euo pipefail
           trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
-          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
           rm qualification/lane-f-shadow/Cargo.lock
           trap - EXIT

@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_agentd::AgentdIntuitionPolicyError;
 use codex_hepta_agentd::AgentdIntuitionPolicyHostV1;
 use codex_hepta_agentd::AgentdIntuitionPolicyPinsV1;
