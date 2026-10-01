@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "2f79c3b877e5970183c347d8f7481d9c9cb24090",
-    "tree": "7ec81b0fb33f7ed367a0f1a7cfeb96597be60317"
+    "commit": "1158039fcbcf4c0b487cd2ee10b3737b0a5b317b",
+    "tree": "f84c7ea4330517347dbbc62b426658b03ef664c0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -124,11 +124,47 @@
         "codex-rs/hepta-compact-engine/src/authenticated.rs",
         "codex-rs/hepta-compact-engine/src/candidate.rs"
       ]
+    },
+    {
+      "operation": "encode_restart_publication_body_v1",
+      "nativeSymbol": "encode_restart_body_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "encode_restart_publication_body_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/publication_body_codec.rs",
+        "codex-rs/hepta-compact-engine/src/publication_body_restore.rs",
+        "codex-rs/hepta-compact-engine/src/authenticated.rs"
+      ]
+    },
+    {
+      "operation": "restore_publication_body_v1",
+      "nativeSymbol": "restore_compaction_publication_body_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "restore_publication_body_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/publication_body_codec.rs",
+        "codex-rs/hepta-compact-engine/src/publication_body_restore.rs",
+        "codex-rs/hepta-compact-engine/src/authenticated.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
     "Compose a named product consumer of the existing SQLite owner lane_c_lineage observation with frozen external context and policy/input validation; test composition is not product execution.",
-    "Implement compact-owned fenced atomic publication for the sealed native proposal, a complete restart body/outbox codec, selected-generation CAS and revocation-aware reload/recovery. Revalidate current host/source eligibility in that publication transaction.",
+    "Implement compact-owned fenced atomic publication for the sealed proposal and complete small restart body, immutable receipt storage, selected-generation CAS and revocation-aware reload/recovery. Revalidate current host/source eligibility in that transaction. Larger proposals still need bounded immutable staged bodies.",
     "Provision host trust and scope/objective/epoch mappings, execute the signed candidate-specific evaluation obligations independently, and revalidate sealed proof/source bindings at every use.",
     "Implement target replay planning and skill proposal separately; neither is implied by checkpoint construction.",
     "Run exact-head and deterministic synthetic-merge checks and named COMPACT-01..04 product acceptance before changing the claim boundary."
