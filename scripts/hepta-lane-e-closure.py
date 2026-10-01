@@ -8,9 +8,11 @@ import importlib.util
 import json
 import re
 import sys
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
+from hepta_module_registry import load_module_registry
 from hepta_workflow_commands import workflow_commands
 from typing import Any
 
@@ -100,6 +102,15 @@ class Findings:
 
 
 def load_json(path: Path, findings: Findings) -> dict[str, Any]:
+    try:
+        relative = path.relative_to(ROOT).as_posix()
+    except ValueError:
+        findings.add("invalid_path", f"JSON registry escapes the repository: {path}")
+        return {}
+    checked = relative_path(relative, findings, "JSON registry")
+    if checked is None:
+        return {}
+    path = checked
     if not path.is_file():
         findings.add(
             "missing_file", f"missing required JSON file: {path.relative_to(ROOT)}"
@@ -120,40 +131,157 @@ def load_json(path: Path, findings: Findings) -> dict[str, Any]:
 
 
 def relative_path(value: object, findings: Findings, context: str) -> Path | None:
-    if not isinstance(value, str) or not value or value.startswith(("/", "../")):
+    try:
+        # Use the implementation-map inventory's existing canonical path
+        # contract: reject every symlink component before reading owner source.
+        return _SOURCE_INVENTORY.checked_source_path(ROOT, value)
+    except ValueError as error:
         findings.add(
-            "invalid_path", f"{context} has invalid repository path: {value!r}"
+            "invalid_path", f"{context} has invalid repository path: {value!r}: {error}"
         )
         return None
-    path = Path(value)
-    if ".." in path.parts:
-        findings.add("invalid_path", f"{context} escapes the repository: {value!r}")
-        return None
-    return ROOT / path
 
 
 def verify_symbol(source: str, native_symbol: str) -> bool:
+    # The navigation schema names identifier paths; unsupported Rust type/UFCS
+    # expressions must not fall back to finding an unrelated free function.
+    if not re.fullmatch(r"[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*", native_symbol):
+        return False
+    source = rust_code(source)
+    top_level = _SOURCE_INVENTORY.top_level_rust_source(source)
     parts = native_symbol.split("::")
     function = parts[-1]
+    function_pattern = (
+        rf"\b(?:pub(?:\([^)]*\))?\s+)?fn\s+{re.escape(function)}"
+        rf"(?:\s*<[^{{}};]*>)?\s*\("
+    )
     if function[:1].isupper():
         return bool(
             re.search(
-                rf"\b(?:struct|enum|type|trait)\s+{re.escape(function)}\b", source
+                rf"\b(?:struct|enum|type|trait)\s+{re.escape(function)}\b", top_level
             )
         )
-    if not re.search(
-        rf"\b(?:pub(?:\([^)]*\))?\s+)?fn\s+{re.escape(function)}"
-        rf"(?:\s*<[^{{}};]*>)?\s*\(",
-        source,
-    ):
-        return False
     if len(parts) >= 2 and parts[-2][:1].isupper():
         owner = parts[-2]
-        return bool(
-            re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
-            and re.search(rf"\bimpl(?:\s*<[^{{}};]*>)?\s+{re.escape(owner)}\b", source)
+        if not re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", top_level):
+            return False
+        for implementation in re.finditer(
+            rf"\bimpl(?:\s*<[^{{}};]*>)?\s+{re.escape(owner)}\b[^{{}};]*\{{",
+            source,
+        ):
+            if top_level[implementation.start()] != "i":
+                continue
+            start = cursor = implementation.end()
+            depth = 1
+            while cursor < len(source) and depth:
+                if source[cursor] == "{":
+                    depth += 1
+                elif source[cursor] == "}":
+                    depth -= 1
+                cursor += 1
+            if depth:
+                continue
+            # A free function, another type's method, or a nested local helper
+            # cannot satisfy this type's associated-method navigation binding.
+            body = _SOURCE_INVENTORY.top_level_rust_source(source[start : cursor - 1])
+            if re.search(function_pattern, body):
+                return True
+        return False
+    return bool(re.search(function_pattern, top_level))
+
+
+def registered_operations(findings: Findings) -> dict[str, dict[str, dict[str, Any]]]:
+    """Load the versioned Lane E subset, rather than freeze implementation-map APIs.
+
+    The canonical matrix registers Lane E operation identities and their exact
+    source/symbol bindings. Broader module implementation maps may contain other
+    owner operations and product consumers. Independently supplied matrix input
+    must preserve this registry; actual source and canonical ownership are
+    checked separately and this navigation registry grants no runtime authority.
+    """
+    registered: dict[str, dict[str, dict[str, Any]]] = {}
+    matrix = load_json(MATRIX_PATH, findings)
+    rows = matrix.get("modules")
+    if not isinstance(rows, list):
+        findings.add(
+            "canonical_operation_registry_invalid", "missing registered modules"
         )
-    return True
+        return registered
+    for row in rows:
+        if not isinstance(row, dict) or not isinstance(row.get("module"), str):
+            findings.add(
+                "canonical_operation_registry_invalid", "invalid registered module"
+            )
+            continue
+        module = row["module"]
+        operations = row.get("operations")
+        if module in registered or not isinstance(operations, list) or not operations:
+            findings.add(
+                "canonical_operation_registry_invalid", f"invalid registry for {module}"
+            )
+            continue
+        registered[module] = {}
+        for operation in operations:
+            if not isinstance(operation, dict):
+                findings.add(
+                    "canonical_operation_registry_invalid",
+                    f"invalid operation for {module}",
+                )
+                continue
+            name = operation.get("operation")
+            if (
+                not isinstance(name, str)
+                or not name.strip()
+                or name in registered[module]
+                or not isinstance(operation.get("source"), str)
+                or not isinstance(operation.get("nativeSymbol"), str)
+            ):
+                findings.add(
+                    "canonical_operation_registry_invalid",
+                    f"invalid operation identity for {module}",
+                )
+                continue
+            registered[module][name] = operation
+    findings.require(
+        set(registered) == EXPECTED_MODULES,
+        "canonical_operation_registry_invalid",
+        "Lane E operation registry has an unknown or missing module",
+    )
+    return registered
+
+
+def registered_cases(findings: Findings) -> dict[str, str]:
+    """Read required case identities from canonical module execution dossiers."""
+    cases: dict[str, str] = {}
+    for module in sorted(EXPECTED_MODULES):
+        try:
+            path = _SOURCE_INVENTORY.checked_source_path(
+                ROOT, f"qualification/module-execution-dossiers/detail/{module}.md"
+            )
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError, ValueError) as error:
+            findings.add(
+                "canonical_case_registry_invalid",
+                f"cannot read {module} dossier: {error}",
+            )
+            continue
+        identities = re.findall(
+            r"^\s*-\s+`?([A-Z][A-Z0-9]*-\d+)`?\s*:", text, re.MULTILINE
+        )
+        findings.require(
+            bool(identities),
+            "canonical_case_registry_invalid",
+            f"{module} dossier has no concrete verification cases",
+        )
+        for identity in identities:
+            if identity in cases:
+                findings.add(
+                    "canonical_case_registry_invalid",
+                    f"duplicate dossier case: {identity}",
+                )
+                continue
+            cases[identity] = module
+    return cases
 
 
 def verify_matrix(
@@ -197,7 +325,27 @@ def verify_matrix(
         "module_closed_world",
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
+    try:
+        registered = {
+            row["id"]: row
+            for row in load_module_registry(
+                _SOURCE_INVENTORY.checked_source_path(ROOT, "docs/modules/MODULES.json")
+            )
+        }
+    except (OSError, ValueError) as error:
+        findings.add("canonical_registry_invalid", str(error))
+        registered = {}
+    operation_registry = registered_operations(findings)
     for module, item in modules.items():
+        owner_roots = [
+            binding["path"]
+            for binding in registered.get(module, {}).get("rootBindings", [])
+        ]
+        findings.require(
+            bool(owner_roots) and item.get("sourceRoot") in owner_roots,
+            "canonical_owner_root",
+            f"{module} source root is not registered to its canonical owner",
+        )
         required_paths = ["sourceRoot", "stableGuide", "dossier", "nativeMapping"]
         if module == "learning.eval":
             required_paths.append("productionContract")
@@ -245,9 +393,43 @@ def verify_matrix(
             "operations_missing",
             f"{module} has no registered source operations",
         )
+        canonical_operations = operation_registry.get(module, {})
+        findings.require(
+            set(operations) == set(canonical_operations),
+            "operation_closed_world",
+            f"{module} operation set differs from the registered Lane E subset",
+        )
         for operation_name, operation in operations.items():
             source_path = relative_path(
                 operation.get("source"), findings, f"{module}.{operation_name}.source"
+            )
+            source_name = operation.get("source")
+            source_owners = {
+                owner
+                for owner, row in registered.items()
+                for binding in row.get("rootBindings", [])
+                if isinstance(source_name, str)
+                and (
+                    source_name == binding["path"]
+                    or source_name.startswith(binding["path"] + "/")
+                )
+            }
+            findings.require(
+                source_owners == {module},
+                "canonical_operation_owner",
+                f"{module}.{operation_name} has an unknown, foreign or ambiguous "
+                "source owner",
+            )
+            canonical = canonical_operations.get(operation_name)
+            findings.require(
+                canonical is not None
+                and all(
+                    operation.get(key) == canonical.get(key)
+                    for key in ("source", "nativeSymbol")
+                ),
+                "canonical_operation_binding",
+                f"{module}.{operation_name} differs from its registered "
+                "source/symbol binding",
             )
             symbol = operation.get("nativeSymbol")
             if source_path is None or not source_path.is_file():
@@ -328,7 +510,7 @@ def verify_matrix(
         )
         test = cross.get("test")
         if path is not None and path.is_file() and isinstance(test, str):
-            text = path.read_text(encoding="utf-8")
+            text = rust_code(path.read_text(encoding="utf-8"))
             findings.require(
                 bool(re.search(rf"\bfn\s+{re.escape(test)}\s*\(", text)),
                 "cross_crate_test_missing",
@@ -366,6 +548,12 @@ def verify_traceability(
         "case_module_coverage",
         "registered modules must each retain native behavioral traceability",
     )
+    case_registry = registered_cases(findings)
+    findings.require(
+        set(cases) == set(case_registry),
+        "case_closed_world",
+        "traceability cases must match the canonical module dossiers",
+    )
 
     source_cache: dict[Path, str] = {}
     for case_id, case in cases.items():
@@ -374,6 +562,11 @@ def verify_traceability(
             module in modules,
             "case_module",
             f"{case_id} has invalid module {module!r}",
+        )
+        findings.require(
+            case_registry.get(case_id) == module,
+            "canonical_case_owner",
+            f"{case_id} does not belong to its canonical dossier module",
         )
         tests = case.get("tests")
         if not isinstance(tests, list) or not tests:
@@ -394,9 +587,11 @@ def verify_traceability(
             if not isinstance(function, str):
                 findings.add("test_function_missing", f"{context} function is missing")
                 continue
-            source_text = source_cache.setdefault(
-                source_path, source_path.read_text(encoding="utf-8")
-            )
+            if source_path not in source_cache:
+                source_cache[source_path] = rust_code(
+                    source_path.read_text(encoding="utf-8")
+                )
+            source_text = source_cache[source_path]
             findings.require(
                 bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", source_text)),
                 "test_function_unresolved",
@@ -428,7 +623,7 @@ def verify_traceability(
                 and source_path.is_file()
                 and isinstance(function, str)
             ):
-                text = source_path.read_text(encoding="utf-8")
+                text = rust_code(source_path.read_text(encoding="utf-8"))
                 findings.require(
                     bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", text)),
                     "cross_case_unresolved",
@@ -465,7 +660,7 @@ def verify_traceability(
                 "product-boundary function is missing",
             )
             if isinstance(function, str):
-                text = source_path.read_text(encoding="utf-8")
+                text = rust_code(source_path.read_text(encoding="utf-8"))
                 findings.require(
                     bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", text)),
                     "boundary_function_unresolved",
@@ -576,6 +771,188 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
         )
 
 
+def rust_code(text: str) -> str:
+    """Mask Rust comments/literals without changing source offsets."""
+    code = list(text)
+    index = 0
+    raw_literal = re.compile(r'(?:br|cr|r)(#*)"')
+    char_literal = re.compile(
+        r"'(?:\\(?:x[0-9a-fA-F]{2}|u\{[0-9a-fA-F_]+\}|.)|[^'\\\n])'"
+    )
+    while index < len(text):
+        end = index
+        if text.startswith("//", index):
+            end = text.find("\n", index)
+            if end < 0:
+                end = len(text)
+        elif text.startswith("/*", index):
+            depth = 1
+            end = index + 2
+            while end < len(text) and depth:
+                if text.startswith("/*", end):
+                    depth += 1
+                    end += 2
+                elif text.startswith("*/", end):
+                    depth -= 1
+                    end += 2
+                else:
+                    end += 1
+        else:
+            raw = raw_literal.match(text, index)
+            if raw and (index == 0 or not text[index - 1].isalnum()):
+                closing = '"' + raw[1]
+                stop = text.find(closing, raw.end())
+                end = len(text) if stop < 0 else stop + len(closing)
+            elif text[index] == '"':
+                end = index + 1
+                while end < len(text):
+                    if text[end] == "\\":
+                        end += 2
+                    elif text[end] == '"':
+                        end += 1
+                        break
+                    else:
+                        end += 1
+            elif text[index] == "'":
+                char = char_literal.match(text, index)
+                if char:
+                    end = char.end()
+        if end > index:
+            for offset in range(index, min(end, len(code))):
+                if code[offset] != "\n":
+                    code[offset] = " "
+            index = end
+        else:
+            index += 1
+    return "".join(code)
+
+
+def without_qualification_items(text: str, feature: str) -> str:
+    """Remove only items carrying the exact, independently checked feature gate.
+
+    An any()/cfg_attr()/unknown gate is not an exemption. Item bodies are
+    balanced on masked code, so braces in comments and literals cannot enlarge
+    the excluded region or hide a following product writer.
+    """
+    code = rust_code(text)
+    output = list(text)
+    gate = re.compile(
+        r'#\[\s*cfg\s*\(\s*feature\s*=\s*"' + re.escape(feature) + r'"\s*\)\s*\]'
+    )
+    for match in gate.finditer(text):
+        if code[match.start()] != "#":
+            continue
+        start = match.end()
+        while True:
+            attributes = re.match(r"\s*#\[[^\]]*\]", code[start:])
+            if not attributes:
+                break
+            start += attributes.end()
+        item = re.match(
+            r"\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:fn|use)\b", code[start:]
+        )
+        if not item:
+            continue
+        cursor = start + item.end()
+        brackets: list[str] = []
+        body = False
+        complete = False
+        while cursor < len(code):
+            char = code[cursor]
+            if char in "([{":
+                if char == "{" and not brackets:
+                    body = True
+                brackets.append(char)
+            elif char in ")]}":
+                if not brackets or {"(": ")", "[": "]", "{": "}"}[brackets[-1]] != char:
+                    break
+                brackets.pop()
+                if body and not brackets:
+                    cursor += 1
+                    complete = True
+                    break
+            elif char == ";" and not brackets:
+                cursor += 1
+                complete = True
+                break
+            cursor += 1
+        else:
+            continue
+        if brackets or not complete:
+            continue
+        for offset in range(match.start(), cursor):
+            if output[offset] != "\n":
+                output[offset] = " "
+    return "".join(output)
+
+
+def feature_is_explicit(manifest: dict[str, Any], feature: str) -> bool:
+    features = manifest.get("features", {})
+    if (
+        not isinstance(features, dict)
+        or feature not in features
+        or not all(
+            isinstance(members, list)
+            and all(isinstance(member, str) for member in members)
+            for members in features.values()
+        )
+    ):
+        return False
+    pending = list(features.get("default", []))
+    seen: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if not isinstance(name, str) or name == feature:
+            return False
+        if name not in seen:
+            seen.add(name)
+            pending.extend(features.get(name, []))
+    return True
+
+
+def legacy_writer_uses(
+    text: str,
+    *,
+    qualification_feature: str | None = None,
+    read_only_journal: bool = False,
+) -> list[str]:
+    if qualification_feature is not None:
+        text = without_qualification_items(text, qualification_feature)
+    code = rust_code(text)
+    # A narrow read-only match arm extracts an existing record's identity. Any
+    # constructor, mutable arm, alternative expression or raw append still fails.
+    code = re.sub(
+        r"\bLedgerEvent\s*::\s*(Decision|Outcome|Credit|Revocation)\s*\(\s*([A-Za-z_]\w*)\s*\)\s*=>\s*&\s*\2\s*\.\s*record_id\s*(?=,|})",
+        "",
+        code,
+    )
+    if read_only_journal:
+        code = re.sub(
+            r"\buse\s+codex_hepta_learning_ledger\s*::\s*DurableLearningJournal\s*;",
+            "",
+            code,
+        )
+    forbidden = {
+        r"\bDurableLearningJournal\b": "unresolved legacy durable journal use",
+        r"\bLedgerEvent\s*::\s*Decision\b": "raw V1 Decision construction or unresolved use",
+        r"\bLedgerEvent\s*::\s*Outcome\b": "raw V1 Outcome construction or unresolved use",
+        r"\bLedgerEvent\s*::\s*Credit\b": "raw V1 Credit construction or unresolved use",
+        r"\bLedgerEvent\s*::\s*Revocation\b": "raw V1 Revocation construction or unresolved use",
+        r"\bLedgerEvent\s*(?:as\b|::\s*[\{*])": "ambiguous legacy event alias/import",
+        r"\btype\s+\w+\s*=\s*(?:\w+\s*::\s*)*LedgerEvent\b": "ambiguous legacy event type alias",
+        r"\.\s*append_qualification\s*\(": "qualification append in the product surface",
+    }
+    if read_only_journal and re.search(r"\bDurableLearningJournal\b", rust_code(text)):
+        forbidden[r"\.\s*append_decision\s*\("] = (
+            "ambiguous legacy journal Decision append"
+        )
+    return [
+        description
+        for pattern, description in forbidden.items()
+        if re.search(pattern, code)
+    ]
+
+
 def verify_product_writer_exclusivity(findings: Findings) -> None:
     """Prevent product crates from bypassing LedgerWriter with raw V1 appends."""
 
@@ -583,13 +960,35 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         "codex-rs/hepta-learning-ledger",
         "codex-rs/hepta-shadow-qualification",
     }
-    forbidden = {
-        r"\bDurableLearningJournal\b": "legacy durable journal trait",
-        r"LedgerEvent::Decision\b": "raw V1 Decision append",
-        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
-        r"LedgerEvent::Credit\b": "raw V1 Credit append",
-        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
-    }
+    agent_feature = "qualification-legacy-learning-write"
+    ledger_feature = "qualification-legacy-write"
+    try:
+        agent_manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text()
+        )
+        ledger_manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-learning-ledger/Cargo.toml").read_text()
+        )
+        qualification_only = (
+            feature_is_explicit(agent_manifest, agent_feature)
+            and feature_is_explicit(ledger_manifest, ledger_feature)
+            and agent_manifest["features"][agent_feature]
+            == ["codex-hepta-learning-ledger/" + ledger_feature]
+        )
+        journal = (ROOT / "codex-rs/hepta-learning-ledger/src/journal.rs").read_text()
+        journal = rust_code(without_qualification_items(journal, ledger_feature))
+        trait = re.search(
+            r"pub\s+trait\s+DurableLearningJournal\s*:\s*sealed\s*::\s*Journal\s*\{([^{}]*)\}",
+            journal,
+        )
+        read_only_journal = bool(
+            qualification_only
+            and trait
+            and set(re.findall(r"\bfn\s+(\w+)\s*\(", trait[1]))
+            == {"snapshot", "anchor"}
+        )
+    except (OSError, ValueError, KeyError):
+        qualification_only = read_only_journal = False
 
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
@@ -606,9 +1005,24 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
-        for pattern, description in forbidden.items():
-            findings.require(
-                re.search(pattern, text) is None,
+        if not any(
+            token in text
+            for token in (
+                "LedgerEvent",
+                "DurableLearningJournal",
+                "append_qualification",
+            )
+        ):
+            continue
+        feature = (
+            agent_feature
+            if qualification_only and relative.startswith("codex-rs/hepta-agentd/")
+            else None
+        )
+        for description in legacy_writer_uses(
+            text, qualification_feature=feature, read_only_journal=read_only_journal
+        ):
+            findings.add(
                 "legacy_learning_writer_product_bypass",
                 f"{relative} uses {description}; product learning writes must use LedgerWriter",
             )

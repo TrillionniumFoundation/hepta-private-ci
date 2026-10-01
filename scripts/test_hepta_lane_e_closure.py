@@ -35,11 +35,37 @@ class LaneEClosedWorldTests(unittest.TestCase):
 
     def test_registered_signed_dataset_operations_and_cases_are_current(self):
         self.assertEqual(self.verify(), set())
+        findings = LANE_E.Findings()
         self.assertIn(
             "fit_transition_model_verified_v2",
-            LANE_E.EXPECTED_OPERATIONS["learning.operator"],
+            LANE_E.registered_operations(findings)["learning.operator"],
         )
-        self.assertIn("OP-06", LANE_E.EXPECTED_CASES)
+        self.assertEqual(
+            LANE_E.registered_cases(findings)["OP-06"], "learning.operator"
+        )
+        self.assertEqual(findings.items, [])
+
+    def test_dynamic_operation_registration_accepts_new_source_binding(self):
+        matrix = copy.deepcopy(self.matrix)
+        operation = copy.deepcopy(matrix["modules"][0]["operations"][0])
+        operation["operation"] = "new_registered_navigation_alias"
+        matrix["modules"][0]["operations"].append(operation)
+        registered = LANE_E.registered_operations(LANE_E.Findings())
+        registered[matrix["modules"][0]["module"]][operation["operation"]] = operation
+        with mock.patch.object(
+            LANE_E, "registered_operations", return_value=registered
+        ):
+            self.assertEqual(self.verify(matrix), set())
+
+    def test_dynamic_case_registration_accepts_new_dossier_case(self):
+        trace = copy.deepcopy(self.trace)
+        case = copy.deepcopy(trace["cases"][0])
+        case["id"] = "NEW-01"
+        trace["cases"].append(case)
+        registered = LANE_E.registered_cases(LANE_E.Findings())
+        registered[case["id"]] = case["module"]
+        with mock.patch.object(LANE_E, "registered_cases", return_value=registered):
+            self.assertEqual(self.verify(trace=trace), set())
 
     def test_missing_unknown_and_duplicate_operations_remain_rejected(self):
         for mutation in ("missing", "unknown", "duplicate"):
@@ -54,7 +80,7 @@ class LaneEClosedWorldTests(unittest.TestCase):
                 operations.append(operation)
             with self.subTest(mutation=mutation):
                 expected = (
-                    "duplicate_operation"
+                    "duplicate_or_empty_operation"
                     if mutation == "duplicate"
                     else "operation_closed_world"
                 )
@@ -92,6 +118,38 @@ class LaneEClosedWorldTests(unittest.TestCase):
         )
         with mock.patch.object(LANE_E, "load_module_registry", return_value=rows):
             self.assertIn("canonical_operation_owner", self.verify())
+
+    def test_source_and_symbol_substitution_within_owner_remain_rejected(self):
+        matrix = copy.deepcopy(self.matrix)
+        operations = matrix["modules"][0]["operations"]
+        # An unrelated owner entrypoint cannot replace a registered binding.
+        for field in ("source", "nativeSymbol"):
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(matrix)
+                mutated["modules"][0]["operations"][0][field] = operations[1][field]
+                if operations[0][field] == operations[1][field]:
+                    replacement = next(
+                        op for op in operations if op[field] != operations[0][field]
+                    )
+                    mutated["modules"][0]["operations"][0][field] = replacement[field]
+                self.assertIn("canonical_operation_binding", self.verify(mutated))
+        replacement = next(
+            op for op in operations if op["source"] != operations[0]["source"]
+        )
+        for field in ("source", "nativeSymbol"):
+            matrix["modules"][0]["operations"][0][field] = replacement[field]
+        codes = self.verify(matrix)
+        self.assertIn("canonical_operation_binding", codes)
+        self.assertNotIn("native_symbol_unresolved", codes)
+        self.assertNotIn("canonical_operation_owner", codes)
+
+    def test_case_cannot_swap_its_canonical_module(self):
+        trace = copy.deepcopy(self.trace)
+        case = trace["cases"][0]
+        case["module"] = next(
+            module for module in LANE_E.EXPECTED_MODULES if module != case["module"]
+        )
+        self.assertIn("canonical_case_owner", self.verify(trace=trace))
 
     def test_authority_and_external_qualification_boundaries_remain_required(self):
         matrix = copy.deepcopy(self.matrix)
