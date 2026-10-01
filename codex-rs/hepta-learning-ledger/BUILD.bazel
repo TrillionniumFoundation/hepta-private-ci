@@ -1,6 +1,22 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-learning-ledger",
     crate_name = "codex_hepta_learning_ledger",
+)
+
+# Cargo enables this only through the shadow harness's dev-dependency.
+# Keep legacy fixture writes out of every product dependency in Bazel too.
+rust_library(
+    name = "hepta-learning-ledger-qualification-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["qualification-legacy-write"],
+    crate_name = "codex_hepta_learning_ledger",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//codex-rs/hepta-shadow-qualification:__pkg__"],
+    deps = all_crate_deps(),
 )

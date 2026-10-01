@@ -63,7 +63,7 @@ rust_test(
     deps = [
         "//codex-rs/hepta-bellman-operator",
         "//codex-rs/hepta-learning-artifacts",
-        "//codex-rs/hepta-learning-ledger",
+        "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
         "//codex-rs/hepta-types",
         "@crates//:ed25519-dalek",
         "@crates//:pretty_assertions",
