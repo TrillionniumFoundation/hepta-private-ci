@@ -16,7 +16,7 @@ use codex_hepta_types::StableId;
 use crate::DeletionRebuildError;
 use crate::JournalAnchor;
 use crate::JournalError;
-use crate::SparseConfig;
+use crate::JournalScope;
 use crate::SparseSignalReceipt;
 
 const Q24: i64 = 1 << 24;
@@ -135,6 +135,20 @@ pub struct NeuronResourceEnvelopeV1 {
     pub write_amplification_ppm: u32,
 }
 
+impl NeuronResourceEnvelopeV1 {
+    pub(crate) fn validate(&self) -> Result<(), NeuronRuntimeError> {
+        if self.p95_latency_micros == 0
+            || self.p99_latency_micros < self.p95_latency_micros
+            || self.transient_allocation_bytes == 0
+            || self.checkpoint_bytes == 0
+            || !(1_000_000..=4_000_000).contains(&self.write_amplification_ppm)
+        {
+            return Err(NeuronRuntimeError::InvalidConfig);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronRuntimeConfigV1 {
     pub config_id: StableId,
@@ -158,43 +172,8 @@ pub struct NeuronRuntimeConfigV1 {
     pub resource_envelope: NeuronResourceEnvelopeV1,
 }
 
-impl NeuronRuntimeConfigV1 {
-    pub(crate) fn validate_native(&self, native: &SparseConfig) -> Result<(), NeuronRuntimeError> {
-        for (field, digest) in [
-            ("model manifest", self.model_manifest_digest),
-            ("encoder", self.encoder_digest),
-            ("head", self.head_digest),
-            ("weights", self.weights_digest),
-            ("tokenizer", self.tokenizer_digest),
-            ("preprocessor", self.preprocessor_digest),
-            ("quantization", self.quantization_digest),
-            ("runtime", self.runtime_digest),
-            ("device", self.device_digest),
-            ("normalization", self.normalization_digest),
-            ("native config", self.native_config_digest),
-        ] {
-            if digest.is_zero() {
-                return Err(NeuronRuntimeError::EmptyDigest(field));
-            }
-        }
-        if self.generation != native.generation
-            || self.head_digest != native.model_digest
-            || self.normalization_digest != native.normalization_digest
-            || self.native_config_digest != native.digest().map_err(JournalError::Mechanism)?
-            || self.state_width != native.width
-            || !(1..=MAX_INPUT_FEATURES).contains(&self.input_feature_dimension)
-            || !(1..=MAX_MODULATORS).contains(&self.modulator_dimension)
-            || self.resource_envelope.p95_latency_micros == 0
-            || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
-            || self.resource_envelope.transient_allocation_bytes == 0
-            || self.resource_envelope.checkpoint_bytes == 0
-            || !(1_000_000..=4_000_000).contains(&self.resource_envelope.write_amplification_ppm)
-        {
-            return Err(NeuronRuntimeError::InvalidConfig);
-        }
-        self.calibration.validate(self.generation)
-    }
-}
+#[path = "runtime_config_digest.rs"]
+mod runtime_config_digest;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronTickInputV1 {
@@ -309,6 +288,7 @@ pub enum WitnessStoreError {
     NotRegular,
     Corrupt,
     ContextMismatch,
+    UnboundRuntimeConfig,
     Capacity,
     Indeterminate,
     Poisoned,
@@ -334,6 +314,31 @@ impl From<io::Error> for WitnessStoreError {
 /// returning success.
 pub trait AnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
+
+    /// Verify the independently enrolled subject/objective scope and generation.
+    /// Default implementations lack authenticated context and fail closed.
+    fn verify_context(
+        &self,
+        _scope: JournalScope,
+        _generation: Generation,
+    ) -> Result<(), WitnessStoreError> {
+        Err(WitnessStoreError::UnboundRuntimeConfig)
+    }
+
+    /// Return the frozen owner configuration identity authenticated and durably
+    /// bound during independent witness enrollment. Do not derive it from the
+    /// configuration supplied for recovery. Unbound low-level stores cannot
+    /// acknowledge a canonical runtime, including an otherwise matching kernel.
+    fn runtime_config_digest(&self) -> Result<Digest32, WitnessStoreError> {
+        Err(WitnessStoreError::UnboundRuntimeConfig)
+    }
+
+    /// Reject known exhaustion or unusable storage before model execution and
+    /// journal mutation. The default has no capacity information; success is
+    /// advisory and never replaces the durable compare-and-swap acknowledgement.
+    fn check_capacity(&self) -> Result<(), WitnessStoreError> {
+        Ok(())
+    }
 
     fn compare_and_swap(
         &mut self,
@@ -403,6 +408,7 @@ pub enum NeuronRuntimeError {
     BootstrapRequiresEmptyJournal,
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
+    SegmentNotFull,
     PendingReconciliation,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
