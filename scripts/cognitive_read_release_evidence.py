@@ -9,6 +9,7 @@ import cognitive_read_full_evidence as full
 
 WITNESS_INTEGRITY_TESTS = (
     "lane_c_witness_guards_reject_drift_and_reopen_cleanly",
+    "canonical_replace_guards_preserve_owner_replay_and_current_cut",
     "lane_c_witness_reopen_rejects_missing_and_weakened_schema",
     "lane_c_witness_reopen_audits_existing_v17_content",
     "unselected_head_rollback_cannot_restore_an_earlier_selection_witness",

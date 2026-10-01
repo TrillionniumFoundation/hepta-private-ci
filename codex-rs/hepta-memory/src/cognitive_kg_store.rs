@@ -983,8 +983,11 @@ impl CognitiveStore {
 
         sqlx::query(
             "INSERT INTO kg_projection (projection_scope, generation)
-             VALUES (?, 0) ON CONFLICT(projection_scope) DO NOTHING",
+             SELECT ?, 0
+             WHERE NOT EXISTS (SELECT 1 FROM kg_projection WHERE projection_scope = ?)
+             ON CONFLICT(projection_scope) DO NOTHING",
         )
+        .bind(&projection_scope)
         .bind(&projection_scope)
         .execute(&mut **transaction)
         .await

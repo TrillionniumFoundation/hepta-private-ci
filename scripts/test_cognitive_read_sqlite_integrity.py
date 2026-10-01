@@ -1,10 +1,10 @@
 """Exercise compiled SQLite migrations independently of owner-generated state."""
 
 import hashlib
-from pathlib import Path
 import re
 import sqlite3
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRATIONS = ROOT / "codex-rs/hepta-memory/migrations"
@@ -18,13 +18,13 @@ INSERT INTO source_ledger (
 """
 
 
-def migrate(db: sqlite3.Connection, first: int = 1, last: int = 19) -> None:
+def migrate(db: sqlite3.Connection, first: int = 1, last: int = 20) -> None:
     for path in sorted(MIGRATIONS.glob("*.sql")):
         if first <= int(path.name.split("_", 1)[0]) <= last:
             db.executescript(path.read_text())
 
 
-def connection(last: int = 19) -> sqlite3.Connection:
+def connection(last: int = 20) -> sqlite3.Connection:
     db = sqlite3.connect(":memory:")
     db.execute("PRAGMA foreign_keys = ON")
     db.execute("PRAGMA recursive_triggers = OFF")
@@ -64,6 +64,69 @@ def memory(db: sqlite3.Connection, name: str, revision: int = 1) -> None:
             None if revision == 1 else revision - 1,
         ),
     )
+
+
+def canonical_rows(db: sqlite3.Connection) -> None:
+    source(db, "s1")
+    memory(db, "a")
+    db.execute("INSERT INTO cognitive_meta VALUES (1, 1, ?)", (OWNER,))
+    db.execute("INSERT INTO memory_heads VALUES ('a', 1)")
+    db.execute("INSERT INTO memory_citations VALUES ('a', 1, 0, 's1', 1)")
+    db.execute(
+        "INSERT INTO kg_revision_fact_sets VALUES ('a', 1, 'fixture', ?, 's1', 1, 2, 1, 100)",
+        ("0" * 64,),
+    )
+    db.executemany(
+        "INSERT INTO kg_revision_entities VALUES ('a', 1, ?, ?, 'fixture', ?, 100, NULL, 's1', 1)",
+        [("one", "canonical-one", "one"), ("two", "canonical-two", "two")],
+    )
+    db.execute("""
+        INSERT INTO kg_revision_relations VALUES (
+            'a', 1, 'relation', 'canonical-relation', 'one', 'canonical-one',
+            'two', 'canonical-two', 'related', 100, NULL, 's1', 1
+        )
+    """)
+    for generation in (1, 2):
+        db.execute(
+            "INSERT INTO kg_projection_generation_receipts VALUES ('agent_private', ?, 'a', 1, ?, ?, ?, 2, 1, 2, 1, 100)",
+            (generation, "0" * 64, "1" * 64, "2" * 64),
+        )
+        db.execute(
+            "INSERT INTO kg_projection_generation_semantics VALUES ('agent_private', ?, ?, ?, ?, ?, ?)",
+            (generation, *("3" * 64 for _ in range(5))),
+        )
+        db.execute(
+            "INSERT INTO kg_projection_generation_storage VALUES ('agent_private', ?, 'revision_facts_v1')",
+            (generation,),
+        )
+        db.executemany(
+            "INSERT INTO kg_nodes VALUES ('agent_private', ?, ?, 'fixture', ?, 100, NULL, 'a', 1, 's1', 1)",
+            [(generation, "node-one", "one"), (generation, "node-two", "two")],
+        )
+        db.executemany(
+            "INSERT INTO kg_projection_node_entities VALUES ('agent_private', ?, ?, ?)",
+            [
+                (generation, "node-one", "canonical-one"),
+                (generation, "node-two", "canonical-two"),
+            ],
+        )
+        db.execute(
+            "INSERT INTO kg_edges VALUES ('agent_private', ?, 'edge', 'node-one', 'node-two', 'related', 100, NULL, 'a', 1, 's1', 1)",
+            (generation,),
+        )
+    db.execute("INSERT INTO kg_projection VALUES ('agent_private', 1)")
+    db.execute(
+        "UPDATE kg_projection SET generation = 2 WHERE projection_scope = 'agent_private'"
+    )
+
+
+def owner_insert_sql(filename: str, prefix: str, conflict: str) -> str:
+    code = (ROOT / "codex-rs/hepta-memory/src" / filename).read_text()
+    return re.search(
+        '"(' + re.escape(prefix) + ".*?" + re.escape(conflict) + ')"',
+        code,
+        re.DOTALL,
+    )[1]
 
 
 def schema_oracle(db: sqlite3.Connection) -> str:
@@ -225,6 +288,167 @@ class SQLiteIntegrityTests(unittest.TestCase):
                     if state != "clean":
                         self.assertTrue(actual)
 
+    def test_replace_cannot_move_a_canonical_row_between_scopes(self) -> None:
+        for table in ("source_ledger", "memory_revisions"):
+            with self.subTest(table=table), connection() as db:
+                source(db, "s1")
+                source(db, "keep")
+                memory(db, "a")
+                before = db.execute("SELECT * FROM lane_c_scope_witness").fetchall()
+                columns = [row[1] for row in db.execute(f"PRAGMA table_info({table})")]
+                projection = [
+                    "'workspace_private'"
+                    if column == "scope_kind"
+                    else "?"
+                    if column == "workspace_sha256"
+                    else column
+                    for column in columns
+                ]
+                with self.assertRaisesRegex(
+                    sqlite3.IntegrityError,
+                    f"{table} existing identity cannot be replaced",
+                ):
+                    db.execute(
+                        f"INSERT OR REPLACE INTO {table} SELECT {', '.join(projection)} FROM {table}",
+                        ("1" * 64,),
+                    )
+                self.assertEqual(
+                    db.execute("SELECT * FROM lane_c_scope_witness").fetchall(), before
+                )
+                self.assertEqual(
+                    db.execute("SELECT * FROM lane_c_scope_witness_audit").fetchall(),
+                    [],
+                )
+
+    def test_all_canonical_insert_guards_precede_replace_conflict_resolution(
+        self,
+    ) -> None:
+        with connection() as db:
+            canonical_rows(db)
+            tables = (
+                "cognitive_meta",
+                "source_ledger",
+                "memory_revisions",
+                "memory_citations",
+                "kg_revision_fact_sets",
+                "kg_revision_entities",
+                "kg_revision_relations",
+                "kg_projection_generation_receipts",
+                "kg_projection_node_entities",
+                "kg_nodes",
+                "kg_edges",
+                "kg_projection_generation_semantics",
+                "kg_projection_generation_storage",
+                "kg_projection",
+            )
+            for table in tables:
+                before = db.execute(f"SELECT * FROM {table}").fetchall()
+                with (
+                    self.subTest(table=table),
+                    self.assertRaisesRegex(
+                        sqlite3.IntegrityError,
+                        f"{table} existing identity cannot be replaced",
+                    ),
+                ):
+                    db.execute(f"INSERT OR REPLACE INTO {table} SELECT * FROM {table}")
+                self.assertEqual(
+                    db.execute(f"SELECT * FROM {table}").fetchall(), before
+                )
+            # The pointer previously allowed REPLACE to bypass its generation
+            # update guard and restore any earlier complete generation.
+            with self.assertRaisesRegex(
+                sqlite3.IntegrityError, "kg_projection existing identity"
+            ):
+                db.execute(
+                    "INSERT OR REPLACE INTO kg_projection VALUES ('agent_private', 1)"
+                )
+            self.assertEqual(
+                db.execute("SELECT generation FROM kg_projection").fetchall(), [(2,)]
+            )
+
+    def test_actual_owner_insert_if_absent_keeps_replay_and_initialization(
+        self,
+    ) -> None:
+        with connection() as db:
+            meta_sql = owner_insert_sql(
+                "cognitive_store.rs",
+                "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)",
+                "ON CONFLICT(singleton) DO NOTHING",
+            )
+            self.assertEqual(db.execute(meta_sql, (1, OWNER)).rowcount, 1)
+            self.assertEqual(db.execute(meta_sql, (1, OWNER)).rowcount, 0)
+            source_sql = owner_insert_sql(
+                "cognitive_store.rs",
+                "INSERT INTO source_ledger (",
+                "ON CONFLICT(source_id, source_revision) DO NOTHING",
+            )
+            parameters = (
+                "s1",
+                OWNER,
+                "agent_private",
+                None,
+                "explicit_memory_directive",
+                b"a",
+                hashlib.sha256(b"a").hexdigest(),
+                100,
+                100,
+                "s1",
+            )
+            self.assertEqual(db.execute(source_sql, parameters).rowcount, 1)
+            # Recorded time can differ on a legitimate replay. The subsequent
+            # owner's semantic comparison deliberately excludes recorded time.
+            replay = (*parameters[:8], 200, parameters[9])
+            self.assertEqual(db.execute(source_sql, replay).rowcount, 0)
+            self.assertEqual(
+                db.execute(
+                    "SELECT recorded_at_unix_seconds FROM source_ledger"
+                ).fetchall(),
+                [(100,)],
+            )
+            conflict = (*parameters[:5], b"different", *parameters[6:])
+            self.assertEqual(db.execute(source_sql, conflict).rowcount, 0)
+            self.assertEqual(
+                db.execute("SELECT content FROM source_ledger").fetchall(), [(b"a",)]
+            )
+            pointer_sql = owner_insert_sql(
+                "cognitive_kg_store.rs",
+                "INSERT INTO kg_projection (projection_scope, generation)",
+                "ON CONFLICT(projection_scope) DO NOTHING",
+            )
+            self.assertEqual(
+                db.execute(pointer_sql, ("agent_private", "agent_private")).rowcount, 1
+            )
+            self.assertEqual(
+                db.execute(pointer_sql, ("agent_private", "agent_private")).rowcount, 0
+            )
+            self.assertEqual(
+                db.execute("SELECT * FROM lane_c_scope_witness_audit").fetchall(), []
+            )
+
+    def test_independent_audit_detects_drift_despite_restored_canonical_schema(
+        self,
+    ) -> None:
+        with connection() as db:
+            source(db, "s1")
+            before = schema_oracle(db)
+            guard = db.execute(
+                "SELECT sql FROM sqlite_schema WHERE name = 'lane_c_scope_witness_direct_update_guard'"
+            ).fetchone()[0]
+            db.execute("DROP TRIGGER lane_c_scope_witness_direct_update_guard")
+            db.execute(
+                "UPDATE lane_c_scope_witness SET source_count = source_count + 1, state_revision = state_revision + 1"
+            )
+            db.execute(guard)
+            self.assertEqual(schema_oracle(db), before)
+            self.assertEqual(db.execute("PRAGMA quick_check(1)").fetchall(), [("ok",)])
+            self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+            self.assertEqual(
+                db.execute(
+                    "SELECT EXISTS (SELECT 1 FROM lane_c_scope_witness_audit UNION ALL SELECT 1 FROM lane_c_head_validity_audit)"
+                ).fetchone(),
+                (1,),
+            )
+
     def test_cross_scope_append_avoids_global_history_scan(self) -> None:
         measurements = []
         for version in (18, 19):
@@ -234,8 +458,8 @@ class SQLiteIntegrityTests(unittest.TestCase):
                 migrate(db, first=16, last=version)
                 steps = [0]
 
-                def progress() -> int:
-                    steps[0] += 100
+                def progress(counter: list[int] = steps) -> int:
+                    counter[0] += 100
                     return 0
 
                 db.set_progress_handler(progress, 100)

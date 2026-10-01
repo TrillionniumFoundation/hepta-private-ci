@@ -63,6 +63,32 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_meta_existing_insert_guard", "trigger"),
+    ("source_ledger_existing_insert_guard", "trigger"),
+    ("memory_revisions_existing_insert_guard", "trigger"),
+    ("memory_citations_existing_insert_guard", "trigger"),
+    ("kg_revision_fact_sets_existing_insert_guard", "trigger"),
+    ("kg_revision_entities_existing_insert_guard", "trigger"),
+    ("kg_revision_relations_existing_insert_guard", "trigger"),
+    (
+        "kg_projection_generation_receipts_existing_insert_guard",
+        "trigger",
+    ),
+    (
+        "kg_projection_node_entities_existing_insert_guard",
+        "trigger",
+    ),
+    ("kg_nodes_existing_insert_guard", "trigger"),
+    ("kg_edges_existing_insert_guard", "trigger"),
+    (
+        "kg_projection_generation_semantics_existing_insert_guard",
+        "trigger",
+    ),
+    (
+        "kg_projection_generation_storage_existing_insert_guard",
+        "trigger",
+    ),
+    ("kg_projection_existing_insert_guard", "trigger"),
     ("lane_c_scope_witness", "table"),
     ("lane_c_head_validity", "table"),
     ("source_ledger_lane_c_scope_lookup", "index"),
@@ -229,7 +255,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "d730a53f04c73331ac5878e5b870d9e37a05729e0f477d5985eef1e0987224e5";
+    "8f38b6cc1095fc6e776a8922b630fd6e34d9a34a8d94ab200bd9345b59d1cfd9";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -356,7 +382,9 @@ impl CognitiveStore {
         protect_database_file(&path)?;
         sqlx::query(
             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
-             VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
+             SELECT 1, ?, ?
+             WHERE NOT EXISTS (SELECT 1 FROM cognitive_meta WHERE singleton = 1)
+             ON CONFLICT(singleton) DO NOTHING",
         )
         .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
         .bind(layout.agent_id().as_str())
@@ -432,7 +460,10 @@ impl CognitiveStore {
                 source_id, source_revision, owner_agent_id, scope_kind, workspace_sha256,
                 source_kind, content, content_sha256, observed_at_unix_seconds,
                 recorded_at_unix_seconds
-             ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
+             ) SELECT ?, 1, ?, ?, ?, ?, ?, ?, ?, ?
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM source_ledger WHERE source_id = ? AND source_revision = 1
+             )
              ON CONFLICT(source_id, source_revision) DO NOTHING",
         )
         .bind(source_id.as_str())
@@ -444,6 +475,7 @@ impl CognitiveStore {
         .bind(content_sha256.as_str())
         .bind(draft.observed_at_unix_seconds)
         .bind(recorded_at)
+        .bind(source_id.as_str())
         .execute(&mut **transaction)
         .await
         .map_err(unavailable)?;

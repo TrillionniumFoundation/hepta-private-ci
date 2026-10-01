@@ -4,12 +4,15 @@
 //! oracle before this independent content audit runs. The full audit belongs
 //! to startup/recovery; request-hot exact-ID reads retain their indexed bound.
 
-use sqlx::SqlitePool;
+use sqlx::Executor;
+use sqlx::Sqlite;
 
 use super::CognitiveStoreError;
 use super::unavailable;
 
-pub(super) async fn verify(pool: &SqlitePool) -> Result<(), CognitiveStoreError> {
+pub(super) async fn verify<'e>(
+    executor: impl Executor<'e, Database = Sqlite>,
+) -> Result<(), CognitiveStoreError> {
     let drift: bool = sqlx::query_scalar(
         "SELECT EXISTS (
              SELECT 1 FROM lane_c_scope_witness_audit
@@ -17,7 +20,7 @@ pub(super) async fn verify(pool: &SqlitePool) -> Result<(), CognitiveStoreError>
              SELECT 1 FROM lane_c_head_validity_audit
          )",
     )
-    .fetch_one(pool)
+    .fetch_one(executor)
     .await
     .map_err(unavailable)?;
     if drift {

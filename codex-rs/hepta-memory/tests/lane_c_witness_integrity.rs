@@ -15,6 +15,7 @@ use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 use sqlx::SqlitePool;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -264,6 +265,13 @@ async fn lane_c_witness_reopen_audits_existing_v17_content() -> TestResult {
         // and only the independent reopen content audit can detect this drift.
         sqlx::raw_sql(&guard_sql).execute(&pool).await?;
         pool.close().await;
+        assert!(
+            matches!(
+                store.recovery_anchor().await,
+                Err(CognitiveStoreError::Corrupt(message)) if message.contains("Lane C witness does not match")
+            ),
+            "a corrupt projection must not receive a fresh recovery anchor"
+        );
         drop(store);
 
         let reopened = CognitiveStore::open(&layout).await;
@@ -487,5 +495,136 @@ async fn lane_c_witness_migration_rejects_preexisting_drift() -> TestResult {
             .await?;
     assert_eq!(migration_rows, 0);
     verification_pool.close().await;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn canonical_replace_guards_preserve_owner_replay_and_current_cut() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_path)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000523")?;
+    let layout = HeptaFleetRoot::parse(fleet_path)?.layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await?;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let source_draft = SourceDraft {
+        scope: scope.clone(),
+        kind: LedgerSourceKind::ExplicitMemoryDirective,
+        event_key: "canonical-replace-source".to_string(),
+        content: b"canonical source".to_vec(),
+        observed_at_unix_seconds: 100,
+    };
+    let citation = store.append_source(&access, &source_draft).await?;
+    assert_eq!(store.append_source(&access, &source_draft).await?, citation);
+    assert!(matches!(
+        store
+            .append_source(
+                &access,
+                &SourceDraft {
+                    content: b"conflicting replay".to_vec(),
+                    ..source_draft
+                }
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+    let draft = MemoryRevisionDraft {
+        scope: scope.clone(),
+        content: "canonical memory".to_string(),
+        verification: MemoryVerification::Verified,
+        lifecycle: MemoryLifecycleState::Active,
+        valid_from_unix_seconds: 100,
+        valid_to_unix_seconds: None,
+        citations: vec![citation],
+    };
+    let record = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "canonical-replace-memory".to_string(),
+                revision: draft.clone(),
+            },
+        )
+        .await?;
+    // A second legitimate publication exercises insert-if-absent initialization
+    // of the existing KG pointer followed by its guarded generation update.
+    store
+        .correct_memory(
+            &access,
+            &record.id.memory_id,
+            record.id.revision,
+            &MemoryRevisionDraft {
+                content: "canonical correction".to_string(),
+                ..draft
+            },
+        )
+        .await?;
+    let selected = store
+        .lane_c_snapshot_ids(
+            &access,
+            &scope,
+            /*now_unix_seconds*/ 200,
+            &[StableId::new(record.id.memory_id.as_str())?],
+        )
+        .await?;
+    let anchor = store.recovery_anchor().await?;
+    let pool = raw_pool(store.path(), /*create*/ false).await?;
+    sqlx::query("PRAGMA recursive_triggers = OFF")
+        .execute(&pool)
+        .await?;
+    for mutation in [
+        "INSERT OR REPLACE INTO source_ledger
+         SELECT source_id, source_revision, owner_agent_id, 'workspace_private',
+                printf('%064d', 0), source_kind, content, content_sha256,
+                observed_at_unix_seconds, recorded_at_unix_seconds FROM source_ledger",
+        "INSERT OR REPLACE INTO memory_revisions
+         SELECT memory_id, revision, owner_agent_id, 'workspace_private', printf('%064d', 0),
+                content, content_sha256, verification, lifecycle, tombstone_reason,
+                valid_from_unix_seconds, valid_to_unix_seconds, supersedes_revision,
+                recorded_at_unix_seconds FROM memory_revisions",
+        "INSERT OR REPLACE INTO memory_citations SELECT * FROM memory_citations",
+        "INSERT OR REPLACE INTO kg_revision_fact_sets SELECT * FROM kg_revision_fact_sets",
+        "INSERT OR REPLACE INTO cognitive_meta SELECT * FROM cognitive_meta",
+        "INSERT OR REPLACE INTO kg_projection SELECT projection_scope, 1 FROM kg_projection",
+        "INSERT OR REPLACE INTO kg_projection_generation_receipts
+         SELECT * FROM kg_projection_generation_receipts",
+        "INSERT OR REPLACE INTO kg_projection_generation_semantics
+         SELECT * FROM kg_projection_generation_semantics",
+        "INSERT OR REPLACE INTO kg_projection_generation_storage
+         SELECT * FROM kg_projection_generation_storage",
+    ] {
+        let error = sqlx::query(mutation)
+            .execute(&pool)
+            .await
+            .expect_err("REPLACE must not bypass immutable canonical identities");
+        assert!(
+            error
+                .to_string()
+                .contains("existing identity cannot be replaced")
+        );
+    }
+    pool.close().await;
+    assert_eq!(
+        store
+            .revalidate_lane_c_selection(&access, &scope, &selected, /*now_unix_seconds*/ 200,)
+            .await?,
+        selected
+    );
+    assert_eq!(store.recovery_anchor().await?, anchor);
+    drop(store);
+    let reopened = CognitiveStore::open(&layout).await?;
+    assert_eq!(reopened.recovery_anchor().await?, anchor);
+    assert_eq!(
+        reopened
+            .lane_c_snapshot_ids(
+                &access,
+                &scope,
+                /*now_unix_seconds*/ 200,
+                &[StableId::new(record.id.memory_id.as_str())?],
+            )
+            .await?,
+        selected
+    );
     Ok(())
 }
