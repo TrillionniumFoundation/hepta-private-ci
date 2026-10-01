@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
-    "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+    "commit": "a180997d54925a77d7720246adb558224a11d318",
+    "tree": "b6b33bea1ef48394d757b2482c51f21040ff750b"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -307,11 +307,17 @@
       "nativeSymbol": "issue_tabular_final_use_capability_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/final_use_preflight.rs",
+          "symbol": "tabular"
+        }
+      ],
       "tests": [
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::elapsed_deadline_boundary_and_overflow_fail_closed",
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::cancellation_at_publication_guard_rejects_completed_work",
-        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset"
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset",
+        "codex-rs/hepta-bellman-operator/src/owner_issuance_resource_tests.rs::tabular_tiny_byte_budget_rejects_before_invalid_observer_signature"
       ],
       "state": "single_use_owner_bound_issuance_implemented",
       "authority": "owner_borrow_only",
@@ -323,13 +329,30 @@
       "nativeSymbol": "fit_tabular_final_use_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/final_use_clock.rs",
+          "symbol": "FinalUseClockV1"
+        },
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/final_use_release.rs",
+          "symbol": "FinalUseCandidateReleaseV1::finish"
+        }
+      ],
       "tests": [
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::elapsed_deadline_boundary_and_overflow_fail_closed",
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::cancellation_at_publication_guard_rejects_completed_work",
-        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset"
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset",
+        "codex-rs/hepta-bellman-operator/src/owner_forward_clock_tests.rs::tabular_forward_clock_jump_cannot_publish_after_root_distribution_expiry",
+        "codex-rs/hepta-bellman-operator/src/owner_candidate_release_tests.rs::tabular_outer_release_revalidates_root_and_signed_row_evidence",
+        "codex-rs/hepta-bellman-operator/src/owner_candidate_release_tests.rs::healthy_outer_handoff_records_the_actual_release_time",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::forward_host_floor_advances_during_fit_instead_of_freezing_at_the_jump",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::latest_supplied_witness_anchors_the_entire_synchronous_call",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::frozen_and_equal_floors_preserve_every_elapsed_microsecond",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::elapsed_regression_and_unix_time_overflow_fail_closed",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::rebased_release_deadline_is_exclusive_and_cancellation_still_wins"
       ],
-      "state": "pre_and_post_fit_currentness_implemented",
+      "state": "pre_post_fit_and_actual_outer_release_currentness_implemented",
       "authority": "owner_borrow_only",
       "sourcePathExists": true
     },
@@ -339,12 +362,18 @@
       "nativeSymbol": "issue_world_model_final_use_capability_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/final_use_preflight.rs",
+          "symbol": "world"
+        }
+      ],
       "tests": [
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::elapsed_deadline_boundary_and_overflow_fail_closed",
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::cancellation_at_publication_guard_rejects_completed_work",
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset",
-        "codex-rs/hepta-bellman-operator/src/owner_dataset_tests.rs::world_final_use_request_cannot_relabel_authoritative_training_trust"
+        "codex-rs/hepta-bellman-operator/src/owner_dataset_tests.rs::world_final_use_request_cannot_relabel_authoritative_training_trust",
+        "codex-rs/hepta-bellman-operator/src/owner_issuance_resource_tests.rs::world_tiny_operation_budget_rejects_before_invalid_observer_signature"
       ],
       "state": "single_use_owner_bound_issuance_implemented",
       "authority": "owner_borrow_only",
@@ -356,13 +385,29 @@
       "nativeSymbol": "fit_world_model_final_use_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/final_use_clock.rs",
+          "symbol": "FinalUseClockV1"
+        },
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/final_use_release.rs",
+          "symbol": "FinalUseCandidateReleaseV1::finish"
+        }
+      ],
       "tests": [
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::elapsed_deadline_boundary_and_overflow_fail_closed",
         "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::cancellation_at_publication_guard_rejects_completed_work",
-        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset"
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::monotonic_fit_context_elapsed_time_cannot_reset",
+        "codex-rs/hepta-bellman-operator/src/owner_forward_clock_tests.rs::world_forward_clock_jump_cannot_publish_after_model_retention",
+        "codex-rs/hepta-bellman-operator/src/owner_candidate_release_tests.rs::world_outer_release_revalidates_model_retention_after_inner_fit",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::forward_host_floor_advances_during_fit_instead_of_freezing_at_the_jump",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::latest_supplied_witness_anchors_the_entire_synchronous_call",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::frozen_and_equal_floors_preserve_every_elapsed_microsecond",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::elapsed_regression_and_unix_time_overflow_fail_closed",
+        "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs::rebased_release_deadline_is_exclusive_and_cancellation_still_wins"
       ],
-      "state": "pre_and_post_fit_currentness_implemented",
+      "state": "pre_post_fit_and_actual_outer_release_currentness_implemented",
       "authority": "owner_borrow_only",
       "sourcePathExists": true
     },
@@ -384,9 +429,21 @@
       "nativeSymbol": "RankerAdmissionSnapshotV2::new",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs",
       "mappingClass": "product_admission",
-      "delegatedCallees": [],
-      "tests": [],
-      "state": "opaque_validated_final_use_admission_implemented",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "symbol": "PinnedCognitiveRanker::rank"
+        }
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_rechecks_real_current_head_expiry_and_known_signer_revocation",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_restores_exact_input_when_the_guard_expires_after_reordering",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_enforces_elapsed_time_when_the_host_sample_stays_frozen",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_restores_input_when_root_expires_during_consumption",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_rejects_oversized_owned_content_without_copying_or_mutating_it",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_enforces_known_root_revocation_with_a_frozen_host_clock"
+      ],
+      "state": "opaque_root_admitted_current_head_final_use_and_transactional_ordering_implemented",
       "authority": "host_currentness_provider_only",
       "sourcePathExists": true
     },
@@ -815,8 +872,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "84c633367fa5452f241d4ff5254e0c12ee19d939",
-    "tree": "5b7f191b91800ecf9e108151eff510edbf7e2c2f"
+    "commit": "a180997d54925a77d7720246adb558224a11d318",
+    "tree": "b6b33bea1ef48394d757b2482c51f21040ff750b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -867,11 +924,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "ebf13f1298068be13440a3fe9a662ef0716df6cd"
+      "object": "ef8d52484207853eb69ffce5d7c11d2dee9136d5"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs",
-      "object": "bd3d87d947acf786ccb4ee3f96157cb2f3dbddcf"
+      "object": "7f9d4eade9ea6e868b983d2c53efc500c58c32f7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs",
+      "object": "3f0fd6d039128e2c360453f1a304c9210cf20d9d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
@@ -891,7 +952,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/learning_operator_coordinator_tests.rs",
-      "object": "019c9d6451d2241655a94568331ec128eb3186d1"
+      "object": "454a3f2f98fd7194f638d69c05ae3edfde99f390"
     },
     {
       "path": "codex-rs/hepta-agentd/src/learning_operator_product_persistence.rs",
@@ -935,7 +996,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "cecc8eba6846cd4f2526603135d9f9b141d5dd5e"
+      "object": "b0ccbc2218b2e62c7a7ee8e929f20211990b50f6"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
@@ -954,12 +1015,28 @@
       "object": "57b8fb071a2dc6d87249ef62821098ce50585614"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_clock.rs",
+      "object": "4cb352df326b2f427251d9cc9cd22621b2cd84c6"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_clock_tests.rs",
+      "object": "4fe16dd24a360c1e3479438420df7789a76652fc"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
-      "object": "3b81c2961bf1dabe995e45d54480013832e297a4"
+      "object": "fe36151b44de59243b110db4928a30839032e2bc"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_preflight.rs",
+      "object": "30762accde1cb0ea71f2cee82297e816387d4777"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/final_use_publication.rs",
       "object": "1644db04d4265cc2e1cb9b8cca44ce0331fb014a"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/final_use_release.rs",
+      "object": "04f039aced9c03bfc6007ca7ad79c1f45893a17b"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/final_use_selected.rs",
@@ -986,8 +1063,20 @@
       "object": "914f6d6cb7d35b9e5c14bed350babe4864239eb3"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_candidate_release_tests.rs",
+      "object": "ecd2354369ad22c07bed7224d6e7c8f9dc061fdb"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/owner_dataset_tests.rs",
-      "object": "eb05ebe46bd059762600fa8bfea9002ae1e70719"
+      "object": "bf13764deb478eface36d52d4ea1340eb7f2426e"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_forward_clock_tests.rs",
+      "object": "82c9c1f82d531fd2016dfec3a537e30cbeb9b4b3"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_issuance_resource_tests.rs",
+      "object": "ced2e9f4b386ca9a3c741ce49015c4092d0fc72b"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/owner_trust_window_tests.rs",
@@ -995,7 +1084,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/profiles.rs",
-      "object": "abc2091e915e49d9f61c22ac4600c3f412347bd0"
+      "object": "5ed6d9d0531112fadc876cfae5cddd79614209b4"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/reference.rs",
@@ -1071,7 +1160,7 @@
     },
     {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
-      "object": "dc97efa6ab78fa800473955b828ae1d3dae6ee86"
+      "object": "ea54b079296a2d69764eaeff462cbdf17bb7524f"
     },
     {
       "path": "scripts/hepta-learning-operator-api-surface.py",
