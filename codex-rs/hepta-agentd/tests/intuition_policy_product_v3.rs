@@ -1,6 +1,34 @@
 // Shared signed policy/ledger material; behavioral tests remain in this target.
 include!("support/intuition_policy_fixture.rs");
 
+use codex_hepta_intuition::ProductionDispositionV1;
+use codex_hepta_learning_ledger::AppendDisposition;
+use codex_hepta_learning_ledger::LedgerAnchor;
+use codex_hepta_learning_ledger::LedgerRecovery;
+
+#[derive(Debug)]
+struct TestIntuitionClock {
+    now: AtomicU64,
+}
+
+impl TestIntuitionClock {
+    fn new(now: u64) -> Self {
+        Self {
+            now: AtomicU64::new(now),
+        }
+    }
+
+    fn set(&self, now: u64) {
+        self.now.store(now, Ordering::Release);
+    }
+}
+
+impl IntuitionPolicyClock for TestIntuitionClock {
+    fn now(&self) -> Result<u64, AgentdIntuitionPolicyError> {
+        Ok(self.now.load(Ordering::Acquire))
+    }
+}
+
 #[test]
 #[allow(
     clippy::expect_used,

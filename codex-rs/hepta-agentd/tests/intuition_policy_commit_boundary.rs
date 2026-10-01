@@ -592,7 +592,9 @@ fn writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation() {
     ));
 
     clock.set_now(199);
-    clock.release_through(3);
+    // A valid commit samples again after its read-only product fence; both
+    // samples remain under the same writer lock.
+    clock.release_through(4);
     let committed = host
         .commit_v4(
             &agent_id,

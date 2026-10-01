@@ -24,7 +24,6 @@ use codex_hepta_intuition::CanonicalRiskRuleV1;
 use codex_hepta_intuition::LearnedScorerContractV1;
 use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::PolicyGeneration;
-use codex_hepta_intuition::ProductionDispositionV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::ScoringCommitmentV2;
 use codex_hepta_intuition::canonical_assignment_distribution_digest_v2;
@@ -37,7 +36,6 @@ use codex_hepta_intuition::canonical_profile_qualification_payload_v1;
 use codex_hepta_intuition::canonical_runtime_commitment_payload_v2;
 use codex_hepta_intuition::canonical_scored_outputs_digest_v2;
 use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
-use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -45,8 +43,6 @@ use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::LearningTrustDistributionV1;
 use codex_hepta_learning_ledger::LearningTrustRootV1;
-use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
@@ -64,29 +60,6 @@ use tempfile::tempdir;
 const NOW: u64 = 150;
 const GENERATION: u64 = 4;
 const SPAWN_GENERATION: u64 = 7;
-
-#[derive(Debug)]
-struct TestIntuitionClock {
-    now: AtomicU64,
-}
-
-impl TestIntuitionClock {
-    fn new(now: u64) -> Self {
-        Self {
-            now: AtomicU64::new(now),
-        }
-    }
-
-    fn set(&self, now: u64) {
-        self.now.store(now, Ordering::Release);
-    }
-}
-
-impl IntuitionPolicyClock for TestIntuitionClock {
-    fn now(&self) -> Result<u64, AgentdIntuitionPolicyError> {
-        Ok(self.now.load(Ordering::Acquire))
-    }
-}
 
 #[allow(
     clippy::expect_used,
@@ -380,4 +353,3 @@ fn open_rw(path: &Path) -> File {
         .open(path)
         .expect("open durable test file")
 }
-

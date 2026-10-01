@@ -551,6 +551,39 @@ impl AgentdIntuitionPolicyHostV1 {
         )
     }
 
+    /// Canonical serving adds its current owner and ingress fences while the
+    /// sole learning writer is locked. Historical public host calls retain
+    /// their existing signature and error type.
+    pub(crate) fn commit_v4_checked<F>(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+        prepared: PreparedAgentdIntuitionDecisionV3,
+        expected_ledger_head: Digest32,
+        decision_evidence: Option<SignedLearningEvidenceV1>,
+        final_use: F,
+    ) -> Result<AgentdIntuitionDecisionReceiptV2, crate::AgentdIntuitionServiceErrorV1>
+    where
+        F: FnOnce(
+            &dyn crate::IntuitionPolicyClock,
+        ) -> Result<(), crate::AgentdIntuitionServiceErrorV1>,
+    {
+        self.require_identity(agent_id, spawn_generation)?;
+        let product = self
+            .product
+            .as_ref()
+            .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
+        product.learning.commit_prepared_checked(
+            agent_id,
+            spawn_generation,
+            &product.pins,
+            prepared,
+            expected_ledger_head,
+            decision_evidence,
+            final_use,
+        )
+    }
+
     /// Historical call signature retained; final-use time is always writer-owned.
     #[deprecated(note = "use commit_v4; final-use time is writer-owned")]
     pub fn commit_v3(

@@ -12,6 +12,20 @@ fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
+    signed_fixture_with_distribution_expiry(super::wall_clock_ms().expect("clock"), None)
+}
+
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
+fn signed_fixture_with_distribution_expiry(
+    now: u64,
+    expires_at: Option<u64>,
+) -> (
+    Fixture,
+    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) {
     let mut value = fixture();
     let key = SigningKey::from_bytes(&[47; 32]);
     for owner in &mut value.owners {
@@ -40,7 +54,14 @@ fn signed_fixture() -> (
         candidate_set_digest: legal.candidate_set_digest,
         selected_candidate_id: id("action.read"),
     };
-    let (trust, signed) = evidence_fixture(&binding, wall_clock_ms().expect("clock"));
+    let (trust, signed) = match expires_at {
+        Some(expires_at) => {
+            crate::intelligence_product::evaluation_tests::evidence_fixture_with_distribution_expiry(
+                &binding, now, expires_at,
+            )
+        }
+        None => evidence_fixture(&binding, now),
+    };
     value.inputs.signed_evaluation = Some(signed);
     (value, trust)
 }
@@ -261,3 +282,6 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
         ))
     ));
 }
+
+#[path = "intelligence_product_final_use_tests.rs"]
+mod final_use;

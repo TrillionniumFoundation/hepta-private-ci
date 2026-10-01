@@ -3,6 +3,42 @@
 use super::*;
 
 impl AgentdIntelligenceProductRunnerV1 {
+    /// Recheck the frozen seven-owner snapshot at the actual Agentd use site.
+    /// Preparation cannot cache this answer across a learning-writer lock wait.
+    pub(crate) fn require_current_snapshot(
+        &self,
+        snapshot: &CanonicalIntelligenceSnapshotV1,
+    ) -> Result<(), AgentdIntelligenceProductError> {
+        let mut oracle = FileBackedFreshnessOracleV1::new(
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
+        validate_current_snapshot(snapshot, &mut oracle)
+            .map_err(AgentdIntelligenceProductError::Canonical)
+    }
+
+    /// Evaluation leases are consumed only by selected canonical runs.
+    pub(crate) fn require_current_evaluation(
+        &self,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceProductError> {
+        if let Some(trust) = &self.evaluation_trust {
+            trust
+                .validate_current(now)
+                .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn require_current_prepared(
+        &self,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceProductError> {
+        self.require_current_snapshot(&prepared.snapshot)?;
+        self.require_current_evaluation(now.max(wall_clock_ms()?))
+    }
+
     pub fn new(
         authority_file: PathBuf,
         authority_verifier: IntelligenceAuthorityVerifierV1,
@@ -257,10 +293,12 @@ impl AgentdIntelligenceProductRunnerV1 {
     ) -> Result<AgentdIntelligenceAdmittedOutcomeV1, AgentdIntelligenceProductError> {
         match self.prepare(coordinator, request, inputs).await? {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+                let now = wall_clock_ms()?;
+                self.require_current_prepared(&prepared, now)?;
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
                     .start_run(
-                        wall_clock_ms()?,
+                        now,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
                             request_digest: snapshot.request_digest,

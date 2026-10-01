@@ -152,7 +152,7 @@ pub(super) fn evidence_fixture(
     clippy::unwrap_used,
     reason = "Fixed signed fixture construction must fail the test if its contract changes."
 )]
-fn evidence_fixture_with_distribution_expiry(
+pub(super) fn evidence_fixture_with_distribution_expiry(
     binding: &AgentdEvaluationBindingV1,
     now: u64,
     distribution_expires_at: u64,

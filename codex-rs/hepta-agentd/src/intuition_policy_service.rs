@@ -107,10 +107,14 @@ impl From<AgentdIntuitionPolicyError> for AgentdIntuitionServiceErrorV1 {
 
 /// Once append has succeeded, no subsequent failure may erase its recovery token.
 /// In particular an admission I/O error is not proof that append never happened.
-fn retain_committed_receipt<T, E>(admission: Result<bool, E>, receipt: T) -> Result<T, T> {
+fn retain_committed_receipt<T, E>(
+    admission: Result<bool, E>,
+    receipt: T,
+) -> Result<T, (T, Option<E>)> {
     match admission {
         Ok(true) => Ok(receipt),
-        Ok(false) | Err(_) => Err(receipt),
+        Ok(false) => Err((receipt, None)),
+        Err(source) => Err((receipt, Some(source))),
     }
 }
 
@@ -150,12 +154,16 @@ impl AgentdState {
         .map_err(Into::into)
     }
 
-    pub(crate) fn commit_intuition_policy_v4(
+    pub(crate) fn commit_intuition_policy_v4_checked<F>(
         &self,
         prepared: PreparedAgentdIntuitionDecisionV3,
         expected_ledger_head: Digest32,
         decision_evidence: Option<SignedLearningEvidenceV1>,
-    ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionServiceErrorV1> {
+        final_use: F,
+    ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionServiceErrorV1>
+    where
+        F: FnOnce(&dyn crate::IntuitionPolicyClock) -> Result<(), AgentdError>,
+    {
         if !self.automation_admission_ready()? {
             return Err(AgentdIntuitionServiceErrorV1::NotReady);
         }
@@ -164,16 +172,28 @@ impl AgentdState {
             .get()
             .ok_or(AgentdIntuitionServiceErrorV1::NotConfigured)?;
         let identity = self.identity();
-        let receipt = host.commit_v4(
+        let receipt = host.commit_v4_checked(
             &identity.agent_id,
             identity.spawn_generation,
             prepared,
             expected_ledger_head,
             decision_evidence,
+            |now| {
+                if !self.automation_admission_ready()? {
+                    return Err(AgentdIntuitionServiceErrorV1::NotReady);
+                }
+                final_use(now).map_err(AgentdIntuitionServiceErrorV1::from)
+            },
         )?;
-        retain_committed_receipt(self.automation_admission_ready(), receipt).map_err(|receipt| {
-            AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt }
-        })
+        retain_committed_receipt(self.automation_admission_ready(), receipt).map_err(
+            |(receipt, source)| match source {
+                Some(source) => AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
+                    receipt,
+                    source: Box::new(source),
+                },
+                None => AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt },
+            },
+        )
     }
 }
 
@@ -186,7 +206,7 @@ mod tests {
         let receipt = String::from("durable:sequence:7:chain:verified");
         assert_eq!(
             retain_committed_receipt::<_, ()>(Ok(false), receipt.clone()),
-            Err(receipt)
+            Err((receipt, None))
         );
     }
 
@@ -195,7 +215,7 @@ mod tests {
         let receipt = String::from("durable:sequence:8:chain:verified");
         assert_eq!(
             retain_committed_receipt(Err("generation-store-unavailable"), receipt.clone()),
-            Err(receipt)
+            Err((receipt, Some("generation-store-unavailable")))
         );
     }
 

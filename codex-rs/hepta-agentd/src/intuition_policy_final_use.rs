@@ -114,6 +114,35 @@ impl IntuitionPolicyLearningSink {
         expected_predecessor: Digest32,
         decision_evidence: Option<SignedLearningEvidenceV1>,
     ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
+        self.commit_prepared_checked(
+            agent_id,
+            spawn_generation,
+            pins,
+            prepared,
+            expected_predecessor,
+            decision_evidence,
+            |_| Ok(()),
+        )
+    }
+
+    /// Recheck the canonical product owners after any writer-lock wait and
+    /// immediately before append. This callback can only reject admission; it
+    /// receives neither the writer nor a capability to publish effects.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn commit_prepared_checked<F, E>(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+        pins: &AgentdIntuitionPolicyPinsV2,
+        prepared: PreparedAgentdIntuitionDecisionV3,
+        expected_predecessor: Digest32,
+        decision_evidence: Option<SignedLearningEvidenceV1>,
+        final_use: F,
+    ) -> Result<AgentdIntuitionDecisionReceiptV2, E>
+    where
+        F: FnOnce(&dyn IntuitionPolicyClock) -> Result<(), E>,
+        E: From<AgentdIntuitionPolicyError>,
+    {
         // This is the sole final-use serialization boundary. The product clock,
         // current trust distribution, all three qualification signatures, host
         // pins and the durable Decision append are evaluated under one lock.
@@ -135,7 +164,7 @@ impl IntuitionPolicyLearningSink {
             || prepared.owner_trust_generation != current_trust_generation
             || prepared.owner_trust_distribution_digest != current_distribution_digest
         {
-            return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch);
+            return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch.into());
         }
         validate_prepared_time(prepared.prepared_at, prepared.qualification_expires_at, now)?;
         validate_current_pins(
@@ -146,6 +175,15 @@ impl IntuitionPolicyLearningSink {
             &prepared.assignment,
         )?;
 
+        final_use(self.clock.as_ref())?;
+        // The product fence may read signed owner files or other durable
+        // registries. Its return must not reuse time sampled before that I/O.
+        let now = self.clock.now()?;
+        writer
+            .revalidate_trust(now)
+            .map_err(AgentdIntuitionPolicyError::Learning)?;
+        validate_prepared_time(prepared.prepared_at, prepared.qualification_expires_at, now)?;
+
         let revalidated = decide_authenticated_intuition_v3(
             prepared.request.clone(),
             prepared.profile.clone(),
@@ -154,9 +192,10 @@ impl IntuitionPolicyLearningSink {
             prepared.qualification.as_borrowed(),
             writer.verifier(),
             now,
-        )?;
+        )
+        .map_err(AgentdIntuitionPolicyError::from)?;
         if revalidated != prepared.decision {
-            return Err(AgentdIntuitionPolicyError::PreparedQualificationMismatch);
+            return Err(AgentdIntuitionPolicyError::PreparedQualificationMismatch.into());
         }
         let current_binding = product_host_binding_digest(
             agent_id,
@@ -166,7 +205,7 @@ impl IntuitionPolicyLearningSink {
             revalidated.authentication_digest,
         );
         if current_binding != prepared.host_binding_digest {
-            return Err(AgentdIntuitionPolicyError::PreparedProfileMismatch);
+            return Err(AgentdIntuitionPolicyError::PreparedProfileMismatch.into());
         }
 
         let (production_record_id, learning) =
@@ -197,15 +236,17 @@ impl IntuitionPolicyLearningSink {
                         .map_err(|receipt| {
                             AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }
                         })?,
-                        Err(error) => return Err(AgentdIntuitionPolicyError::Learning(error)),
+                        Err(error) => {
+                            return Err(AgentdIntuitionPolicyError::Learning(error).into());
+                        }
                     };
                     (Some(record_id), Some(receipt))
                 }
                 (Some(_), None) => {
-                    return Err(AgentdIntuitionPolicyError::MissingDecisionEvidence);
+                    return Err(AgentdIntuitionPolicyError::MissingDecisionEvidence.into());
                 }
                 (None, Some(_)) => {
-                    return Err(AgentdIntuitionPolicyError::UnexpectedDecisionEvidence);
+                    return Err(AgentdIntuitionPolicyError::UnexpectedDecisionEvidence.into());
                 }
                 (None, None) => (None, None),
             };

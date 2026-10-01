@@ -73,7 +73,7 @@ impl ServingProfile {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn authenticate_canonical_intuition(
+pub(crate) fn authenticate_canonical_intuition<F>(
     state: &AgentdState,
     product: Option<AgentdIntuitionProductInvocationV1>,
     request: CalibratedDecisionRequestV1,
@@ -81,7 +81,11 @@ pub(crate) fn authenticate_canonical_intuition(
     run_snapshot_digest: Digest32,
     canonical: &AgentdIntelligenceProductOutcomeV1,
     now: u64,
-) -> Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError> {
+    final_use: F,
+) -> Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError>
+where
+    F: FnOnce(&dyn crate::IntuitionPolicyClock) -> Result<(), AgentdError>,
+{
     let started = Instant::now();
     let profile = state.intuition_serving_profile;
     record_request(profile.as_str());
@@ -147,7 +151,12 @@ pub(crate) fn authenticate_canonical_intuition(
         // Final-use time and current trust are sampled inside the sole
         // LedgerWriter lock; the serving caller cannot extend a prepared lease.
         let committed = state
-            .commit_intuition_policy_v4(policy_prepared, expected_ledger_head, decision_evidence)
+            .commit_intuition_policy_v4_checked(
+                policy_prepared,
+                expected_ledger_head,
+                decision_evidence,
+                final_use,
+            )
             .map_err(AgentdError::from)?;
         let final_check = (|| {
             require_outcome_parity(

@@ -631,6 +631,7 @@ impl AgentdState {
         } = invocation;
         let episode_id = request.run_id.clone();
         let run_snapshot_digest = request.snapshot.digest();
+        let canonical_snapshot = request.snapshot.clone();
         let intuition_request = inputs.intuition_request.clone();
 
         // Freeze only the small immutable composition while holding the run
@@ -670,64 +671,115 @@ impl AgentdState {
                 run_snapshot_digest,
                 &outcome,
                 policy_now,
+                |clock| {
+                    runner
+                        .require_current_snapshot(&canonical_snapshot)
+                        .map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "canonical intelligence final-use fence failed: {error}"
+                            ))
+                        })?;
+                    self.require_current_run_start(record)?;
+                    if matches!(
+                        &outcome,
+                        crate::AgentdIntelligenceProductOutcomeV1::Ready(_)
+                    ) {
+                        let now = clock.now().map_err(|error| {
+                            AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
+                        })?;
+                        runner.require_current_evaluation(now).map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "canonical evaluation final-use fence failed: {error}"
+                            ))
+                        })?;
+                    }
+                    Ok(())
+                },
             )?;
 
         // All fallible operations after policy commit stay inside this result.
         // The final conversion retains the receipt on every failure, including
         // either freshness check, run-lock acquisition and context attachment.
-        let admission = (|| match outcome {
-            crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                let first_now = self.require_current_run_start(record)?;
-                let second_now = self.require_current_run_start(record)?;
-                let now_ms = first_now.max(second_now);
-                let snapshot = prepared.run_snapshot();
-                let attachment = prepared.context_attachment();
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
-                    .start_run(
-                        now_ms,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
-                    .map_err(run_error)?;
-                let run_receipt = runs
-                    .attach_context(
-                        now_ms,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
-                        },
-                    )
-                    .map_err(run_error)?;
-                Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
-                    prepared,
-                    run_receipt,
-                })
-            }
-            crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
-                Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained)
-            }
-            crate::AgentdIntelligenceProductOutcomeV1::SlowPath => {
-                Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath)
+        let admission = (|| {
+            self.require_current_run_start(record)?;
+            runner
+                .require_current_snapshot(&canonical_snapshot)
+                .map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "canonical intelligence admission fence failed: {error}"
+                    ))
+                })?;
+            match outcome {
+                crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+                    let snapshot = prepared.run_snapshot();
+                    let attachment = prepared.context_attachment();
+                    // Do not wait after sampling final-use qualification, or invert
+                    // the existing runtime -> runs lock order with a callback.
+                    let mut runs = self.runs.try_lock().map_err(|error| match error {
+                        std::sync::TryLockError::WouldBlock => {
+                            AgentdError::Overloaded { retry_after_ms: 25 }
+                        }
+                        std::sync::TryLockError::Poisoned(_) => AgentdError::Protocol(
+                            "agent run coordinator mutex is poisoned".to_string(),
+                        ),
+                    })?;
+                    let now_ms = unix_now_ms()?;
+                    if now_ms >= record.authentication.expires_at_ms {
+                        return Err(AgentdError::Invalid(
+                            "durable run-start authentication expired before admission".to_string(),
+                        ));
+                    }
+                    runner.require_current_evaluation(now_ms).map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical evaluation admission fence failed: {error}"
+                        ))
+                    })?;
+                    let admitted = runs
+                        .start_run(
+                            now_ms,
+                            crate::RunSnapshot {
+                                run_id: snapshot.run_id,
+                                request_digest: snapshot.request_digest,
+                                objective_digest: snapshot.objective_digest,
+                                body_digest: snapshot.body_digest,
+                                artifact_set_digest: snapshot.artifact_set_digest,
+                                authority_epoch: snapshot.authority_epoch,
+                                generation: snapshot.generation,
+                                fence_digest: snapshot.fence_digest,
+                                deadline_ms: snapshot.deadline_ms,
+                            },
+                        )
+                        .map_err(run_error)?;
+                    let run_receipt = runs
+                        .attach_context(
+                            now_ms,
+                            admitted.revision,
+                            crate::ContextAttachment {
+                                run_id: attachment.run_id,
+                                request_digest: attachment.request_digest,
+                                objective_digest: attachment.objective_digest,
+                                body_digest: attachment.body_digest,
+                                artifact_set_digest: attachment.artifact_set_digest,
+                                authority_epoch: attachment.authority_epoch,
+                                generation: attachment.generation,
+                                fence_digest: attachment.fence_digest,
+                                deadline_ms: attachment.deadline_ms,
+                                context_digest: attachment.context_digest,
+                                compilation_receipt_digest: attachment.compilation_receipt_digest,
+                            },
+                        )
+                        .map_err(run_error)?;
+                    Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
+                        prepared,
+                        run_receipt,
+                    })
+                }
+                crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
+                    Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained)
+                }
+                crate::AgentdIntelligenceProductOutcomeV1::SlowPath => {
+                    Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath)
+                }
             }
         })();
         crate::intuition_policy_service::finish_canonical_admission(

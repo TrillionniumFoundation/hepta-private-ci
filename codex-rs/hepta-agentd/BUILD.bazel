@@ -4,6 +4,7 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 
 codex_rust_crate(
     name = "hepta-agentd",
+    compile_data = ["tests/support/intuition_policy_fixture.rs"],
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
 )
@@ -15,6 +16,7 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
+    compile_data = ["tests/support/intuition_policy_fixture.rs"],
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
