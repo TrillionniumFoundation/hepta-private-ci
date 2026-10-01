@@ -12,12 +12,43 @@ use super::NativeBoundaryStatus;
 use super::NativeIntelligenceRunBinding;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
-use super::NativeRunStatus;
 use super::RPC_TIMEOUT;
 use super::Result;
 use super::input::bounded_diagnostic;
 use super::input::validate_intelligence_binding;
 use super::unix_time_ms;
+
+#[path = "native_intelligence_receipt.rs"]
+pub(super) mod receipt;
+pub(super) use receipt::intelligence_terminal_phase;
+use receipt::validate_intelligence_receipt_binding;
+
+fn verify_intelligence_receipt(
+    generation: u64,
+    binding: &NativeIntelligenceRunBinding,
+    revision: &mut u64,
+    run: &AgentRunReceipt,
+) -> std::result::Result<(), String> {
+    validate_intelligence_receipt_binding(generation, binding, *revision, run)?;
+    receipt::verify_intelligence_receipt(
+        generation,
+        binding,
+        revision,
+        run,
+        unix_time_ms().map_err(|error| error.to_string())?,
+    )
+}
+
+fn verify_intelligence_recovery_receipt(
+    generation: u64,
+    binding: &NativeIntelligenceRunBinding,
+    run: &AgentRunReceipt,
+    output: &NativeRunOutput,
+) -> std::result::Result<(), String> {
+    receipt::verify_intelligence_recovery_receipt(generation, binding, run, output, || {
+        unix_time_ms().map_err(|error| error.to_string())
+    })
+}
 
 pub(super) struct IntelligenceObservation<'a> {
     pub binding: &'a NativeIntelligenceRunBinding,
@@ -117,111 +148,6 @@ pub(super) async fn reconcile_intelligence_terminal(
         })
 }
 
-fn verify_intelligence_recovery_receipt(
-    generation: u64,
-    binding: &NativeIntelligenceRunBinding,
-    run: &AgentRunReceipt,
-    output: &NativeRunOutput,
-) -> std::result::Result<(), String> {
-    let mut revision = binding
-        .expected_revision
-        .checked_add(1)
-        .ok_or_else(|| "intelligence dispatch revision overflow during recovery".to_string())?;
-    validate_intelligence_receipt_binding(generation, binding, revision, run)?;
-    if run.terminal_observed && run.revision > revision {
-        match run.phase {
-            AgentRunPhase::Succeeded
-                if output.terminal_observed
-                    && output.status == NativeRunStatus::Completed
-                    && output.boundary_status == NativeBoundaryStatus::Succeeded
-                    && output.stop_reason.is_none() =>
-            {
-                return Ok(());
-            }
-            AgentRunPhase::Failed
-                if output.terminal_observed && output.status == NativeRunStatus::Failed =>
-            {
-                return Ok(());
-            }
-            AgentRunPhase::Cancelled
-                if output.terminal_observed
-                    && (output.status == NativeRunStatus::Interrupted
-                        || output.boundary_status == NativeBoundaryStatus::Cancelled) =>
-            {
-                return Ok(());
-            }
-            AgentRunPhase::Admitted
-            | AgentRunPhase::ContextAttached
-            | AgentRunPhase::Dispatched
-            | AgentRunPhase::Cancelling
-            | AgentRunPhase::Cancelled
-            | AgentRunPhase::Succeeded
-            | AgentRunPhase::Failed
-            | AgentRunPhase::Indeterminate => {}
-        }
-    }
-    verify_intelligence_receipt(generation, binding, &mut revision, run)
-}
-
-fn validate_intelligence_receipt_binding(
-    generation: u64,
-    binding: &NativeIntelligenceRunBinding,
-    revision: u64,
-    run: &AgentRunReceipt,
-) -> std::result::Result<(), String> {
-    if run.run_id != binding.run_id
-        || run.generation != generation
-        || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
-        || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
-        || run.revision < revision
-    {
-        return Err("owning intelligence execution binding is stale or mixed".to_string());
-    }
-    Ok(())
-}
-
-fn verify_intelligence_receipt(
-    generation: u64,
-    binding: &NativeIntelligenceRunBinding,
-    revision: &mut u64,
-    run: &AgentRunReceipt,
-) -> std::result::Result<(), String> {
-    validate_intelligence_receipt_binding(generation, binding, *revision, run)?;
-    let deadline_elapsed = unix_time_ms().map_err(|error| error.to_string())? >= run.deadline_ms;
-    match run.phase {
-        AgentRunPhase::Dispatched if run.revision == *revision && !run.terminal_observed => {
-            if deadline_elapsed {
-                Err(LOCAL_DEADLINE_ELAPSED.to_string())
-            } else {
-                Ok(())
-            }
-        }
-        AgentRunPhase::Cancelling | AgentRunPhase::Cancelled => {
-            // Only an exact owner's cancellation may advance this local cursor.
-            // A newer success/attachment never grants another physical send.
-            if run.cancel_reason.is_none()
-                || (run.phase == AgentRunPhase::Cancelled) != run.terminal_observed
-            {
-                return Err("owning intelligence cancellation receipt is inconsistent".to_string());
-            }
-            *revision = run.revision;
-            Err(if deadline_elapsed {
-                LOCAL_DEADLINE_ELAPSED.to_string()
-            } else {
-                LOCAL_CANCELLED.to_string()
-            })
-        }
-        AgentRunPhase::Admitted
-        | AgentRunPhase::ContextAttached
-        | AgentRunPhase::Dispatched
-        | AgentRunPhase::Succeeded
-        | AgentRunPhase::Failed
-        | AgentRunPhase::Indeterminate => {
-            Err("owning intelligence run is no longer the exact dispatched revision".to_string())
-        }
-    }
-}
-
 /// A later owner observation cannot upgrade an already denied worker boundary.
 pub(super) fn apply_intelligence_failure(output: &mut NativeRunOutput, reason: String) {
     if !matches!(
@@ -233,29 +159,6 @@ pub(super) fn apply_intelligence_failure(output: &mut NativeRunOutput, reason: S
         output.boundary_status = super::classify_observation_failure(&reason);
     }
     output.stop_reason = output.stop_reason.take().or(Some(reason));
-}
-
-/// Publish the local worker outcome independently from provider completion.
-/// Late Completed after cancellation or a deadline cannot make Agentd succeed.
-pub(super) fn intelligence_terminal_phase(
-    output: &NativeRunOutput,
-) -> super::Result<AgentRunPhase> {
-    if !output.terminal_observed || output.status == NativeRunStatus::Indeterminate {
-        return Err("cannot commit a nonterminal intelligence observation".into());
-    }
-    match output.boundary_status {
-        NativeBoundaryStatus::Succeeded if output.succeeded() => Ok(AgentRunPhase::Succeeded),
-        NativeBoundaryStatus::Succeeded
-        | NativeBoundaryStatus::Failed
-        | NativeBoundaryStatus::TimedOut
-        | NativeBoundaryStatus::Quarantined => Ok(AgentRunPhase::Failed),
-        NativeBoundaryStatus::Interrupted | NativeBoundaryStatus::Cancelled => {
-            Ok(AgentRunPhase::Cancelled)
-        }
-        NativeBoundaryStatus::Indeterminate => {
-            Err("cannot commit an indeterminate intelligence boundary".into())
-        }
-    }
 }
 
 pub(super) async fn reconcile_intelligence_start_unknown(
