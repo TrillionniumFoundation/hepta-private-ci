@@ -5,6 +5,7 @@
 //! trusted reconciler observes the original operation.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -190,7 +191,6 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        self.require_active(&lease_id)?;
         self.prepare(
             operation_id,
             LeaseOperationKindV1::Renew,
@@ -205,17 +205,6 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        let lease = self
-            .state
-            .leases
-            .get(&lease_id)
-            .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-        if matches!(
-            lease.state,
-            SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
-        ) {
-            return Err(LeaseRegistryErrorV1::InvalidTransition);
-        }
         self.prepare(
             operation_id,
             LeaseOperationKindV1::Revoke,
@@ -228,6 +217,21 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        let current = self
+            .operation(operation_id)
+            .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
+        if let Some(lease_id) = current.lease_id.as_deref() {
+            if current.kind == LeaseOperationKindV1::Renew {
+                self.require_live_renewal(lease_id)?;
+            } else if self.state.leases.get(lease_id).is_none_or(|lease| {
+                matches!(
+                    lease.state,
+                    SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+                )
+            }) {
+                return Err(LeaseRegistryErrorV1::InvalidTransition);
+            }
+        }
         let mut next = self.state.clone();
         let operation = next
             .operations
@@ -302,6 +306,7 @@ impl DurableLeaseRegistryV1 {
                 {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
+                self.require_live_renewal(&lease_id)?;
                 let lease = next
                     .leases
                     .get_mut(&lease_id)
@@ -394,6 +399,31 @@ impl DurableLeaseRegistryV1 {
             }
             return Err(LeaseRegistryErrorV1::OperationConflict);
         }
+        if let Some(lease_id) = lease_id.as_deref() {
+            match kind {
+                LeaseOperationKindV1::Renew => {
+                    self.require_active(lease_id)?;
+                    if self.has_pending_operation(lease_id, None) {
+                        return Err(LeaseRegistryErrorV1::InvalidTransition);
+                    }
+                }
+                LeaseOperationKindV1::Revoke => {
+                    let lease = self
+                        .state
+                        .leases
+                        .get(lease_id)
+                        .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+                    if matches!(
+                        lease.state,
+                        SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+                    ) || self.has_pending_operation(lease_id, Some(LeaseOperationKindV1::Revoke))
+                    {
+                        return Err(LeaseRegistryErrorV1::InvalidTransition);
+                    }
+                }
+                LeaseOperationKindV1::Issue => return Err(LeaseRegistryErrorV1::InvalidInput),
+            }
+        }
         if self.state.operations.len() >= MAX_RECORDS {
             return Err(LeaseRegistryErrorV1::CapacityExceeded);
         }
@@ -422,6 +452,33 @@ impl DurableLeaseRegistryV1 {
         Ok(())
     }
 
+    fn has_pending_operation(&self, lease_id: &str, kind: Option<LeaseOperationKindV1>) -> bool {
+        self.state.operations.values().any(|operation| {
+            operation.lease_id.as_deref() == Some(lease_id)
+                && kind.is_none_or(|kind| operation.kind == kind)
+                && matches!(
+                    operation.state,
+                    LeaseOperationStateV1::Prepared | LeaseOperationStateV1::Unknown
+                )
+        })
+    }
+
+    fn require_live_renewal(&self, lease_id: &str) -> Result<(), LeaseRegistryErrorV1> {
+        let lease = self
+            .state
+            .leases
+            .get(lease_id)
+            .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+        if !matches!(
+            lease.state,
+            SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
+        ) || self.has_pending_operation(lease_id, Some(LeaseOperationKindV1::Revoke))
+        {
+            return Err(LeaseRegistryErrorV1::InvalidTransition);
+        }
+        Ok(())
+    }
+
     fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
         validate_state(&next)?;
         persist(&self.path, &next)?;
@@ -437,15 +494,31 @@ fn restore_unknown_lease_state(
     let Some(lease_id) = operation.lease_id.as_ref() else {
         return Ok(());
     };
+    let renewal_still_unknown = operation.kind == LeaseOperationKindV1::Revoke
+        && state.operations.values().any(|pending| {
+            pending.kind == LeaseOperationKindV1::Renew
+                && pending.lease_id.as_ref() == Some(lease_id)
+                && pending.state == LeaseOperationStateV1::Unknown
+        });
     let lease = state
         .leases
         .get_mut(lease_id)
         .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
     if matches!(
-        lease.state,
-        SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
+        (operation.kind, lease.state),
+        (
+            LeaseOperationKindV1::Renew,
+            SecretLeaseStateV1::RenewUnknown
+        ) | (
+            LeaseOperationKindV1::Revoke,
+            SecretLeaseStateV1::RevokeUnknown
+        )
     ) {
-        lease.state = SecretLeaseStateV1::Active;
+        lease.state = if renewal_still_unknown {
+            SecretLeaseStateV1::RenewUnknown
+        } else {
+            SecretLeaseStateV1::Active
+        };
     }
     Ok(())
 }
@@ -457,6 +530,7 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
     {
         return Err(LeaseRegistryErrorV1::CorruptState);
     }
+    let mut pending = BTreeSet::new();
     for (id, operation) in &state.operations {
         if id != &operation.operation_id
             || !identifier(id)
@@ -467,6 +541,21 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
                 .is_some_and(|value| !identifier(value))
         {
             return Err(LeaseRegistryErrorV1::CorruptState);
+        }
+        match (operation.kind, operation.lease_id.as_deref()) {
+            (LeaseOperationKindV1::Issue, None) => {}
+            (LeaseOperationKindV1::Renew | LeaseOperationKindV1::Revoke, Some(lease_id)) => {
+                if !state.leases.contains_key(lease_id)
+                    || (matches!(
+                        operation.state,
+                        LeaseOperationStateV1::Prepared | LeaseOperationStateV1::Unknown
+                    ) && !pending
+                        .insert((operation.kind == LeaseOperationKindV1::Revoke, lease_id)))
+                {
+                    return Err(LeaseRegistryErrorV1::CorruptState);
+                }
+            }
+            _ => return Err(LeaseRegistryErrorV1::CorruptState),
         }
     }
     for (id, lease) in &state.leases {
