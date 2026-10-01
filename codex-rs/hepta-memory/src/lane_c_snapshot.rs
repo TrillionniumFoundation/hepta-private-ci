@@ -9,6 +9,8 @@ use std::collections::BTreeMap;
 #[path = "lane_c_owner_transaction.rs"]
 mod owner_transaction;
 
+pub(crate) use owner_transaction::LaneCOwnerTransaction;
+
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
 use codex_hepta_cognitive_read::ReadIdsError;
 use codex_hepta_cognitive_read::ReadIdsRequestV1;
@@ -687,39 +689,11 @@ impl CognitiveStore {
         scope: &CognitiveScope,
         now_unix_seconds: i64,
     ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
-        let (cut, _) = self
-            .lane_c_snapshot_projection(access, scope, now_unix_seconds, LaneCProjection::Heads)
-            .await?;
-        Ok(cut)
-    }
-
-    // Retain one owner acquisition/validation path rather than duplicating SQL
-    // for compaction. Only the explicit lineage projection copies ancestry.
-    pub(crate) async fn lane_c_snapshot_projection(
-        &self,
-        access: &CognitiveAccess,
-        scope: &CognitiveScope,
-        now_unix_seconds: i64,
-        projection: LaneCProjection,
-    ) -> Result<(DurableCognitiveSnapshot, LaneCLineageCapture), CognitiveStoreError> {
-        self.authorize(access, scope)?;
-        if now_unix_seconds < 0 {
-            return Err(CognitiveStoreError::Invalid(
-                "negative snapshot time".to_string(),
-            ));
-        }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let projection = owner_transaction::project_in_transaction(
-            self,
-            access,
-            scope,
-            now_unix_seconds,
-            projection,
-            &mut transaction,
-        )
-        .await?;
-        transaction.commit().await.map_err(unavailable)?;
-        Ok(projection)
+        let mut transaction =
+            LaneCOwnerTransaction::begin_read(self, access, scope, now_unix_seconds).await?;
+        let snapshot = transaction.snapshot(now_unix_seconds).await?;
+        transaction.commit().await?;
+        Ok(snapshot)
     }
 
     /// Compare an independently retained exact witness against this already

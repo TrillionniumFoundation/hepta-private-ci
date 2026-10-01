@@ -19,6 +19,7 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::DurableCognitiveSnapshot;
 use crate::cognitive_store::unavailable;
+use crate::lane_c_snapshot::LaneCOwnerTransaction;
 
 /// Whole-scope ancestry ceiling, shared with the existing Lane C snapshot.
 pub const MAX_LANE_C_LINEAGE_REVISIONS: usize = 16_384;
@@ -155,27 +156,13 @@ impl DurableCognitiveLineageObservation {
     pub fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
     }
-}
 
-impl CognitiveStore {
-    /// Read bounded complete ancestry through the existing scope-authorized
-    /// SQLite owner. Capacity failure rejects the cut instead of truncating it.
-    /// The same transaction and validation power `lane_c_snapshot`; ordinary
-    /// head readers do not allocate or copy the complete lineage projection.
-    pub async fn lane_c_lineage(
-        &self,
-        access: &CognitiveAccess,
-        scope: &CognitiveScope,
+    /// Assemble a receipt only from the shared validated owner projection.
+    pub(crate) fn from_owner_projection(
+        owner_cut: DurableCognitiveSnapshot,
+        capture: LaneCLineageCapture,
         now_unix_seconds: i64,
-    ) -> Result<DurableCognitiveLineageObservation, CognitiveStoreError> {
-        let (owner_cut, capture) = self
-            .lane_c_snapshot_projection(
-                access,
-                scope,
-                now_unix_seconds,
-                LaneCProjection::EligibleLineage,
-            )
-            .await?;
+    ) -> Result<Self, CognitiveStoreError> {
         let source_head_count = capture.physical_head_digests.len() as u64;
         let excluded_head_count = source_head_count
             .checked_sub(owner_cut.snapshot().records.len() as u64)
@@ -211,6 +198,25 @@ impl CognitiveStore {
             observation_digest: Digest32::of_bytes(&receipt),
         })
     }
+}
+
+impl CognitiveStore {
+    /// Read bounded complete ancestry through the existing scope-authorized
+    /// SQLite owner. Capacity failure rejects the cut instead of truncating it.
+    /// The same transaction and validation power `lane_c_snapshot`; ordinary
+    /// head readers do not allocate or copy the complete lineage projection.
+    pub async fn lane_c_lineage(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveLineageObservation, CognitiveStoreError> {
+        let mut transaction =
+            LaneCOwnerTransaction::begin_read(self, access, scope, now_unix_seconds).await?;
+        let observation = transaction.lineage(now_unix_seconds).await?;
+        transaction.commit().await?;
+        Ok(observation)
+    }
 
     /// Reacquire the exact owner cut before use, including excluded-head
     /// changes and eligibility transitions caused only by elapsed time.
@@ -226,12 +232,12 @@ impl CognitiveStore {
                 "lineage clock regressed".to_string(),
             ));
         }
-        let current = self.lane_c_lineage(access, scope, now_unix_seconds).await?;
-        if current.source_binding_digest != expected.source_binding_digest {
-            return Err(CognitiveStoreError::Conflict(
-                "cognitive lineage changed or rolled back".to_string(),
-            ));
-        }
+        let mut transaction =
+            LaneCOwnerTransaction::begin_read(self, access, scope, now_unix_seconds).await?;
+        let current = transaction
+            .revalidate_lineage(expected, now_unix_seconds)
+            .await?;
+        transaction.commit().await?;
         Ok(current)
     }
 }

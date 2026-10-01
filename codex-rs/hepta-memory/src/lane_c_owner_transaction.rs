@@ -1,12 +1,109 @@
-//! Shared owner projection inside an already-opened SQLite transaction.
+//! Bound owner reads sharing one SQLite transaction.
 //!
-//! This helper does not acquire or finish a transaction. All metadata guards,
-//! capacity checks, ancestry validation and eligibility rules share one cut.
+//! The sealed owner object controls its default read transaction. The shared
+//! SQL projection neither begins nor commits; metadata guards, capacity checks,
+//! ancestry validation and eligibility rules all use its supplied connection.
 
 use super::*;
 use sqlx::SqliteConnection;
+use sqlx::Transaction;
 
-pub(super) async fn project_in_transaction(
+use crate::DurableCognitiveLineageObservation;
+
+/// Bound read transaction over exactly one physical store and authorized scope.
+/// Private fields prevent rebinding a caller's arbitrary SQL connection. This
+/// object carries no durable-writer fence, final-use grant or publication API.
+pub(crate) struct LaneCOwnerTransaction<'a> {
+    store: &'a CognitiveStore,
+    access: CognitiveAccess,
+    scope: CognitiveScope,
+    transaction: Transaction<'static, Sqlite>,
+}
+
+impl<'a> LaneCOwnerTransaction<'a> {
+    pub(crate) async fn begin_read(
+        store: &'a CognitiveStore,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+    ) -> Result<Self, CognitiveStoreError> {
+        // Preserve the public read boundary's authorization/time/error order.
+        store.authorize(access, scope)?;
+        if now_unix_seconds < 0 {
+            return Err(CognitiveStoreError::Invalid(
+                "negative snapshot time".to_string(),
+            ));
+        }
+        let transaction = store.pool.begin().await.map_err(unavailable)?;
+        Ok(Self {
+            store,
+            access: access.clone(),
+            scope: scope.clone(),
+            transaction,
+        })
+    }
+
+    pub(crate) async fn snapshot(
+        &mut self,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
+        let (snapshot, _) = project_in_transaction(
+            self.store,
+            &self.access,
+            &self.scope,
+            now_unix_seconds,
+            LaneCProjection::Heads,
+            &mut self.transaction,
+        )
+        .await?;
+        Ok(snapshot)
+    }
+
+    pub(crate) async fn lineage(
+        &mut self,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveLineageObservation, CognitiveStoreError> {
+        let (snapshot, capture) = project_in_transaction(
+            self.store,
+            &self.access,
+            &self.scope,
+            now_unix_seconds,
+            LaneCProjection::EligibleLineage,
+            &mut self.transaction,
+        )
+        .await?;
+        DurableCognitiveLineageObservation::from_owner_projection(
+            snapshot,
+            capture,
+            now_unix_seconds,
+        )
+    }
+
+    pub(crate) async fn revalidate_lineage(
+        &mut self,
+        expected: &DurableCognitiveLineageObservation,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveLineageObservation, CognitiveStoreError> {
+        if now_unix_seconds < expected.observed_at_unix_seconds() {
+            return Err(CognitiveStoreError::Invalid(
+                "lineage clock regressed".to_string(),
+            ));
+        }
+        let current = self.lineage(now_unix_seconds).await?;
+        if current.source_binding_digest() != expected.source_binding_digest() {
+            return Err(CognitiveStoreError::Conflict(
+                "cognitive lineage changed or rolled back".to_string(),
+            ));
+        }
+        Ok(current)
+    }
+
+    pub(crate) async fn commit(self) -> Result<(), CognitiveStoreError> {
+        self.transaction.commit().await.map_err(unavailable)
+    }
+}
+
+async fn project_in_transaction(
     store: &CognitiveStore,
     access: &CognitiveAccess,
     scope: &CognitiveScope,
