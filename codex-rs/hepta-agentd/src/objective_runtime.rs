@@ -46,6 +46,12 @@ use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
 
+#[path = "objective_runtime_directory.rs"]
+mod directory;
+
+use directory::prepare_private_directory;
+use directory::sync_run_start_directory;
+
 const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
 const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
 const MAX_RUN_START_RECORDS: usize = 4_096;
@@ -504,67 +510,6 @@ fn open_run_start_journal(
         )
         .map_err(store_error)
     }
-}
-
-#[cfg(unix)]
-fn sync_run_start_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::File::open(path)?.sync_all()?;
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
-    // The selected non-Unix host profile must independently qualify directory-entry
-    // durability. The journal file itself is synchronized before this boundary.
-    Ok(())
-}
-
-fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
-    let parent = path
-        .parent()
-        .ok_or_else(|| invalid("objective run-start root has no parent"))?;
-    if parent.canonicalize()? != parent {
-        return Err(invalid("objective run-start parent must be canonical"));
-    }
-    match std::fs::symlink_metadata(path) {
-        Ok(metadata) if !metadata.is_dir() || metadata.file_type().is_symlink() => {
-            return Err(invalid("objective run-start root must be a real directory"));
-        }
-        Ok(_) => {}
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            std::fs::create_dir(path)?;
-        }
-        Err(error) => return Err(error.into()),
-    }
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.is_dir() || metadata.file_type().is_symlink() {
-        return Err(invalid("objective run-start root must be a real directory"));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        use std::os::unix::fs::PermissionsExt;
-
-        let directory = std::fs::File::open(path)?;
-        let opened = directory.metadata()?;
-        if !opened.is_dir()
-            || opened.dev() != metadata.dev()
-            || opened.ino() != metadata.ino()
-            || opened.uid() != std::fs::metadata(parent)?.uid()
-        {
-            return Err(invalid("objective run-start root changed while opening"));
-        }
-        // Change the verified directory handle, never a path that may have
-        // become a symlink to another owner's directory before chmod.
-        directory.set_permissions(std::fs::Permissions::from_mode(0o700))?;
-        let after = std::fs::symlink_metadata(path)?;
-        if !after.is_dir() || after.dev() != opened.dev() || after.ino() != opened.ino() {
-            return Err(invalid(
-                "objective run-start root changed during preparation",
-            ));
-        }
-    }
-    Ok(())
 }
 
 fn replay_frontier(
