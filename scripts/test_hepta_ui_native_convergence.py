@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -284,6 +286,121 @@ unbuilt-dev = { path = "../unbuilt-dev" }
 
     def git(self, *args):
         return subprocess.check_output(["git", *args], cwd=self.root, text=True)
+
+    def repository_root_with_ancestor_alias(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        alias = Path(temporary.name) / "parent-alias"
+        try:
+            alias.symlink_to(self.root.resolve().parent, target_is_directory=True)
+        except OSError as error:
+            if os.name == "nt" and getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows token cannot create directory symlinks")
+            raise
+        return alias / self.root.resolve().name
+
+    def test_ancestor_root_alias_preserves_inherited_dependencies_and_freeze(self):
+        alias_root = self.repository_root_with_ancestor_alias()
+        with patch.object(MODULE, "ROOT", self.root.resolve()):
+            expected = MODULE.local_cargo_dependency_paths()
+        with patch.object(MODULE, "ROOT", alias_root):
+            self.assertEqual(MODULE.local_cargo_dependency_paths(), expected)
+            MODULE.check_frozen_implementation(self.implementation)
+
+    def test_ancestor_root_alias_cannot_hide_internal_dependency_symlink(self):
+        alias_root = self.repository_root_with_ancestor_alias()
+        (self.root / "codex-rs/linked").symlink_to(
+            self.root / "codex-rs/leaf", target_is_directory=True
+        )
+        workspace = self.root / "codex-rs/Cargo.toml"
+        workspace.write_text(
+            workspace.read_text(encoding="utf-8").replace(
+                'leaf = { path = "leaf" }', 'leaf = { path = "linked" }'
+            ),
+            encoding="utf-8",
+        )
+        for root in (self.root.resolve(), alias_root):
+            with (
+                self.subTest(root=root),
+                patch.object(MODULE, "ROOT", root),
+                self.assertRaisesRegex(RuntimeError, "uses a symlink"),
+            ):
+                MODULE.local_cargo_dependency_paths()
+
+    def test_internal_parent_traversal_cannot_hide_a_dependency_symlink(self):
+        alias_root = self.repository_root_with_ancestor_alias()
+        (self.root / "codex-rs/linked").symlink_to(
+            self.root / "codex-rs/leaf", target_is_directory=True
+        )
+        for root in (self.root.resolve(), alias_root):
+            with (
+                self.subTest(root=root),
+                patch.object(MODULE, "ROOT", root),
+                self.assertRaisesRegex(RuntimeError, "uses a symlink"),
+            ):
+                MODULE._repository_path(
+                    self.root.resolve() / "codex-rs/linked/../leaf/Cargo.toml"
+                )
+
+    def test_outside_alias_cannot_reenter_the_repository(self):
+        alias_root = self.repository_root_with_ancestor_alias()
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        outside_alias = Path(temporary.name) / "leaf-alias"
+        outside_alias.symlink_to(self.root / "codex-rs/leaf", target_is_directory=True)
+        for root in (self.root.resolve(), alias_root):
+            with self.subTest(root=root), patch.object(MODULE, "ROOT", root):
+                with self.assertRaisesRegex(RuntimeError, "escapes the repository"):
+                    MODULE._repository_path(
+                        root / "codex-rs/../../" / root.name / "codex-rs/leaf"
+                    )
+                with self.assertRaisesRegex(RuntimeError, "escapes the repository"):
+                    MODULE._repository_path(outside_alias)
+
+    @unittest.skipUnless(os.name == "nt", "requires actual Windows NTFS junctions")
+    def test_internal_junction_is_rejected_but_declared_root_alias_is_admitted(self):
+        root = self.root.resolve()
+        root_alias = root / "declared-root-alias"
+        junction = root / "codex-rs/junction"
+        target = root / "codex-rs/leaf"
+        with patch.object(MODULE, "ROOT", root):
+            expected = MODULE.local_cargo_dependency_paths()
+        command = Path(os.environ["SystemRoot"]) / "System32/cmd.exe"
+        for link, destination in ((root_alias, root), (junction, target)):
+            completed = subprocess.run(
+                [str(command), "/d", "/c", "mklink", "/J", str(link), str(destination)],
+                text=True,
+                errors="replace",
+                capture_output=True,
+                timeout=20,
+            )
+            self.assertEqual(
+                completed.returncode,
+                0,
+                f"mklink /J failed for {link}: {completed.stdout} {completed.stderr}",
+            )
+            self.addCleanup(link.rmdir)
+            self.assertEqual(link.resolve(), destination)
+            self.assertTrue(
+                link.lstat().st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT
+            )
+        self.assertFalse(junction.is_symlink())
+        with patch.object(MODULE, "ROOT", root_alias):
+            self.assertEqual(MODULE.local_cargo_dependency_paths(), expected)
+        workspace = root / "codex-rs/Cargo.toml"
+        workspace.write_text(
+            workspace.read_text(encoding="utf-8").replace(
+                'leaf = { path = "leaf" }', 'leaf = { path = "junction" }'
+            ),
+            encoding="utf-8",
+        )
+        for declared_root in (root, root_alias):
+            with (
+                self.subTest(root=declared_root),
+                patch.object(MODULE, "ROOT", declared_root),
+                self.assertRaisesRegex(RuntimeError, "symlink or reparse point"),
+            ):
+                MODULE.local_cargo_dependency_paths()
 
     def test_workspace_alias_target_build_and_root_dev_dependencies_are_frozen(self):
         with patch.object(MODULE, "ROOT", self.root):

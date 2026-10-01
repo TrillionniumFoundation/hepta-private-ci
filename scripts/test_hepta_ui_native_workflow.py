@@ -7,9 +7,11 @@ import json
 from pathlib import Path
 import subprocess
 import shutil
+import sys
 import tempfile
 import textwrap
 import unittest
+from unittest.mock import patch
 
 WORKFLOW = (
     Path(__file__).resolve().parents[1]
@@ -25,22 +27,75 @@ def shell_step(name: str) -> str:
     return textwrap.dedent(body)
 
 
+def bash_executable() -> str:
+    # Actions selects Git Bash explicitly on Windows; a bare name can select WSL.
+    if sys.platform == "win32":
+        git = shutil.which("git")
+        if git is not None:
+            for parent in Path(git).resolve().parents:
+                candidate = parent / "bin/bash.exe"
+                if candidate.is_file():
+                    return str(candidate)
+        raise RuntimeError("workflow tests require the installed Git for Windows Bash")
+    bash = shutil.which("bash")
+    if bash is None:
+        raise RuntimeError("workflow tests require Bash")
+    return bash
+
+
+class ShellSelectionTests(unittest.TestCase):
+    def test_windows_uses_git_bash_even_with_another_bash_on_path(self):
+        with tempfile.TemporaryDirectory(prefix="ui native shell ") as temporary:
+            root = Path(temporary).resolve()
+            git = root / "Git/cmd/git.exe"
+            bash = root / "Git/bin/bash.exe"
+            other_bash = root / "WSL/bash.exe"
+            for path in (git, bash, other_bash):
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"fixture")
+            with (
+                patch.object(sys, "platform", "win32"),
+                patch.object(
+                    shutil,
+                    "which",
+                    side_effect=lambda name: str(git if name == "git" else other_bash),
+                ) as which,
+            ):
+                self.assertEqual(Path(bash_executable()), bash)
+                which.assert_called_once_with("git")
+
+    def test_windows_without_git_bash_fails_instead_of_using_another_shell(self):
+        with tempfile.TemporaryDirectory(prefix="ui native shell ") as temporary:
+            git = Path(temporary).resolve() / "Git/cmd/git.exe"
+            git.parent.mkdir(parents=True)
+            git.write_bytes(b"fixture")
+            with (
+                patch.object(sys, "platform", "win32"),
+                patch.object(shutil, "which", return_value=str(git)),
+                self.assertRaisesRegex(RuntimeError, "Git for Windows Bash"),
+            ):
+                bash_executable()
+
+
 class PlatformConstructionTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory()
+        self.temp = tempfile.TemporaryDirectory(prefix="ui native workflow ")
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name) / "repo"
+        self.root = Path(self.temp.name).resolve() / "repo"
         self.root.mkdir()
-        self.runner_temp = Path(self.temp.name) / "runner"
+        self.runner_temp = Path(self.temp.name).resolve() / "runner"
         self.output = self.runner_temp / "ui-native-platform"
         self.git("init", "--quiet")
+        self.git("config", "core.autocrlf", "false")
         self.git("config", "user.name", "fixture")
         self.git("config", "user.email", "fixture@example.invalid")
-        (self.root / "source.rs").write_text("source\n", encoding="utf-8")
+        (self.root / "source.rs").write_text("source\n", encoding="utf-8", newline="\n")
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "base")
         self.base = self.git("rev-parse", "HEAD").strip()
-        (self.root / "source.rs").write_text("candidate\n", encoding="utf-8")
+        (self.root / "source.rs").write_text(
+            "candidate\n", encoding="utf-8", newline="\n"
+        )
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "candidate")
         self.candidate = self.git("rev-parse", "HEAD").strip()
@@ -51,7 +106,7 @@ class PlatformConstructionTests(unittest.TestCase):
     def construct(self, kind):
         return subprocess.run(
             [
-                "bash",
+                bash_executable(),
                 "-c",
                 shell_step("Construct exact head or fixed ordered-parent merge"),
             ],
@@ -61,8 +116,10 @@ class PlatformConstructionTests(unittest.TestCase):
                 "CANDIDATE": self.candidate,
                 "BASE": self.base,
                 "KIND": kind,
-                "RUNNER_TEMP": str(self.runner_temp),
-                "GITHUB_ENV": str(Path(self.temp.name) / "github-env"),
+                "RUNNER_TEMP": self.runner_temp.as_posix(),
+                "GITHUB_ENV": (
+                    Path(self.temp.name).resolve() / "github-env"
+                ).as_posix(),
             },
             text=True,
             stdout=subprocess.PIPE,
@@ -72,7 +129,7 @@ class PlatformConstructionTests(unittest.TestCase):
 
     def test_exact_head_records_evidence_without_dirtying_checkout(self):
         result = self.construct("head")
-        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.git("rev-parse", "HEAD").strip(), self.candidate)
         self.assertEqual(self.git("status", "--porcelain"), "")
         self.assertIn(
@@ -80,7 +137,7 @@ class PlatformConstructionTests(unittest.TestCase):
             (self.output / "native-evidence/source.txt").read_text(),
         )
         exported = (Path(self.temp.name) / "github-env").read_text()
-        self.assertIn(f"NATIVE_OUTPUT_ROOT={self.output}\n", exported)
+        self.assertIn(f"NATIVE_OUTPUT_ROOT={self.output.as_posix()}\n", exported)
 
     def test_storage_preparation_exports_target_for_later_steps(self):
         implementation = "a" * 40
@@ -97,23 +154,23 @@ class PlatformConstructionTests(unittest.TestCase):
         )
         exported = Path(self.temp.name) / "storage-github-env"
         result = subprocess.run(
-            ["bash", "-c", script],
+            [bash_executable(), "-c", script],
             cwd=self.root,
             text=True,
             capture_output=True,
             env={
                 **os.environ,
-                "RUNNER_TEMP": str(self.runner_temp),
-                "GITHUB_ENV": str(exported),
+                "RUNNER_TEMP": self.runner_temp.as_posix(),
+                "GITHUB_ENV": exported.as_posix(),
             },
         )
-        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         later_env = dict(
             line.split("=", 1) for line in exported.read_text().splitlines()
         )
         later = subprocess.run(
             [
-                "bash",
+                bash_executable(),
                 "-c",
                 'printf "%s\\n%s\\n" "$CARGO_TARGET_DIR" "$IMPLEMENTATION_SHA"',
             ],
@@ -122,16 +179,19 @@ class PlatformConstructionTests(unittest.TestCase):
             capture_output=True,
             env={**os.environ, **later_env},
         )
-        self.assertEqual(later.returncode, 0, later.stderr)
+        self.assertEqual(later.returncode, 0, later.stdout + later.stderr)
         self.assertEqual(
             later.stdout.splitlines(),
-            [str(self.runner_temp / "ui-native-storage-target"), implementation],
+            [
+                (self.runner_temp / "ui-native-storage-target").as_posix(),
+                implementation,
+            ],
         )
         self.assertEqual(self.git("status", "--porcelain"), "")
 
     def test_merge_preserves_ordered_parents_and_clean_checkout(self):
         result = self.construct("merge")
-        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(
             self.git("show", "-s", "--format=%P", "HEAD").strip(),
             f"{self.base} {self.candidate}",
@@ -140,15 +200,17 @@ class PlatformConstructionTests(unittest.TestCase):
         self.assertTrue((self.output / "native-evidence/source.txt").is_file())
 
     def test_dirty_source_is_still_rejected(self):
-        (self.root / "source.rs").write_text("dirty source\n", encoding="utf-8")
+        (self.root / "source.rs").write_text(
+            "dirty source\n", encoding="utf-8", newline="\n"
+        )
         result = self.construct("head")
         self.assertNotEqual(result.returncode, 0)
 
 
 class StorageReleaseProfileTests(unittest.TestCase):
     def test_actual_storage_shell_commands_build_and_run_release_harness(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
+        with tempfile.TemporaryDirectory(prefix="ui native storage ") as temporary:
+            root = Path(temporary).resolve()
             binary = root / "bin"
             binary.mkdir()
             commands = root / "commands.jsonl"
@@ -159,11 +221,13 @@ class StorageReleaseProfileTests(unittest.TestCase):
                 "with open(os.environ['CAPTURED_COMMANDS'], 'a') as output:\n"
                 "    output.write(json.dumps(sys.argv[1:]) + '\\n')\n",
                 encoding="utf-8",
+                newline="\n",
             )
             strace = binary / "strace"
             strace.write_text(
                 '#!/bin/sh\nwhile [ "$1" != "cargo" ]; do shift; done\nexec "$@"\n',
                 encoding="utf-8",
+                newline="\n",
             )
             cargo.chmod(0o755)
             strace.chmod(0o755)
@@ -177,7 +241,7 @@ class StorageReleaseProfileTests(unittest.TestCase):
                     textwrap.dedent(run[2:]) if run.startswith("|\n") else run.strip()
                 )
                 result = subprocess.run(
-                    ["bash", "-c", script],
+                    [bash_executable(), "-c", script],
                     cwd=root,
                     capture_output=True,
                     text=True,
@@ -185,11 +249,11 @@ class StorageReleaseProfileTests(unittest.TestCase):
                         **os.environ,
                         "PATH": f"{binary}{os.pathsep}{os.environ['PATH']}",
                         "CAPTURED_COMMANDS": str(commands),
-                        "RUNNER_TEMP": str(root),
+                        "RUNNER_TEMP": root.as_posix(),
                         "IMPLEMENTATION_SHA": "a" * 40,
                     },
                 )
-                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             captured = [json.loads(line) for line in commands.read_text().splitlines()]
             self.assertEqual(len(captured), 3)
             for command in captured:
@@ -211,9 +275,9 @@ class StorageReleaseProfileTests(unittest.TestCase):
 
 class RepositoryAggregateTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory()
+        self.temp = tempfile.TemporaryDirectory(prefix="ui native aggregate ")
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.storage_root = self.root / "storage-bundle"
         self.storage_root.mkdir()
         self.env = {
@@ -288,7 +352,11 @@ class RepositoryAggregateTests(unittest.TestCase):
 
     def aggregate(self):
         return subprocess.run(
-            ["bash", "-c", shell_step("Bind platform aggregate and storage artifact")],
+            [
+                bash_executable(),
+                "-c",
+                shell_step("Bind platform aggregate and storage artifact"),
+            ],
             cwd=self.root,
             env=self.env,
             text=True,
@@ -299,7 +367,7 @@ class RepositoryAggregateTests(unittest.TestCase):
 
     def test_same_run_retained_storage_inputs_are_accepted(self):
         result = self.aggregate()
-        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         final = json.loads(
             (self.root / "native-aggregate/qualification-result.json").read_text()
         )

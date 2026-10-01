@@ -148,7 +148,8 @@ fn helper_acknowledgement_is_durable_before_success() {
             .stdin(Stdio::piped())
             .spawn()
             .unwrap();
-        let deadline = Instant::now() + Duration::from_secs(20);
+        let readiness_started = Instant::now();
+        let readiness_deadline = readiness_started + Duration::from_secs(20);
         loop {
             let current = manager.load_pending().unwrap().unwrap();
             if let Some(readiness) = current.readiness {
@@ -156,10 +157,19 @@ fn helper_acknowledgement_is_durable_before_success() {
                 assert_eq!(readiness.process_id, child.id());
                 break;
             }
-            if child.try_wait().unwrap().is_some() || Instant::now() >= deadline {
-                let _ = child.kill();
-                let _ = child.wait();
-                panic!("candidate did not publish readiness");
+            let child_status = child.try_wait().unwrap();
+            if child_status.is_some() || Instant::now() >= readiness_deadline {
+                let pending = manager
+                    .load_pending()
+                    .map(|pending| pending.map(|pending| (pending.status, pending.readiness)));
+                let killed = child.kill();
+                let reaped = child.wait();
+                panic!(
+                    "candidate did not publish readiness: scenario={scenario}, elapsed={:?}, \
+                     child_status={child_status:?}, kill={killed:?}, reaped={reaped:?}, \
+                     pending={pending:?}",
+                    readiness_started.elapsed()
+                );
             }
             std::thread::sleep(Duration::from_millis(10));
         }
@@ -172,14 +182,26 @@ fn helper_acknowledgement_is_durable_before_success() {
             pipe.write_all(b"C").unwrap();
         }
         drop(pipe);
+        // Startup verifies the entire debug test executable before readiness.
+        // That work must not consume the separate acknowledgement/exit budget.
+        let exit_started = Instant::now();
+        let exit_deadline = exit_started + Duration::from_secs(20);
         let status = loop {
             if let Some(status) = child.try_wait().unwrap() {
                 break status;
             }
-            if Instant::now() >= deadline {
-                let _ = child.kill();
-                let _ = child.wait();
-                panic!("candidate did not terminate after helper result");
+            if Instant::now() >= exit_deadline {
+                let pending = manager
+                    .load_pending()
+                    .map(|pending| pending.map(|pending| (pending.status, pending.readiness)));
+                let killed = child.kill();
+                let reaped = child.wait();
+                panic!(
+                    "candidate did not terminate after helper result: scenario={scenario}, \
+                     elapsed={:?}, child_status=running, kill={killed:?}, reaped={reaped:?}, \
+                     pending={pending:?}",
+                    exit_started.elapsed()
+                );
             }
             std::thread::sleep(Duration::from_millis(10));
         };

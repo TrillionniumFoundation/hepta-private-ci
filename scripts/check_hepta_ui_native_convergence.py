@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import stat
 import subprocess
 import tomllib
 from pathlib import Path
@@ -130,21 +131,42 @@ def _cargo_manifest(path: Path) -> dict[str, Any]:
 
 
 def _repository_path(path: Path) -> str:
-    resolved = path.resolve(strict=True)
+    root = ROOT.resolve(strict=True)
     try:
-        relative = resolved.relative_to(ROOT.resolve())
+        lexical_relative = path.relative_to(ROOT)
+    except ValueError:
+        try:
+            lexical_relative = path.relative_to(root)
+        except ValueError as error:
+            raise RuntimeError(
+                f"local Cargo dependency escapes the repository: {path}"
+            ) from error
+    # Canonicalize only the trusted root alias (macOS /var, Windows short paths).
+    # Keep dependency components intact so resolving them cannot hide a link.
+    depth = 0
+    for part in lexical_relative.parts:
+        depth += -1 if part == ".." else 1
+        _require(depth >= 0, f"local Cargo dependency escapes the repository: {path}")
+    checked = root / lexical_relative
+    resolved = checked.resolve(strict=True)
+    try:
+        relative = resolved.relative_to(root)
     except ValueError as error:
         raise RuntimeError(
             f"local Cargo dependency escapes the repository: {path}"
         ) from error
-    _require(
-        not any(
-            parent.is_symlink()
-            for parent in (path, *path.parents)
-            if parent.is_relative_to(ROOT)
-        ),
-        f"local Cargo dependency uses a symlink: {path}",
-    )
+    for parent in (checked, *checked.parents):
+        if not parent.is_relative_to(root):
+            continue
+        metadata = parent.lstat()
+        _require(
+            not (
+                stat.S_ISLNK(metadata.st_mode)
+                or getattr(metadata, "st_file_attributes", 0)
+                & stat.FILE_ATTRIBUTE_REPARSE_POINT
+            ),
+            f"local Cargo dependency uses a symlink or reparse point: {path}",
+        )
     return relative.as_posix()
 
 
@@ -155,15 +177,15 @@ def _workspace_manifest(path: Path, manifest: dict[str, Any]) -> Path | None:
     if explicit is not None:
         _require(isinstance(explicit, str), "Cargo package.workspace must be a path")
         workspace = path.parent / explicit / "Cargo.toml"
+        _repository_path(workspace)
         _require(
             "workspace" in _cargo_manifest(workspace),
             "explicit Cargo workspace is missing",
         )
-        _repository_path(workspace)
         return workspace
     for parent in path.parent.parents:
         try:
-            parent.relative_to(ROOT)
+            parent.relative_to(ROOT.resolve(strict=True))
         except ValueError:
             break
         candidate = parent / "Cargo.toml"
