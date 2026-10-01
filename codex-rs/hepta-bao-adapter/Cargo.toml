@@ -21,14 +21,17 @@ codex-http-client = { workspace = true }
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+tempfile = { workspace = true }
 thiserror = { workspace = true }
 url = { workspace = true }
 zeroize = { workspace = true, features = ["serde"] }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
+
 [dev-dependencies]
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
-tempfile = { workspace = true }
 rcgen = { workspace = true }
 rustls = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net", "io-util", "time"] }

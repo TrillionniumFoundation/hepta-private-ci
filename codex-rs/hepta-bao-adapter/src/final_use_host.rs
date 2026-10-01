@@ -219,6 +219,9 @@ impl std::error::Error for BaoFinalUseHostError {}
 
 #[cfg(all(test, unix))]
 mod tests {
+    // Fixture setup fails the test immediately; runtime authority lints stay active.
+    #![allow(clippy::unwrap_used)]
+
     use super::*;
     use ed25519_dalek::SigningKey;
 

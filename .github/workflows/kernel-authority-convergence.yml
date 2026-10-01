@@ -2,47 +2,36 @@ name: Kernel authority convergence source gate
 
 on:
   push:
-    branches:
-      - work/kernel-authority-convergence-20260925
+    branches: [main, work/kernel-authority-convergence-20260925]
     paths:
-      - .github/workflows/kernel-authority-convergence.yml
-      - .github/workflows/kernel-authority-production-closure.yml
-      - .github/workflows/kernel-authority-product-process-recovery.yml
-      - .github/workflows/kernel-authority-target-capacity.yml
-      - codex-rs/hepta-contracts/src/authority_trust.rs
-      - codex-rs/hepta-agentd/src/authority_feed_clock.rs
-      - codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
-      - codex-rs/hepta-agentd/src/automation_effect_host.rs
-      - codex-rs/hepta-agentd/src/config.rs
-      - codex-rs/hepta-agentd/src/runtime.rs
-      - codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs
-      - codex-rs/hepta-fleet/src/authority_port.rs
-      - qualification/kernel-authority/convergence_acceptance.py
-      - qualification/kernel-authority/convergence_manifest.json
-      - qualification/kernel-authority/port_acceptance.py
-      - qualification/kernel-authority/test_convergence_acceptance.py
-      - docs/modules/kernel.authority/CONVERGENCE_STATUS.md
-      - docs/modules/kernel.authority/README.md
+      - 'codex-rs/**'
+      - 'scripts/**'
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/**'
+      - 'qa/b4-no-bypass/**'
+      - 'CALLERS.toml'
+      - 'justfile'
+      - 'MODULE.bazel'
+      - 'MODULE.bazel.lock'
+      - 'defs.bzl'
+      - '.github/workflows/kernel-authority-*.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - '.github/actionlint.yaml'
   pull_request:
     paths:
-      - .github/workflows/kernel-authority-convergence.yml
-      - .github/workflows/kernel-authority-production-closure.yml
-      - .github/workflows/kernel-authority-product-process-recovery.yml
-      - .github/workflows/kernel-authority-target-capacity.yml
-      - codex-rs/hepta-contracts/src/authority_trust.rs
-      - codex-rs/hepta-agentd/src/authority_feed_clock.rs
-      - codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
-      - codex-rs/hepta-agentd/src/automation_effect_host.rs
-      - codex-rs/hepta-agentd/src/config.rs
-      - codex-rs/hepta-agentd/src/runtime.rs
-      - codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs
-      - codex-rs/hepta-fleet/src/authority_port.rs
-      - qualification/kernel-authority/convergence_acceptance.py
-      - qualification/kernel-authority/convergence_manifest.json
-      - qualification/kernel-authority/port_acceptance.py
-      - qualification/kernel-authority/test_convergence_acceptance.py
-      - docs/modules/kernel.authority/CONVERGENCE_STATUS.md
-      - docs/modules/kernel.authority/README.md
+      - 'codex-rs/**'
+      - 'scripts/**'
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/**'
+      - 'qa/b4-no-bypass/**'
+      - 'CALLERS.toml'
+      - 'justfile'
+      - 'MODULE.bazel'
+      - 'MODULE.bazel.lock'
+      - 'defs.bzl'
+      - '.github/workflows/kernel-authority-*.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - '.github/actionlint.yaml'
   workflow_dispatch:
 
 permissions:

@@ -1,5 +1,6 @@
 """Standard-library checks for security-critical workflow triggers and identity."""
 import fnmatch
+import json
 from pathlib import Path
 import re
 import unittest
@@ -16,6 +17,28 @@ def event_paths(text, event):
 
 
 class WorkflowCoverageTests(unittest.TestCase):
+    def test_lightweight_source_gates_cover_every_mapped_path_and_build_input(self):
+        manifest = json.loads((ROOT / 'qualification/kernel-authority/convergence_manifest.json').read_text())
+        critical = manifest['trackedSourcePaths'] + [
+            'codex-rs/state/src/sqlite.rs',
+            'codex-rs/hepta-supervisor/src/restart_state.rs',
+            'codex-rs/hepta-bao-adapter/src/https_consumer.rs',
+            'codex-rs/hepta-intelligence/src/canonical.rs',
+            'codex-rs/app-server-client/src/remote.rs',
+            'codex-rs/ext/hepta-prompt/src/lib.rs',
+            'MODULE.bazel.lock',
+            'defs.bzl',
+            '.github/actions/hepta-synthetic-merge/action.yml',
+        ]
+        for name in ('kernel-authority-convergence.yml', 'kernel-authority-evidence-gate.yml'):
+            text = (ROOT / '.github/workflows' / name).read_text()
+            for event in ('push', 'pull_request'):
+                patterns = event_paths(text, event)
+                self.assertTrue(patterns, (name, event))
+                for path in critical:
+                    self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in patterns),
+                                    (name, event, path))
+
     def test_every_authority_and_changed_host_file_triggers_both_events(self):
         text = WORKFLOW.read_text()
         critical = [

@@ -369,8 +369,6 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    let recovery_window_millis = u64::try_from(RESTART_RECOVERY_WINDOW.as_millis())
-        .expect("bounded recovery window milliseconds");
     let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
         // Wall-clock rollback is not allowed to buy extra restart attempts.
         return (
@@ -380,10 +378,10 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    if elapsed_millis >= recovery_window_millis {
+    let elapsed = Duration::from_millis(elapsed_millis);
+    if elapsed >= RESTART_RECOVERY_WINDOW {
         return (0, None, None, false);
     }
-    let elapsed = Duration::from_millis(elapsed_millis);
     let started = now.checked_sub(elapsed).unwrap_or(now);
     (
         durable.attempts,

@@ -4,19 +4,33 @@ on:
   push:
     branches: [main, work/kernel-authority-convergence-20260925]
     paths:
+      - 'codex-rs/**'
+      - 'scripts/**'
       - 'qualification/kernel-authority/**'
-      - 'docs/modules/kernel.authority/**'
-      - 'codex-rs/hepta-contracts/**'
-      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/**'
+      - 'qa/b4-no-bypass/**'
+      - 'CALLERS.toml'
+      - 'justfile'
+      - 'MODULE.bazel'
+      - 'MODULE.bazel.lock'
+      - 'defs.bzl'
       - '.github/workflows/kernel-authority-*.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
       - '.github/actionlint.yaml'
   pull_request:
     paths:
+      - 'codex-rs/**'
+      - 'scripts/**'
       - 'qualification/kernel-authority/**'
-      - 'docs/modules/kernel.authority/**'
-      - 'codex-rs/hepta-contracts/**'
-      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/**'
+      - 'qa/b4-no-bypass/**'
+      - 'CALLERS.toml'
+      - 'justfile'
+      - 'MODULE.bazel'
+      - 'MODULE.bazel.lock'
+      - 'defs.bzl'
       - '.github/workflows/kernel-authority-*.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
       - '.github/actionlint.yaml'
   workflow_dispatch:
 

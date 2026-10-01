@@ -17,6 +17,7 @@ use serde::Serialize;
 const SCHEMA_VERSION: u32 = 1;
 const MAX_RECORDS: usize = 65_536;
 const MAX_METADATA_BYTES: usize = 16 * 1024;
+const MAX_REGISTRY_BYTES: u64 = 8 * 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -140,12 +141,12 @@ impl std::error::Error for LeaseRegistryErrorV1 {}
 impl DurableLeaseRegistryV1 {
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, LeaseRegistryErrorV1> {
         let path = path.into();
-        let state = if path.exists() {
+        let state = if let Some(file) = open_snapshot(&path)? {
             let mut bytes = Vec::new();
-            File::open(&path)
-                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
+            file.take(MAX_REGISTRY_BYTES + 1)
+                .read_to_end(&mut bytes)
                 .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-            if bytes.len() > 8 * 1024 * 1024 {
+            if bytes.len() as u64 > MAX_REGISTRY_BYTES {
                 return Err(LeaseRegistryErrorV1::CorruptState);
             }
             let state: StoredRegistryV1 =
@@ -273,7 +274,7 @@ impl DurableLeaseRegistryV1 {
         }
 
         let mut next = self.state.clone();
-        match (&current.kind, observation) {
+        let resulting_state = match (&current.kind, observation) {
             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
                 validate_lease(&lease)?;
                 if lease.state != SecretLeaseStateV1::Active {
@@ -283,8 +284,7 @@ impl DurableLeaseRegistryV1 {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
                 next.leases.insert(lease.lease_id.clone(), lease);
-                let operation = next.operations.get_mut(operation_id).unwrap();
-                operation.state = LeaseOperationStateV1::Applied;
+                LeaseOperationStateV1::Applied
             }
             (
                 LeaseOperationKindV1::Renew,
@@ -314,8 +314,7 @@ impl DurableLeaseRegistryV1 {
                     .checked_add(1)
                     .ok_or(LeaseRegistryErrorV1::InvalidTransition)?;
                 lease.state = SecretLeaseStateV1::Active;
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Applied;
+                LeaseOperationStateV1::Applied
             }
             (
                 LeaseOperationKindV1::Revoke,
@@ -336,24 +335,21 @@ impl DurableLeaseRegistryV1 {
                     .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
                 lease.provider_metadata_sha256 = provider_metadata_sha256;
                 lease.state = SecretLeaseStateV1::Revoked;
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Applied;
+                LeaseOperationStateV1::Applied
             }
             (_, ProviderLeaseObservationV1::Unknown) => {
                 return self.mark_unknown(operation_id);
             }
-            (_, ProviderLeaseObservationV1::Denied) => {
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Denied;
+            (_, ProviderLeaseObservationV1::Denied | ProviderLeaseObservationV1::NotApplied) => {
                 restore_unknown_lease_state(&mut next, &current)?;
-            }
-            (_, ProviderLeaseObservationV1::NotApplied) => {
-                next.operations.get_mut(operation_id).unwrap().state =
-                    LeaseOperationStateV1::Denied;
-                restore_unknown_lease_state(&mut next, &current)?;
+                LeaseOperationStateV1::Denied
             }
             _ => return Err(LeaseRegistryErrorV1::ObservationMismatch),
-        }
+        };
+        next.operations
+            .get_mut(operation_id)
+            .ok_or(LeaseRegistryErrorV1::CorruptState)?
+            .state = resulting_state;
         self.commit(next)?;
         self.operation(operation_id)
             .cloned()
@@ -500,20 +496,53 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
     Ok(())
 }
 
+// The caller owns the parent directory. Reject leaf aliases and non-regular
+// inputs before reading; on Unix NONBLOCK also closes the FIFO-open race.
+fn open_snapshot(path: &Path) -> Result<Option<File>, LeaseRegistryErrorV1> {
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) if !metadata.is_file() => return Err(LeaseRegistryErrorV1::CorruptState),
+        Ok(_) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err(LeaseRegistryErrorV1::Unavailable),
+    }
+    #[cfg(unix)]
+    let file: File = rustix::fs::open(
+        path,
+        rustix::fs::OFlags::RDONLY
+            | rustix::fs::OFlags::NOFOLLOW
+            | rustix::fs::OFlags::NONBLOCK
+            | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::Mode::empty(),
+    )
+    .map_err(|_| LeaseRegistryErrorV1::Unavailable)?
+    .into();
+    #[cfg(not(unix))]
+    let file = File::open(path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    let metadata = file
+        .metadata()
+        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    if !metadata.is_file() || metadata.len() > MAX_REGISTRY_BYTES {
+        return Err(LeaseRegistryErrorV1::CorruptState);
+    }
+    Ok(Some(file))
+}
+
 fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
     let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
     std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let file_name = path
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    let next = parent.join(format!("{file_name}.next"));
-    let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    if bytes.len() as u64 > MAX_REGISTRY_BYTES {
+        return Err(LeaseRegistryErrorV1::CapacityExceeded);
+    }
+    // A fixed `.next` path can alias another file or block on a FIFO. An
+    // exclusively created sibling also keeps crash leftovers out of recovery.
+    let mut file =
+        tempfile::NamedTempFile::new_in(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     file.write_all(&bytes)
-        .and_then(|()| file.sync_all())
+        .and_then(|()| file.as_file().sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    file.persist(path)
+        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     File::open(parent)
         .and_then(|directory| directory.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)

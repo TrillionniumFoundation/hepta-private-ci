@@ -1,5 +1,8 @@
 #[cfg(unix)]
 mod unix {
+    // Fixture setup fails the test immediately; runtime authority lints stay active.
+    #![allow(clippy::expect_used, clippy::unwrap_used)]
+
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;
     use std::sync::Arc;

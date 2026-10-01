@@ -643,18 +643,20 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            ExpectedNativeDispatch {
+                payload_digest,
+                request_digest: request_receipt.request_digest,
+                source_admission_digest,
+                codex_home_digest,
+                connection_id,
+                session_id: &started.thread.session_id,
+                deadline_ms: adapter_intent.deadline_ms,
+                authority_epoch,
+                revocation_revision,
+                revocation_head_digest: &revocation_head_digest,
+                authority_witness: &authority_witness,
+                app_server_version: &app_server_version,
+            },
         )?;
 
         if let Some(binding) = intelligence {
@@ -913,17 +915,16 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -1146,22 +1147,40 @@ async fn send_authorized_turn_start(
         .await
 }
 
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
-    request_id: &str,
+struct ExpectedNativeDispatch<'a> {
     payload_digest: Digest32,
     request_digest: Digest32,
     source_admission_digest: Digest32,
     codex_home_digest: Digest32,
     connection_id: u64,
-    session_id: &str,
+    session_id: &'a str,
     deadline_ms: u64,
     authority_epoch: u64,
     revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    revocation_head_digest: &'a str,
+    authority_witness: &'a str,
+    app_server_version: &'a str,
+}
+
+fn verify_persisted_dispatch_binding(
+    control: &DurableInferenceControl,
+    request_id: &str,
+    expected: ExpectedNativeDispatch<'_>,
 ) -> Result<()> {
+    let ExpectedNativeDispatch {
+        payload_digest,
+        request_digest,
+        source_admission_digest,
+        codex_home_digest,
+        connection_id,
+        session_id,
+        deadline_ms,
+        authority_epoch,
+        revocation_revision,
+        revocation_head_digest,
+        authority_witness,
+        app_server_version,
+    } = expected;
     let dispatch = control
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())

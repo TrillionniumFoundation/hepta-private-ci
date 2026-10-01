@@ -85,6 +85,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+                supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;

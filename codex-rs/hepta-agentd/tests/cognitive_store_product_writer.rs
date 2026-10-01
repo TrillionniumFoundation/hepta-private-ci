@@ -10,6 +10,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdProductionWriterHost;
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
@@ -174,6 +175,27 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let mut wrong_cut = expected.clone();
+    wrong_cut.state_digest = Sha256Digest::for_bytes(b"incorrect-product-recovery-cut");
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&wrong_cut),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await;
+    assert!(matches!(
+        rejected,
+        Err(AgentdError::Protocol(ref message))
+            if message.contains("differs from independently retained current cut")
+    ));
+    let unchanged_source = DurableCognitiveStore::open(&config.identity().layout).await?;
+    assert_eq!(unchanged_source.recovery_anchor().await?, expected);
+    unchanged_source.close().await;
+    drop(unchanged_source);
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -184,7 +206,13 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_eq!(host.writer().generation(), 1);
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
+    assert_eq!(host.writer().recovery_anchor().await?, recovered_anchor);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());

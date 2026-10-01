@@ -1,4 +1,127 @@
+// Fixture setup fails the test immediately; runtime authority lints stay active.
+#![allow(clippy::expect_used, clippy::unwrap_used)]
+
 use super::*;
+
+#[cfg(unix)]
+#[test]
+fn snapshot_fifo_is_rejected_without_a_writer() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("lease-registry.json");
+    rustix::fs::mknodat(
+        rustix::fs::CWD,
+        &path,
+        rustix::fs::FileType::Fifo,
+        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
+        0,
+    )
+    .unwrap();
+    let (tx, rx) = std::sync::mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        tx.send(DurableLeaseRegistryV1::open(path).map(|_| ()))
+            .unwrap();
+        drop(directory);
+    });
+    assert_eq!(
+        rx.recv_timeout(std::time::Duration::from_secs(2))
+            .expect("snapshot open blocked on a FIFO"),
+        Err(LeaseRegistryErrorV1::CorruptState)
+    );
+    worker.join().unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn snapshot_symlink_never_loads_another_registry_or_initializes_empty() {
+    let (directory, mut registry) = registry();
+    registry
+        .prepare_issue("original-operation".into(), [3; 32])
+        .unwrap();
+    let target = directory.path().join("lease-registry.json");
+    let link = directory.path().join("alias.json");
+    std::os::unix::fs::symlink(&target, &link).unwrap();
+    assert!(matches!(
+        DurableLeaseRegistryV1::open(&link),
+        Err(LeaseRegistryErrorV1::CorruptState)
+    ));
+    std::fs::remove_file(target).unwrap();
+    assert!(matches!(
+        DurableLeaseRegistryV1::open(link),
+        Err(LeaseRegistryErrorV1::CorruptState)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn stale_next_symlink_cannot_truncate_another_file() {
+    let (directory, mut registry) = registry();
+    let victim = directory.path().join("unrelated-file");
+    std::fs::write(&victim, b"original contents").unwrap();
+    std::os::unix::fs::symlink(&victim, directory.path().join("lease-registry.json.next")).unwrap();
+    registry
+        .prepare_issue("original-operation".into(), [3; 32])
+        .unwrap();
+    assert_eq!(std::fs::read(victim).unwrap(), b"original contents");
+    drop(registry);
+    let reopened =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+    assert_eq!(
+        reopened.operation("original-operation").unwrap().state,
+        LeaseOperationStateV1::Prepared
+    );
+}
+
+#[test]
+fn oversized_snapshot_is_rejected_before_reading() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("lease-registry.json");
+    File::create(&path)
+        .unwrap()
+        .set_len(MAX_REGISTRY_BYTES + 1)
+        .unwrap();
+    assert!(matches!(
+        DurableLeaseRegistryV1::open(path),
+        Err(LeaseRegistryErrorV1::CorruptState)
+    ));
+}
+
+#[test]
+fn oversized_commit_preserves_the_reopenable_durable_state() {
+    let (directory, mut registry) = registry();
+    registry
+        .prepare_issue("original-operation".into(), [3; 32])
+        .unwrap();
+    let path = directory.path().join("lease-registry.json");
+    let original = std::fs::read(&path).unwrap();
+    let mut next = registry.state.clone();
+    for number in 0..16_384 {
+        let id = format!("{number:05}{}", "a".repeat(251));
+        next.operations.insert(
+            id.clone(),
+            LeaseOperationV1 {
+                operation_id: id,
+                kind: LeaseOperationKindV1::Issue,
+                semantic_sha256: [3; 32],
+                lease_id: None,
+                state: LeaseOperationStateV1::Prepared,
+            },
+        );
+    }
+    assert_eq!(
+        registry.commit(next),
+        Err(LeaseRegistryErrorV1::CapacityExceeded)
+    );
+    assert_eq!(registry.state.operations.len(), 1);
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert_eq!(
+        DurableLeaseRegistryV1::open(path)
+            .unwrap()
+            .state
+            .operations
+            .len(),
+        1
+    );
+}
 
 fn registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
     let directory = tempfile::tempdir().unwrap();
