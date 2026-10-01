@@ -21,6 +21,7 @@ mod model;
 mod outbox;
 mod pre_dispatch_defer;
 mod reconciliation_cursor;
+mod sqlite;
 
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;

@@ -103,10 +103,13 @@ def validate_declarations():
         )
 
     def test_pending_declaration_is_counted_separately_without_historical_anchor(self):
-        result = self.verify()
-        self.assertEqual(result["trackedSourceDeclarationMaps"], 1)
-        self.assertEqual(result["sourceObservationCount"], 1)
-        self.assertFalse(result["productionImplementationProved"])
+        for profile in ("development", "qualification"):
+            with self.subTest(profile=profile):
+                result = self.verify(profile=profile)
+                self.assertEqual(result["trackedSourceDeclarationMaps"], 1)
+                self.assertEqual(result["sourceObservationCount"], 1)
+                self.assertEqual(result["verificationProfile"], profile)
+                self.assertFalse(result["productionImplementationProved"])
         self.assertNotIn("sourceBase", self.declaration)
 
     def test_adapter_rejects_every_execution_acceptance_and_release_promotion(self):
@@ -115,7 +118,10 @@ def validate_declarations():
                 self.declaration["statusMatrix"][field] = True
                 self.save_declaration()
                 self.commit("hostile promotion")
-                self.reject()
+                for profile in ("development", "qualification"):
+                    with self.subTest(profile=profile):
+                        with self.assertRaises(SystemExit):
+                            self.verify(profile=profile)
                 self.declaration["statusMatrix"][field] = False
 
     def test_adapter_rejects_wrong_head_identity_and_schema_module_substitution(self):

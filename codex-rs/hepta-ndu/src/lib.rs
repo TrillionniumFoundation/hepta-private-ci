@@ -50,7 +50,10 @@ pub use evaluator::canonical_utility_profile_digest;
 // Retain the established compatibility export without letting the legacy
 // wrapper weaken strict lint for product callers. New code uses the policy-bound
 // V2 entry point below.
-#[allow(deprecated)]
+#[allow(
+    deprecated,
+    reason = "retained as an explicit source-compatibility export; product callers use the policy-bound V2 entry"
+)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;

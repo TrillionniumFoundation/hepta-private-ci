@@ -220,15 +220,47 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
 
 
 def verify_source_identity(
-    row: dict, roots: list[str], candidate: dict[str, str], *, check_checkout=True
+    row: dict,
+    roots: list[str],
+    candidate: dict[str, str],
+    *,
+    check_checkout=True,
+    profile: str = "qualification",
 ) -> list[str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
-    source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
+    if profile == "development":
+        # Current source navigation is not a renewal of historical execution
+        # evidence. Retain working-tree path/type checks without rebinding an old
+        # observation after an ordinary implementation or test edit.
+        paths = evidence_paths(row, roots)
+        for key in ("sourceBase", "observedAtHead"):
+            if key not in row and key == "observedAtHead":
+                continue
+            identity = row.get(key)
+            if not isinstance(identity, dict) or any(
+                not isinstance(identity.get(field), str)
+                or re.fullmatch(r"[0-9a-f]{40}", identity[field]) is None
+                for field in ("commit", "tree")
+            ):
+                raise ValueError(
+                    "source identity requires literal commit/tree SHA-1 values"
+                )
+        observed_paths = row.get("observedSourcePaths", [])
+        if not isinstance(observed_paths, list):
+            raise ValueError("invalid observed source paths")
+        for path in observed_paths:
+            if not checked_source_path(ROOT, path).exists():
+                raise ValueError(f"missing observed source/evidence: {path}")
+        paths = sorted(set(paths + observed_paths))
+        return paths
+    if profile != "qualification":
+        raise ValueError("unknown verification profile")
+    source = checked_identity(row.get("sourceBase"), candidate)
     paths = evidence_paths(row, roots)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
@@ -338,7 +370,13 @@ def current_source_objects(row: dict) -> list[dict[str, str]]:
     ]
 
 
-def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> None:
+def validate_path_blob_manifest(
+    row: dict,
+    mid: str,
+    failures: list[str],
+    *,
+    profile: str = "qualification",
+) -> None:
     """Validate a self-reference-safe exact source manifest against HEAD.
 
     Tracked implementation maps cannot contain their own future HEAD/tree
@@ -384,13 +422,14 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
         if not candidate.is_file():
             failures.append(f"{mid}: missing exact source path {path}")
             return
-        try:
-            actual = git("rev-parse", f"HEAD:{path}")
-        except subprocess.CalledProcessError:
-            failures.append(f"{mid}: cannot resolve exact source path {path}")
-            return
-        if actual != blob:
-            failures.append(f"{mid}: exact source blob drift {path}")
+        if profile == "qualification":
+            try:
+                actual = git("rev-parse", f"HEAD:{path}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: cannot resolve exact source path {path}")
+                return
+            if actual != blob:
+                failures.append(f"{mid}: exact source blob drift {path}")
         by_path[path] = blob
 
     mapped_paths = {
@@ -1277,8 +1316,9 @@ def verify(
     require_current_source: bool = True,
     expected_sha: str | None = None,
     expected_tree: str | None = None,
+    profile: str = "qualification",
 ):
-    """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
+    """Validate current navigation or strictly qualify mapped source identity.
 
     Exact-blob maps may retain an immutable provenance anchor only when their
     mapped HEAD blobs and explicit current-source observation both verify. No
@@ -1286,6 +1326,8 @@ def verify(
     """
     candidate = current_source_base()
     try:
+        if profile not in {"development", "qualification"}:
+            raise ValueError("unknown verification profile")
         for value, label in (
             (expected_sha, "expected-sha"),
             (expected_tree, "expected-tree"),
@@ -1302,7 +1344,8 @@ def verify(
             raise ValueError(
                 f"expected candidate tree {expected_tree}, observed {candidate['tree']}"
             )
-        require_clean_candidate(candidate)
+        if profile == "qualification":
+            require_clean_candidate(candidate)
         modules = load("docs/modules/MODULES.json")["modules"]
         if not isinstance(modules, list) or not modules:
             raise ValueError("module registry must be nonempty")
@@ -1357,7 +1400,10 @@ def verify(
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")
             validate_operation_inventory(mid, ops)
-            if row.get("closedWorldPublicFunctions") is True:
+            if (
+                profile == "qualification"
+                and row.get("closedWorldPublicFunctions") is True
+            ):
                 exported = set()
                 for root in resolved:
                     if (checked_source_path(ROOT, root) / "Cargo.toml").is_file():
@@ -1402,13 +1448,19 @@ def verify(
                         raise ValueError(
                             f"invalid exact source blob: {op['operation']}"
                         )
-                    if (
+                    if profile == "qualification" and (
                         git("rev-parse", f"{candidate['commit']}:{source}")
                         != source_blob
                     ):
                         raise ValueError(f"source blob drift: {op['operation']}")
             checked_paths.update(
-                verify_source_identity(row, resolved, candidate, check_checkout=False)
+                verify_source_identity(
+                    row,
+                    resolved,
+                    candidate,
+                    check_checkout=False,
+                    profile=profile,
+                )
             )
             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
             if row["sourceBase"] == candidate:
@@ -1463,15 +1515,39 @@ def verify(
                 == "path_blob_manifest_v1"
             ):
                 manifest_failures = []
-                validate_path_blob_manifest(row, mid, manifest_failures)
+                validate_path_blob_manifest(
+                    row, mid, manifest_failures, profile=profile
+                )
                 if manifest_failures:
                     raise ValueError("; ".join(manifest_failures))
             source_objects = row.get("sourceObjects")
             if source_objects is not None:
-                if not isinstance(source_objects, list) or not source_objects:
+                if (
+                    not isinstance(source_objects, list)
+                    or not source_objects
+                    or any(
+                        not isinstance(entry, dict)
+                        or set(entry) != {"path", "object"}
+                        or not isinstance(entry["path"], str)
+                        or not isinstance(entry["object"], str)
+                        or re.fullmatch(r"[0-9a-f]{40}", entry["object"]) is None
+                        for entry in source_objects
+                    )
+                ):
                     raise ValueError("source objects")
-                if source_objects != current_source_objects(row):
+                if len({entry["path"] for entry in source_objects}) != len(
+                    source_objects
+                ):
+                    raise ValueError("duplicate source object paths")
+                if (
+                    profile == "qualification"
+                    and source_objects != current_source_objects(row)
+                ):
                     raise ValueError("stale source objects")
+                if profile == "development" and {
+                    entry["path"] for entry in source_objects
+                } != set(tracked_source_paths(row)):
+                    raise ValueError("source object path coverage")
             if row.get("productCallerState", "not_composed") != "not_composed":
                 callers = row.get("productCallers")
                 if not isinstance(callers, list) or not callers:
@@ -1510,9 +1586,10 @@ def verify(
         ) as exc:
             failures.append(f"{mid}: {exc}")
     try:
-        # Two global scans, not two scans per module. The documented contract
-        # remains a quiescent checkout, never concurrent build attestation.
-        require_clean_candidate(candidate, sorted(checked_paths))
+        # Qualification requires a quiescent checkout. Development navigation
+        # also works on edits that have not yet been committed.
+        if profile == "qualification":
+            require_clean_candidate(candidate, sorted(checked_paths))
     except (ValueError, subprocess.CalledProcessError) as exc:
         failures.append(str(exc))
     if failures:
@@ -1525,7 +1602,9 @@ def verify(
                 "maps": len(modules),
                 "productionImplementationProved": False,
                 "candidateSource": candidate,
-                "currentSourceIdentityRequired": True,
+                "verificationProfile": profile,
+                "currentSourceIdentityRequired": profile == "qualification",
+                "historicalEvidenceRevalidated": profile == "qualification",
                 "candidateBoundMaps": candidate_bound_maps,
                 "trackedSourceDeclarationMaps": tracked_source_declaration_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
@@ -1564,7 +1643,15 @@ def main():
         "--expected-tree",
         help="Require verify to run at this exact candidate tree.",
     )
+    parser.add_argument(
+        "--profile",
+        choices=["development", "qualification"],
+        default="qualification",
+        help="Development validates current navigation; qualification also revalidates exact source evidence.",
+    )
     args = parser.parse_args()
+    if args.require_current_source and args.profile != "qualification":
+        parser.error("--require-current-source requires the qualification profile")
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
@@ -1581,6 +1668,7 @@ def main():
             "verify": lambda: verify(
                 expected_sha=args.expected_sha,
                 expected_tree=args.expected_tree,
+                profile=args.profile,
             ),
             "sync-plasticity-status": sync_plasticity_status,
         }[args.command]()

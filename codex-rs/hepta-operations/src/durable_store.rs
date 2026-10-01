@@ -12,7 +12,6 @@ use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use codex_state::open_durable_evidence_pool_with_limit;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
@@ -104,13 +103,7 @@ impl DurableOperationStore {
         path: &Path,
         clock: Arc<dyn DurableOperationClock>,
     ) -> Result<Self, DurableOperationError> {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-        }
-        let pool = open_durable_evidence_pool_with_limit(path, 4)
-            .await
-            .map_err(sqlx_error)?;
+        let pool = crate::sqlite::open_durable_pool(path).await?;
         if let Err(error) = verify_quick_check(&pool).await {
             pool.close().await;
             return Err(error);

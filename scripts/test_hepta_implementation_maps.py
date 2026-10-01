@@ -137,10 +137,10 @@ class SourceIdentityTests(unittest.TestCase):
         self.save_maps()
         self.commit("update map")
 
-    def verify(self):
+    def verify(self, **kwargs):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            maps.verify()
+            maps.verify(**kwargs)
         return json.loads(output.getvalue())
 
     def reject(self):

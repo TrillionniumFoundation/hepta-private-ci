@@ -227,8 +227,28 @@ so the mock supplied no version while its admitted binding required
 `test-app-server`. The terminal correctly failed with
 `CorrelationMismatch("app server version")`. This follow-up changes only that
 fixture to `codex/test-app-server` and asserts its parsed handshake version.
-The production correlation check remains intact. The corrected assertion needs
-its own execution record; the previous failed run is not converted into a pass.
+The production correlation check remains intact. The subsequent candidate
+`d6961948cccb9b91d649a04232e9471408de75b3`, tree
+`02380265e96b9b350f0c442c1c3067b7958ccc29`, executed in PR run `36818789033`.
+Both source-head and independent base-merge lanes passed all 63 native tests,
+including all ten new cancellation regressions, and all 220 default Agentd
+tests with one ignored. The actual durable-fence regression also passed.
+The independent merge `a311f0cf9aa4bfcf3e5e1824215ea0417c9ff31c` had the same
+tree as that source; this evidence does not apply to the later main integration.
+
+That run then exposed an E0061 compilation error in the explicitly enabled
+`qualification-legacy-learning-write` fixture: its old `mark_dispatched`
+call omitted the now-required clock argument. No qualification-feature
+assertions ran. The integration repair passes the same fallible wall clock
+used for product admission, retaining the production dispatch-deadline gate.
+It does not restore the legacy no-clock API or enable legacy learning writes
+by default. The repaired feature still requires its own execution record.
+
+Diagnostics run `36818788949` again passed 57 filtered default Agentd tests
+(one ignored, 163 filtered) and compiled all default targets. Strict lint
+still failed at the ten previously identified memory-extension/core sites.
+The readiness projection retained the feature compilation failures and did
+not turn them into qualification success.
 
 Diagnostics run `36795792676` passed 57 default Agentd intelligence-filter
 tests (one ignored, 163 filtered) and compiled all default Agentd targets.
@@ -263,3 +283,30 @@ old-base receipts do not establish that integration. In particular, preserve
 the dedicated intelligence source-declaration adapter and cancellation test
 mappings alongside main's new verification profiles; replacing them with the
 generic map would discard the reviewed source declarations.
+
+The integration worktree now resolves all seven actual merge conflicts with
+that main. It retains the audited owner implementations, transaction-local
+clock reads, immutable learning facts and dedicated pending declaration. The
+main SQLite helper's canonical parent-path handling is retained with the
+operations owner's established four-connection bound, rather than silently
+raising capacity to five. The dependency lockfile includes both sides' actual
+dependencies; offline locked Cargo metadata validation passed.
+
+Current development navigation also exposed two stale aggregate caller paths
+in the NDU and Context module maps. Both now identify the real adapters in
+`intelligence_product_ports.rs`, with source-only caller states and the actual
+split-file blob. Qualification flags, top-level conservative composition
+states and historical observations were not renewed. The utility adapter
+remains policy-bound and read-only; a consumed Context owner attachment is not
+proof of complete authenticated V2 provider ingress.
+
+The fused worktree passed development verification of all 40 module maps and
+the full development document system. Both explicitly decline to revalidate
+historical qualification or prove production implementation. Six source-only
+adapter regressions now exercise both development and qualification profiles,
+including rejection of every execution/acceptance/release promotion. Those
+six tests and all 86 implementation-map regressions passed. Pending fault and
+review declarations and derived-document checks also passed. These were
+pre-commit integration/navigation checks, not native execution receipts for a
+new merged source identity. New exact-head native, full Agentd, qualification
+and lint command records remain required for the integrated candidate.
