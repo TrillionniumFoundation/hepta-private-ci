@@ -57,6 +57,9 @@ pub async fn run(
     let automation_effect_host_file = config
         .automation_effect_host_file()
         .map(std::path::Path::to_path_buf);
+    let secrets_runtime_client_file = config
+        .secrets_runtime_client_file()
+        .map(std::path::Path::to_path_buf);
     let objective_profile_file = config
         .objective_profile_file()
         .map(std::path::Path::to_path_buf);
@@ -274,6 +277,25 @@ pub async fn run(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
+    #[cfg(target_os = "linux")]
+    let secrets_host = if let Some(path) = secrets_runtime_client_file {
+        state.refresh_generation()?;
+        let host = Arc::new(crate::secrets_host::AgentdSecretsHost::open(&state, &path)?);
+        state.refresh_generation()?;
+        state
+            .secrets_host
+            .set(Arc::clone(&host))
+            .map_err(|_| AgentdError::Protocol("secrets runtime client already attached".into()))?;
+        Some(host)
+    } else {
+        None
+    };
+    #[cfg(not(target_os = "linux"))]
+    if secrets_runtime_client_file.is_some() {
+        return Err(AgentdError::Invalid(
+            "protected secrets daemon enrollment requires Linux kernel peers".into(),
+        ));
+    }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
@@ -351,6 +373,10 @@ pub async fn run(
     .await;
     if let Err(error) = startup {
         tasks.shutdown().await;
+        #[cfg(target_os = "linux")]
+        if let Some(host) = secrets_host.as_ref() {
+            host.shutdown().await?;
+        }
         if let Some(host) = neuron_runtime_v2.as_ref()
             && let Err(shutdown_error) = host.shutdown()
         {
@@ -367,6 +393,23 @@ pub async fn run(
             drain_runtime(state).await
         })
         .await;
+    #[cfg(target_os = "linux")]
+    let runtime_result = match (
+        runtime_result,
+        async {
+            match secrets_host.as_ref() {
+                Some(host) => host.shutdown().await,
+                None => Ok(()),
+            }
+        }
+        .await,
+    ) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(error), Err(join_error)) => Err(AgentdError::Protocol(format!(
+            "Agentd failed: {error}; physical secrets worker join failed: {join_error}"
+        ))),
+    };
     let neuron_shutdown = neuron_runtime_v2
         .as_ref()
         .map_or(Ok(()), |host| host.shutdown());

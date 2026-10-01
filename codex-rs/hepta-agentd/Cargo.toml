@@ -26,6 +26,7 @@ server = [
     "dep:codex-hepta-app-bridge",
     "dep:codex-hepta-app-host",
     "dep:codex-hepta-agent-components",
+    "dep:codex-hepta-bao-adapter",
     "dep:codex-model-provider",
     "dep:codex-protocol",
     "dep:codex-utils-absolute-path",
@@ -135,3 +136,6 @@ core_test_support = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+codex-hepta-bao-adapter = { optional = true, path = "../hepta-bao-adapter" }

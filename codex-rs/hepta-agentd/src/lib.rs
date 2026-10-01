@@ -102,6 +102,8 @@ mod retrieval_product_mode;
 mod runtime;
 #[cfg(feature = "server")]
 mod runtime_executable;
+#[cfg(all(feature = "server", target_os = "linux"))]
+mod secrets_host;
 #[cfg(feature = "server")]
 mod self_iteration;
 #[cfg(feature = "server")]
@@ -215,6 +217,7 @@ pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
+pub use codex_hepta_agent_protocol::SecretsOriginalObservation;
 pub use codex_hepta_agent_protocol::SessionIngress;
 pub use codex_hepta_agent_protocol::SessionTransport;
 pub use codex_hepta_agentd_core::AgentdCapabilityPackV1;

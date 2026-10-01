@@ -47,6 +47,11 @@ impl SecretsRuntimeClient {
         runtime_original_id(&config.agent_id, "configuration-validation")?;
         Ok(Self { config })
     }
+    /// Stable daemon coordinate used to retain uncertainty after caller cancellation.
+    pub fn original_operation_id(&self, original: &str) -> Result<String, ConsumerPortError> {
+        runtime_original_id(&self.config.agent_id, original)
+    }
+
     /// A failure after dispatch is Unknown. The caller retains this exact ID
     /// and may only query Status or Recover; this method never retries effects.
     pub fn consume_original(
@@ -54,7 +59,7 @@ impl SecretsRuntimeClient {
         original: &str,
         budget: Duration,
     ) -> Result<SecretsRuntimeResponse, ConsumerPortError> {
-        let original_operation_id = runtime_original_id(&self.config.agent_id, original)?;
+        let original_operation_id = self.original_operation_id(original)?;
         let budget_ms = u64::try_from(budget.as_millis())
             .map_err(|_| ConsumerPortError::Invalid)?
             .min(self.config.operation_timeout_ms);
@@ -80,7 +85,7 @@ impl SecretsRuntimeClient {
             &RuntimeRequest::Status {
                 operation_id: original.to_owned(),
             },
-            &runtime_original_id(&self.config.agent_id, original)?,
+            &self.original_operation_id(original)?,
             self.config.operation_timeout_ms,
         )
     }
@@ -92,7 +97,7 @@ impl SecretsRuntimeClient {
             &RuntimeRequest::Recover {
                 operation_id: original.to_owned(),
             },
-            &runtime_original_id(&self.config.agent_id, original)?,
+            &self.original_operation_id(original)?,
             self.config.operation_timeout_ms,
         )
     }
