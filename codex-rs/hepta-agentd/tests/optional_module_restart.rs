@@ -3,6 +3,11 @@
 //! services represent sibling liveness; these are not forty real Codex sessions.
 //! No provider, physical effect, independent evaluator, cross-schema migration
 //! or deployed-host performance claim is made by this fixture.
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use std::fs::File;
 use std::path::Path;
 use std::process::Child;

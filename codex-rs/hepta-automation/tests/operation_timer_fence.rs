@@ -1,5 +1,10 @@
 //! Every schedule writer, including the kernel.operations destination, must
 //! honor the same durable timer epoch. These tests use real owner SQLite stores.
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationStore;

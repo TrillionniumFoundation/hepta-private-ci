@@ -1,4 +1,9 @@
 //! Qualification-only local keys and actual durable owners; no runtime authority.
+#![allow(
+    clippy::unwrap_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
