@@ -6,10 +6,19 @@
 //! not lock the namespace after verification.
 
 use std::fs::Metadata;
+use std::fs::OpenOptions;
 use std::io;
 use std::os::unix::fs::MetadataExt;
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
+
+/// Keep the open itself finite if a trusted publisher replaces an inspected
+/// entry with a FIFO, and reject a replacement final-component symlink.
+/// Callers must still validate the opened descriptor and retained namespace.
+pub(crate) fn configure_protected_open(options: &mut OpenOptions) {
+    options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
+}
 
 pub(crate) struct OperatorNamespace {
     directories: Vec<(PathBuf, Metadata)>,

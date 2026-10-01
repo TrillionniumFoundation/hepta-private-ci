@@ -2,6 +2,7 @@
 //!
 //! Opening an existing store never follows a final-component symlink or
 //! truncates a file before its descriptor and protected namespace are checked.
+//! Unix opens reject special-file replacements without waiting for FIFO writers.
 //! Unix trusts the directory owner and root, excluding equivalent-UID attackers.
 
 use std::fs;
@@ -57,7 +58,7 @@ impl PromptDirectory {
             let probe = physical.join(super::LOCK_FILE);
             let namespace = crate::operator_namespace::OperatorNamespace::capture(&probe, &before)
                 .map_err(corrupt)?;
-            let handle = File::open(&physical).map_err(unavailable)?;
+            let handle = open_directory_handle(&physical)?;
             let opened = handle.metadata().map_err(unavailable)?;
             validate_directory(&opened)?;
             if !same_directory_identity(&before, &opened) {
@@ -124,8 +125,24 @@ impl PromptDirectory {
             Err(error) => return Err(unavailable(error)),
         };
         validate_file(&before, &self.before)?;
-        let file = File::open(&path).map_err(unavailable)?;
-        self.finish_open(path, file, Some(before)).map(Some)
+        self.open_inspected_existing(path, before).map(Some)
+    }
+
+    fn open_inspected_existing(
+        &self,
+        path: PathBuf,
+        before: Metadata,
+    ) -> Result<PromptFile, AgentdPromptRuntimeError> {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            // The pre-open type check cannot prevent a later FIFO or symlink
+            // replacement; the native open must return before fd/path checks.
+            crate::operator_namespace::configure_protected_open(&mut options);
+        }
+        let file = options.open(&path).map_err(unavailable)?;
+        self.finish_open(path, file, Some(before))
     }
 
     pub(super) fn open_mutable(&self, name: &str) -> Result<PromptFile, AgentdPromptRuntimeError> {
@@ -148,6 +165,7 @@ impl PromptDirectory {
         {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
+            crate::operator_namespace::configure_protected_open(&mut options);
         }
         let file = options.open(&path).map_err(unavailable)?;
         self.finish_open(path, file, before)
@@ -209,6 +227,17 @@ impl PromptDirectory {
             .map_err(|_| AgentdPromptRuntimeError::IndeterminateDurability)?;
         Ok(())
     }
+}
+
+#[cfg(unix)]
+fn open_directory_handle(path: &Path) -> Result<File, AgentdPromptRuntimeError> {
+    use std::os::unix::fs::OpenOptionsExt;
+
+    OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK)
+        .open(path)
+        .map_err(unavailable)
 }
 
 impl PromptFile {

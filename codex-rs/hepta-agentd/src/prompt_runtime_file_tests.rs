@@ -54,6 +54,38 @@ fn target_snapshot(path: &Path) -> (Vec<u8>, u32) {
 }
 
 #[cfg(unix)]
+fn open_fifo_without_waiting(
+    fifo: &Path,
+    opener: impl FnOnce() -> Result<(), AgentdPromptRuntimeError> + Send + 'static,
+) -> Result<(), AgentdPromptRuntimeError> {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    let (sender, receiver) = mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        sender.send(opener()).expect("send guarded open result");
+    });
+    let observed = receiver.recv_timeout(Duration::from_secs(/*secs*/ 2));
+    if observed.is_err() {
+        // Release a regressed blocking reader before reporting its original
+        // timeout, so the negative regression cannot leave a hung worker.
+        let keeper = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+            .open(fifo)
+            .expect("release regressed FIFO reader");
+        receiver
+            .recv_timeout(Duration::from_secs(/*secs*/ 2))
+            .expect("regressed reader finishes after cleanup keeper");
+        drop(keeper);
+    }
+    worker.join().expect("open worker exits");
+    observed.expect("FIFO replacement must not wait for a writer")
+}
+
+#[cfg(unix)]
 #[test]
 fn lock_symlink_rejection_preserves_external_contents_and_permissions() {
     use std::os::unix::fs::symlink;
@@ -192,6 +224,108 @@ fn file_replacement_after_open_is_rejected_before_publication() {
         Err(AgentdPromptRuntimeError::CorruptState)
     );
     assert!(!temporary.path().join(STATE_FILE).exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn inspected_state_fifo_replacement_does_not_wait_for_a_writer() {
+    use std::process::Command;
+
+    let temporary = tempfile::tempdir().expect("private fixture");
+    let directory = PromptDirectory::open(temporary.path()).expect("private runtime directory");
+    let path = directory.path.join(STATE_FILE);
+    let mut source = directory
+        .open_mutable(STATE_FILE)
+        .expect("regular state file");
+    std::io::Write::write_all(&mut source.file, b"original state bytes").expect("state bytes");
+    drop(source);
+    let before = fs::symlink_metadata(&path).expect("inspected state file");
+    validate_file(&before, &directory.before).expect("regular state admission");
+    let retained = directory.path.join("retained-state");
+    fs::rename(&path, &retained).expect("retain original inode after inspection");
+    let retained_before = target_snapshot(&retained);
+    assert!(
+        Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(&path)
+            .status()
+            .expect("POSIX mkfifo")
+            .success()
+    );
+    let fifo = path.clone();
+    let observed = open_fifo_without_waiting(&fifo, move || {
+        directory.open_inspected_existing(path, before).map(|_| ())
+    });
+    assert_eq!(target_snapshot(&retained), retained_before);
+    assert_eq!(observed, Err(AgentdPromptRuntimeError::CorruptState));
+}
+
+#[cfg(unix)]
+#[test]
+fn inspected_directory_fifo_replacement_does_not_wait_for_a_writer() {
+    use std::os::unix::fs::MetadataExt;
+    use std::process::Command;
+
+    let temporary = tempfile::tempdir().expect("private fixture");
+    let directory = PromptDirectory::open(&temporary.path().join("runtime"))
+        .expect("private runtime directory");
+    let physical = directory.path.clone();
+    let before = fs::symlink_metadata(&physical).expect("inspected canonical directory");
+    validate_directory(&before).expect("regular directory admission");
+    let marker = external_target(&physical);
+    let marker_before = target_snapshot(&marker);
+    let retained = temporary.path().join("retained-directory");
+    fs::rename(&physical, &retained).expect("retain inspected directory");
+    assert!(
+        Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(&physical)
+            .status()
+            .expect("POSIX mkfifo")
+            .success()
+    );
+    let fifo = physical.clone();
+    assert_eq!(
+        open_fifo_without_waiting(&fifo, move || open_directory_handle(&physical).map(|_| ())),
+        Err(AgentdPromptRuntimeError::Unavailable)
+    );
+    let after = fs::symlink_metadata(&retained).expect("retained directory metadata");
+    assert_eq!(
+        (after.dev(), after.ino(), after.uid(), after.mode()),
+        (before.dev(), before.ino(), before.uid(), before.mode())
+    );
+    assert_eq!(
+        target_snapshot(&retained.join("outside-owner-state")),
+        marker_before
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn inspected_state_symlink_replacement_is_rejected_without_changing_its_target() {
+    let temporary = tempfile::tempdir().expect("private fixture");
+    let directory = PromptDirectory::open(temporary.path()).expect("private runtime directory");
+    let path = directory.path.join(STATE_FILE);
+    let mut source = directory
+        .open_mutable(STATE_FILE)
+        .expect("regular state file");
+    std::io::Write::write_all(&mut source.file, b"original state bytes").expect("state bytes");
+    drop(source);
+    let before = fs::symlink_metadata(&path).expect("inspected state file");
+    validate_file(&before, &directory.before).expect("regular state admission");
+    let retained = directory.path.join("retained-state");
+    fs::rename(&path, &retained).expect("retain original inode after inspection");
+    let retained_before = target_snapshot(&retained);
+    std::os::unix::fs::symlink(&retained, &path).expect("replace selected leaf with a symlink");
+    assert!(matches!(
+        directory.open_inspected_existing(path.clone(), before),
+        Err(AgentdPromptRuntimeError::Unavailable)
+    ));
+    assert_eq!(target_snapshot(&retained), retained_before);
+    assert_eq!(
+        fs::read_link(path).expect("retained replacement symlink"),
+        retained
+    );
 }
 
 #[test]
