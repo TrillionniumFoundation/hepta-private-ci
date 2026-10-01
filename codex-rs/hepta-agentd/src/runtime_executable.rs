@@ -43,7 +43,10 @@ impl RuntimeExecutableIdentity {
             .get_or_init(|| observe_current_image().map_err(|error| error.kind()))
             .as_ref()
             .map_err(|kind| {
-                AgentdError::Io(io::Error::new(*kind, "runtime executable observation failed"))
+                AgentdError::Io(io::Error::new(
+                    *kind,
+                    "runtime executable observation failed",
+                ))
             })
     }
 
