@@ -79,6 +79,21 @@ remain readable subject to content and identity validation. A trusted principal
 can still add a link after validation; these checks do not create domain
 authority or an OS-wide ownership guarantee.
 
+The Windows utility defines that identity as the process primary token's
+`TokenUser`, read by `current_user_sid()` through `OpenProcessToken`.
+Creation relies on the OS default owner. Microsoft's
+[Owner of a New Object](https://learn.microsoft.com/en-us/windows/win32/secauthz/owner-of-a-new-object)
+contract derives new-object ownership from the creating primary or impersonation
+token's `TokenOwner`; [TOKEN_OWNER](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_owner)
+can name a legal user or group SID. A different default owner can therefore
+create an object that strict subsequent owner verification rejects. The current
+support and qualification precondition is default-owner SID equal to primary
+`TokenUser`, with no thread impersonation. This is a conditional fail-closed
+availability limitation, not an observed exploit or a claim that elevation
+always fails. Physical Windows ordinary, elevated, owner-mismatch and
+impersonation cases remain unqualified; satisfying the precondition alone does
+not establish platform acceptance.
+
 `journal.rs` owns the active operation state machine and exact
 `HashMap<OperationKey, usize>` lookup. `journal_storage.rs` owns snapshots and
 framed WAL persistence. `retirement.rs` owns immutable segments, archived

@@ -241,6 +241,23 @@ PR #1308 的首次远端入口观测还发现 job.env 的 runner 上下文非法
 runner 初始化步骤使用 RUNNER_TEMP 并写入 GITHUB_ENV；不能将修复或队列状态
 表述为七主体 CI 已通过。
 
+最终源码的编译隔离检查在干净 review head
+`7237eca7ba4139d64138e1511afbdb45a507d0ad` 实际重跑，三项外部 crate
+均观察到预期 E0603。夹具从最终应用锁
+`612e3139224be6d1f36dab01850ee048bd7ec9e405dbbd8a556096dc17d3e701`
+归一化，逐项核对依赖身份、checksum 和边，随后执行 offline/locked 编译。
+相同 head 的新建 detached worktree 全局文档验证仍有上述 39 个非本模块
+provenance 失败，ui.native 适配通过；不是全局验证成功。原生远端 run
+36795845661 已接受并排队，尚无七主体成功证据。
+
+Windows 最终只读审查还确认一个条件性可用性限制：新对象的缺省 owner
+取 effective token 的默认 owner，而验证要求 primary TokenUser；合法组默认
+owner 或线程 impersonation 可能导致新对象随后被拒绝。现有实现要求默认
+owner 与用户 SID 一致且无线程 impersonation。它保持安全拒绝，没有观察到
+授权绕过，也不能据此宣称所有管理员提升场景必然失败。真实 Windows 上的
+普通用户、提升用户及 owner 不一致场景仍需验收；不能通过放宽 owner 验证、
+接纳 owner group 或自动修改已有对象 owner 来消除此限制。
+
 所有 productionQualified/deploymentQualified/releaseAuthorized 保持 false。
 本轮停止条件是复现问题均有对应修复与回归，复审未发现新的同范围可执行
 修复项；这不构成对所有未来缺陷或生产完成度的证明。明确保留以下验收工作：

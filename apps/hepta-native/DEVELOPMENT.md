@@ -154,6 +154,21 @@ the actual opened child's owner and ACL. The shared utility's read/write
 An admission check cannot prevent a trusted principal from adding a later
 hardlink. Preserve target-OS root replacement, ACL drift and alias regressions.
 
+On Windows, `current_user_sid()` identifies the process primary token's
+`TokenUser`; it does not resolve a thread impersonation token or the effective
+default owner. The OS uses the creating primary/impersonation token's default
+`TokenOwner` for new objects, and a legal group SID may be that owner; see
+[Owner of a New Object](https://learn.microsoft.com/en-us/windows/win32/secauthz/owner-of-a-new-object)
+and [TOKEN_OWNER](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_owner).
+If that SID differs, creation may succeed and subsequent strict verification
+reject it. The current support and qualification precondition is default-owner
+SID equal to primary `TokenUser`, with no thread impersonation. Treat other
+contexts as an unqualified, conditional fail-closed availability boundary,
+without inferring an exploit or universal administrator failure. Physical
+ordinary/elevated, owner-mismatch and impersonation tests remain pending.
+Keep exact owner checks; do not admit owner groups or rewrite existing owners
+to make qualification pass.
+
 ## Linux picker and verified resource handoff
 
 Linux file selection defaults to XDG Desktop Portal. The selected URI is bounded
