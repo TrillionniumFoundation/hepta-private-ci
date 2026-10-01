@@ -69,6 +69,9 @@ pub struct SelfIterationHostConfigV1 {
     pub calibration_reference_batch: Option<CalibrationReferenceBatchConfigV1>,
     #[serde(default)]
     pub rejected_calibration_feedback: Option<RejectedCalibrationFeedbackConfigV1>,
+    #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+    #[serde(default)]
+    pub cpu_neuron: Option<crate::initial_cpu_anchor::InstalledCpuSourceV1>,
 }
 
 pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
@@ -97,6 +100,32 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
         DurableInferenceControl::open(&installed.native_journal, installed.native_record_capacity)
             .map_err(|error| invalid(error.to_string()))?;
     let control = Arc::new(tokio::sync::Mutex::new(control));
+    let cpu_status = serde_json::json!({"state":"disabled", "actual_neuron_tick":false});
+    #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+    let (config, cpu_status) = if let Some(source) = installed.cpu_neuron.as_ref() {
+        match crate::initial_cpu_anchor::InstalledCpuComposition::prepare(
+            source,
+            &identity,
+            &installed.final_use_authority_config,
+            control.clone(),
+        ) {
+            Ok(cpu) => (
+                cpu.attach(config)?,
+                serde_json::json!({
+                    "state":"attached_pending_first_tick", "actual_neuron_tick":false,
+                }),
+            ),
+            Err(error) => (
+                config,
+                serde_json::json!({
+                    "state":"pending_current_cpu_inputs", "actual_neuron_tick":false,
+                    "diagnostic":error.to_string().chars().take(2048).collect::<String>(),
+                }),
+            ),
+        }
+    } else {
+        (config, cpu_status)
+    };
     config.with_self_iteration_model_owner(move |cancellation| async move {
         let mut model = AppServerSelfIterationModelPortV1::new_shared(
             driver,
@@ -105,7 +134,15 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
             cancellation.clone(),
         )
         .map_err(|error| invalid(error.to_string()))?;
-        run_model_owner(&mut model, installed, identity, pin, cancellation).await
+        run_model_owner(
+            &mut model,
+            installed,
+            identity,
+            pin,
+            cpu_status,
+            cancellation,
+        )
+        .await
     })
 }
 
@@ -233,6 +270,7 @@ async fn run_model_owner(
     installed: SelfIterationHostConfigV1,
     identity: AgentdIdentity,
     host_pin: Digest32,
+    cpu_status: serde_json::Value,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     let mut interval = tokio::time::interval(Duration::from_secs(60));
@@ -254,6 +292,7 @@ async fn run_model_owner(
         "state": "pending_inputs",
         "generation_ready": false,
         "authority_grants": false,
+        "cpu_neuron": cpu_status,
     });
     loop {
         tokio::select! { _ = cancellation.cancelled() => return Ok(()), _ = interval.tick() => {} }
