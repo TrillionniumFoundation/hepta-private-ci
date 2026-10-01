@@ -282,16 +282,32 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
             learning.clone(),
         )
         .expect("other host with same identity, generation and trust");
-        assert!(matches!(
-            other.commit_v4(
+        let rejected = other
+            .commit_v4(
                 &agent_id,
                 SPAWN_GENERATION,
                 prepared.clone(),
                 Digest32::ZERO,
                 Some(decision_evidence.clone()),
-            ),
-            Err(AgentdIntuitionPolicyError::PreparedProfileMismatch)
-        ));
+            )
+            .err()
+            .expect("every changed host pin must reject before append");
+        // Final-use checks report the concrete pin mismatch before the complete
+        // host binding check. A deterministic assignment does not consume an RNG
+        // owner, but even that pin remains bound to the prepared host identity.
+        let expected = match field {
+            0 => AgentdIntuitionPolicyError::ProfilePinMismatch,
+            1 | 2 => AgentdIntuitionPolicyError::PolicyPinMismatch,
+            3 => AgentdIntuitionPolicyError::ObjectiveClassPinMismatch,
+            4 => AgentdIntuitionPolicyError::ModelPinMismatch,
+            5 => AgentdIntuitionPolicyError::ScorerPinMismatch,
+            6 => AgentdIntuitionPolicyError::CalibrationPinMismatch,
+            7 => AgentdIntuitionPolicyError::OodPinMismatch,
+            8 => AgentdIntuitionPolicyError::RiskRulePinMismatch,
+            9 => AgentdIntuitionPolicyError::PreparedProfileMismatch,
+            _ => unreachable!(),
+        };
+        assert_eq!(rejected.code(), expected.code(), "changed host pin {field}");
     }
     clock.set(NOW - 1);
     assert!(matches!(
@@ -615,6 +631,7 @@ fn final_use_revalidates_scheduled_signer_revocation_and_distribution_expiry() {
         let parent = File::open(directory.path()).expect("parent");
         let writer = LedgerWriter::from_durable(ledger, witness, activated, &parent, &parent)
             .expect("writer");
+        let initial_frontier = writer.witness_frontier().expect("initial witness frontier");
         let clock = Arc::new(TestIntuitionClock::new(NOW));
         let learning = Arc::new(IntuitionPolicyLearningSink::new_with_clock(
             writer,
@@ -694,6 +711,8 @@ fn final_use_revalidates_scheduled_signer_revocation_and_distribution_expiry() {
                 .expect("payload")
                 .expect("selected"),
         );
+        let ledger_before = std::fs::read(&ledger_path).expect("ledger before rejection");
+        let witness_before = std::fs::read(&witness_path).expect("witness before rejection");
         clock.set(176);
         let rejected = host.commit_v4(
             &agent_id,
@@ -720,14 +739,31 @@ fn final_use_revalidates_scheduled_signer_revocation_and_distribution_expiry() {
         }
         drop(host);
         drop(learning);
+        assert_eq!(
+            std::fs::read(&ledger_path).expect("ledger after rejection"),
+            ledger_before,
+            "rejected qualification must not mutate the durable ledger"
+        );
+        assert_eq!(
+            std::fs::read(&witness_path).expect("witness after rejection"),
+            witness_before,
+            "rejected qualification must not advance the independent witness"
+        );
+        let witness = LedgerWitnessStore::recover(open_rw(&witness_path), binding)
+            .expect("recover the actual independent witness");
+        assert_eq!(
+            witness.frontier().expect("recovered witness frontier"),
+            initial_frontier
+        );
+        assert_eq!(initial_frontier.anchor.sequence, 0);
+        // An empty witness has acknowledged no record: sequence zero is not a
+        // valid Acknowledged anchor. Recover using that explicit empty history,
+        // after comparing both files with their pre-admission bytes above.
         let recovered = DurableLedger::recover(
             open_rw(&ledger_path),
             binding,
             64,
-            LedgerRecovery::Acknowledged(LedgerAnchor {
-                sequence: 0,
-                chain_digest: Digest32::ZERO,
-            }),
+            LedgerRecovery::Unacknowledged,
         )
         .expect("unchanged durable ledger");
         assert!(recovered.records().expect("records").is_empty());
