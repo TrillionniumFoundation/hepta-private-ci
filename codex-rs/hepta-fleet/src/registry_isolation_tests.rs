@@ -66,6 +66,52 @@ fn local_read_observes_a_new_generation_without_cached_authority() {
 }
 
 #[test]
+fn historical_starting_read_requires_the_complete_exact_agent_history() {
+    let (_temp, registry, record) = fixture();
+    let id = &record.manifest.agent_id;
+    for (generation, lifecycle) in [
+        (0, AgentLifecycle::Starting),
+        (1, AgentLifecycle::Failed),
+        (2, AgentLifecycle::Stopped),
+        (3, AgentLifecycle::Starting),
+    ] {
+        registry
+            .compare_and_transition(id, generation, lifecycle)
+            .expect("real lifecycle transition");
+    }
+    let prior = registry
+        .load_agent_lifecycle_generation(id, 1)
+        .expect("original Starting event");
+    assert_eq!(prior.lifecycle, AgentLifecycle::Starting);
+    assert_eq!(prior.generation, 1);
+    assert_eq!(
+        registry
+            .load_agent(id)
+            .expect("current owner")
+            .lifecycle
+            .generation,
+        4
+    );
+    assert_eq!(
+        registry
+            .load_agent_lifecycle_generation(id, 3)
+            .expect("historical Stopped")
+            .lifecycle,
+        AgentLifecycle::Stopped
+    );
+    assert!(registry.load_agent_lifecycle_generation(id, 5).is_err());
+    // A real-looking older event from another Agent cannot become a restart
+    // grant merely because the current event and requested index still exist.
+    let path = lifecycle_path(record.layout.owner_run_root(), 1);
+    let mut unrelated = prior;
+    unrelated.agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other id");
+    fs::write(path, serde_json::to_vec(&unrelated).expect("fixture event"))
+        .expect("fixture corruption");
+    assert!(registry.load_agent_lifecycle_generation(id, 1).is_err());
+    assert!(registry.load_agent(id).is_err());
+}
+
+#[test]
 fn local_read_still_rejects_its_own_corrupt_lifecycle_and_missing_manifest() {
     let (_temp, registry, record) = fixture();
     let path = lifecycle_path(record.layout.owner_run_root(), /*generation*/ 0);
