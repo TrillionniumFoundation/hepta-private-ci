@@ -34,6 +34,7 @@ mod recovery;
 mod recovery_diagnostics;
 mod recovery_observation;
 mod release;
+mod release_completion;
 mod release_transaction;
 mod restart_budget;
 mod restart_journal;

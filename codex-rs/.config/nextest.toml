@@ -204,3 +204,13 @@ filter = 'package(codex-hepta-learning-artifacts) & test(owner_host_process_kill
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 10 }
 retries = 0
+
+# Each release publication experiment opens three or four independent durable
+# fleets and drives a full upgrade at every physical writer cut. The observed
+# single cut takes 21-25 seconds on the native shared disk; this bounds the
+# aggregate harness only, preserving every original lifecycle deadline.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & (test(release_publication_retry_tests::terminal_release_journal_failure_retries_without_duplicate_commit_or_spawn) | test(release_publication_retry_tests::signed_receipt_failure_retries_after_terminal_release_journal))'
+test-group = 'hepta_product_lifecycle'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0

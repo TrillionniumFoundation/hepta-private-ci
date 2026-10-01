@@ -130,6 +130,8 @@ pub(crate) struct ReleaseChange {
     pub prior_previous: Option<AgentRelease>,
     pub phase: ReleaseChangePhase,
     pub explicit_rollback: bool,
+    /// Exact health observed by this owner while outcome publication is pending.
+    pub healthy_generation: Option<u64>,
 }
 
 pub(crate) struct BoundedQueue<T> {

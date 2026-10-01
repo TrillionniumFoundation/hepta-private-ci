@@ -2349,3 +2349,6 @@ mod metadata_tests;
 
 #[path = "catalog_final_use_tests.rs"]
 mod catalog_final_use_tests;
+
+#[path = "release_publication_retry_tests.rs"]
+mod release_publication_retry_tests;

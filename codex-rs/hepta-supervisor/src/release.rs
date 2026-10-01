@@ -306,6 +306,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             prior_previous,
             phase: ReleaseChangePhase::WaitingForTargetExit,
             explicit_rollback,
+            healthy_generation: None,
         });
         if let Err(error) = self.drain_slot(agent_id, slot, now) {
             let _ = self.enter_unsigned_release_recovery(agent_id, slot);
@@ -333,98 +334,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
-    pub(crate) fn release_became_healthy(
-        &mut self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        generation: u64,
-    ) -> Result<(), SupervisorError> {
-        let mut terminal_transaction_phase = None;
-        if let Some(change) = slot.release_change.take() {
-            match change.phase {
-                ReleaseChangePhase::TargetStarting => {
-                    slot.previous_release = Some(change.origin.clone());
-                    terminal_transaction_phase = Some(if change.explicit_rollback {
-                        ReleaseTransactionPhase::RolledBack
-                    } else {
-                        ReleaseTransactionPhase::Committed
-                    });
-                    let kind = if change.explicit_rollback {
-                        SupervisorEventKind::ExplicitRollbackCommitted {
-                            previous: change.origin.identity().to_string(),
-                            target: change.target.identity().to_string(),
-                        }
-                    } else {
-                        SupervisorEventKind::UpgradeCommitted {
-                            previous: change.origin.identity().to_string(),
-                            target: change.target.identity().to_string(),
-                        }
-                    };
-                    slot.event(generation, kind);
-                }
-                ReleaseChangePhase::AutomaticRollbackStarting => {
-                    slot.previous_release = change.prior_previous;
-                    terminal_transaction_phase = Some(ReleaseTransactionPhase::RolledBack);
-                    slot.event(
-                        generation,
-                        SupervisorEventKind::AutomaticRollbackCommitted {
-                            failed: change.target.identity().to_string(),
-                            restored: change.origin.identity().to_string(),
-                        },
-                    );
-                }
-                ReleaseChangePhase::WaitingForTargetExit => {
-                    slot.release_change = Some(change);
-                }
-            }
-        }
-        self.persist_release_state(agent_id, slot)?;
-        if let Some(phase) = terminal_transaction_phase {
-            self.advance_release_transaction(agent_id, slot, phase)?;
-        }
-        self.commit_signed_intent_if_target(agent_id, slot)
-    }
-
-    pub(crate) fn persist_release_state(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-    ) -> Result<(), SupervisorError> {
-        let current = slot
-            .active_release
-            .as_ref()
-            .map(|release| release.release_id().clone());
-        let previous = slot
-            .previous_release
-            .as_ref()
-            .map(|release| release.release_id().clone());
-        if current
-            .as_ref()
-            .is_some_and(|release| release.as_str() == "unversioned")
-        {
-            return Ok(());
-        }
-        let actual = self.record(agent_id)?.release_state;
-        slot.release_state_generation = actual.generation;
-        if actual.current == current && actual.previous == previous {
-            return Ok(());
-        }
-        let next = self.registry.compare_and_set_release_state(
-            agent_id,
-            actual.generation,
-            current,
-            previous,
-        )?;
-        slot.release_state_generation = next.generation;
-        Ok(())
-    }
-
     pub(crate) fn continue_release_change_after_exit(
         &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<bool, SupervisorError> {
+        if let Some(generation) = slot
+            .release_change
+            .as_ref()
+            .and_then(|change| change.healthy_generation)
+        {
+            // Exact health was observed before an outcome writer failed.
+            // Exit cannot reinterpret that same-owner observation as a failed launch.
+            self.release_became_healthy(agent_id, slot, generation)?;
+            return Ok(true);
+        }
         let Some(mut change) = slot.release_change.take() else {
             return Ok(false);
         };
@@ -587,6 +512,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     prior_previous,
                     phase: ReleaseChangePhase::WaitingForTargetExit,
                     explicit_rollback,
+                    healthy_generation: None,
                 });
                 match record.lifecycle.lifecycle {
                     AgentLifecycle::Running => {
@@ -611,6 +537,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     prior_previous,
                     phase: ReleaseChangePhase::TargetStarting,
                     explicit_rollback,
+                    healthy_generation: None,
                 });
                 if slot.runtime.is_none() {
                     let _ = self.start_automatic_rollback(agent_id, slot, now)?;
@@ -623,6 +550,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     prior_previous,
                     phase: ReleaseChangePhase::AutomaticRollbackStarting,
                     explicit_rollback,
+                    healthy_generation: None,
                 });
                 if slot.runtime.is_none()
                     && matches!(

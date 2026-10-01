@@ -76,6 +76,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         // cleanup. Preserve the pending durable attempt for explicit recovery.
         if slot.runtime.is_none() {
             slot.pending_control = None;
+            if slot
+                .release_change
+                .as_ref()
+                .is_some_and(|change| change.healthy_generation.is_some())
+            {
+                // An exit-time ACK can fail after exact ownership is finalized.
+                // Retain and finish the same outcome on a later empty-runtime tick.
+                let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+            }
         }
         if slot.runtime.is_none()
             && slot.release_change.is_none()
