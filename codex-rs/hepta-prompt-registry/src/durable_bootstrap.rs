@@ -13,6 +13,7 @@ use std::path::Path;
 use super::Access;
 use super::DurableRegistryError;
 use super::MAX_STATE_BYTES;
+use super::OpenPolicy;
 use super::Store;
 use super::StoredAny;
 use super::StoredV4;
@@ -21,6 +22,7 @@ use super::map_precommit_io;
 use super::open_private;
 use super::payloads;
 use super::prepare_directory;
+use super::prepare_directory_with_policy;
 use crate::PromptRegistry;
 
 #[derive(Deserialize)]
@@ -33,13 +35,28 @@ impl Store {
         directory: &Path,
         maximum_records: usize,
     ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
-        let root = prepare_directory(directory)?;
+        Self::open_with_policy(directory, maximum_records, OpenPolicy::BootstrapAllowed)
+    }
+
+    pub(super) fn open_with_policy(
+        directory: &Path,
+        maximum_records: usize,
+        policy: OpenPolicy,
+    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
+        let root = match policy {
+            OpenPolicy::BootstrapAllowed => prepare_directory(directory)?,
+            OpenPolicy::ExistingStateRequired => prepare_directory_with_policy(directory, policy)?,
+        };
         // Serialize bootstrap before a marker exists. Otherwise another opener
         // could acquire the new marker between its creation and file locking,
         // strand the creator, and leave an apparently initialized empty store.
         // The descriptor retains this lock for the owner's complete lifetime.
         root.try_lock()
             .map_err(|_| DurableRegistryError::StateLocked)?;
+        let has_state = entry_exists(&root, "registry.json")?;
+        if policy == OpenPolicy::ExistingStateRequired && !has_state {
+            return Err(DurableRegistryError::RecoveryStateMissing);
+        }
         let (lock, new_owner_marker) = match open_private(&root, "registry.lock", Access::CreateNew)
         {
             Ok(lock) => (lock, true),
@@ -72,7 +89,6 @@ impl Store {
             #[cfg(test)]
             fail_storage_full_before_rename_once: Cell::new(false),
         };
-        let has_state = entry_exists(&store.root, "registry.json")?;
         if !has_state {
             if !store.new_owner_marker {
                 return Err(DurableRegistryError::Corrupt);

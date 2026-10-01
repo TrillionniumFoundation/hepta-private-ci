@@ -67,6 +67,18 @@ mod bootstrap;
 #[path = "durable_lifecycle_validation.rs"]
 mod lifecycle_validation;
 
+#[path = "durable_directory.rs"]
+mod directory;
+use directory::open_private;
+use directory::prepare_directory;
+#[cfg(all(test, unix))]
+use directory::prepare_directory_with_parent_sync;
+use directory::prepare_directory_with_policy;
+
+#[path = "durable_recovery.rs"]
+mod recovery;
+pub use recovery::PromptRegistryRecoveryAnchor;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -89,6 +101,9 @@ impl fmt::Debug for DurablePromptRegistry {
 }
 
 impl DurablePromptRegistry {
+    /// Bootstrap or reopen internally validated state. This path cannot detect
+    /// a self-consistent old backup; use the independently anchored recovery
+    /// path when the host has authenticated and retained the exact current cut.
     pub fn open_state_dir(
         directory: &Path,
         maximum_records: usize,
@@ -1318,6 +1333,12 @@ enum StoredAny {
     V4(StoredV2, Vec<relations::StoredRelation>),
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OpenPolicy {
+    BootstrapAllowed,
+    ExistingStateRequired,
+}
+
 struct Store {
     root: File,
     _lock: File,
@@ -1376,101 +1397,6 @@ enum Access {
 }
 
 #[cfg(unix)]
-fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
-    use std::os::unix::fs::DirBuilderExt;
-    use std::os::unix::fs::MetadataExt;
-
-    let created = match std::fs::DirBuilder::new().mode(0o700).create(root) {
-        Ok(()) => true,
-        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => false,
-        Err(_) => return Err(DurableRegistryError::Unavailable),
-    };
-    let directory: File = rustix::fs::open(
-        root,
-        rustix::fs::OFlags::RDONLY
-            | rustix::fs::OFlags::DIRECTORY
-            | rustix::fs::OFlags::NOFOLLOW
-            | rustix::fs::OFlags::CLOEXEC,
-        rustix::fs::Mode::empty(),
-    )
-    .map_err(|_| DurableRegistryError::UnsafeStateDirectory)?
-    .into();
-    let metadata = directory
-        .metadata()
-        .map_err(|_| DurableRegistryError::Unavailable)?;
-    if !metadata.is_dir()
-        || metadata.mode() & 0o077 != 0
-        || metadata.uid() != rustix::process::geteuid().as_raw()
-    {
-        return Err(DurableRegistryError::UnsafeStateDirectory);
-    }
-    if created {
-        // Syncing files and the owner directory cannot make a new directory's
-        // name durable in its parent. Fence that first-publication boundary too.
-        let parent = root
-            .parent()
-            .filter(|parent| !parent.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        File::open(parent)
-            .and_then(|parent| parent.sync_all())
-            .map_err(map_precommit_io)?;
-    }
-    Ok(directory)
-}
-
-#[cfg(unix)]
-fn open_private(
-    directory: &File,
-    name: &str,
-    access: Access,
-) -> Result<File, DurableRegistryError> {
-    use std::os::unix::fs::MetadataExt;
-
-    let flags = match access {
-        Access::Read => rustix::fs::OFlags::RDONLY,
-        Access::Create => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
-        Access::CreateNew => {
-            rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::EXCL
-        }
-    } | rustix::fs::OFlags::NOFOLLOW
-        | rustix::fs::OFlags::NONBLOCK
-        | rustix::fs::OFlags::CLOEXEC;
-    let file: File = rustix::fs::openat(
-        directory,
-        name,
-        flags,
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-    )
-    .map_err(|_| DurableRegistryError::Unavailable)?
-    .into();
-    let metadata = file
-        .metadata()
-        .map_err(|_| DurableRegistryError::Unavailable)?;
-    if !metadata.is_file()
-        || metadata.mode() & 0o077 != 0
-        || metadata.nlink() != 1
-        || metadata.uid() != rustix::process::geteuid().as_raw()
-    {
-        return Err(DurableRegistryError::UnsafeStateDirectory);
-    }
-    Ok(file)
-}
-
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
-    Err(DurableRegistryError::UnsafeStateDirectory)
-}
-
-#[cfg(not(unix))]
-fn open_private(
-    _directory: &File,
-    _name: &str,
-    _access: Access,
-) -> Result<File, DurableRegistryError> {
-    Err(DurableRegistryError::UnsafeStateDirectory)
-}
-
-#[cfg(unix)]
 fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryError> {
     match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
         Ok(_) => Ok(true),
@@ -1515,6 +1441,12 @@ pub enum DurableRegistryError {
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,
+    /// The independent exact-cut witness has an invalid shape.
+    InvalidRecoveryAnchor,
+    /// Selected state differs from the independently authenticated cut.
+    RecoveryAnchorMismatch,
+    /// Anchored recovery never bootstraps an absent owner or selected state.
+    RecoveryStateMissing,
     /// Rename may have succeeded but directory fsync failed; disk state is
     /// unknown and the current writer is poisoned until reopened.
     IndeterminateDurability,

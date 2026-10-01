@@ -44,6 +44,38 @@ fn relation() -> PromptFactorRelation {
 }
 
 #[test]
+fn independently_anchored_v4_recovery_retains_revoked_relation_history() {
+    let temp = tempfile::tempdir().must("temporary directory");
+    let root = temp.path().join("registry");
+    let mut owner = DurablePromptRegistry::open_state_dir(&root, 64).must("owner");
+    seed(&mut owner);
+    owner.register_factor_relation(relation()).must("relation");
+    let prior = owner.recovery_anchor().must("retained prior cut");
+    owner
+        .revoke_factor(&id("factor:b"), &id("revoker:storage"), digest("reason"), 1)
+        .must("fixture revocation");
+    let current = owner.recovery_anchor().must("independent current cut");
+    let expected = owner.registry().must("registry").clone();
+    assert_ne!(current, prior);
+    drop(owner);
+    let manifest = std::fs::read(root.join("registry.json")).must("selected image");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir_with_recovery_anchor(&root, 64, &prior),
+        Err(DurableRegistryError::RecoveryAnchorMismatch)
+    ));
+    assert_eq!(
+        std::fs::read(root.join("registry.json")).must("unchanged image"),
+        manifest
+    );
+    let recovered = DurablePromptRegistry::open_state_dir_with_recovery_anchor(&root, 64, &current)
+        .must("current V4 recovery");
+    assert_eq!(recovered.registry().must("registry"), &expected);
+    assert_eq!(recovered.recovery_anchor().must("current cut"), current);
+    assert_eq!(expected.relations.len(), 1);
+    assert!(expected.factor_graph_source_v1().relations().is_empty());
+}
+
+#[test]
 fn relation_snapshot_reopens_and_retains_revoked_history_without_projecting_it() {
     let temp = tempfile::tempdir().must("temporary directory");
     let root = temp.path().join("registry");
