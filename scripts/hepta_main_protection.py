@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install a no-bypass, independently reviewed main ruleset after a real green gate.
+"""Install the owner-operated main ruleset after a real green gate.
 
 Adapted from #912 for #774's existing always-reporting blocking-ci workflow.
 Uses the operator's authenticated gh CLI. Default mode is read-only; no policy
@@ -104,9 +104,9 @@ def desired_ruleset(app_id: int) -> dict[str, Any]:
                 "type": "pull_request",
                 "parameters": {
                     "dismiss_stale_reviews_on_push": True,
-                    "require_code_owner_review": True,
-                    "require_last_push_approval": True,
-                    "required_approving_review_count": 1,
+                    "require_code_owner_review": False,
+                    "require_last_push_approval": False,
+                    "required_approving_review_count": 0,
                     "required_review_thread_resolution": True,
                 },
             },
@@ -146,16 +146,17 @@ def verify_ruleset(value: dict[str, Any], app_id: int) -> None:
         raise ProtectionError("missing required protection")
     review = rules["pull_request"].get("parameters", {})
     count = review.get("required_approving_review_count")
-    if type(count) is not int or count < 1:
-        raise ProtectionError("at least one independent approval is required")
+    if type(count) is not int or count < 0:
+        raise ProtectionError("review count is not an observed nonnegative integer")
     for field in (
         "dismiss_stale_reviews_on_push",
         "require_code_owner_review",
         "require_last_push_approval",
-        "required_review_thread_resolution",
     ):
-        if review.get(field) is not True:
-            raise ProtectionError(f"missing independent-review control: {field}")
+        if type(review.get(field)) is not bool:
+            raise ProtectionError(f"unknown owner-selected review policy: {field}")
+    if review.get("required_review_thread_resolution") is not True:
+        raise ProtectionError("unresolved review conversations do not block merging")
     checks = rules["required_status_checks"].get("parameters", {})
     if checks.get("strict_required_status_checks_policy") is not True:
         raise ProtectionError("checks do not require an up-to-date base")

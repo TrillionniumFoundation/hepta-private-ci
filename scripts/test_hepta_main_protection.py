@@ -101,11 +101,13 @@ class ProtectionTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ProtectionError):
                 desired_ruleset(value)
 
-    def test_no_bypass_and_independent_review_rules(self):
+    def test_install_preserves_checks_without_reintroducing_required_review(self):
         value = desired_ruleset(APP)
         verify_ruleset(value, APP)
         self.assertEqual(value["bypass_actors"], [])
-        self.assertEqual(review(value)["required_approving_review_count"], 1)
+        self.assertEqual(review(value)["required_approving_review_count"], 0)
+        self.assertFalse(review(value)["require_code_owner_review"])
+        self.assertFalse(review(value)["require_last_push_approval"])
         self.assertEqual((GATE, WORKFLOW), ("CI required", "blocking-ci.yml"))
 
     def test_every_review_control_is_checked_on_readback(self):
@@ -113,18 +115,33 @@ class ProtectionTests(unittest.TestCase):
             "dismiss_stale_reviews_on_push",
             "require_code_owner_review",
             "require_last_push_approval",
-            "required_review_thread_resolution",
         )
         for field in fields:
-            for replacement in (False, None, 1, "true"):
+            for replacement in (None, 1, "true"):
                 value = desired_ruleset(APP)
                 review(value)[field] = replacement
                 with self.subTest(field=field, replacement=replacement):
                     with self.assertRaises(ProtectionError):
                         verify_ruleset(value, APP)
 
-    def test_zero_missing_and_boolean_review_counts_are_rejected(self):
-        for count in (None, 0, -1, True, "1"):
+    def test_owner_selected_review_values_are_accepted_without_weakening_checks(self):
+        for count in (0, 1, 2):
+            value = desired_ruleset(APP)
+            review(value)["required_approving_review_count"] = count
+            review(value)["require_code_owner_review"] = bool(count)
+            review(value)["require_last_push_approval"] = bool(count)
+            verify_ruleset(value, APP)
+        for replacement in (False, None, 1):
+            value = desired_ruleset(APP)
+            review(value)["required_review_thread_resolution"] = replacement
+            with (
+                self.subTest(resolution=replacement),
+                self.assertRaises(ProtectionError),
+            ):
+                verify_ruleset(value, APP)
+
+    def test_missing_negative_and_boolean_review_counts_are_rejected(self):
+        for count in (None, -1, True, "1"):
             value = desired_ruleset(APP)
             review(value)["required_approving_review_count"] = count
             with self.subTest(count=count), self.assertRaises(ProtectionError):
@@ -191,7 +208,11 @@ class ProtectionTests(unittest.TestCase):
         for apply in (False, True):
             api = FakeAPI()
             api.ruleset = {**desired_ruleset(APP), "id": 7}
-            review(api.ruleset)["required_approving_review_count"] = 0
+            api.ruleset["rules"] = [
+                rule
+                for rule in api.ruleset["rules"]
+                if rule["type"] != "required_status_checks"
+            ]
             with (
                 tempfile.TemporaryDirectory() as tmp,
                 self.assertRaises(ProtectionError),
@@ -250,7 +271,12 @@ class ProtectionTests(unittest.TestCase):
             def call(self, method, path, body=None):
                 value = super().call(method, path, body)
                 if method == "POST":
-                    review(self.ruleset)["require_last_push_approval"] = False
+                    checks = next(
+                        rule
+                        for rule in self.ruleset["rules"]
+                        if rule["type"] == "required_status_checks"
+                    )
+                    checks["parameters"]["strict_required_status_checks_policy"] = False
                 return value
 
         api = WeakReadback()

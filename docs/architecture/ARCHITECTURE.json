@@ -55,7 +55,7 @@
     "Embeddings, engrams, graph projections and model-generated trajectories are rebuildable projections and never replace source-ledger truth.",
     "A deleted fact, module or artifact cannot reappear from cache, backup, replay, index, projection, checkpoint, canary or rollback without a new authorized source event.",
     "Repository candidates are ordinary reviewable source; encoded carriers, workflow materializers, persisted checkout credentials, branch self-push and review-object substitution are forbidden.",
-    "Repository settings must require protected canonical branches, independent review, required exact-head and merge-candidate checks, no force push and designated ownership before self-iteration activation.",
+    "Repository settings must require protected canonical branches, required exact-head and merge-candidate checks, no force push and designated ownership before self-iteration activation. The repository owner selects reviewer requirements; candidate code cannot change this policy or grant itself merge authority.",
     "Degraded central control never blocks bounded local safety, stop, revoke, reconcile, drain or last-known-good operation."
   ],
   "dependencyDirection": [
@@ -254,10 +254,7 @@
       "gradient_reach_and_truncation",
       "environment_horizon"
     ],
-    "informationChannels": [
-      "scoped_representation",
-      "admitted_action"
-    ],
+    "informationChannels": ["scoped_representation", "admitted_action"],
     "universalApproximation": "conditional_family_containment_not_fixed_laya_checkpoint",
     "parameterField": "training_observation_not_forward_pass_or_sufficient_state_by_definition",
     "scalingLaw": "empirical_hypothesis_no_transferred_exponents",

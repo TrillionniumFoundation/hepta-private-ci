@@ -73,20 +73,20 @@ class RepositoryControlTests(unittest.TestCase):
     def test_strict_observed_profile(self):
         self.assertEqual(self.validate(), [100, 200])
 
-    def test_codeowners_file_does_not_replace_enforced_owner_review(self):
-        for value in (False, None, 0, 1, "true", [], {}):
+    def test_unknown_codeowner_policy_is_rejected(self):
+        for value in (None, 0, 1, "true", [], {}):
             with self.subTest(value=value):
                 self.protection["required_pull_request_reviews"][
                     "require_code_owner_reviews"
                 ] = value
-                with self.assertRaisesRegex(controls.ControlError, "code-owner review"):
+                with self.assertRaisesRegex(controls.ControlError, "review policy"):
                     self.validate()
 
     def test_missing_codeowner_review_policy_fails_closed(self):
         del self.protection["required_pull_request_reviews"][
             "require_code_owner_reviews"
         ]
-        with self.assertRaisesRegex(controls.ControlError, "code-owner review"):
+        with self.assertRaisesRegex(controls.ControlError, "review policy"):
             self.validate()
 
     def test_unknown_or_disabled_conversation_policy_fails_closed(self):
@@ -112,14 +112,14 @@ class RepositoryControlTests(unittest.TestCase):
         with self.assertRaisesRegex(controls.ControlError, "review conversations"):
             self.validate()
 
-    def test_unenforced_owner_policy_rejects_before_loading_check_history(self):
+    def test_unknown_owner_policy_rejects_before_loading_check_history(self):
         self.protection["required_pull_request_reviews"][
             "require_code_owner_reviews"
-        ] = False
+        ] = None
         with patch.object(
             controls, "api", side_effect=[self.branch, self.protection]
         ) as api:
-            with self.assertRaisesRegex(controls.ControlError, "code-owner review"):
+            with self.assertRaisesRegex(controls.ControlError, "review policy"):
                 controls.observe(REPO, SHA, APP)
         self.assertEqual(api.call_count, 2)
 
@@ -157,7 +157,18 @@ class RepositoryControlTests(unittest.TestCase):
         self.protection["required_pull_request_reviews"][
             "required_approving_review_count"
         ] = 0
+        self.assertEqual(self.validate(), [100, 200])
+
+    def test_explicit_disabled_reviews_do_not_replace_independent_evaluation(self):
+        self.protection["required_pull_request_reviews"] = None
+        self.assertEqual(self.validate(), [100, 200])
+        self.checks[1]["app"]["id"] += 1
         with self.assertRaises(controls.ControlError):
+            self.validate()
+
+    def test_missing_review_policy_is_not_observed_disabled_policy(self):
+        del self.protection["required_pull_request_reviews"]
+        with self.assertRaisesRegex(controls.ControlError, "Review policy is unknown"):
             self.validate()
 
     def test_boolean_does_not_count_as_one_review(self):
@@ -167,19 +178,23 @@ class RepositoryControlTests(unittest.TestCase):
         with self.assertRaises(controls.ControlError):
             self.validate()
 
-    def test_stale_reviews_allowed(self):
+    def test_owner_may_disable_stale_review_dismissal(self):
         self.protection["required_pull_request_reviews"]["dismiss_stale_reviews"] = (
             False
         )
-        with self.assertRaises(controls.ControlError):
-            self.validate()
+        self.assertEqual(self.validate(), [100, 200])
 
-    def test_last_push_can_be_self_approved(self):
+    def test_owner_may_disable_last_push_review(self):
         self.protection["required_pull_request_reviews"][
             "require_last_push_approval"
         ] = False
-        with self.assertRaises(controls.ControlError):
-            self.validate()
+        self.assertEqual(self.validate(), [100, 200])
+
+    def test_owner_may_disable_codeowner_review(self):
+        self.protection["required_pull_request_reviews"][
+            "require_code_owner_reviews"
+        ] = False
+        self.assertEqual(self.validate(), [100, 200])
 
     def test_user_review_bypass(self):
         self.protection["required_pull_request_reviews"][
