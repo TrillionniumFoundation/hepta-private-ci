@@ -305,12 +305,28 @@ impl PinnedCognitiveRanker {
                 .with_current(current, |_| consume())
                 .map_err(|error| error.to_string())??;
             let finished = self.current.current()?;
-            if let Some(admission) = &self.admission {
-                admission.revalidate(&finished)?;
-            }
+            let final_admission = self
+                .admission
+                .as_ref()
+                .map(|admission| admission.revalidate(&finished))
+                .transpose()?;
+            let final_window = self
+                .admission
+                .as_ref()
+                .map(|_| finished.use_window())
+                .transpose()
+                .map_err(|error| error.to_string())?;
             candidate
                 .with_current(finished, |_| ())
                 .map_err(|error| error.to_string())?;
+            if let (Some(admission), Some(host)) = (&self.admission, &final_admission) {
+                admission.revalidate_retained(host)?;
+            }
+            if let Some(window) = final_window {
+                window
+                    .revalidate_at(admission::current_wall_millis()?)
+                    .map_err(|error| error.to_string())?;
+            }
             Ok(result)
         })
     }

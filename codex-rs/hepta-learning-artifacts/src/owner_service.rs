@@ -516,3 +516,11 @@ mod tests;
 #[cfg(test)]
 #[path = "owner_service_adversarial_tests.rs"]
 mod adversarial_tests;
+
+#[path = "owner_service_status.rs"]
+mod status;
+pub use status::LearningArtifactPublicationStatusV1;
+
+#[cfg(test)]
+#[path = "owner_service_status_tests.rs"]
+mod status_tests;

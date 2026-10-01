@@ -584,3 +584,28 @@ pub use process_configuration::run_with_process_configuration;
 
 #[cfg(feature = "server")]
 pub use codex_hepta_agent_components::learning_artifacts::IterationEnvelopeV1;
+
+#[cfg(feature = "server")]
+mod learning_operator_artifact_owner;
+#[cfg(feature = "server")]
+mod learning_operator_context;
+#[cfg(feature = "server")]
+mod learning_operator_shadow_loader;
+#[cfg(feature = "server")]
+mod learning_operator_source_binding;
+#[cfg(feature = "server")]
+pub use learning_operator_artifact_owner::LearningOperatorArtifactOwnerV2;
+#[cfg(feature = "server")]
+pub use learning_operator_artifact_owner::LearningOperatorPublicationErrorV1;
+#[cfg(feature = "server")]
+pub use learning_operator_artifact_owner::LearningOperatorPublicationInputsV2;
+#[cfg(feature = "server")]
+pub use learning_operator_artifact_owner::LearningOperatorStorageReceiptV2;
+#[cfg(feature = "server")]
+pub use learning_operator_context::LearningOperatorRunContextV2;
+#[cfg(feature = "server")]
+pub use learning_operator_context::PersistedOperatorCandidateV1;
+#[cfg(feature = "server")]
+pub use learning_operator_shadow_loader::EvaluatedTabularLoadBindingV4;
+#[cfg(feature = "server")]
+pub use learning_operator_shadow_loader::EvaluatedTabularShadowConsumerV4;

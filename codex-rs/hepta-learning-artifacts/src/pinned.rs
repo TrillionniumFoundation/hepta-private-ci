@@ -144,6 +144,7 @@ pub struct VerifiedCurrentRegistryViewV1 {
     trust_digest: Digest32,
     ineligible_artifacts: BTreeSet<StableId>,
     source_datasets: BTreeMap<StableId, BTreeSet<Digest32>>,
+    use_window: Option<currentness::VerifiedCurrentRegistryUseWindowV1>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -166,6 +167,7 @@ impl VerifiedCurrentRegistryViewV1 {
             trust_digest,
             ineligible_artifacts: BTreeSet::new(),
             source_datasets: BTreeMap::new(),
+            use_window: None,
         }
     }
 
@@ -395,3 +397,23 @@ impl RevalidatingCandidate {
 #[cfg(test)]
 #[path = "pinned_tests.rs"]
 mod tests;
+
+#[path = "pinned_currentness.rs"]
+mod currentness;
+pub use currentness::VerifiedCurrentRegistryUseWindowV1;
+
+impl VerifiedCurrentRegistryViewV1 {
+    pub(crate) fn bind_use_window(&mut self, window: VerifiedCurrentRegistryUseWindowV1) {
+        self.use_window = Some(window);
+    }
+    /// Immutable head/actor time facts retained only by the signed CURRENT owner.
+    pub fn use_window(
+        &self,
+    ) -> Result<VerifiedCurrentRegistryUseWindowV1, crate::ArtifactOwnerHostError> {
+        self.use_window
+            .ok_or(crate::ArtifactOwnerHostError::CurrentHeadContext)
+    }
+    pub fn revalidate_at(&self, now: u64) -> Result<(), crate::ArtifactOwnerHostError> {
+        self.use_window()?.revalidate_at(now)
+    }
+}

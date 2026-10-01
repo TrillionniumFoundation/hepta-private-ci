@@ -262,12 +262,24 @@ impl ArtifactOwnerVerifierV1 {
         if registry.head_digest() != signed_head.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
-        Ok(VerifiedCurrentRegistryViewV1::new(
+        let mut view = VerifiedCurrentRegistryViewV1::new(
             snapshot_receipt,
             registry,
             verified.witness_digest,
             verified.trust_digest,
-        ))
+        );
+        let signer = self
+            .head_signers
+            .get(&signed_head.witness.signer_id)
+            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
+        view.bind_use_window(
+            crate::VerifiedCurrentRegistryUseWindowV1::from_verified_head(
+                &signed_head.witness,
+                signer,
+                requirement.now,
+            ),
+        );
+        Ok(view)
     }
 
     fn verify_writer_lease(
@@ -919,12 +931,25 @@ impl LearningArtifactOwnerHost {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         self.validate_current_registry_inventory(&registry)?;
-        Ok(VerifiedCurrentRegistryViewV1::new(
+        let mut view = VerifiedCurrentRegistryViewV1::new(
             receipt,
             registry,
             current.witness_digest,
             current.trust_digest,
-        ))
+        );
+        let signer = self
+            .verifier
+            .head_signers
+            .get(&current.signed.witness.signer_id)
+            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
+        view.bind_use_window(
+            crate::VerifiedCurrentRegistryUseWindowV1::from_verified_head(
+                &current.signed.witness,
+                signer,
+                now,
+            ),
+        );
+        Ok(view)
     }
 
     pub fn recover_current_registry(

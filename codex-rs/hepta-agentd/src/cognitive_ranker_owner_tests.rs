@@ -85,6 +85,32 @@ pub(super) fn published_wall_clock_owner_view(
     )
 }
 
+pub(super) fn published_wall_clock_owner_view_expiring_at(
+    fixture: &Fixture,
+    source_datasets: Vec<Digest32>,
+    expires_at: u64,
+) -> (
+    Arc<WallClockOwnerView>,
+    PathBuf,
+    PathBuf,
+    PinnedCandidateSpec,
+) {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_millis()
+        .try_into()
+        .unwrap();
+    let (view, snapshot, payload, selected) =
+        published_owner_view_at(fixture, source_datasets, now, expires_at);
+    (
+        Arc::new(WallClockOwnerView(view)),
+        snapshot,
+        payload,
+        selected,
+    )
+}
+
 fn published_owner_view_at(
     fixture: &Fixture,
     source_datasets: Vec<Digest32>,

@@ -238,6 +238,13 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Borrow the original root-authenticated owner trust for opaque paired use.
+    /// This does not issue a verifier or extend its activation lifetime.
+    #[must_use]
+    pub fn activated_trust(&self) -> &ActivatedLearningTrustV1 {
+        &self.trust
+    }
+
     /// Verify the retained root-signed distribution before owner work.
     pub fn revalidate_trust_at(
         &self,

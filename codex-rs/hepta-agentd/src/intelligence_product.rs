@@ -803,3 +803,6 @@ mod evaluation_tests;
 #[cfg(test)]
 #[path = "intelligence_owner_snapshot_tests.rs"]
 mod owner_snapshot_tests;
+
+#[path = "learning_operator_product_persistence.rs"]
+mod learning_operator_persistence;

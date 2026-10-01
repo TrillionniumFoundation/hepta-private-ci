@@ -102,7 +102,13 @@ pub(super) struct EvaluatedUseV2 {
 }
 
 impl EvaluatedUseV2 {
-    pub(super) fn revalidate(&self, current: &VerifiedCurrentRegistryViewV1) -> Result<(), String> {
+    pub(super) fn revalidate(
+        &self,
+        current: &VerifiedCurrentRegistryViewV1,
+    ) -> Result<RankerAdmissionSnapshotV3, String> {
+        current
+            .revalidate_at(current_wall_millis()?)
+            .map_err(|error| error.to_string())?;
         let host = self.provider.current()?;
         if host.learning_trust.verifier().trust_digest() != self.learning_trust
             || host.learning_trust.verifier().authority_epoch() != self.authority_epoch
@@ -112,8 +118,28 @@ impl EvaluatedUseV2 {
         {
             return Err("ranker authority/runtime changed; explicit reload required".to_owned());
         }
+        self.revalidate_retained(&host)?;
+        Ok(host)
+    }
+
+    /// The host snapshot was refreshed before owner/materialization work.
+    /// Finish with the original selection's owned clock, without another I/O
+    /// callback that could itself outlive the validity check.
+    pub(super) fn revalidate_retained(
+        &self,
+        host: &RankerAdmissionSnapshotV3,
+    ) -> Result<(), String> {
         self.authorization.revalidate(&host.learning_trust)
     }
+}
+
+pub(super) fn current_wall_millis() -> Result<u64, String> {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|error| error.to_string())?
+        .as_millis()
+        .try_into()
+        .map_err(|_| "ranker clock overflow".to_owned())
 }
 
 impl PinnedCognitiveRanker {

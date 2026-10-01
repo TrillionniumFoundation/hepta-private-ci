@@ -13,6 +13,83 @@ impl CurrentRankerAdmissionV3 for Admission {
     }
 }
 
+struct RetainedCurrent {
+    original: Arc<dyn CurrentCognitiveRegistry>,
+    captured: Mutex<std::collections::VecDeque<VerifiedCurrentRegistryViewV1>>,
+}
+impl CurrentCognitiveRegistry for RetainedCurrent {
+    fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
+        if let Some(current) = self.captured.lock().unwrap().pop_front() {
+            return Ok(current);
+        }
+        self.original.current()
+    }
+}
+
+#[test]
+fn paired_v2_expiry_during_real_consumption_closes_cached_current_and_discards_result() {
+    let original = vec![item("one"), item("two")];
+    let fixture = fixture_with_profile(
+        &original,
+        &[0, 10],
+        Generation::new(2).unwrap(),
+        hash("read-ranking-task"),
+        hash("distinct-training-data"),
+    );
+    let signing = paired::SigningFixture::new(fixture.model_pin.objective_digest);
+    let (selection, evaluation_dataset) = select(&fixture, &signing);
+    let expires = paired::now_millis() + 30_000;
+    let (view, snapshot, payload, selected) =
+        owner_service::published_wall_clock_owner_view_expiring_at(
+            &fixture,
+            vec![fixture.model_pin.dataset_digest, evaluation_dataset],
+            expires,
+        );
+    let model_pin = pin(&fixture, &selected, &signing.trust);
+    let artifact_trust = view.current().unwrap().trust_digest();
+    let retained = Arc::new(RetainedCurrent {
+        original: view,
+        captured: Mutex::new(std::collections::VecDeque::new()),
+    });
+    let admission = Arc::new(Admission(Mutex::new(
+        RankerAdmissionSnapshotV3::new(
+            signing.trust,
+            artifact_trust,
+            model_pin.runtime_profile_digest,
+        )
+        .unwrap(),
+    )));
+    let ranker = PinnedCognitiveRanker::load_evaluated_v2(
+        owner(),
+        2,
+        File::open(snapshot).unwrap(),
+        File::open(payload).unwrap(),
+        selected,
+        model_pin,
+        retained.clone(),
+        &selection,
+        admission,
+    )
+    .unwrap();
+    *retained.captured.lock().unwrap() = [
+        retained.original.current().unwrap(),
+        retained.original.current().unwrap(),
+    ]
+    .into();
+    let mut consumed = false;
+    let result = ranker.with_current(|| {
+        consumed = true;
+        let delay = (expires + 1).saturating_sub(paired::now_millis());
+        std::thread::sleep(std::time::Duration::from_millis(delay));
+        Ok("completed computation must not be released")
+    });
+    assert!(consumed);
+    assert!(result.is_err());
+    assert!(ranker.cache.lock().unwrap().is_none());
+    retained.captured.lock().unwrap().clear();
+    assert!(ranker.revalidate().is_err());
+}
+
 fn select(
     fixture: &Fixture,
     signing: &paired::SigningFixture,

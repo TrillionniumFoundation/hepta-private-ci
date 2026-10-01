@@ -122,7 +122,7 @@ impl SignedArtifactSelectionV1 {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VerifiedArtifactSelectionV1 {
     pin: PinnedCandidateSpec,
     selection_digest: Digest32,
@@ -924,3 +924,6 @@ mod tests {
         assert_eq!(last.actor.role, LifecycleActorRoleV2::Selector);
     }
 }
+
+#[path = "selection_currentness.rs"]
+mod currentness;
