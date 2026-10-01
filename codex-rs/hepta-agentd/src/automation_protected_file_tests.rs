@@ -1,4 +1,5 @@
 use super::*;
+use std::os::unix::fs::FileTypeExt;
 use std::os::unix::fs::PermissionsExt;
 use std::time::Duration;
 
@@ -11,12 +12,28 @@ fn protected_open_rejects_links_and_never_waits_for_fifo_writer() {
     std::os::unix::fs::symlink(&file, &link).expect("file link");
     assert!(open_protected_file(&link).is_err());
     let fifo = temp.path().join("fifo");
+    #[cfg(not(target_vendor = "apple"))]
     rustix::fs::mkfifoat(
         rustix::fs::CWD,
         &fifo,
         rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
     )
     .expect("FIFO");
+    #[cfg(target_vendor = "apple")]
+    assert!(
+        std::process::Command::new("/usr/bin/mkfifo")
+            .args(["-m", "600"])
+            .arg(&fifo)
+            .status()
+            .expect("POSIX FIFO utility")
+            .success()
+    );
+    assert!(
+        fs::symlink_metadata(&fifo)
+            .expect("FIFO metadata")
+            .file_type()
+            .is_fifo()
+    );
     let (send, result) = std::sync::mpsc::channel();
     let worker = std::thread::spawn(move || {
         send.send(open_protected_file(&fifo).is_err())
