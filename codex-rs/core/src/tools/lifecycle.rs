@@ -374,10 +374,6 @@ pub(crate) async fn notify_tool_indeterminate(
     terminal_result
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "terminal evidence must carry the complete immutable tool-call binding"
-)]
 async fn notify_tool_policy_terminal_parts(
     session: &Session,
     turn: &TurnContext,

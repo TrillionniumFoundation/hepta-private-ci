@@ -3,6 +3,7 @@
 
 use super::*;
 
+#[cfg(unix)]
 #[path = "native_intelligence_recovery_publication_tests.rs"]
 mod publication;
 use crate::native_app_server::NativeBoundaryStatus;

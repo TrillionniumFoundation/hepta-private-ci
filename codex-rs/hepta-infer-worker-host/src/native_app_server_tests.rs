@@ -6,8 +6,10 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
+#[cfg(unix)]
 #[path = "native_intelligence_observation_tests.rs"]
 mod intelligence_observation;
+#[cfg(unix)]
 #[path = "native_intelligence_terminal_cancel_tests.rs"]
 mod intelligence_terminal_cancel;
 #[path = "native_output_observation_tests.rs"]

@@ -109,7 +109,6 @@ const MCP_TOOL_CALL_EVENT_RESULT_MAX_BYTES: usize = DEFAULT_OUTPUT_BYTES_CAP;
 
 /// Handles the specified tool call and dispatches the appropriate MCP tool-call
 /// item lifecycle events to the `Session`.
-#[expect(clippy::too_many_arguments)]
 pub(crate) async fn handle_mcp_tool_call(
     sess: Arc<Session>,
     step_context: &Arc<StepContext>,
@@ -384,10 +383,6 @@ impl McpToolCallItemMetadata {
     }
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "MCP approval must be applied inside the prepared call's catalog lease"
-)]
 async fn handle_approved_mcp_tool_call(
     sess: &Arc<Session>,
     step_context: &StepContext,

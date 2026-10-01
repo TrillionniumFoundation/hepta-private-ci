@@ -903,10 +903,6 @@ impl Session {
         clippy::await_holding_invalid_type,
         reason = "active turn checks and turn state updates must remain atomic"
     )]
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "steering carries the accepted input plus its turn-scoped metadata"
-    )]
     async fn steer_input(
         &self,
         input: &mut Vec<UserInput>,
