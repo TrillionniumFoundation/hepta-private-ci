@@ -28,10 +28,6 @@ impl DestinationDedupeStore {
     /// Standalone qualification/store mode. Product owners should normally add
     /// the table to their own migration lineage and call `from_migrated_pool`.
     pub async fn open_standalone(path: &Path) -> Result<Self, DurableOperationError> {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-        }
         let pool = crate::sqlite::open_durable_pool(path).await?;
         if let Err(error) = DESTINATION_MIGRATOR.run(&pool).await {
             pool.close().await;

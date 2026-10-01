@@ -73,10 +73,6 @@ pub struct DurableOperationStore {
 
 impl DurableOperationStore {
     pub async fn open(path: &Path) -> Result<Self, DurableOperationError> {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-        }
         let pool = crate::sqlite::open_durable_pool(path).await?;
         if let Err(error) = verify_quick_check(&pool).await {
             pool.close().await;
@@ -902,9 +898,9 @@ impl DurableOperationStore {
                 .ok_or(DurableOperationError::Capacity)?;
             sqlx::query(
                 "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
-                 lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
-                 terminal_at_ms = COALESCE(terminal_at_ms, ?)
-                 WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+                     lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
+                     terminal_at_ms = COALESCE(terminal_at_ms, ?)
+                     WHERE destination = ? AND scope_id = ? AND operation_id = ?",
             )
             .bind(to_i64(fence)?)
             .bind(receipt.evidence_digest.as_array().as_slice())
