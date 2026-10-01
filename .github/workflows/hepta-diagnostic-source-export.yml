@@ -61,7 +61,7 @@ jobs:
       - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d
 
       - name: Install cargo-shear
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532

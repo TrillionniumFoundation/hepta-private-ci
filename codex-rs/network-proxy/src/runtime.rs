@@ -1095,6 +1095,8 @@ impl ConfigReloader for NoopReloader {
     }
 }
 
+impl rama_core::extensions::Extension for NetworkProxyState {}
+
 #[cfg(test)]
 mod tests {
     use super::*;

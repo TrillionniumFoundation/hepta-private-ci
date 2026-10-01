@@ -368,7 +368,7 @@ rejected by these checks were inconsistent or outside the bounded product profil
 
 ### Reproduction and review
 
-From the repository root with Rust 1.95.0, `just` and `cargo-nextest` installed:
+From the repository root with Rust 1.96.0, `just` and `cargo-nextest` installed:
 
 ```sh
 just test -p codex-hepta-memory-retrieval

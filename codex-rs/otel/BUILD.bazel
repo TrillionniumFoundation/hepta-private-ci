@@ -1,7 +1,9 @@
+load("@crates//:data.bzl", "DEP_DATA")
 load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "otel",
+    crate_aliases = DEP_DATA["codex-rs/otel"]["aliases"],
     crate_name = "codex_otel",
     integration_test_args = ["--test-threads=1"],
 )

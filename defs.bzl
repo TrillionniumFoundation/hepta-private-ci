@@ -182,6 +182,7 @@ workspace_root_test = rule(
 def codex_rust_crate(
         name,
         crate_name,
+        crate_aliases = {},
         crate_features = [],
         crate_srcs = None,
         crate_root = None,
@@ -224,6 +225,7 @@ def codex_rust_crate(
             Example: `app-server`.
         crate_name: Cargo crate name from Cargo.toml
             Example: `codex_app_server`.
+        crate_aliases: Cargo dependency renames, as recorded in @crates DEP_DATA aliases.
         crate_features: Cargo features to enable for this crate.
             Crates are only compiled in a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
@@ -333,6 +335,7 @@ def codex_rust_crate(
             name = name,
             crate_name = crate_name,
             crate_root = crate_root,
+            aliases = crate_aliases,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             compile_data = compile_data,
@@ -357,6 +360,7 @@ def codex_rust_crate(
                 testonly = True,
                 crate_name = crate_name,
                 crate_root = crate_root,
+                aliases = crate_aliases,
                 crate_features = crate_features + unit_test_features,
                 deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,
                 compile_data = compile_data,
@@ -375,6 +379,7 @@ def codex_rust_crate(
         rust_test(
             name = unit_test_binary,
             crate = unit_test_library,
+            aliases = crate_aliases,
             crate_features = crate_features + unit_test_features,
             deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
             # Unit tests also compile to standalone Windows executables, so
@@ -425,6 +430,7 @@ def codex_rust_crate(
         rust_binary(
             name = binary,
             crate_name = binary.replace("-", "_"),
+            aliases = crate_aliases,
             crate_root = main,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
@@ -453,6 +459,7 @@ def codex_rust_crate(
         rust_test(
             name = binary_unit_test_binary,
             crate = ":" + binary,
+            aliases = crate_aliases,
             crate_features = crate_features,
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
@@ -577,6 +584,7 @@ def codex_rust_crate(
             rust_test(
                 name = integration_test_binary,
                 crate_name = test_crate_name,
+                aliases = crate_aliases,
                 crate_root = test,
                 crate_features = crate_features + unit_test_features,
                 srcs = [test],
@@ -618,6 +626,7 @@ def codex_rust_crate(
             rust_test(
                 name = test_name,
                 crate_name = test_crate_name,
+                aliases = crate_aliases,
                 crate_root = test,
                 crate_features = crate_features + unit_test_features,
                 srcs = [test],
@@ -694,6 +703,7 @@ def codex_rust_crate(
         rust_test(
             name = windows_cross_test_binary,
             crate_name = test_crate_name,
+            aliases = crate_aliases,
             crate_root = test,
             crate_features = crate_features + unit_test_features,
             srcs = [test],
