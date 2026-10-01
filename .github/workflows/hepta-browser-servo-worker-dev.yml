@@ -29,12 +29,37 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Select Browser Node runtime
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+
+      - name: Install locked Browser service build dependencies
+        run: npm ci --prefix apps/hepta-browser --ignore-scripts
+
       - name: Verify exact source identity
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git rev-parse HEAD HEAD^{tree} | tee source-identity.txt
+
+      - name: Build the immutable Browser service twice
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p worker-evidence
+          build_root="$(mktemp -d "$RUNNER_TEMP/browser-service-build.XXXXXX")"
+          trap 'rm -rf "$build_root"' EXIT
+          node apps/hepta-browser/scripts/build-service.mjs "$build_root/service-a.mjs"
+          node apps/hepta-browser/scripts/build-service.mjs "$build_root/service-b.mjs"
+          cmp --silent "$build_root/service-a.mjs" "$build_root/service-b.mjs"
+          cmp --silent "$build_root/service-a.mjs.receipt.json" "$build_root/service-b.mjs.receipt.json"
+          install -m 0444 "$build_root/service-a.mjs" worker-evidence/hepta-browser-service.mjs
+          install -m 0444 "$build_root/service-a.mjs.receipt.json" worker-evidence/hepta-browser-service.mjs.receipt.json
+          sha256sum worker-evidence/hepta-browser-service.mjs \
+            worker-evidence/hepta-browser-service.mjs.receipt.json \
+            > worker-evidence/service-reproducible-sha256.txt
 
       - name: Install Rust 1.88.0
         shell: bash
@@ -176,7 +201,10 @@ jobs:
               'cargoLockSha256': digest(root / 'Cargo.lock'),
               'workerSha256': digest(root / 'hepta-servo-worker'),
               'sbomSha256': digest(root / 'hepta-servo-worker.spdx.json'),
+              'serviceSha256': digest(root / 'hepta-browser-service.mjs'),
+              'serviceReceiptSha256': digest(root / 'hepta-browser-service.mjs.receipt.json'),
               'reproducibleIndependentBuilds': True,
+              'reproducibleServiceBuilds': True,
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
           }

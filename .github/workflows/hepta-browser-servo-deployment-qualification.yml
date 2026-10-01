@@ -77,6 +77,14 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Select Browser Node runtime
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+
+      - name: Install locked Browser service build dependencies
+        run: npm ci --prefix apps/hepta-browser --ignore-scripts
+
       - name: Bind checkout and trusted host prerequisites
         shell: bash
         run: |
@@ -89,6 +97,7 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > deployment-evidence/source-identity.txt
           uname -a > deployment-evidence/uname.txt
           node --version > deployment-evidence/node-version.txt
+          sha256sum "$(command -v node)" > deployment-evidence/node.sha256
           python3 --version > deployment-evidence/python-version.txt 2>&1
           bwrap --version > deployment-evidence/bwrap-version.txt
           sha256sum "$(command -v bwrap)" > deployment-evidence/bwrap.sha256
@@ -116,11 +125,16 @@ jobs:
             --worker-manifest apps/hepta-browser/servo-worker/Cargo.toml \
             --receipt-root worker-evidence --source-sha "$SOURCE_SHA" \
             --source-tree "$(git rev-parse HEAD^{tree})" \
+            --service-source-root apps/hepta-browser \
             --worker-sha "$EXPECTED_WORKER_SHA256"
           chmod 0555 worker-evidence/hepta-servo-worker
           cp worker-evidence/build-receipt.json deployment-evidence/source-build-receipt.json
+          cp worker-evidence/hepta-browser-service.mjs.receipt.json \
+            deployment-evidence/service-build-receipt.json
           sha256sum worker-evidence/hepta-servo-worker \
             > deployment-evidence/worker.sha256
+          sha256sum worker-evidence/hepta-browser-service.mjs \
+            > deployment-evidence/service.sha256
 
       - name: Re-probe host filesystem and external egress isolation
         shell: bash
@@ -152,6 +166,13 @@ jobs:
               'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
               'buildRunId': os.environ['BUILD_RUN_ID'],
               'workerSha256': os.environ['EXPECTED_WORKER_SHA256'],
+              'serviceSha256': digest(pathlib.Path('worker-evidence/hepta-browser-service.mjs')),
+              'serviceReceiptSha256': digest(root / 'service-build-receipt.json'),
+              'sourceBuildReceiptSha256': digest(root / 'source-build-receipt.json'),
+              'nodeExecutableSha256': (root / 'node.sha256').read_text().split()[0],
+              'bubblewrapExecutableSha256': (root / 'bwrap.sha256').read_text().split()[0],
+              'serviceArtifactReproducedFromSource': True,
+              'serviceExecutionQualified': False,
               'sandboxProbeSha256': digest(root / 'linux-sandbox-probe.json'),
               'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
               'operatorAcceptance': False,
