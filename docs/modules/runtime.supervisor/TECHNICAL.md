@@ -187,6 +187,14 @@ release through Fleet and compares immutable bytes plus the admission frontier
 to the journal. Revoked releases and policy drift reject even when the predecessor
 was previously valid.
 
+Every main launch, including automatic restart from a cached descriptor, repeats
+current catalog admission before lease checks, lifecycle mutation or spawn.
+Catalog-derived descriptors retain their origin after a catalog entry is removed;
+removal cannot turn them into an unregistered local command. Explicit direct
+`AgentRelease` constructors remain catalog-free, nonproduction in-process plant
+fixtures. They cannot bypass an existing, denied or revoked catalog entry, and
+signed mutation admission still requires canonical source and target bindings.
+
 A production mutation requires a detached external grant and H7 envelope. The
 daemon validates signer identity and epoch, authority epoch, operation, source
 and target, control revision, lifecycle generation, expiry, digests and current
@@ -196,6 +204,21 @@ Ambiguous signed transitions enter `recovery_required`. Read-only status and the
 signed recovery ceremony remain available; Start, Restart and release changes
 are denied while Stop and Kill retain their containment role. A decision may terminalize
 only an observed committed or rolled-back state and cannot move release bytes.
+
+For an explicit rollback, `rolled_back` may mean either a healthy rollback target
+or restoration of the source after the target failed. Recovery distinguishes
+these through the exact prepared transaction, signed intent and Fleet frontier:
+source restoration retains the prepared generation and previous release; target
+success advances exactly one generation and sets the source as previous.
+Matching current-release text alone is insufficient. Production status omits a
+transaction digest when that transaction does not belong to the reported intent.
+If a recovery terminal write is published but its durability acknowledgement
+fails, the same owner can resume only that exact decision. It reconstructs the
+original signed journal bindings, repeats signature/expiry/epoch and current
+admission checks, acknowledges both terminal records, and advances control
+revision once. Replaying an acknowledged decision has no additional process or
+revision effect. A replaced daemon uses a new authority epoch; an old decision
+cannot authorize recovery against that new epoch.
 
 Production Start may restart the durable currently selected release. Selecting
 a different release requires the signed transition path, even after Stop or
@@ -259,11 +282,38 @@ control and bidirectional formatting characters; the underlying state digest
 still binds the original error. Fleet resolution runs inside the existing
 blocking owner task, avoiding a second blocking-pool dependency.
 
+The client verifies the kernel peer user before sending a frame. It validates
+reply type, selected Agent, operation, pre-dispatch digest, supervisor epoch and
+signed receipt association against the outstanding request. Roster identities
+must be unique and counts remain within the request and fleet limits. Unexpected
+payloads and malformed frames produce bounded diagnostics without echoing their
+contents. An active Matrix flag represents retained process ownership, including
+while the main is draining or has exited; it does not imply serving readiness.
+Observation validation also permits quarantined retained main owners and a
+registry generation with no adopted runtime. General mutation fences keep their
+eligibility constraints; emergency Kill accepts the observation shape while
+retaining live CAS comparison and exact-handle containment checks. Display health
+is masked by the live lifecycle/generation, while raw snapshot facts remain in
+the CAS digest, so a stale runtime cannot claim serving eligibility.
+
+Recovery replies contain terminal journal digests, which differ from the
+pre-resolution digests signed in the decision. The client checks the Agent,
+grant, terminal outcome and observed release but cannot reconstruct that hash
+transition from this reply alone. Exact signature, journal and admission checks
+remain under the owner; this protocol does not supply an atomic recovery envelope.
+
 The authoritative lifecycle tick remains 25 ms. Tick-only whole-fleet projection
 rebuilds are coalesced to a 100 ms interval, while a live owner request publishes
 immediately after it executes. This removes the unconditional 40-Hz full Fleet
 reload/projection loop without changing lifecycle authority or read freshness.
 Projection refreshes and skips are exposed in scheduler diagnostics.
+
+Projection publication obtains a metadata-only snapshot that shares the full
+snapshot's lifecycle and hidden CAS fields. It avoids cloning diagnostic rings
+that the projection does not consume; the public full snapshot still returns
+those rings. At the configured maxima, cloning 256 log entries of 4096 bytes for
+each of 256 Agents could copy up to 256 MiB of log payload per refresh. This is a
+capacity upper bound, not a measured latency or allocation result.
 
 For releases without a Matrix command, an already empty companion restart
 budget causes no journal publication on idle ticks. A nonempty budget is cleared
@@ -287,6 +337,14 @@ classified according to whether the outcome is known absent, known present or
 ambiguous. Ambiguity quarantines rather than reporting success. Truncated or
 identity-conflicting process leases, restart records, control intents and release
 transactions fail closed.
+
+Main and Matrix leases, restart state, and release/signed journals use a common
+bounded descriptor reader. On Unix it rejects links, special files, unsafe owner
+or write permissions, excessive size, and changed named/opened identity before
+and after reading. `O_NOFOLLOW` and `O_NONBLOCK` protect the final component;
+supervisor-owned parent directories remain a deployment requirement. Lease files
+are published with mode 0600, and staging hard links are removed before the
+directory durability acknowledgement so acknowledged leases have one link.
 
 Constructor recovery isolates damaged evidence per Agent. It retains any exact
 main and Matrix process owners, fences serving, and retries containment until
@@ -403,6 +461,12 @@ Git commit/tree/parents, log length and digest, clean source before and after,
 and complete source blob bindings. Applicable failed, cancelled, missing or
 skipped lanes reject the aggregate job.
 
+Python validator execution has its own positive, source-bound unittest inventory
+and strict verbose transcript grammar. Every named case must pass exactly once
+in discovery order, with one consistent terminal count and `OK`; skipped,
+partial, substituted or extra results reject. These receipts cannot satisfy a
+nextest binary requirement and cannot be classified as a zero-test command.
+
 The workflow also runs on pushes to `main`, so the real merge SHA receives new
 evidence instead of inheriting PR-head results. Source-head, deterministic merge
 and real merge receipts remain different artifacts.
@@ -433,16 +497,18 @@ The following is source navigation, not a pass receipt:
 
 | Operation | Native symbol or component | Primary source | Test source |
 | --- | --- | --- | --- |
-| Start | `Supervisor::start` | `src/supervisor.rs` | `src/supervisor_tests.rs` |
+| Start | `Supervisor::start` | `src/supervisor.rs`, `src/recovery.rs` | `src/supervisor_tests.rs`, `src/release_admission_tests.rs` |
 | Drain | `Supervisor::drain` | `src/supervisor.rs` | `src/supervisor_tests.rs`, `src/unix_tests.rs` |
 | Stop/Kill | durable control intent | `src/control.rs`, `src/control_intent.rs` | `src/control_durable_restart_tests.rs`, `src/control_completion_tests.rs` |
 | Restart | restart budget/lineage | `src/supervisor.rs`, `src/restart_*` | `tests/restart_budget*.rs` |
 | Upgrade/Rollback | release transaction | `src/release_transaction.rs`, `src/supervisor.rs` | `src/supervisor_tests.rs` |
 | Signed mutation | external grant verifier | `src/signed_authority.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs` |
-| Signed recovery | decision verification | `src/signed_authority.rs`, `src/supervisor.rs` | `tests/authority_recovery.rs` |
+| Signed recovery | decision verification and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
-| Read projection | immutable bounded view | `src/daemon_read_view.rs` | `src/daemon_read_view_tests.rs` |
+| Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
+| Local control client | request/reply association | `src/daemon_client.rs`, `src/daemon_client_validation.rs` | `src/daemon_client_validation_tests.rs` |
+| Durable file input | stable bounded descriptor read | `src/durable_publish.rs`, `src/lease.rs`, `src/restart_journal.rs` | `src/durable_read_tests.rs`, `src/lease_read_tests.rs`, `src/restart_journal_read_tests.rs` |
 
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance. The tested SHA is
 derived from Git and execution context, not hard-coded into a self-referential
