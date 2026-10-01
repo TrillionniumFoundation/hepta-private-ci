@@ -2,7 +2,7 @@ use base64::Engine as _;
 
 use super::*;
 
-fn app_fixture(root: &std::path::Path) -> HeptaNativeApp {
+pub(super) fn app_fixture(root: &std::path::Path) -> HeptaNativeApp {
     let state = root.join("state");
     crate::private_state::PrivateStateRoot::open(state.clone()).unwrap();
     let key_path = root.join("keys.json");
@@ -174,7 +174,10 @@ fn diagnostic_render_failure_invalidates_presentation_binding_and_readiness() {
     app.status_rendered = Some("previous snapshot".into());
     app.view_revision = Some(1);
     app.ready_view = Some(view.clone());
-    app.operation_binding = Some("previous final-use binding".into());
+    app.operation_binding = Some(PreparedBinding {
+        text: "previous final-use binding".into(),
+        input: super::binding_prepare::BindingInput::capture(&app).unwrap(),
+    });
     app.readiness_frames.observe(1, &view).unwrap();
     let error = "cannot render bounded runtime status: presentation byte bound".to_owned();
     app.handle_task_outcome(UiTaskKind::Refresh, Ok(Err(error.clone())));

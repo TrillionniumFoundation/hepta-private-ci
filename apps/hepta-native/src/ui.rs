@@ -1,3 +1,4 @@
+mod binding_prepare;
 mod history_page;
 mod native_picker;
 mod operations_view;
@@ -8,6 +9,7 @@ mod shutdown;
 mod task_supervisor;
 mod update_views;
 
+use self::binding_prepare::PreparedBinding;
 use self::history_page::HISTORY_PAGE_SIZE;
 use self::readiness::ReadinessFrames;
 use self::runtime_status::render_runtime_status;
@@ -87,6 +89,7 @@ enum UiTaskKind {
     Refresh,
     Reconcile,
     Execute,
+    PrepareBinding,
     StageUpdate,
     Ready,
     History,
@@ -100,6 +103,7 @@ impl UiTaskKind {
             Self::Refresh => "hepta-native-refresh",
             Self::Reconcile => "hepta-native-reconcile",
             Self::Execute => "hepta-native-effect",
+            Self::PrepareBinding => "hepta-native-binding-prepare",
             Self::StageUpdate => "hepta-native-update-stage",
             Self::Ready => "hepta-native-readiness",
             Self::History => "hepta-native-history-read",
@@ -113,6 +117,7 @@ impl UiTaskKind {
             Self::Refresh => locale.text("Refreshing runtime", "正在刷新运行时"),
             Self::Reconcile => locale.text("Reconciling operations", "正在对账操作"),
             Self::Execute => locale.text("Executing bounded operation", "正在执行受限操作"),
+            Self::PrepareBinding => locale.text("Preparing exact binding", "正在生成精确 binding"),
             Self::StageUpdate => locale.text("Verifying and staging update", "正在验证并暂存更新"),
             Self::Ready => locale.text("Recording verified GUI readiness", "正在记录界面就绪状态"),
             Self::History => locale.text("Reading one history page", "正在读取一页历史"),
@@ -125,6 +130,7 @@ impl UiTaskKind {
 #[derive(Debug)]
 enum UiTaskOutput {
     Shutdown,
+    PrepareBinding(PreparedBinding),
     Refresh {
         status_rendered: String,
         view_revision: u64,
@@ -235,7 +241,7 @@ pub struct HeptaNativeApp {
     notification_title: String,
     notification_body: String,
     operation_grant_path: String,
-    operation_binding: Option<String>,
+    operation_binding: Option<PreparedBinding>,
     operation_message: Option<String>,
     startup_recorder: Option<crate::startup::StartupRecorder>,
     update_handoff: Option<crate::update_handoff::UpdateHandoff>,
@@ -478,6 +484,9 @@ impl HeptaNativeApp {
             }
         };
         match outcome {
+            Ok(UiTaskOutput::PrepareBinding(binding)) => {
+                self.install_prepared_binding(binding);
+            }
             Ok(UiTaskOutput::Shutdown) => {
                 self.shutdown.check_deadline(Instant::now());
                 self.shutdown.runtime_closed = true;
@@ -545,7 +554,10 @@ impl HeptaNativeApp {
                     self.readiness_frames.reset();
                     self.operation_binding = None;
                 }
-                if kind == UiTaskKind::Execute {
+                if kind == UiTaskKind::PrepareBinding {
+                    self.operation_binding = None;
+                    self.operation_message = None;
+                } else if kind == UiTaskKind::Execute {
                     self.operation_message = None;
                 } else if kind == UiTaskKind::StageUpdate {
                     self.update_message = None;

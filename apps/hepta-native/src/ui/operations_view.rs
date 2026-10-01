@@ -159,6 +159,7 @@ impl HeptaNativeApp {
             grant_response.request_focus();
         }
         self.render_file_input_intent_status(ui);
+        self.invalidate_edited_binding();
         let busy = self.is_busy();
         ui.horizontal(|ui| {
             if ui
@@ -192,7 +193,7 @@ impl HeptaNativeApp {
                 "交给独立签发方的 binding：",
             ));
             ui.add(
-                egui::TextEdit::multiline(binding)
+                egui::TextEdit::multiline(&mut binding.text)
                     .font(egui::TextStyle::Monospace)
                     .desired_rows(10)
                     .interactive(false),
@@ -352,7 +353,7 @@ impl HeptaNativeApp {
         }
     }
 
-    fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
+    pub(super) fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
         let payload = match self.operation_action {
             PlatformAction::OpenPath => PlatformPayload::OpenPath {
                 path: super::path_input::absolute_path(&self.operation_path)?,
@@ -370,40 +371,6 @@ impl HeptaNativeApp {
         };
         payload.validate()?;
         Ok(payload)
-    }
-
-    fn prepare_operation_binding(&mut self) {
-        let outcome = (|| -> Result<String, ShellError> {
-            let payload = self.operation_payload()?;
-            let runtime = self.runtime.try_lock().map_err(|_| {
-                ShellError::State("native runtime is busy; retry after the current task".to_owned())
-            })?;
-            let binding = runtime.prepare_platform_binding(
-                self.operation_subject_id.trim(),
-                self.operation_id.trim(),
-                &payload,
-            )?;
-            serde_json::to_string_pretty(&binding).map_err(ShellError::from)
-        })();
-        match outcome {
-            Ok(binding) => {
-                self.operation_binding = Some(binding);
-                self.operation_message = Some(
-                    self.locale
-                        .text(
-                            "Binding prepared. The independent authority owner must choose grant identity, nonce, epoch and lifetime and sign the complete grant.",
-                            "Binding 已生成。独立 authority owner 必须自行选择 grant identity、nonce、epoch 与有效期，并签署完整 grant。",
-                        )
-                        .to_owned(),
-                );
-                self.last_error = None;
-            }
-            Err(error) => {
-                self.operation_binding = None;
-                self.operation_message = None;
-                self.last_error = Some(error.to_string());
-            }
-        }
     }
 
     fn execute_operation(&mut self) {

@@ -1,0 +1,51 @@
+---
+source: src/ui/binding_prepare_snapshot_tests.rs
+expression: rendered
+---
+=== Preparing ===
+Hepta Native
+Authenticated view available
+Refresh
+Reconcile
+Preparing exact binding
+Native operations
+The shell never signs its own authority. Prepare the exact binding, have the independent authority owner issue a SignedFinalUseGrant, then select that grant file for one final-use operation.
+Authority subject
+test.subject
+Operation ID
+test.operation
+copy_text
+Clipboard text
+original clipboard payload
+Signed grant path
+Choose file
+Use next dropped file
+Prepare exact binding
+Execute with signed grant
+Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.
+Archive closed history (retain last 256)
+No operation receipts.
+
+=== Stale result ===
+Hepta Native
+Authenticated view available
+Refresh
+Reconcile
+Native operations
+The shell never signs its own authority. Prepare the exact binding, have the independent authority owner issue a SignedFinalUseGrant, then select that grant file for one final-use operation.
+Authority subject
+test.subject
+Operation ID
+test.operation
+copy_text
+Clipboard text
+edited clipboard payload
+Signed grant path
+Choose file
+Use next dropped file
+Prepare exact binding
+Execute with signed grant
+Prepared binding discarded because the input, screen or view changed; prepare it again.
+Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.
+Archive closed history (retain last 256)
+No operation receipts.
