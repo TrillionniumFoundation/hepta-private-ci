@@ -11,6 +11,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable
 
+from .capacity_policy import (
+    DatabaseCapacityDecision,
+    DatabaseCapacityPolicy,
+    enforce_database_capacity,
+    evaluate_database_capacity,
+)
+from .clock_policy import ClockPolicy
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .integration_controller import (
@@ -31,6 +38,11 @@ from .orchestration import (
     WorkerProfile,
     issue_repository_work_envelope,
     plan_engineering_work,
+)
+from .worker_identity import (
+    WorkerRegistrationRenewalDecision,
+    WorkerRegistrationRenewalReceipt,
+    renew_worker_registration,
 )
 from .worker_lifecycle import (
     WorkerClaim,
@@ -58,10 +70,18 @@ class EngineeringControlProduct:
         *,
         expected_repository: str,
         trust_store: SignatureTrustStore,
+        clock_policy: ClockPolicy = ClockPolicy(),
+        capacity_policy: DatabaseCapacityPolicy = DatabaseCapacityPolicy(),
     ):
+        if not isinstance(clock_policy, ClockPolicy):
+            raise EngineeringError("invalid_clock_policy")
+        if not isinstance(capacity_policy, DatabaseCapacityPolicy):
+            raise EngineeringError("invalid_capacity_policy")
         self.repository = Path(repository).resolve()
         self.expected_repository = expected_repository
         self.trust_store = trust_store
+        self.clock_policy = clock_policy
+        self.capacity_policy = capacity_policy
         self.store = EngineeringStore(database)
         self._startup_reconciled = False
 
@@ -78,12 +98,17 @@ class EngineeringControlProduct:
     def close(self) -> None:
         self.store.close()
 
+    def _enforce_admission_capacity(self) -> DatabaseCapacityDecision:
+        """Block new durable resources while leaving drain/recovery paths usable."""
+        return enforce_database_capacity(self.store, self.capacity_policy)
+
     def admit_repository_envelope(
         self,
         envelope: WorkEnvelope,
         *,
         now_ns: int | None = None,
     ) -> WorkEnvelope:
+        self._enforce_admission_capacity()
         return issue_repository_work_envelope(
             self.repository,
             self.store,
@@ -103,6 +128,7 @@ class EngineeringControlProduct:
         expires_unix_ns: int,
         now_ns: int | None = None,
     ):
+        self._enforce_admission_capacity()
         return self.store.acquire_path_lease(
             lease_id,
             envelope_id,
@@ -124,6 +150,7 @@ class EngineeringControlProduct:
         generation_id: str,
         now_ns: int | None = None,
     ) -> EngineeringPlan:
+        self._enforce_admission_capacity()
         return plan_engineering_work(
             self.store,
             envelope,
@@ -142,8 +169,12 @@ class EngineeringControlProduct:
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
         report = recover_worker_lifecycle(self.store, now_ns=now_ns)
+        self._enforce_admission_capacity()
         self._startup_reconciled = True
         return report
+
+    def database_capacity(self) -> DatabaseCapacityDecision:
+        return evaluate_database_capacity(self.store, self.capacity_policy)
 
     def worker_capacity(self, worker_id: str):
         return worker_capacity_usage(self.store, worker_id)
@@ -154,11 +185,27 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> str:
+        self._enforce_admission_capacity()
         return register_worker(
             self.store,
             receipt,
             self.trust_store,
             now_ns=now_ns,
+        )
+
+    def renew_worker(
+        self,
+        receipt: WorkerRegistrationRenewalReceipt,
+        *,
+        now_ns: int,
+    ) -> WorkerRegistrationRenewalDecision:
+        self._enforce_admission_capacity()
+        return renew_worker_registration(
+            self.store,
+            receipt,
+            self.trust_store,
+            now_ns=now_ns,
+            clock_policy=self.clock_policy,
         )
 
     def claim(
@@ -173,6 +220,7 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
+        self._enforce_admission_capacity()
         return claim_assignment(
             self.store,
             generation_id,
@@ -243,6 +291,7 @@ class EngineeringControlProduct:
         base_tree: str,
         now_ns: int | None = None,
     ) -> IntegrationQueueGeneration:
+        self._enforce_admission_capacity()
         return publish_integration_queue(
             self.store,
             plan,

@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.control-engineering-implementation-extensions.v1",
+  "module": "control.engineering",
+  "operations": [
+    {
+      "operation": "validate_signed_window",
+      "designOperation": "clock_and_skew_policy",
+      "nativeSymbol": "validate_signed_window",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/clock_policy.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_clock_policy.py"
+      ]
+    },
+    {
+      "operation": "renew_worker_registration",
+      "designOperation": "worker_registration_renewal_and_key_rotation",
+      "nativeSymbol": "renew_worker_registration",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/worker_identity.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_worker_identity.py"
+      ]
+    },
+    {
+      "operation": "create_audit_checkpoint",
+      "designOperation": "full_audit_checkpoint",
+      "nativeSymbol": "create_audit_checkpoint",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_audit_checkpoint.py"
+      ]
+    },
+    {
+      "operation": "advance_audit_checkpoint",
+      "designOperation": "incremental_audit_tail_verification",
+      "nativeSymbol": "advance_audit_checkpoint",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_audit_checkpoint.py"
+      ]
+    },
+    {
+      "operation": "evaluate_database_capacity",
+      "designOperation": "sqlite_capacity_and_migration_policy",
+      "nativeSymbol": "evaluate_database_capacity",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_capacity_policy.py"
+      ]
+    },
+    {
+      "operation": "verify_external_production_bundle",
+      "designOperation": "external_production_evidence_admission",
+      "nativeSymbol": "verify_external_production_bundle",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/production_adapters.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_production_adapters.py"
+      ]
+    },
+    {
+      "operation": "require_independent_approved_review",
+      "designOperation": "current_head_repository_review_gate",
+      "nativeSymbol": "require_independent_approved_review",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/review_gate.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_review_gate.py"
+      ]
+    },
+    {
+      "operation": "build_merge_policy_receipt",
+      "designOperation": "exact_blob_merge_method_gate",
+      "nativeSymbol": "build_merge_policy_receipt",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/merge_policy.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_merge_policy.py"
+      ]
+    },
+    {
+      "operation": "build_stress_profile",
+      "designOperation": "bounded_crash_contention_wal_and_growth_profile",
+      "nativeSymbol": "build_stress_profile",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/stress_profile.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_stress_profile.py"
+      ]
+    },
+    {
+      "operation": "build_mutation_campaign",
+      "designOperation": "real_evaluator_owned_mutation_campaign",
+      "nativeSymbol": "build_mutation_campaign",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/qualification_mutation_campaign.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_qualification_mutation_campaign.py"
+      ]
+    },
+    {
+      "operation": "observe_canonical_workflow",
+      "designOperation": "canonical_product_workflow_release_blocker",
+      "nativeSymbol": "observe_workflow",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/workflow_gate.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_workflow_gate.py"
+      ]
+    },
+    {
+      "operation": "prepare_projection",
+      "designOperation": "single_canonical_status_projection",
+      "nativeSymbol": "prepare_projection",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/status_projection.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_status_projection.py"
+      ]
+    },
+    {
+      "operation": "database_capacity",
+      "designOperation": "named_product_capacity_admission",
+      "nativeSymbol": "EngineeringControlProduct.database_capacity",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_capacity_policy.py"
+      ]
+    },
+    {
+      "operation": "verify_production_acceptance_bundle",
+      "designOperation": "manual_external_production_acceptance_verification",
+      "nativeSymbol": "main",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/production_acceptance.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_production_adapters.py"
+      ]
+    }
+  ]
+}
