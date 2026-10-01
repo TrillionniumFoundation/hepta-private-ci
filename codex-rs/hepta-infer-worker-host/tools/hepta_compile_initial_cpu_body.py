@@ -22,16 +22,20 @@ def encoded(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":")).encode() + b"\n"
 
 
+def root_ancestors(path):
+    for ancestor in path.parents:
+        metadata = ancestor.lstat()
+        if ancestor.resolve() != ancestor or metadata.st_uid != 0 or metadata.st_mode & 0o022:
+            raise ValueError("mutable Root source or destination ancestor")
+
+
 def source(item, maximum):
     if set(item) != {"path", "digest"}:
         raise ValueError("exact Root source fields required")
     path = Path(item["path"])
     if not path.is_absolute() or path.resolve() != path:
         raise ValueError("canonical Root source required")
-    for ancestor in path.parents:
-        metadata = ancestor.lstat()
-        if metadata.st_uid != 0 or metadata.st_mode & 0o022:
-            raise ValueError("mutable source ancestor")
+    root_ancestors(path)
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
     try:
         before = os.fstat(fd)
@@ -115,9 +119,7 @@ def compile_body(config, destination):
     identity += bytes.fromhex(inputs["execution_profile_digest"]) + bytes.fromhex(digest(provenance_bytes))
     if destination.exists() or not destination.is_absolute() or destination.parent.resolve() != destination.parent:
         raise ValueError("exclusive canonical new body destination required")
-    parent = destination.parent.stat()
-    if parent.st_uid != 0 or parent.st_mode & 0o022:
-        raise ValueError("Root body parent required")
+    root_ancestors(destination)
     destination.mkdir(mode=0o755)
     sources = [create(destination / name, data) for name, data in (
         ("base-bundle.json", base_bytes), ("organ-bundle.json", organ_bytes),
