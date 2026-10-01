@@ -64,13 +64,29 @@ Every scenario retains attempts, completed operations, zero unexpected failures,
 4. the exact registered artifact name;
 5. the registered frozen plan SHA-256.
 
-The workflow verifies that the producer was an exact-source `workflow_dispatch` success and that exactly one unexpired artifact with an immutable SHA-256 belongs to that run. It rejects artifacts over 20 MiB from metadata, records the immutable GitHub artifact digest, and downloads the exact named artifact from the exact run through the pinned official download action. After extraction it accepts exactly the two expected root regular files and enforces independent 256 KiB and 16 MiB limits for the plan and report. Missing or extra entries, directories, links and oversized inputs fail closed; the receipt binds the GitHub artifact digest plus the exact plan and report byte digests.
+The workflow verifies that the producer was an exact-source `workflow_dispatch`
+success and that exactly one unexpired artifact with an immutable SHA-256 belongs
+to that run. It rejects artifacts over 20 MiB from metadata and records the
+immutable GitHub artifact digest. `scripts/platform_wire_production_intake.py`
+downloads the selected artifact ID through a bounded stream and verifies the
+SHA-256 of the exact ZIP bytes before extraction. It reuses the performance
+intake's closed archive checks: inspect every central-directory entry before
+decompressing any file, permit only stored or deflated regular files, require
+exactly the two expected root entries, and enforce independent 256 KiB and
+16 MiB uncompressed limits for the plan and report. Duplicate, auxiliary,
+directory, linked, encrypted, non-root and oversized entries fail closed. Bounded
+entry reads check decompressed size and ZIP CRC before writing; the receipt binds
+the GitHub archive digest plus the exact plan and report byte digests.
 
 After archive admission, the workflow runs the closed producer registry check and the eight-scenario validator. It emits a `hepta.platform-wire.receipt.v2` receipt of kind `platform-wire-production`. The receipt binds source, workflow/run/attempt, artifact/archive identity, registry, plan and report digests, deployment artifacts/configuration, transport context and all eight reduced outcomes. Failed attempts retain a failed receipt and available metadata; they never become acceptance.
 
 ## Lifecycle integration
 
-Source qualification remains exact-head plus deterministic synthetic merge plus protected target-host evidence. Production acceptance is stricter. `scripts/platform_wire_status.py` now requires all of the following before `Accepted` can become true:
+`Qualified` requires exact-head, deterministic synthetic-merge, protected
+target-host and passed three-target fuzz campaign evidence for one source
+candidate. The current lifecycle contract is in
+[README.md](README.md#lifecycle-contract). `scripts/platform_wire_status.py`
+requires all of the following before `Accepted` can become true:
 
 - `Qualified` is true;
 - one passed five-path `platform-wire-performance` receipt for the same source;
@@ -79,6 +95,10 @@ Source qualification remains exact-head plus deterministic synthetic merge plus 
 - one distinct operations receipt.
 
 `Released` additionally requires the existing source-bound release receipt and artifact digest. Performance and production composition are separate gates: a fast but unauthenticated deployment fails, and an authenticated deployment that misses either frozen performance ratio also fails.
+
+The status renderer checks consistency of trusted imported evidence. The importing
+owner must authenticate workflow, artifact and approver provenance before using
+the report; local JSON does not itself establish those facts or authorize release.
 
 ## What remains external
 

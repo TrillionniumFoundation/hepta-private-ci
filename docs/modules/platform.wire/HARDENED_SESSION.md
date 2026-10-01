@@ -39,11 +39,10 @@ The default remains `protocol-tooling` so existing repository callers can be
 migrated without a flag-day break. Production integration must use:
 
 ```toml
-codex-hepta-wire = {
-  path = "../hepta-wire",
-  default-features = false,
-  features = ["production"]
-}
+[dependencies.codex-hepta-wire]
+path = "../hepta-wire"
+default-features = false
+features = ["production"]
 ```
 
 The production-surface verifier compiles a positive fixture and requires
@@ -130,11 +129,16 @@ identity and keys. The implementation exposes no reset operation.
 proves that the codec descriptor, semantic revision and canonicalization
 profile exactly match the policy frozen into the session registry. It then:
 
-1. encodes the typed value;
-2. admits schema, version, producer, role, generation and capability policy;
-3. constructs the HPTA envelope;
+1. admits schema, version, producer, role, generation and capability metadata
+   before invoking the codec;
+2. encodes the typed value and checks its payload length;
+3. constructs and admits the complete HPTA envelope;
 4. authenticates the exact HPTA bytes with the endpoint-specific HPTM key and
    next outbound sequence.
+
+Metadata denial therefore does not run payload serialization or hashing. The
+encoded payload still requires its own bound check; metadata preflight cannot
+predict the codec's output size.
 
 No production method accepts a caller-constructed `DecodedEnvelope`.
 

@@ -77,12 +77,16 @@ The workflow does not accept arbitrary refs, arbitrary same-repository workflows
 
 ## Lifecycle integration
 
-Source qualification is unchanged: `Qualified` still requires exact-head, deterministic synthetic-merge and protected target-host receipts for one source candidate.
+`Qualified` requires exact-head, deterministic synthetic-merge, protected
+target-host and passed three-target fuzz campaign receipts for one source
+candidate. The lifecycle definitions in [README.md](README.md#lifecycle-contract)
+are the current contract; this intake supplies only the performance family.
 
 Production acceptance is stricter. `scripts/platform_wire_status.py` requires all of the following before `Accepted` can become true:
 
 - `Qualified` is true;
 - one passed `platform-wire-performance` receipt for the same source;
+- one passed `platform-wire-production` receipt for the same source;
 - one independent semantic/security reviewer receipt;
 - one distinct operations receipt.
 
@@ -99,4 +103,8 @@ Adding this intake closes a repository-controlled evidence gap; it does not supp
 - reconnect, process restart, key rotation, rolling upgrade and mixed-version observations;
 - independent reviewer, operations, canary/promotion and release decisions.
 
-No lifecycle boolean should be edited by hand. Run the status renderer with the retained exact-head, merge, target-host, performance, reviewer, operations and release receipts for the same selected source.
+No lifecycle boolean should be edited by hand. Run the status renderer with the
+retained exact-head, merge, target-host, fuzz, performance, production, reviewer,
+operations and release receipts for the same selected source. The renderer checks
+consistency of trusted imported evidence; the importing owner must authenticate
+workflow, artifact and approver provenance.
