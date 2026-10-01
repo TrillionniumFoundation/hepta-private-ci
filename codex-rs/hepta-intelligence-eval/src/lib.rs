@@ -503,6 +503,8 @@ mod initial_neuron_operational_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod initial_neuron_operational_metrics;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod initial_neuron_operational_reader;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod initial_neuron_operational_source;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_calibration_host::initialize_fixed_evaluator_key;
@@ -510,6 +512,10 @@ pub use fixed_calibration_host::initialize_fixed_evaluator_key;
 pub use fixed_calibration_host::run_fixed_calibration_evaluator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use initial_neuron_operational_host::run_initial_neuron_operational_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_reader::VerifiedInitialOperationalEvidenceV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_reader::inspect_initial_neuron_operational_evidence;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_cycle_host;

@@ -8,6 +8,7 @@ use crate::initial_neuron_operational_metrics::measure;
 use crate::initial_neuron_operational_source::Cut;
 use crate::initial_neuron_operational_source::HostResult;
 use crate::initial_neuron_operational_source::Source;
+use crate::initial_neuron_operational_source::VerifiedCut;
 use crate::initial_neuron_operational_source::inspect_cut;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::ReviewEvidenceWireV1;
@@ -26,42 +27,42 @@ use std::path::PathBuf;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Config {
-    schema: String,
-    uid: u32,
-    gid: u32,
-    program_digest: String,
-    private_key_path: PathBuf,
-    root_verifying_key_hex: String,
-    policy: Source,
-    baseline_manifest: Source,
-    baseline_weights: Source,
-    preregistration: Source,
-    calibration: Cut,
-    ood: Cut,
-    inaccessible_paths: Vec<PathBuf>,
+pub(super) struct Config {
+    pub(super) schema: String,
+    pub(super) uid: u32,
+    pub(super) gid: u32,
+    pub(super) program_digest: String,
+    pub(super) private_key_path: PathBuf,
+    pub(super) root_verifying_key_hex: String,
+    pub(super) policy: Source,
+    pub(super) baseline_manifest: Source,
+    pub(super) baseline_weights: Source,
+    pub(super) preregistration: Source,
+    pub(super) calibration: Cut,
+    pub(super) ood: Cut,
+    pub(super) inaccessible_paths: Vec<PathBuf>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Policy {
-    schema: String,
-    generation: u64,
-    qualified_predecessor: Option<String>,
-    scope_digest: String,
-    objective_digest: String,
-    baseline_manifest_digest: String,
-    baseline_weights_digest: String,
-    source_training_digest: String,
-    preregistration_digest: String,
-    frozen_at_ms: u64,
-    expires_at_ms: u64,
-    calibration_rows: usize,
-    ood_rows: usize,
-    claim_scope: String,
-    gates: Gates,
+pub(super) struct Policy {
+    pub(super) schema: String,
+    pub(super) generation: u64,
+    pub(super) qualified_predecessor: Option<String>,
+    pub(super) scope_digest: String,
+    pub(super) objective_digest: String,
+    pub(super) baseline_manifest_digest: String,
+    pub(super) baseline_weights_digest: String,
+    pub(super) source_training_digest: String,
+    pub(super) preregistration_digest: String,
+    pub(super) frozen_at_ms: u64,
+    pub(super) expires_at_ms: u64,
+    pub(super) calibration_rows: usize,
+    pub(super) ood_rows: usize,
+    pub(super) claim_scope: String,
+    pub(super) gates: Gates,
 }
 impl Policy {
-    fn validate(&self, now: u64) -> HostResult<()> {
+    pub(super) fn validate(&self, now: u64) -> HostResult<()> {
         if self.schema != "hepta.cpu-neuron.initial-operational-policy.v1"
             || self.generation != 1
             || self.qualified_predecessor.is_some()
@@ -93,7 +94,7 @@ impl Policy {
         self.gates.validate()
     }
 }
-fn payload(body: &Value) -> HostResult<Vec<u8>> {
+pub(super) fn payload(body: &Value) -> HostResult<Vec<u8>> {
     let bytes = serde_json::to_vec(body)?;
     if bytes.len() > 64 * 1024 {
         return Err("bounded initial operational report".into());
@@ -102,34 +103,20 @@ fn payload(body: &Value) -> HostResult<Vec<u8>> {
     payload.extend_from_slice(Digest32::of_bytes(&bytes).as_array());
     Ok(payload)
 }
-/// Run only the protected fixed initial-install policy under the independent
-/// evaluator UID. Its evidence attests measurements; S and the durable artifact
-/// Owner must separately admit generation one through the existing initial API.
-pub fn run_initial_neuron_operational_evaluator(path: &Path) -> HostResult<()> {
-    let bytes = read_root_review_input(path, 32 * 1024)?;
-    let config: Config = serde_json::from_slice(&bytes)?;
-    let cgroup = boundary(config.uid, config.gid)?;
-    let program = Digest32::of_bytes(&read_root_review_input(
-        &std::env::current_exe()?,
-        128 * 1024 * 1024,
-    )?);
+pub(super) struct OperationalInputs {
+    pub(super) policy: Policy,
+    pub(super) manifest_digest: Digest32,
+    pub(super) weights_digest: Digest32,
+    pub(super) calibration: VerifiedCut,
+    pub(super) ood: VerifiedCut,
+}
+pub(super) fn inspect_inputs(config: &Config, now: u64) -> HostResult<OperationalInputs> {
     if config.schema != "hepta.fixed-initial-neuron-evaluator-config.v1"
-        || program != config.program_digest.parse::<Digest32>()?
+        || config.uid == 0
         || config.inaccessible_paths.len() != 5
     {
-        return Err("initial fixed evaluator actual program/custody binding".into());
+        return Err("initial fixed evaluator protected profile".into());
     }
-    for inaccessible in &config.inaccessible_paths {
-        match File::open(inaccessible) {
-            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => (),
-            _ => {
-                return Err(
-                    "independent initial evaluator can read source gold or another key".into(),
-                );
-            }
-        }
-    }
-    let now = now_ms()?;
     let policy: Policy = serde_json::from_slice(&config.policy.read(32 * 1024)?)?;
     policy.validate(now)?;
     let manifest = config.baseline_manifest.read(16 * 1024)?;
@@ -190,6 +177,90 @@ pub fn run_initial_neuron_operational_evaluator(path: &Path) -> HostResult<()> {
     {
         return Err("initial calibration/OOD source records overlap".into());
     }
+    Ok(OperationalInputs {
+        policy,
+        manifest_digest,
+        weights_digest,
+        calibration,
+        ood,
+    })
+}
+
+pub(super) fn measurement_body(
+    config: &Config,
+    inputs: &OperationalInputs,
+    config_digest: Digest32,
+    now: u64,
+    program: Digest32,
+    cgroup: &str,
+) -> HostResult<Value> {
+    let OperationalInputs {
+        policy,
+        manifest_digest,
+        weights_digest,
+        calibration,
+        ood,
+    } = inputs;
+    let calibration_dataset = calibration.publication.cut.dataset.native()?;
+    let ood_dataset = ood.publication.cut.dataset.native()?;
+    let calibration_metrics = measure(calibration, &policy.gates)?;
+    let ood_metrics = measure(ood, &policy.gates)?;
+    Ok(
+        json!({"schema":"hepta.cpu-neuron.initial-operational-measurements.v1",
+        "generation":1,"qualified_predecessor":null,"claim_scope":policy.claim_scope,
+        "policy_digest":config.policy.digest,"source_training_digest":policy.source_training_digest,
+        "preregistration_digest":policy.preregistration_digest,"model_manifest_digest":manifest_digest.to_string(),
+        "weights_digest":weights_digest.to_string(),"calibration_cut_digest":config.calibration.publication.digest,
+        "ood_cut_digest":config.ood.publication.digest,"calibration_dataset_digest":calibration_dataset.snapshot.dataset_digest.to_string(),
+        "ood_dataset_digest":ood_dataset.snapshot.dataset_digest.to_string(),
+        "calibration":calibration_metrics,"ood":ood_metrics,
+        "operational_constraints_passed":calibration_metrics.operational_constraints_passed && ood_metrics.operational_constraints_passed,
+        "evaluator_uid":config.uid,"evaluator_gid":config.gid,"evaluator_cgroup":cgroup,
+        "evaluator_program_digest":program.to_string(),"config_digest":config_digest.to_string(),
+        "measured_at_ms":now,"original_calibration_read":false,"original_holdout_read":false,
+        "historical_unseen_holdout_claim":false,"primary_superiority_claim":false,
+        "qualified":false,"authority_grants_any":false,"holdout_consumed":false,"production_activation":false}),
+    )
+}
+
+/// Run only the protected fixed initial-install policy under the independent
+/// evaluator UID. Its evidence attests measurements; S and the durable artifact
+/// Owner must separately admit generation one through the existing initial API.
+pub fn run_initial_neuron_operational_evaluator(path: &Path) -> HostResult<()> {
+    let bytes = read_root_review_input(path, 32 * 1024)?;
+    let config: Config = serde_json::from_slice(&bytes)?;
+    let cgroup = boundary(config.uid, config.gid)?;
+    let program = Digest32::of_bytes(&read_root_review_input(
+        &std::env::current_exe()?,
+        128 * 1024 * 1024,
+    )?);
+    if config.schema != "hepta.fixed-initial-neuron-evaluator-config.v1"
+        || program != config.program_digest.parse::<Digest32>()?
+        || config.inaccessible_paths.len() != 5
+    {
+        return Err("initial fixed evaluator actual program/custody binding".into());
+    }
+    for inaccessible in &config.inaccessible_paths {
+        match File::open(inaccessible) {
+            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => (),
+            _ => {
+                return Err(
+                    "independent initial evaluator can read source gold or another key".into(),
+                );
+            }
+        }
+    }
+    let now = now_ms()?;
+    let inputs = inspect_inputs(&config, now)?;
+    let OperationalInputs {
+        policy,
+        manifest_digest,
+        weights_digest,
+        calibration,
+        ood,
+    } = &inputs;
+    let scope = policy.scope_digest.parse()?;
+    let objective = policy.objective_digest.parse()?;
     let (_, distribution) = calibration.publication.trust.native()?;
     let reviewer = distribution
         .distribution
@@ -212,22 +283,14 @@ pub fn run_initial_neuron_operational_evaluator(path: &Path) -> HostResult<()> {
     {
         return Err("initial independent evaluator owns a different key".into());
     }
-    let calibration_metrics = measure(&calibration, &policy.gates)?;
-    let ood_metrics = measure(&ood, &policy.gates)?;
-    let body = json!({"schema":"hepta.cpu-neuron.initial-operational-measurements.v1",
-        "generation":1,"qualified_predecessor":null,"claim_scope":policy.claim_scope,
-        "policy_digest":config.policy.digest,"source_training_digest":policy.source_training_digest,
-        "preregistration_digest":policy.preregistration_digest,"model_manifest_digest":manifest_digest.to_string(),
-        "weights_digest":weights_digest.to_string(),"calibration_cut_digest":config.calibration.publication.digest,
-        "ood_cut_digest":config.ood.publication.digest,"calibration_dataset_digest":calibration_dataset.snapshot.dataset_digest.to_string(),
-        "ood_dataset_digest":ood_dataset.snapshot.dataset_digest.to_string(),
-        "calibration":calibration_metrics,"ood":ood_metrics,
-        "operational_constraints_passed":calibration_metrics.operational_constraints_passed && ood_metrics.operational_constraints_passed,
-        "evaluator_uid":config.uid,"evaluator_gid":config.gid,"evaluator_cgroup":cgroup,
-        "evaluator_program_digest":program.to_string(),"config_digest":Digest32::of_bytes(&bytes).to_string(),
-        "measured_at_ms":now,"original_calibration_read":false,"original_holdout_read":false,
-        "historical_unseen_holdout_claim":false,"primary_superiority_claim":false,
-        "qualified":false,"authority_grants_any":false,"holdout_consumed":false,"production_activation":false});
+    let body = measurement_body(
+        &config,
+        &inputs,
+        Digest32::of_bytes(&bytes),
+        now,
+        program,
+        &cgroup,
+    )?;
     let payload = payload(&body)?;
     let mut evidence = SignedLearningEvidenceV1 {
         evidence_id: StableId::new(format!(
@@ -252,7 +315,7 @@ pub fn run_initial_neuron_operational_evaluator(path: &Path) -> HostResult<()> {
         &payload,
         now,
     )?;
-    for source in [&calibration, &ood] {
+    for source in [calibration, ood] {
         for actor in &source.actors {
             verify_signed_actor_separation(actor, &actual, now)?;
         }
@@ -270,8 +333,8 @@ pub fn run_initial_neuron_operational_evaluator(path: &Path) -> HostResult<()> {
     for cut in [&config.calibration, &config.ood] {
         inspect_cut(
             cut,
-            manifest_digest,
-            weights_digest,
+            *manifest_digest,
+            *weights_digest,
             scope,
             objective,
             policy.frozen_at_ms,
