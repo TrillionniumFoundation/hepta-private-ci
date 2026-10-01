@@ -223,5 +223,13 @@ fn inspected_browser_artifact_symlink_replacement_is_rejected() {
     let retained = root.path().join("retained");
     fs::rename(&path, &retained).expect("retain original inode");
     std::os::unix::fs::symlink(&retained, &path).expect("replacement final symlink");
-    assert!(inspected.open(/*maximum*/ 4096).is_err());
+    let error = inspected
+        .open(/*maximum*/ 4096)
+        .err()
+        .expect("reject replacement symlink");
+    assert!(matches!(&error, BrowserServoError::Invalid(_)));
+    assert_eq!(
+        error.to_string(),
+        artifact_io_error(io::Error::from_raw_os_error(libc::ELOOP)).to_string()
+    );
 }
