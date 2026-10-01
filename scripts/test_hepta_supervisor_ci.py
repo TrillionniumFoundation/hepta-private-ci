@@ -10,6 +10,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from scripts import hepta_supervisor_ci as ci
+from scripts.hepta_ci_exec import observed_test_counts
 from scripts.hepta_supervisor_ci import CONTEXT_ENV
 from scripts.hepta_supervisor_ci import CONTEXT_FIELDS
 from scripts.hepta_supervisor_ci import PLANS
@@ -18,7 +20,115 @@ from scripts.hepta_supervisor_ci import REQUIRED_TESTS
 from scripts.hepta_supervisor_ci import context_from_env
 from scripts.hepta_supervisor_ci import read_regular
 from scripts.hepta_supervisor_ci import validate_record
+from scripts.hepta_supervisor_ci import validate_unittest_transcript
 from scripts.test_hepta_supervisor_evidence import transcript
+
+
+def unittest_transcript(names, count=None):
+    results = "\n".join(f"{name.rsplit('.', 1)[-1]} ({name}) ... ok" for name in names)
+    total = len(names) if count is None else count
+    return f"{results}\n\n{'-' * 70}\nRan {total} tests in 0.001s\n\nOK\n".encode()
+
+
+class UnittestTranscriptTests(unittest.TestCase):
+    names = ("reviewed.suite.Tests.test_first", "reviewed.suite.Tests.test_second")
+
+    def test_accepts_complete_verbose_suite_and_truthful_record(self):
+        log = unittest_transcript(self.names)
+        self.assertEqual(
+            validate_unittest_transcript(log, self.names, 2)["passed_python_tests"],
+            list(self.names),
+        )
+        fixture = ReceiptTests()
+        fixture.setUp()
+        command = ["python3", "-m", "unittest", "-v", "reviewed.suite"]
+        record = {
+            **fixture.record,
+            "command": command,
+            "minimum_tests": 2,
+            "observed_passed_tests": 2,
+            "log_bytes": len(log),
+            "log_sha256": hashlib.sha256(log).hexdigest(),
+        }
+        with (
+            patch.dict(ci.PLANS, {"python-suite": (2, command)}),
+            patch.dict(ci.REQUIRED_PYTHON_TESTS, {"python-suite": self.names}),
+        ):
+            result = validate_record(
+                "python-suite",
+                record,
+                fixture.context,
+                fixture.identity,
+                log,
+                observed_test_counts,
+            )
+            self.assertEqual(result["required_tests"], 2)
+            with self.assertRaises(ValueError):
+                validate_record(
+                    "python-suite",
+                    {**record, "observed_passed_tests": 1},
+                    fixture.context,
+                    fixture.identity,
+                    log,
+                    observed_test_counts,
+                )
+
+    def test_rejects_skipped_failed_and_nonpass_cases(self):
+        log = unittest_transcript(self.names)
+        for status in (
+            b"FAIL",
+            b"ERROR",
+            b"skipped 'reason'",
+            b"expected failure",
+            b"unexpected success",
+        ):
+            with self.subTest(status=status), self.assertRaises(ValueError):
+                validate_unittest_transcript(
+                    log.replace(b"... ok", b"... " + status, 1), self.names, 2
+                )
+
+    def test_rejects_missing_duplicate_reordered_and_substituted_cases(self):
+        for names in (
+            self.names[:1],
+            (self.names[0], self.names[0]),
+            tuple(reversed(self.names)),
+            (self.names[0], self.names[1] + "_other"),
+        ):
+            with self.subTest(names=names), self.assertRaises(ValueError):
+                validate_unittest_transcript(
+                    unittest_transcript(names, 2), self.names, 2
+                )
+        log = unittest_transcript(self.names).replace(
+            b"test_first (", b"test_second (", 1
+        )
+        with self.assertRaises(ValueError):
+            validate_unittest_transcript(log, self.names, 2)
+
+    def test_rejects_incomplete_extra_or_conflicting_transcripts(self):
+        log = unittest_transcript(self.names)
+        for altered in (
+            log[:-1],
+            log + b"extra output\n",
+            b"extra output\n" + log,
+            log + log,
+            log.replace(b"OK\n", b"OK (skipped=1)\n"),
+            log.replace(b"OK\n", b"FAILED (failures=1)\n"),
+            b"Ran 2 tests in 0.001s\n\nOK\n",
+        ):
+            with self.subTest(log=altered), self.assertRaises(ValueError):
+                validate_unittest_transcript(altered, self.names, 2)
+
+    def test_rejects_misreported_counts_and_empty_inventory(self):
+        log = unittest_transcript(self.names)
+        for count in (0, 1, 3, True):
+            with self.subTest(count=count), self.assertRaises(ValueError):
+                validate_unittest_transcript(log, self.names, count)
+        with self.assertRaises(ValueError):
+            validate_unittest_transcript(
+                unittest_transcript(self.names, 3), self.names, 2
+            )
+        with self.assertRaises(ValueError):
+            validate_unittest_transcript(log, (), 2)
 
 
 class ReceiptTests(unittest.TestCase):

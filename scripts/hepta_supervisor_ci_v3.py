@@ -23,6 +23,15 @@ CURRENT_KEY_REQUIREMENTS = (
     "key_tests::duplicate_and_unknown_flags_are_rejected",
     "key_tests::relative_fleet_root_is_rejected_before_daemon_start",
 )
+VALIDATOR_TEST_MODULES = (
+    "scripts.test_hepta_supervisor_status",
+    "scripts.test_hepta_supervisor_external_receipt",
+    "scripts.test_hepta_supervisor_ci",
+    "scripts.test_hepta_supervisor_ci_v3",
+    "scripts.test_hepta_supervisor_workflow",
+    "scripts.test_runtime_supervisor_materialize",
+)
+MINIMUM_VALIDATOR_TESTS = 31
 CURRENT_BINDING_PATHS = (
     *base.BINDING_PATHS,
     "scripts/hepta_supervisor_ci_v3.py",
@@ -52,12 +61,18 @@ class CurrentPlan:
     plans: dict[str, tuple[int, list[str]]]
     required_binary_tests: dict[str, dict[str, tuple[str, ...]]]
     required_tests: dict[str, tuple[str, ...]]
+    required_python_tests: dict[str, tuple[str, ...]]
     binding_paths: tuple[str, ...]
 
 
 def current_plan() -> CurrentPlan:
     serial = base.SERIAL
     test = base.TEST
+    validator_tests = base.unittest_test_ids(VALIDATOR_TEST_MODULES)
+    base.require(
+        len(validator_tests) >= MINIMUM_VALIDATOR_TESTS,
+        "reviewed validator suite lost required coverage",
+    )
     plans = {
         name: (minimum, command.copy())
         for name, (minimum, command) in base.PLANS.items()
@@ -66,17 +81,13 @@ def current_plan() -> CurrentPlan:
         {
             "status": (0, ["python3", "scripts/hepta_supervisor_status.py", "check"]),
             "validator-tests": (
-                0,
+                len(validator_tests),
                 [
                     "python3",
                     "-m",
                     "unittest",
                     "-v",
-                    "scripts.test_hepta_supervisor_status",
-                    "scripts.test_hepta_supervisor_external_receipt",
-                    "scripts.test_hepta_supervisor_ci_v3",
-                    "scripts.test_hepta_supervisor_workflow",
-                    "scripts.test_runtime_supervisor_materialize",
+                    *VALIDATOR_TEST_MODULES,
                 ],
             ),
             "verifier-artifact": (
@@ -167,7 +178,11 @@ def current_plan() -> CurrentPlan:
         for name, binaries in required_binary_tests.items()
     }
     return CurrentPlan(
-        plans, required_binary_tests, required_tests, CURRENT_BINDING_PATHS
+        plans,
+        required_binary_tests,
+        required_tests,
+        {"validator-tests": validator_tests},
+        CURRENT_BINDING_PATHS,
     )
 
 
@@ -179,6 +194,8 @@ def apply_current_plan() -> None:
     base.REQUIRED_BINARY_TESTS.update(plan.required_binary_tests)
     base.REQUIRED_TESTS.clear()
     base.REQUIRED_TESTS.update(plan.required_tests)
+    base.REQUIRED_PYTHON_TESTS.clear()
+    base.REQUIRED_PYTHON_TESTS.update(plan.required_python_tests)
     base.BINDING_PATHS = plan.binding_paths
 
 

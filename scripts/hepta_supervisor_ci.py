@@ -7,6 +7,7 @@ into production authority. Historical IMPLEMENTATION_MAP.sourceBase is retained.
 from __future__ import annotations
 
 import argparse
+import ast
 from collections.abc import Callable
 import hashlib
 import json
@@ -276,6 +277,9 @@ REQUIRED_TESTS = {
     name: tuple(test for tests in binaries.values() for test in tests)
     for name, binaries in REQUIRED_BINARY_TESTS.items()
 }
+# Python suites have their own runner grammar; they cannot satisfy a nextest
+# binary requirement or be mistaken for a command that executes no tests.
+REQUIRED_PYTHON_TESTS: dict[str, tuple[str, ...]] = {}
 CONTEXT_FIELDS = (
     "source_sha",
     "base_sha",
@@ -313,6 +317,89 @@ BINDING_PATHS = (
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise ValueError(message)
+
+
+def unittest_test_ids(modules: tuple[str, ...]) -> tuple[str, ...]:
+    """Inventory explicit source-bound TestCases without importing test code.
+
+    These reviewed suites use direct unittest.TestCase subclasses and ordinary
+    test methods. Importing them would recurse through the workflow test's
+    current_plan declaration. Dynamic or inherited test discovery is refused.
+    """
+    names = []
+    for module in modules:
+        require(
+            re.fullmatch(r"scripts\.test_\w+", module) is not None,
+            "unreviewed unittest module",
+        )
+        path = Path(__file__).resolve().parent / (module.rsplit(".", 1)[-1] + ".py")
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        require(
+            not any(
+                isinstance(node, ast.FunctionDef) and node.name == "load_tests"
+                for node in tree.body
+            ),
+            "dynamic unittest discovery is not reviewed",
+        )
+        classes = (node for node in tree.body if isinstance(node, ast.ClassDef))
+        for case in sorted(classes, key=lambda node: node.name):
+            methods = sorted(
+                node.name
+                for node in case.body
+                if isinstance(node, ast.FunctionDef) and node.name.startswith("test_")
+            )
+            if not methods:
+                continue
+            require(
+                len(case.bases) == 1
+                and ast.unparse(case.bases[0]) == "unittest.TestCase",
+                "inherited or dynamic unittest cases are not reviewed",
+            )
+            names.extend(f"{module}.{case.name}.{name}" for name in methods)
+    names = tuple(names)
+    require(bool(names) and len(set(names)) == len(names), "invalid unittest inventory")
+    return names
+
+
+def validate_unittest_transcript(
+    log: bytes, expected: tuple[str, ...], passed: int
+) -> dict:
+    """Require every verbose case once and one complete, clean terminal result."""
+    require(
+        bool(expected) and len(set(expected)) == len(expected), "unittest inventory"
+    )
+    require(type(passed) is int and passed > 0, "missing unittest passes")
+    text = log.decode("utf-8", errors="strict")
+    require(text.endswith("\n"), "incomplete unittest transcript")
+    lines = text.splitlines()
+    require(len(lines) == len(expected) + 5, "incomplete or extra unittest results")
+    seen = []
+    for line in lines[: len(expected)]:
+        match = re.fullmatch(
+            r"(test_\w+) \(([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+)\) \.\.\. ok",
+            line,
+        )
+        require(match is not None, "unittest case did not cleanly pass")
+        assert match is not None
+        name, identity = match.groups()
+        require(identity.rsplit(".", 1)[-1] == name, "unittest case identity mismatch")
+        seen.append(identity)
+    require(tuple(seen) == expected, "missing, reordered or repeated unittest cases")
+    tail = lines[len(expected) :]
+    require(
+        tail[0] == "" and tail[1] == "-" * 70 and tail[3:] == ["", "OK"],
+        "unittest run did not end with one clean success",
+    )
+    summary = re.fullmatch(r"Ran ([1-9][0-9]*) tests? in [0-9]+(?:\.[0-9]+)?s", tail[2])
+    require(summary is not None, "invalid unittest terminal summary")
+    assert summary is not None
+    require(int(summary[1]) == passed == len(seen), "inconsistent unittest pass count")
+    return {
+        "passed_tests": passed,
+        "skipped_tests": 0,
+        "required_tests": len(expected),
+        "passed_python_tests": seen,
+    }
 
 
 def validate_record(
@@ -372,6 +459,8 @@ def validate_record(
     require(passed >= minimum and failed == 0, f"{name}: missing or failed tests")
     if name in REQUIRED_BINARY_TESTS:
         return validate_transcript(log, REQUIRED_BINARY_TESTS[name], passed)
+    if name in REQUIRED_PYTHON_TESTS:
+        return validate_unittest_transcript(log, REQUIRED_PYTHON_TESTS[name], passed)
     require(passed == 0, f"{name}: unexpected test transcript in non-test plan")
     return {"passed_tests": 0, "skipped_tests": 0, "required_tests": 0}
 
