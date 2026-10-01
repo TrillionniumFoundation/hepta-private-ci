@@ -176,8 +176,8 @@ jobs:
                   "git", "commit-tree", os.environ["TREE"],
                   "-p", os.environ["BASE"], "-p", os.environ["CANDIDATE"],
               ],
-              input="deterministic ui.native qualification merge\n",
-              text=True,
+              # Binary stdin keeps the commit message's UTF-8 LF bytes identical.
+              input=b"deterministic ui.native qualification merge\n",
               env={
                   **os.environ,
                   "GIT_AUTHOR_NAME": "native-qualification",
@@ -187,7 +187,7 @@ jobs:
                   "GIT_AUTHOR_DATE": "2000-01-01T00:00:00Z",
                   "GIT_COMMITTER_DATE": "2000-01-01T00:00:00Z",
               },
-          ).strip()
+          ).decode("ascii").strip()
           print(commit)
           PYTHON
             )"

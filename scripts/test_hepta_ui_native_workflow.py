@@ -1,5 +1,7 @@
 """Execute the workflow's Git construction shell against isolated repositories."""
 
+import contextlib
+import io
 import os
 import hashlib
 import importlib.util
@@ -12,6 +14,8 @@ import tempfile
 import textwrap
 import unittest
 from unittest.mock import patch
+
+import hepta_ui_native_aggregate as aggregate
 
 WORKFLOW = (
     Path(__file__).resolve().parents[1]
@@ -198,6 +202,42 @@ class PlatformConstructionTests(unittest.TestCase):
         )
         self.assertEqual(self.git("status", "--porcelain"), "")
         self.assertTrue((self.output / "native-evidence/source.txt").is_file())
+
+    def test_merge_constructor_sends_binary_lf_and_matches_aggregate(self):
+        script = shell_step("Construct exact head or fixed ordered-parent merge")
+        constructor = script.split("<<'PYTHON'\n", 1)[1].split("\nPYTHON", 1)[0]
+        tree = self.git("merge-tree", "--write-tree", self.base, self.candidate).strip()
+        check_output = subprocess.check_output
+
+        def binary_commit_tree(command, **kwargs):
+            self.assertEqual(command[:2], ["git", "commit-tree"])
+            self.assertIsInstance(kwargs["input"], bytes)
+            self.assertFalse(kwargs.get("text", False))
+            return check_output(command, cwd=self.root, **kwargs)
+
+        output = io.StringIO()
+        with (
+            patch.dict(
+                os.environ,
+                {"TREE": tree, "BASE": self.base, "CANDIDATE": self.candidate},
+            ),
+            patch.object(subprocess, "check_output", side_effect=binary_commit_tree),
+            contextlib.redirect_stdout(output),
+        ):
+            exec(compile(constructor, str(WORKFLOW), "exec"), {})
+        merge = output.getvalue().strip()
+        payload = check_output(["git", "cat-file", "commit", merge], cwd=self.root)
+        self.assertEqual(
+            payload.split(b"\n\n", 1)[1],
+            b"deterministic ui.native qualification merge\n",
+        )
+        expected = aggregate.deterministic_subjects(
+            self.root, self.candidate, self.base
+        )
+        self.assertEqual(merge, expected["merge"]["sourceSha"])
+        result = self.construct("merge")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(self.git("rev-parse", "HEAD").strip(), merge)
 
     def test_dirty_source_is_still_rejected(self):
         (self.root / "source.rs").write_text(

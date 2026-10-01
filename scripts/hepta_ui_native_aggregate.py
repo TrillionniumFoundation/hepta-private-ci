@@ -72,13 +72,17 @@ def deterministic_subjects(
         "GIT_AUTHOR_DATE": "2000-01-01T00:00:00Z",
         "GIT_COMMITTER_DATE": "2000-01-01T00:00:00Z",
     }
-    merge = subprocess.check_output(
-        ["git", "commit-tree", tree, "-p", base, "-p", candidate],
-        cwd=root,
-        input="deterministic ui.native qualification merge\n",
-        text=True,
-        env=env,
-    ).strip()
+    merge = (
+        subprocess.check_output(
+            ["git", "commit-tree", tree, "-p", base, "-p", candidate],
+            cwd=root,
+            # Text-mode pipes convert LF to CRLF on Windows and change the commit ID.
+            input=b"deterministic ui.native qualification merge\n",
+            env=env,
+        )
+        .decode("ascii")
+        .strip()
+    )
     return {
         "head": {
             "sourceSha": candidate,

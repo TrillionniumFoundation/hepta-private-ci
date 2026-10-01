@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Adversarial aggregate tests. Fixtures are not product qualification receipts."""
+
 import copy
 import hashlib
 import json
@@ -9,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import hepta_ui_native_aggregate as aggregate
 import hepta_ui_native_evidence as evidence
@@ -122,14 +124,13 @@ class AggregateTests(unittest.TestCase):
             evidence.write_json(path, receipt)
             self.paths.append(path)
             if profile["os"] == "Linux":
-                product_path = (
-                    folder
-                    / product_evidence.PRODUCT_RELATIVE
-                )
+                product_path = folder / product_evidence.PRODUCT_RELATIVE
                 product_path.parent.mkdir(parents=True)
                 product_path.write_text(
                     json.dumps(
-                        self.product_receipt(profile, binary_digests, manifest, platform),
+                        self.product_receipt(
+                            profile, binary_digests, manifest, platform
+                        ),
                         indent=2,
                     )
                     + "\n",
@@ -143,7 +144,9 @@ class AggregateTests(unittest.TestCase):
             starts.append(
                 {
                     "process_id": 2000 + index,
-                    "session": {"session_id": f"ordinary-session-{profile['kind']}-{index}"},
+                    "session": {
+                        "session_id": f"ordinary-session-{profile['kind']}-{index}"
+                    },
                     "normal_close_exit_code": 0,
                     "measurements": {
                         "schema": product_evidence.MEASUREMENT_SCHEMA,
@@ -456,7 +459,27 @@ class DeterministicSubjectTests(unittest.TestCase):
             git("add", ".")
             git("commit", "--quiet", "-m", "candidate")
             candidate = git("rev-parse", "HEAD")
-            result = aggregate.deterministic_subjects(root, candidate, base)
+            check_output = subprocess.check_output
+            with patch.object(
+                aggregate.subprocess, "check_output", wraps=check_output
+            ) as invoked:
+                result = aggregate.deterministic_subjects(root, candidate, base)
+            commit_calls = [
+                call
+                for call in invoked.call_args_list
+                if call.args[0][1] == "commit-tree"
+            ]
+            self.assertEqual(len(commit_calls), 1)
+            self.assertIsInstance(commit_calls[0].kwargs["input"], bytes)
+            self.assertFalse(commit_calls[0].kwargs.get("text", False))
+            payload = check_output(
+                ["git", "cat-file", "commit", result["merge"]["sourceSha"]],
+                cwd=root,
+            )
+            self.assertEqual(
+                payload.split(b"\n\n", 1)[1],
+                b"deterministic ui.native qualification merge\n",
+            )
             self.assertEqual(
                 result, aggregate.deterministic_subjects(root, candidate, base)
             )
