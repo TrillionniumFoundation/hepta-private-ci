@@ -13,14 +13,14 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use std::sync::Arc;
 use std::time::Duration;
 
-pub(super) struct Composition {
+pub(crate) struct Composition {
     runtime: AgentdNeuronRuntimeV2Config,
     runner: Arc<AgentdIntelligenceProductRunnerV1>,
     provider: Arc<AgentdDurableCpuAbstainInvocationProviderV2>,
 }
 
 impl Composition {
-    pub(super) fn prepare(
+    pub(crate) fn prepare(
         source: &InstalledCpuSourceV1,
         identity: &AgentdIdentity,
         authority_config: &Path,
@@ -91,7 +91,7 @@ impl Composition {
         })
     }
 
-    pub(super) fn attach(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
+    pub(crate) fn attach(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
         config
             .with_neuron_runtime_v2(self.runtime)?
             .with_intelligence_product_runner(self.runner)?
