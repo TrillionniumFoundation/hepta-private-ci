@@ -42,6 +42,10 @@ pub struct RestartClaim {
     pub window_started_unix_ms: u64,
 }
 
+#[path = "restart_budget_continuation.rs"]
+mod continuation;
+pub(crate) use continuation::continue_failed_restart;
+
 pub fn claim_restart(
     run_root: &Path,
     maximum_attempts: u32,
