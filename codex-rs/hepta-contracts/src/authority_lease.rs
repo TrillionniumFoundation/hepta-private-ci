@@ -922,10 +922,16 @@ impl Store {
         let has_state = entry_exists(&store.root, "authority-leases.json")?;
         let state = if has_state {
             let mut bytes = Vec::new();
-            open_private(&store.root, "authority-leases.json", Access::Read)?
+            let mut file = open_private(&store.root, "authority-leases.json", Access::Read)?;
+            (&mut file)
                 .take((MAX_AUTHORITY_STORE_BYTES + 1) as u64)
                 .read_to_end(&mut bytes)
                 .map_err(|_| AuthorityLeaseError::Unavailable)?;
+            #[cfg(target_os = "macos")]
+            {
+                verify_private_file(&file)?;
+                verify_directory(&store.root)?;
+            }
             if bytes.len() > MAX_AUTHORITY_STORE_BYTES {
                 return Err(AuthorityLeaseError::InvalidTrust);
             }
@@ -960,6 +966,8 @@ impl Store {
             store.persist(&state)?;
             state
         };
+        #[cfg(target_os = "macos")]
+        verify_directory(&store.root)?;
         Ok((store, state))
     }
 
@@ -970,12 +978,24 @@ impl Store {
             state: state.clone(),
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| AuthorityLeaseError::Unavailable)?;
+        #[cfg(target_os = "macos")]
+        validate_destination(&self.root, "authority-leases.json")?;
         let mut file = open_private(&self.root, "authority-leases.next", Access::Create)?;
+        #[cfg(target_os = "macos")]
+        {
+            verify_directory(&self.root)?;
+            verify_private_file(&file)?;
+        }
         file.set_len(0)
             .map_err(|_| AuthorityLeaseError::Unavailable)?;
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| AuthorityLeaseError::Unavailable)?;
+        #[cfg(target_os = "macos")]
+        {
+            verify_private_file(&file)?;
+            verify_directory(&self.root)?;
+        }
         replace_state(&self.root)?;
         self.root
             .sync_all()
@@ -1076,7 +1096,6 @@ enum Access {
 #[cfg(unix)]
 fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
     use std::os::unix::fs::DirBuilderExt;
-    use std::os::unix::fs::MetadataExt;
     if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
         && error.kind() != std::io::ErrorKind::AlreadyExists
     {
@@ -1092,6 +1111,13 @@ fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
     )
     .map_err(|_| AuthorityLeaseError::UnsafeStateDirectory)?
     .into();
+    verify_directory(&directory)?;
+    Ok(directory)
+}
+
+#[cfg(unix)]
+fn verify_directory(directory: &File) -> Result<(), AuthorityLeaseError> {
+    use std::os::unix::fs::MetadataExt;
     let metadata = directory
         .metadata()
         .map_err(|_| AuthorityLeaseError::Unavailable)?;
@@ -1101,22 +1127,15 @@ fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
     {
         return Err(AuthorityLeaseError::UnsafeStateDirectory);
     }
-    Ok(directory)
+    #[cfg(target_os = "macos")]
+    codex_utils_private_state::verify_private_permissions(directory)
+        .map_err(|_| AuthorityLeaseError::UnsafeStateDirectory)?;
+    Ok(())
 }
 
 #[cfg(unix)]
-fn open_private(directory: &File, name: &str, access: Access) -> Result<File, AuthorityLeaseError> {
-    use rustix::fs::Mode;
-    use rustix::fs::OFlags;
+fn verify_private_file(file: &File) -> Result<(), AuthorityLeaseError> {
     use std::os::unix::fs::MetadataExt;
-    let flags = match access {
-        Access::Read => OFlags::RDONLY,
-        Access::Create => OFlags::RDWR | OFlags::CREATE,
-    } | OFlags::NOFOLLOW
-        | OFlags::CLOEXEC;
-    let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
-        .map_err(|_| AuthorityLeaseError::Unavailable)?
-        .into();
     let metadata = file
         .metadata()
         .map_err(|_| AuthorityLeaseError::Unavailable)?;
@@ -1127,27 +1146,80 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Au
     {
         return Err(AuthorityLeaseError::UnsafeStateDirectory);
     }
+    #[cfg(target_os = "macos")]
+    codex_utils_private_state::verify_private_permissions(file)
+        .map_err(|_| AuthorityLeaseError::UnsafeStateDirectory)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, AuthorityLeaseError> {
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
+    let flags = match access {
+        Access::Read => OFlags::RDONLY,
+        Access::Create => OFlags::RDWR | OFlags::CREATE,
+    } | OFlags::NOFOLLOW
+        | OFlags::NONBLOCK
+        | OFlags::CLOEXEC;
+    let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
+        .map_err(|_| AuthorityLeaseError::Unavailable)?
+        .into();
+    verify_private_file(&file)?;
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
     Ok(file)
+}
+
+#[cfg(target_os = "macos")]
+fn validate_destination(directory: &File, name: &str) -> Result<(), AuthorityLeaseError> {
+    if entry_exists(directory, name)? {
+        // Validate existing evidence instead of replacing an unsafe ACL with
+        // the new staging file's private permissions.
+        open_private(directory, name, Access::Read)?;
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
 fn entry_exists(directory: &File, name: &str) -> Result<bool, AuthorityLeaseError> {
-    match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
+    let result = match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
         Ok(_) => Ok(true),
         Err(rustix::io::Errno::NOENT) => Ok(false),
         Err(_) => Err(AuthorityLeaseError::Unavailable),
-    }
+    };
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
+    result
 }
 
 #[cfg(unix)]
 fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
-    rustix::fs::renameat(
+    #[cfg(target_os = "macos")]
+    let source = open_private(directory, "authority-leases.next", Access::Read)?;
+    #[cfg(target_os = "macos")]
+    {
+        validate_destination(directory, "authority-leases.json")?;
+        verify_directory(directory)?;
+        verify_private_file(&source)?;
+    }
+    let result = rustix::fs::renameat(
         directory,
         "authority-leases.next",
         directory,
         "authority-leases.json",
     )
-    .map_err(|_| AuthorityLeaseError::Unavailable)
+    .map_err(|_| AuthorityLeaseError::Unavailable);
+    #[cfg(target_os = "macos")]
+    {
+        verify_private_file(&source)?;
+        verify_directory(directory)?;
+    }
+    result
 }
 
 #[cfg(not(unix))]
@@ -1711,3 +1783,11 @@ mod tests {
         assert_eq!(registry.capacity().unwrap().leases, 0);
     }
 }
+
+#[cfg(all(test, target_os = "macos"))]
+#[path = "authority_lease_macos_tests.rs"]
+mod macos_tests;
+
+#[cfg(all(test, unix))]
+#[path = "authority_lease_unix_tests.rs"]
+mod unix_tests;
