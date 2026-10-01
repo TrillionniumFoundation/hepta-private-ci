@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "7abcf31217ee6cff0d7742f8a63a980c3decd002",
+    "tree": "83290941ef17a5ddc4aabcdcb6d53f7a13a06398"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -420,7 +420,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+      "object": "c94be1eddebaf2daff26a62c5ec5cda29ad9d8fa"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -480,7 +480,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
-      "object": "61d8f2b30d97b6134b17f604d67f5940391ba0e5"
+      "object": "72332f3875ab31b88a6efc05dd67b836553fce5a"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
@@ -502,5 +502,16 @@
       "path": "docs/modules/learning.ledger/TECHNICAL.md",
       "object": "9ddcc6bf01d6ce9a61a804f0c38fdbfa3d690d54"
     }
-  ]
+  ],
+  "historicalInvalidSourceBase": {
+    "state": "invalid_historical_metadata_retained",
+    "originalSourceBase": {
+      "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+      "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    },
+    "meaning": "diagnostic_only_not_a_current_source_or_execution_receipt",
+    "localObservation": "historical Git object missing in branch-history checkout (cat-file exit 128)",
+    "priorCiObservation": "object resolved by all-ref checkout but failed candidate ancestry (merge-base exit 1)",
+    "supersededReason": "changed signed-evidence source is freshly bound to a real current source checkpoint; invalid historical qualification is not repaired or transferred"
+  }
 }

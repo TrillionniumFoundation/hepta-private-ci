@@ -258,3 +258,31 @@ rewrites were restored to keep the patch scoped; owned Rust formatting passed.
 The four-package automatic fix completed; the separately attempted Agentd fix
 remains resource-blocked as recorded above. No local Rust tests were rerun after
 automatic fixes or formatting.
+
+## Follow-up source-navigation checkpoint
+
+The coherent source/docs checkpoint is
+`7abcf31217ee6cff0d7742f8a63a980c3decd002`, tree
+`83290941ef17a5ddc4aabcdcb6d53f7a13a06398`.
+The changed source and two test-only dependency additions affect thirteen map
+observations: prompt.registry, prompt.optimizer, intelligence.control,
+runtime.agentd, kernel.operations, runtime.supervisor, knowledge.graph,
+learning.ledger, learning.operator, learning.plasticity, platform.types,
+memory.retrieval and memory.federation. Their exact current-source bindings are
+refreshed without transferring execution evidence or changing claim flags;
+the plasticity source-identity projection is synchronized too.
+
+The changed learning.ledger map previously had an invalid inherited sourceBase.
+Its current source receives a new real checkpoint binding. The original identity
+and the two distinct local/CI rejection observations are retained explicitly in
+`historicalInvalidSourceBase` as diagnostic metadata. This does not make the old
+identity valid, repair its historical qualification or grant product execution.
+The six unchanged invalid anchors in objective.compiler, utility.ndu,
+cognitive.read, learning.artifacts, automation.taskflow and control.engineering
+remain blocking repository-wide failures. The separate kernel.operations profile
+state mismatch and inherited intelligence enum lint also remain open.
+
+Independent read-only re-review of the repaired source and a separate docs/workflow
+consistency review found no additional concrete scoped bypass or evidence overclaim.
+This is convergence of the examined native invariants, not proof that no further
+optimization can exist or that the missing product composition is complete.
