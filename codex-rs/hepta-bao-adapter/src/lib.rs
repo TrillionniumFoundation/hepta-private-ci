@@ -52,6 +52,26 @@ mod operation_execution;
 #[cfg(target_os = "linux")]
 mod private_files;
 mod product_bootstrap;
+#[cfg(target_os = "linux")]
+mod runtime_authbus;
+#[cfg(target_os = "linux")]
+mod runtime_client;
+#[cfg(target_os = "linux")]
+mod runtime_clock;
+#[cfg(target_os = "linux")]
+mod runtime_config;
+#[cfg(target_os = "linux")]
+pub use runtime_client::SecretsRuntimeClient;
+#[cfg(target_os = "linux")]
+pub use runtime_client::SecretsRuntimeClientConfig;
+#[cfg(target_os = "linux")]
+mod runtime_service;
+#[cfg(target_os = "linux")]
+pub use runtime_config::SecretsRuntimeServiceConfig;
+#[cfg(target_os = "linux")]
+pub use runtime_service::SecretsRuntimeResponse;
+#[cfg(target_os = "linux")]
+pub use runtime_service::serve_secrets_runtime;
 #[cfg(all(test, unix))]
 mod saga_crash;
 mod secret_boundary_v1;

@@ -23,6 +23,7 @@ use serde::Serialize;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::Instant;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -32,6 +33,20 @@ pub(crate) struct RoleConnection {
     pub timeout_ms: u64,
 }
 impl RoleConnection {
+    pub(crate) fn call_before<Q: Serialize, R: serde::de::DeserializeOwned>(
+        &self,
+        request: &Q,
+        deadline: Instant,
+    ) -> Result<R, ConsumerPortError> {
+        let mut connection = self.clone();
+        let remaining = deadline
+            .checked_duration_since(Instant::now())
+            .ok_or(ConsumerPortError::Unavailable)?;
+        connection.timeout_ms = connection
+            .timeout_ms
+            .min(u64::try_from(remaining.as_millis()).map_err(unavailable)?);
+        connection.call(request)
+    }
     pub fn call<Q: Serialize, R: serde::de::DeserializeOwned>(
         &self,
         request: &Q,
@@ -109,6 +124,7 @@ type OriginalAdmissionDigests = ([u8; 32], [u8; 32]);
 #[derive(Clone)]
 pub struct SecretsAuthorityClient {
     config: SecretsRoleClientConfig,
+    deadline: Option<Instant>,
 }
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -120,10 +136,26 @@ pub struct ApprovedSecretOperation {
 impl SecretsAuthorityClient {
     pub fn new(config: SecretsRoleClientConfig) -> Result<Self, ConsumerPortError> {
         config.validate()?;
-        Ok(Self { config })
+        Ok(Self {
+            config,
+            deadline: None,
+        })
+    }
+    pub(crate) fn for_original_deadline(&self, deadline: Instant) -> Self {
+        Self {
+            config: self.config.clone(),
+            deadline: Some(deadline),
+        }
     }
     pub fn trusted_time(&self) -> Result<SignedTrustedTimeAttestation, ConsumerPortError> {
-        self.config.authority.trusted_time()
+        match self.call(&AuthorityRequest::Time)? {
+            AuthorityResponse::Time { attestation } => attestation.verify(
+                &self.config.authority.issuer_id,
+                self.config.authority.key_epoch,
+                &self.config.authority.verifying_key,
+            ),
+            _ => Err(ConsumerPortError::Unavailable),
+        }
     }
     pub fn authorize_original(
         &self,
@@ -137,6 +169,27 @@ impl SecretsAuthorityClient {
             AuthorityResponse::Grant { grant } => grant,
             _ => return Err(ConsumerPortError::Unavailable),
         };
+        self.approve_original(operation, grant)
+    }
+    pub(crate) fn authorize_original_once(
+        &self,
+        operation: &str,
+    ) -> Result<(ApprovedSecretOperation, SignedFinalUseRevocationUpdate), ConsumerPortError> {
+        crate::authority_role_owner::original_id(operation)?;
+        let update = self.refresh_revocations()?;
+        let grant = match self.call(&AuthorityRequest::IssueOnce {
+            original_operation_id: operation.to_owned(),
+        })? {
+            AuthorityResponse::Grant { grant } => grant,
+            _ => return Err(ConsumerPortError::Unavailable),
+        };
+        Ok((self.approve_original(operation, grant)?, update))
+    }
+    fn approve_original(
+        &self,
+        operation: &str,
+        grant: SignedFinalUseGrant,
+    ) -> Result<ApprovedSecretOperation, ConsumerPortError> {
         if grant.grant.signer_id != self.config.issuer_id
             || grant.grant.binding != self.config.frozen_binding
             || grant.grant.grant_id != format!("secrets.read:{operation}")
@@ -144,7 +197,7 @@ impl SecretsAuthorityClient {
             return Err(ConsumerPortError::Rejected);
         }
         verify_grant(&grant, &self.config.issuer_verifying_key)?;
-        let approval = match self.config.operator.call(&OperatorRequest::Approve {
+        let approval = match self.call_operator(&OperatorRequest::Approve {
             grant: Box::new(grant.clone()),
         })? {
             OperatorResponse::Approval { approval } => approval,
@@ -203,7 +256,7 @@ impl SecretsAuthorityClient {
         }
     }
     pub fn refresh_revocations(&self) -> Result<SignedFinalUseRevocationUpdate, ConsumerPortError> {
-        let update = match self.config.operator.call(&OperatorRequest::Revocations)? {
+        let update = match self.call_operator(&OperatorRequest::Revocations)? {
             OperatorResponse::Revocations { update } => update,
             _ => return Err(ConsumerPortError::Unavailable),
         };
@@ -218,8 +271,24 @@ impl SecretsAuthorityClient {
             _ => Err(ConsumerPortError::Unavailable),
         }
     }
+    fn call_operator(
+        &self,
+        request: &OperatorRequest,
+    ) -> Result<OperatorResponse, ConsumerPortError> {
+        match self.deadline {
+            Some(deadline) => self.config.operator.call_before(request, deadline),
+            None => self.config.operator.call(request),
+        }
+    }
     fn call(&self, request: &AuthorityRequest) -> Result<AuthorityResponse, ConsumerPortError> {
-        self.config.authority.connection.call(request)
+        match self.deadline {
+            Some(deadline) => self
+                .config
+                .authority
+                .connection
+                .call_before(request, deadline),
+            None => self.config.authority.connection.call(request),
+        }
     }
 }
 impl AuthorityFrontierStore<FinalUseFrontier> for SecretsAuthorityClient {

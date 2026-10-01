@@ -274,3 +274,28 @@ async fn protected_clock_rollback_fences_signing_and_retains_original_status()
     owner.close().await;
     Ok(())
 }
+
+#[tokio::test]
+async fn once_issuance_keeps_lost_reply_original_after_expiry_and_restart()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = Fixture::new()?;
+    fixture.config.grant_lifetime_ms = 30;
+    let owner = AuthorityRoleOwner::open(fixture.config.clone()).await?;
+    let grant = owner.issue_once("lost-reply-original").await?;
+    assert_eq!(
+        owner.issue_once("lost-reply-original").await,
+        Err(ConsumerPortError::Unavailable)
+    );
+    tokio::time::sleep(std::time::Duration::from_millis(35)).await;
+    assert_eq!(owner.issue("lost-reply-original").await?, grant);
+    owner.close().await;
+    let owner = AuthorityRoleOwner::open(fixture.config.clone()).await?;
+    assert_eq!(
+        owner.issue_once("lost-reply-original").await,
+        Err(ConsumerPortError::Unavailable)
+    );
+    assert_eq!(owner.issue("lost-reply-original").await?, grant);
+    assert_eq!(owner.original_status("lost-reply-original").await?, None);
+    owner.close().await;
+    Ok(())
+}

@@ -91,6 +91,9 @@ pub(crate) enum AuthorityRequest {
     Issue {
         original_operation_id: String,
     },
+    IssueOnce {
+        original_operation_id: String,
+    },
     BeginOriginal {
         original_operation_id: String,
         approval: SignedFinalUseApproval,

@@ -125,7 +125,12 @@ struct CredentialConsumerRole {
 }
 
 impl crate::local_service::LocalServiceOwner for CredentialConsumerRole {
-    async fn handle(&self, _peer_uid: u32, request: &[u8]) -> Result<Vec<u8>, ConsumerPortError> {
+    async fn handle(
+        &self,
+        _peer_uid: u32,
+        request: &[u8],
+        _original_deadline: std::time::Instant,
+    ) -> Result<Vec<u8>, ConsumerPortError> {
         let request: ConsumerRequest = serde_json::from_slice(request).map_err(unavailable)?;
         let response = match request {
             ConsumerRequest::PrepareReceipt {

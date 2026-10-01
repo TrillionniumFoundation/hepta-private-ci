@@ -17,10 +17,18 @@ async fn main() -> std::process::ExitCode {
     if arguments.next().is_some()
         || configuration.is_none()
         || (reservation.is_some()
-            && command.as_deref() != Some(std::ffi::OsStr::new("settlement-original")))
+            && !matches!(
+                command.as_deref().and_then(std::ffi::OsStr::to_str),
+                Some(
+                    "settlement-original"
+                        | "consume-original"
+                        | "runtime-status"
+                        | "recover-original"
+                )
+            ))
     {
         eprintln!(
-            "usage: hepta-secrets-runtime serve-consumer|serve-authority|serve-operator /etc/hepta-secrets/role.json\n       hepta-secrets-runtime authorize-original|original-status /etc/hepta-secrets/client.json ORIGINAL_ID\n       hepta-secrets-runtime settlement-original /etc/hepta-secrets/evidence.json ORIGINAL_ID RESERVATION_ID"
+            "usage: hepta-secrets-runtime serve-runtime|serve-consumer|serve-authority|serve-operator /etc/hepta-secrets/role.json\n       hepta-secrets-runtime authorize-original|original-status /etc/hepta-secrets/client.json ORIGINAL_ID\n       hepta-secrets-runtime settlement-original /etc/hepta-secrets/evidence.json ORIGINAL_ID RESERVATION_ID\n       hepta-secrets-runtime consume-original|runtime-status|recover-original /etc/hepta-secrets/agent.json ORIGINAL_ID AGENT_UUID"
         );
         return std::process::ExitCode::from(64);
     }
@@ -36,6 +44,9 @@ async fn main() -> std::process::ExitCode {
             tokio::select! {_=terminate.recv()=>{},_=tokio::signal::ctrl_c()=>{}}
         };
         match command.as_deref().and_then(std::ffi::OsStr::to_str) {
+            Some("serve-runtime") if operation.is_none() => {
+                codex_hepta_bao_adapter::serve_secrets_runtime(codex_hepta_bao_adapter::SecretsRuntimeServiceConfig::load_root_owned(path)?, shutdown).await
+            }
             Some("serve-consumer") if operation.is_none() => {
                 codex_hepta_bao_adapter::serve_credential_consumer(
                     CredentialConsumerServiceConfig::load_root_owned(path)?,
@@ -56,6 +67,20 @@ async fn main() -> std::process::ExitCode {
                     shutdown,
                 )
                 .await
+            }
+            Some("consume-original" | "runtime-status" | "recover-original") => {
+                let operation = operation.as_deref().and_then(std::ffi::OsStr::to_str).ok_or(ConsumerPortError::Invalid)?;
+                let agent = reservation.as_deref().and_then(std::ffi::OsStr::to_str).ok_or(ConsumerPortError::Invalid)?;
+                let client = codex_hepta_bao_adapter::SecretsRuntimeClient::new(
+                    codex_hepta_bao_adapter::SecretsRuntimeClientConfig::load_root_owned(path)?, agent)?;
+                let response = match command.as_deref().and_then(std::ffi::OsStr::to_str) {
+                    Some("consume-original") => client.consume_original(operation, std::time::Duration::from_secs(30))?,
+                    Some("runtime-status") => client.original_status(operation)?,
+                    Some("recover-original") => client.recover_original(operation)?,
+                    _ => return Err(ConsumerPortError::Invalid),
+                };
+                println!("{}", serde_json::to_string(&response).map_err(|_| ConsumerPortError::Unavailable)?);
+                Ok(())
             }
             Some("settlement-original") => {
                 let operation = operation.as_deref().and_then(std::ffi::OsStr::to_str).ok_or(ConsumerPortError::Invalid)?;

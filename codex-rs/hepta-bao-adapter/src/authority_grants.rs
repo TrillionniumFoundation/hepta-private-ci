@@ -13,13 +13,37 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 const MAX_GRANTS: i64 = 65_536;
+enum ExistingGrant {
+    ReturnOriginal,
+    RefuseNewAdmission,
+}
 impl AuthorityRoleOwner {
     pub async fn issue(&self, operation: &str) -> Result<SignedFinalUseGrant, ConsumerPortError> {
+        self.issue_with_existing(operation, ExistingGrant::ReturnOriginal)
+            .await
+    }
+
+    pub async fn issue_once(
+        &self,
+        operation: &str,
+    ) -> Result<SignedFinalUseGrant, ConsumerPortError> {
+        self.issue_with_existing(operation, ExistingGrant::RefuseNewAdmission)
+            .await
+    }
+
+    async fn issue_with_existing(
+        &self,
+        operation: &str,
+        existing: ExistingGrant,
+    ) -> Result<SignedFinalUseGrant, ConsumerPortError> {
         original_id(operation)?;
         let (mut tx, guard) = self.begin().await?;
         if let Some(grant) = self.grant_in(&mut tx, operation).await? {
             self.commit(tx, guard).await?;
-            return Ok(grant); // Expiry never permits minting another nonce.
+            return match existing {
+                ExistingGrant::ReturnOriginal => Ok(grant),
+                ExistingGrant::RefuseNewAdmission => Err(ConsumerPortError::Unavailable),
+            }; // Expiry or a lost reply never permits minting another nonce.
         }
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authority_role_grant")
             .fetch_one(&mut *tx)

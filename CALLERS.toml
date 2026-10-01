@@ -67,6 +67,12 @@ required_boundary_ids = [
   "secrets_consumer_credential_effect",
   "secrets_consumer_settlement",
   "secrets_runtime_settlement_request",
+  "final_use_current_head_freshness",
+  "secrets_runtime_service_boot",
+  "secrets_runtime_once_authorization",
+  "secrets_original_once_issuer",
+  "secrets_original_effect_clock_budget",
+  "secrets_agent_runtime_consume",
   "bao_receipt_consumer_registration"
 ]
 
@@ -175,7 +181,7 @@ symbol = "FinalUseAuthority::open_state_dir"
 call_pattern = '\bFinalUseAuthority::open_state_dir(?:_with_clock|_with_trust|_with_recovered_trust|_with_issuer_keys)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_recovered_trust(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-supervisor/src/local_model_authority.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-supervisor/src/local_model_authority.rs", "codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
 caller_markers = ["FinalUseAuthority", "verifying_key"]
 
 [[boundary]]
@@ -262,7 +268,7 @@ id = "final_use_approval_trust"
 symbol = "FinalUseApprovalVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role_config.rs", "codex-rs/hepta-bao-adapter/src/operator_approval.rs", "codex-rs/hepta-bao-adapter/src/role_client.rs", "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role_config.rs", "codex-rs/hepta-bao-adapter/src/operator_approval.rs", "codex-rs/hepta-bao-adapter/src/role_client.rs", "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs", "codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
 caller_markers = ["FinalUseApprovalVerifier::new"]
 
 [[boundary]]
@@ -279,8 +285,8 @@ id = "final_use_revocation_feed_trust"
 symbol = "FinalUseRevocationFeedVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["FinalUseRevocationFeedVerifier::new"]
 
 [[boundary]]
 id = "final_use_revocation_feed_apply"
@@ -330,8 +336,8 @@ id = "bao_final_use_host_new"
 symbol = "BaoFinalUseHost::new"
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["impl BaoFinalUseHost", "pub fn new(", "DuplicateConsumer"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["BaoFinalUseHost::new", "consumer.registration()"]
 
 [[boundary]]
 id = "bao_registered_revocation_update"
@@ -339,8 +345,8 @@ symbol = "BaoFinalUseHost::apply_revocation_update"
 call_pattern = "\\.\\s*apply_revocation_update\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["pub fn apply_revocation_update", "revocation_verifier", ".apply(&self.authority, update, now_unix_ms)"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["apply_revocation_update"]
 
 [[boundary]]
 id = "bao_registered_final_use_host"
@@ -704,3 +710,56 @@ definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
 definition_markers = ["pub fn for_prepared_receipts", "receipt_preparer = Some", "Self::for_operations"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_port.rs"]
 caller_markers = ["RegisteredBaoConsumer::for_prepared_receipts", "prepare_receipt"]
+
+[[boundary]]
+id = "final_use_current_head_freshness"
+symbol = "FinalUseRevocationFeedVerifier::authenticate_current_head"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub fn authenticate_current_head", "self.verify_signed(signed, now_unix_ms)?", "!= signed.update.head"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["authenticate_current_head", "current == update.update.head"]
+call_pattern = 'revocation_verifier\s*\.\s*authenticate_current_head\s*\('
+
+[[boundary]]
+id = "secrets_runtime_service_boot"
+symbol = "serve_secrets_runtime"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+definition_markers = ["pub async fn serve_secrets_runtime", "FinalUseAuthority::open_state_dir_with_recovered_trust", "open_authbus", "compose_hepta_secrets_runtime"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_secrets_runtime", "SecretsRuntimeServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_runtime_once_authorization"
+symbol = "SecretsAuthorityClient::authorize_original_once"
+definition_path = "codex-rs/hepta-bao-adapter/src/role_client.rs"
+definition_markers = ["pub(crate) fn authorize_original_once", "IssueOnce", "self.refresh_revocations()?"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["authorize_original_once", "apply_revocation_update(&update)"]
+call_pattern = 'authority\s*\.\s*authorize_original_once\s*\('
+
+[[boundary]]
+id = "secrets_original_once_issuer"
+symbol = "AuthorityRoleOwner::issue_once"
+definition_path = "codex-rs/hepta-bao-adapter/src/authority_grants.rs"
+definition_markers = ["pub async fn issue_once", "ExistingGrant::RefuseNewAdmission"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role.rs"]
+caller_markers = ["IssueOnce", "self.issue_once"]
+call_pattern = 'self\s*\.\s*issue_once\s*\('
+
+[[boundary]]
+id = "secrets_original_effect_clock_budget"
+symbol = "RuntimeProtectedClock::begin_original_deadline"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_clock.rs"
+definition_markers = ["pub fn begin_original_deadline", "original_deadline", "Instant::now() >= deadline", "impl AuthorityClock"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["begin_original_deadline(deadline)", "transport_deadline.min"]
+call_pattern = 'clock\s*\.\s*begin_original_deadline\s*\('
+
+[[boundary]]
+id = "secrets_agent_runtime_consume"
+symbol = "SecretsRuntimeClient::consume_original"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_client.rs"
+definition_markers = ["pub fn consume_original", "RuntimeRequest::Consume", "SecretsRuntimeResponse::Unknown", "config.agent_uid != rustix::process::geteuid().as_raw()"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["client.consume_original", "SecretsRuntimeClientConfig::load_root_owned"]
+call_pattern = 'client\s*\.\s*consume_original\s*\('

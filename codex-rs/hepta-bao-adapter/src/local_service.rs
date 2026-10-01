@@ -3,6 +3,7 @@
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::Instant;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -37,6 +38,7 @@ pub(crate) trait LocalServiceOwner: Send + Sync + 'static {
         &self,
         peer_uid: u32,
         request: &[u8],
+        original_deadline: Instant,
     ) -> impl Future<Output = Result<Vec<u8>, ConsumerPortError>> + Send;
     fn fence_unknown(&self);
     fn close(&self) -> impl Future<Output = ()> + Send;
@@ -52,9 +54,9 @@ pub(crate) async fn serve<O: LocalServiceOwner>(
         || config.allowed_peer_uids.is_empty()
         || config.allowed_peer_uids.len() > 8
         || config.request_timeout_ms == 0
-        || config.request_timeout_ms > 5_000
+        || config.request_timeout_ms > 30_000
         || config.shutdown_drain_ms < config.request_timeout_ms
-        || config.shutdown_drain_ms > 10_000
+        || config.shutdown_drain_ms > 60_000
     {
         return Err(ConsumerPortError::Invalid);
     }
@@ -79,10 +81,11 @@ pub(crate) async fn serve<O: LocalServiceOwner>(
                 let Ok(permit) = Arc::clone(&permits).try_acquire_owned() else { drop(stream); continue; };
                 let owner = Arc::clone(&owner);
                 let config = Arc::clone(&config);
+                let original_deadline = Instant::now() + Duration::from_millis(config.request_timeout_ms);
                 tasks.spawn(async move {
                     let _permit = permit;
                     if timeout(Duration::from_millis(config.request_timeout_ms), exchange(
-                        stream, &config, &*owner,
+                        stream, &config, &*owner, original_deadline,
                     )).await.is_err() { owner.fence_unknown(); }
                 });
             }
@@ -103,6 +106,9 @@ pub(crate) async fn serve<O: LocalServiceOwner>(
     {
         owner.fence_unknown();
         tasks.abort_all();
+        while tasks.join_next().await.is_some() {}
+        // JoinSet completion proves request futures have stopped before this
+        // endpoint is released. A cancelled durable owner remains fenced.
         return Err(ConsumerPortError::Unavailable);
     }
     drop(endpoint);
@@ -113,6 +119,7 @@ async fn exchange<O: LocalServiceOwner>(
     mut stream: UnixStream,
     config: &LocalServiceConfig,
     owner: &O,
+    original_deadline: Instant,
 ) -> Result<(), ConsumerPortError> {
     let peer_uid = stream.peer_cred().map_err(unavailable)?.uid();
     if !config.allowed_peer_uids.contains(&peer_uid) {
@@ -127,7 +134,7 @@ async fn exchange<O: LocalServiceOwner>(
     if stream.peer_cred().map_err(unavailable)?.uid() != peer_uid {
         return Err(ConsumerPortError::Rejected);
     }
-    let response = owner.handle(peer_uid, &body).await?;
+    let response = owner.handle(peer_uid, &body, original_deadline).await?;
     if response.is_empty() || response.len() > MAX_FRAME_BYTES {
         return Err(ConsumerPortError::Unavailable);
     }

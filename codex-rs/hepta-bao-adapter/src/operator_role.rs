@@ -63,6 +63,10 @@ impl SecretsOperatorServiceConfig {
     }
     fn keys_profile(&self) -> Result<(SigningKey, SigningKey, [u8; 32]), ConsumerPortError> {
         if self.schema_version != 1
+            || self.service.request_timeout_ms == 0
+            || self.service.request_timeout_ms > 5_000
+            || self.service.shutdown_drain_ms < self.service.request_timeout_ms
+            || self.service.shutdown_drain_ms > 10_000
             || self.service.service_uid != rustix::process::geteuid().as_raw()
             || self.runtime_uid == self.service.service_uid
             || self.authority_time.connection.peer_uid == self.service.service_uid
@@ -286,7 +290,12 @@ pub async fn serve_secrets_operator(
     crate::local_service::serve(service, owner, endpoint, shutdown).await
 }
 impl LocalServiceOwner for OperatorRoleOwner {
-    async fn handle(&self, _peer_uid: u32, request: &[u8]) -> Result<Vec<u8>, ConsumerPortError> {
+    async fn handle(
+        &self,
+        _peer_uid: u32,
+        request: &[u8],
+        _original_deadline: std::time::Instant,
+    ) -> Result<Vec<u8>, ConsumerPortError> {
         let request: OperatorRequest = serde_json::from_slice(request).map_err(unavailable)?;
         let result = match request {
             OperatorRequest::Approve { grant } => self

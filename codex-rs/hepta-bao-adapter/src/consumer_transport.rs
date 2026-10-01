@@ -30,7 +30,24 @@ impl PreparedConnection {
         peer_uid: u32,
         timeout: Duration,
     ) -> Result<Self, ConsumerPortError> {
-        if !path.is_absolute() || timeout.is_zero() || timeout > Duration::from_secs(5) {
+        Self::connect_bounded(path, peer_uid, timeout, Duration::from_secs(5))
+    }
+
+    pub(crate) fn connect_runtime(
+        path: &Path,
+        peer_uid: u32,
+        timeout: Duration,
+    ) -> Result<Self, ConsumerPortError> {
+        Self::connect_bounded(path, peer_uid, timeout, Duration::from_secs(30))
+    }
+
+    fn connect_bounded(
+        path: &Path,
+        peer_uid: u32,
+        timeout: Duration,
+        maximum: Duration,
+    ) -> Result<Self, ConsumerPortError> {
+        if !path.is_absolute() || timeout.is_zero() || timeout > maximum {
             return Err(ConsumerPortError::Invalid);
         }
         let deadline = Instant::now() + timeout;

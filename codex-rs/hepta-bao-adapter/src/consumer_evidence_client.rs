@@ -17,6 +17,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::path::Path;
 use std::time::Duration;
+use std::time::Instant;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -36,6 +37,7 @@ impl ConsumerEvidenceConfig {
 }
 pub struct ConsumerEvidenceClient {
     config: ConsumerEvidenceConfig,
+    deadline: Option<Instant>,
 }
 impl ConsumerEvidenceClient {
     pub fn new(config: ConsumerEvidenceConfig) -> Result<Self, ConsumerPortError> {
@@ -56,7 +58,14 @@ impl ConsumerEvidenceClient {
         if key.is_weak() {
             return Err(ConsumerPortError::Invalid);
         }
-        Ok(Self { config })
+        Ok(Self {
+            config,
+            deadline: None,
+        })
+    }
+    pub(crate) fn for_original_deadline(mut self, deadline: Instant) -> Self {
+        self.deadline = Some(deadline);
+        self
     }
     /// Status-like evidence request. It never reads or authenticates a credential.
     /// The consumer derives the cost and receipt digest from its retained ACK.
@@ -66,10 +75,19 @@ impl ConsumerEvidenceClient {
         reservation: &str,
     ) -> Result<SignedSettlementEvidence, ConsumerPortError> {
         crate::authority_role_owner::original_id(operation)?;
+        let timeout = Duration::from_millis(self.config.consumer.timeout_ms);
+        let timeout = match self.deadline {
+            Some(deadline) => timeout.min(
+                deadline
+                    .checked_duration_since(Instant::now())
+                    .ok_or(ConsumerPortError::Unavailable)?,
+            ),
+            None => timeout,
+        };
         let connection = PreparedConnection::connect(
             &self.config.consumer.socket_path,
             self.config.consumer.service_uid,
-            Duration::from_millis(self.config.consumer.timeout_ms),
+            timeout,
         )?;
         let signed = match connection.exchange(&ConsumerRequest::Settlement {
             operation_id: operation.to_owned(),
@@ -97,10 +115,29 @@ impl ConsumerEvidenceClient {
 }
 impl BaoAuthBusEvidenceProvider for ConsumerEvidenceClient {
     fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
-        self.config
-            .authority
-            .trusted_time()
-            .map_err(|_| BaoAuthBusError::Evidence("independent protected time unavailable"))
+        let result = match self.deadline {
+            Some(deadline) => {
+                let response: crate::role_wire::AuthorityResponse = self
+                    .config
+                    .authority
+                    .connection
+                    .call_before(&crate::role_wire::AuthorityRequest::Time, deadline)
+                    .map_err(|_| {
+                        BaoAuthBusError::Evidence("original protected-time budget unavailable")
+                    })?;
+                match response {
+                    crate::role_wire::AuthorityResponse::Time { attestation } => attestation
+                        .verify(
+                            &self.config.authority.issuer_id,
+                            self.config.authority.key_epoch,
+                            &self.config.authority.verifying_key,
+                        ),
+                    _ => Err(ConsumerPortError::Unavailable),
+                }
+            }
+            None => self.config.authority.trusted_time(),
+        };
+        result.map_err(|_| BaoAuthBusError::Evidence("independent protected time unavailable"))
     }
     fn settlement_evidence(
         &mut self,

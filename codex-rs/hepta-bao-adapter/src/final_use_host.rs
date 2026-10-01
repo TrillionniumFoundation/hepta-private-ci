@@ -366,10 +366,19 @@ impl BaoFinalUseHost {
             .clock
             .now_unix_ms()
             .map_err(BaoFinalUseHostError::Trust)?;
-        let receipt = self
-            .revocation_verifier
-            .apply(&self.authority, update, now_unix_ms)
-            .map_err(BaoFinalUseHostError::Control)?;
+        let current = self.authority.revocation_head().map_err(|error| {
+            BaoFinalUseHostError::Control(codex_hepta_contracts::FinalUseControlError::Authority(
+                error,
+            ))
+        })?;
+        let receipt = if current == update.update.head {
+            self.revocation_verifier
+                .authenticate_current_head(&self.authority, update, now_unix_ms)
+        } else {
+            self.revocation_verifier
+                .apply(&self.authority, update, now_unix_ms)
+        }
+        .map_err(BaoFinalUseHostError::Control)?;
         *fresh_until = receipt.valid_until_unix_ms();
         Ok(receipt)
     }

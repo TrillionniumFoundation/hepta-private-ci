@@ -24,7 +24,12 @@ pub async fn serve_secrets_authority(
 }
 
 impl LocalServiceOwner for AuthorityRoleOwner {
-    async fn handle(&self, peer_uid: u32, request: &[u8]) -> Result<Vec<u8>, ConsumerPortError> {
+    async fn handle(
+        &self,
+        peer_uid: u32,
+        request: &[u8],
+        _original_deadline: std::time::Instant,
+    ) -> Result<Vec<u8>, ConsumerPortError> {
         let request: AuthorityRequest = serde_json::from_slice(request).map_err(unavailable)?;
         let permitted = peer_uid == self.config.runtime_uid
             || (peer_uid == self.config.operator_uid
@@ -85,6 +90,11 @@ impl LocalServiceOwner for AuthorityRoleOwner {
                     original_operation_id,
                 } => Ok(AuthorityResponse::Grant {
                     grant: self.issue(&original_operation_id).await?,
+                }),
+                AuthorityRequest::IssueOnce {
+                    original_operation_id,
+                } => Ok(AuthorityResponse::Grant {
+                    grant: self.issue_once(&original_operation_id).await?,
                 }),
                 AuthorityRequest::BeginOriginal {
                     original_operation_id,

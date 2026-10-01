@@ -62,6 +62,10 @@ impl SecretsAuthorityServiceConfig {
         StableId::new(&self.distributor_id).map_err(invalid)?;
         Generation::new(self.time_key_epoch).map_err(invalid)?;
         if self.schema_version != 1
+            || self.service.request_timeout_ms == 0
+            || self.service.request_timeout_ms > 5_000
+            || self.service.shutdown_drain_ms < self.service.request_timeout_ms
+            || self.service.shutdown_drain_ms > 10_000
             || self.runtime_uid == self.operator_uid
             || self.service.service_uid == self.runtime_uid
             || self.service.service_uid == self.operator_uid
