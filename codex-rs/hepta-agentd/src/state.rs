@@ -190,6 +190,10 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
+    #[allow(
+        dead_code,
+        reason = "Reserved production seam; learning.plasticity tracks the uncomposed self-iteration trigger"
+    )]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -207,6 +211,10 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed topology plasticity.
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[allow(
+        dead_code,
+        reason = "Reserved production seam; learning.plasticity tracks the uncomposed self-iteration trigger"
+    )]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,

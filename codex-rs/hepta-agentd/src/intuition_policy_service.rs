@@ -120,6 +120,10 @@ fn retain_committed_receipt<T, E>(
 
 impl AgentdState {
     #[allow(clippy::too_many_arguments)]
+    #[allow(
+        clippy::result_large_err,
+        reason = "Keep the public service error payload compatible and retain complete acknowledged receipts"
+    )]
     pub(crate) fn prepare_intuition_policy_v3(
         &self,
         request: CalibratedDecisionRequestV1,
@@ -154,6 +158,10 @@ impl AgentdState {
         .map_err(Into::into)
     }
 
+    #[allow(
+        clippy::result_large_err,
+        reason = "Keep the public service error payload compatible and retain complete acknowledged receipts"
+    )]
     pub(crate) fn commit_intuition_policy_v4_checked<F>(
         &self,
         prepared: PreparedAgentdIntuitionDecisionV3,
