@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   WorkerFrameDecoder,
+  MAX_BROWSER_WORKER_FRAME_BYTES,
   buildWorkerFrame,
   canonicalWorkerJson,
   encodeWorkerFrame,
@@ -84,4 +85,62 @@ test("decoder fails closed on partial channel termination", () => {
   const decoder = new WorkerFrameDecoder();
   decoder.push(encoded.subarray(0, encoded.length - 1));
   assert.throws(() => decoder.end(), /partial frame/);
+});
+
+test("decoder rejects invalid UTF-8 even when lossy decoding preserves canonical JSON", () => {
+  const encoded = encodeWorkerFrame(frame({ payload: { text: "�" } }));
+  const replacementOffset = encoded.indexOf(Buffer.from("�", "utf8"));
+  assert.notEqual(replacementOffset, -1);
+  // A single invalid byte decodes to the same replacement character through
+  // Buffer.toString(), hiding a wire mutation from canonical JSON comparison.
+  const body = Buffer.concat([
+    encoded.subarray(4, replacementOffset),
+    Buffer.from([0xff]),
+    encoded.subarray(replacementOffset + 3),
+  ]);
+  const prefix = Buffer.alloc(4);
+  prefix.writeUInt32BE(body.length, 0);
+  assert.throws(
+    () => new WorkerFrameDecoder().push(Buffer.concat([prefix, body])),
+    /not valid UTF-8/,
+  );
+});
+
+test("worker serialization rejects Unicode and sparse arrays that Rust cannot canonicalize", () => {
+  for (const payload of [{ text: "\ud800" }, { "\ud800": "value" }]) {
+    assert.throws(() => frame({ payload }), /well-formed Unicode/);
+  }
+  assert.throws(
+    () => frame({ payload: { items: new Array(1) } }),
+    /plain object/,
+  );
+  assert.doesNotThrow(() =>
+    encodeWorkerFrame(frame({ payload: { text: "😀�" } })),
+  );
+});
+
+test("decoder rejects a leading UTF-8 BOM instead of stripping wire bytes", () => {
+  const encoded = encodeWorkerFrame(frame());
+  const body = Buffer.concat([
+    Buffer.from([0xef, 0xbb, 0xbf]),
+    encoded.subarray(4),
+  ]);
+  const prefix = Buffer.alloc(4);
+  prefix.writeUInt32BE(body.length, 0);
+  assert.throws(
+    () => new WorkerFrameDecoder().push(Buffer.concat([prefix, body])),
+    /not valid JSON/,
+  );
+});
+
+test("a chunk containing arbitrarily many individually valid frames remains bounded", () => {
+  const encoded = encodeWorkerFrame(frame());
+  const count = Math.ceil(
+    (MAX_BROWSER_WORKER_FRAME_BYTES + 5) / encoded.length,
+  );
+  const oversized = Buffer.concat(Array.from({ length: count }, () => encoded));
+  assert.throws(
+    () => new WorkerFrameDecoder().push(oversized),
+    /chunk exceeds byte limit/,
+  );
 });

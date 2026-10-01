@@ -14,6 +14,7 @@ const KINDS = new Set([
   "response",
   "event",
 ]);
+const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 
 function requireRecord(value, name) {
   if (
@@ -43,20 +44,41 @@ function positiveInteger(value, name) {
 
 function canonicalValue(value, depth = 0) {
   if (depth > 32) throw new TypeError("worker frame nesting exceeds limit");
-  if (value === null || typeof value === "boolean" || typeof value === "string")
+  if (value === null || typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    for (let index = 0; index < value.length; index += 1) {
+      const unit = value.charCodeAt(index);
+      if (unit >= 0xd800 && unit <= 0xdbff) {
+        const next = value.charCodeAt(index + 1);
+        if (!(next >= 0xdc00 && next <= 0xdfff)) {
+          throw new TypeError(
+            "worker frame strings must contain well-formed Unicode",
+          );
+        }
+        index += 1;
+      } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+        throw new TypeError(
+          "worker frame strings must contain well-formed Unicode",
+        );
+      }
+    }
     return value;
+  }
   if (typeof value === "number") {
     if (!Number.isSafeInteger(value))
       throw new TypeError("worker frame numbers must be safe integers");
     return value;
   }
   if (Array.isArray(value))
-    return value.map((item) => canonicalValue(item, depth + 1));
+    return Array.from(value, (item) => canonicalValue(item, depth + 1));
   const record = requireRecord(value, "worker frame value");
   return Object.fromEntries(
     Object.keys(record)
       .sort()
-      .map((key) => [key, canonicalValue(record[key], depth + 1)]),
+      .map((key) => [
+        canonicalValue(key, depth + 1),
+        canonicalValue(record[key], depth + 1),
+      ]),
   );
 }
 
@@ -149,6 +171,9 @@ export class WorkerFrameDecoder {
     if (!(chunk instanceof Uint8Array)) {
       throw new TypeError("worker frame chunk must be bytes");
     }
+    if (chunk.byteLength > MAX_BROWSER_WORKER_FRAME_BYTES + 4) {
+      throw new TypeError("worker frame chunk exceeds byte limit");
+    }
     this.#buffer = Buffer.concat([this.#buffer, Buffer.from(chunk)]);
     if (this.#buffer.length > MAX_BROWSER_WORKER_FRAME_BYTES + 4) {
       const announced =
@@ -164,7 +189,12 @@ export class WorkerFrameDecoder {
         throw new TypeError("worker frame announced length is invalid");
       }
       if (this.#buffer.length < 4 + length) break;
-      const body = this.#buffer.subarray(4, 4 + length).toString("utf8");
+      let body;
+      try {
+        body = UTF8_DECODER.decode(this.#buffer.subarray(4, 4 + length));
+      } catch {
+        throw new TypeError("worker frame body is not valid UTF-8");
+      }
       this.#buffer = this.#buffer.subarray(4 + length);
       let parsed;
       try {

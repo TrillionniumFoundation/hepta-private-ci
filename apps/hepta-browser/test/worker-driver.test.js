@@ -3,7 +3,17 @@ import test from "node:test";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import { createHash } from "node:crypto";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  lstat,
+  mkdir,
+  mkdtemp,
+  realpath,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -23,7 +33,13 @@ function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function fakeLauncher({ holdDispatchResponse = null } = {}) {
+function fakeLauncher({
+  holdDispatchResponse = null,
+  payloadForResponse,
+  onSpawn,
+  onRequest,
+  holdKinds = [],
+} = {}) {
   return {
     posture: {
       inheritedPrivateChannel: true,
@@ -40,10 +56,13 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
       child.stdout = new PassThrough();
       child.stderr = new PassThrough();
       child.kill = () => true;
+      onSpawn?.(child);
       const decoder = new WorkerFrameDecoder();
       let sequence = 1;
       child.stdin.on("data", (chunk) => {
         for (const request of decoder.push(chunk)) {
+          onRequest?.(request);
+          if (holdKinds.includes(request.kind)) continue;
           let observation;
           switch (request.kind) {
             case "start":
@@ -79,7 +98,10 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
               sequence: sequence++,
               kind: "response",
               requestId: request.requestId,
-              payload: { ok: true, observation },
+              payload: payloadForResponse?.(request, observation) ?? {
+                ok: true,
+                observation,
+              },
             }),
           );
           if (request.kind === "dispatch" && holdDispatchResponse) {
@@ -96,7 +118,9 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
 }
 
 async function preparedDriver({ launcher = fakeLauncher() } = {}) {
-  const root = await mkdtemp(join(tmpdir(), "hepta-worker-driver-"));
+  const root = await realpath(
+    await mkdtemp(join(tmpdir(), "hepta-worker-driver-")),
+  );
   const workerPath = join(root, "worker.bin");
   const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
   await writeFile(workerPath, workerBytes, { mode: 0o700 });
@@ -186,7 +210,9 @@ test("dispatch returns at local pipe write without waiting for worker execution 
 });
 
 test("subprocess driver fails closed on worker artifact digest drift", async () => {
-  const root = await mkdtemp(join(tmpdir(), "hepta-worker-driver-"));
+  const root = await realpath(
+    await mkdtemp(join(tmpdir(), "hepta-worker-driver-")),
+  );
   const workerPath = join(root, "worker.bin");
   await writeFile(workerPath, "not-the-qualified-bytes", { mode: 0o700 });
   const driver = new SubprocessBrowserDriver({
@@ -298,4 +324,346 @@ test("subprocess driver rejects launchers that do not enforce the isolation post
       }),
     /hostFilesystemRestricted/,
   );
+});
+
+test("malformed worker observations close the channel without throwing from the stream handler", async () => {
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({
+      payloadForResponse: (request, observation) => ({
+        ok: true,
+        observation: request.kind === "observe" ? null : observation,
+      }),
+    }),
+  });
+  const request = {
+    profileId: "profile.1",
+    processId: started.processId,
+    generation: 1,
+  };
+  await assert.rejects(
+    driver.observe(request),
+    /worker observation must be an object/,
+  );
+  await assert.rejects(driver.observe(request), /channel is closed/);
+});
+
+test("private pipe errors reject pending requests and permanently close the channel", async () => {
+  for (const streamName of ["stdin", "stdout", "stderr"]) {
+    let child;
+    const { driver, started } = await preparedDriver({
+      launcher: fakeLauncher({
+        onSpawn: (spawned) => {
+          child = spawned;
+        },
+        holdKinds: ["observe"],
+      }),
+    });
+    const request = {
+      profileId: "profile.1",
+      processId: started.processId,
+      generation: 1,
+    };
+    const pending = driver.observe(request);
+    child[streamName].emit("error", new Error("broken private pipe"));
+    await assert.rejects(pending, /broken private pipe/);
+    await assert.rejects(driver.observe(request), /channel is closed/);
+  }
+});
+
+test("complete stdout EOF rejects pending requests instead of waiting for process exit", async () => {
+  let child;
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({
+      onSpawn: (spawned) => {
+        child = spawned;
+      },
+      holdKinds: ["observe"],
+    }),
+  });
+  const pending = driver.observe({
+    profileId: "profile.1",
+    processId: started.processId,
+    generation: 1,
+  });
+  child.stdout.end();
+  await assert.rejects(pending, /response channel ended/);
+});
+
+test("stdout destruction rejects pending requests even when no end event arrives", async () => {
+  let child;
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({
+      onSpawn: (spawned) => {
+        child = spawned;
+      },
+      holdKinds: ["observe"],
+    }),
+  });
+  const pending = driver.observe({
+    profileId: "profile.1",
+    processId: started.processId,
+    generation: 1,
+  });
+  child.stdout.destroy();
+  await assert.rejects(pending, /response channel closed/);
+});
+
+test("unanswered dispatch responses cannot grow the pending request table without bound", async () => {
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ holdDispatchResponse: {} }),
+  });
+  const request = {
+    profileId: "profile.1",
+    processId: started.processId,
+    profileGeneration: 1,
+  };
+  for (let index = 0; index < 1024; index += 1) {
+    await driver.dispatch({
+      ...request,
+      operationId: `operation.pending.${index}`,
+    });
+  }
+  await assert.rejects(
+    driver.dispatch({ ...request, operationId: "operation.pending.overflow" }),
+    /pending-request capacity exhausted/,
+  );
+  // stop still tears down the worker through its cleanup path when its request
+  // cannot be admitted, releasing every retained response promise.
+  await assert.rejects(
+    driver.stop(request),
+    /pending-request capacity exhausted/,
+  );
+});
+
+test("rejected duplicate requests do not consume outgoing protocol sequence numbers", async () => {
+  const sequences = [];
+  const held = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({
+      holdDispatchResponse: held,
+      onRequest: (request) => sequences.push(request.sequence),
+    }),
+  });
+  const request = {
+    profileId: "profile.1",
+    processId: started.processId,
+    profileGeneration: 1,
+    operationId: "operation.duplicate",
+  };
+  await driver.dispatch(request);
+  await assert.rejects(driver.dispatch(request), /identity is already live/);
+  held.release();
+  await driver.reconcile(request);
+  assert.deepEqual(sequences, [1, 2, 3]);
+});
+
+test("concurrent starts cannot leak a second worker before artifact verification finishes", async () => {
+  const root = await realpath(
+    await mkdtemp(join(tmpdir(), "hepta-worker-start-")),
+  );
+  const workerPath = join(root, "worker.bin");
+  const bytes = Buffer.from("qualified-worker");
+  await writeFile(workerPath, bytes, { mode: 0o700 });
+  let spawned = 0;
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(bytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher({
+      onSpawn: () => {
+        spawned += 1;
+      },
+    }),
+  });
+  const request = { profileId: "profile.1", generation: 1 };
+  const first = driver.start(request);
+  await assert.rejects(
+    driver.start({ profileId: "profile.2", generation: 1 }),
+    /already started or starting/,
+  );
+  assert.equal((await first).started, true);
+  assert.equal(spawned, 1);
+  await driver.stop(request);
+});
+
+test(
+  "a launcher spawn failure has its asynchronous child error handled before PID validation",
+  { skip: process.platform !== "linux" },
+  async () => {
+    const root = await realpath(
+      await mkdtemp(join(tmpdir(), "hepta-worker-spawn-error-")),
+    );
+    const workerPath = join(root, "worker.bin");
+    const bytes = Buffer.from("qualified-worker");
+    await writeFile(workerPath, bytes, { mode: 0o700 });
+    const driver = new SubprocessBrowserDriver({
+      workerPath,
+      workerDigest: digest(bytes),
+      profileRoot: join(root, "profiles"),
+      launcher: new LinuxBubblewrapLauncher({
+        bwrapPath: join(root, "missing-bwrap"),
+      }),
+    });
+    await assert.rejects(
+      driver.start({ profileId: "profile.1", generation: 1 }),
+      /worker pid|ENOENT/,
+    );
+    await new Promise((resolve) => setImmediate(resolve));
+    await assert.rejects(
+      driver.observe({ profileId: "profile.1", generation: 1 }),
+      /not started/,
+    );
+  },
+);
+
+test(
+  "startup refuses a shared profile root before exposing a verified executable",
+  { skip: process.platform === "win32" },
+  async () => {
+    const root = await realpath(
+      await mkdtemp(join(tmpdir(), "hepta-worker-shared-root-")),
+    );
+    const workerPath = join(root, "worker.bin");
+    const bytes = Buffer.from("qualified-worker");
+    await writeFile(workerPath, bytes, { mode: 0o700 });
+    const profileRoot = join(root, "profiles");
+    await mkdir(profileRoot, { mode: 0o700 });
+    await chmod(profileRoot, 0o777);
+    let spawned = false;
+    const driver = new SubprocessBrowserDriver({
+      workerPath,
+      workerDigest: digest(bytes),
+      profileRoot,
+      launcher: fakeLauncher({
+        onSpawn: () => {
+          spawned = true;
+        },
+      }),
+    });
+    await assert.rejects(
+      driver.start({ profileId: "profile.1", generation: 1 }),
+      /permissions or owner are unsafe/,
+    );
+    assert.equal(spawned, false);
+  },
+);
+
+test(
+  "startup refuses symlink roots and unsafe ancestor directories",
+  { skip: process.platform === "win32" },
+  async () => {
+    const root = await realpath(
+      await mkdtemp(join(tmpdir(), "hepta-worker-root-chain-")),
+    );
+    const workerPath = join(root, "worker.bin");
+    const bytes = Buffer.from("qualified-worker");
+    await writeFile(workerPath, bytes, { mode: 0o700 });
+    const privateRoot = join(root, "private");
+    await mkdir(privateRoot, { mode: 0o700 });
+    const linkedRoot = join(root, "linked");
+    await symlink(privateRoot, linkedRoot, "dir");
+    const sharedParent = join(root, "shared");
+    await mkdir(sharedParent, { mode: 0o700 });
+    await chmod(sharedParent, 0o777);
+    for (const profileRoot of [
+      linkedRoot,
+      join(linkedRoot, "nested"),
+      join(sharedParent, "profiles"),
+    ]) {
+      const driver = new SubprocessBrowserDriver({
+        workerPath,
+        workerDigest: digest(bytes),
+        profileRoot,
+        launcher: fakeLauncher(),
+      });
+      await assert.rejects(
+        driver.start({ profileId: "profile.1", generation: 1 }),
+        /symlink|permissions or owner are unsafe/,
+      );
+    }
+    await assert.rejects(lstat(join(privateRoot, "nested")), {
+      code: "ENOENT",
+    });
+    await assert.rejects(lstat(join(sharedParent, "profiles")), {
+      code: "ENOENT",
+    });
+  },
+);
+
+test("shutdown during artifact verification prevents late worker startup", async () => {
+  const root = await realpath(
+    await mkdtemp(join(tmpdir(), "hepta-worker-start-shutdown-")),
+  );
+  const workerPath = join(root, "worker.bin");
+  const bytes = Buffer.from("qualified-worker");
+  await writeFile(workerPath, bytes, { mode: 0o700 });
+  let spawned = false;
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(bytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher({
+      onSpawn: () => {
+        spawned = true;
+      },
+    }),
+  });
+  const starting = driver.start({ profileId: "profile.1", generation: 1 });
+  await driver.shutdown();
+  await assert.rejects(starting, { name: "AbortError" });
+  assert.equal(spawned, false);
+});
+
+test("shutdown kills a real pipe-connected worker that remains alive after stdin EOF", async () => {
+  let child;
+  const posture = fakeLauncher().posture;
+  const protocolUrl = new URL("../src/worker-protocol.js", import.meta.url)
+    .href;
+  const workerSource = `
+    const { WorkerFrameDecoder, buildWorkerFrame, encodeWorkerFrame } = await import(process.argv[1]);
+    const decoder = new WorkerFrameDecoder();
+    let sequence = 1;
+    process.stdin.on("data", chunk => {
+      for (const request of decoder.push(chunk)) {
+        process.stdout.write(encodeWorkerFrame(buildWorkerFrame({
+          sessionId: request.sessionId, generation: request.generation,
+          sequence: sequence++, kind: "response", requestId: request.requestId,
+          payload: { ok: true, observation: { started: true } },
+        })));
+      }
+    });
+    setInterval(() => {}, 1000);
+  `;
+  const { driver } = await preparedDriver({
+    launcher: {
+      posture,
+      spawn() {
+        child = spawn(
+          process.execPath,
+          ["--input-type=module", "-e", workerSource, protocolUrl],
+          { stdio: ["pipe", "pipe", "pipe"], env: {} },
+        );
+        return child;
+      },
+    },
+  });
+  let timer;
+  const exited = Promise.race([
+    once(child, "exit"),
+    new Promise((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error("worker remained alive after shutdown")),
+        2_000,
+      );
+    }),
+  ]);
+  try {
+    await driver.shutdown();
+    const [, signal] = await exited;
+    assert.equal(signal, "SIGKILL");
+    await driver.shutdown();
+  } finally {
+    clearTimeout(timer);
+    child.kill("SIGKILL");
+  }
 });
