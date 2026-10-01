@@ -24,6 +24,7 @@ jobs:
       learning: ${{ steps.scope.outputs.learning }}
       objective: ${{ steps.scope.outputs.objective }}
       native: ${{ steps.scope.outputs.native }}
+      native_desktop: ${{ steps.scope.outputs.native_desktop }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
       risk: ${{ steps.scope.outputs.risk }}
@@ -146,6 +147,57 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
+  native-desktop:
+    name: Native desktop Rust checks
+    needs: scope
+    if: needs.scope.outputs.native_desktop == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-desktop-target
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare desktop build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libx11-dev libxi-dev libxrandr-dev libgl1-mesa-dev libwayland-dev libxkbcommon-dev libudev-dev
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Check actual desktop formatting
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/format.json" --
+          cargo fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
+      - name: Run actual desktop tests
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/test.json" --
+          just test -p hepta-native --manifest-path ../apps/hepta-native/Cargo.toml --locked --cargo-profile dev-small --retries 0
+      - name: Check all desktop targets independently of test outcome
+        if: ${{ !cancelled() }}
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/clippy.json" --
+          cargo clippy --manifest-path apps/hepta-native/Cargo.toml --locked --profile dev-small --all-targets -- -D warnings
+      - name: Retain actual desktop command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-desktop-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-desktop-records/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   hepta-scoped:
     name: Hepta scoped native checks
     needs: scope
@@ -256,6 +308,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - native-desktop
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -267,6 +320,7 @@ jobs:
         env:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
+          NATIVE_DESKTOP: ${{ needs.scope.outputs.native_desktop }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
         shell: bash
         run: |
@@ -277,6 +331,7 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          desktop = os.environ["NATIVE_DESKTOP"] == "true"
           allowed = []
           if not (native or full):
               allowed.append("hepta-contract-gate")
@@ -284,6 +339,8 @@ jobs:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
               allowed.append("hepta-scoped")
+          if not desktop:
+              allowed.append("native-desktop")
           if not (not native and not full):
               allowed.append("lightweight")
           print(json.dumps(allowed))

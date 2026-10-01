@@ -102,6 +102,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
     selected = set(GROUPS) if force_full else set()
     derived = force_full
     full_repo = force_full
+    native_desktop = force_full
 
     for path in paths:
         parts = PurePosixPath(path).parts
@@ -113,6 +114,20 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             or "\x00" in path
         ):
             raise ValueError(f"invalid repository path: {path!r}")
+
+        # This application has its own Cargo graph. A workspace-only test
+        # cannot compile it, and an application-only edit needs no CLI rebuild.
+        if path.startswith("apps/hepta-native/"):
+            native_desktop = True
+            continue
+        if path.startswith(
+            (
+                "codex-rs/hepta-contracts/",
+                "codex-rs/hepta-private-state/",
+                "codex-rs/keyring-store/",
+            )
+        ):
+            native_desktop = True
 
         if path in DERIVED_ONLY_DOCS or path.startswith(
             "qualification/module-execution-dossiers/detail/"
@@ -214,6 +229,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         "native": bool(selected),
         "derived": derived,
         "full_repo": full_repo,
+        "native_desktop": native_desktop or full_repo,
     }
 
 
@@ -260,7 +276,11 @@ def include_input_scope(
     """
     if scope["full_repo"]:
         return scope
-    static_paths = [path for path in paths if not select([path])["native"]]
+    static_paths = []
+    for path in paths:
+        boundary = select([path])
+        if not boundary["native"] and not boundary["native_desktop"]:
+            static_paths.append(path)
     if not static_paths:
         return scope
     try:
