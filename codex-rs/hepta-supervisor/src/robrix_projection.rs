@@ -84,12 +84,14 @@ const JSON_SCHEMA_NON_SCHEMA_INVARIANT_CLASSES: [&str; 5] = [
     "requested_cursor_contiguity",
     "cross_field_ordering",
 ];
-const SUPERVISORD_NON_SCHEMA_INVARIANTS: [&str; 5] = [
+const SUPERVISORD_NON_SCHEMA_INVARIANTS: [&str; 7] = [
     "response_request_id_matches_outstanding_request",
     "agent_status_fields_equal_control_fence",
-    "matrix_attached_generation_equals_agent_spawn_generation",
-    "control_fence_spawn_generation_not_greater_than_runtime_generation",
+    "healthy_matrix_attached_generation_equals_agent_spawn_generation",
+    "healthy_agent_spawn_generation_not_greater_than_runtime_generation",
     "control_fence_current_and_previous_release_differ",
+    "roster_agent_ids_are_unique",
+    "snapshot_response_matches_selected_agent",
 ];
 const MATRIXD_NON_SCHEMA_INVARIANTS: [&str; 5] = [
     "request_agent_and_fence_match_selected_process",
@@ -423,9 +425,19 @@ fn verify_supervisord_response_case(case: &CorpusCase) -> Result<()> {
         case.id
     );
     let valid = projection.as_ref().is_some_and(|response| {
-        case.context
-            .expected_request_id
-            .is_some_and(|request_id| response.validate(request_id).is_ok())
+        case.context.expected_request_id.is_some_and(|request_id| {
+            match case.context.expected_agent_id.as_deref() {
+                Some(selected) => AgentId::parse(selected.to_string()).is_ok_and(|agent_id| {
+                    response
+                        .validate_for(&RobrixSupervisordRequest::new(
+                            request_id,
+                            RobrixSupervisordMethod::Snapshot { agent_id },
+                        ))
+                        .is_ok()
+                }),
+                None => response.validate(request_id).is_ok(),
+            }
+        })
     });
     ensure!(
         valid == case.expected.backend_projection_validate,
@@ -531,7 +543,7 @@ struct ProjectionManifest {
     json_schema_validation_role: &'static str,
     authoritative_semantic_validator: &'static str,
     json_schema_non_schema_invariant_classes: [&'static str; 5],
-    supervisord_non_schema_invariants: [&'static str; 5],
+    supervisord_non_schema_invariants: [&'static str; 7],
     matrixd_non_schema_invariants: [&'static str; 5],
     files: BTreeMap<String, ArtifactDigest>,
 }
@@ -821,6 +833,130 @@ fn corpus() -> Result<CorpusDocument> {
             expectation(Some(true), /*decode*/ true, /*validate*/ true),
             CorpusContext {
                 expected_request_id: Some(request_id),
+                ..CorpusContext::default()
+            },
+        )?);
+    }
+
+    cases.push(corpus_case(
+        "supervisord_response_health_roster_overflow",
+        CorpusPlane::Supervisord,
+        CorpusDirection::Response,
+        &SupervisordResponse {
+            schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+            request_id: 24,
+            payload: SupervisordPayload::Health(SupervisordHealth {
+                ready: true,
+                supervisor_epoch: epoch()?,
+                process_id: 100,
+                registered_agents: MAX_SUPERVISORD_ROSTER + 1,
+                observed_faults: 0,
+            }),
+        },
+        expectation(Some(true), /*decode*/ true, /*validate*/ false),
+        CorpusContext {
+            expected_request_id: Some(24),
+            ..CorpusContext::default()
+        },
+    )?);
+    let mut duplicate = status.clone();
+    duplicate.healthy = false;
+    let mut duplicate_expectation =
+        expectation(Some(true), /*decode*/ true, /*validate*/ false);
+    duplicate_expectation.backend_json_schema_validate = true;
+    duplicate_expectation.json_schema_semantic_gap =
+        Some(JsonSchemaSemanticGap::CrossElementKeyUniqueness);
+    cases.push(corpus_case(
+        "supervisord_response_duplicate_agent_ids",
+        CorpusPlane::Supervisord,
+        CorpusDirection::Response,
+        &SupervisordResponse {
+            schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+            request_id: 24,
+            payload: SupervisordPayload::Roster {
+                agents: vec![status.clone(), duplicate],
+            },
+        },
+        duplicate_expectation,
+        CorpusContext {
+            expected_request_id: Some(24),
+            ..CorpusContext::default()
+        },
+    )?);
+    let mut selected_expectation =
+        expectation(Some(true), /*decode*/ true, /*validate*/ false);
+    selected_expectation.backend_json_schema_validate = true;
+    selected_expectation.json_schema_semantic_gap =
+        Some(JsonSchemaSemanticGap::SelectedProcessContext);
+    cases.push(corpus_case(
+        "supervisord_response_selected_agent_drift",
+        CorpusPlane::Supervisord,
+        CorpusDirection::Response,
+        &SupervisordResponse {
+            schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+            request_id: 24,
+            payload: SupervisordPayload::Agent(status.clone()),
+        },
+        selected_expectation,
+        CorpusContext {
+            expected_request_id: Some(24),
+            expected_agent_id: Some(AGENT_B.to_string()),
+            ..CorpusContext::default()
+        },
+    )?);
+
+    let mut draining_owner = status.clone();
+    draining_owner.lifecycle = AgentLifecycle::Draining;
+    draining_owner.control_fence.lifecycle = AgentLifecycle::Draining;
+    draining_owner.healthy = false;
+    draining_owner.matrix.healthy = false;
+    let mut companion_only = draining_owner.clone();
+    companion_only.lifecycle = AgentLifecycle::Stopped;
+    companion_only.control_fence.lifecycle = AgentLifecycle::Stopped;
+    companion_only.active = false;
+    companion_only.process_id = None;
+    companion_only.spawn_generation = None;
+    companion_only.runtime_generation = None;
+    companion_only.control_fence.spawn_generation = None;
+    companion_only.control_fence.runtime_generation = None;
+    let mut stale_companion = status.clone();
+    stale_companion.matrix.healthy = false;
+    stale_companion.matrix.degraded = true;
+    stale_companion.matrix.attached_agent_generation = Some(99);
+    let mut stopped_owner = draining_owner.clone();
+    stopped_owner.lifecycle = AgentLifecycle::Stopped;
+    stopped_owner.control_fence.lifecycle = AgentLifecycle::Stopped;
+    stopped_owner.matrix.active = false;
+    stopped_owner.matrix.process_id = None;
+    stopped_owner.matrix.attached_agent_generation = None;
+    stopped_owner.matrix.binding_revision = None;
+    for (id, retained) in [
+        (
+            "supervisord_response_retained_matrix_draining",
+            draining_owner,
+        ),
+        (
+            "supervisord_response_retained_matrix_without_main",
+            companion_only,
+        ),
+        (
+            "supervisord_response_quarantined_stale_matrix",
+            stale_companion,
+        ),
+        ("supervisord_response_stopped_exact_owner", stopped_owner),
+    ] {
+        cases.push(corpus_case(
+            id,
+            CorpusPlane::Supervisord,
+            CorpusDirection::Response,
+            &SupervisordResponse {
+                schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+                request_id: 24,
+                payload: SupervisordPayload::Agent(retained),
+            },
+            expectation(Some(true), /*decode*/ true, /*validate*/ true),
+            CorpusContext {
+                expected_request_id: Some(24),
                 ..CorpusContext::default()
             },
         )?);
@@ -2121,8 +2257,8 @@ fn common_supervisor_definitions() -> BTreeMap<String, Value> {
                         "supervisor_epoch": {"$ref": "#/$defs/SupervisorEpoch"},
                         "lifecycle": {"$ref": "#/$defs/AgentLifecycle"},
                         "lifecycle_generation": {"type": "integer", "minimum": 0},
-                        "spawn_generation": nullable_integer(),
-                        "runtime_generation": nullable_integer(),
+                        "spawn_generation": nullable_positive_integer(),
+                        "runtime_generation": nullable_positive_integer(),
                         "current_release": nullable_ref("ReleaseId"),
                         "previous_release": nullable_ref("ReleaseId"),
                         "release_change_pending": {"type": "boolean"},
@@ -2145,16 +2281,8 @@ fn common_supervisor_definitions() -> BTreeMap<String, Value> {
                     json!({
                         "oneOf": [
                             {"properties": {"spawn_generation": {"type": "null"}, "runtime_generation": {"type": "null"}}},
-                            {"properties": {"spawn_generation": {"type": "integer", "minimum": 0}, "runtime_generation": {"type": "integer", "minimum": 0}}},
+                            {"properties": {"spawn_generation": {"type": "integer", "minimum": 1}, "runtime_generation": {"type": "integer", "minimum": 1}}},
                         ]
-                    }),
-                    json!({
-                        "if": {"properties": {"lifecycle": {"enum": ["starting", "running", "draining"]}}},
-                        "then": {"properties": {"runtime_generation": {"type": "integer", "minimum": 0}}}
-                    }),
-                    json!({
-                        "if": {"properties": {"lifecycle": {"const": "stopped"}}},
-                        "then": {"properties": {"runtime_generation": {"type": "null"}}}
                     }),
                     json!({
                         "if": {"properties": {"release_change_pending": {"const": true}}},
@@ -2219,8 +2347,8 @@ fn common_supervisor_definitions() -> BTreeMap<String, Value> {
                         "active": {"type": "boolean"},
                         "healthy": {"type": "boolean"},
                         "process_id": nullable_positive_integer(),
-                        "spawn_generation": nullable_integer(),
-                        "runtime_generation": nullable_integer(),
+                        "spawn_generation": nullable_positive_integer(),
+                        "runtime_generation": nullable_positive_integer(),
                         "current_release": nullable_ref("ReleaseId"),
                         "previous_release": nullable_ref("ReleaseId"),
                         "release_change_pending": {"type": "boolean"},
@@ -2249,7 +2377,7 @@ fn common_supervisor_definitions() -> BTreeMap<String, Value> {
                         "then": {"properties": {"active": {"const": true}, "lifecycle": {"const": "running"}}}
                     }),
                     json!({
-                        "if": {"properties": {"matrix": {"properties": {"active": {"const": true}}, "required": ["active"]}}},
+                        "if": {"properties": {"matrix": {"properties": {"healthy": {"const": true}}, "required": ["healthy"]}}},
                         "then": {"properties": {"active": {"const": true}, "lifecycle": {"const": "running"}}}
                     }),
                 ],

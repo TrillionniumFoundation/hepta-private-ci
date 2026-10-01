@@ -385,6 +385,167 @@
         "robrix_decode": true,
         "robrix_validate": false
       },
+      "id": "supervisord_response_health_roster_overflow",
+      "plane": "supervisord",
+      "wire_bytes": 197,
+      "wire_sha256": "506941092f33ec126bc8f8163625a5fd6fc7e6600415402febd17ac25a811e4f",
+      "wire_utf8": "{\"payload\":{\"observed_faults\":0,\"process_id\":100,\"ready\":true,\"registered_agents\":257,\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\",\"type\":\"health\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": null,
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": true,
+        "backend_projection_decode": true,
+        "backend_projection_validate": false,
+        "json_schema_semantic_gap": "cross_element_key_uniqueness",
+        "robrix_decode": true,
+        "robrix_validate": false
+      },
+      "id": "supervisord_response_duplicate_agent_ids",
+      "plane": "supervisord",
+      "wire_bytes": 1761,
+      "wire_sha256": "0163118ef402e5d21a1b561eebf595b7700ec108b448f01ae2b8b352093fa2c6",
+      "wire_utf8": "{\"payload\":{\"agents\":[{\"active\":true,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":true,\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"matrix\":{\"active\":true,\"attached_agent_generation\":5,\"binding_revision\":11,\"configured\":true,\"degraded\":false,\"healthy\":true,\"last_error\":null,\"process_id\":4321,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":1234,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5},{\"active\":true,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":false,\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"matrix\":{\"active\":true,\"attached_agent_generation\":5,\"binding_revision\":11,\"configured\":true,\"degraded\":false,\"healthy\":true,\"last_error\":null,\"process_id\":4321,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":1234,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5}],\"type\":\"roster\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13",
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": true,
+        "backend_projection_decode": true,
+        "backend_projection_validate": false,
+        "json_schema_semantic_gap": "selected_process_context",
+        "robrix_decode": true,
+        "robrix_validate": false
+      },
+      "id": "supervisord_response_selected_agent_drift",
+      "plane": "supervisord",
+      "wire_bytes": 904,
+      "wire_sha256": "502803d6d44e7f1d53645feb10dc23c821ccd6054d531f36bb7dff7c50549368",
+      "wire_utf8": "{\"payload\":{\"active\":true,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":true,\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"matrix\":{\"active\":true,\"attached_agent_generation\":5,\"binding_revision\":11,\"configured\":true,\"degraded\":false,\"healthy\":true,\"last_error\":null,\"process_id\":4321,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":1234,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"type\":\"agent\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": null,
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": true,
+        "backend_projection_decode": true,
+        "backend_projection_validate": true,
+        "json_schema_semantic_gap": null,
+        "robrix_decode": true,
+        "robrix_validate": true
+      },
+      "id": "supervisord_response_retained_matrix_draining",
+      "plane": "supervisord",
+      "wire_bytes": 908,
+      "wire_sha256": "5a8d11b104beb6da8d86385eed3fbe23fad206319a45031aacb546c79fe12425",
+      "wire_utf8": "{\"payload\":{\"active\":true,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"draining\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":false,\"lifecycle\":\"draining\",\"lifecycle_generation\":7,\"matrix\":{\"active\":true,\"attached_agent_generation\":5,\"binding_revision\":11,\"configured\":true,\"degraded\":false,\"healthy\":false,\"last_error\":null,\"process_id\":4321,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":1234,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"type\":\"agent\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": null,
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": true,
+        "backend_projection_decode": true,
+        "backend_projection_validate": true,
+        "json_schema_semantic_gap": null,
+        "robrix_decode": true,
+        "robrix_validate": true
+      },
+      "id": "supervisord_response_retained_matrix_without_main",
+      "plane": "supervisord",
+      "wire_bytes": 919,
+      "wire_sha256": "4a98c40edccf1a16af776d533c3888d96269588b2c6ecd6fb577174aa872026c",
+      "wire_utf8": "{\"payload\":{\"active\":false,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"stopped\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":null,\"spawn_generation\":null,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":false,\"lifecycle\":\"stopped\",\"lifecycle_generation\":7,\"matrix\":{\"active\":true,\"attached_agent_generation\":5,\"binding_revision\":11,\"configured\":true,\"degraded\":false,\"healthy\":false,\"last_error\":null,\"process_id\":4321,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":null,\"release_change_pending\":false,\"runtime_generation\":null,\"spawn_generation\":null,\"type\":\"agent\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": null,
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": true,
+        "backend_projection_decode": true,
+        "backend_projection_validate": true,
+        "json_schema_semantic_gap": null,
+        "robrix_decode": true,
+        "robrix_validate": true
+      },
+      "id": "supervisord_response_quarantined_stale_matrix",
+      "plane": "supervisord",
+      "wire_bytes": 905,
+      "wire_sha256": "b7491c913734c6e04cb425a203ae559e76db1d6623fc4c9eeef81bb6f1072b15",
+      "wire_utf8": "{\"payload\":{\"active\":true,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":true,\"lifecycle\":\"running\",\"lifecycle_generation\":7,\"matrix\":{\"active\":true,\"attached_agent_generation\":99,\"binding_revision\":11,\"configured\":true,\"degraded\":true,\"healthy\":false,\"last_error\":null,\"process_id\":4321,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":1234,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"type\":\"agent\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": null,
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": true,
+        "backend_projection_decode": true,
+        "backend_projection_validate": true,
+        "json_schema_semantic_gap": null,
+        "robrix_decode": true,
+        "robrix_validate": true
+      },
+      "id": "supervisord_response_stopped_exact_owner",
+      "plane": "supervisord",
+      "wire_bytes": 912,
+      "wire_sha256": "1e36a88d2ecb67276febf7e24a75b186ef48bac2f404d7679b55fcd9c26c5ee8",
+      "wire_utf8": "{\"payload\":{\"active\":true,\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"control_fence\":{\"agent_id\":\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\",\"current_release\":\"agentd-v1\",\"lifecycle\":\"stopped\",\"lifecycle_generation\":7,\"previous_release\":null,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"state_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"supervisor_epoch\":\"018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12\"},\"current_release\":\"agentd-v1\",\"healthy\":false,\"lifecycle\":\"stopped\",\"lifecycle_generation\":7,\"matrix\":{\"active\":false,\"attached_agent_generation\":null,\"binding_revision\":null,\"configured\":true,\"degraded\":false,\"healthy\":false,\"last_error\":null,\"process_id\":null,\"restart_attempt\":0},\"previous_release\":null,\"process_id\":1234,\"release_change_pending\":false,\"runtime_generation\":7,\"spawn_generation\":5,\"type\":\"agent\"},\"request_id\":24,\"schema_version\":2}\n"
+    },
+    {
+      "context": {
+        "after_cursor": null,
+        "expected_agent_id": null,
+        "expected_fence": null,
+        "expected_request_id": 24
+      },
+      "direction": "response",
+      "expected": {
+        "backend_admin_decode": true,
+        "backend_json_schema_validate": false,
+        "backend_projection_decode": true,
+        "backend_projection_validate": false,
+        "json_schema_semantic_gap": null,
+        "robrix_decode": true,
+        "robrix_validate": false
+      },
       "id": "supervisord_response_control_matrix_diagnostic",
       "plane": "supervisord",
       "wire_bytes": 913,

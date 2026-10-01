@@ -2,8 +2,8 @@
   "authoritative_semantic_validator": "generated_cross_parser_corpus_with_rust_protocol_validation",
   "files": {
     "cross-parser-corpus-v2.json": {
-      "bytes": 1852490,
-      "sha256": "05bd7eb5634a07df613684e807be7574ab0008dc2d5e3d158a5cf0cdbb7827ce"
+      "bytes": 1864877,
+      "sha256": "d128b11151faefc8146ecdd6adc4ddefd66127c89a0af8748d1b2f9dae815a36"
     },
     "matrixd-control-v2.schema.json": {
       "bytes": 25875,
@@ -14,8 +14,8 @@
       "sha256": "ee51f845b336fa1fdf1a07394f5faac4eaabb6b0bba9fe581dd953393f1a816e"
     },
     "supervisord-readonly-v2.schema.json": {
-      "bytes": 21482,
-      "sha256": "09e09128d9681f154155dc609f606bdc2904abcef36ce7b62e989d648b08d962"
+      "bytes": 20779,
+      "sha256": "4df5313898ae46241cdbc155a2552eccfa25b2fa4850bda990ae233d9bbeea73"
     }
   },
   "json_schema_non_schema_invariant_classes": [
@@ -59,9 +59,11 @@
   "supervisord_non_schema_invariants": [
     "response_request_id_matches_outstanding_request",
     "agent_status_fields_equal_control_fence",
-    "matrix_attached_generation_equals_agent_spawn_generation",
-    "control_fence_spawn_generation_not_greater_than_runtime_generation",
-    "control_fence_current_and_previous_release_differ"
+    "healthy_matrix_attached_generation_equals_agent_spawn_generation",
+    "healthy_agent_spawn_generation_not_greater_than_runtime_generation",
+    "control_fence_current_and_previous_release_differ",
+    "roster_agent_ids_are_unique",
+    "snapshot_response_matches_selected_agent"
   ],
   "supervisord_schema_version": 2
 }

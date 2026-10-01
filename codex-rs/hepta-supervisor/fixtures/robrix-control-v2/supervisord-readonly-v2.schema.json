@@ -395,12 +395,12 @@
             "properties": {
               "matrix": {
                 "properties": {
-                  "active": {
+                  "healthy": {
                     "const": true
                   }
                 },
                 "required": [
-                  "active"
+                  "healthy"
                 ]
               }
             }
@@ -480,7 +480,7 @@
               "type": "null"
             },
             {
-              "minimum": 0,
+              "minimum": 1,
               "type": "integer"
             }
           ]
@@ -491,7 +491,7 @@
               "type": "null"
             },
             {
-              "minimum": 0,
+              "minimum": 1,
               "type": "integer"
             }
           ]
@@ -532,53 +532,16 @@
             {
               "properties": {
                 "runtime_generation": {
-                  "minimum": 0,
+                  "minimum": 1,
                   "type": "integer"
                 },
                 "spawn_generation": {
-                  "minimum": 0,
+                  "minimum": 1,
                   "type": "integer"
                 }
               }
             }
           ]
-        },
-        {
-          "if": {
-            "properties": {
-              "lifecycle": {
-                "enum": [
-                  "starting",
-                  "running",
-                  "draining"
-                ]
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "runtime_generation": {
-                "minimum": 0,
-                "type": "integer"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "lifecycle": {
-                "const": "stopped"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "runtime_generation": {
-                "type": "null"
-              }
-            }
-          }
         },
         {
           "if": {
@@ -637,7 +600,7 @@
               "type": "null"
             },
             {
-              "minimum": 0,
+              "minimum": 1,
               "type": "integer"
             }
           ]
@@ -648,7 +611,7 @@
               "type": "null"
             },
             {
-              "minimum": 0,
+              "minimum": 1,
               "type": "integer"
             }
           ]
@@ -908,9 +871,11 @@
   "x-hepta-non-schema-invariants": [
     "response_request_id_matches_outstanding_request",
     "agent_status_fields_equal_control_fence",
-    "matrix_attached_generation_equals_agent_spawn_generation",
-    "control_fence_spawn_generation_not_greater_than_runtime_generation",
-    "control_fence_current_and_previous_release_differ"
+    "healthy_matrix_attached_generation_equals_agent_spawn_generation",
+    "healthy_agent_spawn_generation_not_greater_than_runtime_generation",
+    "control_fence_current_and_previous_release_differ",
+    "roster_agent_ids_are_unique",
+    "snapshot_response_matches_selected_agent"
   ],
   "x-hepta-validation-role": "structural_and_locally_expressible_invariants_only"
 }
