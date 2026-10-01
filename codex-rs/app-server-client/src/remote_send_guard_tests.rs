@@ -1,5 +1,3 @@
-#![cfg(unix)]
-
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
@@ -10,9 +8,8 @@ use codex_app_server_protocol::JSONRPCResponse;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ThreadQueueReconcileMode;
 use codex_app_server_protocol::ThreadQueueReconcileParams;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use futures::StreamExt;
-use tokio::net::UnixListener;
+use tokio::net::TcpListener;
 use tokio::sync::Notify;
 use tokio::time::Duration;
 use tokio::time::timeout;
@@ -23,10 +20,11 @@ use crate::RemoteAppServerConnectArgs;
 use crate::RemoteAppServerEndpoint;
 use crate::TypedRequestError;
 
-fn args(path: std::path::PathBuf) -> RemoteAppServerConnectArgs {
+fn args(websocket_url: String) -> RemoteAppServerConnectArgs {
     RemoteAppServerConnectArgs {
-        endpoint: RemoteAppServerEndpoint::UnixSocket {
-            socket_path: AbsolutePathBuf::try_from(path).unwrap(),
+        endpoint: RemoteAppServerEndpoint::WebSocket {
+            websocket_url,
+            auth_token: None,
         },
         client_name: "first-contact-test".to_string(),
         client_version: "1".to_string(),
@@ -51,7 +49,7 @@ fn request(id: i64) -> ClientRequest {
 }
 
 async fn server(
-    listener: UnixListener,
+    listener: TcpListener,
     initializing: Arc<Notify>,
     release_initialize: Arc<Notify>,
 ) -> Vec<String> {
@@ -123,9 +121,8 @@ fn check(
 
 #[tokio::test]
 async fn delayed_initialize_rechecks_contact_and_writes_no_expired_queue_request() {
-    let temp = tempfile::tempdir().unwrap();
-    let path = temp.path().canonicalize().unwrap().join("app.sock");
-    let listener = UnixListener::bind(&path).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let websocket_url = format!("ws://{}", listener.local_addr().unwrap());
     let initializing = Arc::new(Notify::new());
     let release = Arc::new(Notify::new());
     let server = tokio::spawn(server(
@@ -136,7 +133,7 @@ async fn delayed_initialize_rechecks_contact_and_writes_no_expired_queue_request
     let live = Arc::new(AtomicBool::new(/*v*/ true));
     let polls = Arc::new(AtomicUsize::new(/*v*/ 0));
     let before_send = check(Arc::clone(&live), Arc::clone(&polls));
-    let client = tokio::spawn(RemoteAppServerClient::connect(args(path)));
+    let client = tokio::spawn(RemoteAppServerClient::connect(args(websocket_url)));
     timeout(Duration::from_secs(/*secs*/ 2), initializing.notified())
         .await
         .unwrap();
@@ -165,14 +162,15 @@ async fn delayed_initialize_rechecks_contact_and_writes_no_expired_queue_request
 
 #[tokio::test]
 async fn queued_requests_check_after_worker_wait_and_rejection_keeps_connection_usable() {
-    let temp = tempfile::tempdir().unwrap();
-    let path = temp.path().canonicalize().unwrap().join("app.sock");
-    let listener = UnixListener::bind(&path).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let websocket_url = format!("ws://{}", listener.local_addr().unwrap());
     let initializing = Arc::new(Notify::new());
     let release_initialize = Arc::new(Notify::new());
     release_initialize.notify_one();
     let server = tokio::spawn(server(listener, initializing, release_initialize));
-    let client = RemoteAppServerClient::connect(args(path)).await.unwrap();
+    let client = RemoteAppServerClient::connect(args(websocket_url))
+        .await
+        .unwrap();
     let entered = Arc::new(Notify::new());
     let release = Arc::new(Notify::new());
     let handle = client.request_handle();
@@ -230,9 +228,8 @@ async fn queued_requests_check_after_worker_wait_and_rejection_keeps_connection_
 
 #[tokio::test]
 async fn cancelled_request_does_not_cross_first_send_while_guard_waits() {
-    let temp = tempfile::tempdir().unwrap();
-    let path = temp.path().canonicalize().unwrap().join("app.sock");
-    let listener = UnixListener::bind(&path).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let websocket_url = format!("ws://{}", listener.local_addr().unwrap());
     let release_initialize = Arc::new(Notify::new());
     release_initialize.notify_one();
     let server = tokio::spawn(server(
@@ -240,7 +237,9 @@ async fn cancelled_request_does_not_cross_first_send_while_guard_waits() {
         Arc::new(Notify::new()),
         release_initialize,
     ));
-    let client = RemoteAppServerClient::connect(args(path)).await.unwrap();
+    let client = RemoteAppServerClient::connect(args(websocket_url))
+        .await
+        .unwrap();
     let entered = Arc::new(Notify::new());
     let handle = client.request_handle();
     let notify = Arc::clone(&entered);
