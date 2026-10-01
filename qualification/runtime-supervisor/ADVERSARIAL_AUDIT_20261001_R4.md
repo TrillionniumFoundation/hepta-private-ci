@@ -284,3 +284,15 @@ timeout setsockopt；accepted socket 在 Darwin 继承 listener 的非阻塞状�
 [Unix disconnect](https://github.com/apple-oss-distributions/xnu/blob/xnu-11215.81.4/bsd/kern/uipc_usrreq.c)
 和 [关闭状态设置](https://github.com/apple-oss-distributions/xnu/blob/xnu-11215.81.4/bsd/kern/uipc_socket2.c)。
 它建立 Darwin 24 家族语义，不冒充 runner 24G830 补丁内核的精确执行身份。
+
+六 native lanes 和两条 deep lanes 的真实身份、具名失败、官方 ZIP digest、
+90 条 native 原始日志的字节／SHA 校验、零重试与干净源码证明已冻结在
+[d016 远端观察](REMOTE_CI_OBSERVATION_20261001_D016.json)。Linux 三 native
+成功、macOS 三 native 失败；deep 两条成功仅证明其较窄范围。该历史材料不
+为新源码、当前 main、生产激活或独立验收转移资格。
+
+最终 fixture 补修源码与指南为 `4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b`，
+tree `f0eb8dd82c1eb058dc233e0b089144b798ae6880`。两个 reviewable stages
+分别为 237 和 40 changed lines，API 与本地 tree 一致。再次完成 scoped fix、
+完整 fmt 和默认／qualification-offline all-target strict Clippy，未在其后
+重跑本地测试。新发布候选须取得自己的 Linux/macOS source 和 merge 执行。

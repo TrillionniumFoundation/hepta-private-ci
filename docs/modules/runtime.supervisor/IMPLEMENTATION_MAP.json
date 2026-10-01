@@ -666,9 +666,9 @@
     "scripts/just-shell.py"
   ],
   "observedAtHead": {
-    "commit": "9e27dab1e445ab04c0e7ea6b68a2dd89e5bc9ab0",
-    "tree": "adb9bf639b274b8cbeed8db00c5488921fbb22be",
-    "interpretation": "Reviewed source-only exact-peer Unix control transport under one existing 200 ms monotonic exchange budget: connect, peer-PID verification before request bytes, partial write, half-close and bounded first-line read share an absolute deadline; partial progress does not renew it, and timeout is neither Drain acknowledgement nor process-exit proof. All mapped objects below belong to this source commit/tree; historical 7c4e0ab, d74cde5 and d0169ba execution records do not validate these new transport bytes. The observed historical d0169ba macOS default-library failure remains a failure with its exact failing leaf awaiting raw logs; it is not credited to this source. Current actual exact-head/platform execution is pending. Immutable sourceBase, existing ownership, gaps, capability and acceptance boundaries are preserved; this observation transfers no target-host qualification, independent acceptance, activation or release claim."
+    "commit": "4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b",
+    "tree": "f0eb8dd82c1eb058dc233e0b089144b798ae6880",
+    "interpretation": "Reviewed source-only exact-peer control transport and bounded nonblocking test-peer I/O with the original production and fixture budgets unchanged. The production single-exchange 200 ms absolute-deadline contract, kernel peer-PID verification before request bytes, bounded frames and timeout-without-Drain-acknowledgement-or-process-exit semantics remain unchanged. The test-only fixture avoids socket timeout setsockopt after accept and normalizes nonblocking mode without weakening peer, zero-request-byte, live-child or frame assertions. Darwin source establishes that setting socket options after both peer directions have shut down can return EINVAL; the historical d0169ba logs lack syscall context, so new native CI must confirm this repair. Historical d0169ba had three passing Linux native lanes, three macOS native lanes failing at negative-peer fixtures while constructor, Fleet and product scenarios passed, and two passing deep lanes. Those results and older 7c4e0ab/d74cde5 records do not validate or transfer credit to these new transport/fixture bytes. At the time this source observation is written, new actual exact-head/platform execution has not yet been obtained and remains pending; subsequent candidate CI is independent evidence. All mapped objects belong to this exact source commit/tree. Immutable sourceBase, ownership, gaps and existing capability/acceptance boundaries are preserved, with no target-host qualification, independent acceptance, activation or release claim transferred."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -747,7 +747,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "a1acfe0d30490369721cafbbc536de1035a185fa"
+      "object": "1f4f92588f8eaa4b031d7d135c94091dfc96e433"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/automatic_restart_event_tests.rs",
@@ -959,7 +959,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix.rs",
-      "object": "1469a0ba50756a54539ea860b5b67fd913c55698"
+      "object": "144c87f7196a28751258011bc3b20ae0d315c7b0"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_control_io.rs",
@@ -971,7 +971,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_control_io_tests.rs",
-      "object": "89a8e787841c0fc30be643c0a24cb788d83ae6fb"
+      "object": "bbdd90af175c677abc98904a7b634591e25ad0d5"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_peer_identity.rs",
@@ -979,11 +979,15 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_peer_identity_tests.rs",
-      "object": "3785ab25fb3c3d29ee42dd64d3318f8b19554d13"
+      "object": "2dccd79356caf5aa04ce43023f3c848bf1b466cd"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_process_ref_tests.rs",
       "object": "fb993fafcea80c6f655ef7be5053f1963e33696b"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_socket_fixture_io.rs",
+      "object": "489b3ef800ae2cf51236d74feb2ab9e2bfb0521b"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
@@ -1063,7 +1067,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "6d0b539ef839380b0058bb687709f5d2594bd097"
+      "object": "bfe8a205f6e38df9f20f238d8e4746cb4fcb2808"
     },
     {
       "path": "justfile",
