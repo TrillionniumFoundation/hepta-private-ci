@@ -1,0 +1,143 @@
+{
+  "authority": "DENY_ALL",
+  "claims": {
+    "activationAuthorized": false,
+    "independentAcceptance": false,
+    "releaseAuthorized": false,
+    "sourceQualifiedByThisRun": false,
+    "targetHostQualified": false
+  },
+  "latestMain": {
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "moduleSourceAndDocsChanged": false,
+    "moduleSourceAndDocsChangedSince": "a126987b84737dbc2ee2592442a314117bddb4a2"
+  },
+  "localExecution": {
+    "cargoLlvmCov": "0.9.1",
+    "cargoNextest": "0.9.146",
+    "ciJust": "1.51.0",
+    "ciNextest": "0.9.103",
+    "commands": [
+      {
+        "command": "just test -p codex-hepta-intelligence-eval --locked --retries 0 --test-threads 4",
+        "exitCode": 0,
+        "passed": 248,
+        "skipped": 0
+      },
+      {
+        "command": "cargo llvm-cov nextest --locked -p codex-hepta-intelligence-eval --all-targets --no-default-features --retries 0 --test-threads 4 --fail-under-lines 85 --json --output-path <outside-repository>/coverage.json",
+        "exitCode": 0,
+        "lines": {
+          "count": 11621,
+          "covered": 10001,
+          "percent": 86.05971947336718
+        },
+        "passed": 248,
+        "reportSha256": "aeebfa87b9f2bc9ac67678feac0e111f2200dab7a736655e900d933797cc3cce",
+        "skipped": 0
+      },
+      {
+        "command": "cargo clippy --locked --offline -p codex-hepta-intelligence-eval --all-targets -- -D warnings",
+        "exitCode": 0
+      },
+      {
+        "command": "just fix -p codex-hepta-intelligence-eval --all-targets --locked --offline",
+        "exitCode": 0
+      },
+      {
+        "command": "just fmt",
+        "exitCode": 0
+      },
+      {
+        "command": "python3 -m unittest discover -s scripts -p 'test_hepta_learning_eval_*.py'",
+        "executionsPassed": 197,
+        "exitCode": 0,
+        "skipped": 0
+      }
+    ],
+    "executedRustInputsBeforeFormatting": {
+      "codex-rs/hepta-intelligence-eval/src/bin/learning_eval_storage_profile.rs": {
+        "postFormattingSha256": "8f5c2a01fc91c9772b4f590fb24d4284519361f462e93e16923b315704e69956",
+        "sha256": "8f5c2a01fc91c9772b4f590fb24d4284519361f462e93e16923b315704e69956",
+        "tokenSha256": "2d6bed923ba2c68eb6070d84ad1a0403cb7d2dc9078fb75a279b6a1392fa5048"
+      },
+      "codex-rs/hepta-intelligence-eval/src/bin/storage_profile_support/profile_tests.rs": {
+        "postFormattingSha256": "dfd29d351c349b12e0942e14e062f611ae8ac59cc2ad5a63a0413de35690b40d",
+        "sha256": "fb19929cbf503e62e37a189e86bf97ecfb82bb0796d0923a2ebe52f3f7fc4a4b",
+        "tokenSha256": "f0415e00f91e541b1566cf90aaa3a6137196f9672103d9f4d7760f7b7c4423aa"
+      },
+      "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs": {
+        "postFormattingSha256": "27d8c9977fe6386432bc088dd162f7bbf802f22dbc25d1c240ab80a65d3fc9e8",
+        "sha256": "27d8c9977fe6386432bc088dd162f7bbf802f22dbc25d1c240ab80a65d3fc9e8",
+        "tokenSha256": "96f57e97534ef5e57a0b99d5419bdabd2072ae48d131ff98e6cd8202862f7988"
+      }
+    },
+    "failedLibtestCoverageRuns": [
+      {
+        "failed": 1,
+        "failure": "longer_divergent_history_cannot_skip_the_retained_minimum_prefix: Busy",
+        "logSha256": "42fa90a2648a8b590e4cbc0bf048bf618bd365508ad0b2c225a76ec641153fdd",
+        "passed": 223
+      },
+      {
+        "failed": 1,
+        "failure": "append_rejects_every_noncanonical_record_field_without_consuming_the_plan: Busy",
+        "logSha256": "394c3f1aaff16dfa2a2755e885c847bef7e8ab4df6618b816c5ab656f1a5aae2",
+        "passed": 223
+      }
+    ],
+    "just": "1.58.0",
+    "logs": {
+      "eval-followup-final-tests.log": {
+        "sha256": "d7ff907841d7aaeb2f72cfb179c22881a0a5ea75a7cadd47dca82ba81e9dc8c8"
+      },
+      "eval-followup-fix.log": {
+        "sha256": "1d83abd0176b274b21b4f51f152f047d90805943c7d033fc158d42a7b8a64ae8"
+      },
+      "eval-followup-fmt-final.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "eval-followup-fmt.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "eval-followup-nextest-coverage.log": {
+        "sha256": "b28c03976f25de1e80e9793ba1a16d9fd3e6467e82895c2b33b473e854c58a12"
+      },
+      "eval-followup-python-final.log": {
+        "sha256": "fa49552202eaafdd1b1c99cbaf4cda3702247ac0fba7ef06f74937d7de57a7a7"
+      },
+      "eval-followup-strict.log": {
+        "sha256": "f94b0d7196b0040f58c221ca42e4332ca04309d9e9c6a9c6a9c22f1521eeeada"
+      }
+    },
+    "note": "Native nextest process isolation replaces the default libtest coverage harness. No test exclusions, retries, reduced threshold, production locking change or feature mixing. Local tool versions differ from CI; local results are not immutable CI qualification.",
+    "postFormattingRustTokensUnchanged": true,
+    "postFormattingTokenHashEncoding": "SHA256(UTF8(json.dumps(rust_code_tokens(source))))",
+    "rust": "1.95.0"
+  },
+  "observedAt": "2026-10-01",
+  "priorRemoteSource": {
+    "commit": "5ca584996a43b9c9545d73aa14351aa7622958f0",
+    "convergenceRun": 36805266722,
+    "coverageArtifact": {
+      "archiveSha256": "98f206b95550cd9dfd81e976a8734a13552a843870ef96d1e5284ab7932a3cb9",
+      "id": 11140292219
+    },
+    "defaultCoverage": {
+      "count": 11621,
+      "covered": 9780,
+      "percent": 84.1579898459685
+    },
+    "exactHeadArtifact": {
+      "archiveSha256": "2b32a9a5df6a665184b2b46bd7833dff5b04b6b139a70f61915094788e575f81",
+      "coverageSha256": "c777ea123e6ff9dd9a14b5fdfe4fbb6f8c78bb8071ebcc06db72c1887f01cff7",
+      "id": 11139851019
+    },
+    "exactHeadRun": 36805266695,
+    "sustainedProfileRun": 36805266525,
+    "tree": "e03d180be459b7411d79d2efce42f742d9e17a69",
+    "trustedBootstrapRun": 36805266707
+  },
+  "releasePosture": "NO_GO",
+  "schema": "hepta.learning-eval.ci-followup-audit.v1"
+}

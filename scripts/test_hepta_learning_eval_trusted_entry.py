@@ -279,7 +279,7 @@ class ProducerConclusionTests(unittest.TestCase):
 
 class ControlPlaneIdentityTests(unittest.TestCase):
     def test_checked_in_control_plane_inventory_is_regular(self):
-        if not (MODULE.ROOT / ".git").is_dir():
+        if not ((MODULE.ROOT / ".git").is_dir() or (MODULE.ROOT / ".git").is_file()):
             self.skipTest(
                 "repository checkout is not mounted in this unit-test sandbox"
             )

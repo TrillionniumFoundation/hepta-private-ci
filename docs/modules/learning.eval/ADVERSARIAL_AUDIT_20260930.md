@@ -290,3 +290,40 @@ attempt journal 均为 7,168 events / 1,103,342 bytes；holdout 源/successor �
 外部剩余工作由独立拥有者提供：真实 host/anchor/provider/publication/cursor 的身份与拓扑、存储断电和恢复测量、至少两个真实未来窗口和三个独立 snapshot、retention/change-point/power/subgroup/privacy/unlearning/backup 非复活，以及 semantic/operator acceptance 和后续独立 selection/canary/promotion/release。`UNBOUND_EXTERNAL` 能力不得因 trait、fixture 或 repository CI 存在而变成已认证实例。
 
 本轮终止标准是：本次范围内确认的缺陷已落实修复并有对应验证；尚未建立的证据被明确保留；最终候选可交给独立 reviewer 和资格执行。该标准不声称未来不可能发现新问题，也不把持续优化请求解释为虚构外部时间、真实收益或发布权限。
+
+## 12. 2026-10-01 CI 终态复审与第三轮优化
+
+本节是首两轮后的 root 复审，没有新增独立审核者。最新 main 为 `997e7beef8151160065df36b024bc8da5c989e93`；相对此前 main 的已接受变化主要属于全局 CI/文档 gate，模块源码、专属文档及 status 脚本没有变化。下面的 CI 失败属于草稿 PR 的历史候选 `5ca584996a43b9c9545d73aa14351aa7622958f0`，不能归因于更新后的 main，也不能移用于本轮新候选。
+
+| 历史候选检查 | 实际终态及含义 |
+|---|---|
+| convergence 36805266722 | identity、default/compatibility compile、fault recovery、consumer tests 通过；coverage 和 format-lint 失败，完整资格失败 |
+| exact trees 36805266695 | head 的前 15 个命令通过，停在 default coverage；后续 compatibility coverage、strict lint、format/diff 未执行；merge job 也失败，未核定其具体故障日志 |
+| sustained profile 36805266525 | 成功，只代表该历史候选的 profile |
+| trusted bootstrap 36805266707 | 成功，不能证明本轮新增控制面字节已获 trusted base 接受 |
+| development docs 36805266485 | source/cleanup commit 不是祖先；这不是缺对象，也不是已更新 main 的 editorial gate 结论 |
+| Lane E 36805266796 | 仍有 10 项 findings：operation 闭世界 1、traceability case 1、Agentd legacy writer bypass 8 |
+
+### 12.1 确认的问题与修复
+
+历史候选 default coverage 在相同 11,621 行范围内覆盖 9,780 行，即 **84.16%**，真实低于 85% 门槛。非空 durable storage profile 的 271 行全部未覆盖，是实际验证缺口。新增两个 native binary 回归执行真实七阶段写入和重新打开、完整 pending 检查、文件长度与报告计数对应、profile digest，以及已有 journal 的拒绝和原字节保留。覆盖率不是仅靠文档或 profile 成功推断。
+
+两次并行 libtest coverage 分别在不同 CAS recovery 回归返回 `Busy`；进程创建和文件锁别名生命周期是调查方向，尚未证明生产缺陷的根因。没有更改生产锁释放或恢复语义。CAS fixture 改为独占预留的私有临时目录，避免共享平面路径和旧文件碰撞。默认 coverage 改用 native nextest 进程隔离、4 个线程、**零重试**；仍为 all targets、no default features、85% 门槛，没有排除文件、弱化断言或混入 compatibility 覆盖。compatibility qualification 仍独立执行。
+
+另有两个 Python 仓库检查只识别 `.git` 目录，误跳过合法 worktree 的 `.git` 文件；初次 197 次执行有 4 次跳过（导入复用导致同一检查重复出现）。修复检测后 **197 次执行全部通过、零跳过**，不把执行次数称为唯一测试数量。
+
+### 12.2 本轮实际验证与完成度
+
+| scoped 检查 | 本轮实际结果 |
+|---|---|
+| `just test`，零重试 | 248 通过，0 跳过 |
+| default native-nextest measured coverage | 10,001 / 11,621 行，**86.06%**；248 通过，0 跳过；profile 207 / 271 行 |
+| owner all-targets strict Clippy | exit 0，`-D warnings` |
+| owner scoped `just fix` / mandatory `just fmt` | 均 exit 0；格式后执行过的 Rust token 身份相同，没有仅因格式重复 Rust 测试 |
+| learning.eval Python regression suite | 197 次执行通过，0 跳过 |
+
+详细命令、工具版本、实际日志摘要、失败的 libtest 运行及历史 CI artifact 身份保存在 [ci-followup.json](audit-evidence/20261001/ci-followup.json)。本地 nextest 0.9.146 / just 1.58.0 与 CI 的 0.9.103 / 1.51.0 不同；Rust 1.95.0 和 cargo-llvm-cov 0.9.1 相同。实际执行输入和格式后源码 token 对应保留，最终源码观察由后续 map-only rebind 与 PR 交付记录绑定；这些本地结果不能写成新不可变 head/merge CI 已通过。
+
+模块详细开发文档、核心实现和 scoped 回归已经形成可审查的实现闭包；本轮关闭了默认覆盖门槛和 worktree 检查缺口。历史 format-lint 此次实际先失败在 ContextCompiler v2 的两个 lint（doc-comment 空行、8/7 参数），而非此前本地首先观察的 Core lint；owner strict 通过不代表整个消费者链 strict 通过。全量同一候选 matrix、新控制面的独立 trusted bootstrap/restack、项目 registry/lineage 协调及真实 target-host/未来窗/独立验收仍未闭合，不能用百分比估计发布完成度。
+
+本轮范围内最后复查没有新增已确认功能缺陷；这表示当前可执行修复收敛，不表示未来不可能发现优化。继续保持 `DENY_ALL / NO_GO`；source full qualification、外部认证、activation、promotion 和 release 均未授权。

@@ -123,7 +123,7 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
 
     def test_repository_projects_local_deterministic_contract(self):
         root = Path(__file__).resolve().parents[1]
-        if not (root / ".git").is_dir():
+        if not ((root / ".git").is_dir() or (root / ".git").is_file()):
             self.skipTest(
                 "repository checkout is not mounted in this unit-test sandbox"
             )

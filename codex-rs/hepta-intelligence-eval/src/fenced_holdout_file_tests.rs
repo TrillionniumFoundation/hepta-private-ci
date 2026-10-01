@@ -7,6 +7,8 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_types::FixedQ32;
 
@@ -36,17 +38,32 @@ fn digest(value: &str) -> Digest32 {
 }
 
 struct TempFile {
+    root: PathBuf,
     path: PathBuf,
 }
 
 impl TempFile {
     fn new() -> Self {
-        let path = std::env::temp_dir().join(format!(
-            "hepta-fenced-cas-{}-{}",
-            std::process::id(),
-            NEXT.fetch_add(1, Ordering::Relaxed)
-        ));
-        Self { path }
+        for _ in 0..16 {
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos();
+            let root = std::env::temp_dir().join(format!(
+                "hepta-fenced-cas-{}-{nonce}-{}",
+                std::process::id(),
+                NEXT.fetch_add(/*val*/ 1, Ordering::Relaxed)
+            ));
+            match fs::create_dir(&root) {
+                Ok(()) => {
+                    let path = root.join("store.cas");
+                    return Self { root, path };
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                Err(error) => panic!("reserve private temp store directory: {error}"),
+            }
+        }
+        panic!("could not reserve a private temp store directory")
     }
 
     fn create(&self) -> File {
@@ -71,7 +88,7 @@ impl TempFile {
 
 impl Drop for TempFile {
     fn drop(&mut self) {
-        let _ = fs::remove_file(&self.path);
+        let _ = fs::remove_dir_all(&self.root);
     }
 }
 

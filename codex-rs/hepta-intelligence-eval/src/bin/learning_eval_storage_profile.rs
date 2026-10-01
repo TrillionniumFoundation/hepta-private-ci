@@ -28,6 +28,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+#[cfg(test)]
+#[path = "storage_profile_support/profile_tests.rs"]
+mod tests;
+
 #[derive(Clone, Debug)]
 struct Args {
     attempts: u64,
