@@ -10,7 +10,7 @@ use codex_hepta_contracts::Sha256Digest;
 use crate::DurableMutationStatusV1;
 use crate::MutationJournalError;
 
-const HISTORY: &str = "supervisor-mutation-history-v1";
+pub(crate) const HISTORY: &str = "supervisor-mutation-history-v1";
 const MAX_SHARD_ENTRIES: usize = 1024;
 
 fn paths(run_root: &Path, request_id: u64) -> (PathBuf, PathBuf, PathBuf) {

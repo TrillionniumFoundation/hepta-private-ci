@@ -162,6 +162,7 @@ pub(super) fn protect_registry(
         layout.releases_root(),
         policy.workload_gid,
         /*executable*/ true,
+        /*private_history*/ None,
     )?;
     for record in registry.load().map_err(host_error)?.agents.into_values() {
         prepare_workload(&record.layout, policy)?;
@@ -179,11 +180,17 @@ fn protect_agent_metadata(
         layout.owner_run_root(),
         policy.workload_gid,
         /*executable*/ false,
+        Some(
+            &layout
+                .owner_run_root()
+                .join(crate::mutation_history::HISTORY),
+        ),
     )?;
     protect_tree(
         layout.releases_root(),
         policy.workload_gid,
         /*executable*/ false,
+        /*private_history*/ None,
     )
 }
 
@@ -225,7 +232,12 @@ pub(super) fn prepare_workload(
     set_owner(socket_root, policy.workload_uid, policy.workload_gid, 0o700)
 }
 
-fn protect_tree(path: &Path, gid: u32, executable: bool) -> Result<(), ProcessDriverError> {
+fn protect_tree(
+    path: &Path,
+    gid: u32,
+    executable: bool,
+    private_history: Option<&Path>,
+) -> Result<(), ProcessDriverError> {
     let metadata = std::fs::symlink_metadata(path)?;
     if metadata.file_type().is_symlink()
         || !(metadata.is_dir() || metadata.is_file())
@@ -234,6 +246,16 @@ fn protect_tree(path: &Path, gid: u32, executable: bool) -> Result<(), ProcessDr
         return Err(ProcessDriverError::new(
             "protected owner tree contains an untrusted entry",
         ));
+    }
+    if private_history == Some(path) {
+        // This native owner alone validates the bounded archive descendants.
+        // Shared launch metadata must still become readable by the workload.
+        if !metadata.is_dir() || metadata.mode() & 0o7777 != 0o700 {
+            return Err(ProcessDriverError::new(
+                "private mutation history has unsafe permissions",
+            ));
+        }
+        return Ok(());
     }
     if metadata.is_dir() {
         // Immutable catalog subdirectories must keep every write bit absent;
@@ -249,7 +271,7 @@ fn protect_tree(path: &Path, gid: u32, executable: bool) -> Result<(), ProcessDr
             },
         )?;
         for entry in std::fs::read_dir(path)? {
-            protect_tree(&entry?.path(), gid, executable)?;
+            protect_tree(&entry?.path(), gid, executable, private_history)?;
         }
     } else {
         set_owner(

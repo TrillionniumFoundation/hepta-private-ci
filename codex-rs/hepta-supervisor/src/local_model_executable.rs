@@ -8,7 +8,6 @@ use std::fs::Metadata;
 use std::io::Read;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
-use std::path::Path;
 use std::path::PathBuf;
 
 use anyhow::Context;

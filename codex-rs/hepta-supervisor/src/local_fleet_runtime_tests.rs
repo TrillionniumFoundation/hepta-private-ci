@@ -72,12 +72,57 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
         logs_root: record.layout.logs_root().to_path_buf(),
         command: AgentCommand::new("/usr/bin/sleep", vec!["30".into()])?,
     };
+    let owner_run_root = record.layout.owner_run_root().to_path_buf();
     let runtime = Handle::current();
     let owner = Arc::clone(&host);
     tokio::task::spawn_blocking(move || {
         runtime.block_on(async move {
-            assert!(owner.prove_never_spawned(&spec.agent_id)?.is_some());
+            let proof = owner
+                .prove_never_spawned(&spec.agent_id)?
+                .ok_or("missing native pre-spawn proof")?;
+            let epoch = uuid::Uuid::new_v4().to_string();
+            let digest = "a".repeat(64);
+            let prior = crate::prepare_mutation(
+                &owner_run_root,
+                /*request_id*/ 91,
+                &spec.agent_id,
+                &epoch,
+                crate::SupervisordMutation::Start,
+                &digest,
+                /*intent_sequence*/ 1,
+            )?;
+            crate::mutation_journal::resolve_before_spawn(
+                &owner_run_root,
+                &prior.idempotency_key,
+                &digest,
+                &proof,
+            )?;
+            crate::prepare_mutation(
+                &owner_run_root,
+                /*request_id*/ 92,
+                &spec.agent_id,
+                &epoch,
+                crate::SupervisordMutation::Start,
+                &digest,
+                /*intent_sequence*/ 2,
+            )?;
+            // Live registration initially creates private owner metadata; the
+            // launch must expose only the shared metadata, never cold history.
+            std::fs::set_permissions(&owner_run_root, std::fs::Permissions::from_mode(0o700))?;
             let execution = owner.prepare_agent(&spec)?;
+            assert_eq!(
+                std::fs::metadata(&owner_run_root)?.permissions().mode() & 0o7777,
+                0o750
+            );
+            // The real launch ownership preparation must not expose private
+            // history or make the earlier NoEffect receipt unqueryable.
+            let archived =
+                crate::mutation_journal_slots::lookup(&owner_run_root, /*request_id*/ 91)?
+                    .ok_or("archived request lost across real launch preparation")?;
+            assert_eq!(
+                archived.status.phase,
+                crate::DurableMutationPhaseV1::NoEffect
+            );
             let held = owner.store.execution_hold(&execution.id).await?;
             let held = held.ok_or("prepared execution was not durable before spawn")?;
             assert_eq!((held.state.as_str(), held.process_id), ("prepared", None));
