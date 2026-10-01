@@ -207,3 +207,6 @@ Bazel compile_data 未包含 include_str 使用的 MODULES.json。前者只加�
 all-target strict Clippy 均通过；完整 fmt 后 46 个无关 formatter-only 路径还原。
 新增测试曾在编译中发现宏导入歧义，显式导入 pretty_assertions 后纠正，原失败日志保留。
 两次独立源码复审未再发现具体实现缺陷；当前执行和验收状态保持 pending / false。
+
+补修完整源码与验证输入为 `74eda6dbe9a63c043c60e7c468fa353b64bb3854`，tree `2d2015f0c02ab6a2362ae5860a67ec0d34331ad7`。
+当前 source map 绑定该观察；首次修复源码、本地具名执行和 7c CI 的身份均保留。
