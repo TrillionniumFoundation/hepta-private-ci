@@ -156,6 +156,23 @@ Drain expiry preserves the original drain deadline plus stop grace, rather
 than restarting that budget at the delayed tick. A same-incarnation pending
 Kill cannot be downgraded.
 
+A live Stop checks its supplied monotonic `now + stop_grace` before publishing
+the durable request. Private Fresh/Retained preparation preserves the codec.
+Fresh control is staged only after durable restart cancellation succeeds; a
+cancellation fault retains the journal but produces no new pending control,
+requested marker or signal. Retries retain the earlier pending/acknowledged
+monotonic Stop deadline or stronger Kill while revalidating the journal's exact
+target/digest and Stop wall-clock rollback. Only journal restoration without an
+in-process Stop/Kill continuation translates remaining wall time to Instant.
+
+While an exact current-spawn Stop is unexpired and deferred behind an owned
+Matrix companion, tick skips the main signal and allows the otherwise eligible
+startup/Running health observation. A deferred request alone must not make the
+companion require emergency termination. Due containment still runs before
+fallible Fleet reads. Tick remembers same-tick continuation even if pending
+clears, and acknowledged Stopping/Killing cannot regain readiness from later
+successful probes. Draining retains its existing observation behavior.
+
 This continuation requires representable deadlines. Recovery checks the
 combined Drain/Stop budget against its supplied time before process acquisition;
 Drain repeats that check at the actual slot invocation before deferral, fencing,

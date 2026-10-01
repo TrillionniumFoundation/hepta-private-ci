@@ -20,6 +20,26 @@ Matrix faults use their separate release-bound window. `MatrixRestartBudgetExhau
 
 These rules describe `tick.rs`, `control.rs`, `recovery.rs`, `restart_budget.rs` and `matrix.rs`; they do not promise automatic retries for every startup or adoption failure.
 
+Live Stop proves the supplied monotonic `now + stop_grace` before durable
+publication. Private Fresh/Retained preparation preserves the journal codec;
+Fresh stages that deadline only after durable restart cancellation succeeds.
+Cancellation failure retains the durable intent but stages no new pending
+control, requested marker or signal. Live retry preserves an earlier pending or
+acknowledged Stop deadline and stronger Kill, while still verifying the exact
+journal target/digest and Stop wall-clock rollback. Only journal restoration
+without an in-process Stop/Kill continuation maps remaining wall time to Instant.
+
+Unexpired same-spawn Stop deferred behind an owned Matrix does not signal the
+main early and retains otherwise eligible startup/Running health observation;
+deferral alone must not trigger emergency companion Kill. Due containment still
+runs first on the exact owner. Tick retains same-tick continuation after pending
+clears, and Stopping/Killing cannot regain readiness from later healthy probes.
+Draining keeps its existing observation semantics. The two-owner source leaf
+`fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control` covers
+these boundaries with real leases and explicit process-driver doubles. Historical
+`6958a901`'s three failed default-library cases remain failures; these new source
+bytes require their own native execution receipt.
+
 ### Durable restart counter
 
 One physical codec in `restart_journal.rs` owns the bounded, digest-protected schema-v2 `supervisor-restart-budget.json` in each Agent run root. Its independent `main` and `companion` fields cannot overwrite one another. The companion retains exact Agent/release binding; main continuation additionally requires the Agent/process-bound `restart_lineage.rs` witness.

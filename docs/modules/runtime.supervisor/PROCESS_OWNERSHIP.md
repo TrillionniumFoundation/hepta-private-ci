@@ -288,6 +288,25 @@ main termination is attempted first and Matrix termination is attempted separate
 a failing companion cannot prevent the preceding main kill. This does not yet
 persist restart-internal drain deadlines or a durable Matrix quarantine.
 
+A live Stop first checks the supplied monotonic `now + stop_grace` before
+publishing its durable intent. Private Fresh/Retained preparation changes no
+schema or digest: only Fresh stages that exact deadline, and only after durable
+restart cancellation succeeds. Failed cancellation leaves the durable intent
+retained without a new pending control, StopRequested marker or signal.
+Retained pending/acknowledged Stop keeps its earlier monotonic limit and cannot
+downgrade Kill. Continuation still validates current journal digest and exact
+process target and rejects Stop wall-clock rollback. Only restoration with no
+in-process Stop/Kill continuation reconstructs a deadline from durable wall time.
+
+An unexpired same-spawn pending Stop with an exact deferred Stop and owned
+Matrix does not bypass companion-first deferral to signal the main early.
+Otherwise eligible startup/Running health remains observable during this grace
+so that deferral alone does not trigger emergency Matrix Kill. At the original
+deadline, main containment remains first. Tick captures its control continuation
+before pending may clear; it cannot regain serving from that tick's probe, and
+Stopping/Killing remains unready on subsequent successful live probes. The
+Draining observation policy is unchanged.
+
 A successful driver Drain/Stop call clears its pending retry, not the deadline
 of the acknowledged Draining/Stopping phase. Repeated poll errors or an
 unrelated Agent's corrupt Fleet manifest previously prevented the later expiry
@@ -326,10 +345,14 @@ doubles, with owner/lease retention assertions. Two child
 `deadline_tests::budget_tests` cases in `tick_control_budget_tests.rs` verify
 overflow rejection before any recovery acquisition and before Drain side
 effects, preserving the complete Agent record, snapshot, raw lease and driver
-counts. Three `tick_control_fault_tests::pending_deadline_tests` functions in
+counts. Four `tick_control_fault_tests::pending_deadline_tests` functions in
 `tick_pending_deadline_tests.rs` exercise first-signal failures for Drain, Stop
 and Kill against a real corrupt unrelated Fleet manifest, original deadlines,
-and stale-spawn rejection. These also use explicit process-driver doubles.
+and stale-spawn rejection. The added
+`fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control` uses
+two retained owners and real main/Matrix leases to cover deferral/retry, no early
+signal, exact deadline, terminal-phase readiness and cleanup. These use explicit
+process-driver doubles.
 Test source is not actual-child, current-head or target-host execution evidence.
 
 ## Control-intent file boundary

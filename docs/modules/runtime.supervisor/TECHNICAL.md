@@ -186,6 +186,18 @@ reconciliation may mark the control complete, so a stale restart claim cannot
 resurrect the journaled generation. Record identity conflicts, generation drift
 and uncertain persistence fail closed.
 
+For a live operator Stop, `stop_slot` checks the caller's monotonic
+`now + stop_grace` before durable publication. Private preparation reports Fresh
+or Retained without changing the journal schema or digest. A Fresh request is
+staged with that exact monotonic deadline only after durable restart cancellation
+succeeds, before Matrix deferral. Cancellation failure retains the durable
+intent but stages no new pending control, StopRequested marker or signal.
+Live retries combine the earlier pending/acknowledged Stop deadlines and retain
+a stronger Kill. They still reread the bound journal, validate its digest and
+exact current target, and reject Stop wall-clock rollback; they do not translate
+wall-clock remaining time onto a caller-supplied Instant again. Only restoration
+without an in-process Stop/Kill continuation reconstructs that remaining time.
+
 A successful driver Drain or Stop request clears `pending_control`, but the
 acknowledged Draining or Stopping phase still retains its original deadline.
 If the initial signal fails, the already admitted request instead remains
@@ -216,6 +228,16 @@ Kill, and the same tick reuses its control result without a second signal for
 the unchanged generation. A previously observed exact exit remains the first
 branch and retries durable finalization without another signal or poll.
 
+An unexpired current-spawn Stop deferred behind an owned Matrix companion does
+not signal the main process early. Its otherwise eligible startup/Running
+health observation remains available, preventing the mere deferred request from
+causing emergency companion termination. The original Stop deadline still
+triggers main containment before Fleet reads when due. Tick captures the
+continuation even when a successful signal clears pending control; a probe later
+in that tick cannot readmit it. Subsequent healthy probes cannot make an
+acknowledged Stopping or Killing phase ready. Existing Draining probe semantics
+remain unchanged.
+
 The continuation grants no new admission authority and retains independently
 observed signal, registry and poll faults once on unresolved paths. Signal
 acceptance does not manufacture a Drain acknowledgement, exit or cleanup
@@ -235,6 +257,15 @@ adoption cut. Those remaining boundaries stay explicit in the capability matrix.
 See `src/control_intent.rs`, `src/control.rs`,
 `src/control_durable_restart_tests.rs` and
 [`RESTART_CANCELLATION.md`](RESTART_CANCELLATION.md).
+
+The source-only regression
+`supervisor::tests::tick_control_fault_tests::pending_deadline_tests::fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control`
+uses two exact owners and real leases to exercise deferral/retry, no early main
+signal, original-deadline containment and readiness after Stop/Kill. This raises
+the current added source inventory to 21 Supervisor and 2 Fleet leaves, with
+77 repair identities in the current library plan. Historical `6958a901` had the
+prior 20/76 inventory and a default-library run with three failures; it is not
+relabelled as proof of these later bytes. New native execution remains required.
 
 ## 7. Release transactions and signed authority
 

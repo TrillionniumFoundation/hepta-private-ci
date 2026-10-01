@@ -247,6 +247,24 @@ state until a separately authorized recovery protocol exists. Do not edit or
 delete intent/restart/transaction files to make the daemon ready. An offline
 inspection or directive is not a physical-effect or deployment-acceptance receipt.
 
+Live Stop validates its caller-supplied monotonic `now + stop_grace` before
+publishing the durable request. Private Fresh/Retained preparation preserves
+the journal format; Fresh control is staged only after durable restart
+cancellation succeeds. Failed cancellation retains the intent without newly
+staging control, publishing StopRequested or signaling. Retry retains an earlier
+pending/acknowledged Stop deadline or stronger Kill, with journal target/digest
+and Stop wall-clock rollback validation. Only restoration without an in-process
+Stop/Kill continuation reconstructs the remaining deadline from durable wall time.
+
+An unexpired Stop deferred behind an owned Matrix does not signal the main early.
+Otherwise eligible startup/Running health remains observable during that grace;
+the deferred request alone must not force companion emergency Kill. Original-
+deadline containment still runs first when due. A tick retains its control
+continuation after pending clears, and acknowledged Stopping/Killing cannot
+regain readiness from a later healthy probe; Draining behavior is unchanged.
+The new two-owner source regression requires its own native receipt and does
+not relabel `6958a901`'s three default-library failures as passed.
+
 ## 7. Candidate execution evidence
 
 `blocking-ci.yml` calls `hepta-supervisor-qualification.yml`; its terminal result

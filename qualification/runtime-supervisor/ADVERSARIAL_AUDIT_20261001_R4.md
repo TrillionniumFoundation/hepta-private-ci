@@ -441,7 +441,7 @@ roster、HOL、SIGKILL parent、authority smoke、两 lint 和 clean identity
 
 这些成功只验证 1f 的传输／fixture／constructor 等原字节，不验证本节
 之后的阶段／pending 期限、signed effect 分类、文件／目录 fd 读取源码。
-最新补修新增 20 个 Supervisor 和两个 Fleet 测试叶；common repair mandatory
+6958 补修新增 20 个 Supervisor 和两个 Fleet 测试叶；common repair mandatory
 为 76 个，Fleet 为五个，其中一个既有 signed terminal 回归仅加强断言。
 这是静态源码要求，须在自己的新 head 上真实执行，不能把数量预测或历史
 通过填入新收据。验收、当前 main 合入、生产激活与发布仍未建立。
@@ -465,6 +465,57 @@ mandatory、Fleet 五个，Fleet 正向样本与五乘三类拒绝保护完整�
 源码变更先拆为十个 reviewable stages，实际改动分别为
 256／225／248／389／457／373／431／404／399／122 行，每阶段低于 500；
 逐个 API blob 与本地 object 相同，逐阶段 tree 相同。随后一个小阶段补齐
-上述防退化检查与只读诊断 receipt。诊断产物明确记录 exact source／tree／
+上述防退化检查与只读诊断 receipt。6958 的诊断产物明确记录 exact source／tree／
 parents、更新前后五个输入 SHA、candidate copy／hash 退出码；真实 lock
 生成需要 update、after、copy 和 hash 全部成功，绿色 job 本身仍不是证明。
+
+6958a901d1318f01fe836aa679f501d4b610637b 的真实 Linux Bazel 诊断中，
+before／update／after／copy／hash 均为零退出；生成 candidate 与原锁文件
+字节及 SHA256 相同，实际更新无需修改 MODULE.bazel.lock。不制造空锁差异，
+也不借此声称新的 package 或生产资格。该历史 receipt 只记录五个选定输入，
+没有单独记录工作区 Cargo.toml。后续候选的诊断补至六个选定输入，并记录
+生成前完整 tracked-clean 与生成后除 lock 外的 tracked drift；这些增强
+须由自己的 exact head CI 确认，不能补记为 6958 已执行。
+
+## 6958 真实执行发现的时钟与健康回归
+
+6958 的两个 deep lanes 实际 default library 均运行 406 叶：403 PASS、
+三 FAIL、零 skip、零 retry；后续 qualification／products／lint 因失败未运行。
+第一个 base lane 原始日志 SHA256 为
+`7d35d2d86346035161b271d2e5c1ebacd4c0459786ba2307c002707335be45e1`。
+三个失败为既有 prepared-release recovery 的健康断言，以及新增 acknowledged
+Stop／failed-initial-Stop 原期限断言。额外 Agentd Ubuntu 执行确认同三个
+失败，但该额外 workflow 使用默认 retry，独立记录，不能作零重试 qualification。
+这些真实失败没有改为环境项、跳过、通过或提高预算。
+
+两个独立诊断确认：fresh Stop 先记录 wall-clock deadline，发布后再扣去
+fsync 等经过的 wall time，却把 remaining 加回更早 supplied Instant，因而
+原 10 ms 单调期限可缩至 9 ms 或更早。修复对 fresh preparation 只建立一次
+checked monotonic deadline，在 publication 前验证 representability，成功取消
+durable restart 后才保存在同 incarnation 的 pending。Retained Stop／Kill
+及 acknowledged phase 继续使用原强度／期限；仍读取并校验 journal 的 digest、
+exact target 和 wall rollback，无 in-process continuation 才执行原恢复换算。
+wire、schema、signed authority 与跨 daemon wall-clock 恢复格式不变。
+
+另一个失败是前置控制成功后清 pending，再读取 retrying 丢失本 tick 的控制
+事实，旧 healthy probe 回填了 readiness。现在保留该事实；后续 Stopping／
+Killing 的 live probe 也不能重新宣告健康。原 Draining 语义保持。未到期且同
+owner 的 Matrix-deferred Stop 继续遵守 companion-first，并允许原 Running
+观察，不能因保存期限而提前主进程信号或 companion emergency Kill。
+
+新增一个真实 Fleet／两份 lease 配合 deterministic process driver 的回归，
+覆盖 Matrix Stop 成功与失败、Retained 重试不续期、9 ms 无提前信号、10 ms
+一次 containment、11 ms 未退出不回填健康、明确 poll exit 后正确清理且无替换。
+它不冒充真实 OS child 或目标机 SLO。最终补修源要求因此为 21 个新 Supervisor
+叶、两个 Fleet 叶、77 个 repair mandatory 与五个 Fleet mandatory；6958 的
+历史 20／76 要求与失败观察不重标。新源码仍需要自己的完整远端执行证明。
+
+[6958 真实 Bazel 锁文件诊断](BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261001_6958A901.json)
+保留实际 run／job／官方 ZIP、17 成员 hash、五选定输入与 exact API bytes、
+五退出码和不变 candidate 的原始结论；没有新增锁内容或未来执行信用。
+
+上述时钟／健康修复交付后，scoped fix 的 default 与 qualification 配置、
+完整 fmt、Supervisor／Fleet default strict all-target Clippy，以及 Supervisor
+qualification／offline strict all-target Clippy 均通过。仅执行编译／静态
+检查，fix／fmt 后没有重跑本地测试；独立源码复核未找到新的具体反例。
+同 head 原生 CI 仍是新修复验收的必要条件。
