@@ -130,8 +130,8 @@ fn seed(
 fn restart_migrates_real_empty_failed_spawn_to_generation_four_without_reset() -> TestResult {
     let (fixture, original_config) = Fixture::new()?;
     let original = runtime_composition(original_config.identity(), 1);
-    let old = AgentRunCoordinator::open_durable(original.clone(), fixture.path())?;
-    let previous_digest = old.committed_store_sha256.clone();
+    let old = AgentRunCoordinator::open_durable(original, fixture.path())?;
+    let previous_digest = old.committed_store_sha256;
     drop(original_config);
     fixture.transition(1, AgentLifecycle::Failed)?;
     fixture.transition(2, AgentLifecycle::Stopped)?;
@@ -294,5 +294,96 @@ fn restart_rejects_unrelated_tuple_false_prior_spawn_corrupt_predecessor_and_sta
     );
     assert_eq!(fs::read(fixture.path())?, before);
     drop(old);
+    Ok(())
+}
+
+#[test]
+fn restart_refuses_lossy_nested_history_and_duplicate_ids_without_rewriting_source() -> TestResult {
+    let (fixture, old_config) = Fixture::new()?;
+    fixture.transition(1, AgentLifecycle::Running)?;
+    let mut old = AgentRunCoordinator::open_durable(
+        runtime_composition(old_config.identity(), 1),
+        fixture.path(),
+    )?;
+    seed(&mut old, "closed", RunPhase::Succeeded)?;
+    seed(&mut old, "pending", RunPhase::ContextAttached)?;
+    old.persist()?;
+    let previous = load_durable_run_store(&fixture.path())?.ok_or("original source")?;
+    let source: serde_json::Value = serde_json::from_slice(&fs::read(fixture.path())?)?;
+    drop(old_config);
+    fixture.transition(2, AgentLifecycle::Draining)?;
+    fixture.transition(3, AgentLifecycle::Stopped)?;
+    fixture.transition(4, AgentLifecycle::Starting)?;
+    let config = fixture.config(5)?;
+    let admission = config.verified_run_store_restart()?;
+    let current = runtime_composition(config.identity(), 5);
+    for pointer in [
+        "/composition",
+        "/runs/pending",
+        "/runs/pending/snapshot",
+        "/tombstones/closed/snapshot",
+        "/tombstones/closed/receipt",
+    ] {
+        let mut unsupported = source.clone();
+        unsupported
+            .pointer_mut(pointer)
+            .and_then(serde_json::Value::as_object_mut)
+            .ok_or("source object")?
+            .insert(
+                "unrecognized_history".into(),
+                "must_not_be_discarded".into(),
+            );
+        let bytes = serde_json::to_vec(&unsupported)?;
+        fs::write(fixture.path(), &bytes)?;
+        assert!(
+            AgentRunCoordinator::open_durable_for_restart(
+                current.clone(),
+                fixture.path(),
+                &admission,
+            )
+            .is_err(),
+            "unsupported source field at {pointer}"
+        );
+        assert_eq!(fs::read(fixture.path())?, bytes);
+    }
+    let original_json = serde_json::to_string(&source)?;
+    let runs_json = serde_json::to_string(&source["runs"])?;
+    let record_json = serde_json::to_string(&source["runs"]["pending"])?;
+    let duplicate = original_json.replacen(
+        &format!("\"runs\":{runs_json}"),
+        &format!("\"runs\":{{\"pending\":{record_json},\"pending\":{record_json}}}"),
+        1,
+    );
+    assert_ne!(original_json, duplicate);
+    fs::write(fixture.path(), duplicate.as_bytes())?;
+    assert!(
+        AgentRunCoordinator::open_durable_for_restart(current.clone(), fixture.path(), &admission,)
+            .is_err()
+    );
+    assert_eq!(fs::read(fixture.path())?, duplicate.as_bytes());
+    // Existing optional-null omissions carry the same typed history and are
+    // compatible; no public RPC deserialization policy changes are needed.
+    let mut legacy = source;
+    // This persisted revision has a non-null predecessor commitment. Only an
+    // actually null optional field can be omitted without losing history.
+    legacy["runs"]["pending"]
+        .as_object_mut()
+        .ok_or("source pending run")?
+        .remove("cancel_reason");
+    fs::write(fixture.path(), serde_json::to_vec(&legacy)?)?;
+    AgentRunCoordinator::open_durable_for_restart(current, fixture.path(), &admission)?;
+    let retained = load_durable_run_store(&fixture.path())?.ok_or("retained source")?;
+    assert_eq!(
+        retained.previous_store_sha256,
+        Some(durable_run_store_sha256(&previous)?)
+    );
+    assert_eq!(
+        serde_json::to_value(retained.tombstones)?,
+        serde_json::to_value(previous.tombstones)?
+    );
+    assert_eq!(
+        serde_json::to_value(retained.runs)?,
+        serde_json::to_value(previous.runs)?
+    );
     Ok(())
 }

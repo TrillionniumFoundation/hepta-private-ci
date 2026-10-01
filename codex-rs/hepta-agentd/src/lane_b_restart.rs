@@ -2,6 +2,9 @@
 use super::*;
 use crate::config::VerifiedRunStoreRestart;
 
+#[path = "lane_b_restart_store.rs"]
+mod store;
+
 #[cfg(test)]
 #[path = "lane_b_restart_tests.rs"]
 mod tests;
@@ -13,14 +16,18 @@ impl AgentRunCoordinator {
         admission: &VerifiedRunStoreRestart,
     ) -> Result<Self, AgentRunError> {
         let mut candidate = Self::compose_runtime(composition)?;
-        admission.validate_store_binding(&candidate.composition, &durable_path, None)?;
+        admission.validate_store_binding(
+            &candidate.composition,
+            &durable_path,
+            /*previous*/ None,
+        )?;
         let parent = durable_path
             .parent()
             .ok_or_else(|| AgentRunError::Persistence("run store has no parent".into()))?;
         fs::create_dir_all(parent)
             .map_err(|error| AgentRunError::Persistence(format!("create run parent: {error}")))?;
         let _lock = DurableRunStoreLock::acquire(&durable_path)?;
-        let previous = load_durable_run_store(&durable_path)?;
+        let previous = store::load_store(&durable_path)?;
         candidate.durable_path = Some(durable_path.clone());
         if let Some(store) = previous.as_ref() {
             // Validate against its exact original composition, never against
@@ -69,7 +76,7 @@ impl AgentRunCoordinator {
         };
         validate_durable_run_store(&next, &candidate.composition)?;
         let next_digest = durable_run_store_sha256(&next)?;
-        let observed = load_durable_run_store(&durable_path)?;
+        let observed = store::load_store(&durable_path)?;
         let observed_revision = observed.as_ref().map_or(0, |store| store.store_revision);
         let observed_digest = observed
             .as_ref()
