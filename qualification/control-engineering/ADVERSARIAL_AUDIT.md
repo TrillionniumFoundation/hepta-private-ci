@@ -161,17 +161,27 @@ a real SQLite disk-full failure and real Git execution exceeding its budget. The
 are repairs within the existing engineering owner. They do not create an external
 provider, independent reviewer, native adaptive producer or deployment controller.
 
-The continued local owner snapshot `e5125d067a491ede29bb3d78a9b0c4adf5db035b`
-passed 468 discovered supported tests (466 passed, two host-admission skips),
+The final continued local owner snapshot `2b1a3f9fc82b2d563d6764ac3509b593386a0440`
+passed 480 discovered supported tests (478 passed, two host-admission skips),
 with 31 unprivileged-host cases explicitly excluded from this root-only host.
-All 46 newly added regression methods are included. Branch-inclusive coverage
-was 81.0699141024247%; Ruff and 12 strict boundary type checks passed.
-The 133 source-mapping regressions, 40 strict current-source module maps, module
-document verification passed. Whole-repository document verification stopped
-because the recovered partial Git history lacked a historical qualification
-commit; it is not a successful check until that provenance is restored or the
-new exact candidate passes hosted verification.
+All 58 newly added regression methods are included. Branch-inclusive coverage
+was 81.39258298194399%; Ruff and the aligned 14-file owner/product/evidence type
+gates passed. The 160 source-mapping regressions, all 40 strict current-source
+module maps, module documentation, status/API checks and gap inventory passed.
+
+Whole-repository document verification now also passed on the exact recorded local
+source. The legacy baseline and its required ancestor path were restored from real
+Git objects with SHA checks; the retained graph is explicitly partial, not a full
+historical checkout. The global verifier still reports 54 readiness documentation,
+22 CNS reference and 18 HNMF reference gaps. Passing inventory/identity verification
+does not close those unrelated project-wide deliverables or promote this owner.
+
+The last input review closed persisted scalar overflow, boolean lease comparisons,
+malformed text/collections and signed fence time/counter gaps. Independent repeat
+checks retained the maximum valid stored values, JSON-only larger integers,
+context/signature gates, atomic rollback and acknowledgement replay. No further
+reproducible defect was found within those reviewed boundaries after the repairs.
 [CONTINUED_AUDIT_LOCAL.json](CONTINUED_AUDIT_LOCAL.json) retains exact scope and
-log digests. Full 499-test discovery and strong source/merge qualification belong
-to the new hosted candidate. `just fmt` could not execute because this environment
-has no `just`; this change does not modify Rust.
+log digests. Full 511-test discovery, paired product receipts and strong source/merge
+qualification belong to the new hosted candidate. `just fmt` could not execute
+because this environment has no `just`; this change does not modify Rust.
