@@ -19,6 +19,8 @@ NUMERIC_PROFILES = MappingProxyType({
 CANONICAL_DIGEST_V1 = MappingProxyType(dict(_SPEC["canonicalDigestV1"]))
 
 def numeric_profile(profile_id: str) -> dict:
+    if type(profile_id) is not str:
+        raise ValueError("unknown numeric profile")
     row = NUMERIC_PROFILES.get(profile_id)
     if row is None:
         raise ValueError("unknown numeric profile")
@@ -34,6 +36,8 @@ def validate_id_profile(value: str, variant: str) -> str:
     # Every admitted profile is ASCII, so its character and UTF-8 byte bounds agree.
     if type(value) is not str or not value or len(value) > STABLE_ID_MAX_BYTES or "\0" in value:
         raise ValueError("identifier bound")
+    if type(variant) is not str:
+        raise ValueError("unknown identifier profile")
     row = ID_PROFILES.get(variant)
     if row is None:
         raise ValueError("unknown identifier profile")

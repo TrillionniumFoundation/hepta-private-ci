@@ -20,7 +20,9 @@ function maxDepth(raw) {
 export function parseStrictJson(raw) {
   if (typeof raw !== "string" || raw.length > MAX_RAW_BYTES || Buffer.byteLength(raw) > MAX_RAW_BYTES) throw new Error("size_exceeded");
   if (maxDepth(raw) > MAX_RAW_DEPTH) throw new Error("depth_exceeded");
-  const value = JSON.parse(raw);
+  let value;
+  try { value = JSON.parse(raw); } catch { throw new Error("invalid_json"); }
+  validateScalars(value);
   // JSON.parse validates the bounded syntax; retain each object's decoded keys
   // separately because it otherwise silently overwrites each duplicate key.
   const scopes = [];
@@ -46,6 +48,19 @@ export function parseStrictJson(raw) {
     }
   }
   return value;
+}
+
+function validateScalars(value) {
+  if (typeof value === "number" && !Number.isFinite(value)) throw new Error("invalid_json");
+  if (typeof value === "string" && !value.isWellFormed()) throw new Error("invalid_json");
+  if (Array.isArray(value)) {
+    for (const item of value) validateScalars(item);
+  } else if (value !== null && typeof value === "object") {
+    for (const [key, item] of Object.entries(value)) {
+      validateScalars(key);
+      validateScalars(item);
+    }
+  }
 }
 
 export function assertUnsignedIntegerTokens(raw) {

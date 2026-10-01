@@ -139,7 +139,7 @@ def digest(value: Any, name: str) -> str:
 
 
 def u64_text(value: Any, name: str, *, positive: bool = False) -> int:
-    if not isinstance(value, str) or not U64_TEXT.fullmatch(value):
+    if not isinstance(value, str) or len(value) > 20 or not U64_TEXT.fullmatch(value):
         raise ValueError(f"{name}: u64")
     parsed = int(value)
     if parsed > U64_MAX or (positive and parsed == 0):
@@ -148,7 +148,7 @@ def u64_text(value: Any, name: str, *, positive: bool = False) -> int:
 
 
 def i64_text(value: Any, name: str) -> int:
-    if not isinstance(value, str) or not I64_TEXT.fullmatch(value):
+    if not isinstance(value, str) or len(value) > 20 or not I64_TEXT.fullmatch(value):
         raise ValueError(f"{name}: i64")
     parsed = int(value)
     if not I64_MIN <= parsed <= I64_MAX:
@@ -249,7 +249,7 @@ def external_projection(value: dict[str, Any]) -> tuple[str, dict[str, tuple[str
     if value["kind"] != "external_system_manifest_v1":
         raise ValueError("kind")
     classes = {"debian_host", "debian_service", "posix_host", "posix_service", "digital_adapter"}
-    if value["system_class"] not in classes:
+    if type(value["system_class"]) is not str or value["system_class"] not in classes:
         raise ValueError("system_class")
     timestamp(value["observed_at"], "observed_at")
     fields = {
@@ -281,11 +281,11 @@ def sensor_projection(value: dict[str, Any]) -> tuple[str, dict[str, tuple[str, 
     }
     distributions = {"bounded_interval", "normal_approximation", "empirical_quantiles"}
     policies = {"reject", "degrade", "abstain", "reflex_stop"}
-    if value["sensor_class"] not in classes:
+    if type(value["sensor_class"]) is not str or value["sensor_class"] not in classes:
         raise ValueError("sensor_class")
-    if value["uncertainty_profile"]["distribution_class"] not in distributions:
+    if type(value["uncertainty_profile"]["distribution_class"]) is not str or value["uncertainty_profile"]["distribution_class"] not in distributions:
         raise ValueError("distribution_class")
-    if value["failure_policy"] not in policies:
+    if type(value["failure_policy"]) is not str or value["failure_policy"] not in policies:
         raise ValueError("failure_policy")
     valid_from = timestamp(value["valid_from"], "valid_from")
     valid_until = timestamp(value["valid_until"], "valid_until")

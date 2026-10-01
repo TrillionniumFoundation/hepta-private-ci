@@ -174,7 +174,7 @@ def delta_projection(value: Any) -> tuple[str, dict[str, Any]]:
     value = strict_keys(value, DELTA_KEYS, "topology delta")
     module_id = stable_id(value["module_id"], "module_id")
     operation = value["operation"]
-    if operation not in OPERATIONS:
+    if type(operation) is not str or operation not in OPERATIONS:
         raise ValueError("operation")
     related = value["related_module_ids"]
     if not isinstance(related, list) or len(related) > 256:
@@ -305,6 +305,17 @@ def verify_strict_json_boundaries() -> None:
             raise AssertionError(f"decoded duplicate object key accepted: {raw}")
     for raw in ('[{"x":1},{"x":2}]', '{"x":{"x":1}}', '{"x":"\\\"x\\\":1"}'):
         parse_strict_json(raw)
+    paired = parse_strict_json('{"\\ud834\\udd1e":"\\ud834\\udd1e"}')
+    if paired != {"\U0001d11e": "\U0001d11e"}:
+        raise AssertionError("valid Unicode surrogate pair changed")
+    for raw in ('{"x":"\\ud800"}', '{"\\ud800":1}', '{"x":1e999}', '{"x":' + "9" * 400 + '}'):
+        try:
+            parse_strict_json(raw)
+        except ValueError as error:
+            if str(error) != "invalid_json":
+                raise AssertionError(f"wrong invalid scalar rejection: {error}") from error
+        else:
+            raise AssertionError(f"invalid JSON scalar accepted: {raw}")
     parse_strict_json('[-0,1.0,1e0]')
     assert_unsigned_integer_tokens('["-0","1.0","1e0",0,1]')
     parse_strict_json("0" + " " * (MAX_RAW_BYTES - 1))

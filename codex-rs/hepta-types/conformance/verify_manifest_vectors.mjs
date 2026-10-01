@@ -91,14 +91,14 @@ function digest(value, name) {
 }
 
 function u64Text(value, name, positive = false) {
-  if (typeof value !== "string" || !U64_TEXT.test(value)) fail(`${name}: u64`);
+  if (typeof value !== "string" || value.length > 20 || !U64_TEXT.test(value)) fail(`${name}: u64`);
   const parsed = BigInt(value);
   if (parsed > U64_MAX || (positive && parsed === 0n)) fail(`${name}: u64`);
   return parsed;
 }
 
 function i64Text(value, name) {
-  if (typeof value !== "string" || !I64_TEXT.test(value)) fail(`${name}: i64`);
+  if (typeof value !== "string" || value.length > 20 || !I64_TEXT.test(value)) fail(`${name}: i64`);
   const parsed = BigInt(value);
   if (parsed < I64_MIN || parsed > I64_MAX) fail(`${name}: i64`);
   return parsed;

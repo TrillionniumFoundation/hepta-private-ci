@@ -219,6 +219,13 @@ function verifyStrictJsonBoundaries() {
   for (const raw of ['[{"x":1},{"x":2}]', '{"x":{"x":1}}', '{"x":"\\\"x\\\":1"}']) {
     parseStrictJson(raw);
   }
+  const paired = parseStrictJson('{"\\ud834\\udd1e":"\\ud834\\udd1e"}');
+  assert(Object.keys(paired).length === 1 && paired["𝄞"] === "𝄞", "valid Unicode surrogate pair changed");
+  for (const raw of ['{"x":"\\ud800"}', '{"\\ud800":1}', '{"x":1e999}', '{"x":' + "9".repeat(400) + '}']) {
+    let rejected = false;
+    try { parseStrictJson(raw); } catch (error) { rejected = error.message === "invalid_json"; }
+    assert(rejected, `invalid JSON scalar accepted: ${raw}`);
+  }
   parseStrictJson('[-0,1.0,1e0]');
   assertUnsignedIntegerTokens('["-0","1.0","1e0",0,1]');
   parseStrictJson("0" + " ".repeat(MAX_RAW_BYTES - 1));

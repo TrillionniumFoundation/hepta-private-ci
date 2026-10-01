@@ -18,6 +18,17 @@ class FalseZeroByte(bytes):
         return 0
 
 
+class ProfileAlias:
+    def __init__(self, key):
+        self.key = key
+
+    def __hash__(self):
+        return hash(self.key)
+
+    def __eq__(self, other):
+        return self.key == other
+
+
 assert binding.STABLE_ID_MAX_BYTES == 128
 assert binding.validate_id_profile("a" * 128, "Stable") == "a" * 128
 try:
@@ -69,14 +80,14 @@ for raw in (b"\x01", b"\x80"):
         pass
     else:
         raise SystemExit("generated Python binding admitted authority grant bits")
-for profile_id in ("constructor", "toString", "__proto__", "unknown-profile"):
+for profile_id in ("constructor", "toString", "__proto__", "unknown-profile", ProfileAlias("signed-q32-nearest-ties-even-v1"), []):
     try:
         binding.numeric_profile(profile_id)
     except ValueError:
         pass
     else:
         raise SystemExit(f"generated Python binding admitted unknown numeric profile: {profile_id}")
-for variant in ("constructor", "toString", "__proto__", "Unknown"):
+for variant in ("constructor", "toString", "__proto__", "Unknown", ProfileAlias("Stable"), []):
     try:
         binding.validate_id_profile("stable-id", variant)
     except ValueError:
