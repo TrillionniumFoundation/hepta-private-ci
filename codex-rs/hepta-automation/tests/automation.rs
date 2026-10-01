@@ -966,6 +966,12 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // The v18 drain trigger references the v2 outcome table. Remove its owner
+    // before dropping that table so SQLite can validate later ALTER statements.
+    sqlx::query("DROP TABLE automation_timer_lifecycle")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop post-v1 timer lifecycle");
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -981,6 +987,9 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
         "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",
+        "DROP TABLE IF EXISTS taskflow_effect_dispatch_authority_witnesses",
+        "DROP TABLE IF EXISTS destination_operation_dedupe",
+        "DROP TABLE IF EXISTS automation_terminal_observer_cursor",
         "DROP VIEW IF EXISTS automation_occurrence",
         "DROP VIEW IF EXISTS automation_schedule",
         "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",

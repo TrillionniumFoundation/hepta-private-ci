@@ -20,10 +20,24 @@ use crate::PlasticityRuntimeHandleV1;
 /// It contains only the bounded runtime handle and cannot access proposal
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
+#[cfg_attr(
+    not(test),
+    expect(
+        dead_code,
+        reason = "governed producer retained for qualification; normal event ingress has not selected this seam"
+    )
+)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
     handle: PlasticityRuntimeHandleV1,
 }
 
+#[cfg_attr(
+    not(test),
+    expect(
+        dead_code,
+        reason = "governed producer retained for qualification; normal event ingress has not selected this seam"
+    )
+)]
 impl AgentdLearningPlasticityProducerV1 {
     pub(crate) fn new(handle: PlasticityRuntimeHandleV1) -> Self {
         Self { handle }

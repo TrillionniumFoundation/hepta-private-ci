@@ -116,14 +116,10 @@ impl Drop for AgentProcess {
     }
 }
 
-fn now_ms() -> u64 {
-    u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("system time after epoch")
-            .as_millis(),
-    )
-    .expect("time fits u64")
+fn now_ms() -> Result<u64> {
+    Ok(u64::try_from(
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
+    )?)
 }
 
 fn test_signing_key(label: &[u8]) -> SigningKey {
@@ -164,8 +160,8 @@ fn write_private_json(path: &Path, value: &impl Serialize) -> Result<()> {
     Ok(())
 }
 
-fn definition() -> TaskFlowDefinition {
-    TaskFlowDefinition::new(
+fn definition() -> Result<TaskFlowDefinition> {
+    Ok(TaskFlowDefinition::new(
         "agentd-process-effect",
         1,
         STEP_ID,
@@ -180,8 +176,7 @@ fn definition() -> TaskFlowDefinition {
         ],
         vec!["provider.deliver".to_string()],
         Sha256Digest::for_bytes(b"agentd-process-effect-policy"),
-    )
-    .expect("valid process definition")
+    )?)
 }
 
 fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -207,7 +202,7 @@ async fn prepare_effect(
     intent: &AuthorizedEffectIntent,
     now: u64,
 ) -> Result<()> {
-    let definition = definition();
+    let definition = definition()?;
     let fence = TaskFlowFence::new(
         agent_id.clone(),
         "agentd-process-effect-owner",
@@ -273,7 +268,7 @@ fn signed_final_use(
     intent: &AuthorizedEffectIntent,
     now: u64,
     signer: &SigningKey,
-) -> SignedFinalUseGrant {
+) -> Result<SignedFinalUseGrant> {
     let nonce: [u8; 32] = Sha256::digest(b"agentd-process-effect-nonce").into();
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -281,24 +276,21 @@ fn signed_final_use(
         authority_epoch: AUTHORITY_EPOCH,
         grant_id: "agentd-process-effect-grant".to_string(),
         nonce,
-        binding: intent.final_use_binding().expect("final-use binding"),
+        binding: intent.final_use_binding()?,
         not_before_unix_ms: now.saturating_sub(1_000),
-        expires_at_unix_ms: now + TRUST_WINDOW_MS,
+        expires_at_unix_ms: now + 60_000,
     };
-    SignedFinalUseGrant {
-        signature: signer
-            .sign(&grant.signing_bytes().expect("grant signing bytes"))
-            .to_bytes()
-            .to_vec(),
+    Ok(SignedFinalUseGrant {
+        signature: signer.sign(&grant.signing_bytes()?).to_bytes().to_vec(),
         grant,
-    }
+    })
 }
 
 fn signed_revocation_update(
     signer: &SigningKey,
     head: FinalUseRevocations,
     now: u64,
-) -> SignedFinalUseRevocationUpdate {
+) -> Result<SignedFinalUseRevocationUpdate> {
     let issued_at_unix_ms = now.saturating_sub(1_000);
     let update = FinalUseRevocationUpdate::new(
         "automation-revocation-distributor".to_string(),
@@ -306,13 +298,10 @@ fn signed_revocation_update(
         issued_at_unix_ms,
         issued_at_unix_ms.saturating_add(codex_hepta_contracts::MAX_REVOCATION_FEED_LIFETIME_MS),
     );
-    SignedFinalUseRevocationUpdate {
-        signature: signer
-            .sign(&update.signing_bytes().expect("revocation signing bytes"))
-            .to_bytes()
-            .to_vec(),
+    Ok(SignedFinalUseRevocationUpdate {
+        signature: signer.sign(&update.signing_bytes()?).to_bytes().to_vec(),
         update,
-    }
+    })
 }
 
 fn spawn_agentd(
@@ -447,7 +436,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(layout.home_root())?;
 
-    let now = now_ms();
+    let now = now_ms()?;
     let scope = Sha256Digest::for_bytes(b"provider-process-fixture-scope");
     let intent = effect_intent(&scope);
     let store = AutomationStore::open(&layout).await?;
@@ -512,7 +501,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let initial_update = signed_revocation_update(&revocation_signer, initial_head, now);
+    let initial_update = signed_revocation_update(&revocation_signer, initial_head, now)?;
     let feed_file = layout.automation_root().join("effect-revocation-feed.json");
     write_private_json(&feed_file, &initial_update)?;
     let trust_root = root.join("external-authority-trust");
@@ -554,7 +543,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         "claim_reserve": 8
     });
     write_private_json(&host_file, &host_config)?;
-    let grant = signed_final_use(&intent, now, &final_use_signer);
+    let grant = signed_final_use(&intent, now, &final_use_signer)?;
 
     let starting_one = registry.compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)?;
     ensure!(starting_one.generation == 1);
@@ -605,8 +594,8 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
             revision: 2,
             revoked_grant_ids: revoked,
         },
-        now_ms(),
-    );
+        now_ms()?,
+    )?;
     write_private_json(&feed_file, &newer_update)?;
     let pending_result = first_client
         .automation_execute_effect(intent.clone(), WIRE, grant.clone(), COMMAND_ID.to_string())

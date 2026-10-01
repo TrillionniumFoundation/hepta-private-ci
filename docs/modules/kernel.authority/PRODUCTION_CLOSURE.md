@@ -1,6 +1,6 @@
 # kernel.authority production-closure program
 
-Status: **repository closure implemented; target deployment evidence remains fail-closed**.
+Status: **repository closure program implemented; successful current-candidate native execution and target deployment evidence remain pending**.
 
 This document binds the four closure stages for `kernel.authority` to concrete
 source, tests, workflows and retained receipts. It does not grant production

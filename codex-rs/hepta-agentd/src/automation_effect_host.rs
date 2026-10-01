@@ -83,7 +83,7 @@ fn default_claim_reserve() -> usize {
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -567,7 +567,9 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(
+                        receipt,
+                    )));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -599,9 +601,9 @@ impl AgentdAutomationEffectHost {
                             "reconcile authorized effect terminal observation: {error}"
                         ))
                     })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
-                    }
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(
+                        AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)),
+                    ),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),

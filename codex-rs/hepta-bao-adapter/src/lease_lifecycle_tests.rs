@@ -71,7 +71,7 @@ fn reused_operation_id_with_changed_semantics_conflicts() {
 
 #[test]
 fn renew_unknown_blocks_fabricated_success_until_reconciled() {
-    let (_directory, mut registry) = registry();
+    let (directory, mut registry) = registry();
     registry
         .prepare_issue("op:issue:1".into(), [3; 32])
         .unwrap();
@@ -88,6 +88,9 @@ fn renew_unknown_blocks_fabricated_success_until_reconciled() {
         .prepare_renew("op:renew:1".into(), "lease:db:1".into(), [4; 32])
         .unwrap();
     registry.mark_unknown("op:renew:1").unwrap();
+    drop(registry);
+    let mut registry =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
     assert_eq!(
         registry.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::RenewUnknown
@@ -113,7 +116,7 @@ fn renew_unknown_blocks_fabricated_success_until_reconciled() {
 
 #[test]
 fn revoke_unknown_stays_nonterminal_until_provider_observation() {
-    let (_directory, mut registry) = registry();
+    let (directory, mut registry) = registry();
     registry
         .prepare_issue("op:issue:1".into(), [3; 32])
         .unwrap();
@@ -130,6 +133,9 @@ fn revoke_unknown_stays_nonterminal_until_provider_observation() {
         .prepare_revoke("op:revoke:1".into(), "lease:db:1".into(), [6; 32])
         .unwrap();
     registry.mark_unknown("op:revoke:1").unwrap();
+    drop(registry);
+    let mut registry =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
     assert_eq!(
         registry.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::RevokeUnknown
@@ -145,6 +151,9 @@ fn revoke_unknown_stays_nonterminal_until_provider_observation() {
             },
         )
         .unwrap();
+    drop(registry);
+    let registry =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
     assert_eq!(
         registry.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::Revoked
@@ -206,4 +215,36 @@ fn expiry_is_durable_and_terminal_for_renewal() {
         reopened.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::Expired
     );
+}
+
+#[test]
+fn issue_observation_cannot_install_nonactive_lease() {
+    for state in [
+        SecretLeaseStateV1::RenewUnknown,
+        SecretLeaseStateV1::RevokeUnknown,
+        SecretLeaseStateV1::Revoked,
+        SecretLeaseStateV1::Expired,
+    ] {
+        let (directory, mut registry) = registry();
+        registry
+            .prepare_issue("op:issue:1".into(), [3; 32])
+            .unwrap();
+        let mut lease = active_lease();
+        lease.state = state;
+        assert_eq!(
+            registry.reconcile(
+                "op:issue:1",
+                ProviderLeaseObservationV1::IssueApplied { lease }
+            ),
+            Err(LeaseRegistryErrorV1::InvalidInput)
+        );
+        drop(registry);
+        let reopened =
+            DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+        assert!(reopened.lease("lease:db:1").is_none());
+        assert_eq!(
+            reopened.operation("op:issue:1").unwrap().state,
+            LeaseOperationStateV1::Prepared
+        );
+    }
 }
