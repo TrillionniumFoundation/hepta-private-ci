@@ -181,6 +181,41 @@ BellmanOperatorArtifactV1 {
 }
 ```
 
+The Bellman artifact schema preserves all fourteen fields above. Its exact
+canonical field names and bounds are:
+
+| Design field | Canonical field | Type and encoded bound |
+|---|---|---|
+| `artifact_id` | `artifactId` | required `id128`, 128 bytes |
+| `applicability_digest` | `applicabilityDigest` | required `sha256`, 64 bytes |
+| `sensor_core_digest` | `sensorCoreDigest` | required `sha256`, 64 bytes |
+| `branch_digest` | `branchDigest` | required `sha256`, 64 bytes |
+| `state_trunk_digest` | `stateTrunkDigest` | required `sha256`, 64 bytes |
+| `action_trunk_digest` | `actionTrunkDigest` | required `sha256`, 64 bytes |
+| `rank` | `rank` | required `u32`; qualified pilot rank at most 64 |
+| `normalization_digest` | `normalizationDigest` | required `sha256`, 64 bytes |
+| `training_dataset_digest` | `trainingDatasetDigest` | required `sha256`, 64 bytes |
+| `training_code_digest` | `trainingCodeDigest` | required `sha256`, 64 bytes |
+| `runtime_tuple_digest` | `runtimeTupleDigest` | required `sha256`, 64 bytes |
+| `error_budget` | `errorBudget` | required `bounded_object`, 16384 bytes |
+| `predecessor` | `predecessorArtifactId` | optional `id128`, 128 bytes; absent for an initial artifact |
+| `rollback_digest` | `rollbackDigest` | required `sha256`, 64 bytes |
+
+The complete canonical JSON record is bounded to 262144 encoded bytes, rejects
+unknown critical fields and binds all semantic fields except a detached signature.
+`errorBudget` must account for evidenced model, sensor, reconstruction, network,
+optimization, statistical and rollout terms without omission or double counting,
+including explicit evidenced zero terms where inapplicable. The non-negative
+total and independent dominant-component approval follow Section 7. Artifact
+identity, applicability, fixed sensor core, model/runtime tuple and rollback
+lineage must agree with the artifact owner's immutable manifest.
+
+These are canonical integration requirements. The current target-builder and
+tabular Rust artifacts, including the owner-local `HEPTTB01` payload, do not
+implement this complete JSON record. Schema registration does not supply an
+adapter, demonstrate wire conformance or implement the neural architecture;
+those source and qualification obligations remain open.
+
 The sensor core is create-only. Runtime observations may inform a proposal for a future core but may not mutate the selected core. All target rows bind the policy, objective, jump/hard snapshot, candidate set, propensity/support, outcome source and dataset lineage. Correction and deletion propagate through targets, model checkpoints and derived artifacts.
 
 ## 7. Numerical stability, complexity and resource bounds

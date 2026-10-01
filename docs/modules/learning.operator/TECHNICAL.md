@@ -155,6 +155,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `BellmanOperatorArtifactV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
 - `LearningDecisionV1`
@@ -187,6 +188,14 @@ invalid enums, canonical ordering and digest stability, plus preservation of the
 registered rejected, unavailable, timed out, indeterminate, quarantined and
 terminally failed outcomes. Native arithmetic, structural validation and signed
 attestation tests do not substitute for those wire-boundary checks.
+
+The canonical `BellmanOperatorArtifactV1` schema retains all fourteen design
+fields, including applicability, sensor core, branch and state/action trunks,
+rank, normalization, dataset/code/runtime identity, complete error budget and
+rollback lineage. [Section 6 of the operator specification](../../learning/HOLDER_BELLMAN_SPEC.md#6-data-protocol-and-lineage-schema)
+maps its symbolic design fields to canonical field names and bounds. Its registry
+entry defines the required shape; the current tabular payload does not implement
+that shape or establish its runtime/model and wire-conformance evidence.
 
 ## 6. Data authority, persistence and migrations
 
@@ -497,6 +506,7 @@ This generated projection binds `learning.operator` to the current canonical con
 - `SupportAuditReceiptV1`
 
 **Typed protocols:**
+- `BellmanOperatorArtifactV1`
 - `CandidateSetCompletenessReceiptV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`

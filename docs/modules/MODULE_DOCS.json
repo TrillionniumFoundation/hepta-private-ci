@@ -729,8 +729,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "P0.7B-B1A-PROVIDER-BOUNDARY",
-      "sha256": "5bad391e7571448cd2c69b7e84fb242952a1dd96602b6d34df0188db05217a59",
-      "bytes": 22489,
+      "sha256": "101ce3b5cffce8994784b04190bd2bd56f78b8795d5a7dc032f3356daded251e",
+      "bytes": 22490,
       "words": 2349,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
@@ -2045,9 +2045,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "sha256": "8787c61757bb4805d919a6dfd1f3d321387f9b862ce4a9c19941b78c9984a671",
-      "bytes": 27708,
-      "words": 2568,
+      "sha256": "cfff65524a6c38a0f1761b6af77055b672c7512cc36f38929b3a97e58c900e56",
+      "bytes": 35226,
+      "words": 3499,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -2096,6 +2096,7 @@
         "SupportAuditReceiptV1"
       ],
       "protocols": [
+        "BellmanOperatorArtifactV1",
         "CandidateSetCompletenessReceiptV1",
         "CreditAssignmentReceiptV1",
         "DatasetSnapshotV1",
@@ -2148,9 +2149,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "LRN-2-CAUSAL-EVALUATION",
-      "sha256": "aaab5534588680619e22cb5d3ceebea07b2e584bd9dd9515e2daf0a4f0a5033e",
-      "bytes": 30686,
-      "words": 2836,
+      "sha256": "076437fc296bafd0fe67ede99318d1c9a61e971077ea4378ba2918ab80ea38ba",
+      "bytes": 31358,
+      "words": 2908,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -2218,6 +2219,7 @@
       ],
       "protocols": [
         "AlgorithmFaultReceiptV1",
+        "BellmanOperatorArtifactV1",
         "CandidateEvaluationReceiptV1",
         "CandidateSetCompletenessReceiptV1",
         "ConformanceReceiptV1",
@@ -2298,9 +2300,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "sha256": "ed9d414530b97eee43e6611417c52184d272b1c6b2e51113d168e8a26d156d24",
-      "bytes": 31718,
-      "words": 3278,
+      "sha256": "40a263cb83c223d0efbe9fb0f85e4de7e3daea649a8262c38e04bf8dcf0addbd",
+      "bytes": 32359,
+      "words": 3347,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -2361,6 +2363,7 @@
       ],
       "protocols": [
         "AlgorithmFaultReceiptV1",
+        "BellmanOperatorArtifactV1",
         "CandidateEvaluationReceiptV1",
         "ConformanceReceiptV1",
         "DatasetSnapshotV1",
