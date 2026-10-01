@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 MODULE_RE = re.compile(
-    r"(?ms)(?P<attrs>(?:\s*#\s*\[[^\]]*\]\s*)*)"
+    r"(?ms)(?P<attrs>(?:#\s*\[[^\]]*\]\s*)*)"
     r"(?:pub(?:\([^)]*\))?\s+)?mod\s+"
     r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*;"
 )

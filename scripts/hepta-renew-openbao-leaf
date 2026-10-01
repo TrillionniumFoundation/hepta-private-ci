@@ -150,6 +150,7 @@ class ListenerNotCurrent(ValueError):
 def observe(config, cert_bytes, ca_bytes):
     # OpenBao reloads the startup paths on HUP; this helper never changes them.
     context = ssl.create_default_context(cadata=ca_bytes.decode())
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
     with socket.create_connection(("127.0.0.1", config["port"]), timeout=3) as raw:
         with context.wrap_socket(raw, server_hostname="127.0.0.1") as connection:
             expected = x509.load_pem_x509_certificate(cert_bytes).public_bytes(serialization.Encoding.DER)

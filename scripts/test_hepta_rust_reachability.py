@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -78,6 +79,33 @@ class RustReachabilityTests(unittest.TestCase):
             report["unreachableSources"],
             [{"package": "codex-hepta-example", "path": "codex-rs/hepta-example/src/orphan.rs"}],
         )
+
+    def test_repeated_attributes_retain_path_without_exponential_backtracking(self) -> None:
+        temporary, root = self.repository()
+        self.addCleanup(temporary.cleanup)
+        source = root / "codex-rs/hepta-example/src/lib.rs"
+        source.write_text(
+            ("#[cfg(test)]  \n" * 2000)
+            + '#[path = "shared.rs"]  \n  pub(crate) mod shared;\n',
+            encoding="utf-8",
+        )
+        source.with_name("shared.rs").write_text("pub fn shared() {}\n", encoding="utf-8")
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import runpy,sys; from pathlib import Path; "
+                "m=runpy.run_path(sys.argv[1]); p=Path(sys.argv[2]); "
+                "print([c.name for c in m['direct_children'](p,{p})])",
+                str(SCRIPT),
+                str(source),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=3,
+            check=True,
+        )
+        self.assertEqual(result.stdout.strip(), "['shared.rs']")
 
 
 if __name__ == "__main__":
