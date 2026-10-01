@@ -280,6 +280,66 @@
       "bytes": 2168
     },
     {
+      "name": "final-clean-contract",
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-contract.py",
+        "verify"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-contract.log",
+      "rawLogSha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69",
+      "bytes": 68
+    },
+    {
+      "name": "final-clean-doc-indexes",
+      "command": [
+        "python3",
+        "../scripts/hepta-module-docs.py",
+        "refresh-indexes",
+        "--check"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-doc-indexes.log",
+      "rawLogSha256": "4d90e2f4b8f2a7d588457bb8de6b3824fb3f19350803cc2bb10c905182da359d",
+      "bytes": 42
+    },
+    {
+      "name": "final-clean-module-docs",
+      "command": [
+        "python3",
+        "../scripts/hepta-module-docs.py",
+        "verify"
+      ],
+      "exitCode": 1,
+      "status": "baseline-blocked",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-module-docs.log",
+      "rawLogSha256": "6b252ea4a1b0176830ac958e94127b0cc56e2708f79438585e01eb55fd8ce4b7",
+      "bytes": 1012,
+      "reason": "Five unchanged other-module historical anchors are not ancestors of the current candidate; actual raw verification failure retained."
+    },
+    {
+      "name": "final-clean-source-map",
+      "command": [
+        "python3",
+        "../scripts/hepta-learning-operator-map.py",
+        "emit",
+        "--source-sha",
+        "c9354316e1a24bf128b53828821f33f3d7e1a1c6",
+        "--source-tree",
+        "3c2ca4433d3e1e7c2d2c96fbb8a402c4e563cbe9",
+        "--output",
+        ".hepta-evidence/learning-operator-local-audit/current-map.json"
+      ],
+      "exitCode": 0,
+      "status": "pass",
+      "rawLog": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-source-map.log",
+      "rawLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
       "name": "final-core-owner-tests",
       "command": [
         "just",
@@ -954,6 +1014,26 @@
       "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-adapter-scoped-fix.log",
       "sha256": "598b2698a1d78239b28e9330f06015d6a633e3142f84ad0cb72527e6f417e6b7",
       "bytes": 2168
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-contract.log",
+      "sha256": "cd51212b7779d3d5bc68c39a5d4ef7094d2101d6897b24dadfadf4df70fa4d69",
+      "bytes": 68
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-doc-indexes.log",
+      "sha256": "4d90e2f4b8f2a7d588457bb8de6b3824fb3f19350803cc2bb10c905182da359d",
+      "bytes": 42
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-module-docs.log",
+      "sha256": "6b252ea4a1b0176830ac958e94127b0cc56e2708f79438585e01eb55fd8ce4b7",
+      "bytes": 1012
+    },
+    {
+      "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-clean-source-map.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
     },
     {
       "path": "qualification/lane-e/learning-operator-audit-20261001-round2/final-core-owner-tests.log",
@@ -1782,6 +1862,22 @@
       "behindBy": 16
     }
   ],
+  "cleanMetadataChecks": {
+    "observedRemoteHead": "c9354316e1a24bf128b53828821f33f3d7e1a1c6",
+    "observedTree": "3c2ca4433d3e1e7c2d2c96fbb8a402c4e563cbe9",
+    "operatorProjection": "pass",
+    "operatorProjectionObjects": 99,
+    "operatorContract": "pass",
+    "docIndexCheck": "pass",
+    "globalModuleDocs": "baseline-blocked",
+    "unresolvedModules": [
+      "objective.compiler",
+      "utility.ndu",
+      "cognitive.read",
+      "automation.taskflow",
+      "control.engineering"
+    ]
+  },
   "formatScope": "just fmt completed; 46 unrelated Python formatter-only changes were restored to baseline. All Rust and the six changed Python source/test files passed the scoped format check. No full Python lint gate is claimed; its broad attempted lint failure remains in raw logs.",
   "finalReadonlyReview": "Independent reviewers found no further actionable counterexample in the implemented bounded scope after forward-clock, CURRENT actor and strict receipt type fixes. Unknown future owner/revocation/stop changes still require host refresh and an exclusive effect fence."
 }

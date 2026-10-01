@@ -68,6 +68,7 @@ fixture 的修改保持真实 owner、abstain、fsync、签名及预注册统计
 | 最终格式化 Agentd 组件源码 harness | 35 passed，0 skipped | 230 项 at-run 输入哈希前后不变；真实 path dependencies，不能替代完整 Agentd class/build。 |
 | evidence / Lane E / V8 Python 回归 | 27 / 15 / 6 全通过 | 包括重哈希类型篡改、真实 stage 执行及 merged-lock V8 校验。 |
 | operator default/compat all-target strict Clippy | 均通过 | `-D warnings` 仅用于 operator；八库 fix 的其他既有 warnings 保留原始日志。 |
+| 已提交 clean snapshot 的 operator map/文档契约/索引 | 通过 | `c9354316...` 下 99 个精确 Git source/control objects；全仓库文档门禁仍因五个其他模块旧锚点受阻。 |
 | scoped fix、just fmt、改动文件格式与语法 | 通过 | 46 个无关 Python 自动格式差异已回退；不宣称整个仓库 Python lint 无警告。 |
 
 机器清单保留已纠正的编译/fixture 失败和 broad Python lint 尝试，不用它们冒充成功运行。
