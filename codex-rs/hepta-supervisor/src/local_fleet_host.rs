@@ -14,12 +14,11 @@ use codex_hepta_fleet::DurableFleetStore;
 use codex_hepta_fleet::FleetAuthorityPort;
 use codex_hepta_fleet::FleetExecutionContextV1;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::LaunchDigestDomain;
 use codex_hepta_fleet::LocalCapacityObserver;
 use codex_hepta_fleet::LocalCapacityObserverConfig;
 use codex_hepta_fleet::ResourceVectorV1;
 use serde::Deserialize;
-use sha2::Digest;
-use sha2::Sha256;
 use tokio::runtime::Handle;
 use tokio_util::sync::CancellationToken;
 
@@ -169,8 +168,10 @@ impl LocalFleetHost {
             };
             // Actual installed program bytes and the complete immutable launch
             // configuration determine the digest; no request digest is trusted.
-            let mut digest = Sha256::new();
-            digest.update(std::fs::read(&spec.command.program)?);
+            let mut digest = self
+                .registry
+                .launch_digest_prefix(&spec.command.program, LaunchDigestDomain::Agent)
+                .map_err(host_error)?;
             digest.update(serde_json::to_vec(&record.manifest)?);
             digest.update(spec.generation.to_be_bytes());
             for (name, value) in &environment {
@@ -184,15 +185,17 @@ impl LocalFleetHost {
                 digest.update((bytes.len() as u64).to_be_bytes());
                 digest.update(bytes);
             }
+            let verified_program = digest.commit().map_err(host_error)?;
             let mut prepared = self
                 .prepare(
                     &spec.agent_id,
                     "main",
                     resources,
-                    hex_digest(digest.finalize()),
+                    hex_digest(verified_program.digest()),
                 )
                 .await?;
             prepared.launch = Some(launch);
+            prepared.verified_program = Some(verified_program);
             prepared.environment = environment;
             Ok(prepared)
         })?
@@ -209,9 +212,10 @@ impl LocalFleetHost {
                 .load_agent(&spec.agent_id)
                 .map_err(host_error)?;
             containment::prepare_workload(&record.layout, &self.policy)?;
-            let mut digest = Sha256::new();
-            digest.update(b"hepta.local-host.matrix.v1\0");
-            digest.update(std::fs::read(&spec.command.program)?);
+            let mut digest = self
+                .registry
+                .launch_digest_prefix(&spec.command.program, LaunchDigestDomain::Matrix)
+                .map_err(host_error)?;
             digest.update(serde_json::to_vec(&record.manifest)?);
             digest.update(spec.binding_digest.as_str());
             digest.update(spec.agent_generation.to_be_bytes());
@@ -222,15 +226,17 @@ impl LocalFleetHost {
                 digest.update((bytes.len() as u64).to_be_bytes());
                 digest.update(bytes);
             }
+            let verified_program = digest.commit().map_err(host_error)?;
             let mut prepared = self
                 .prepare(
                     &spec.agent_id,
                     "matrix",
                     self.policy.matrix_resources,
-                    hex_digest(digest.finalize()),
+                    hex_digest(verified_program.digest()),
                 )
                 .await?;
             prepared.launch = Some(launch);
+            prepared.verified_program = Some(verified_program);
             Ok(prepared)
         })?
     }
@@ -355,7 +361,18 @@ impl LocalFleetHost {
         &self,
         command: &mut std::process::Command,
         prepared: &PreparedExecution,
-    ) {
+    ) -> Result<(), ProcessDriverError> {
+        if let Some(program) = &prepared.verified_program {
+            if program.program() != Path::new(command.get_program()) {
+                return Err(ProcessDriverError::new(
+                    "prepared launch program differs from command",
+                ));
+            }
+            // The actual FD remains open until spawn completes. Any genuine
+            // change after durable preparation rejects spawn and retains the
+            // existing hold/recovery obligation; it is never fake NoEffect.
+            program.verify_current().map_err(host_error)?;
+        }
         // Keep the owner's explicit per-agent launch fields, then discard all
         // inherited variables. Loader and language runtime injection variables
         // cannot cross the root-to-workload boundary through the environment.
@@ -375,6 +392,7 @@ impl LocalFleetHost {
             )
             .envs(explicit);
         containment::constrain(command, prepared, &self.policy);
+        Ok(())
     }
 
     pub(crate) fn recover_execution(

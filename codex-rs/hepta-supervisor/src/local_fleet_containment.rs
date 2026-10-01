@@ -28,6 +28,7 @@ pub(crate) struct PreparedExecution {
     membership: File,
     pub launch: Option<tokio::sync::OwnedMutexGuard<()>>,
     pub environment: Vec<(OsString, OsString)>,
+    pub verified_program: Option<codex_hepta_fleet::VerifiedLaunchProgram>,
 }
 
 pub(super) fn prepare_base(policy: &Policy) -> Result<(), ProcessDriverError> {
@@ -110,6 +111,7 @@ pub(super) fn create_execution(
         membership,
         launch: None,
         environment: Vec::new(),
+        verified_program: None,
     })
 }
 

@@ -293,7 +293,7 @@ impl ProcessDriver for UnixProcessDriver {
             .transpose()?;
         #[cfg(all(target_os = "linux", feature = "local-host"))]
         if let (Some(host), Some(execution)) = (&self.local_host, &execution) {
-            host.constrain(&mut command, execution);
+            host.constrain(&mut command, execution)?;
         }
         let child = command.spawn()?;
         #[cfg(all(target_os = "linux", feature = "local-host"))]
@@ -402,7 +402,7 @@ impl ProcessDriver for UnixProcessDriver {
             .transpose()?;
         #[cfg(all(target_os = "linux", feature = "local-host"))]
         if let (Some(host), Some(execution)) = (&self.local_host, &execution) {
-            host.constrain(&mut command, execution);
+            host.constrain(&mut command, execution)?;
         }
         let child = command.spawn()?;
         #[cfg(all(target_os = "linux", feature = "local-host"))]

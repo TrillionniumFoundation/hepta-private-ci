@@ -182,11 +182,17 @@ async fn live_allow_read_lane_is_bounded_and_never_retains_the_writer_lock()
         release_change_pending: false,
         state_digest: crate::ControlStateDigest::parse("0".repeat(64))?,
     };
-    let method = SupervisordMethod::AllowInstalledRelease {
-        fence,
-        release_id: "cold-release".parse()?,
-    };
-    for _ in 0..2 {
+    let methods = [
+        SupervisordMethod::AllowInstalledRelease {
+            fence: fence.clone(),
+            release_id: "cold-release".parse()?,
+        },
+        SupervisordMethod::Start {
+            fence,
+            release_id: "cold-release".parse()?,
+        },
+    ];
+    for method in methods {
         let reply = timeout(
             Duration::from_secs(1),
             handle(Arc::clone(&state), method.clone()),

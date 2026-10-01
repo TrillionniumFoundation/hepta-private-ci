@@ -27,6 +27,9 @@ use crate::FleetRegistryError;
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
 const RELEASE_MANIFEST_FILE: &str = "release.json";
+
+#[path = "release_launch_read.rs"]
+mod launch_read;
 const AGENTD_RELEASE_PROGRAM: &str = "bin/hepta-agentd";
 const MATRIXD_RELEASE_PROGRAM: &str = "bin/hepta-matrixd";
 const RELEASE_ALLOW_PREFIX: &str = "allow-";

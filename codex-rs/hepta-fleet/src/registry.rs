@@ -36,8 +36,15 @@ mod retirement;
 
 #[path = "release_digest_cache.rs"]
 mod release_digest_cache;
+#[cfg(unix)]
+pub use release_digest_cache::LaunchDigestDomain;
 pub(crate) use release_digest_cache::ManifestRead;
 use release_digest_cache::ReleaseDigestCache;
+pub use release_digest_cache::ReleaseReadPin;
+#[cfg(unix)]
+pub use release_digest_cache::VerifiedLaunchDigest;
+#[cfg(unix)]
+pub use release_digest_cache::VerifiedLaunchProgram;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRecord {

@@ -161,11 +161,12 @@ pub(super) async fn handle_with_request_id(
     ) {
         return reply;
     }
-    // Live allow is the configuration path that formerly read a complete cold
-    // ELF under the lifecycle permit. This reader has no Agent allowance or
-    // durable operation authority; the owner still verifies the original fence
-    // and actual catalog identity before publishing the allowance.
-    if let SupervisordMethod::AllowInstalledRelease { release_id, .. } = &method {
+    // The reader carries no Agent allowance or durable operation authority.
+    // Cold catalog bytes are read before admission. The owner still checks the
+    // original fence, allowance and actual identity at the effect boundary.
+    let release_read_pin = if let SupervisordMethod::AllowInstalledRelease { release_id, .. }
+    | SupervisordMethod::Start { release_id, .. } = &method
+    {
         let reader = state.execution.release_reads.get_or_init(|| {
             super::release_reads::ReleaseReads::new(
                 state.registry.clone(),
@@ -181,12 +182,12 @@ pub(super) async fn handle_with_request_id(
             .prevalidate(release_id.clone(), &state.execution.cancellation)
             .await
         {
-            super::release_reads::ReadResult::Validated => {}
+            super::release_reads::ReadResult::Validated(pin) => Some(pin),
             super::release_reads::ReadResult::Busy => {
                 state.execution.rejected.fetch_add(1, Ordering::Relaxed);
                 return error_payload(
                     "not_admitted_busy",
-                    "catalog reader is busy; configuration was not admitted; refresh before retry",
+                    "catalog reader is busy; request was not admitted; refresh before retry",
                     /*actual*/ None,
                 );
             }
@@ -199,7 +200,9 @@ pub(super) async fn handle_with_request_id(
                 );
             }
         }
-    }
+    } else {
+        None
+    };
     // Wait on the FIFO semaphore, not in the blocking pool. Connection capacity
     // bounds the number of waiters; timeout drops only the unadmitted acquisition.
     // A bounded FIFO wait prevents a busy periodic ticker from starving mutations.
@@ -222,6 +225,9 @@ pub(super) async fn handle_with_request_id(
     };
     let runtime = Handle::current();
     match spawn_owned(state, permit, move |state| {
+        // A private read fact pin survives the owner wait and execution. It
+        // contains no fence, allowance, receipt or grant authorization.
+        let _release_read_pin = release_read_pin;
         let reply = runtime.block_on(super::handle_request(Arc::clone(state), request_id, method));
         let supervisor = state.supervisor.blocking_lock();
         // A live owner request may have changed state and therefore always

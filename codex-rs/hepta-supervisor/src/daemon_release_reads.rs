@@ -6,6 +6,7 @@ use std::time::Duration;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_fleet::ReleaseId;
+use codex_hepta_fleet::ReleaseReadPin;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
@@ -14,7 +15,7 @@ const WAIT_BUDGET: Duration = Duration::from_millis(250);
 enum ReadJob {
     Validate {
         release_id: ReleaseId,
-        reply: oneshot::Sender<Result<(), FleetRegistryError>>,
+        reply: oneshot::Sender<Result<ReleaseReadPin, FleetRegistryError>>,
     },
     #[cfg(test)]
     Pause {
@@ -24,7 +25,7 @@ enum ReadJob {
 }
 
 pub(super) enum ReadResult {
-    Validated,
+    Validated(ReleaseReadPin),
     Busy,
     Stopped,
     Rejected(FleetRegistryError),
@@ -55,7 +56,7 @@ impl ReleaseReads {
                     }
                     match job {
                         ReadJob::Validate { release_id, reply } => {
-                            let result = registry.prevalidate_release(&release_id);
+                            let result = registry.prevalidate_release_for_launch(&release_id);
                             let _ = reply.send(result);
                         }
                         #[cfg(test)]
@@ -86,7 +87,8 @@ impl ReleaseReads {
         tokio::select! {
             _ = cancellation.cancelled() => ReadResult::Stopped,
             result = tokio::time::timeout(WAIT_BUDGET, response) => match result {
-                Ok(Ok(Ok(()))) => ReadResult::Validated,
+                Ok(Ok(Ok(pin))) => ReadResult::Validated(pin),
+                Ok(Ok(Err(FleetRegistryError::ReleasePrevalidationRequired))) => ReadResult::Busy,
                 Ok(Ok(Err(error))) => ReadResult::Rejected(error),
                 Ok(Err(_)) => ReadResult::Stopped,
                 Err(_) => ReadResult::Busy,

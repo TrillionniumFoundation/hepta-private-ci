@@ -133,6 +133,13 @@ pub use module_catalog::RuntimeModuleDefinitionV1;
 pub use registry::AgentRecord;
 pub use registry::FleetRegistry;
 pub use registry::FleetSnapshot;
+#[cfg(unix)]
+pub use registry::LaunchDigestDomain;
+pub use registry::ReleaseReadPin;
+#[cfg(unix)]
+pub use registry::VerifiedLaunchDigest;
+#[cfg(unix)]
+pub use registry::VerifiedLaunchProgram;
 pub use release::AGENT_RELEASE_STATE_SCHEMA_VERSION;
 pub use release::AgentReleaseState;
 pub use release::RELEASE_METADATA_SCHEMA_VERSION;

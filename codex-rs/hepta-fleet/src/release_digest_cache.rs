@@ -4,6 +4,8 @@
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
+#[cfg(unix)]
+use std::sync::Arc;
 
 use sha2::Digest;
 use sha2::Sha256;
@@ -24,14 +26,25 @@ use std::sync::Mutex;
 #[cfg(unix)]
 const MAX_CACHED_PROGRAMS: usize = 256;
 
+#[path = "release_digest_prefix.rs"]
+mod prefix;
+#[cfg(unix)]
+pub use prefix::LaunchDigestDomain;
+pub use prefix::ReleaseReadPin;
+#[cfg(unix)]
+pub use prefix::VerifiedLaunchDigest;
+#[cfg(unix)]
+pub use prefix::VerifiedLaunchProgram;
+
 #[derive(Debug, Default)]
 pub(crate) struct ReleaseDigestCache {
     #[cfg(unix)]
-    entries: Mutex<BTreeMap<PathBuf, Entry>>,
+    entries: Mutex<BTreeMap<PathBuf, Arc<Entry>>>,
 }
 
 /// Manifest bytes and identity acquired together by the registry reader.
 /// No request can construct this private native identity proof.
+#[derive(Clone)]
 pub(crate) struct ManifestRead {
     pub(crate) bytes: Vec<u8>,
     pub(crate) sha256: String,
@@ -138,8 +151,20 @@ impl ReleaseDigestCache {
         mut file: File,
         defer_cold_read: bool,
     ) -> Result<String, FleetRegistryError> {
+        self.opened_hashes(path, manifest, &mut file, defer_cold_read)
+            .map(|entry| entry.sha256.clone())
+    }
+
+    #[cfg(unix)]
+    fn opened_hashes(
+        &self,
+        path: &Path,
+        manifest: &ManifestRead,
+        file: &mut File,
+        defer_cold_read: bool,
+    ) -> Result<Arc<Entry>, FleetRegistryError> {
         manifest.verify_current()?;
-        let before = Snapshot::capture(path, &file)?;
+        let before = Snapshot::capture(path, file)?;
         let cacheable = before.root_custody.is_some() && manifest.snapshot.root_custody.is_some();
         if cacheable {
             let cached = self
@@ -152,13 +177,13 @@ impl ReleaseDigestCache {
                         && entry.manifest_snapshot == manifest.snapshot
                         && entry.manifest_sha256 == manifest.sha256
                 })
-                .map(|entry| entry.sha256.clone());
-            if let Some(sha256) = cached {
-                if Snapshot::capture(path, &file)? != before {
+                .cloned();
+            if let Some(entry) = cached {
+                if Snapshot::capture(path, file)? != before {
                     return Err(changed("immutable program changed during cache lookup"));
                 }
                 manifest.verify_current()?;
-                return Ok(sha256);
+                return Ok(entry);
             }
             if defer_cold_read {
                 return Err(FleetRegistryError::ReleasePrevalidationRequired);
@@ -166,30 +191,41 @@ impl ReleaseDigestCache {
         }
         // The file descriptor and visible path must still name the exact file
         // that supplied all bytes. Never hold the cache mutex through disk I/O.
-        let sha256 = hash_file(&mut file, before.file.length)?;
-        if Snapshot::capture(path, &file)? != before {
+        let hashes = read_hashes(file, before.file.length)?;
+        if Snapshot::capture(path, file)? != before {
             return Err(changed("immutable program changed during hashing"));
         }
         manifest.verify_current()?;
+        let entry = Arc::new(Entry {
+            snapshot: before,
+            manifest_sha256: manifest.sha256.clone(),
+            manifest_snapshot: manifest.snapshot.clone(),
+            sha256: hashes.sha256,
+            agent_prefix: hashes.agent_prefix,
+            matrix_prefix: hashes.matrix_prefix,
+        });
         if cacheable {
             let mut entries = self
                 .entries
                 .lock()
                 .map_err(|_| changed("digest cache lock poisoned"))?;
             if !entries.contains_key(path) && entries.len() >= MAX_CACHED_PROGRAMS {
-                entries.pop_first();
+                let unpinned = entries
+                    .iter()
+                    .find(|(_, entry)| Arc::strong_count(entry) == 1)
+                    .map(|(path, _)| path.clone());
+                match unpinned {
+                    Some(path) => {
+                        entries.remove(&path);
+                    }
+                    // A full digest remains valid even when all cache facts
+                    // are pinned. Cache pressure cannot fail an admitted use.
+                    None => return Ok(entry),
+                }
             }
-            entries.insert(
-                path.to_path_buf(),
-                Entry {
-                    snapshot: before,
-                    manifest_sha256: manifest.sha256.clone(),
-                    manifest_snapshot: manifest.snapshot.clone(),
-                    sha256: sha256.clone(),
-                },
-            );
+            entries.insert(path.to_path_buf(), Arc::clone(&entry));
         }
-        Ok(sha256)
+        Ok(entry)
     }
 
     #[cfg(all(test, unix))]
@@ -203,8 +239,20 @@ impl ReleaseDigestCache {
     }
 }
 
-fn hash_file(file: &mut File, length: u64) -> Result<String, FleetRegistryError> {
-    let mut hasher = Sha256::new();
+struct ProgramHashes {
+    sha256: String,
+    #[cfg(unix)]
+    agent_prefix: Sha256,
+    #[cfg(unix)]
+    matrix_prefix: Sha256,
+}
+
+fn read_hashes(file: &mut File, length: u64) -> Result<ProgramHashes, FleetRegistryError> {
+    let mut agent_prefix = Sha256::new();
+    #[cfg(unix)]
+    let mut matrix_prefix = Sha256::new();
+    #[cfg(unix)]
+    matrix_prefix.update(b"hepta.local-host.matrix.v1\0");
     let mut buffer = [0_u8; 64 * 1024];
     let mut read_bytes = 0_u64;
     loop {
@@ -218,12 +266,25 @@ fn hash_file(file: &mut File, length: u64) -> Result<String, FleetRegistryError>
         if read_bytes > length {
             return Err(changed("immutable program grew during hashing"));
         }
-        hasher.update(&buffer[..count]);
+        agent_prefix.update(&buffer[..count]);
+        #[cfg(unix)]
+        matrix_prefix.update(&buffer[..count]);
     }
     if read_bytes != length {
         return Err(changed("immutable program length changed during hashing"));
     }
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(ProgramHashes {
+        sha256: format!("{:x}", agent_prefix.clone().finalize()),
+        #[cfg(unix)]
+        agent_prefix,
+        #[cfg(unix)]
+        matrix_prefix,
+    })
+}
+
+#[cfg(not(unix))]
+fn hash_file(file: &mut File, length: u64) -> Result<String, FleetRegistryError> {
+    read_hashes(file, length).map(|hashes| hashes.sha256)
 }
 
 fn changed(message: &str) -> FleetRegistryError {
@@ -334,6 +395,8 @@ struct Entry {
     manifest_sha256: String,
     manifest_snapshot: Snapshot,
     sha256: String,
+    agent_prefix: Sha256,
+    matrix_prefix: Sha256,
 }
 
 #[cfg(all(test, unix))]

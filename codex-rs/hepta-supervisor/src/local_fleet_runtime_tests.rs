@@ -10,6 +10,8 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
+use sha2::Digest;
+use sha2::Sha256;
 use tokio::runtime::Handle;
 
 use super::super::LocalFleetHost;
@@ -42,6 +44,11 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
         },
     )?;
     let record = registry.register(manifest)?;
+    let release = registry.install_release(
+        "native-sleep".parse()?,
+        Path::new("/usr/bin/sleep"),
+        vec!["30".into()],
+    )?;
     let policy = fixture.path().join("policy.json");
     std::fs::write(
         &policy,
@@ -61,6 +68,9 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
     )?;
     std::fs::set_permissions(&policy, std::fs::Permissions::from_mode(0o600))?;
     let host = LocalFleetHost::open(&policy, registry.clone()).await?;
+    // This is the exact production phase boundary: normalization/owner open
+    // precedes the read worker, and its fact pin precedes lifecycle admission.
+    let release_read_pin = registry.prevalidate_release_for_launch(&release.release_id)?;
     let spec = SpawnSpec {
         agent_id: agent.clone(),
         generation: 1,
@@ -70,13 +80,15 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
         run_root: record.layout.run_root().to_path_buf(),
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         logs_root: record.layout.logs_root().to_path_buf(),
-        command: AgentCommand::new("/usr/bin/sleep", vec!["30".into()])?,
+        command: AgentCommand::new(release.program, vec!["30".into()])?,
     };
     let owner_run_root = record.layout.owner_run_root().to_path_buf();
+    let manifest_bytes = serde_json::to_vec(&record.manifest)?;
     let runtime = Handle::current();
     let owner = Arc::clone(&host);
     tokio::task::spawn_blocking(move || {
         runtime.block_on(async move {
+            let _release_read_pin = release_read_pin;
             let proof = owner
                 .prove_never_spawned(&spec.agent_id)?
                 .ok_or("missing native pre-spawn proof")?;
@@ -126,11 +138,32 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
             let held = owner.store.execution_hold(&execution.id).await?;
             let held = held.ok_or("prepared execution was not durable before spawn")?;
             assert_eq!((held.state.as_str(), held.process_id), ("prepared", None));
+            // The factual prefix must preserve every byte of the original
+            // installed-launch commitment used by recovery and native holds.
+            let mut original = Sha256::new();
+            original.update(std::fs::read(&spec.command.program)?);
+            original.update(&manifest_bytes);
+            original.update(spec.generation.to_be_bytes());
+            for (name, value) in &execution.environment {
+                for bytes in [name.as_encoded_bytes(), value.as_encoded_bytes()] {
+                    original.update((bytes.len() as u64).to_be_bytes());
+                    original.update(bytes);
+                }
+            }
+            for arg in &spec.command.args {
+                let bytes = arg.as_encoded_bytes();
+                original.update((bytes.len() as u64).to_be_bytes());
+                original.update(bytes);
+            }
+            assert_eq!(
+                held.context.manifest_digest,
+                super::super::hex_digest(original.finalize())
+            );
             assert!(owner.validate_retirement(&spec.agent_id).is_err());
 
             let mut command = Command::new(&spec.command.program);
             command.args(&spec.command.args);
-            owner.constrain(&mut command, &execution);
+            owner.constrain(&mut command, &execution)?;
             let mut child = command.spawn()?;
             owner.bind(&execution, child.id())?;
             assert_eq!(
