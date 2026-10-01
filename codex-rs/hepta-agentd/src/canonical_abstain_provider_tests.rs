@@ -29,7 +29,7 @@ use crate::intelligence_product::tests::write_authority_file;
 
 const TEST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
-fn identity(root: &Path, generation: u64) -> AgentdIdentity {
+pub(crate) fn identity(root: &Path, generation: u64) -> AgentdIdentity {
     let root = root.canonicalize().expect("canonical root");
     let agent_id = AgentId::parse(TEST_AGENT_ID).expect("agent id");
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
@@ -58,7 +58,7 @@ fn now_micros() -> u64 {
     .expect("u64 clock")
 }
 
-fn durable_record(value: &Fixture) -> RunStartRecordV1 {
+pub(crate) fn durable_record(value: &Fixture) -> RunStartRecordV1 {
     let AgentdObjectiveOwnerInputV1::Admission {
         envelope,
         profile,

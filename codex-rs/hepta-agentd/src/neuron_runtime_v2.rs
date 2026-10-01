@@ -62,8 +62,12 @@ include!("neuron_runtime_v2_startup_recovery.rs");
 include!("neuron_runtime_v2_failed_recovery.rs");
 include!("neuron_runtime_v2_modules.rs");
 include!("neuron_runtime_v2_product.rs");
+include!("neuron_runtime_v2_deferred.rs");
 #[path = "neuron_runtime_v2_decision_cell.rs"]
 mod decision_cell;
+#[cfg(test)]
+#[path = "neuron_runtime_v2_deferred_tests.rs"]
+mod deferred_tests;
 
 #[cfg(test)]
 #[path = "neuron_runtime_v2_error_action_tests.rs"]

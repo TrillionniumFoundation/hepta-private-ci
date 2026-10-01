@@ -7,6 +7,23 @@ pub trait AgentdNeuronTickProviderV2: Send + Sync {
         record: &codex_hepta_agent_components::learning_ledger::RunStartRecordV1,
         invocation: &crate::AgentdIntelligenceInvocationV1,
     ) -> Result<NeuronTickInputV1, crate::AgentdError>;
+
+    /// Build at the actual neural stage using its NDU predecessor and the
+    /// existing owner's acknowledged generation/head. Compatibility providers
+    /// still pass the same exact stage/head checks before model dispatch.
+    fn build_tick_for_stage(
+        &self,
+        identity: &crate::AgentdIdentity,
+        record: &codex_hepta_agent_components::learning_ledger::RunStartRecordV1,
+        invocation: &crate::AgentdIntelligenceInvocationV1,
+        _stage: &codex_hepta_agent_components::intelligence::CanonicalPortInputV1,
+        _current: (
+            Generation,
+            Option<codex_hepta_agent_components::neuron::JournalAnchor>,
+        ),
+    ) -> Result<NeuronTickInputV1, crate::AgentdError> {
+        self.build_tick(identity, record, invocation)
+    }
 }
 
 /// One explicitly supplied active generation plus sealed historical
@@ -112,32 +129,6 @@ pub struct AgentdNeuronRuntimeV2Host {
 }
 
 impl AgentdNeuronRuntimeV2Host {
-    pub(crate) fn prepare(
-        &self,
-        identity: &crate::AgentdIdentity,
-        record: &codex_hepta_agent_components::learning_ledger::RunStartRecordV1,
-        invocation: &crate::AgentdIntelligenceInvocationV1,
-    ) -> Result<AgentdNeuronInvocationV2, crate::AgentdError> {
-        if self.stopped.load(Ordering::Acquire) || self.iteration_quarantine.load(Ordering::Acquire)
-        {
-            return Err(crate::AgentdError::Protocol(
-                "Neuron V2 runtime is stopped".to_string(),
-            ));
-        }
-        invocation.validate(identity, record)?;
-        let input = self
-            .tick_provider
-            .build_tick(identity, record, invocation)?;
-        let runtime_body_digest = record.runtime_body_digest;
-        self.controller
-            .prepare(
-                invocation.request.run_id.clone(),
-                runtime_body_digest,
-                input,
-            )
-            .map_err(|error| neuron_product_error("prepare invocation", error))
-    }
-
     pub(crate) fn begin_quiesce(&self) -> Result<(), crate::AgentdError> {
         let _lifecycle = self.lifecycle.lock().map_err(|_| {
             crate::AgentdError::Protocol("Neuron V2 lifecycle lock poisoned".to_string())

@@ -69,7 +69,7 @@ impl AgentdIntelligenceProductRunnerV1 {
     ) -> Result<
         (
             crate::AgentdIntelligenceInvocationV1,
-            Option<crate::AgentdNeuronInvocationV2>,
+            Option<crate::neuron_runtime_v2::AgentdDeferredNeuronInvocationV2>,
         ),
         crate::AgentdError,
     > {
@@ -91,7 +91,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 invocation.inputs.run_identity = Some(run_identity);
                 invocation.validate(&identity, &record)?;
                 let neuron = neuron_host
-                    .map(|host| host.prepare(&identity, &record, &invocation))
+                    .map(|host| host.defer(identity, record, invocation.clone()))
                     .transpose()?;
                 Ok::<_, crate::AgentdError>((invocation, neuron))
             })

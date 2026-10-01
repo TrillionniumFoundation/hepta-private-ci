@@ -22,6 +22,9 @@ use codex_hepta_agent_components::neuron::OperationStoreError;
 use codex_hepta_agent_components::neuron::WitnessStoreError;
 use tokio_util::sync::CancellationToken;
 
+#[path = "intelligence_deferred_neuron.rs"]
+mod deferred;
+
 struct NeuronStageAdmission {
     snapshot: CanonicalIntelligenceSnapshotV1,
     authority_file: PathBuf,
@@ -298,6 +301,9 @@ fn legacy_failure_class(error: &NeuronRuntimeError) -> CanonicalPortFailureClass
             NeuronAdmissionError::DeadlineExceeded | NeuronAdmissionError::Cancelled,
         ) => CanonicalPortFailureClassV1::TimedOut,
         NeuronRuntimeError::Admission(NeuronAdmissionError::Unavailable)
+        | NeuronRuntimeError::Model(
+            codex_hepta_agent_components::neuron::NeuronModelError::Unavailable,
+        )
         | NeuronRuntimeError::InvalidCalibration => CanonicalPortFailureClassV1::Unavailable,
         NeuronRuntimeError::WitnessAfterCommit { .. }
         | NeuronRuntimeError::PendingReconciliation
@@ -323,6 +329,9 @@ fn unified_failure_class(error: &NeuronRuntimeV2Error) -> CanonicalPortFailureCl
             NeuronAdmissionError::DeadlineExceeded | NeuronAdmissionError::Cancelled,
         ) => CanonicalPortFailureClassV1::TimedOut,
         NeuronRuntimeV2Error::Admission(NeuronAdmissionError::Unavailable)
+        | NeuronRuntimeV2Error::Model(
+            codex_hepta_agent_components::neuron::NeuronModelError::Unavailable,
+        )
         | NeuronRuntimeV2Error::Configuration(NeuronRuntimeError::InvalidCalibration) => {
             CanonicalPortFailureClassV1::Unavailable
         }
@@ -356,6 +365,17 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         inputs: AgentdIntelligenceOwnerInputsV1,
         neuron: crate::AgentdNeuronInvocationV2,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_with_durable_neuron(composition, request, inputs, neuron)
+            .await
+    }
+
+    async fn prepare_with_durable_neuron<I: DurableNeuronInvocation>(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        neuron: I,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let identity = inputs
             .run_identity

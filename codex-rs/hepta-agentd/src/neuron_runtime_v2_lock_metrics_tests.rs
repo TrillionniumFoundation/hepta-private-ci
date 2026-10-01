@@ -133,7 +133,7 @@ fn objective() -> Digest32 {
     digest("lock.metrics.objective")
 }
 
-fn scope() -> JournalScope {
+fn scope(objective_digest: Digest32) -> JournalScope {
     let subject = subject();
     let raw = subject.as_str().as_bytes();
     JournalScope {
@@ -142,7 +142,7 @@ fn scope() -> JournalScope {
             &(raw.len() as u32).to_be_bytes(),
             raw,
         ]),
-        objective_digest: objective(),
+        objective_digest,
     }
 }
 
@@ -150,13 +150,14 @@ fn contexts(
     native: &SparseConfig,
     config: &NeuronRuntimeConfigV1,
     body: &NeuronBodyBundleIdentityV1,
+    scope: JournalScope,
 ) -> (NeuronGenerationStoreContextV2, NeuronRuntimeIndexContextV2) {
     let config_digest = checked(config.semantic_digest());
     let body_digest = checked(body.semantic_digest());
     (
         NeuronGenerationStoreContextV2 {
             generation: native.generation,
-            scope: scope(),
+            scope,
             runtime_config_digest: config_digest,
             body_bundle_digest: body_digest,
             max_records: 16,
@@ -168,7 +169,7 @@ fn contexts(
         },
         NeuronRuntimeIndexContextV2 {
             generation: native.generation,
-            scope: scope(),
+            scope,
             runtime_config_digest: config_digest,
             body_bundle_digest: body_digest,
             max_records: 16,
@@ -306,15 +307,25 @@ pub(crate) fn runtime_fixture(
     provider_delay: Duration,
     witness_delay: Duration,
 ) -> RuntimeFixture {
+    runtime_fixture_for_objective(generation_value, provider_delay, witness_delay, objective())
+}
+
+pub(crate) fn runtime_fixture_for_objective(
+    generation_value: u64,
+    provider_delay: Duration,
+    witness_delay: Duration,
+    objective_digest: Digest32,
+) -> RuntimeFixture {
     let root = checked(TempDir::new());
     let generation = checked(Generation::new(generation_value));
     let native = native_config(generation);
     let config = runtime_config(&native);
     let body = body_bundle(generation);
-    let (store_context, index_context) = contexts(&native, &config, &body);
+    let scope = scope(objective_digest);
+    let (store_context, index_context) = contexts(&native, &config, &body, scope);
     let witness_context = NeuronWitnessContextV2 {
         generation,
-        scope: scope(),
+        scope,
         key_epoch: 1,
         deletion_epoch: 1,
         max_records: 16,
@@ -333,7 +344,7 @@ pub(crate) fn runtime_fixture(
         &store_path,
         &index_path,
         native,
-        scope(),
+        scope,
         config,
         body,
         store_context,
@@ -351,7 +362,8 @@ pub(crate) fn runtime_fixture(
         },
     );
     let handle = checked(owner.into_shared(Allow));
-    let input = input(generation_value);
+    let mut input = input(generation_value);
+    input.objective_digest = objective_digest;
     let body_digest = handle.body_bundle_digest().expect("body digest");
     let invocation = checked(handle.prepare(input.tick_id.clone(), body_digest, input.clone()));
     let canonical = CanonicalPortInputV1 {

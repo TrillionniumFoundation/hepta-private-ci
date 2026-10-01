@@ -303,4 +303,4 @@ fn invalid(message: &str) -> AgentdError {
 
 #[cfg(test)]
 #[path = "canonical_abstain_provider_tests.rs"]
-mod tests;
+pub(crate) mod tests;

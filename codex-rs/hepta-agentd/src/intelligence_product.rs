@@ -244,6 +244,7 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
     }
 }
 
+#[derive(Clone)]
 pub enum AgentdObjectiveOwnerInputV1 {
     Admission {
         envelope: ObjectiveSourceEnvelopeV1,
@@ -253,6 +254,7 @@ pub enum AgentdObjectiveOwnerInputV1 {
     DurableRunStart(Box<RunStartRecordV1>),
 }
 
+#[derive(Clone)]
 pub struct AgentdIntelligenceOwnerInputsV1 {
     pub run_identity: Option<crate::AgentdIntelligenceRunIdentityV1>,
     pub objective: AgentdObjectiveOwnerInputV1,

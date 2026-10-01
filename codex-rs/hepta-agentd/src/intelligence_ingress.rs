@@ -13,6 +13,7 @@ use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
 pub use crate::intelligence_run_identity::AgentdIntelligenceRunIdentityV1;
 
+#[derive(Clone)]
 pub struct AgentdIntelligenceInvocationV1 {
     pub request: CanonicalIntelligenceRunRequestV1,
     pub inputs: AgentdIntelligenceOwnerInputsV1,

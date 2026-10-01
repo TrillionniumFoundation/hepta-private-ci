@@ -612,7 +612,7 @@ impl AgentdState {
         let outcome = match neuron {
             Some(neuron) => {
                 runner
-                    .prepare_for_composition_with_durable_neuron_v2(
+                    .prepare_for_composition_with_deferred_neuron_v2(
                         &composition,
                         invocation.request,
                         invocation.inputs,
