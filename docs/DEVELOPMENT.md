@@ -44,14 +44,15 @@ acceptance dossiers. The existing contract qualification entry requests those
 explicitly (`require_exact_source=true`); `hepta_ci_risk.py --qualification`
 produces the corresponding deep execution plan without granting any authority.
 The document verifier reports changed shared-path lease requests without
-self-attesting them. Protected-branch review remains required for integration.
+self-attesting them. Protected-branch status checks remain required for
+integration; the repository owner selects whether reviewer approval is required.
 An explicit `verify --require-path-lease-attestation` checks the separate
 activation boundary and rejects touched requests without external attestation;
 a static pass never activates a lease or grants authority.
 
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
-review checks and merge through the normal protected branch. The qualification
+code checks and merge through the configured protected branch. The qualification
 path is opt-in and is required only for a runtime boundary, external effect,
 independent evaluation, candidate execution, promotion or release. Readiness
 dossiers, paper locks, synthetic merge receipts and capability evidence must not
