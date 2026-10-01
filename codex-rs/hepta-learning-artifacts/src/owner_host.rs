@@ -70,6 +70,9 @@ mod admissions;
 #[path = "owner_registry_replay.rs"]
 mod registry_replay;
 
+#[path = "owner_capacity.rs"]
+mod capacity;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSignerV1 {
     pub signer_id: StableId,
@@ -559,6 +562,13 @@ impl LearningArtifactOwnerHost {
         // before creating an admission or a durable Prepared operation.
         let mut prospective_registry = registry.clone();
         self.stage_compatibility_registration(&transaction, &mut prospective_registry, now)?;
+        if new_operation {
+            self.preflight_new_publication(&transaction.intent().admission)?;
+        }
+        capacity::preflight_atomic_record(
+            &self.checkpoint_path(&transaction.intent().operation_id, transaction.phase()),
+            records::MAX_OWNER_RECORDS,
+        )?;
         self.persist_admission(&transaction.intent().admission)?;
         self.persist_checkpoint(&transaction)?;
         Ok(transaction)
@@ -637,11 +647,13 @@ impl LearningArtifactOwnerHost {
         )?;
         let mut validated = transaction.clone();
         validated.record_payload_durable(Digest32::of_bytes(bytes), bytes.len() as u64)?;
-        records::write_record_with_limit(
-            &crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?,
-            bytes,
-            crate::storage::MAX_PAYLOAD,
+        let path = crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?;
+        capacity::preflight_atomic_record(&path, capacity::MAX_PAYLOAD_RECORDS)?;
+        capacity::preflight_atomic_record(
+            &self.checkpoint_path(&validated.intent().operation_id, validated.phase()),
+            records::MAX_OWNER_RECORDS,
         )?;
+        records::write_record_with_limit(&path, bytes, crate::storage::MAX_PAYLOAD)?;
         self.persist_checkpoint(&validated)?;
         *transaction = validated;
         Ok(relative)
@@ -681,11 +693,13 @@ impl LearningArtifactOwnerHost {
         ));
         let mut validated = transaction.clone();
         validated.record_registry_durable(registry, expected, withdrawal_registry, now)?;
-        records::write_record_with_limit(
-            &crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?,
-            &encoded,
-            encoded.len(),
+        let path = crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?;
+        capacity::preflight_atomic_record(&path, capacity::MAX_REGISTRY_RECORDS)?;
+        capacity::preflight_atomic_record(
+            &self.checkpoint_path(&validated.intent().operation_id, validated.phase()),
+            records::MAX_OWNER_RECORDS,
         )?;
+        records::write_record_with_limit(&path, &encoded, encoded.len())?;
         self.persist_checkpoint(&validated)?;
         *transaction = validated;
         Ok(expected)
@@ -780,11 +794,16 @@ impl LearningArtifactOwnerHost {
             signed.witness.generation.get(),
             verified.witness_digest
         ));
-        records::write_record_with_limit(
-            &crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?,
-            &encoded,
-            encoded.len(),
+        let path = crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?;
+        // Check every destination before the first effect: a full head or
+        // checkpoint domain must not manufacture another witness orphan.
+        capacity::preflight_atomic_record(&path, capacity::MAX_WITNESS_RECORDS)?;
+        capacity::preflight_head(&self.signed_head_record_path(signed))?;
+        capacity::preflight_atomic_record(
+            &self.checkpoint_path(&validated.intent().operation_id, validated.phase()),
+            records::MAX_OWNER_RECORDS,
         )?;
+        records::write_record_with_limit(&path, &encoded, encoded.len())?;
         self.persist_signed_head_record(signed)?;
         let discovered = self
             .discover_current_head(now)?
@@ -1193,6 +1212,10 @@ impl LearningArtifactOwnerHost {
             };
         let checkpoint = checkpoint_from_snapshot(&transaction.snapshot(), original_lease_digest);
         let bytes = encode_checkpoint(&checkpoint);
+        capacity::preflight_atomic_record(
+            &self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase),
+            records::MAX_OWNER_RECORDS,
+        )?;
         write_create_only_or_exact(
             &self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase),
             &bytes,
@@ -1216,6 +1239,7 @@ impl LearningArtifactOwnerHost {
         &self,
         signed: &SignedCurrentArtifactHeadV1,
     ) -> Result<(), ArtifactOwnerHostError> {
+        capacity::preflight_head(&self.signed_head_record_path(signed))?;
         write_create_only_or_exact(
             &self.signed_head_record_path(signed),
             &encode_signed_head(signed),

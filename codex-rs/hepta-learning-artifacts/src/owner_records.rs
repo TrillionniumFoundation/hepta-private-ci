@@ -12,7 +12,7 @@ use super::*;
 
 static NEXT_RECORD: AtomicU64 = AtomicU64::new(1);
 // Five canonical checkpoints per operation plus one pending-record allowance.
-const MAX_OWNER_RECORDS: usize = MAX_HEAD_RECORDS * 6;
+pub(super) const MAX_OWNER_RECORDS: usize = MAX_HEAD_RECORDS * 6;
 
 pub(super) fn validate_checkpoint(
     checkpoint: &ArtifactOwnerPublicationCheckpointV1,
