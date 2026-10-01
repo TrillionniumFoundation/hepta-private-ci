@@ -276,3 +276,78 @@ fn persisted_registry_source_digest_is_checked_on_restore() {
         Err(AgentdPromptRuntimeError::CorruptState)
     ));
 }
+
+#[test]
+fn waiting_prepare_rechecks_poison_after_indeterminate_commit() {
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    let fixture = staged_product_pipeline(&temporary);
+    let runtime = fixture.pipeline.runtime_owner();
+    runtime.fail_directory_sync_after_rename_once();
+    let (entered_tx, entered_rx) = std::sync::mpsc::sync_channel(0);
+    let (release_tx, release_rx) = std::sync::mpsc::sync_channel(0);
+    let writer_owner = Arc::clone(&runtime);
+    let writer = std::thread::spawn(move || {
+        writer_owner.commit_state(|state| {
+            entered_tx.send(()).unwrap();
+            release_rx.recv().unwrap();
+            state.staged.clear();
+            state.stage_sources.clear();
+            Ok(())
+        })
+    });
+    entered_rx.recv().unwrap();
+    let prepare_owner = Arc::clone(&runtime);
+    let waiter = std::thread::spawn(move || prepare_owner.prepare(product_request()));
+
+    // The writer holds state. Holding registry proves prepare passed its first
+    // availability check and is now waiting for the state lock, without sleeps.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    let waiting = loop {
+        match fixture.pipeline.registry.try_lock() {
+            Err(std::sync::TryLockError::WouldBlock) => break true,
+            Err(std::sync::TryLockError::Poisoned(_)) => break false,
+            Ok(guard) => drop(guard),
+        }
+        if std::time::Instant::now() >= deadline {
+            break false;
+        }
+        std::thread::yield_now();
+    };
+    release_tx.send(()).unwrap();
+    assert_eq!(
+        writer.join().unwrap(),
+        Err(AgentdPromptRuntimeError::IndeterminateDurability)
+    );
+    assert_eq!(
+        waiter.join().unwrap(),
+        Err(host_error(AgentdPromptRuntimeError::ReopenRequired))
+    );
+    assert!(waiting);
+    // Reads and commits share prepare's lock_state check, so no caller can
+    // interpret the old in-memory snapshot as authoritative after this failure.
+    assert_eq!(
+        runtime.staged_count(),
+        Err(AgentdPromptRuntimeError::ReopenRequired)
+    );
+    assert_eq!(
+        runtime.dispatch_record("attempt:absent"),
+        Err(AgentdPromptRuntimeError::ReopenRequired)
+    );
+    assert_eq!(
+        runtime.terminal_record("attempt:absent"),
+        Err(AgentdPromptRuntimeError::ReopenRequired)
+    );
+    assert_eq!(
+        runtime.clear_turn("thread:product", "turn:product"),
+        Err(AgentdPromptRuntimeError::ReopenRequired)
+    );
+    drop(runtime);
+    drop(fixture);
+    let reopened = AgentdPromptPipelineOwner::open_state_dirs(
+        &temporary.path().join("prompt-registry"),
+        &temporary.path().join("prompt-runtime"),
+        /*maximum_registry_records*/ 64,
+    )
+    .unwrap();
+    assert_eq!(reopened.runtime_owner().staged_count().unwrap(), 0);
+}

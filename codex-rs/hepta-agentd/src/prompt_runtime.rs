@@ -18,6 +18,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::MutexGuard;
 use std::sync::PoisonError;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -226,13 +227,7 @@ impl AgentdPromptRuntimeOwner {
         attempt_id: &str,
     ) -> Result<Option<PromptRuntimeTerminalRecordV1>, AgentdPromptRuntimeError> {
         self.ensure_available()?;
-        Ok(self
-            .state
-            .lock()
-            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?
-            .terminal_records
-            .get(attempt_id)
-            .cloned())
+        Ok(self.lock_state()?.terminal_records.get(attempt_id).cloned())
     }
 
     pub fn dispatch_record(
@@ -240,23 +235,12 @@ impl AgentdPromptRuntimeOwner {
         attempt_id: &str,
     ) -> Result<Option<PromptRuntimeDispatchRecordV1>, AgentdPromptRuntimeError> {
         self.ensure_available()?;
-        Ok(self
-            .state
-            .lock()
-            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?
-            .dispatch_records
-            .get(attempt_id)
-            .cloned())
+        Ok(self.lock_state()?.dispatch_records.get(attempt_id).cloned())
     }
 
     pub fn staged_count(&self) -> Result<usize, AgentdPromptRuntimeError> {
         self.ensure_available()?;
-        Ok(self
-            .state
-            .lock()
-            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?
-            .staged
-            .len())
+        Ok(self.lock_state()?.staged.len())
     }
 
     pub fn host(self: &Arc<Self>) -> Result<PromptRuntimeHost, AgentdPromptRuntimeError> {
@@ -288,15 +272,23 @@ impl AgentdPromptRuntimeOwner {
         Ok(())
     }
 
+    fn lock_state(&self) -> Result<MutexGuard<'_, PromptRuntimeState>, AgentdPromptRuntimeError> {
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?;
+        // A writer may lose durability acknowledgement while this caller waits
+        // for the lock. The old in-memory state then requires reopening.
+        self.ensure_available()?;
+        Ok(state)
+    }
+
     fn commit_state<T>(
         &self,
         mutation: impl FnOnce(&mut PromptRuntimeState) -> Result<T, AgentdPromptRuntimeError>,
     ) -> Result<T, AgentdPromptRuntimeError> {
         self.ensure_available()?;
-        let mut current = self
-            .state
-            .lock()
-            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?;
+        let mut current = self.lock_state()?;
         let mut next = current.clone();
         let result = mutation(&mut next)?;
         validate_state(&next)?;
@@ -329,11 +321,15 @@ impl AgentdPromptRuntimeOwner {
         };
         // All paths holding both locks acquire registry before runtime state.
         let registry = self.lock_source_registry().map_err(host_error)?;
-        let state = self.state.lock().map_err(|_| {
-            PromptRuntimeHostError::new(
-                "agentd_prompt_runtime_state_poisoned",
-                "Agentd prompt runtime state lock is poisoned",
-            )
+        let state = self.lock_state().map_err(|error| {
+            if error == AgentdPromptRuntimeError::StatePoisoned {
+                PromptRuntimeHostError::new(
+                    "agentd_prompt_runtime_state_poisoned",
+                    "Agentd prompt runtime state lock is poisoned",
+                )
+            } else {
+                host_error(error)
+            }
         })?;
         if has_unresolved_dispatch(&state, &key) {
             return Err(PromptRuntimeHostError::new(
