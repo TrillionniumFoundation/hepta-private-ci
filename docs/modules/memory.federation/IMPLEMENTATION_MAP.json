@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -38,7 +38,8 @@
         "codex-rs/hepta-memory/src/cognitive_runtime.rs",
         "codex-rs/hepta-agentd/src/runtime.rs",
         "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
-      ]
+      ],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     },
     {
       "operation": "observe_cancellation",
@@ -52,7 +53,8 @@
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     }
   ],
   "repositoryControlledGaps": [
@@ -150,13 +152,20 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation/src/v2.rs",
+    "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "docs/modules/memory.federation/TECHNICAL.md"
   ],
   "productCallers": [
     {
@@ -177,7 +186,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+      "object": "b38685d48a3b7212e79b29f1e293dd50f53b8774"
     },
     {
       "path": "codex-rs/hepta-memory-federation",
@@ -203,5 +212,6 @@
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
     }
-  ]
+  ],
+  "technicalGuideBlob": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c92f0b55956b3652ac2df087c307ca84f39650b4",
-    "tree": "7149bb9ea540d6984c5d62d880aa39808283c6a0"
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -304,6 +304,14 @@
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "object": "9cea7c40f57e4856425665adfc57ecb357ba0ed3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "object": "920d1da7ae75b54575741e81c03bc732ded53d97"
+    },
+    {
       "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
       "object": "b6a6b6c6008253e4098dd691c5547909b3104108"
     },
@@ -360,8 +368,65 @@
       "object": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
     },
     {
+      "path": "codex-rs/hepta-intelligence/src/lib.rs",
+      "object": "211978d99c06c5e257bddd0b552999ce44f64ab4"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "object": "4c254d7a8e2032fd41f75d12b0284bccbac62260"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "object": "4d4f9b61ba5573d38971ca7821bb76da8ce50d60"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "60fad4e54aa38a4688421627f2f783e0152e5ba9"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "object": "7dcb78372ed798bc98faae802498700d8ef0bd58"
+    },
+    {
+      "path": "docs/modules/context.compiler/COGNITIVE_READ_INGRESS.md",
+      "object": "f5e71c9f0743bdb5f39539f245b61b48b99fe9af"
+    },
+    {
       "path": "docs/modules/context.compiler/TECHNICAL.md",
-      "object": "bba347eebcdf9a9e93afaf5ae26798dee368bd0e"
+      "object": "046d60117d02dc7b21e765f6062f5e826e8d2e34"
     }
-  ]
+  ],
+  "observedAtHead": {
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+    "codex-rs/hepta-context-compiler",
+    "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
+    "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs",
+    "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+    "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs",
+    "codex-rs/hepta-context-compiler/src/lib.rs",
+    "codex-rs/hepta-context-compiler/src/lib_tests.rs",
+    "codex-rs/hepta-context-compiler/src/requirements.rs",
+    "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
+    "codex-rs/hepta-context-compiler/src/v2.rs",
+    "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+    "codex-rs/hepta-context-compiler/src/wire.rs",
+    "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+    "docs/modules/context.compiler/COGNITIVE_READ_INGRESS.md",
+    "docs/modules/context.compiler/TECHNICAL.md"
+  ],
+  "technicalGuideBlob": "046d60117d02dc7b21e765f6062f5e826e8d2e34"
 }

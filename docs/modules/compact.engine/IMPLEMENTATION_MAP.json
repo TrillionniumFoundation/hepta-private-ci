@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c92f0b55956b3652ac2df087c307ca84f39650b4",
-    "tree": "7149bb9ea540d6984c5d62d880aa39808283c6a0"
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -125,7 +125,7 @@
           "symbol": "CognitiveReadCompactionCandidateV1::new"
         }
       ],
-      "sourceBlob": "fffd87d7065bf7e6fe40fcefd949f70a3706d049"
+      "sourceBlob": "53587467bb01ce2586e0dc0bbb2a6a14bdfa4081"
     }
   ],
   "repositoryControlledGaps": [
@@ -185,11 +185,11 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
-      "object": "fffd87d7065bf7e6fe40fcefd949f70a3706d049"
+      "object": "53587467bb01ce2586e0dc0bbb2a6a14bdfa4081"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs",
-      "object": "9d7f3f1812956770291e4fd5ede35ce2a4402e30"
+      "object": "d8636aefa02ab05b8e193e88aeb98a4b1e9a8b39"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
@@ -203,5 +203,26 @@
       "path": "docs/modules/compact.engine/TECHNICAL.md",
       "object": "a32875e895a4688a0a55435ef2d9bf609ca2338f"
     }
-  ]
+  ],
+  "observedAtHead": {
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-cognitive-read/src/ids.rs",
+    "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-compact-engine/src/lib.rs",
+    "codex-rs/hepta-compact-engine/src/lib_tests.rs",
+    "codex-rs/hepta-compact-engine/src/product.rs",
+    "codex-rs/hepta-compact-engine/src/qualified.rs",
+    "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
+    "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "docs/modules/compact.engine/TECHNICAL.md"
+  ],
+  "technicalGuideBlob": "a32875e895a4688a0a55435ef2d9bf609ca2338f"
 }

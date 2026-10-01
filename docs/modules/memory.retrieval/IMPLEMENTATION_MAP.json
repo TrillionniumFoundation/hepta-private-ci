@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "69e7c773f9ebaa777783a4965749a0051edf37eb"
     },
     {
       "operation": "compile_cue",
@@ -47,7 +48,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_cue",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "build_candidate_union_from_generated",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "settle_engram",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "engram_settle",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0"
     },
     {
       "operation": "recall_generated_with_engram",
@@ -91,7 +95,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "observe_retrieval_assignment",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "7d701b3a4db8820a962cd9174ffd6ce9e41f12e1"
     },
     {
       "operation": "build_candidate_union",
@@ -117,7 +123,8 @@
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "recall",
@@ -129,7 +136,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "adapt_generation_bound_recall_to_canonical_shadow_v1",
@@ -143,7 +151,8 @@
       "sourcePathExists": true,
       "designOperation": "canonical_recall_shadow_adapter",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     }
   ],
   "repositoryControlledGaps": [
@@ -191,8 +200,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "85dfce7cc070ec841eb81e27c37d03007f7a9906",
+    "tree": "4e9bb93a98977281248c33bd288f4095ca6cf93f"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -217,6 +226,16 @@
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
     "codex-rs/hepta-memory-retrieval",
+    "codex-rs/hepta-memory-retrieval/src/decision.rs",
+    "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/engram.rs",
+    "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+    "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/generator.rs",
+    "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/v2.rs",
+    "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
@@ -226,6 +245,7 @@
     "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
     "qualification/memory-retrieval/TARGET_HOST.md"
   ],
   "canonicalCognitiveRecallMigration": {
@@ -241,14 +261,14 @@
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "nativeSymbol": "read_with_retrieval_context_and_learning",
+      "nativeSymbol": "read_prepared_with_retrieval_context_and_learning",
       "state": "explicit_authenticated_retrieval_profile"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "object": "4857f5fbff1af60e82347b5dc545b6bd0bd51b0d"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
@@ -298,5 +318,6 @@
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
       "object": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
     }
-  ]
+  ],
+  "technicalGuideBlob": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
 }
