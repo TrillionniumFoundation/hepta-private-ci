@@ -10,8 +10,8 @@
       "codex-rs/hepta-private-state/src",
       "codex-rs/utils/private-state/src"
     ],
-    "fileCount": 74,
-    "manifestDigest": "8b4f461351f2dceb6c5b6a816885fdd8cfc55acdb862f97e9303108d93d58319"
+    "fileCount": 84,
+    "manifestDigest": "dcc8040a5cd3683ee17f552e4f97f3ea5c4568c7cacb1ffeda98a6dc67ede42f"
   },
   "files": [
     {
@@ -30,6 +30,11 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/journal_windows_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/native_http_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
@@ -40,7 +45,17 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/platform_identity_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/platform_terminality_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/private_state_child_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -70,12 +85,27 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/startup_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/storage_qualification_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/src/storage_qualification_tests/process_samples.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/binding_prepare_snapshot_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/binding_prepare_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -131,6 +161,16 @@
     },
     {
       "path": "apps/hepta-native/src/update_backup_policy_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/update_root_storage_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/update_root_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -236,6 +276,11 @@
     },
     {
       "path": "apps/hepta-native/tests/update_product.rs",
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/tests/windows_registrar.rs",
       "role": "integration_test",
       "ownerPackage": "hepta-native"
     },
@@ -381,6 +426,11 @@
     },
     {
       "path": "codex-rs/utils/private-state/src/windows.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-utils-private-state"
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_acl_tests.rs",
       "role": "unit_test",
       "ownerPackage": "codex-utils-private-state"
     }
