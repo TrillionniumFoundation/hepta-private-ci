@@ -5,6 +5,9 @@
 //! are checked before publication, and checkpoint publication is derived from
 //! committed owner state rather than caller-supplied semantic fields.
 
+#[path = "protocol_timestamp.rs"]
+mod timestamp;
+
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
@@ -26,6 +29,7 @@ const MAX_SIGNAL_FIELD_BYTES: usize = 32_768;
 const MAX_ACTIVATION_SUMMARY_BYTES: usize = 16_384;
 const MAX_SIGNAL_VALUES: usize = 4_096;
 const MAX_ACTIVE_INDICES: usize = 512;
+const MAX_ACTIVATION_DIMENSION: u32 = 512;
 const PPM: u32 = 1_000_000;
 const Q24_LIMIT: i64 = 8 * (1 << 24);
 const Q24_ONE: i64 = 1 << 24;
@@ -753,7 +757,7 @@ fn validate_runtime_config(
     if value.temporal_state_dimension == 0
         || value.temporal_state_dimension > 256
         || value.activation_dimension == 0
-        || value.activation_dimension > 512
+        || value.activation_dimension > MAX_ACTIVATION_DIMENSION
         || value.modulator_dimension == 0
         || value.modulator_dimension > 8
         || value.state_minimum_q24 != -Q24_LIMIT
@@ -780,10 +784,7 @@ fn validate_runtime_config(
         || value.transient_allocation_bytes == 0
         || value.checkpoint_bytes == 0
         || !(1_000_000..=4_000_000).contains(&value.write_amplification_ppm)
-        || value.expiry_utc.is_empty()
-        || value.expiry_utc.len() > 64
-        || !value.expiry_utc.contains('T')
-        || !value.expiry_utc.ends_with('Z')
+        || !timestamp::valid_utc_timestamp(&value.expiry_utc)
     {
         return Err(NeuronProtocolError::InvalidField("runtime config"));
     }
@@ -826,11 +827,17 @@ fn validate_tick_receipt(value: &NeuronTickReceiptProtocolV1) -> Result<(), Neur
     if value.active_indices.len() > MAX_ACTIVE_INDICES
         || value
             .active_indices
+            .iter()
+            .any(|index| *index >= MAX_ACTIVATION_DIMENSION)
+        || value
+            .active_indices
             .windows(2)
             .any(|pair| pair[0] >= pair[1])
         || value.sparsity_ppm > PPM
         || value.confidence_ppm > PPM
         || value.ood_ppm > PPM
+        || !(0..=2 * Q24_LIMIT).contains(&value.prediction_error_q24)
+        || value.checkpoint_bytes == 0
     {
         return Err(NeuronProtocolError::InvalidField("tick receipt"));
     }
@@ -878,6 +885,9 @@ fn validate_checkpoint(value: &NeuronCheckpointV1) -> Result<(), NeuronProtocolE
     if value.logical_sequence == 0
         || value.expires_unix_ms == 0
         || indices.len() > MAX_ACTIVE_INDICES
+        || indices
+            .iter()
+            .any(|index| *index >= MAX_ACTIVATION_DIMENSION)
         || indices.windows(2).any(|pair| pair[0] >= pair[1])
         || value.activation_summary.sparsity_ppm > PPM
         || (value.logical_sequence == 1) != value.predecessor_id.is_none()

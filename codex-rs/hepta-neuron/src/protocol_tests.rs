@@ -1,6 +1,7 @@
 use super::*;
 
 use codex_hepta_types::Digest32;
+use pretty_assertions::assert_eq;
 
 use crate::NeuronCalibrationProfileV1;
 use crate::NeuronResourceEnvelopeV1;
@@ -12,6 +13,27 @@ use crate::SparseTick;
 use crate::sparse_tick;
 
 const Q: i64 = 1 << 24;
+
+const MALFORMED_UTC_EXPIRIES: [&str; 18] = [
+    "TZ",
+    "2026-00-01T00:00:00Z",
+    "2026-13-01T00:00:00Z",
+    "2026-10-00T00:00:00Z",
+    "2026-04-31T00:00:00Z",
+    "2026-02-29T00:00:00Z",
+    "2100-02-29T00:00:00Z",
+    "2026-10-01T24:00:00Z",
+    "2026-10-01T00:60:00Z",
+    "2026-10-01T00:00:61Z",
+    "2026-10-01T00:00:00.Z",
+    "2026-10-01T00:00:00.xZ",
+    "2026-10-01T00:00:00ZjunkZ",
+    "2026-1-01T00:00:00Z",
+    "2026-10-01TT00:00:00Z",
+    "2026-10-01T00:00Z",
+    "2026-10-01T00:00:00+01:00Z",
+    "2026-10-01T00:00:0éZ",
+];
 
 #[test]
 fn zero_projection_budget_roundtrips_in_canonical_config() {
@@ -413,5 +435,251 @@ fn checkpoint_publication_rejects_forged_saturation_count() {
             1_900_000_000_000,
         ),
         Err(NeuronProtocolError::BindingMismatch("saturation count"))
+    );
+}
+
+#[test]
+fn runtime_config_canonical_publication_rejects_malformed_utc_expiry() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    for expiry in MALFORMED_UTC_EXPIRIES {
+        assert_eq!(
+            canonical_runtime_config_v1(&config, &native, expiry),
+            Err(NeuronProtocolError::InvalidField("runtime config")),
+            "expiry {expiry}"
+        );
+    }
+}
+
+#[test]
+fn runtime_config_encoder_rejects_malformed_utc_expiry() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    let mut value = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2026-10-02T00:00:00Z",
+    ));
+    for expiry in MALFORMED_UTC_EXPIRIES {
+        value.expiry_utc = expiry.to_owned();
+        assert_eq!(
+            encode_neuron_runtime_config_v1(&value),
+            Err(NeuronProtocolError::InvalidField("runtime config")),
+            "expiry {expiry}"
+        );
+    }
+}
+
+#[test]
+fn runtime_config_decoder_rejects_malformed_utc_expiry() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    let value = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2026-10-02T00:00:00Z",
+    ));
+    let bytes = checked(encode_neuron_runtime_config_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    for expiry in MALFORMED_UTC_EXPIRIES {
+        json["expiry"] = serde_json::json!(expiry);
+        assert_eq!(
+            decode_neuron_runtime_config_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("runtime config")),
+            "expiry {expiry}"
+        );
+    }
+}
+
+#[test]
+fn runtime_config_utc_expiry_accepts_calendar_and_fraction_boundaries() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    for expiry in [
+        "0001-01-01T00:00:00Z",
+        "1970-01-01T00:00:00Z",
+        "2000-02-29T23:59:59Z",
+        "2100-02-28T23:59:59.1Z",
+        "2026-10-01T00:00:00.000001Z",
+        "2026-10-01T00:00:00.123456789Z",
+        "2026-10-01T00:00:00.1234567890123456789012345678901234567890123Z",
+        "9999-12-31T23:59:59.123456Z",
+    ] {
+        let value = checked(canonical_runtime_config_v1(&config, &native, expiry));
+        assert_eq!(
+            checked(decode_neuron_runtime_config_v1(&checked(
+                encode_neuron_runtime_config_v1(&value),
+            ))),
+            value,
+            "expiry {expiry}"
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_encoder_rejects_indices_outside_global_activation_domain() {
+    let (_, _, tick) = committed();
+    let mut value = checked(canonical_tick_receipt_v1(&tick));
+    for index in [512, u32::MAX] {
+        value.active_indices = vec![index];
+        assert_eq!(
+            encode_neuron_tick_receipt_v1(&value),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "index {index}"
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_decoder_rejects_indices_outside_global_activation_domain() {
+    let (_, _, tick) = committed();
+    let value = checked(canonical_tick_receipt_v1(&tick));
+    let bytes = checked(encode_neuron_tick_receipt_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    for index in [512, u32::MAX] {
+        json["activeIndices"] = serde_json::json!([index]);
+        assert_eq!(
+            decode_neuron_tick_receipt_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "index {index}"
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_global_activation_bound_does_not_authenticate_native_config() {
+    let (_, _, tick) = committed();
+    let mut value = checked(canonical_tick_receipt_v1(&tick));
+    // This format bound admits index 511; owner publication separately checks
+    // the actual committed activation dimensions and digest bindings.
+    value.active_indices = vec![511];
+    assert_eq!(
+        checked(decode_neuron_tick_receipt_v1(&checked(
+            encode_neuron_tick_receipt_v1(&value),
+        ))),
+        value
+    );
+}
+
+fn checkpoint_protocol() -> NeuronCheckpointV1 {
+    let (config, checkpoint, tick) = committed();
+    checked(canonical_checkpoint_v1(
+        &config,
+        &native_config(),
+        &checkpoint,
+        &tick,
+        1_900_000_000_000,
+    ))
+}
+
+#[test]
+fn checkpoint_encoder_rejects_indices_outside_global_activation_domain() {
+    let mut value = checkpoint_protocol();
+    for index in [512, u32::MAX] {
+        value.activation_summary.active_indices = vec![index];
+        assert_eq!(
+            encode_neuron_checkpoint_v1(&value),
+            Err(NeuronProtocolError::InvalidField("checkpoint")),
+            "index {index}"
+        );
+    }
+}
+
+#[test]
+fn checkpoint_decoder_rejects_indices_outside_global_activation_domain() {
+    let value = checkpoint_protocol();
+    let bytes = checked(encode_neuron_checkpoint_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    for index in [512, u32::MAX] {
+        json["activationSummary"]["activeIndices"] = serde_json::json!([index]);
+        assert_eq!(
+            decode_neuron_checkpoint_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("checkpoint")),
+            "index {index}"
+        );
+    }
+}
+
+#[test]
+fn checkpoint_global_activation_bound_does_not_authenticate_native_config() {
+    let mut value = checkpoint_protocol();
+    // Protocol parsing alone does not certify this index for the fixture's
+    // native width; canonical owner publication supplies that binding.
+    value.activation_summary.active_indices = vec![511];
+    assert_eq!(
+        checked(decode_neuron_checkpoint_v1(&checked(
+            encode_neuron_checkpoint_v1(&value),
+        ))),
+        value
+    );
+}
+
+#[test]
+fn tick_receipt_encoder_rejects_prediction_error_outside_linf_q24_domain() {
+    let (_, _, tick) = committed();
+    let mut value = checked(canonical_tick_receipt_v1(&tick));
+    for prediction_error in [-1, i64::MIN, 16 * Q + 1] {
+        value.prediction_error_q24 = prediction_error;
+        assert_eq!(
+            encode_neuron_tick_receipt_v1(&value),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "prediction error {prediction_error}"
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_decoder_rejects_prediction_error_outside_linf_q24_domain() {
+    let (_, _, tick) = committed();
+    let value = checked(canonical_tick_receipt_v1(&tick));
+    let bytes = checked(encode_neuron_tick_receipt_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    for prediction_error in [-1, i64::MIN, 16 * Q + 1] {
+        json["predictionErrorQ24"] = serde_json::json!(prediction_error);
+        assert_eq!(
+            decode_neuron_tick_receipt_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("tick receipt")),
+            "prediction error {prediction_error}"
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_encoder_rejects_zero_checkpoint_payload_bytes() {
+    let (_, _, tick) = committed();
+    let mut value = checked(canonical_tick_receipt_v1(&tick));
+    value.checkpoint_bytes = 0;
+    assert_eq!(
+        encode_neuron_tick_receipt_v1(&value),
+        Err(NeuronProtocolError::InvalidField("tick receipt"))
+    );
+}
+
+#[test]
+fn tick_receipt_decoder_rejects_zero_checkpoint_payload_bytes() {
+    let (_, _, tick) = committed();
+    let value = checked(canonical_tick_receipt_v1(&tick));
+    let bytes = checked(encode_neuron_tick_receipt_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    json["resourceReceipt"]["checkpointBytes"] = serde_json::json!(0);
+    assert_eq!(
+        decode_neuron_tick_receipt_v1(&checked(serde_json::to_vec(&json))),
+        Err(NeuronProtocolError::InvalidField("tick receipt"))
+    );
+}
+
+#[test]
+fn tick_receipt_scalar_boundaries_do_not_authenticate_owner_measurements() {
+    let (_, _, tick) = committed();
+    let mut value = checked(canonical_tick_receipt_v1(&tick));
+    // These are admissible scalar values, not attestations of this fixture's
+    // actual prediction error or checkpoint payload measurement.
+    value.prediction_error_q24 = 16 * Q;
+    value.checkpoint_bytes = 1;
+    assert_eq!(
+        checked(decode_neuron_tick_receipt_v1(&checked(
+            encode_neuron_tick_receipt_v1(&value),
+        ))),
+        value
     );
 }
