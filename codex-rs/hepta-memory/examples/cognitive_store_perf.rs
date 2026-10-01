@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::ffi::OsString;
 use std::path::Path;
@@ -6,7 +7,9 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
@@ -15,6 +18,7 @@ use codex_hepta_memory::LedgerSourceKind;
 use codex_hepta_memory::MemoryDraft;
 use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevisionDraft;
+use codex_hepta_memory::MemoryRevisionRecord;
 use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
 use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL;
@@ -25,7 +29,9 @@ use tempfile::TempDir;
 
 const DEFAULT_RECORDS: usize = 256;
 const MAX_RECORDS: usize = 16_384;
+const MAX_ACTIVE_HEADS: usize = 512;
 const CONTENT_BYTES: usize = 1024;
+const RECOVERY_LOGICAL_BUDGET_BYTES: usize = 128 * 1024 * 1024;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -37,6 +43,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if requested == 0 || requested > MAX_RECORDS {
         return Err(format!("HEPTA_COGNITIVE_PERF_RECORDS must be 1..={MAX_RECORDS}").into());
     }
+    // Retained revision capacity is independent of the KG live-head ceiling.
+    // The latency sample retains its distinct-head workload; larger histories
+    // correct a fixed pilot-sized head set instead of expanding it every time.
+    let active_heads = requested.min(MAX_ACTIVE_HEADS);
 
     let temp = TempDir::new()?;
     let fleet = temp.path().join("fleet");
@@ -51,8 +61,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let cold_open_us = elapsed_us(opened);
 
     let mut commit_us = Vec::with_capacity(requested);
+    let mut remember_us = Vec::with_capacity(active_heads);
+    let mut correction_us = Vec::with_capacity(requested - active_heads);
+    let mut heads = Vec::<MemoryRevisionRecord>::with_capacity(active_heads);
+    let workload_started = Instant::now();
     for index in 0..requested {
+        let head_index = index % active_heads;
+        let expected_revision = u64::try_from(index / active_heads + 1)?;
         let content = bounded_content(index);
+        let expected_content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source = SourceDraft {
             scope: CognitiveScope::AgentPrivate,
             kind: LedgerSourceKind::ExplicitMemoryDirective,
@@ -61,7 +78,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             observed_at_unix_seconds: 1,
         };
         let memory = MemoryDraft {
-            stable_key: format!("perf-memory-{index:05}"),
+            stable_key: format!("perf-memory-{head_index:05}"),
             revision: MemoryRevisionDraft {
                 scope: CognitiveScope::AgentPrivate,
                 content,
@@ -73,11 +90,55 @@ async fn main() -> Result<(), Box<dyn Error>> {
             },
         };
         let started = Instant::now();
-        store
-            .remember_with_kg(&access, &source, &memory, &KgFactSetDraft::default())
-            .await?;
-        commit_us.push(elapsed_us(started));
+        let receipt = if index < active_heads {
+            store
+                .remember_with_kg(&access, &source, &memory, &KgFactSetDraft::default())
+                .await?
+        } else {
+            let head = &heads[head_index];
+            store
+                .correct_with_kg(
+                    &access,
+                    &head.id.memory_id,
+                    head.id.revision,
+                    &source,
+                    &memory.revision,
+                    &KgFactSetDraft::default(),
+                )
+                .await?
+        };
+        let elapsed = elapsed_us(started);
+        if receipt.memory.id.revision != expected_revision
+            || receipt.memory.content_sha256 != expected_content_sha256
+            || receipt.memory.citations.as_slice() != std::slice::from_ref(&receipt.source)
+            || receipt.projection.generation.get() != u64::try_from(index + 1)?
+            || receipt.projection.entity_count != 0
+            || receipt.projection.relation_count != 0
+            || receipt.projection.node_count != 0
+            || receipt.projection.edge_count != 0
+        {
+            return Err("commit did not preserve the exact source/revision/KG workload".into());
+        }
+        if index < active_heads {
+            remember_us.push(elapsed);
+            heads.push(receipt.memory);
+        } else {
+            if receipt.memory.id.memory_id != heads[head_index].id.memory_id {
+                return Err("correction changed the stable memory identity".into());
+            }
+            correction_us.push(elapsed);
+            heads[head_index] = receipt.memory;
+        }
+        commit_us.push(elapsed);
+        if (index + 1) % MAX_ACTIVE_HEADS == 0 || index + 1 == requested {
+            eprintln!(
+                "committed {} of {requested} retained revisions across {} active heads",
+                index + 1,
+                heads.len(),
+            );
+        }
     }
+    let workload_us = elapsed_us(workload_started);
 
     let database = store.path().to_path_buf();
     let database_bytes = file_len(&database);
@@ -90,6 +151,35 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .await?;
     let snapshot_us = elapsed_us(snapshot_started);
     let snapshot_records = snapshot.snapshot().records.len();
+    let expected_heads = heads
+        .iter()
+        .map(|head| (head.id.memory_id.as_str(), head))
+        .collect::<BTreeMap<_, _>>();
+    let requested_frontier = u64::try_from(requested)?;
+    let frontiers = snapshot.frontiers();
+    if snapshot_records != active_heads
+        || expected_heads.len() != active_heads
+        || frontiers.memory != requested_frontier
+        || frontiers.source != requested_frontier
+        || frontiers.knowledge_facts != requested_frontier
+        || frontiers.knowledge_graph.get() != requested_frontier + 1
+        || frontiers.tombstone != 0
+    {
+        return Err("snapshot does not cover the complete retained-revision workload".into());
+    }
+    for record in &snapshot.snapshot().records {
+        let head = expected_heads
+            .get(record.record_id.as_str())
+            .ok_or("snapshot contains an unexpected memory head")?;
+        if record.state != RecordState::Live
+            || record.revision.get() != head.id.revision
+            || record.content_digest != head.content_sha256.as_str().parse()?
+        {
+            return Err("snapshot did not preserve the exact latest memory revisions".into());
+        }
+    }
+    let snapshot_digest = snapshot.snapshot().snapshot_digest.to_string();
+    let owner_cut_digest = snapshot.cut_digest().to_string();
 
     let anchor_started = Instant::now();
     let anchor = store.recovery_anchor().await?;
@@ -105,33 +195,66 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if reopened_anchor != anchor {
         return Err("reopen changed the exact cognitive current-cut anchor".into());
     }
+    let reopen_cut_started = Instant::now();
+    reopened
+        .revalidate_lane_c_snapshot(
+            &access,
+            &CognitiveScope::AgentPrivate,
+            &snapshot,
+            now_unix_seconds()?,
+        )
+        .await?;
+    let reopen_cut_us = elapsed_us(reopen_cut_started);
 
-    commit_us.sort_unstable();
     let metrics = json!({
-        "schema": "hepta.perf-durable.cognitive-store.v1",
+        "schema": "hepta.perf-durable.cognitive-store.v2",
         "profile": "PERF-DURABLE",
         "sourceSha": std::env::var("SOURCE_SHA").ok(),
-        "records": requested,
-        "contentBytesPerRecord": CONTENT_BYTES,
+        "testedSha": std::env::var("TESTED_SHA").ok(),
+        "retainedMemoryRevisions": requested,
+        "activeMemoryHeads": active_heads,
+        "contentBytesPerRevision": CONTENT_BYTES,
+        "workload": {
+            "kind": if requested == active_heads {
+                "distinct live heads"
+            } else {
+                "bounded live heads with retained correction history"
+            },
+            "rememberCommits": remember_us.len(),
+            "correctionCommits": correction_us.len(),
+            "sourceAppends": frontiers.source,
+            "immutableFactSets": frontiers.knowledge_facts,
+            "kgPublications": frontiers.knowledge_graph.get() - 1,
+            "kgFactsPerRevision": { "entities": 0, "relations": 0 },
+            "minimumRevisionsPerMemory": requested / active_heads,
+            "maximumRevisionsPerMemory": requested.div_ceil(active_heads),
+            "elapsedUs": workload_us,
+        },
         "sqliteJournalMode": PRODUCTION_DURABLE_WRITER_JOURNAL_MODE,
         "sqliteSynchronous": PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL,
         "coldOpenUs": cold_open_us,
-        "commitUs": {
-            "p50": percentile(&commit_us, 50),
-            "p95": percentile(&commit_us, 95),
-            "p99": percentile(&commit_us, 99),
-            "max": *commit_us.last().unwrap_or(&0),
+        "commitUs": latency_distribution(commit_us),
+        "commitUsByOperation": {
+            "remember": latency_distribution(remember_us),
+            "correction": latency_distribution(correction_us),
         },
         "databaseBytes": database_bytes,
         "walBytesBeforeReopen": wal_bytes,
         "journalBytesBeforeReopen": journal_bytes,
         "snapshot": {
-            "records": snapshot_records,
+            "heads": snapshot_records,
+            "memoryRevisionFrontier": frontiers.memory,
+            "digest": snapshot_digest,
+            "ownerCutDigest": owner_cut_digest,
             "materializeUs": snapshot_us,
         },
+        "recoveryLogicalBudgetBytes": RECOVERY_LOGICAL_BUDGET_BYTES,
+        "recoveryLogicalBudgetValidated": true,
         "recoveryAnchorUs": recovery_anchor_us,
         "reopenUs": reopen_us,
         "reopenAnchorUs": reopen_anchor_us,
+        "reopenCutUs": reopen_cut_us,
+        "exactRecoveryStateDigest": anchor.state_digest.as_str(),
         "exactCutPreserved": true,
     });
     let rendered = serde_json::to_string_pretty(&metrics)?;
@@ -145,6 +268,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::fs::write(output, format!("{rendered}\n"))?;
     }
     Ok(())
+}
+
+fn latency_distribution(mut values: Vec<u64>) -> Option<serde_json::Value> {
+    if values.is_empty() {
+        return None;
+    }
+    values.sort_unstable();
+    Some(json!({
+        "samples": values.len(),
+        "p50": percentile(&values, 50),
+        "p95": percentile(&values, 95),
+        "p99": percentile(&values, 99),
+        "max": values.last().copied().unwrap_or(0),
+    }))
 }
 
 fn bounded_content(index: usize) -> String {

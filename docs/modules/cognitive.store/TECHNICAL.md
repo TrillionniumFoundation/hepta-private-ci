@@ -199,15 +199,20 @@ It checks migration-row types, sizes, versions, descriptions, success and checks
 then compares every SQLite schema object with the corresponding compiled in-memory
 reference. After schema admission and before `MIGRATOR` executes, an existing
 `cognitive_meta` row receives bounded type and owner validation against
-`layout.agent_id()`. New databases and legacy empty metadata can still initialize.
-A wrong owner is rejected without advancing the migration prefix.
+`layout.agent_id()`. Missing metadata can initialize only when every logical
+application table is empty; FTS internal default rows are not application state.
+Existing local owner columns and operation subjects must match the layout before
+migration. The admitted prefix also receives the shared logical row/byte budget
+check. Orphan state and foreign ownership are rejected without advancing history.
 Clean historical prefixes can upgrade; altered CHECK expressions,
 triggers, autoindexes or FTS shadow definitions are rejected before pending
 migrations execute. One `BEGIN IMMEDIATE` transaction serializes prefix admission,
 existing-owner validation, compiled migrations, full-schema verification and owner
 metadata initialization.
-The completed schema is verified again before integrity
-PRAGMAs evaluate CHECK expressions. The logical recovery anchor binds registered
+Every reopen verifier authenticates schema and budgets in the same SQLite
+transaction as its reads or integrity command. Journal materialization repeats
+its admission in the exact read snapshot; a pool connection cannot substitute
+unverified executable schema after the admission cut. The logical recovery anchor binds registered
 owner tables; FTS shadow definitions are authenticated, while their physical
 contents remain rebuildable index state.
 
@@ -237,7 +242,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies the algorithm and pilot ceilings. Current native bounds are enforced in [hepta-cognitive-store](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and [Lane C SQLite](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md). The durable measurement executable [cognitive_store_perf.rs](../../../codex-rs/hepta-memory/examples/cognitive_store_perf.rs) records cold-open, per-commit p50/p95/p99/max, database/WAL/journal bytes, snapshot materialization, recovery-anchor cost and reopen cost. Consolidated source CI runs both a 256-record latency sample and a 16,384-record maximum-retained profile when the durable owner changes. Measurements are exact-run artifacts, not prose claims or deployment thresholds.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies the algorithm and pilot ceilings. Current native bounds are enforced in [hepta-cognitive-store](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and [Lane C SQLite](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md). The durable measurement executable [cognitive_store_perf.rs](../../../codex-rs/hepta-memory/examples/cognitive_store_perf.rs) records cold-open, per-commit p50/p95/p99/max, database/WAL/journal bytes, snapshot materialization, recovery-anchor cost and reopen cost. The focused owner qualification workflow configures a 256-record latency sample and a 16,384-record maximum-retained profile. The reusable consolidated qualification also configures these measurements for durable-owner changes. Dependency-selected ordinary native checks do not imply that either profile executed. Measurements are exact-run artifacts, not prose claims or deployment thresholds.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -267,7 +272,9 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-memory/src/production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs): same-transaction production provenance, semantic-validation rollback, live-authority rejection, and response-loss/restart duplicate rejection (`semantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut`).
 - [codex-rs/hepta-cognitive-store/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-store/src/lib_tests.rs); named case: `append_and_correction_are_predecessor_fenced`.
 
-In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.
+Ordinary development follows [the global development policy](../../DEVELOPMENT.md#1-mission-and-truthful-completion-model): edit the owned source, run affected package tests and applicable review checks, then use the normal protected branch. From the repository root, `python3 scripts/hepta-docs.py verify --profile development` validates current working-tree ownership, schemas, registered paths and references, including uncommitted edits. Historical qualification inventories and handwritten execution receipts are not additional permission to implement or merge an authorized source change.
+
+In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect its output for passes, failures and skips. Explicit qualification uses `--profile qualification` with committed candidate inputs and retains exact source-head and merge-candidate evidence when the selected qualification requires them. A development-profile pass supplies no execution, activation or acceptance fact. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -280,7 +287,7 @@ Applicable work packages:
 
 The bootstrap package is `MEM-1-STORE`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source completion for the declared scope requires code in the registered root, public surfaces matching the registries and passing affected tests. Qualification separately requires current exact-candidate evidence for its selected boundary, including source-head and merge-candidate checks where declared. Ordinary source development does not require runtime qualification records merely to merge. Later planned packages may remain without invalidating documentation closure; production-writer authority, authenticated current-cut recovery and activation gates remain mandatory whenever those runtime boundaries are exercised.
 
 ## 14. Activation, compatibility and retirement
 
@@ -307,15 +314,17 @@ semantic mutations recheck the retained verifier after taking the SQLite write
 lock and before commit; denial rolls back their semantic and provenance writes.
 
 The [production route and remaining gates](PRODUCTION_CLOSURE.md) identify the
-compiled façade, host composition, cutover and rollback procedure. Agentd now consumes bounded exact-ID owner snapshots, sharing a global head/visibility witness across candidate, output and final-use selections. Each selected ancestry remains bounded; global witness scanning has bounded RAM and scope-dependent latency.
+compiled façade, host composition, cutover and rollback procedure. Agentd now consumes bounded exact-ID owner snapshots, sharing a global head/visibility witness across candidate, output and final-use selections. Each selected ancestry remains bounded; global witness scanning has bounded RAM and scope-dependent latency. Publication and final-use revalidate the complete owner witness after their last provider, ranker or learning await. Prepublication learning records retain assignments without claiming consumer exposure or a returned snapshot; positive delivery needs independently observed consumer acknowledgement.
 
 The focused native gate is [hepta-cognitive-store-native.yml](../../../.github/workflows/hepta-cognitive-store-native.yml).
 It qualifies both the exact source head and deterministic base-merge candidate
 with the two owner-library test suites. Its strict Clippy command selects only
 `codex-hepta-cognitive-store` and `codex-hepta-memory`, uses `--no-deps` and retains
 `-D warnings`; dependency compilation remains required. The source-head job also
-invokes crash/reopen recovery and the 256-record and 16,384-record durable
-performance profiles. These configured commands do not establish successful
+invokes crash/reopen recovery, a 256-distinct-head latency sample, and a
+16,384-retained-revision profile using 512 heads with 32 revisions each. The
+maximum workload performs real corrections and keeps the independent KG head
+limit unchanged; its artifacts distinguish retained revisions from active heads. These configured commands do not establish successful
 execution receipts. This gate runs independently of whole-repository
 document validation. It supplies scoped native evidence and does not replace
 global source/caller/document gates, Agentd integration qualification or independent
@@ -421,4 +430,4 @@ The bootstrap source-location obligation for `cognitive.store` is implemented by
 
 - `codex-rs/hepta-cognitive-store`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Ordinary document validation uses the development profile against the current working tree. Native development CI selects affected owners and reverse consumers from both the base and candidate Cargo dependency graphs. The reusable `.github/workflows/hepta-consolidated-source.yml` supplies dependency-selected native checks or explicitly requested full qualification; its executed scope and command outputs must be inspected rather than inferred from the workflow name. The focused cognitive owner qualification is described in section 14. Qualification profiles retain committed source identities and their declared inventory and evidence checks. A workflow definition or source-navigation binding is not a successful execution receipt. Actual source implementation receipts grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion or release authority.

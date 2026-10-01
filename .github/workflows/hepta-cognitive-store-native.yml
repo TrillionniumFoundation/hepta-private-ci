@@ -160,7 +160,7 @@ jobs:
           HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/hepta-command-records/cognitive-perf-metrics.json
         run: |
           python3 ../scripts/hepta_ci_exec.py \
-            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-command.json" -- \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-command.json" --timeout-seconds 300 -- \
             cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
       - name: Measure cognitive maximum-retained profile
         if: ${{ matrix.lane == 'source-head' && steps.owner_tests.outcome == 'success' }}
@@ -170,7 +170,7 @@ jobs:
           HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/hepta-command-records/cognitive-perf-max-metrics.json
         run: |
           python3 ../scripts/hepta_ci_exec.py \
-            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-max-command.json" -- \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-max-command.json" --timeout-seconds 1200 -- \
             cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
       - name: Strict owner Clippy independently of test outcome
         if: ${{ always() && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}

@@ -75,13 +75,18 @@ must identify a continuous compiled history prefix whose complete schema matches
 a separate in-memory reference built from the compiled migrations. After this
 schema admission and before `MIGRATOR` executes, any existing `cognitive_meta` row
 receives bounded type and owner validation against `layout.agent_id()`. New
-databases and legacy empty metadata can still initialize. A wrong owner is
-rejected without advancing the migration prefix. This
+databases can initialize, and missing metadata is accepted only for a genuinely
+empty logical application state. Existing local owner columns and operation
+subjects are checked before migration; orphan and foreign-owned state are denied
+without advancing the migration prefix. The same snapshot enforces logical row
+and byte admission before materialization. This
 preserves clean historical upgrades while rejecting altered triggers, CHECKs,
 autoindexes and FTS shadow definitions. Prefix admission, existing-owner validation,
 compiled migrations, full-schema verification and owner metadata initialization share one
 `BEGIN IMMEDIATE` transaction. The completed schema is verified again
-before integrity scans. It recomputes source and memory digests in bounded batches and
+in the same transaction as integrity scans. Independent content, projection and
+journal verifiers admit their own exact snapshots before reading executable
+schema or materializing history. It recomputes source and memory digests in bounded batches and
 checks exact historical Memory FTS membership/content plus FTS5 integrity.
 Expired and tombstoned revisions remain in that historical index and are filtered
 by owner read semantics. Existing files with unsafe mode are rejected rather
@@ -120,6 +125,15 @@ witness. Incompatible schema or an unverifiable current cut stops rollback.
 
 ## 5. Qualification and remaining completion gates
 
+Ordinary authorized source development uses affected package tests and
+`python3 scripts/hepta-docs.py verify --profile development` against the current
+working tree. It does not require handwritten runtime receipts merely to edit,
+test or merge source. Explicit `--profile qualification` checks retain committed
+candidate identities and the evidence required by the exercised boundary. A
+development-profile pass does not establish runtime execution or acceptance;
+the production-writer lease, live verifier and independent current-cut witness
+remain mandatory host inputs.
+
 Run package tests for `codex-hepta-cognitive-store` and `codex-hepta-memory`, plus
 Agentd product writer/composition tests. Cover lock contention with revocation,
 precommit denial, exact-cut recovery, hostile database/sidecar identities,
@@ -154,10 +168,22 @@ Reconciliation uses destination-local shared cursors and a frozen semantic
 preparation-sequence upper bound per scan cycle. Wall-clock preparation timestamps
 and operation IDs are not the admission watermark. Unresolved early rows and
 continuing new arrivals cannot prevent prior rows from being revisited. The cursor
-resets on writer restart and carries
-no durable authority. A missing source row remains unresolved until a trusted
+resets on writer restart and carries no durable authority. The Agentd host also
+rotates across at most 256 destinations through a clone-shared cursor. Concurrent
+normal ACK and reconciliation settle only verified matching terminal outcomes;
+opposite results, stale fences and different actual receipt replays remain errors. A missing source row remains unresolved until a trusted
 terminal observation exists. Cross-cache forget settlement, physical erasure and
 canonical shadow promotion also require their own evidence.
+
+Publication and final-use check the full owner witness after their last internal
+await. Learning records created before a response returns contain assignment
+facts only, with no delivered candidates, exposure claim or published digest.
+A successful return is not a consumer acknowledgement.
+
+Cold read-only recovery follows the validated active-generation pointer, and
+nonregular pointers are rejected without a blocking FIFO open. Failed recovery
+copy writes or syncs remove only files created by that attempt; pre-existing
+collision files remain intact.
 
 ## 6. Claim vocabulary
 
@@ -177,7 +203,11 @@ frontier/lineage drift, cross-page tombstone resurrection, canonical UTF-8 reaso
 hashes, database/sidecar aliases, content/FTS tampering, recovery/write-lock
 revocation, create-only predecessor drift, delayed target commits, single-cut
 observation, fair reconciliation and bounded selected reads beyond 16,384 total
-revisions. Fixes receive independent follow-up source review.
+revisions. Follow-up cases include orphan/foreign-owner historical admission,
+concurrent DDL between admission and integrity, startup journal budgets,
+late-await cut drift and truthful learning assignments, destination fairness,
+both ACK/observer race orders, active-generation cold reads and failed-copy
+cleanup. Fixes receive independent follow-up source review.
 
 V2 image and page digests establish consistency, not source authenticity or
 freshness. Single-page validation proves only available ancestry; consumers
