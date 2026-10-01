@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots above are materialized. Executed checks belong to an exact source candidate and are recorded in the [2026-10-01 audit](ADVERSARIAL_AUDIT_2026-10-01.md). Focused tests, all-target compilation, strict lint and source/merge qualification remain separate evidence obligations; a successful focused test does not imply that a later blocked lint step executed. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -94,6 +94,7 @@ in-memory state image. Use the durable API for owner publication. The internal
 | `v2.rs` | Model tuple, snapshot, compatible set | Exact model ID/version and all profile digests; canonical bounded set; required factor coverage |
 | `delivery.rs` | Payload registration, supersession, dereference | Exact stored bytes/digest; one active realization per complete profile; current snapshot/lifecycle |
 | `durable.rs` / `durable_payloads.rs` | V1/V2 migration, V3 publication and reopen | Single owner lock; semantic replay validation; immutable committed extents |
+| `durable_recovery.rs` | Exact-cut recovery anchor and anchored reopen | Independently supplied current cut must match before migration or payload-tail cleanup |
 | `protocol.rs` | `PromptFactorV1` / `PromptRealizationV1` JSON codecs | Bounded input, canonical dimensions, unknown/duplicate critical member rejection |
 
 1. Register an immutable draft factor. Validate bounded semantics before insertion;
@@ -155,6 +156,16 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+Native factor semantics bound purpose to 4,096 bytes, authority class to 64 bytes
+and the canonical JSON eligible-dimension array to 8,192 bytes. Stable identifiers
+use the ASCII grammar and a 128-byte ceiling. Dimension validation accounts for
+the exact array brackets, commas and quoted identifiers with checked arithmetic,
+rejects excess before serialization, and scans canonical order without cloning
+the full dimension vector. Complete canonical protocol input is capped at
+262,144 bytes. Admission identifier validation likewise checks borrowed input
+before creating owned IDs; signed-grant shapes and public wire versions remain
+unchanged. Shape failures retain `InvalidField` / `InvalidGrant` semantics.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -195,8 +206,12 @@ hashing and the full in-memory registry remain size-dependent; this change reduc
 payload copy/write amplification, not unlimited-history recovery or retention cost.
 
 The owner locks its Unix directory descriptor before creating `registry.lock`,
-then retains both locks for its lifetime. First creation synchronizes the parent
-directory entry. Invalid zero capacity fails before creating owner state. If the
+then retains both locks for its lifetime. Every successful open synchronizes the
+parent directory entry, including retries after a failed initial parent sync.
+It obtains the actual parent with descriptor-relative `openat("..")` from the
+validated owner directory, so `.` or `owner/child/..` aliases cannot redirect the
+durability fence to a lexical parent of the input path.
+Invalid zero capacity fails before creating owner state. If the
 first metadata publication fails before rename, only the newly created marker
 belonging to that opener is removed and the owner directory is synchronized,
 allowing a fresh retry. Existing-owner and migration markers are retained;
@@ -228,9 +243,31 @@ Native Unix file opening rejects symlinks and non-regular files without blocking
 on a FIFO. Non-Unix durable owner opening currently fails closed. Backup integrity
 checks prove the copied image's internal consistency; they do not prove freshness
 against an independently pinned current revision. Restoring a valid older complete
-owner image can roll back revocation. A production restore therefore still needs
-an independent monotonic frontier and an approved recovery procedure; native
-`open_state_dir` currently accepts no such external frontier.
+owner image through ordinary `open_state_dir` can roll back revocation.
+
+For anchored recovery, call `recovery_anchor()` on an available committed owner
+and independently retain and authenticate the returned
+`PromptRegistryRecoveryAnchor`. It binds the exact `revision`,
+`lifecycle_frontier`, `revocation_frontier` and semantic `registry_digest`.
+`open_state_dir_with_recovery_anchor(directory, maximum_records, expected)`
+requires an existing selected state, validates it under the owner lock and rejects
+any different cut before metadata migration or payload-tail cleanup. An invalid
+anchor returns `InvalidRecoveryAnchor`; missing selected state returns
+`RecoveryStateMissing`; a valid but different cut returns
+`RecoveryAnchorMismatch`. Anchor shape and capacity validation precede filesystem
+access. A matching V1/V2 image may migrate; a matching V3 image may discard its
+unselected payload tail only after comparison. A missing owner directory or
+selected metadata cannot create an owner directory or marker. Opening an existing
+legacy image can create its missing owner-lock marker before cut comparison;
+cut rejection still leaves metadata and payload bytes unchanged.
+
+This is exact equality, not a minimum-prefix proof: every newly acknowledged
+mutation requires a newly independently retained cut. The host must establish
+the anchor's authentication and currentness in a separate rollback domain;
+deriving it from the suspect backup proves neither. The ordinary constructor
+remains available for bootstrap and unanchored local reopening, and Agentd does
+not yet supply a trusted recovery anchor. Production restore still requires that
+host composition and an approved acknowledgement/recovery procedure.
 
 ## 9. Security, privacy and threat controls
 
@@ -265,8 +302,19 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named case: `external_material_cannot_admit_itself`.
 - [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named case: `every_state_change_allocates_one_revision_and_identical_retry_does_not`.
+- [codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs) covers adversarial storage restore and bootstrap recovery.
+- [codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs) covers missing state, old backups, equal-revision forks, mismatch-before-trim/migration and parent-sync retry.
+- [codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs) covers exact 8,191/8,192/8,193-byte dimension-array boundaries and canonical ordering.
+- [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs) and [prompt_delivery_multirole_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_multirole_tests.rs) cover sealed compilation and exact selected realization identity.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs) covers rehashed pricing/portfolio tampering and candidate semantic integrity.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs) follows actual durable enumeration and independent signed completeness/pricing through expiry and known-revocation selection boundaries.
+- [codex-rs/hepta-learning-ledger/src/signed_evidence_horizon_tests.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence_horizon_tests.rs) covers the optimizer dependency's exclusive evidence horizon, known revocation and saturating boundary.
+- [codex-rs/hepta-agentd/src/prompt_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_tests.rs) covers exact model and deadline checks at the Agentd staging seam.
+- [codex-rs/hepta-agentd/src/prompt_runtime_integrity_tests.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_integrity_tests.rs) covers dispatch deadline and terminal-order rejection at commit and reopen.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-registry`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) separately labels target acceptance designs.
+
+The integration checks use `just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'` and `just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_)'`. The audit records source/merge identities, suite counts and remaining gate failures; changing this guide does not refresh execution evidence.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -297,6 +345,64 @@ explicit validated adapter rather than implicit prefix conversion. Already-stage
 attachments still need current registry/revocation revalidation at physical send
 before activating a live mutation pipeline. Source safety repairs do not close
 that integration gate.
+
+Canonical optimizer enumeration, pricing and selected portfolios also carry
+private process provenance. Build them through `enumerate_factors_v1`,
+`price_factors_v1` and `select_portfolio_v1`;
+`PricedPromptCandidatesV1::validate()` and
+`SelectedPromptPortfolioV1::validate()` reject changed public fields even when
+their public receipt hashes are recomputed. Candidate validation binds the
+complete registry snapshot, model tuple, factor/realization identities, ordering
+and receipt semantics. The enumeration seal binds its recorded omission count and
+snapshot, so rehashing public receipts cannot hide omissions or invent a new
+enumeration source. Pricing also requires the verifier's objective to match.
+The pricing seal retains the original verifier trust digest; selection requires
+the same objective and trust snapshot, so another objective or trust epoch cannot
+be mixed into pair evidence for an already priced set.
+The optimizer consumes
+[`VerifiedLearningEvidenceV1::valid_until_unix_ms`](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs)
+as an exclusive evidence deadline. Signed-envelope and authenticated-principal
+expiries are inclusive at verification, so the deadline is one millisecond after
+their minimum, capped by any revocation time already known to that trust snapshot.
+Saturation conservatively excludes `u64::MAX` if an exclusive successor cannot be
+represented. Pricing seals its verification time and the earliest completeness/
+pricing evidence deadline. Selection rejects time before verification with
+`InvalidTime`, and time at or beyond the evidence deadline with `PortfolioExpired`,
+even without pair evidence. Portfolio validity is capped by requested validity,
+pricing/completeness evidence, every verified pair-evidence horizon and selected
+realization expiry. Selection time is privately sealed; exercise before that time
+returns `RejectStale`. These are bounded dependency facts from learning.ledger,
+not a registry-owned evidence authority.
+Selection, exercise and registry compilation validate the corresponding sealed
+inputs before use. Integrity failures are `CandidateIntegrity`,
+`PricingIntegrity` or `PortfolioIntegrity`. These objects have no serialized
+reconstruction path for their private seals; the seals grant no final-use or
+provider authority.
+
+The seal records verified construction under that trust snapshot; it does not
+refresh producer trust at exercise or physical send. Live host composition still
+needs current trust/revocation checks at the corresponding effect boundary.
+
+Registry compilation and compiled-output validation reject any selected fragment
+whose declared `token_cost` exceeds 10,000, returning
+`PromptRegistryCompilationErrorV2::PromptFragmentTokenLimit`. The boundary applies
+to each individual fragment, even when the total budget would allow more. The
+signed fixture covers 10,000 accepted and 10,001 rejected. This enforces a declared
+cost only; the registry/compiler does not independently run the exact tokenizer.
+Fragments declared above 1,000 tokens fall under the repository's P0 manual
+review rule. Actual tokenizer attestation and the applicable manual-review receipt
+remain qualification work; a passing declared-bound test establishes neither.
+
+Agentd's runtime journal rejects a dispatch whose `dispatched_unix_ms` is equal
+to or after the staged deadline. A terminal observation must be at or after its
+dispatch timestamp; equality is allowed. Commit validation and recovery checks
+use the same time-order rules. Recovery can recheck a dispatch deadline where
+the corresponding staged record remains; terminal-versus-dispatch ordering is
+also checked after the stage has been cleared.
+Completion after a valid dispatch is not inferred to be a new dispatch. These
+timestamp checks enforce recorded deadline/order semantics and do not refresh
+current registry revocation or authenticate a journal timestamp as wall-clock
+evidence.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -444,6 +550,9 @@ This receipt records repository source bindings for the current documentation ca
 | `promptfactorv1` | `PromptFactorV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
 | `promptrealizationv1` | `PromptRealizationV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
 | `factor_graph_source_v1` | `factor_graph_source_v1` | `codex-rs/hepta-prompt-registry/src/lib.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `promptregistryrecoveryanchor` | `PromptRegistryRecoveryAnchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| `recovery_anchor` | `recovery_anchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| `open_state_dir_with_recovery_anchor` | `open_state_dir_with_recovery_anchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.

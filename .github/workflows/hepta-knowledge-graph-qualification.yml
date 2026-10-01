@@ -6,6 +6,7 @@ on:
       - "codex-rs/hepta-kg/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
@@ -24,6 +25,7 @@ on:
       - "codex-rs/hepta-kg/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
@@ -118,6 +120,7 @@ jobs:
           set -euo pipefail
           cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
             --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
+            --package codex-hepta-learning-ledger \
             --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
 
       - name: Install repository test runner
@@ -146,7 +149,7 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer
+          just test --locked -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer -p codex-hepta-learning-ledger
 
       - name: Test sealed prompt compilation and Agentd staging
         working-directory: codex-rs
@@ -156,6 +159,25 @@ jobs:
           set -euo pipefail
           just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'
           just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_)'
+
+      - name: Strict prompt owner and evidence lint
+        working-directory: codex-rs
+        env:
+          CARGO_BUILD_JOBS: "1"
+        run: |
+          set -euo pipefail
+          just clippy --locked --no-deps --all-targets \
+            -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-learning-ledger -- -D warnings
+
+      - name: Strict prompt consumer lint
+        working-directory: codex-rs
+        env:
+          CARGO_BUILD_JOBS: "1"
+        run: |
+          set -euo pipefail
+          just clippy --locked --no-deps --all-targets \
+            -p codex-hepta-intelligence -p codex-hepta-agentd -- -D warnings
 
       - name: Verify knowledge.graph closed-world truth
         shell: bash
@@ -212,6 +234,7 @@ jobs:
           cargo clippy --locked \
             -p codex-hepta-kg -p codex-hepta-prompt-registry \
             -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
             -- -D warnings
 
