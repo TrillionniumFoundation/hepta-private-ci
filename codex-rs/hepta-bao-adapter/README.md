@@ -574,3 +574,37 @@ durable replacement. A real isolated service-manager run separately verified
 that `RuntimeDirectoryPreserve=yes` retains the UID992/G976 directory after
 exit. All five emitted units passed manager verification. These isolated
 checks do not claim installed Fleet activation.
+
+
+### Upgrade the existing protected service program
+
+`scripts/hepta-upgrade-secrets-product` upgrades an existing instance without
+running first installation again. Install the reviewed upgrader and current
+policy maintenance helper as Root-owned `0555` programs under `/usr/libexec/hepta`.
+Drain and physically stop all four secrets roles before replacing the program;
+the upgrader acquires each original stable endpoint writer lock and the same
+Root publication lock used by policy upkeep. A live writer rejects the change.
+
+```text
+sudo python3 /usr/libexec/hepta/hepta-upgrade-secrets-product plan --expected-revision CURRENT_SOFTWARE_REVISION
+sudo python3 /usr/libexec/hepta/hepta-upgrade-secrets-product upgrade --expected-revision CURRENT_SOFTWARE_REVISION --binary QUALIFIED_RUNTIME_ELF --sha256 EXACT_ELF_SHA256
+sudo python3 /usr/libexec/hepta/hepta-upgrade-secrets-product apply --expected-revision ORIGINAL_SOFTWARE_REVISION
+```
+
+The initial software revision is `1`; it is separate from the AuthBus policy
+revision. `upgrade` retains both exact executables in the protected release
+archive and replaces the current regular program file and Root manifest through
+an original pending intent. During a partial image/manifest publication, the
+existing startup verifier rejects the inconsistent pair. `apply` completes only
+that same intent, including a lost completion acknowledgement. It rejects a
+conflicting manifest and cannot restore an earlier database. An identical
+program is a no-op; it does not create another software revision.
+
+Finish pending software publication before policy renewal/revocation. Policy
+upkeep and software upgrade reject each other's unfinished publication. Keys,
+frozen configuration, database paths, operation identities, grants, nonces,
+quotas, signed acknowledgements and the canonical mount remain in place.
+Forward database migrations belong to the actual role owners when the qualified
+successor starts. Retaining old executable bytes does not authorize database
+rollback or starting an older incompatible writer. The upgrader does not start
+services; verify and restart the original units after completion.
