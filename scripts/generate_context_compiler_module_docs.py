@@ -135,6 +135,57 @@ def bullets(values):
     return "\n".join(f"- {value}" for value in values)
 
 
+def repository_map(value, state):
+    """Expose the detailed contract through the repository's shared map schema.
+
+    Consumer anchors describe source composition, never authenticated product
+    execution. Preserve the contract inventory and its more detailed statuses.
+    Source objects are rebound explicitly with the state, not silently at render.
+    """
+    root = "codex-rs/hepta-context-compiler"
+    operations = []
+    callers = []
+    for row in state["consumerExecution"]:
+        definition = row["definition"]
+        operations.append({
+            "operation": row["id"], "designOperation": row["id"],
+            "nativeSymbol": definition["symbol"], "sourcePath": definition["path"],
+            "sourcePathExists": True, "mappingClass": "owner_native",
+            "state": row["sourceState"], "authority": "none",
+            "delegatedCallees": [],
+            "tests": [f"{test['path']}::{test['name']}" for test in row["testSources"]],
+        })
+        if row["consumer"] is not None:
+            caller = row["consumer"]
+            binding = {"sourcePath": caller["path"], "nativeSymbol": caller["symbol"]}
+            if binding not in callers:
+                callers.append(binding)
+    value.update({
+        "schema": "hepta.module-implementation-map.v3", "schemaVersion": 3,
+        "contractStatus": value["status"],
+        "status": {"implemented": True, "composed": True, "qualified": False},
+        "sourceBase": {"commit": state["runtimeSourceAnchor"], "tree": state["runtimeSourceTree"]},
+        "observedAtHead": {"commit": state["runtimeSourceAnchor"], "tree": state["runtimeSourceTree"]},
+        "observedSourcePaths": [root, "codex-rs/Cargo.toml", "codex-rs/Cargo.lock"],
+        "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+        "laneId": "LANE-C-MEMORY", "owner": "intelligence-platform", "deputy": "security-authority",
+        "technicalGuide": "docs/modules/context.compiler/V3_DEVELOPMENT.md",
+        "declaredRoots": [root], "resolvedRoots": [root], "sourceRoot": [root],
+        "sourceRootPresent": True, "productionImplementation": False,
+        "productCallerState": "source_composed_authenticated_ingress_unverified",
+        "productionWriterState": "not_established",
+        "operations": operations, "productCallers": callers,
+        "sourceObjects": state["implementationMapSourceObjects"],
+        "claimBoundary": {
+            "implementedOperationMappingComplete": True, "nativeSourceMappingComplete": False,
+            "sourceRootPresent": True, "productionImplementation": False,
+            "productExecutionProved": False, "independentAcceptance": False,
+            "activation": False, "release": False,
+        },
+    })
+    return value
+
+
 def render_all(state, root=ROOT):
     digest = canonical_hash(state)
     header = (
@@ -235,6 +286,7 @@ counted as active merely because they exist.
         if kind == "map":
             value["productComposition"]["state"] = "partial"
             value["productComposition"]["singlePhysicalPath"] = "Registry/compiler V3 uses the existing Agentd exact-body owner; authenticated ingress and external security-capability consumption remain not composed. No alternate owner is activated."
+            value = repository_map(value, state)
         else:
             value["artifacts"]["currentProductPath"] = str(OUTPUTS["product"])
         documents[OUTPUTS[kind]] = json.dumps(value, ensure_ascii=False, indent=2) + "\n"

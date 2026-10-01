@@ -128,7 +128,19 @@ class CurrentStateTests(unittest.TestCase):
             for key in ("publicSurface", "proofObjects", "byteIdentities", "invariants", "testMatrix"):
                 self.assertEqual(baseline[key], current[key])
             self.assertEqual(current["runtimeSourceFiles"], state["runtimeSourceFiles"])
-            self.assertEqual(current["status"], state["status"])
+            self.assertEqual(current["contractStatus"] if kind == "map" else current["status"], state["status"])
+
+    def test_generated_map_uses_repository_contract_without_granting_execution(self):
+        current = json.loads(docs.render_all(self.state)[docs.OUTPUTS["map"]])
+        self.assertEqual(current["schema"], "hepta.module-implementation-map.v3")
+        self.assertEqual(current["schemaVersion"], 3)
+        self.assertEqual({row["operation"] for row in current["operations"]},
+                         {row["id"] for row in self.state["consumerExecution"]})
+        self.assertTrue(current["status"]["composed"])
+        self.assertFalse(current["status"]["qualified"])
+        for key in ("productionImplementation", "productExecutionProved", "independentAcceptance", "activation", "release"):
+            self.assertIs(current["claimBoundary"][key], False)
+        self.assertEqual(current["sourceObjects"], self.state["implementationMapSourceObjects"])
 
 
 if __name__ == "__main__":
