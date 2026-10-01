@@ -329,3 +329,36 @@ fn last_supported_head_generation_remains_readable() {
         signed
     );
 }
+
+#[test]
+fn public_verifier_cannot_lower_trust_registry_generation_or_epoch_floors() {
+    let key = signer();
+    let scope_digest = withdrawal_scope().digest();
+    let mut configured = trust(&key, scope_digest);
+    configured.minimum_registry_generation = Generation::new(2).fixture("generation floor");
+    configured.minimum_authority_epoch = 5;
+    let verifier = ArtifactOwnerVerifierV1::new(configured).fixture("verifier");
+    for variant in 0..3 {
+        let mut signed = signed_head(&key, scope_digest, digest("current-head"));
+        signed.witness.generation = Generation::new(2).fixture("generation");
+        signed.witness.authority_epoch = 5;
+        match variant {
+            0 => signed.witness.registry_id = id("foreign-registry"),
+            1 => signed.witness.generation = Generation::new(1).fixture("low generation"),
+            2 => signed.witness.authority_epoch = 1,
+            _ => unreachable!(),
+        }
+        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+        let weak = RegistryHeadRequirementV1 {
+            registry_id: signed.witness.registry_id.clone(),
+            minimum_generation: Generation::new(1).fixture("weak generation"),
+            expected_predecessor_head_digest: Digest32::ZERO,
+            minimum_authority_epoch: 1,
+            now: 20,
+        };
+        assert!(matches!(
+            verifier.verify_current_head(&signed, &weak),
+            Err(ArtifactOwnerHostError::CurrentHeadContext)
+        ));
+    }
+}

@@ -132,6 +132,9 @@ pub struct VerifiedArtifactSelectionV1 {
     expires_at: u64,
     selector_expires_at: u64,
     selector_revoked_at: Option<u64>,
+    artifact_owner_trust_digest: Digest32,
+    requires_full_admission: bool,
+    current_verified_at: Option<u64>,
     trust_digest: Digest32,
     authority: AuthorityPosture,
 }
@@ -270,6 +273,12 @@ impl ArtifactSelectionVerifierV1 {
         {
             return Err(ArtifactSelectionError::OwnerTrustMismatch);
         }
+        if current
+            .verified_at()
+            .is_some_and(|verified_at| verified_at != now)
+        {
+            return Err(ArtifactSelectionError::CurrentHeadMismatch);
+        }
         if signed.registry_id != self.trust.registry_id
             || signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || signed.authority_epoch < self.trust.minimum_authority_epoch
@@ -295,7 +304,7 @@ impl ArtifactSelectionVerifierV1 {
             .registry()
             .manifest(&signed.artifact_id)
             .ok_or(ArtifactSelectionError::ArtifactUnavailable)?;
-        if !current.registry().is_eligible(&signed.artifact_id) {
+        if !current.is_eligible(&signed.artifact_id) {
             return Err(ArtifactSelectionError::ArtifactUnavailable);
         }
         validate_manifest_binding(signed, manifest)?;
@@ -345,6 +354,9 @@ impl ArtifactSelectionVerifierV1 {
             expires_at: signed.expires_at,
             selector_expires_at: selector.expires_at,
             selector_revoked_at: selector.revoked_at,
+            artifact_owner_trust_digest: self.artifact_owner_trust_digest,
+            requires_full_admission: current.full_admission(&signed.artifact_id).is_some(),
+            current_verified_at: current.verified_at(),
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -367,6 +379,9 @@ pub fn record_verified_selection(
         || selection
             .selector_revoked_at
             .is_some_and(|revoked_at| now >= revoked_at)
+        || selection
+            .current_verified_at
+            .is_some_and(|verified_at| verified_at != now)
     {
         return Err(ArtifactSelectionError::SelectionContext);
     }
@@ -413,7 +428,13 @@ pub fn load_selected_candidate(
 ) -> Result<RevalidatingCandidate, ArtifactSelectionError> {
     let loaded = load_pinned_candidate(snapshot_file, payload_file, selection.pin)
         .map_err(ArtifactSelectionError::Load)?;
-    Ok(RevalidatingCandidate::new(loaded))
+    let candidate =
+        RevalidatingCandidate::new_with_trust(loaded, selection.artifact_owner_trust_digest);
+    Ok(if selection.requires_full_admission {
+        candidate.require_full_admission()
+    } else {
+        candidate
+    })
 }
 
 fn validate_manifest_binding(

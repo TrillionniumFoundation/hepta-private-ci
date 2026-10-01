@@ -88,6 +88,36 @@ fn binding() -> Digest32 {
     Digest32::of_bytes(b"independently-retained-host-epoch-v1")
 }
 
+#[test]
+fn authenticated_consumer_locks_owner_trust_after_its_first_view() {
+    let directory = TestDirectory::new("trust-substitution");
+    let selected = manifest("policy", 1, None, b"value");
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    write_payload(&directory, &registry, &selected, b"value");
+    let receipt = write_snapshot(&directory, &registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, receipt, selected)));
+    let view = |owner: &[u8]| {
+        VerifiedCurrentRegistryViewV1::new(
+            receipt,
+            registry.clone(),
+            Digest32::of_bytes(b"witness"),
+            Digest32::of_bytes(owner),
+        )
+    };
+    must(cached.with_current(view(b"owner-a"), |_| ()));
+    assert_eq!(
+        cached.with_current(view(b"owner-b"), |_| panic!(
+            "foreign owner reached consumer"
+        )),
+        Err::<(), _>(PinnedCandidateLoadError::FrontierMismatch)
+    );
+    assert_eq!(
+        cached.with_current(view(b"owner-a"), |_| panic!("old trust revived consumer")),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
+
 fn write_payload(
     directory: &TestDirectory,
     registry: &ArtifactRegistry,

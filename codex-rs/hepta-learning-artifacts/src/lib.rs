@@ -6,6 +6,8 @@
 #![forbid(unsafe_code)]
 
 mod admin;
+mod admission_closure;
+mod admission_storage;
 mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
@@ -27,9 +29,17 @@ mod storage;
 mod storage_hygiene;
 #[cfg(test)]
 mod test_support;
+mod verified_admissions;
 
 pub use admin::ArtifactOwnerStatusV1;
 pub use admin::inspect_artifact_owner_status_v1;
+pub use admission_storage::ArtifactAdmissionSnapshotReceiptV3;
+pub use admission_storage::MAX_ARTIFACT_ADMISSION_SNAPSHOT_BYTES;
+pub use admission_storage::admission_snapshot_receipt_v3;
+pub use admission_storage::read_artifact_admission_snapshot;
+pub use admission_storage::read_artifact_admission_snapshot_bound;
+pub use admission_storage::validate_admission_registry_projection_v3;
+pub use admission_storage::write_artifact_admission_snapshot_beneath;
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
@@ -101,15 +111,23 @@ pub use model::StateChange;
 pub use owner_host::ArtifactOwnerHostError;
 pub use owner_host::ArtifactOwnerPublicationCheckpointV1;
 pub use owner_host::ArtifactOwnerRecoveryV1;
+pub use owner_host::ArtifactOwnerStateIntentV1;
+pub use owner_host::ArtifactOwnerStatePublicationReceiptV1;
+pub use owner_host::ArtifactOwnerStateTransitionV1;
 pub use owner_host::ArtifactOwnerTrustV1;
 pub use owner_host::ArtifactOwnerVerifierV1;
+pub use owner_host::ArtifactWithdrawalBootstrapReceiptV1;
 pub use owner_host::LearningArtifactOwnerHost;
+pub use owner_host::LearningArtifactStatePublishRequestV1;
+pub use owner_host::LearningArtifactWithdrawalBootstrapRequestV1;
 pub use owner_host::SignedArtifactWriterLeaseV1;
 pub use owner_host::SignedCurrentArtifactHeadV1;
 pub use owner_host::TrustedArtifactSignerV1;
 pub use owner_host::VerifiedCurrentArtifactHeadV1;
+pub use owner_host::read_signed_current_artifact_head_v1;
 pub use owner_service::LearningArtifactOwnerService;
 pub use owner_service::LearningArtifactOwnerServiceConfigV1;
+pub use owner_service::LearningArtifactOwnerServiceConfigV2;
 pub use owner_service::LearningArtifactOwnerServiceError;
 pub use owner_service::LearningArtifactPublishRequestV1;
 pub use pinned::LoadedPinnedCandidate;

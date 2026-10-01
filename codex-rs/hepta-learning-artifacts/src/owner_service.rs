@@ -29,6 +29,12 @@ use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
+#[path = "owner_state_service.rs"]
+mod state_service;
+#[path = "owner_withdrawal_bootstrap_service.rs"]
+mod withdrawal_bootstrap_service;
+pub use state_service::LearningArtifactOwnerServiceConfigV2;
+
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
     pub root: PathBuf,
@@ -98,15 +104,21 @@ impl LearningArtifactOwnerService {
         };
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
-        if recovery.len() > 1 {
+        let state_recovery = host.state_recovery_operations()?;
+        if recovery.len() + state_recovery.len() > 1 {
             return Err(LearningArtifactOwnerServiceError::RecoveryConflict);
         }
         let recovery_required = recovery
             .first()
-            .map(|checkpoint| checkpoint.operation_id.clone());
+            .map(|checkpoint| checkpoint.operation_id.clone())
+            .or_else(|| state_recovery.first().cloned());
+        let withdrawal_registry = host.recover_durable_withdrawal_frontier(
+            host.recover_bootstrap_withdrawals(config.withdrawal_registry, config.storage_binding)?,
+            config.storage_binding,
+        )?;
         Ok(Self {
             host,
-            withdrawal_registry: config.withdrawal_registry,
+            withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
             recovery_required,
@@ -125,7 +137,9 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
-        Ok(self.host.current_registry_view(now)?)
+        Ok(self
+            .host
+            .current_registry_view_with_withdrawals(&self.withdrawal_registry, now)?)
     }
 
     #[must_use]
@@ -154,7 +168,9 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
-        self.withdrawal_registry = next;
+        if next_snapshot.records() != current.records() {
+            return Err(LearningArtifactOwnerServiceError::DurableStatePublicationRequired);
+        }
         Ok(())
     }
 
@@ -414,6 +430,8 @@ pub enum LearningArtifactOwnerServiceError {
     CheckpointShape,
     CheckpointMismatch,
     UnexpectedPhase,
+    DurableStatePublicationRequired,
+    WithdrawalHeadRollback,
 }
 
 impl fmt::Display for LearningArtifactOwnerServiceError {
@@ -459,10 +477,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-service-{}-{id}",
@@ -480,19 +498,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("stable id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn key() -> SigningKey {
+    pub(super) fn key() -> SigningKey {
         SigningKey::from_bytes(&[9u8; 32])
     }
 
-    fn scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -512,7 +530,7 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
@@ -524,7 +542,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut lease = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -542,7 +560,7 @@ mod tests {
         lease
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
@@ -567,7 +585,7 @@ mod tests {
         }
     }
 
-    fn publish_request(
+    pub(super) fn publish_request(
         key: &SigningKey,
         withdrawals: &DatasetWithdrawalRegistry,
         predecessor: Digest32,
@@ -709,3 +727,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "owner_state_tests.rs"]
+mod state_tests;
