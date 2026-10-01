@@ -131,7 +131,7 @@ fn completed_items_and_terminal_summary_deduplicate_by_exact_message_identity() 
             thread_id: "thread-a".to_string(),
             turn_id: "turn-a".to_string(),
             item_id: "first".to_string(),
-            delta: "hel".to_string(),
+            delta: "he".to_string(),
         }),
         completed_message("thread-a", "turn-a", "first", "hello"),
         completed_message("thread-a", "turn-a", "second", "hello"),
