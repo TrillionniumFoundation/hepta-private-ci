@@ -57,17 +57,18 @@ fn verified_copy_preserves_installed_executable_mode() {
 #[cfg(unix)]
 #[test]
 fn owner_locks_reject_links_and_special_files_without_mutating_targets() {
-    let root = tempfile::tempdir().unwrap();
+    let directory = crate::private_state_test_support::private_tempdir();
+    let root = PrivateStateRoot::open_existing(directory.path()).unwrap();
     let target = root.path().join("operator-data");
     std::fs::write(&target, b"preserve").unwrap();
     let owner = root.path().join("update-owner.lock");
     std::os::unix::fs::symlink(&target, &owner).unwrap();
-    assert!(lock_update_root(root.path()).is_err());
+    assert!(lock_update_root(&root).is_err());
     assert_eq!(std::fs::read(&target).unwrap(), b"preserve");
     std::fs::remove_file(&owner).unwrap();
     let absent = root.path().join("absent");
     std::os::unix::fs::symlink(&absent, &owner).unwrap();
-    assert!(lock_update_root(root.path()).is_err());
+    assert!(lock_update_root(&root).is_err());
     assert!(!absent.exists());
     std::fs::remove_file(&owner).unwrap();
     rustix::fs::mkfifoat(
@@ -76,19 +77,19 @@ fn owner_locks_reject_links_and_special_files_without_mutating_targets() {
         rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
     )
     .unwrap();
-    assert!(lock_update_root(root.path()).is_err());
+    assert!(lock_update_root(&root).is_err());
 }
 
 #[test]
 fn handoff_lock_waits_for_readiness_publication_to_release_ownership() {
     let root = tempfile::tempdir().unwrap();
     let path = root.path().join("locks");
-    let _private = PrivateStateRoot::open(path.clone()).unwrap();
-    let owner = lock_update_root(&path).unwrap();
+    let private = PrivateStateRoot::open(path.clone()).unwrap();
+    let owner = lock_update_root(&private).unwrap();
     let (started, waiting) = std::sync::mpsc::sync_channel(1);
     let waiter = std::thread::spawn(move || {
         started.send(()).unwrap();
-        lock_update_handoff(&path)
+        lock_update_handoff(&private)
     });
     waiting.recv().unwrap();
     std::thread::sleep(std::time::Duration::from_millis(20));
