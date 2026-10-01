@@ -134,6 +134,144 @@ fn synapse(source: &str, target: &str, relation: SynapseRelationV1, weight: Fixe
     }
 }
 
+fn ranking_fixture_with_outside_support(
+    nodes_per_population: usize,
+    supports_per_node: usize,
+) -> (CandidateUnionV1, RetrievalPolicyV1, EngramRecallReceiptV1) {
+    let cue = cue();
+    let policy = retrieval_policy(2);
+    let union = build_candidate_union(
+        &cue,
+        &policy,
+        vec![candidate(1, 1_i64 << 31), candidate(2, 1_i64 << 30)],
+    )
+    .expect("union");
+    let mut nodes = Vec::new();
+    for (population_index, population) in EngramPopulationV1::ALL.into_iter().enumerate() {
+        for index in 0..nodes_per_population {
+            let mut supports = vec![support(if population_index == 6 && index == 0 {
+                2
+            } else {
+                1
+            })];
+            supports.push(EngramSupportV1 {
+                record_id: id("memory:2"),
+                record_revision: revision(2),
+            });
+            for outside in 2..supports_per_node {
+                supports.push(EngramSupportV1 {
+                    record_id: id(&format!("outside:{population_index}:{index}:{outside:04}")),
+                    record_revision: revision(1),
+                });
+            }
+            supports.sort();
+            nodes.push(node(
+                &format!("ranking-node:{population_index}:{index:04}"),
+                population,
+                supports,
+                FixedQ32::ZERO,
+            ));
+        }
+    }
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("ranking-outside-support"),
+        nodes,
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    dynamics.leak = FixedQ32::ZERO;
+    dynamics.lateral_inhibition = FixedQ32::ZERO;
+    let receipt = settle_engram(&cue, &union, &snapshot, &dynamics).expect("settle");
+    (union, policy, receipt)
+}
+
+#[test]
+fn ranking_ignores_outside_support_and_other_revisions_without_losing_coverage() {
+    let (union, mut policy, receipt) = ranking_fixture_with_outside_support(1, 8);
+    let (eligible, selections) = select_engram_candidates(&union, &policy, &receipt);
+    assert_eq!(eligible, vec![support(1), support(2)]);
+    assert_eq!(
+        selections,
+        union
+            .entries
+            .iter()
+            .map(|entry| RecallSelectionV1 {
+                record_id: entry.record.record_id.clone(),
+                record_revision: entry.record.revision,
+                record_digest: entry.record.record_digest(),
+                weighted_score: entry.weighted_score,
+                maximum_ood: entry.maximum_ood,
+                channels: entry.channels.clone(),
+                support_digests: entry.support_digests.clone(),
+                contradiction_group_digests: entry.contradiction_group_digests.clone(),
+            })
+            .collect::<Vec<_>>()
+    );
+    policy.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
+    let (eligible, filtered) = select_engram_candidates(&union, &policy, &receipt);
+    assert_eq!(eligible, vec![support(1), support(2)]);
+    assert_eq!(filtered, vec![selections[0].clone()]);
+    assert_eq!(
+        receipt.support_strength(&id("memory:2"), revision(1)),
+        Some(FixedQ32::from_raw(1_i64 << 30))
+    );
+}
+
+#[test]
+#[ignore = "explicit release ranking probe with out-of-cut support"]
+fn target_host_hnmf_ranking_reports_outside_support_latency() {
+    let (union, policy, receipt) =
+        ranking_fixture_with_outside_support(MAX_ACTIVE_PER_POPULATION, 512);
+    let expected = select_engram_candidates(&union, &policy, &receipt);
+    assert_eq!(expected.0, vec![support(1), support(2)]);
+    let mut micros = Vec::new();
+    for _ in 0..20 {
+        let started = std::time::Instant::now();
+        let result = select_engram_candidates(
+            std::hint::black_box(&union),
+            std::hint::black_box(&policy),
+            std::hint::black_box(&receipt),
+        );
+        micros.push(started.elapsed().as_micros());
+        assert_eq!(result, expected);
+    }
+    micros.sort_unstable();
+    eprintln!(
+        "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-ranking-outside-support\",\"candidate_events\":2,\"active_nodes\":{},\"support_events\":{},\"iterations\":20,\"p50_us\":{},\"p95_us\":{},\"p99_us\":{}}}",
+        receipt.active_nodes.len(),
+        receipt
+            .active_nodes
+            .iter()
+            .map(|node| node.support.len())
+            .sum::<usize>(),
+        micros[9],
+        micros[18],
+        micros[19],
+    );
+    let mut validation_micros = Vec::new();
+    for _ in 0..20 {
+        let started = std::time::Instant::now();
+        let result = std::hint::black_box(&receipt).validate();
+        validation_micros.push(started.elapsed().as_micros());
+        assert_eq!(result, Ok(()));
+    }
+    validation_micros.sort_unstable();
+    eprintln!(
+        "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-receipt-validation-outside-support\",\"candidate_events\":2,\"active_nodes\":{},\"support_events\":{},\"iterations\":20,\"p50_us\":{},\"p95_us\":{},\"p99_us\":{}}}",
+        receipt.active_nodes.len(),
+        receipt
+            .active_nodes
+            .iter()
+            .map(|node| node.support.len())
+            .sum::<usize>(),
+        validation_micros[9],
+        validation_micros[18],
+        validation_micros[19],
+    );
+}
+
 #[test]
 fn recurrent_association_changes_final_selection_order() {
     let cue = cue();

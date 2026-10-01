@@ -85,6 +85,16 @@ jobs:
           just test --release --locked --no-tests fail -p codex-hepta-memory -E 'test(/cognitive_retrieval/)' \
             > "$RUNNER_TEMP/memory-retrieval-target-host/owner-regressions.log" 2>&1
 
+      - name: Native all-target strict lint and formatting
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --release --locked --all-targets -p codex-hepta-memory-retrieval -- -D warnings \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/native-clippy.log" 2>&1
+          cargo fmt -p codex-hepta-memory-retrieval -p codex-hepta-agentd -- --check \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/formatting.log" 2>&1
+
       - name: HNMF 512-candidate four-step probe
         shell: bash
         run: |
@@ -103,6 +113,15 @@ jobs:
             -E 'test(target_host_hnmf_validates_full_structural_ceiling)' \
             > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-structural.log" 2>&1
 
+      - name: HNMF ranking and receipt validation with outside support
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v just test --release --locked -p codex-hepta-memory-retrieval \
+            --run-ignored ignored-only --no-tests fail --no-capture \
+            -E 'test(target_host_hnmf_ranking_reports_outside_support_latency)' \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-outside-support.log" 2>&1
+
       - name: Summarize measurement lines
         if: always()
         shell: bash
@@ -120,5 +139,57 @@ jobs:
         with:
           name: memory-retrieval-qualification-host-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/memory-retrieval-target-host/**
+          if-no-files-found: error
+          retention-days: 30
+
+  agentd-context:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Bind Agentd source and host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/memory-retrieval-agentd"
+          {
+            printf 'source_commit=%s\n' "$(git rev-parse HEAD)"
+            printf 'source_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            uname -a
+            lscpu
+            free -b
+            rustc -Vv
+            cargo -V
+          } > "$RUNNER_TEMP/memory-retrieval-agentd/host.txt" 2>&1
+
+      - name: Agentd context and delivery regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v just test --locked -p codex-hepta-agentd --lib --no-tests fail \
+            -E 'test(/cognitive_context|cognitive_retrieval_learning|retrieval_mode|cognitive_retrieval_process/)' \
+            > "$RUNNER_TEMP/memory-retrieval-agentd/regressions.log" 2>&1
+
+      - name: Retain raw Agentd composition evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-agentd-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-retrieval-agentd/**
           if-no-files-found: error
           retention-days: 30

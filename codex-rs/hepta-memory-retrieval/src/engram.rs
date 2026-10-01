@@ -497,7 +497,6 @@ impl EngramRecallReceiptV1 {
             return Err(EngramErrorV1::SynapseLimitExceeded);
         }
         let mut active_ids = BTreeSet::new();
-        let mut active_support = BTreeSet::new();
         let mut population_counts = BTreeMap::<EngramPopulationV1, usize>::new();
         let mut previous_active: Option<&ActiveEngramNodeV1> = None;
         for node in &self.active_nodes {
@@ -523,7 +522,6 @@ impl EngramRecallReceiptV1 {
             if *population_count > MAX_ACTIVE_PER_POPULATION {
                 return Err(EngramErrorV1::ActivePopulationLimitExceeded);
             }
-            active_support.extend(node.support.iter().cloned());
             if let Some(left) = previous_active {
                 let ordered = left.activation > node.activation
                     || (left.activation == node.activation && left.node_id < node.node_id);
@@ -570,11 +568,12 @@ impl EngramRecallReceiptV1 {
         if !strictly_sorted_unique(&self.selected_support) {
             return Err(EngramErrorV1::NonCanonical("selected_support"));
         }
-        if self
-            .selected_support
-            .iter()
-            .any(|support| !active_support.contains(support))
-        {
+        if self.selected_support.iter().any(|support| {
+            !self
+                .active_nodes
+                .iter()
+                .any(|node| node.support.binary_search(support).is_ok())
+        }) {
             return Err(EngramErrorV1::NonCanonical("selected_support"));
         }
         if !strictly_sorted_unique(&self.contradictions) {
@@ -627,9 +626,15 @@ impl EngramRecallReceiptV1 {
         self.active_nodes
             .iter()
             .filter(|node| {
-                node.support.iter().any(|support| {
-                    &support.record_id == record_id && support.record_revision == record_revision
-                })
+                // Callers validate the receipt first, including canonical support order.
+                node.support
+                    .binary_search_by(|support| {
+                        support
+                            .record_id
+                            .cmp(record_id)
+                            .then_with(|| support.record_revision.cmp(&record_revision))
+                    })
+                    .is_ok()
             })
             .map(|node| node.activation)
             .max()
@@ -1069,7 +1074,7 @@ pub(crate) fn select_engram_candidates(
     policy: &RetrievalPolicyV1,
     engram: &EngramRecallReceiptV1,
 ) -> (Vec<EngramSupportV1>, Vec<RecallSelectionV1>) {
-    let active_strength = active_support_strength(engram);
+    let active_strength = active_support_strength(union, engram);
     let mut eligible_support = union
         .entries
         .iter()
@@ -1230,20 +1235,36 @@ fn sparse_select(
         .collect())
 }
 
-fn active_support_strength(engram: &EngramRecallReceiptV1) -> BTreeMap<EngramSupportV1, FixedQ32> {
-    let mut values = BTreeMap::new();
+fn active_support_strength(
+    union: &CandidateUnionV1,
+    engram: &EngramRecallReceiptV1,
+) -> BTreeMap<EngramSupportV1, FixedQ32> {
+    // Ranking needs only the current cut. Keep this working set at the
+    // candidate ceiling instead of cloning all active nodes' outside supports.
+    let mut values = union
+        .entries
+        .iter()
+        .map(|entry| (support_for_entry(entry), FixedQ32::ZERO))
+        .collect::<BTreeMap<_, _>>();
     for node in &engram.active_nodes {
-        for support in &node.support {
-            values
-                .entry(support.clone())
-                .and_modify(|current| {
-                    if node.activation > *current {
-                        *current = node.activation;
-                    }
-                })
-                .or_insert(node.activation);
+        // Probe the smaller side, so a large union with sparse node support
+        // does not require visiting every candidate for every active node.
+        if node.support.len() < values.len() {
+            for support in &node.support {
+                if let Some(current) = values.get_mut(support) {
+                    *current = (*current).max(node.activation);
+                }
+            }
+        } else {
+            for (support, current) in &mut values {
+                if node.support.binary_search(support).is_ok() {
+                    *current = (*current).max(node.activation);
+                }
+            }
         }
     }
+    // Validated active nodes are strictly positive, so zero means unsupported.
+    values.retain(|_, activation| *activation > FixedQ32::ZERO);
     values
 }
 

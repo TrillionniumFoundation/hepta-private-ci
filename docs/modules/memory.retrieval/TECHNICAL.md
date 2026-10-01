@@ -427,7 +427,27 @@ filters explicitly fail on zero selected tests. This supplies focused source
 execution evidence independently of unrelated global preflight failures; it does not
 waive those gates or establish Agentd/target-host acceptance.
 
-After committing source and guide changes, refresh only this module's navigation
-observation with `python3 scripts/hepta-implementation-maps.py migrate --module
-memory.retrieval`, commit that metadata, and verify it. The map cannot contain its
-own future commit identity. Source observation is not execution qualification.
+### Working set and owner validation order
+
+Activity support lists are canonically sorted exact `(record ID, revision)` pairs.
+Ranking retains strengths only for the current union's at most 512 candidates.
+For each active node it probes the smaller of the candidate set and node support
+list, using binary search or candidate-map lookup. Full receipt validation checks every node's
+support ordering and bounds, then probes the at most 512 declared selected identities;
+it does not clone every outside-cut support into a second set. Maximum activation,
+exact revision identity, score-floor filtering and full eligible coverage are preserved.
+Receipt hashing still covers every support byte. The outside-support release probe
+measures ranking and validation separately; neither timing is an end-to-end claim.
+
+Agentd awaits optional ranker and current-context validation before checking the
+durable SQLite owner cut at response publication. Final-use validation repeats the
+owner-cut check after those external callbacks. An unchanged provider digest cannot
+mask a concurrent source-frontier change during either awaited validation. These
+checks establish currentness at the last owner check; they do not create an atomic
+lease across independently owned registries, later learning writes or future use.
+
+After committing mapped source changes, refresh the affected modules' navigation
+observations with `python3 scripts/hepta-implementation-maps.py migrate --module
+memory.retrieval --module runtime.agentd`, commit that metadata, and verify it.
+The map cannot contain its own future commit identity. Source observation is not
+execution qualification.

@@ -400,11 +400,6 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .into());
     }
 
-    // A concurrent correction, deletion, changed citation, expiry or restored
-    // older database must not leak a stale projection into the response.
-    store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
-        .await?;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         tokio::task::spawn_blocking(move || ranker.revalidate())
@@ -421,6 +416,12 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             return Err(CognitiveContextError::RetrievalContextUnavailable);
         }
     }
+    // External validation can await while the owner changes. Check the durable
+    // cut after those callbacks so source drift cannot hide behind a stable
+    // ranker or context digest.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
     if let Some(sink) = learning_sink {
         let assignment =
             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
@@ -628,6 +629,11 @@ pub(crate) async fn revalidate_with_retrieval_context(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
+
+    // Reacquire the owner cut after the awaited context/ranker callbacks, too.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
 
     Ok(CognitiveContextRevalidation {
         snapshot_digest: expected_snapshot.to_string(),
