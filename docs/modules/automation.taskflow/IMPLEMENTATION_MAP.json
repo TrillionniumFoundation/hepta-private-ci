@@ -63,7 +63,7 @@
           "ownerModule": "runtime.agentd"
         }
       ],
-      "sourceBlob": "b730bb8dc59a2cc6d475c24a7958878f595d6e8e"
+      "sourceBlob": "8537e76c427cbf11e0fc8b0107e0e15443a2ed11"
     },
     {
       "designOperation": "materialize_due",
@@ -97,7 +97,7 @@
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
       "sourcePathExists": true,
-      "sourceBlob": "54c3c32da62e06f2c0d8753e489189b6e6deb3fa"
+      "sourceBlob": "a3450a0fcfeb90ba66f0e78568a159141c8bdb46"
     },
     {
       "designOperation": "claim_occurrence",
@@ -214,7 +214,7 @@
         }
       ],
       "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
-      "sourceBlob": "e9ca2ef6ec315fa7a5c9780c1aa55c434c1b6d40"
+      "sourceBlob": "0fea241ce4a760a6d4e4d70581cac953aed50238"
     }
   ],
   "repositoryControlledGaps": [],
@@ -261,8 +261,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "9751d4257cf95fc9b897e7b5a1febe10b676c747",
-    "tree": "1a30d235232444a6e5f2a46fd5e65a6e650ca2d7"
+    "commit": "50307a64bf55ee1ab1cd4715393d428932d239df",
+    "tree": "e58c50e1875c4bc4579af6876146500488f3bb9d"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -270,11 +270,11 @@
     "entries": [
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-        "blobSha": "b730bb8dc59a2cc6d475c24a7958878f595d6e8e"
+        "blobSha": "8537e76c427cbf11e0fc8b0107e0e15443a2ed11"
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
-        "blobSha": "54c3c32da62e06f2c0d8753e489189b6e6deb3fa"
+        "blobSha": "a3450a0fcfeb90ba66f0e78568a159141c8bdb46"
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -282,7 +282,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "e9ca2ef6ec315fa7a5c9780c1aa55c434c1b6d40"
+        "blobSha": "0fea241ce4a760a6d4e4d70581cac953aed50238"
       }
     ]
   },
@@ -358,7 +358,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "object": "a7c789e0ff0bf63d0ba7ce6d5256941bd78e802f"
+      "object": "c744f8be0c4873f3115b18ea4c3cf2ef2cab2d1a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
@@ -378,15 +378,15 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "8cb671de5c88bea623d32368ac87ecf806985d9e"
+      "object": "14ade810a6dedcc46d3a519b7e73f01e23ddb60b"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "e9ca2ef6ec315fa7a5c9780c1aa55c434c1b6d40"
+      "object": "0fea241ce4a760a6d4e4d70581cac953aed50238"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "7aa4b6ef750e8aab48004989655bc178905ed8a4"
+      "object": "fea1677bcb9baf8c84016e7e255e9155cda3ae20"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -394,11 +394,11 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "object": "b730bb8dc59a2cc6d475c24a7958878f595d6e8e"
+      "object": "8537e76c427cbf11e0fc8b0107e0e15443a2ed11"
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
-      "object": "54c3c32da62e06f2c0d8753e489189b6e6deb3fa"
+      "object": "a3450a0fcfeb90ba66f0e78568a159141c8bdb46"
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
@@ -406,23 +406,23 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "afc5dfea7533a9322d7c12dc9fe76ae33ab78f66"
+      "object": "c576c70146077abc6d0d2849c306c5aab79653ec"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "c20203c3edf685235a05d47935124e5e268444db"
+      "object": "6439264d016b4c7bcd16dacd9ada162f2151e9d9"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "8fad9f881fadf9b14c467fef1fd2016dadf82abc"
+      "object": "824f320b0b73552d9c06a6332f85f711baf82c49"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "6d9a65e9a46eac4452fb726b877571f16147f87b"
+      "object": "a64c4205f59cb1a513db809988268f924d49c353"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "28dfacb9d01de52b2d8f5c87940b3b10f998bf1e"
+      "object": "7ad787fc4a51d0932f93945ca29d5f5ec959b366"
     }
   ],
   "navigationProvenanceRepair": {
