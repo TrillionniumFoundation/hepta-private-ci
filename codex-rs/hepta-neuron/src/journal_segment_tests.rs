@@ -19,6 +19,17 @@ fn checked<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     }
 }
 
+// Inspect the original lock-owning handle: Windows locks also exclude other
+// handles in this process. Restore its cursor before the next journal operation.
+fn locked_bytes(mut file: &File) -> Vec<u8> {
+    let position = checked(file.stream_position());
+    checked(file.seek(SeekFrom::Start(0)));
+    let mut bytes = Vec::new();
+    checked(file.read_to_end(&mut bytes));
+    checked(file.seek(SeekFrom::Start(position)));
+    bytes
+}
+
 struct Fixture {
     root: PathBuf,
 }
@@ -118,12 +129,12 @@ fn successor_segment_preserves_state_and_allows_exact_retry() {
     let mut successor = checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
     let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
     let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
-    let before = fixture.bytes("successor");
+    let before = locked_bytes(&successor.file);
     assert_eq!(
         checked(successor.commit(second.checkpoint_after, &tick(3))),
         third
     );
-    assert_eq!(fixture.bytes("successor"), before);
+    assert_eq!(locked_bytes(&successor.file), before);
     assert_eq!(
         successor.commit(fourth.checkpoint_after, &tick(5)),
         Err(JournalError::Capacity)
