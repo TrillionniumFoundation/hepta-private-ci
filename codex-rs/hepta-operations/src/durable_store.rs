@@ -15,10 +15,6 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::DestinationApplyReceipt;
 use crate::DispatchClaim;
@@ -77,22 +73,7 @@ pub struct DurableOperationStore {
 
 impl DurableOperationStore {
     pub async fn open(path: &Path) -> Result<Self, DurableOperationError> {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-        }
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
-            .await
-            .map_err(sqlx_error)?;
+        let pool = crate::sqlite::open_durable_pool(path).await?;
         if let Err(error) = verify_quick_check(&pool).await {
             pool.close().await;
             return Err(error);

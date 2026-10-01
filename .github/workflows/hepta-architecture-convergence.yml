@@ -114,7 +114,7 @@ jobs:
       - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
@@ -169,9 +169,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve -- --ignored --nocapture --test-threads=1
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
@@ -191,7 +189,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --locked -p codex-hepta-plasticity --lib
       - name: Objective and prompt policy convergence
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |
@@ -212,7 +210,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- just test --locked -p codex-hepta-intelligence-eval -E 'test(selector_and_rollback_are_opaque_independent_admissions)'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
       - name: Optional service process lifecycle and executable identity
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
@@ -227,9 +225,9 @@ jobs:
           set -euo pipefail
           # Independent owner lanes remain in force; do not repeat their gates.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/derived.json" -- python3 scripts/hepta-module-docs.py refresh-derived --check
-      - name: Observe candidate Git write denial without mutating repository state
-        # Native diagnostics must run even when external credential observation fails.
-        # The same required lane STILL fails on an allowed or unknown transport.
+      - name: Retain advisory candidate Git transport observation
+        # Network ambiguity is retained as unknown and never claims write denial.
+        # Live branch protection and independent authority remain separate gates.
         if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.scope.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}

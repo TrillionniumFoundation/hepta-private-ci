@@ -21,9 +21,7 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-tokio = { workspace = true, features = ["sync"] }
 
 
 [dev-dependencies]
 codex-app-server-client = { workspace = true, features = ["test-support"] }
-codex-protocol = { workspace = true }

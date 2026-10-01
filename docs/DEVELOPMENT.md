@@ -79,7 +79,19 @@ Stable paths are updated in place. Version numbers live inside documents, never 
 
 The pre-selection baseline contained 143 historical development paths. V8 deleted that complete set in the same commit that installed the canonical document system. Git ancestry now preserves every pre-consolidation branch tip without overlaying an obsolete branch tree or reintroducing an in-tree historical plan. Code-consumed APIs, schemas, policies, migrations, tests and implementation contracts remain protected.
 
-`python3 scripts/hepta-docs.py verify` runs on every pull request and default-branch push with read-only permissions and no path bypass.
+`python3 scripts/hepta-docs.py verify --profile development` runs on every pull
+request and default-branch push with read-only permissions. It validates registered
+ownership, schemas, source paths and references against the current working tree,
+including uncommitted local edits. Historical source observations and qualification
+inventories do not block ordinary development.
+
+The global, module-document and implementation-map verifiers default to
+`--profile qualification` for existing qualification callers. Explicit qualification
+runs retain exact source identities, API inventories and evidence checks. Execution
+receipts require committed inputs and never treat a development-profile pass as
+release evidence. Native CI selects affected owners and reverse consumers from both
+the base and candidate dependency graphs; full qualification remains available for
+release and changes to shared execution boundaries.
 
 ## 3. Current truthful baseline
 
