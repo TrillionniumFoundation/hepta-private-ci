@@ -14,6 +14,7 @@ use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::error::Error as StdError;
 use std::fmt;
+use std::future::Future;
 use std::io::Error as IoError;
 use std::io::ErrorKind;
 use std::io::Result as IoResult;
@@ -27,6 +28,9 @@ use crate::AppServerEvent;
 use crate::RequestResult;
 use crate::SHUTDOWN_TIMEOUT;
 use crate::TypedRequestError;
+use crate::remote_send_guard::BeforeSend;
+use crate::remote_send_guard::GuardedWriteError;
+use crate::remote_send_guard::write_guarded_request;
 use codex_app_server_protocol::ClientInfo;
 use codex_app_server_protocol::ClientNotification;
 use codex_app_server_protocol::ClientRequest;
@@ -136,6 +140,7 @@ enum RemoteClientCommand {
     Request {
         request: Box<JSONRPCRequest>,
         response_tx: oneshot::Sender<IoResult<RequestResult>>,
+        before_send: Option<BeforeSend>,
     },
     Notify {
         notification: ClientNotification,
@@ -627,7 +632,7 @@ impl RemoteAppServerClient {
                             break;
                         };
                         match command {
-                            RemoteClientCommand::Request { request, response_tx } => {
+                            RemoteClientCommand::Request { request, mut response_tx, before_send } => {
                                 let request_id = request.id.clone();
                                 if pending_requests.contains_key(&request_id) {
                                     let _ = response_tx.send(Err(IoError::new(
@@ -636,14 +641,24 @@ impl RemoteAppServerClient {
                                     )));
                                     continue;
                                 }
+                                let result = match before_send {
+                                    Some(before_send) => match write_guarded_request(
+                                        &mut stream, JSONRPCMessage::Request(*request), before_send,
+                                        &mut response_tx,
+                                    ).await {
+                                        Ok(()) => Ok(()),
+                                        Err(GuardedWriteError::BeforeSend(error)) => {
+                                            let _ = response_tx.send(Err(error));
+                                            continue;
+                                        }
+                                        Err(GuardedWriteError::Transport(error)) => Err(error),
+                                    },
+                                    None => write_jsonrpc_message(
+                                        &mut stream, JSONRPCMessage::Request(*request), &endpoint,
+                                    ).await,
+                                };
                                 pending_requests.insert(request_id.clone(), response_tx);
-                                if let Err(err) = write_jsonrpc_message(
-                                    &mut stream,
-                                    JSONRPCMessage::Request(*request),
-                                    &endpoint,
-                                )
-                                .await
-                                {
+                                if let Err(err) = result {
                                     let err_message = err.to_string();
                                     let message = format!(
                                         "remote app server at `{endpoint}` write failed: {err_message}"
@@ -1110,11 +1125,21 @@ impl RemoteAppServerRequestHandle {
     }
 
     pub async fn request_json_rpc(&self, request: JSONRPCRequest) -> IoResult<RequestResult> {
+        self.request_json_rpc_with_before_send(request, /*before_send*/ None)
+            .await
+    }
+
+    async fn request_json_rpc_with_before_send(
+        &self,
+        request: JSONRPCRequest,
+        before_send: Option<BeforeSend>,
+    ) -> IoResult<RequestResult> {
         let (response_tx, response_rx) = oneshot::channel();
         self.command_tx
             .send(RemoteClientCommand::Request {
                 request: Box::new(request),
                 response_tx,
+                before_send,
             })
             .await
             .map_err(|_| {
@@ -1129,6 +1154,39 @@ impl RemoteAppServerRequestHandle {
                 "remote app-server request channel is closed",
             )
         })?
+    }
+
+    /// Execute the one-use owner check inside the transport worker after
+    /// command-queue and WebSocket readiness waits, immediately before first
+    /// send. Rejection or cancellation writes no request frame. The check
+    /// grants no identity or authority by itself; the owner supplies them.
+    pub async fn request_typed_before_send<T>(
+        &self,
+        request: ClientRequest,
+        before_send: impl Future<Output = IoResult<()>> + Send + 'static,
+    ) -> Result<T, TypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
+        let method = request.method_name();
+        let response = self
+            .request_json_rpc_with_before_send(
+                jsonrpc_request_from_client_request(request),
+                Some(Box::pin(before_send)),
+            )
+            .await
+            .map_err(|source| TypedRequestError::Transport {
+                method: method.to_string(),
+                source,
+            })?;
+        let result = response.map_err(|source| TypedRequestError::Server {
+            method: method.to_string(),
+            source,
+        })?;
+        serde_json::from_value(result).map_err(|source| TypedRequestError::Deserialize {
+            method: method.to_string(),
+            source,
+        })
     }
 
     pub async fn request_typed<T>(&self, request: ClientRequest) -> Result<T, TypedRequestError>
