@@ -1,0 +1,626 @@
+{
+  "schema": "hepta.ui-native-ci-run-terminal-summary.v1",
+  "evidenceRole": "immutable exact-candidate repository-controlled software qualification; independent physical, accessibility, signing, production, deployment and release gates remain false",
+  "sealedAt": "2026-10-01T09:49:36.583288+00:00",
+  "run": {
+    "runId": 36842710605,
+    "runAttempt": 1,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36842710605",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "updatedAt": "2026-10-01T09:42:17Z",
+    "allNineJobsTerminal": true,
+    "allNineJobsSucceeded": true
+  },
+  "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "candidateTree": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+  "frozenImplementationInventory": {
+    "fileCount": 420,
+    "selectionPathCount": 32,
+    "localCargoDependencyCount": 16,
+    "inventorySha256": "8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6",
+    "allThreeIndependentPlatformRecordsVerified": true,
+    "records": {
+      "Linux": {
+        "path": "/tmp/hepta-native-0a129-978c-complete-terminal-summary.json",
+        "bytes": 110264,
+        "sha256": "3184a6655fa50b41cf82666db82d5c43b05f6570926f0655c43cf95c31a6bbab"
+      },
+      "macOS": {
+        "path": "/tmp/hepta-native-978c-macos-ci-summary.json",
+        "bytes": 119720,
+        "sha256": "4eaadb2d138347fb905b87b7ab8de25207bf194bb94b44875561b567efe7a638"
+      },
+      "Windows": {
+        "path": "/tmp/hepta-native-windows-0a129-978c-ci-summary.json",
+        "bytes": 166699,
+        "sha256": "1ffcaedd9e33573faecf7e929d0085cf76aaa3c3e635b9bed9a2831824dcf0c5"
+      }
+    }
+  },
+  "immutableRuntimeWorkflow": {
+    "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+    "workflowFile": ".github/workflows/ui-native-qualification.yml",
+    "path": "/tmp/hepta-native-978c-qualification-runtime-workflow.yml",
+    "bytes": 30105,
+    "sha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+    "githubApiDecodedUtf8BytesEqualCandidateGitBlob": true,
+    "allSixActualSubjectReceiptsAndAggregateRuntimeMatch": true,
+    "independentMacosApiVerification": {
+      "path": "/tmp/hepta-native-978c-workflow-github-verification.json",
+      "bytes": 455,
+      "sha256": "0c966020018cfc1bc0564d3ffb67f3afe61b1c3905c68db3e72a21a9d5fe922b"
+    }
+  },
+  "deterministicSourceIdentity": {
+    "expectedSubjects": {
+      "head": {
+        "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+        "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+        "orderedParents": [
+          "0a129b41c2a2d42ca907ea8257bf780108bc664f"
+        ]
+      },
+      "merge": {
+        "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+        "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+        "orderedParents": [
+          "9be52d267d02a76f73e8a94fd086191c351d1c70",
+          "978c1923eda66373e9dce4fe0efa890bc60ac404"
+        ]
+      }
+    },
+    "canonicalBinaryUtf8LfMergeSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+    "commitPayloadBytes": 374,
+    "commitPayloadSha256": "3163de6033dc3b4a89461b623a6c351d4679b796704b530edb304fb1ee2223fe",
+    "independentMathProof": {
+      "path": "/tmp/hepta-native-978c-qualification-canonical-merge-proof.json",
+      "bytes": 770,
+      "sha256": "33576550e5e946e8e111bdea34d43c25917726358f826bf00e8a6d4452220a36"
+    },
+    "immutableHelperProof": {
+      "path": "/tmp/hepta-native-978c-qualification-revalidator/isolated-helper-subjects.json",
+      "bytes": 751,
+      "sha256": "f4ddb3860086cc765c646425ac959cbfbd827d1cdb2cfb3ce0ad6380522e7b0b"
+    },
+    "allThreeActualMergeSourcesMatch": true,
+    "allThreeActualHeadSourcesMatch": true,
+    "strictAggregateAcceptedSameFixedCanonicalSubjects": true
+  },
+  "actualSixPlatformSourceSubjects": [
+    {
+      "os": "Linux",
+      "kind": "head",
+      "jobId": 110305534618,
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+      "orderedParents": [
+        "0a129b41c2a2d42ca907ea8257bf780108bc664f"
+      ],
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+      "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+      "runId": "36842710605",
+      "runAttempt": "1",
+      "allStrictIdentityFieldsAndOrderedParentsMatch": true,
+      "requiredCheckCount": 18,
+      "allRequiredChecksPassedAndSourceUnchanged": true,
+      "artifactId": 11152910946,
+      "subjectQualificationPassed": true,
+      "evidenceRecord": {
+        "path": "/tmp/hepta-native-0a129-978c-complete-terminal-summary.json",
+        "bytes": 110264,
+        "sha256": "3184a6655fa50b41cf82666db82d5c43b05f6570926f0655c43cf95c31a6bbab"
+      }
+    },
+    {
+      "os": "Linux",
+      "kind": "merge",
+      "jobId": 110305534391,
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+      "orderedParents": [
+        "9be52d267d02a76f73e8a94fd086191c351d1c70",
+        "978c1923eda66373e9dce4fe0efa890bc60ac404"
+      ],
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+      "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+      "runId": "36842710605",
+      "runAttempt": "1",
+      "allStrictIdentityFieldsAndOrderedParentsMatch": true,
+      "requiredCheckCount": 18,
+      "allRequiredChecksPassedAndSourceUnchanged": true,
+      "artifactId": 11152532197,
+      "subjectQualificationPassed": true,
+      "evidenceRecord": {
+        "path": "/tmp/hepta-native-0a129-978c-complete-terminal-summary.json",
+        "bytes": 110264,
+        "sha256": "3184a6655fa50b41cf82666db82d5c43b05f6570926f0655c43cf95c31a6bbab"
+      }
+    },
+    {
+      "os": "macOS",
+      "kind": "head",
+      "jobId": 110305534384,
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+      "orderedParents": [
+        "0a129b41c2a2d42ca907ea8257bf780108bc664f"
+      ],
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+      "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+      "runId": "36842710605",
+      "runAttempt": "1",
+      "allStrictIdentityFieldsAndOrderedParentsMatch": true,
+      "requiredCheckCount": 16,
+      "allRequiredChecksPassedAndSourceUnchanged": true,
+      "artifactId": 11151724798,
+      "subjectQualificationPassed": true,
+      "evidenceRecord": {
+        "path": "/tmp/hepta-native-978c-macos-ci-summary.json",
+        "bytes": 119720,
+        "sha256": "4eaadb2d138347fb905b87b7ab8de25207bf194bb94b44875561b567efe7a638"
+      }
+    },
+    {
+      "os": "macOS",
+      "kind": "merge",
+      "jobId": 110305534438,
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+      "orderedParents": [
+        "9be52d267d02a76f73e8a94fd086191c351d1c70",
+        "978c1923eda66373e9dce4fe0efa890bc60ac404"
+      ],
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+      "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+      "runId": "36842710605",
+      "runAttempt": "1",
+      "allStrictIdentityFieldsAndOrderedParentsMatch": true,
+      "requiredCheckCount": 16,
+      "allRequiredChecksPassedAndSourceUnchanged": true,
+      "artifactId": 11152547712,
+      "subjectQualificationPassed": true,
+      "evidenceRecord": {
+        "path": "/tmp/hepta-native-978c-macos-ci-summary.json",
+        "bytes": 119720,
+        "sha256": "4eaadb2d138347fb905b87b7ab8de25207bf194bb94b44875561b567efe7a638"
+      }
+    },
+    {
+      "os": "Windows",
+      "kind": "head",
+      "jobId": 110305534604,
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+      "orderedParents": [
+        "0a129b41c2a2d42ca907ea8257bf780108bc664f"
+      ],
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+      "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+      "runId": "36842710605",
+      "runAttempt": "1",
+      "allStrictIdentityFieldsAndOrderedParentsMatch": true,
+      "requiredCheckCount": 16,
+      "allRequiredChecksPassedAndSourceUnchanged": true,
+      "artifactId": 11152498462,
+      "subjectQualificationPassed": true,
+      "evidenceRecord": {
+        "path": "/tmp/hepta-native-windows-0a129-978c-ci-summary.json",
+        "bytes": 166699,
+        "sha256": "1ffcaedd9e33573faecf7e929d0085cf76aaa3c3e635b9bed9a2831824dcf0c5"
+      }
+    },
+    {
+      "os": "Windows",
+      "kind": "merge",
+      "jobId": 110305534555,
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+      "orderedParents": [
+        "9be52d267d02a76f73e8a94fd086191c351d1c70",
+        "978c1923eda66373e9dce4fe0efa890bc60ac404"
+      ],
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+      "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+      "runId": "36842710605",
+      "runAttempt": "1",
+      "allStrictIdentityFieldsAndOrderedParentsMatch": true,
+      "requiredCheckCount": 16,
+      "allRequiredChecksPassedAndSourceUnchanged": true,
+      "artifactId": 11152429159,
+      "subjectQualificationPassed": true,
+      "evidenceRecord": {
+        "path": "/tmp/hepta-native-windows-0a129-978c-ci-summary.json",
+        "bytes": 166699,
+        "sha256": "1ffcaedd9e33573faecf7e929d0085cf76aaa3c3e635b9bed9a2831824dcf0c5"
+      }
+    }
+  ],
+  "platformChildRecords": {
+    "Linux": {
+      "path": "/tmp/hepta-native-0a129-978c-complete-terminal-summary.json",
+      "bytes": 110264,
+      "sha256": "3184a6655fa50b41cf82666db82d5c43b05f6570926f0655c43cf95c31a6bbab"
+    },
+    "macOS": {
+      "path": "/tmp/hepta-native-978c-macos-ci-summary.json",
+      "bytes": 119720,
+      "sha256": "4eaadb2d138347fb905b87b7ab8de25207bf194bb94b44875561b567efe7a638"
+    },
+    "Windows": {
+      "path": "/tmp/hepta-native-windows-0a129-978c-ci-summary.json",
+      "bytes": 166699,
+      "sha256": "1ffcaedd9e33573faecf7e929d0085cf76aaa3c3e635b9bed9a2831824dcf0c5"
+    }
+  },
+  "rawTerminalApis": {
+    "run": {
+      "path": "/tmp/hepta-native-978c-qualification-final-run-api.json",
+      "bytes": 15020,
+      "sha256": "0fe182661a3822e100d1f07c756dff06ed8fe7d2e054a6e408235e708c412235"
+    },
+    "jobs": {
+      "path": "/tmp/hepta-native-978c-qualification-final-jobs-api.json",
+      "bytes": 30948,
+      "sha256": "5d4b1fab0b312ed0ca2f5b6da8ee339654dd4f2b86009eccab04dbca5be3b91c"
+    },
+    "artifacts": {
+      "path": "/tmp/hepta-native-978c-qualification-final-artifacts-api.json",
+      "bytes": 7498,
+      "sha256": "f407978da5eec6ab0ac9a7881f2b0b39f546b3b4357e9c33f813ac6568f62897"
+    }
+  },
+  "identityJob": {
+    "jobId": 110305336127,
+    "conclusion": "success",
+    "rawLog": {
+      "path": "/tmp/hepta-native-978c-qualification-identity-job.log",
+      "bytes": 688672,
+      "sha256": "29ab61c9f105509aae1886dc8d4018c1970fa5ff5b93ec89a84569ef62a0a03c"
+    },
+    "sourceArtifactApiMetadata": {
+      "id": 11151629451,
+      "node_id": "MDg6QXJ0aWZhY3QxMTE1MTYyOTQ1MQ==",
+      "name": "ui-native-source-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "size_in_bytes": 19223561,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11151629451",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11151629451/zip",
+      "expired": false,
+      "digest": "sha256:219e0719c4b7f3ac28aaf1f07af9516142b83b35dc74320cb5646f3d08e7598f",
+      "created_at": "2026-10-01T09:26:42Z",
+      "updated_at": "2026-10-01T09:26:42Z",
+      "expires_at": "2026-10-31T09:26:39Z",
+      "workflow_run": {
+        "id": 36842710605,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "work/ui-native-adversarial-audit-20261001",
+        "head_sha": "978c1923eda66373e9dce4fe0efa890bc60ac404"
+      }
+    },
+    "sourceArtifactOuterZipIndependentlyDownloadedByThisObserver": false
+  },
+  "terminalJobs": [
+    {
+      "jobId": 110305336127,
+      "name": "ui.native / immutable source identity",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:14Z",
+      "completedAt": "2026-10-01T09:26:45Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534384,
+      "name": "ui.native / macOS / head",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:52Z",
+      "completedAt": "2026-10-01T09:35:17Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534391,
+      "name": "ui.native / Linux / merge",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:48Z",
+      "completedAt": "2026-10-01T09:39:45Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534429,
+      "name": "ui.native / Linux / exact implementation storage scale",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:47Z",
+      "completedAt": "2026-10-01T09:33:08Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534438,
+      "name": "ui.native / macOS / merge",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:27:01Z",
+      "completedAt": "2026-10-01T09:37:08Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534555,
+      "name": "ui.native / Windows / merge",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:47Z",
+      "completedAt": "2026-10-01T09:41:23Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534604,
+      "name": "ui.native / Windows / head",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:49Z",
+      "completedAt": "2026-10-01T09:41:40Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110305534618,
+      "name": "ui.native / Linux / head",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:26:47Z",
+      "completedAt": "2026-10-01T09:36:31Z",
+      "failedSteps": []
+    },
+    {
+      "jobId": 110310863327,
+      "name": "ui.native / qualification result",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-01T09:41:42Z",
+      "completedAt": "2026-10-01T09:42:17Z",
+      "failedSteps": []
+    }
+  ],
+  "actualSoftwareTestScope": {
+    "LinuxHeadAndMerge": {
+      "eachNormalAppTestsPassed": 245,
+      "eachAppIgnored": 3,
+      "eachOwnerTestsPassed": 214,
+      "eachPythonTestsRan": 240,
+      "eachPythonTestsPassed": 239,
+      "eachPythonSkipped": 1,
+      "eachFourNewScopedLockRegressionsActuallyPassed": true,
+      "previousUpdateProductFailureTestActuallyPassed": true,
+      "eachThreeCompilerNegativesPassed": true,
+      "ordinaryXvfbDbusKeyringLifecyclePassed": true
+    },
+    "macOSHeadAndMerge": {
+      "eachNormalAppTestsPassed": 256,
+      "eachAppIgnored": 3,
+      "eachOwnerTestsPassed": 232,
+      "eachPythonTestsRan": 240,
+      "eachPythonTestsPassed": 239,
+      "eachPythonSkipped": 1,
+      "newNativeScopedLockAndSharedLastAliasRegressionsPassed": true,
+      "previousLegacyTrustFailureTestActuallyPassed": true,
+      "eachThirtyTwoAclAndTwoFifoRegressionsPassed": true,
+      "nativeBashQuoteAndBinaryLfRegressionsActuallyPassed": true
+    },
+    "WindowsHeadAndMerge": {
+      "eachNormalAppTestsPassed": 210,
+      "eachAppIgnored": 3,
+      "eachOwnerTestsPassed": 173,
+      "eachPythonTestsRan": 240,
+      "eachPythonTestsPassed": 236,
+      "eachPythonSkipped": 4,
+      "eachFifteenAtomicPrivateRegressionsActuallyPassed": true,
+      "portableOpaqueUpdateLockOwnershipRegressionActuallyPassed": true,
+      "clrVariantSize24AndOffsets0_8_8AndOwnedShortcutRoundTripPassed": true
+    },
+    "recursiveAckChildrenExcludedFromNormalAppCounts": true,
+    "platformSpecificSkippedTestsNotClaimedExecutedOnOtherPlatforms": true
+  },
+  "aggregate": {
+    "jobId": 110310863327,
+    "conclusion": "success",
+    "actualSteps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Missing, cancelled and skipped subjects are failure",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+        "conclusion": "success"
+      },
+      {
+        "name": "Revalidate six platform subjects",
+        "conclusion": "success"
+      },
+      {
+        "name": "Bind platform aggregate and storage artifact",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "strictSixPlatformIdentityChecksSourceTreeRunAttemptWorkflowPackagesAndUnsignedSupplyChainRevalidationExecutedAndPassed": true,
+    "sameRunStorageRawRevalidationAndBindingExecutedAndPassed": true,
+    "rawJobLog": {
+      "path": "/dev/shm/hepta-ui-native-ci-36842710605-aggregate-job.log",
+      "bytes": 710203,
+      "sha256": "2c497069689659f1b541d6a34310147fbd7bdb2471a4d7e11d3567aa58655c36"
+    },
+    "originalArtifact": {
+      "artifactId": 11152518436,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/c3d1e510-9808-49ea-b1da-18df5094995e/ui-native-978c-qualification-result.zip",
+      "bytes": 3420,
+      "sha256": "682acae97b3591b7cf11659d909e2eaa5aa11a7ce39676b686d9226569ffc5f1",
+      "apiOuterDigestAndBytesMatch": true
+    },
+    "actualPlatformAggregate": {
+      "path": "/tmp/hepta-native-978c-qualification-actual-aggregate/platform-qualification.json",
+      "bytes": 10017,
+      "sha256": "00939b89e3d61cfc0d7bf26b9954cb548cfa4ab840dc0bfda1a739c4d0c745f3"
+    },
+    "actualQualificationResult": {
+      "path": "/tmp/hepta-native-978c-qualification-actual-aggregate/qualification-result.json",
+      "bytes": 911,
+      "sha256": "e544510ba1b33fe09aae73f82a70965162676c8198f5b99c448514a31a85b9c2"
+    },
+    "actualManifest": {
+      "accessibilityAcceptance": false,
+      "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+      "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "deploymentQualified": false,
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "physicalHostAcceptance": false,
+      "platformAggregateSha256": "00939b89e3d61cfc0d7bf26b9954cb548cfa4ab840dc0bfda1a739c4d0c745f3",
+      "productionQualified": false,
+      "productionSigningObserved": false,
+      "releaseAuthorized": false,
+      "repositoryControlledQualificationPassed": true,
+      "runAttempt": "1",
+      "runId": "36842710605",
+      "schema": "hepta.ui-native-repository-qualification.v1",
+      "storageJobOutcomesSha256": "5fb9d8ffa1c840174596dd44901fe1395b9311b3b21fd73b9ff9dc263ed5f438",
+      "storageQualificationSha256": "ac377a20467568543ff81c0453e8782ee8d3e30ae99bb34da0e0be2a84b8109e",
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e"
+    },
+    "actualManifestBytesEqualIndependentlyDecodedJobStdout": true,
+    "repositoryControlledQualificationPassed": true
+  },
+  "independentReplay": {
+    "validatorSourceManifest": {
+      "path": "/tmp/hepta-native-978c-qualification-revalidator/source-manifest.json",
+      "bytes": 1252,
+      "sha256": "b03cdc062c2e08e56dee06f2bb2a07ca6cccba65ba26420626c72e588c152349"
+    },
+    "validatorSourcesMaterializedFromExactCandidateGitBlobs": true,
+    "allSixOriginalOuterZipApiHashesAndByteCountsRecomputed": true,
+    "strictSameRunSixBundleAggregateWithSupplyChainActuallyExecuted": true,
+    "retainedChecksLogHashesPackagesLinuxProductSbomProvenanceGitLocksRevalidated": true,
+    "resultObjectAndExactSerializedBytesEqualActualCIPlatformAggregate": true,
+    "receipt": {
+      "path": "/tmp/hepta-native-978c-qualification-revalidator/independent-revalidation-receipt.json",
+      "bytes": 4980,
+      "sha256": "33a60e05084ae1572df8ce953dc7aa8beca6817755509dfdfeca012e3eb4c845"
+    },
+    "result": {
+      "path": "/tmp/hepta-native-978c-qualification-revalidator/independently-revalidated-platform-qualification.json",
+      "bytes": 10017,
+      "sha256": "00939b89e3d61cfc0d7bf26b9954cb548cfa4ab840dc0bfda1a739c4d0c745f3"
+    },
+    "allGitObjectWritesIsolatedToScratch": true,
+    "repositoryWritesPerformed": false
+  },
+  "storage": {
+    "jobId": 110305534429,
+    "conclusion": "success",
+    "artifactId": 11152970087,
+    "storageQualifiedForThisExactImplementationSource": true,
+    "fortyEightNewTraceHashesAndByteCountsIndependentlyVerifiedByTwoAgents": true,
+    "rawActiveRetirementMeasurementsMatchEmbeddedReceipt": true,
+    "independentCandidateValidatorExitCode": 0,
+    "allOriginalHardBudgetsPassed": true,
+    "additionalNineQuantileMathProofPassed": true,
+    "acceptedManifestStorageQualificationAndOutcomesBytesMatchActualRawFiles": true,
+    "budgetBoundToExactCandidateGitBlob": true,
+    "independentBindingProof": {
+      "path": "/tmp/hepta-native-978c-qualification-independent-storage-binding.json",
+      "bytes": 11327,
+      "sha256": "eaea4b7160469d652862b8c090ca201e160af7faba8126b4039067b88b1b4380"
+    },
+    "independentValidatorRecord": {
+      "path": "/tmp/hepta-native-0a129-978c-complete-terminal-summary.json",
+      "bytes": 110264,
+      "sha256": "3184a6655fa50b41cf82666db82d5c43b05f6570926f0655c43cf95c31a6bbab"
+    },
+    "qualification": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36842710605/qualification.json",
+      "bytes": 310041,
+      "sha256": "ac377a20467568543ff81c0453e8782ee8d3e30ae99bb34da0e0be2a84b8109e"
+    },
+    "jobOutcomes": {
+      "active": "success",
+      "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "compile": "success",
+      "retired": "success",
+      "runAttempt": "1",
+      "runId": "36842710605",
+      "schema": "hepta.ui-native-storage-job-outcomes.v1",
+      "sourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "validate": "success",
+      "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e"
+    }
+  },
+  "macosAdditionalRawEvidence": {
+    "terminalSubjectsApi": {
+      "path": "/tmp/hepta-native-978c-macos-terminal-api.json",
+      "bytes": 5619,
+      "sha256": "3436c05d7cae21b4066168774b19890ca4708ef51d7d5ddc4805ff548e9b2f25"
+    },
+    "rawJobLogsMetadata": {
+      "path": "/tmp/hepta-native-978c-macos-raw-joblogs.json",
+      "bytes": 908,
+      "sha256": "9ec2ff62c0469512dd4c80167f2526a6e2e3fa1860fe59905312537489932ebe"
+    },
+    "headRawJobLog": {
+      "path": "/tmp/hepta-native-978c-macos-head-job.log",
+      "bytes": 730822,
+      "sha256": "19ecf643677086d12db143c3ad3ec1b2d7018df561061e2f0f4fe07e28d569b9"
+    },
+    "mergeRawJobLog": {
+      "path": "/tmp/hepta-native-978c-macos-merge-job.log",
+      "bytes": 731282,
+      "sha256": "a0e6ed969172d7211a2d4c984277221510bf24dd9d6350d87af00ffc5e63b473"
+    }
+  },
+  "qualificationLimits": {
+    "scope": "repository-controlled candidate software qualification",
+    "repositoryControlledQualificationPassed": true,
+    "allSevenRequiredPlatformAndStorageSubjectsSucceeded": true,
+    "physicalHostAcceptance": false,
+    "accessibilityAcceptance": false,
+    "productionSigningObserved": false,
+    "productionQualified": false,
+    "deploymentQualified": false,
+    "releaseAuthorized": false,
+    "currentSourceQualificationInherited": false,
+    "laterCandidateOrSourceQualificationInherited": false,
+    "old632OrOtherHistoricalExecutionEvidenceInherited": false
+  },
+  "immutableCaptureLimits": {
+    "macosDeepChildOverallStatusAtItsOwnCaptureRemainsInProgress": true,
+    "finalAllNineSuccessEstablishedBySeparateRawTerminalApis": true,
+    "earlierPlatformAndStoragePhaseCapturesPreservedWithoutOverwrite": true,
+    "existingTrackedHistoryChangedByThisObserver": false
+  }
+}

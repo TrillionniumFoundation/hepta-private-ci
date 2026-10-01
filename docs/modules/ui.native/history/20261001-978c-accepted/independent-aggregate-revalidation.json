@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.ui-native-independent-aggregate-revalidation.v1",
+  "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "runId": "36842710605",
+  "runAttempt": "1",
+  "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "validatorSourceManifest": "/tmp/hepta-native-978c-qualification-revalidator/source-manifest.json",
+  "validatorUsesImmutableCandidateGitBlobs": true,
+  "sixOriginalOuterArtifactApiDigestsAndBytesRecomputed": true,
+  "originalZipMembersExtractedWithTraversalDuplicateAndSymlinkRejection": true,
+  "originalExactSixBundleNamesValidated": true,
+  "expectedSubjects": {
+    "head": {
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    },
+    "merge": {
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    }
+  },
+  "allStrictIdentityRunAttemptWorkflowChecksRetained": true,
+  "allRetainedChecksLogHashesPackageArtifactsLinuxProductAndSupplyChainRevalidated": true,
+  "dependencyComponentsReconstructedFromImmutableGitLocks": true,
+  "aggregateResultObjectEqualActualRetainedCIResult": true,
+  "aggregateResultSerializedBytesEqualActualRetainedCIResult": true,
+  "aggregateResult": {
+    "path": "/tmp/hepta-native-978c-qualification-revalidator/independently-revalidated-platform-qualification.json",
+    "bytes": 10017,
+    "sha256": "00939b89e3d61cfc0d7bf26b9954cb548cfa4ab840dc0bfda1a739c4d0c745f3"
+  },
+  "gitObjectDirectory": "/tmp/hepta-native-978c-qualification-revalidator/git-objects",
+  "repoWritesPerformed": false,
+  "outerArtifacts": [
+    {
+      "artifactId": 11152910946,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/d8bb437f-2f8b-4c19-9767-f3ead8160326/github-actions-artifact-11152910946.zip",
+      "bytes": 12121149,
+      "sha256": "dafa3a76eb43145dffb5bd8e1fd2798088f9aec5873680d0cbd61ed6b6794ef0",
+      "apiDigestAndBytesMatch": true,
+      "bundlePath": "/tmp/hepta-native-978c-qualification-revalidator/bundles/ui-native-qualification-ubuntu-24.04-head-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "zipMemberCount": 58
+    },
+    {
+      "artifactId": 11152532197,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/656fc988-7253-4270-ad32-cc2cbde2ae8b/github-actions-artifact-11152532197.zip",
+      "bytes": 12121377,
+      "sha256": "6b8daa9f1add37e09a13c1f628ff6f746ccde2e732ba91238b8e6b77ea7bb374",
+      "apiDigestAndBytesMatch": true,
+      "bundlePath": "/tmp/hepta-native-978c-qualification-revalidator/bundles/ui-native-qualification-ubuntu-24.04-merge-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "zipMemberCount": 58
+    },
+    {
+      "artifactId": 11151724798,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/0c3301f7-6bf8-4d10-a06b-00416e06c68b/github-actions-artifact-11151724798.zip",
+      "bytes": 5216705,
+      "sha256": "ef70ec9b28cdef19d94dc94da8f97e415d1cd322b216fd46edb436680a1b6a2a",
+      "apiDigestAndBytesMatch": true,
+      "bundlePath": "/tmp/hepta-native-978c-qualification-revalidator/bundles/ui-native-qualification-macos-15-head-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "zipMemberCount": 40
+    },
+    {
+      "artifactId": 11152547712,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/9428d9c8-a1bb-4a11-9bd2-b422dcebd96f/github-actions-artifact-11152547712.zip",
+      "bytes": 5216971,
+      "sha256": "7fbc0744e651561e945e094b5c97e195ba322337028d4c714c044d3206088b9c",
+      "apiDigestAndBytesMatch": true,
+      "bundlePath": "/tmp/hepta-native-978c-qualification-revalidator/bundles/ui-native-qualification-macos-15-merge-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "zipMemberCount": 40
+    },
+    {
+      "artifactId": 11152498462,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/06623e03-f9b6-4a64-a0be-31dd02e769c4/qualification-11152498462.zip",
+      "bytes": 4899006,
+      "sha256": "0dd9b666edc4acd2079ae4313d69da337b89c99d8de8003b9fdcf51282203a71",
+      "apiDigestAndBytesMatch": true,
+      "bundlePath": "/tmp/hepta-native-978c-qualification-revalidator/bundles/ui-native-qualification-windows-2025-head-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "zipMemberCount": 40
+    },
+    {
+      "artifactId": 11152429159,
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/63c73cee-5d8c-4c51-8245-fd93c84f5c71/qualification-11152429159.zip",
+      "bytes": 4899192,
+      "sha256": "71a6f8711c0199e6ec31498cb1d79878a92760548022f07aa042c01f02b4ebaa",
+      "apiDigestAndBytesMatch": true,
+      "bundlePath": "/tmp/hepta-native-978c-qualification-revalidator/bundles/ui-native-qualification-windows-2025-merge-978c1923eda66373e9dce4fe0efa890bc60ac404-attempt-1",
+      "zipMemberCount": 40
+    }
+  ],
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

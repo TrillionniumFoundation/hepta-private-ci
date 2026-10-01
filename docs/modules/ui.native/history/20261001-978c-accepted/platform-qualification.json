@@ -1,0 +1,239 @@
+{
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "deploymentQualified": false,
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "productionImplementation": false,
+  "productionQualified": false,
+  "productionSigningObserved": false,
+  "provenanceGenerated": true,
+  "qualificationPassed": true,
+  "releaseAuthorized": false,
+  "runAttempt": "1",
+  "runId": "36842710605",
+  "sbomGenerated": true,
+  "schema": "hepta.ui.native.aggregate.v2",
+  "scope": "repository-controlled-candidate",
+  "subjects": [
+    {
+      "artifacts": [
+        {
+          "bytes": 11960512,
+          "name": "hepta-native-linux-x86_64-unsigned.zip",
+          "sha256": "27d2e8f5da5a7d3c9ebc1a8be8b58dd19e0555262ef821fd5e457f047510e7fe"
+        }
+      ],
+      "kind": "head",
+      "linuxProductObservation": {
+        "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+        "cjkImeAcceptance": false,
+        "gatewaySha256": "98d4de1697c468a347946eff93e15ac7c7a5cb48110af9a7bb1c7eb587e2e7d8",
+        "independentAcceptance": false,
+        "keyringCredentialLifecycleObserved": true,
+        "normalCloseVerified": true,
+        "ordinaryGuiStartCount": 2,
+        "ownerStateUnchanged": true,
+        "packageBinarySha256": {
+          "usr/bin/hepta-native": "81ab8cd52580128aa387cec1622d90f691b21eb35db2dee21982f6688a72c682",
+          "usr/bin/hepta-native-credential": "c9ae5398a8dc6f8c0ccd6b6c80c1a018b31eace9348933eff6a27f0824e7e1af",
+          "usr/bin/hepta-native-updater": "9064cd208095501a94a1b264e82fa88c606d9e86cbd47b3ed8f226591514daa0"
+        },
+        "packageReceiptSha256": "a5cd55a8c185f5fa0cd691257eadb172756faa5effac480691e0cc996fd5d227",
+        "physicalDisplayAcceptance": false,
+        "physicalInputAcceptance": false,
+        "productionKeyCustodyAcceptance": false,
+        "receipt": "native-evidence/ordinary-linux-product/product-receipt.json",
+        "receiptBytes": 5932,
+        "receiptSha256": "48f75e47d33f3891e17555c9da16beae2db9faac91bc2448ae84eac9b64331ac",
+        "release": false,
+        "runAttempt": "1",
+        "runId": "36842710605",
+        "runner": {
+          "ImageOS": "ubuntu24",
+          "ImageVersion": "20260927.320.1",
+          "RUNNER_ARCH": "X64"
+        },
+        "schema": "hepta.ui.native.linux-product-observation.v1",
+        "screenReaderAcceptance": false,
+        "sourceKind": "head",
+        "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+        "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+        "virtualFocusObserved": true,
+        "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e"
+      },
+      "os": "Linux",
+      "receiptSha256": "6fd7e2d57e8be1d0b5f8124609a9cefa0031f31f11e99414b9bc0a23ba90522c",
+      "runner": "ubuntu-24.04",
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 11960512,
+          "name": "hepta-native-linux-x86_64-unsigned.zip",
+          "sha256": "27d2e8f5da5a7d3c9ebc1a8be8b58dd19e0555262ef821fd5e457f047510e7fe"
+        }
+      ],
+      "kind": "merge",
+      "linuxProductObservation": {
+        "candidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+        "cjkImeAcceptance": false,
+        "gatewaySha256": "98d4de1697c468a347946eff93e15ac7c7a5cb48110af9a7bb1c7eb587e2e7d8",
+        "independentAcceptance": false,
+        "keyringCredentialLifecycleObserved": true,
+        "normalCloseVerified": true,
+        "ordinaryGuiStartCount": 2,
+        "ownerStateUnchanged": true,
+        "packageBinarySha256": {
+          "usr/bin/hepta-native": "81ab8cd52580128aa387cec1622d90f691b21eb35db2dee21982f6688a72c682",
+          "usr/bin/hepta-native-credential": "c9ae5398a8dc6f8c0ccd6b6c80c1a018b31eace9348933eff6a27f0824e7e1af",
+          "usr/bin/hepta-native-updater": "9064cd208095501a94a1b264e82fa88c606d9e86cbd47b3ed8f226591514daa0"
+        },
+        "packageReceiptSha256": "a5cd55a8c185f5fa0cd691257eadb172756faa5effac480691e0cc996fd5d227",
+        "physicalDisplayAcceptance": false,
+        "physicalInputAcceptance": false,
+        "productionKeyCustodyAcceptance": false,
+        "receipt": "native-evidence/ordinary-linux-product/product-receipt.json",
+        "receiptBytes": 5938,
+        "receiptSha256": "c4d63a4372f6ec30c707e53b5aa390f5b6e6afb091e08fba053d20ddf6fe9286",
+        "release": false,
+        "runAttempt": "1",
+        "runId": "36842710605",
+        "runner": {
+          "ImageOS": "ubuntu24",
+          "ImageVersion": "20260927.320.1",
+          "RUNNER_ARCH": "X64"
+        },
+        "schema": "hepta.ui.native.linux-product-observation.v1",
+        "screenReaderAcceptance": false,
+        "sourceKind": "merge",
+        "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+        "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+        "virtualFocusObserved": true,
+        "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e"
+      },
+      "os": "Linux",
+      "receiptSha256": "81fcde68773ffc2f1b719a0cb3277c6e0ceda16f93cd2b9b8134b1489180fc39",
+      "runner": "ubuntu-24.04",
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 5043711,
+          "name": "hepta-native-macos-aarch64-unsigned.zip",
+          "sha256": "fd67ef2bfbf705e0132d3fc38a80558972ee2630e9770f43c37c76fb7bb38f6c"
+        }
+      ],
+      "kind": "head",
+      "linuxProductObservation": null,
+      "os": "macOS",
+      "receiptSha256": "bae21ffc5ae5f0b7e8aaafacf7c730cced510b5dc90d343ed1586a167cf85056",
+      "runner": "macos-15",
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 5043711,
+          "name": "hepta-native-macos-aarch64-unsigned.zip",
+          "sha256": "fd67ef2bfbf705e0132d3fc38a80558972ee2630e9770f43c37c76fb7bb38f6c"
+        }
+      ],
+      "kind": "merge",
+      "linuxProductObservation": null,
+      "os": "macOS",
+      "receiptSha256": "bc1b290226954875ef56fabbc012268fe7cace66bc48051fb1e385a5e4be859a",
+      "runner": "macos-15",
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 4727806,
+          "name": "hepta-native-windows-x86_64-unsigned.zip",
+          "sha256": "c48475cbaee69e7e20e74df3a96249bb3c757a7a7913c82de21bb91bd27ab030"
+        }
+      ],
+      "kind": "head",
+      "linuxProductObservation": null,
+      "os": "Windows",
+      "receiptSha256": "5628d0d943ed8059df90f5f53b0ecbfa674163ee8d3bfef012e930265489fc4c",
+      "runner": "windows-2025",
+      "sourceSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 4727804,
+          "name": "hepta-native-windows-x86_64-unsigned.zip",
+          "sha256": "d5bc32aedcb886e708e865ab59ce9bd4c46593ce339e15cd173ec94d3808b255"
+        }
+      ],
+      "kind": "merge",
+      "linuxProductObservation": null,
+      "os": "Windows",
+      "receiptSha256": "166c78ba321fc8ff7ce283fb139f16d39cf181f23df31f53118b8a43ff2dc474",
+      "runner": "windows-2025",
+      "sourceSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+      "sourceTreeSha": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3"
+    }
+  ],
+  "supplyChainSubjects": [
+    {
+      "kind": "head",
+      "manifestSha256": "f3465d51d36d490ee961aa8872238cb93b451a4f288305ecaaa1def5cab9f402",
+      "os": "Linux",
+      "provenanceSha256": "f7503fa258d003e81c5188c5794d2cc543f251201791d3100f3e083a4614dac6",
+      "runner": "ubuntu-24.04",
+      "sbomSha256": "3d47a888c571fdf9639d3b2c5e08776c410ab8dad0c80bdde55cc2cd47de9d8c"
+    },
+    {
+      "kind": "merge",
+      "manifestSha256": "2b271a494e42a99cd91629c3a7bbcde03bf8e47a09b0645dfd95059af87b5f05",
+      "os": "Linux",
+      "provenanceSha256": "15eeb029e0c870e93e356df7eafc3948d93b74729e6d724f0e589e1ac6bd3d03",
+      "runner": "ubuntu-24.04",
+      "sbomSha256": "f3df9d86c63323f1df454e66ca60b4c520afb67310a3f8e71ac25a698af15f8b"
+    },
+    {
+      "kind": "head",
+      "manifestSha256": "8ff3968b6bc9424047a6b40297912ff49c3d264d9db80f668e94557c0355b4db",
+      "os": "macOS",
+      "provenanceSha256": "2bac2646f5a3b3f2544055fd3b3431bc4f717cfc4d2832552296d7d5fc544774",
+      "runner": "macos-15",
+      "sbomSha256": "f6090a12b4f74a5b43afc44757c40c7c937e18801e4952c73e2f5fd9a36c648c"
+    },
+    {
+      "kind": "merge",
+      "manifestSha256": "4ff599af794c5827664fdf8a286cd143cafe66f61579f1f6294e9c51377113d9",
+      "os": "macOS",
+      "provenanceSha256": "5beb05916eb8ac92a7b876414eef88089e2dc90757c9eaf232c74c30ad86be7f",
+      "runner": "macos-15",
+      "sbomSha256": "d079b6a09e8bd2b601dda928197db9c245e78ab24c1112908fec43710804e022"
+    },
+    {
+      "kind": "head",
+      "manifestSha256": "6ca8de5d36a194bd94df9b3cd716712bf25db7ba94243ce98580b9a698c5ef3a",
+      "os": "Windows",
+      "provenanceSha256": "10f91e858bbcdcdc82dc62df464a97fc6350ebd8c6394bc6e81d5f2f78e2211f",
+      "runner": "windows-2025",
+      "sbomSha256": "4cad58a180202f0d8e39b446832662ef943c83f201dd53a74e5845d5e9c0069d"
+    },
+    {
+      "kind": "merge",
+      "manifestSha256": "66d135739a49bcaedb28bbce6fc3b5459bbf1f2a10a2db9cdc5338899dbe5d2e",
+      "os": "Windows",
+      "provenanceSha256": "94c0144b9d347228761079f7fb505bf1050835060dabfa86a3fe8718e3d3c9b4",
+      "runner": "windows-2025",
+      "sbomSha256": "4f4497957e52ed0607c43cec60142b620f90f1714a9e406bdc5b73f5d1e0619f"
+    }
+  ],
+  "workflowFileSha256": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+  "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e"
+}

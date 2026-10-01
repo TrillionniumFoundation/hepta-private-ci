@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.ui-native-exact-run-evidence-archive.v1",
+  "recordRole": "immutable observation of exact repository-controlled qualification",
+  "archiveParentSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "qualifiedCandidateSha": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "qualifiedCandidateTree": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "canonicalMergeSha": "d64ceb854bb045302f5624f3b63f365a6b34739b",
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+  "frozenInventory": {
+    "gitBlobs": 420,
+    "selectionPaths": 32,
+    "localCargoDependencies": 16,
+    "sha256": "8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6"
+  },
+  "runId": 36842710605,
+  "runAttempt": 1,
+  "workflowSha": "9360eb0688b54f8accea54489c3d1d72c071812e",
+  "runUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36842710605",
+  "repositoryControlledQualificationPassed": true,
+  "archiveRequalifiesDifferentCandidate": false,
+  "currentSourceQualificationInherited": false,
+  "wholeProjectDocsPassed": false,
+  "wholeProjectMapsPassed": false,
+  "existingGlobalBlockers": [
+    "utility.ndu:codex-rs/hepta-ndu/src/lib.rs",
+    "intelligence.control:codex-rs/hepta-ndu/src/lib.rs"
+  ],
+  "platformNormalTestCountsPerSubject": {
+    "Linux": {
+      "application": 245,
+      "owners": 214,
+      "pythonPassed": 239,
+      "pythonSkipped": 1
+    },
+    "macOS": {
+      "application": 256,
+      "owners": 232,
+      "pythonPassed": 239,
+      "pythonSkipped": 1
+    },
+    "Windows": {
+      "application": 210,
+      "owners": 173,
+      "pythonPassed": 236,
+      "pythonSkipped": 4
+    }
+  },
+  "files": [
+    {
+      "path": "linux-verification.json",
+      "bytes": 110264,
+      "sha256": "3184a6655fa50b41cf82666db82d5c43b05f6570926f0655c43cf95c31a6bbab",
+      "observedOriginalPath": "/tmp/hepta-native-0a129-978c-complete-terminal-summary.json"
+    },
+    {
+      "path": "macos-verification.json",
+      "bytes": 119720,
+      "sha256": "4eaadb2d138347fb905b87b7ab8de25207bf194bb94b44875561b567efe7a638",
+      "observedOriginalPath": "/tmp/hepta-native-978c-macos-ci-summary.json"
+    },
+    {
+      "path": "windows-verification.json",
+      "bytes": 166699,
+      "sha256": "1ffcaedd9e33573faecf7e929d0085cf76aaa3c3e635b9bed9a2831824dcf0c5",
+      "observedOriginalPath": "/tmp/hepta-native-windows-0a129-978c-ci-summary.json"
+    },
+    {
+      "path": "platform-qualification.json",
+      "bytes": 10017,
+      "sha256": "00939b89e3d61cfc0d7bf26b9954cb548cfa4ab840dc0bfda1a739c4d0c745f3",
+      "observedOriginalPath": "/tmp/hepta-native-978c-qualification-actual-aggregate/platform-qualification.json"
+    },
+    {
+      "path": "qualification-result.json",
+      "bytes": 911,
+      "sha256": "e544510ba1b33fe09aae73f82a70965162676c8198f5b99c448514a31a85b9c2",
+      "observedOriginalPath": "/tmp/hepta-native-978c-qualification-actual-aggregate/qualification-result.json"
+    },
+    {
+      "path": "independent-aggregate-revalidation.json",
+      "bytes": 4980,
+      "sha256": "33a60e05084ae1572df8ce953dc7aa8beca6817755509dfdfeca012e3eb4c845",
+      "observedOriginalPath": "/tmp/hepta-native-978c-qualification-revalidator/independent-revalidation-receipt.json"
+    },
+    {
+      "path": "independent-storage-binding.json",
+      "bytes": 11327,
+      "sha256": "eaea4b7160469d652862b8c090ca201e160af7faba8126b4039067b88b1b4380",
+      "observedOriginalPath": "/tmp/hepta-native-978c-qualification-independent-storage-binding.json"
+    },
+    {
+      "path": "validator-source-manifest.json",
+      "bytes": 1252,
+      "sha256": "b03cdc062c2e08e56dee06f2bb2a07ca6cccba65ba26420626c72e588c152349",
+      "observedOriginalPath": "/tmp/hepta-native-978c-qualification-revalidator/source-manifest.json"
+    },
+    {
+      "path": "clean-review-summary.json",
+      "bytes": 1508,
+      "sha256": "8a811bf0d9d182526f5fe574766c8744fd55ebbe6e07d352cf0aaa91b9751b7c",
+      "observedOriginalPath": "/tmp/hepta-native-978c-clean-review-summary.json"
+    },
+    {
+      "path": "clean-structural.json",
+      "bytes": 1464,
+      "sha256": "4d30b33c2aef3be8399284a9529b65727cd312f1730648e20e0b5a5af98702a7",
+      "observedOriginalPath": "/tmp/hepta-native-978c-clean-structural.json"
+    },
+    {
+      "path": "clean-compile-negative.json",
+      "bytes": 1761,
+      "sha256": "8246cf072317c0b7c23375d92cf4431b3b0d37753cdcadc4c4e0249c0032d5c7",
+      "observedOriginalPath": "/tmp/hepta-native-978c-clean-compile-negative.json"
+    },
+    {
+      "path": "global-docs-failure.log",
+      "bytes": 287,
+      "sha256": "3963daf0c04932609e1689fe86640bd11afd41efcc7b2c66aed0a627a19f6c02",
+      "observedOriginalPath": "/tmp/hepta-native-978c-clean-global-docs.log"
+    },
+    {
+      "path": "global-maps-failure.log",
+      "bytes": 242,
+      "sha256": "f164d49d334163a60a0c8591b7a70403abca05f35c32ed106ebfe27cabcabd90",
+      "observedOriginalPath": "/tmp/hepta-native-978c-clean-global-maps.log"
+    },
+    {
+      "path": "pre-existing-ndu-drift-proof.json",
+      "bytes": 1374,
+      "sha256": "a88af54382d943abf6eca1485b8d996709b7c3acec1dc414db8266b92df0f61b",
+      "observedOriginalPath": "/tmp/hepta-native-978c-existing-ndu-drift-proof.json"
+    },
+    {
+      "path": "storage-artifact.zip.b64",
+      "bytes": 582921,
+      "sha256": "62736f665934ce4a226b84f8e97826faedacb5761b5fbb77570d71b5d0347761",
+      "encoding": "base64",
+      "decodedBytes": 437189,
+      "decodedSha256": "e79fc33686fbcbbd8c90b79f6da19a458c6219ced367bfb853f6a8d5a5c6377a",
+      "artifactId": 11152970087
+    },
+    {
+      "path": "complete-verification.json",
+      "bytes": 24903,
+      "sha256": "0ffa67e93c69856a37b123d06ef3b8a30a568c44fdad14336fb868abbf4fd061",
+      "observedOriginalPath": "/tmp/hepta-native-978c-final-ci-summary.json"
+    },
+    {
+      "path": "aggregate-artifact.zip.b64",
+      "bytes": 4561,
+      "sha256": "c8c06e703ccd5358e3b96553de54d62feb8b97b906719aaef6b4a0f93beee8a6",
+      "encoding": "base64",
+      "decodedBytes": 3420,
+      "decodedSha256": "682acae97b3591b7cf11659d909e2eaa5aa11a7ce39676b686d9226569ffc5f1",
+      "artifactId": 11152518436
+    }
+  ],
+  "physicalHostAcceptance": false,
+  "accessibilityAcceptance": false,
+  "productionSigningObserved": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

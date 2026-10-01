@@ -1,0 +1,45 @@
+{
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+  "limitations": [
+    "structural evidence is not physical-platform acceptance",
+    "performance budgets remain unqualified until measured artifacts are attached",
+    "release flags remain false pending independent review"
+  ],
+  "localCargoDependencyPaths": [
+    "apps/hepta-native",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-control-plane",
+    "codex-rs/hepta-native-gateway",
+    "codex-rs/hepta-ndu",
+    "codex-rs/hepta-paths",
+    "codex-rs/hepta-plasticity",
+    "codex-rs/hepta-private-state",
+    "codex-rs/hepta-runtime",
+    "codex-rs/hepta-types",
+    "codex-rs/hepta-wire",
+    "codex-rs/keyring-store",
+    "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+    "codex-rs/utils/cargo-bin",
+    "codex-rs/utils/private-state"
+  ],
+  "orderedParents": [
+    "0a129b41c2a2d42ca907ea8257bf780108bc664f"
+  ],
+  "repositoryHead": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "repositoryTree": "1d8aa1f0d23094d9c5c3c52cd695c865c2b9a8d3",
+  "retiredWorkflowCount": 16,
+  "schema": "hepta.ui-native-source-evidence.v1",
+  "sourceContracts": [
+    "active-index",
+    "journal-v7",
+    "retirement-bucket-v1",
+    "retirement-index-v1",
+    "retirement-v3",
+    "wal-magic",
+    "wal-v1"
+  ],
+  "status": "structural-pass",
+  "workflow": "ui-native-qualification.yml"
+}
