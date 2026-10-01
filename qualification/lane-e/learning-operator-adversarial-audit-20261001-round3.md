@@ -81,3 +81,11 @@ operator 在项目中是慢路径候选生成器。LedgerWriter 冻结并验证�
 本轮可复现的工程 finding 已对应修复和反例；独立 core reviewer 复核前跳时钟、preflight 与 outer release，集成 reviewer 复核 root/CURRENT、真实 item 重排及失败回滚。最后审查在上述已实现的有界范围内没有新增可复现工程缺陷。这是当前代码与证据的收敛结论，不是“整个模块 100% 完成”或“以后不会再有优化”。
 
 默认完整循环、实际 ProductRunner root bootstrap、native Bellman wire 规范、backend 历史容量及独立科学/目标宿主接受是仍然明确的后续工程与验收项；未具备真实配置或独立权威时不构造假 owner、fake clock/measurement/acceptance 来清空这些项。PR 保持 draft，不合并 main、不部署、不改变 authority 状态。报告发布时，当前候选的 hosted CI 尚待观察，单独标为 pending；原 head 的失败及新 head 的后续运行不能拼接成成功资格。
+
+## 发布后 CI 复核
+
+候选 `d020868300c3521c8d435ba1300362134c029354` 的实际 blocking CI 检出两项证据文件策略问题：第二轮原始 Cargo 日志中的真实依赖名称被误报为拼写错误；本轮已校验的完整原始证据归档超过默认 512000 字节限制。前后两个提交的该 Cargo 日志 Git blob 同为 `f099d4b9d04d53d09443f8523dc3378708426c57`，未编辑证据内容。
+
+按现有规则只添加该原始日志的精确拼写检查路径（同时覆盖相对路径与 `./` 路径），以及该归档的单一精确大小例外；没有全局忽略依赖名称、放宽默认大小门槛或跳过源码/文档。使用实际 CI 版本 Codespell 2.4.3 的官方 release 源码，在干净 Git 导出加这两项配置 delta 上执行同一 CLI，退出 0；完整变更范围的实际 blob checker 也退出 0。工具的缺失 SCM 版本文件仅从精确 Git release tag 生成，不改变检查代码或词典。首次本地失败（路径匹配及未跟踪的本机工具目录）也保留，不作为源码缺陷或成功结果。
+
+[发布复核清单](learning-operator-audit-20261001-round3/publication-validation.json)和独立压缩日志保留这两项 hosted 失败及本地修复验证。此前 117 份原始证据的归档和哈希不变。该配置修正不改变生产源码；新的 hosted head 需取得自己的执行结果，不能继承此前候选已通过的工作流。

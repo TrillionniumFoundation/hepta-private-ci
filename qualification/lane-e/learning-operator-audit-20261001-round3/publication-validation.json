@@ -1,0 +1,108 @@
+{
+  "observedAt": "2026-10-01T06:16:08.935921+00:00",
+  "candidateSource": "d020868300c3521c8d435ba1300362134c029354",
+  "candidateTree": "d8dc0e8f0459ef0229eb995ef9c694684f7992c9",
+  "scope": "publication policy validation with explicit configuration delta; no production code change or inherited final-head qualification",
+  "configurationDelta": {
+    ".codespellrc": "71a449ee842fe21194436f120a4eb3ec89aefbba57f23d6cb10d6b77e1f6fc28",
+    ".github/blob-size-allowlist.txt": "b09c0db50aafad052e7f42569f62f9469bb8c704e8aaa9bff857c8c7870507eb"
+  },
+  "retainedCargoLogBlob": "f099d4b9d04d53d09443f8523dc3378708426c57",
+  "hostedFailures": [
+    {
+      "runId": 36823320861,
+      "jobId": 110243418107,
+      "scope": "Codespell",
+      "conclusion": "failure",
+      "reason": "Cargo dependency name in an unchanged original execution log was misclassified as spelling error"
+    },
+    {
+      "runId": 36823320861,
+      "jobId": 110243418135,
+      "scope": "blob size",
+      "conclusion": "failure",
+      "reason": "Original evidence archive exceeds default checked-in blob size"
+    }
+  ],
+  "localResults": [
+    {
+      "scope": "first working-directory Codespell attempt",
+      "exitCode": 65,
+      "reason": "Relative log skip did not match ./ prefix; untracked local tool metadata also scanned",
+      "log": "final-head/codespell-fixed.log"
+    },
+    {
+      "scope": "clean tracked source export plus two recorded configuration deltas",
+      "argv": [
+        "python3",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git"
+      ],
+      "cwd": "/dev/shm/hepta-round3-codespell-candidate",
+      "toolVersion": "2.4.3",
+      "officialReleaseCommit": "57b21406f092110c18776e39b0bda50d37c945c8",
+      "toolPath": "/dev/shm/hepta-round3-codespell-2.4.3",
+      "toolPreparation": "Exact official release source; SCM version metadata generated from exact Git tag only; checker and dictionary unchanged",
+      "exitCode": 0,
+      "log": "final-head/codespell-clean-checkout-fixed.log"
+    },
+    {
+      "scope": "all 389 changed blobs at recorded source; modified precise allowlist",
+      "argv": [
+        "python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "997e7beef8151160065df36b024bc8da5c989e93",
+        "--head",
+        "d020868300c3521c8d435ba1300362134c029354",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exitCode": 0,
+      "log": "final-blob-policy.log"
+    }
+  ],
+  "archive": {
+    "path": "publication-logs.tar.gz",
+    "bytes": 79883,
+    "sha256": "a66d7f89f407678f00058ed49ded50c1650b49960983f47e63eb88f39ab2b839",
+    "members": [
+      {
+        "path": "final-head/job-110243418107-codespell.log",
+        "bytes": 26621,
+        "sha256": "175534b90a1c7bbb9d3f3e06d27309bf8a338c66d6d4020c70a17a593a90674a"
+      },
+      {
+        "path": "final-head/job-110243418135-blob-policy.log",
+        "bytes": 746052,
+        "sha256": "be6e50a36fb7c758c343aab0b3a9727849f09bb7da9935054d24bb0a2da5be14"
+      },
+      {
+        "path": "final-head/codespell-fixed.log",
+        "bytes": 496,
+        "sha256": "e272e95eb8a6beed430622b85743382f7f5725962419e641d17d3885b9b0f7ca"
+      },
+      {
+        "path": "final-head/codespell-clean-checkout-fixed.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "final-blob-policy.log",
+        "bytes": 45465,
+        "sha256": "3b99f4472f304bba17630662747dfa8e0615d56c3c044d33183aa8849cfa90d4"
+      }
+    ]
+  },
+  "qualification": {
+    "newHeadHostedExecutionInherited": false,
+    "defaultLoopComplete": false,
+    "productionAccepted": false
+  }
+}
