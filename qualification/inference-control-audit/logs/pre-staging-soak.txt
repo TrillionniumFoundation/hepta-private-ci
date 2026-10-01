@@ -1,0 +1,38 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+    Finished `test` profile [unoptimized] target(s) in 0.80s
+────────────
+ Nextest run ID a02c5e42-0193-43fa-a9bd-31be00f5def8 with nextest profile: local
+    Starting 1 test across 6 binaries (84 tests skipped)
+        SLOW [> 30.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [> 60.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [> 90.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>120.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>150.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>180.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>210.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>240.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>270.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>300.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>330.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>360.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>390.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>420.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>450.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>480.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>510.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>540.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+        SLOW [>570.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+ TERMINATING [>600.000s] (───) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+     TIMEOUT [ 601.030s] (1/1) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::post_compaction_multi_generation_curve has been running for over 60 seconds
+
+    (test timed out)
+
+────────────
+     Summary [ 601.033s] 1 test run: 0 passed, 1 timed out, 84 skipped
+     TIMEOUT [ 601.030s] (1/1) codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve
+error: test run failed
+error: recipe `test` failed on line 88 with exit code 100
