@@ -96,10 +96,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         // Freeze the identity of the existing owner, never a new coordinator
         // or a caller-selected body/model generation. Agentd validates this
         // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
+        let generation = composition.supervisor_generation;
         let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
         fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
+        fence_bytes.extend_from_slice(&composition.agentd_generation.to_be_bytes());
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();

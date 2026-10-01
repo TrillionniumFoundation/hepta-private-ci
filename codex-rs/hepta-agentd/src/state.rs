@@ -586,18 +586,23 @@ impl AgentdState {
             return Ok(None);
         };
 
+        self.require_current_run_start(record)?;
+        let generation = record.snapshot.generation;
         let invocation = provider.build(&self.identity, record)?;
-        invocation.validate(&self.identity, record)?;
+        invocation.validate(generation, record)?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
         // lifecycle operations.
-        let composition = self
+        let mut composition = self
             .runs
             .lock()
             .map_err(poisoned_state)?
             .composition()
             .clone();
+        // Process transport identity stays at the spawn generation. Run
+        // snapshots use the independently validated live lifecycle generation.
+        composition.supervisor_generation = generation;
         let outcome = runner
             .prepare_for_composition(&composition, invocation.request, invocation.inputs)
             .await
@@ -617,6 +622,18 @@ impl AgentdState {
                 let now_ms = first_now.max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
+                control::require_current_run_identity(
+                    &self.identity,
+                    generation,
+                    snapshot.generation,
+                    &snapshot.fence_digest,
+                )?;
+                control::require_current_run_identity(
+                    &self.identity,
+                    generation,
+                    attachment.generation,
+                    &attachment.fence_digest,
+                )?;
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
                 let admitted = runs
                     .start_run(
