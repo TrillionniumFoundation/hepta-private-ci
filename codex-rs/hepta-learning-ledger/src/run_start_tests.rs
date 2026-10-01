@@ -103,6 +103,17 @@ fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
     }
 }
 
+// Inspect the original lock-owning handle: Windows locks also exclude other
+// handles in this process. Restore its cursor before the next journal operation.
+fn locked_bytes(mut file: &File) -> Vec<u8> {
+    let position = must(file.stream_position());
+    must(file.seek(SeekFrom::Start(0)));
+    let mut bytes = Vec::new();
+    must(file.read_to_end(&mut bytes));
+    must(file.seek(SeekFrom::Start(position)));
+    bytes
+}
+
 struct Fixture {
     root: PathBuf,
 }
@@ -181,7 +192,7 @@ fn exact_retry_is_idempotent_but_run_id_drift_conflicts() {
     let mut journal = fixture.create();
     let first = record("run-1", b"objective-semantic-one");
     let receipt = must(journal.append(Digest32::ZERO, first.clone()));
-    let before = must(fs::read(fixture.path()));
+    let before = locked_bytes(&journal.file.0);
 
     let replay = must(journal.append(Digest32::ZERO, first.clone()));
     assert_eq!(
@@ -189,27 +200,27 @@ fn exact_retry_is_idempotent_but_run_id_drift_conflicts() {
         RunStartAppendDisposition::IdempotentReplay
     );
     assert_eq!(replay.chain_digest, receipt.chain_digest);
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&journal.file.0), before);
 
     let second = must(journal.append(
         receipt.chain_digest,
         record("run-2", b"objective-semantic-second"),
     ));
-    let after_second = must(fs::read(fixture.path()));
+    let after_second = locked_bytes(&journal.file.0);
     let late_replay = must(journal.append(second.chain_digest, first));
     assert_eq!(
         late_replay.disposition,
         RunStartAppendDisposition::IdempotentReplay
     );
     assert_eq!(late_replay.record_digest, receipt.record_digest);
-    assert_eq!(must(fs::read(fixture.path())), after_second);
+    assert_eq!(locked_bytes(&journal.file.0), after_second);
 
     let changed = record("run-1", b"objective-semantic-two");
     assert_eq!(
         journal.append(Digest32::ZERO, changed),
         Err(RunStartStoreError::Conflict)
     );
-    assert_eq!(must(fs::read(fixture.path())), after_second);
+    assert_eq!(locked_bytes(&journal.file.0), after_second);
 }
 
 #[test]
@@ -261,12 +272,12 @@ fn objective_payload_digest_mismatch_rejects_before_io() {
     let mut journal = fixture.create();
     let mut invalid = record("run-1", b"objective-semantic-one");
     invalid.snapshot.objective_digest = digest("forged");
-    let before = must(fs::read(fixture.path()));
+    let before = locked_bytes(&journal.file.0);
     assert_eq!(
         journal.append(Digest32::ZERO, invalid),
         Err(RunStartStoreError::ObjectiveDigestMismatch)
     );
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&journal.file.0), before);
 }
 
 #[test]
@@ -369,12 +380,12 @@ fn objective_protocol_digest_mismatch_rejects_before_io() {
     let mut journal = fixture.create();
     let mut invalid = record("run-protocol", b"objective-semantic");
     invalid.objective_function_v1_digest = digest("forged-protocol");
-    let before = must(fs::read(fixture.path()));
+    let before = locked_bytes(&journal.file.0);
     assert_eq!(
         journal.append(Digest32::ZERO, invalid),
         Err(RunStartStoreError::ObjectiveProtocolDigestMismatch)
     );
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&journal.file.0), before);
 }
 
 #[test]
