@@ -4,4 +4,7 @@ codex_rust_crate(
     name = "hepta-bellman-operator",
     crate_name = "codex_hepta_bellman_operator",
     crate_root = "src/authoritative_lib.rs",
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    },
 )

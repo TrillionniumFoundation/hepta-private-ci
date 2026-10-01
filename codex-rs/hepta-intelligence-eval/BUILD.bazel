@@ -11,6 +11,9 @@ codex_rust_crate(
     # retain every cut; their harness timeout is not a product latency gate.
     integration_test_timeout = "long",
     test_data_extra = ["src/lib.rs"],
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    },
     unit_test_timeout = "long",
 )
 

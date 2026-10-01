@@ -28,14 +28,13 @@ from scripts.hepta_workflow_commands import (
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/rust-ci.yml"
 WORKFLOW_DOCUMENT = load_workflow(WORKFLOW.read_text(encoding="utf-8"))
-FLAGS = ("ARGUMENT_COMMENT_LINT", "CODEX", "WORKFLOWS", "ARGUMENT_COMMENT_LINT_PACKAGE")
+FLAGS = ("CODEX", "WORKFLOWS", "ARGUMENT_COMMENT_LINT_PACKAGE")
 RESULTS = (
     "MANIFEST_RESULT",
     "GENERAL_RESULT",
     "BENCHMARK_RESULT",
     "SHEAR_RESULT",
     "ARGPKG_RESULT",
-    "ARGLINT_RESULT",
 )
 
 
@@ -151,7 +150,7 @@ class FastFeedbackTests(unittest.TestCase):
         result, flags = self.detect(self.base)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(set(flags.values()), {"false"})
-        self.assertEqual(len(flags), 4)
+        self.assertEqual(len(flags), 3)
 
     def test_invalid_base_fails_without_skip_outputs(self):
         result, flags = self.detect(self.base, base="0" * 40)
@@ -167,7 +166,6 @@ class FastFeedbackTests(unittest.TestCase):
         result, flags = self.detect(self.changed("codex-rs/member/src/new\nname.rs"))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(flags["codex"], "true")
-        self.assertEqual(flags["argument_comment_lint"], "true")
 
     def test_deleted_source_selects_rust(self):
         present = self.changed("codex-rs/member/src/lib.rs")
@@ -257,29 +255,28 @@ class FastFeedbackTests(unittest.TestCase):
             0,
         )
 
-    def test_selected_lint_requires_success(self):
-        self.assertNotEqual(
-            self.summarize(
-                NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT="true",
-                ARGLINT_RESULT="failure",
-            ).returncode,
-            0,
-        )
-
-    def test_selected_workflows_require_both_lint_and_rust(self):
-        self.assertNotEqual(
-            self.summarize(
-                NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true",
-                ARGLINT_RESULT="skipped",
-            ).returncode,
-            0,
-        )
+    def test_selected_workflows_require_native_checks(self):
         self.assertNotEqual(
             self.summarize(
                 NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true",
                 BENCHMARK_RESULT="failure",
             ).returncode,
             0,
+        )
+        self.assertEqual(
+            self.summarize(NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true").returncode,
+            0,
+        )
+
+    def test_scheduled_parameter_style_diagnostic_is_nonblocking(self):
+        full = load_workflow((ROOT / ".github/workflows/rust-ci-full.yml").read_text())
+        self.assertEqual(
+            workflow_job(full, "argument_comment_lint_prebuilt")["continue-on-error"],
+            "true",
+        )
+        self.assertNotIn(
+            "argument_comment_lint_prebuilt",
+            workflow_needs(workflow_job(full, "results")),
         )
 
     def test_benchmark_is_preserved_but_does_not_delay_format_result(self):

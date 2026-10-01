@@ -3,6 +3,7 @@ load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_proc_macro", "rust_test")
 load("//bazel/rules/testing:foreign_platform_binary.bzl", "foreign_platform_binary")
+load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 load("//bazel/rules/testing/wine:wine_runtime.bzl", "WINE_TEST_TARGET_COMPATIBLE_WITH", "wine_test_runtime")
 
 # Match Cargo's Windows linker behavior so Bazel-built binaries and tests use
@@ -198,6 +199,8 @@ def codex_rust_crate(
         integration_compile_data_extra = [],
         integration_test_args = [],
         unit_test_args = [],
+        unit_test_dependency_replacements = {},
+        unit_test_features = [],
         binary_test_target_compatible_with = [],
         integration_test_timeout = None,
         test_data_extra = [],
@@ -224,6 +227,9 @@ def codex_rust_crate(
             Crates are only compiled in a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
+        unit_test_dependency_replacements: Test-only workspace dependency variants.
+            Replace the complete transitive closure when public types cross crates.
+        unit_test_features: Additional features for the test-only library and harness.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
@@ -337,14 +343,33 @@ def codex_rust_crate(
         unit_test_binary = name + "-unit-tests-bin"
         unit_test_shard_count = _test_shard_count(test_shard_counts, unit_test_name)
 
+        unit_test_library = name
+        if unit_test_dependency_replacements or unit_test_features:
+            unit_test_library = name + "-test-lib"
+            lib_rule(
+                name = unit_test_library,
+                testonly = True,
+                crate_name = crate_name,
+                crate_features = crate_features + unit_test_features,
+                deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,
+                compile_data = compile_data,
+                data = lib_data_extra,
+                srcs = lib_srcs,
+                edition = crate_edition,
+                rustc_flags = rustc_flags_extra,
+                rustc_env = rustc_env,
+                rustc_env_files = rustc_env_files,
+                visibility = ["//visibility:public"],
+            )
+
         # Shard at the workspace_root_test layer. rules_rust's sharding wrapper
         # expects to run from its own runfiles cwd, while workspace_root_test
         # deliberately changes cwd so Insta sees Cargo-like snapshot paths.
         rust_test(
             name = unit_test_binary,
-            crate = name,
-            crate_features = crate_features,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            crate = unit_test_library,
+            crate_features = crate_features + unit_test_features,
+            deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
             # Unit tests also compile to standalone Windows executables, so
             # keep their stack reserve aligned with binaries and integration
             # tests under gnullvm.

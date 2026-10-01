@@ -40,17 +40,24 @@ def validate(needs: object, allowed: set[str], expected: set[str] | None) -> Non
         if result != "success" and not (result == "skipped" and name in allowed):
             failures.append((name, result))
     if failures:
-        raise ValueError("CI dependencies did not succeed: " + ", ".join(
-            f"{name}: {result}" for name, result in sorted(failures)
-        ))
+        raise ValueError(
+            "CI dependencies did not succeed: "
+            + ", ".join(f"{name}: {result}" for name, result in sorted(failures))
+        )
 
 
 def main() -> None:
     try:
         needs = json.loads(os.environ["NEEDS"])
-        allowed = names(json.loads(os.environ.get("ALLOWED_SKIPPED", "[]")), "ALLOWED_SKIPPED")
+        allowed = names(
+            json.loads(os.environ.get("ALLOWED_SKIPPED", "[]")), "ALLOWED_SKIPPED"
+        )
         raw_expected = os.environ.get("EXPECTED_NEEDS")
-        expected = None if raw_expected is None else names(json.loads(raw_expected), "EXPECTED_NEEDS")
+        expected = (
+            None
+            if raw_expected is None
+            else names(json.loads(raw_expected), "EXPECTED_NEEDS")
+        )
         validate(needs, allowed, expected)
     except (KeyError, ValueError, TypeError) as error:
         print(f"CI gate rejected: {error}")
