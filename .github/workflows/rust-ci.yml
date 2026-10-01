@@ -20,8 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0
+          fetch-depth: 2
           persist-credentials: false
+      - name: Fetch exact pull request comparison
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
       - name: Test fast-feedback failure semantics
         run: python3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v
       - name: Detect changed paths (no external action)

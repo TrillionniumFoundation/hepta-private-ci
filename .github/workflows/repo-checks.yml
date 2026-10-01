@@ -17,7 +17,18 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-          fetch-depth: 0
+          fetch-depth: 2
+
+      - name: Fetch exact formatting comparison
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]]; then
+            python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$(git rev-parse HEAD)"
+          fi
 
       - uses: ./.github/actions/setup-ci
 
