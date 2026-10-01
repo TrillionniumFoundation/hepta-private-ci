@@ -15,10 +15,8 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
+use codex_state::DurableSqlitePoolCapacity;
+use codex_state::open_durable_evidence_pool_with_capacity;
 
 use crate::DestinationApplyReceipt;
 use crate::DispatchClaim;
@@ -81,18 +79,12 @@ impl DurableOperationStore {
             std::fs::create_dir_all(parent)
                 .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
         }
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
-            .await
-            .map_err(sqlx_error)?;
+        let pool = open_durable_evidence_pool_with_capacity(
+            path,
+            DurableSqlitePoolCapacity::FourConnections,
+        )
+        .await
+        .map_err(sqlx_error)?;
         if let Err(error) = verify_quick_check(&pool).await {
             pool.close().await;
             return Err(error);
@@ -909,8 +901,8 @@ impl DurableOperationStore {
             operation_id,
         )
         .await?
+            && status.state != DurableOutboxState::Acknowledged
         {
-            if status.state != DurableOutboxState::Acknowledged {
                 let fence = status
                     .fence
                     .checked_add(1)
@@ -931,7 +923,6 @@ impl DurableOperationStore {
                 .execute(&mut *tx)
                 .await
                 .map_err(sqlx_error)?;
-            }
         }
         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
             .await?

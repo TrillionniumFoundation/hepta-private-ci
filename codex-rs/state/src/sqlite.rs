@@ -27,6 +27,11 @@ use std::path::PathBuf;
 use std::time::Duration;
 use std::time::Instant;
 
+#[path = "sqlite_evidence.rs"]
+mod evidence;
+pub use evidence::DurableSqlitePoolCapacity;
+pub use evidence::open_durable_evidence_pool_with_capacity;
+
 const LOGS_DB_FILENAME: &str = "logs_2.sqlite";
 const GOALS_DB_FILENAME: &str = "goals_1.sqlite";
 const MEMORIES_DB_FILENAME: &str = "memories_1.sqlite";
@@ -297,18 +302,7 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        open_durable_evidence_pool_with_capacity(path, DurableSqlitePoolCapacity::Default).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.
