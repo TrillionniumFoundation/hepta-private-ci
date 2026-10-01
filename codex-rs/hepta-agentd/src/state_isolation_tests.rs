@@ -1,26 +1,41 @@
 use std::fs;
+#[cfg(unix)]
 use std::fs::OpenOptions;
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
 use super::*;
+#[cfg(unix)]
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::DurableRunStartJournal;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::RunStartRecordV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_paths::HeptaFleetRoot;
+#[cfg(unix)]
 use codex_hepta_types::AuthorityPosture;
+#[cfg(unix)]
 use codex_hepta_types::Digest32;
+#[cfg(unix)]
 use codex_hepta_types::Generation;
+#[cfg(unix)]
 use codex_hepta_types::StableId;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
+#[cfg(unix)]
 use ed25519_dalek::SigningKey;
 
 use crate::AgentdPayload;
@@ -30,6 +45,7 @@ use crate::RunPhase;
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
+    #[cfg(unix)]
     fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
@@ -413,6 +429,7 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     assert!(run.is_none());
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn current_durable_run_start_requires_live_owner_trust() {
     let (temp, registry, previous) = fixture().expect("runtime fixture");
@@ -634,4 +651,20 @@ async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_acce
         )
         .await;
     assert!(matches!(result, Err(AgentdError::GenerationFenced(_))));
+}
+
+#[cfg(not(unix))]
+#[test]
+fn private_owner_trust_refuses_unsupported_platform_ownership() {
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let path = state.identity.home_root.join("run-start-trust.json");
+    let error = crate::authbus_trust::read_private_owner_file(&path, state.identity(), 16_384)
+        .expect_err("Unix ownership proof must not be synthesized on another platform");
+    let AgentdError::Invalid(message) = error else {
+        panic!("unsupported ownership checks must reject configuration");
+    };
+    assert_eq!(
+        message,
+        "AuthBus text: private owner configuration currently requires Unix ownership checks"
+    );
 }
