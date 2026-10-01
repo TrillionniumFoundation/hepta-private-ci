@@ -129,7 +129,9 @@ pub async fn run(
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
         if let Some(runner) = state.intelligence_product.get() {
-            runner.telemetry().set_provider_configured(true);
+            runner
+                .telemetry()
+                .set_provider_configured(/*configured*/ true);
         }
     }
     if let Some(current) = retrieval_context {
@@ -435,7 +437,7 @@ async fn run_production_operation_reconciler(
     loop {
         // Reconcile immediately after startup/restart, then at a bounded
         // cadence. Agentd never dispatches from this recovery loop.
-        host.reconcile(256).await?;
+        host.reconcile(/*limit*/ 256).await?;
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}

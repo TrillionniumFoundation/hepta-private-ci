@@ -937,6 +937,7 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
 #[path = "production_growth_tests.rs"]
 mod growth;
 
+#[cfg(unix)]
 #[test]
 fn exact_destination_recovery_requires_event_predecessor_and_witness() {
     let fixture = Fixture::new();
@@ -949,7 +950,7 @@ fn exact_destination_recovery_requires_event_predecessor_and_witness() {
         &decision_signing_payload_v2(&request).unwrap(),
     );
     let first = writer
-        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
         .unwrap();
     let first_event = writer.records().unwrap()[0].event.clone();
     let witness = writer.witness_frontier().unwrap();
@@ -995,7 +996,7 @@ fn exact_destination_recovery_requires_event_predecessor_and_witness() {
     let ledger = DurableLedger::recover(
         fixture.file("ledger"),
         binding(),
-        64,
+        /*max_records*/ 64,
         LedgerRecovery::Unacknowledged,
     )
     .unwrap();

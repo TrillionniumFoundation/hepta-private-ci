@@ -51,7 +51,7 @@ fn duplicate_recovery_turn_ids_cannot_substitute_output_after_input_authenticati
             "id": "thread-a", "sessionId": "session-a", "preview": "",
             "ephemeral": true, "modelProvider": "provider", "createdAt": 1,
             "updatedAt": 2, "recencyAt": 2, "status": {"type": "idle"},
-            "cwd": "/tmp", "cliVersion": "test", "source": "exec", "turns": []
+            "cwd": std::env::current_dir().unwrap(), "cliVersion": "test", "source": "exec", "turns": []
         }
     }))
     .unwrap();

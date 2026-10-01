@@ -572,7 +572,9 @@ impl AgentdConfig {
             ));
         }
         self.require_canonical_intelligence_runner(&runner)?;
-        runner.telemetry().set_provider_configured(true);
+        runner
+            .telemetry()
+            .set_provider_configured(/*configured*/ true);
         self.intelligence_product_runner = Some(runner);
         self.intelligence_invocation_provider = Some(std::sync::Arc::new(
             crate::HostOwnedAgentdIntelligenceInvocationProviderV1::new(factory),

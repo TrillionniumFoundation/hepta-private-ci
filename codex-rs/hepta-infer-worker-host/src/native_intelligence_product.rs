@@ -126,7 +126,7 @@ impl NativeIntelligenceProductHostV1 {
                         control,
                         admission,
                         prompt,
-                        None,
+                        /*context_query*/ None,
                         binding.clone(),
                         cancellation,
                     )

@@ -181,7 +181,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), OutcomeCreditClo
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use super::*;
     use codex_hepta_learning_ledger::ActivatedLearningTrustV1;

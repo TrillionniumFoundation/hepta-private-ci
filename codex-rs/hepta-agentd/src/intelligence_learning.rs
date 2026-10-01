@@ -350,7 +350,8 @@ impl AgentdIntelligenceLearningHostV1 {
                 )?))
             })
             .await?;
-        self.enqueue(prepared, payload, None).await
+        self.enqueue(prepared, payload, /*expected_predecessor*/ None)
+            .await
     }
 
     pub async fn enqueue_outcome(

@@ -92,7 +92,11 @@ impl CognitiveTestHost {
         let manifest =
             AgentManifest::new(agent_id.clone(), binding, ResourceBudget::local_default())?;
         let record = registry.register(manifest)?;
-        registry.compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)?;
+        registry.compare_and_transition(
+            &agent_id,
+            /*expected_generation*/ 0,
+            AgentLifecycle::Starting,
+        )?;
         std::fs::create_dir_all(record.layout.home_root())?;
         std::fs::create_dir_all(record.layout.run_root())?;
         write_model_config(record.layout.home_root(), model, provider_base_url)?;
@@ -117,7 +121,11 @@ impl CognitiveTestHost {
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
         state.mark_runtime_prerequisites_ready()?;
-        registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
+        registry.compare_and_transition(
+            &agent_id,
+            /*expected_generation*/ 1,
+            AgentLifecycle::Running,
+        )?;
         state.refresh_generation()?;
 
         codex_utils_home_dir::set_process_codex_home_override(
@@ -163,7 +171,11 @@ impl CognitiveTestHost {
         }
         state.mark_app_server_ready()?;
 
-        let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;
+        let client = AgentdClient::new(
+            identity.control_socket.clone(),
+            agent_id.clone(),
+            /*spawn_generation*/ 1,
+        )?;
         let deadline = Instant::now() + READY_TIMEOUT;
         loop {
             match client.health().await {

@@ -793,3 +793,84 @@ comment-only correction; executable Rust, APIs, tests, byte grammar and workflow
 commands are unchanged. Closing owner-seal, consumer and OnceCell reviews found
 no second confirmed source or compatibility defect in their inspected scope.
 Each execution observation still belongs to its own immutable source and tree.
+
+## Typed argument-call closing review
+
+The R8 Windows argument lint actually executed and reported ten branch-added
+or changed call sites lacking opaque argument names. This is distinct from the
+Windows clippy launcher failure and the Linux pre-lint build cancellation.
+The ten sites are corrected with the actual callee parameter names. Another 29
+reported existing sites in the reviewed owners, protocol seam, physical consumer
+and shared fixture are annotated in the same bounded pass. All 39 insertions
+retain the original expressions, values and argument order; there is no API or
+executable behavior change. The names match the typed diagnostics and source
+signatures, and the format follows the lint's exact `/*param_name*/` grammar.
+Other project-wide baseline diagnostics remain separate. Static reconstruction
+from the original source and reported coordinates verifies the comment-only
+patch; it is not an actual argument-lint execution pass. The final candidate
+requires its own typed CI records.
+
+The actual Windows release build also exposed three unused items introduced by
+the signed profile or the Unix fixture registration. The rollback writer's
+`Write` import and byte-bound constant now share `cfg(unix)` with their only
+users. The final-revalidation fixture setter now shares `cfg(all(test, unix))`
+with its only callers; the existing test pause hook remains available in every
+test build. These narrow guards remove the candidate warnings without changing
+supported runtime behavior or enabling the unsupported Windows anchored profile.
+The Windows build's inherited isolation/plasticity unit errors remain failures;
+the warning correction does not convert that job into a successful build.
+
+The Windows shard also actually ran three new pure recovery regressions and
+failed before their assertions: their `ThreadReadResponse` JSON encoded Unix
+`/tmp` as an `AbsolutePathBuf` cwd. Both fixture builders now serialize the
+platform's actual absolute `current_dir()` path. Their separate observed
+`codex_home` strings and matching intent/dispatch digests are unchanged; cwd is
+not that identity. Every cross-platform registration, malicious duplicate turn,
+retained stop boundary and output assertion is preserved. The fix requires its
+own Windows execution result rather than reusing the earlier Linux passes.
+
+The same platform-safe cwd correction applies to the actual adapter's shared
+reconciliation fixture, whose three inherited contract tests failed at that
+deserialization boundary. It is a direct native recovery consumer, so the
+existing fixture debt is included in this review. Its home binding and all
+message/input/session/duplicate/indeterminate assertions are retained.
+
+The newly added exact destination-recovery ledger regression actually failed on
+Windows when opening its fixture directory handle. It exercises real durable
+ledger and independent witness files, directory sync and prefix catch-up, so
+that single fixture now requires Unix. Its assertions and the old ledger test
+registrations are unchanged. The traceability scope and development/compatibility
+guides state this limit; no Windows durable witness qualification is inferred.
+
+The Intelligence crate's twelve inherited Windows failures are also inside the
+reviewed module: seven evaluated-shadow, two segmented-ledger and three
+Outcome/Credit cases all fail while opening a real ledger directory handle.
+Their two test modules now require Unix. Independent case-by-case review found
+no pure-memory case inside either registration. The production APIs, all Unix
+assertions and separate pure evaluation-entry/canonical fixtures are unchanged.
+This repairs the module's fixture registration; it is not Windows durable
+product parity or an excuse to omit failed tests from prior execution records.
+
+The Mac argument-lint aspect emitted actual typed diagnostics before the later
+job cancellation. Two additional newly added destination-recovery fixture
+arguments now carry their exact `/*now*/` and `/*max_records*/` names, retaining
+50 and 64 respectively. Together with the earlier Windows pass, the candidate
+adds 41 opaque argument hints. The cancelled Mac job remains incomplete; its
+observed diagnostics are usable findings, not a successful full lint execution.
+
+The R8 qualification-host executed its release build, recovery and quality
+matrices and measurement steps, but the raw evidence upload failed: `run_probe`
+used fully qualified Rust test names containing `::` as log filenames, and the
+artifact uploader rejects colon characters. Artifact listing was empty. The
+visible metrics summary is not a substitute for independent raw probe/count or
+sample-distribution verification. Log stems now use a safe spelling while the
+original test filter, forwarded flags, exact matching and positive-test guard
+remain unchanged. The next candidate must supply its own uploaded raw evidence.
+
+Agentd's existing `terminal_cell_owner` learning consumer fixture was also
+actually observed failing on Windows. All three cases (including the existing
+ignored history profile) require real ledger/witness directory handles; the
+fixture now registers on Unix. The second case's earlier inherited CognitiveStore
+schema-oracle failure is not repaired or reclassified as a pass. Independent
+case-by-case review and byte comparison retain every original assertion and
+ignored marker, with production APIs and other suites unchanged.

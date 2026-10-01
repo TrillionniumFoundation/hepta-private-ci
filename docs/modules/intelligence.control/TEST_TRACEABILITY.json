@@ -83,7 +83,7 @@
         "action_projection_preserves_the_ledger_capacity_bound",
         "default_learning_writer_requires_signed_intrinsic_complete_candidates"
       ],
-      "supportScope": "complete payload/event/predecessor matching plus real file-backed LedgerWriter witness-prefix/catch-up tests; full daemon crash cuts remain open"
+      "supportScope": "complete payload/event/predecessor matching plus a Unix real file-backed LedgerWriter directory-handle/witness-prefix/catch-up fixture; Windows durable witness-directory qualification and full daemon crash cuts remain open"
     },
     {
       "id": "fair_recovery",

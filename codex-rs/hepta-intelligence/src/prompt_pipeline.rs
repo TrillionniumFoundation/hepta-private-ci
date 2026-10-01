@@ -367,10 +367,10 @@ pub fn compile_exercised_prompt_context_v1(
         scope_digest,
         authority_domain_digest,
         now_unix_ms.max(1),
-        1,
+        /*revocation_epoch*/ 1,
         Vec::new(),
-        true,
-        None,
+        /*revocation_set_complete*/ true,
+        /*predecessor_snapshot_digest*/ None,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let admission_snapshot = verify_admission_snapshot_v2(snapshot_raw, &verifier)

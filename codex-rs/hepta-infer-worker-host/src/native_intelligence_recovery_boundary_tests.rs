@@ -137,7 +137,7 @@ fn full_thread_read_terminal(intent: &CodexOperationIntent) -> NativeRunOutput {
             "id": "thread-1", "sessionId": "session-1", "preview": "",
             "ephemeral": true, "modelProvider": "provider", "createdAt": 1,
             "updatedAt": 2, "recencyAt": 2, "status": {"type": "idle"},
-            "cwd": "/tmp", "cliVersion": "test", "source": "exec", "turns": []
+            "cwd": std::env::current_dir().unwrap(), "cliVersion": "test", "source": "exec", "turns": []
         }
     }))
     .unwrap();

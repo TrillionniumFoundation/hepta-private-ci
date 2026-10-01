@@ -140,6 +140,15 @@ and rollback owners reject non-Unix profile construction because a qualified
 anchored-handle implementation is unavailable. Platform-specific fixture
 registration does not establish whole-module Windows qualification, non-Unix
 no-follow or production execution parity.
+The real file-backed exact destination-recovery ledger fixture likewise requires
+Unix directory handles. Native recovery and adapter identity fixtures keep their
+cross-platform registrations and use a platform-valid absolute Thread cwd;
+observed-home identity strings and digests remain unchanged.
+The twelve evaluated-shadow/segmented-ledger and Outcome/Credit fixture cases
+also require Unix directory handles; their production APIs remain portable at
+the source boundary without claiming qualified Windows directory durability.
+The three Agentd `terminal_cell_owner` integration cases require the same real
+ledger/witness handles; their original ignored profile is retained.
 Bazel's client/adapter/Agentd
 unit-test variants carry `test-support` only in `testonly` dependency graphs,
 with shared concrete client types. Production libraries and binaries keep the

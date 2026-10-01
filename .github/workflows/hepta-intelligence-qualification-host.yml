@@ -206,7 +206,8 @@ jobs:
             local executable="$1"
             local filter="$2"
             shift 2
-            local output="$root/${filter}.log"
+            local log_filter="${filter//:/-}"
+            local output="$root/${log_filter}.log"
             timeout 180 "$executable" "$filter" "$@" --nocapture --test-threads=1 > "$output" 2>&1
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
           }
@@ -245,7 +246,8 @@ jobs:
           run_quality_probe() {
             local executable="$1"
             local filter="$2"
-            local output="$root/quality-${filter}.log"
+            local log_filter="${filter//:/-}"
+            local output="$root/quality-${log_filter}.log"
             timeout 180 "$executable" "$filter" --nocapture --test-threads=1 > "$output" 2>&1
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
             printf '{"test":"%s","status":"passed"}\n' "$filter" >> "$root/semantic-quality.jsonl"

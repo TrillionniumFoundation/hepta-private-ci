@@ -747,6 +747,21 @@ The mixed Agentd prompt-runtime suite keeps its eight memory/portable-reopen
 cases cross-platform and gates only its actual registry pipeline case. The
 pure aborted-worker capacity assertion likewise remains cross-platform.
 
+The exact destination-recovery regression uses real ledger/witness files and
+opened directory handles for sync and catch-up. That fixture is registered on
+Unix; it does not qualify durable witness-directory handling on Windows. Pure
+native recovery and adapter identity fixtures remain cross-platform and serialize
+a platform-valid absolute `ThreadReadResponse.cwd` without changing their separate
+observed-home identity or digest.
+The nine evaluated-shadow/segmented-ledger and three Outcome/Credit closure
+fixtures likewise open real ledger directories; their test modules require
+Unix. Their production APIs and every Unix assertion remain unchanged. This
+does not exclude the separate pure evaluation-entry or canonical fixtures.
+Agentd's `terminal_cell_owner` integration fixture also requires Unix real
+ledger/witness directory handles, including its existing ignored history profile.
+This registration does not repair a separate CognitiveStore schema oracle or
+establish Windows durable product qualification.
+
 ### Fleet module-catalog compile input
 
 Agentd normally depends on Fleet, whose production library embeds the existing

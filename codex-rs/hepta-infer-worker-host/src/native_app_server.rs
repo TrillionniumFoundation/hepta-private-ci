@@ -112,7 +112,7 @@ static FINAL_REVALIDATION_TEST_HOOK: std::sync::OnceLock<
     std::sync::Mutex<Option<std::sync::Arc<FinalRevalidationTestHook>>>,
 > = std::sync::OnceLock::new();
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 fn install_final_revalidation_test_hook(hook: std::sync::Arc<FinalRevalidationTestHook>) {
     *FINAL_REVALIDATION_TEST_HOOK
         .get_or_init(|| std::sync::Mutex::new(None))
@@ -1399,7 +1399,7 @@ async fn reconcile_intelligence_start_unknown(
                 binding.run_id.clone(),
                 revision,
                 AgentRunPhase::Indeterminate,
-                false,
+                /*terminal_observed*/ false,
             )
             .await
     {

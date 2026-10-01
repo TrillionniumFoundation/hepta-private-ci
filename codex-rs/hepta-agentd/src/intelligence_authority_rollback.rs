@@ -10,6 +10,7 @@ use std::error::Error as StdError;
 use std::ffi::OsString;
 use std::fmt;
 use std::fs::File;
+#[cfg(unix)]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -21,6 +22,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 const ROLLBACK_SCHEMA_VERSION: u32 = 1;
+#[cfg(unix)]
 const MAX_ROLLBACK_RECORD_BYTES: usize = 4 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]

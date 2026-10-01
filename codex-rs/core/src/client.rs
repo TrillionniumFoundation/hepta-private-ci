@@ -2135,7 +2135,10 @@ impl ModelClientSession {
             {
                 if let Some(attempt) = admitted_provider_attempt.take()
                     && let Err(terminal_error) = attempt
-                        .finish_immediate(None, "ephemeral_final_use_revalidation")
+                        .finish_immediate(
+                            /*http_status*/ None,
+                            "ephemeral_final_use_revalidation",
+                        )
                         .await
                 {
                     return Err(terminal_error);

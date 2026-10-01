@@ -40,7 +40,7 @@ impl WorkerCompletionV1 {
     }
 
     fn supervise_unobserved(budget: Duration, hard_grace: Duration) -> std::io::Result<Self> {
-        Self::supervise_inner(budget, Some(hard_grace), None)
+        Self::supervise_inner(budget, Some(hard_grace), /*observation*/ None)
     }
 
     fn supervise_inner(

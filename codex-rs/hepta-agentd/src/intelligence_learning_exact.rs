@@ -35,7 +35,7 @@ impl AgentdIntelligenceLearningHostV1 {
                 )?))
             })
             .await?;
-        self.enqueue_and_dispatch_exact_v1(prepared, payload, None)
+        self.enqueue_and_dispatch_exact_v1(prepared, payload, /*expected_predecessor*/ None)
             .await
     }
 
