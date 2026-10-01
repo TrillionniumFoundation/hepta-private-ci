@@ -6,16 +6,184 @@ use codex_hepta_types::StableId;
 use codex_hepta_learning_artifacts as artifacts;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use std::fs::File;
 
 #[path = "support/terminal_cell_owner.rs"]
+// The shared helper also retains tiny-clock constructors for other suites.
+#[allow(dead_code)]
 mod support;
 use support::Fixture;
 use support::decision;
 use support::digest;
 use support::id;
-use support::outcome;
-use support::sign;
+
+// Native owner fitting charges actual elapsed Unix microseconds. Keep this
+// integration's positive fixture timeline in seconds, including all signed
+// principal/evidence windows; SQLite and sharing-grant Unix seconds are separate.
+const OWNER_MICROS_PER_SECOND: u64 = 1_000_000;
+const OWNER_NOW: u64 = 50_000_000;
+
+fn signer_seed(name: &str) -> u8 {
+    match name {
+        "generator" => 1,
+        "observer" => 2,
+        "allocator" => 3,
+        "evaluator" => 4,
+        "privacy-owner" => 5,
+        _ => panic!("unknown fixture signer"),
+    }
+}
+
+fn activated_seconds_trust() -> ActivatedLearningTrustV1 {
+    let signers = [
+        (
+            "generator",
+            "generator-controller",
+            LearningEvidenceRoleV1::Generator,
+        ),
+        (
+            "observer",
+            "observer-controller",
+            LearningEvidenceRoleV1::Observer,
+        ),
+        (
+            "allocator",
+            "allocator-controller",
+            LearningEvidenceRoleV1::CreditAllocator,
+        ),
+        (
+            "evaluator",
+            "evaluator-controller",
+            LearningEvidenceRoleV1::Evaluator,
+        ),
+        (
+            "privacy-owner",
+            "privacy-controller",
+            LearningEvidenceRoleV1::UnlearningAuthority,
+        ),
+    ]
+    .into_iter()
+    .map(|(name, controller, role)| {
+        let key = SigningKey::from_bytes(&[signer_seed(name); 32]);
+        TrustedLearningSignerV1 {
+            principal: AuthenticatedPrincipalV1 {
+                principal_id: id(name),
+                credential_chain_digest: digest(&format!("{name}-credential")),
+                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                scope_digest: digest("scope"),
+                authority_epoch: 7,
+                authenticated_at: 10_000_000,
+                expires_at: 100_000_000,
+            },
+            controller_id: id(controller),
+            verifying_key: key.verifying_key().to_bytes(),
+            roles: vec![role],
+            revoked_at: None,
+        }
+    })
+    .collect();
+    let key = SigningKey::from_bytes(&[99; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: id("learning-root"),
+        scope_digest: digest("scope"),
+        verifying_key: key.verifying_key().to_bytes(),
+        valid_from: OWNER_MICROS_PER_SECOND,
+        expires_at: 200_000_000,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("trust-distribution"),
+            generation: 1,
+            effective_at: 20_000_000,
+            trust: LearningEvidenceTrustV1 {
+                scope_digest: digest("scope"),
+                objective_digest: digest("objective"),
+                authority_epoch: 7,
+                signers,
+            },
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 15_000_000,
+        expires_at: 90_000_000,
+        signature: [0; 64],
+    };
+    signed.signature = key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    activate_learning_trust(&root, signed, /*previous*/ None, OWNER_NOW).unwrap()
+}
+
+fn seconds_writer(fixture: &Fixture, limit: usize) -> LedgerWriter {
+    let binding = digest("production-ledger-binding");
+    let ledger = DurableLedger::create(fixture.file("ledger"), binding, limit).unwrap();
+    let witness = LedgerWitnessStore::create(fixture.file("witness"), binding).unwrap();
+    LedgerWriter::from_durable(
+        ledger,
+        witness,
+        activated_seconds_trust(),
+        &fixture.directory(),
+        &fixture.directory(),
+    )
+    .unwrap()
+}
+
+fn recover_seconds_writer(
+    fixture: &Fixture,
+    limit: usize,
+    frontier: LedgerWitnessFrontier,
+) -> LedgerWriter {
+    let binding = digest("production-ledger-binding");
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        binding,
+        limit,
+        LedgerRecovery::Acknowledged(frontier.anchor),
+    )
+    .unwrap();
+    let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding).unwrap();
+    LedgerWriter::from_durable(
+        ledger,
+        witness,
+        activated_seconds_trust(),
+        &fixture.directory(),
+        &fixture.directory(),
+    )
+    .unwrap()
+}
+
+fn sign(
+    verifier: &LearningEvidenceVerifierV1,
+    name: &str,
+    role: LearningEvidenceRoleV1,
+    payload: &[u8],
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = support::sign(verifier, name, role, payload);
+    evidence.issued_at *= OWNER_MICROS_PER_SECOND;
+    evidence.expires_at *= OWNER_MICROS_PER_SECOND;
+    evidence.signature = SigningKey::from_bytes(&[signer_seed(name); 32])
+        .sign(&evidence.signing_bytes())
+        .to_bytes();
+    evidence
+}
+
+fn outcome(
+    record: &str,
+    outcome: &str,
+    predecessor: Option<&str>,
+    value: i64,
+) -> AuthenticatedOutcomeV1 {
+    let mut observed = support::outcome(record, outcome, predecessor, value);
+    observed.observer.authenticated_at *= OWNER_MICROS_PER_SECOND;
+    observed.observer.expires_at *= OWNER_MICROS_PER_SECOND;
+    observed.observed_at = observed.observed_at.map(|at| at * OWNER_MICROS_PER_SECOND);
+    observed.watermark.latest_observable_at *= OWNER_MICROS_PER_SECOND;
+    observed.watermark.finalized_at = observed
+        .watermark
+        .finalized_at
+        .map(|at| at * OWNER_MICROS_PER_SECOND);
+    observed
+}
 
 fn collect(owner: &mut LedgerWriter, prefix: &str, selected: &str, value: i64) {
     collect_with_support(owner, prefix, selected, value, decision().support_digest);
@@ -41,7 +209,7 @@ fn collect_with_support(
     );
     let predecessor = owner.witness_frontier().unwrap().anchor.chain_digest;
     let receipt = owner
-        .append_decision(predecessor, request, &signed, 50)
+        .append_decision(predecessor, request, &signed, OWNER_NOW)
         .unwrap();
     let mut observed = outcome(
         &format!("{prefix}.result-record"),
@@ -57,7 +225,7 @@ fn collect_with_support(
         &outcome_signing_payload_v2(&observed),
     );
     owner
-        .append_outcome(receipt.chain_digest, observed, &signed, 50)
+        .append_outcome(receipt.chain_digest, observed, &signed, OWNER_NOW)
         .unwrap();
 }
 
@@ -74,7 +242,7 @@ fn freeze(owner: &LedgerWriter, name: &str) -> DatasetSnapshotReceiptV3 {
         LearningEvidenceRoleV1::Evaluator,
         &payload,
     );
-    owner.freeze_dataset(plan, &signed, 50).unwrap()
+    owner.freeze_dataset(plan, &signed, OWNER_NOW).unwrap()
 }
 
 fn profile(generation: u64) -> TerminalCellProfileV1 {
@@ -156,15 +324,27 @@ fn persist_reload(
 #[test]
 fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     let fixture = Fixture::new();
-    let mut owner = fixture.writer();
+    let mut owner = seconds_writer(&fixture, /*limit*/ 64);
     collect(&mut owner, "initial-a", "read", 0);
     collect(&mut owner, "initial-stop", "abstain", 0);
     let initial = freeze(&owner, "dataset.initial");
-    assert!(freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), 45).is_err());
-    let frozen = freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), 50).unwrap();
+    assert!(
+        freeze_terminal_cell_from_owner_v1(
+            &owner,
+            &initial,
+            profile(1),
+            45 * OWNER_MICROS_PER_SECOND
+        )
+        .is_err()
+    );
+    let frozen =
+        freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), OWNER_NOW).unwrap();
     assert_eq!(frozen.sample_count(), 2);
-    assert!(fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), 49).is_err());
-    let trained = fit_terminal_cell_from_owner_v1(&owner, frozen, 50).unwrap();
+    assert!(
+        fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), 49 * OWNER_MICROS_PER_SECOND)
+            .is_err()
+    );
+    let trained = fit_terminal_cell_from_owner_v1(&owner, frozen, OWNER_NOW).unwrap();
     let mut registry = artifacts::ArtifactRegistry::new();
     let first = persist_reload(&fixture.root, &mut registry, &trained, None);
     for index in 0..5 {
@@ -178,14 +358,14 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     }
     let next = freeze(&owner, "dataset.next");
     assert_eq!(
-        freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(2), 50)
+        freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(2), OWNER_NOW)
             .unwrap()
             .sample_count(),
         2,
         "new observations do not silently enter the old immutable dataset"
     );
-    let pending = freeze_terminal_cell_from_owner_v1(&owner, &next, profile(2), 50).unwrap();
-    let trained_next = fit_terminal_cell_from_owner_v1(&owner, pending.clone(), 50).unwrap();
+    let pending = freeze_terminal_cell_from_owner_v1(&owner, &next, profile(2), OWNER_NOW).unwrap();
+    let trained_next = fit_terminal_cell_from_owner_v1(&owner, pending.clone(), OWNER_NOW).unwrap();
     let second = persist_reload(
         &fixture.root,
         &mut registry,
@@ -213,14 +393,14 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     );
     // Fresh independent observer episodes, not training targets supplied by fit.
     let evaluation = Fixture::new();
-    let mut evaluator = evaluation.writer();
+    let mut evaluator = seconds_writer(&evaluation, /*limit*/ 64);
     collect(&mut evaluator, "held-out-a", "read", FixedQ32::ONE.raw());
     collect(&mut evaluator, "held-out-stop", "abstain", 0);
     let heldout = freeze(&evaluator, "dataset.heldout");
     let target = fit_terminal_cell_from_owner_v1(
         &evaluator,
-        freeze_terminal_cell_from_owner_v1(&evaluator, &heldout, profile(3), 50).unwrap(),
-        50,
+        freeze_terminal_cell_from_owner_v1(&evaluator, &heldout, profile(3), OWNER_NOW).unwrap(),
+        OWNER_NOW,
     )
     .unwrap();
     assert!(
@@ -272,8 +452,10 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
         &outcome_signing_payload_v2(&correction),
     );
     let head = owner.witness_frontier().unwrap().anchor.chain_digest;
-    owner.append_outcome(head, correction, &signed, 50).unwrap();
-    assert!(fit_terminal_cell_from_owner_v1(&owner, pending, 50).is_err());
+    owner
+        .append_outcome(head, correction, &signed, OWNER_NOW)
+        .unwrap();
+    assert!(fit_terminal_cell_from_owner_v1(&owner, pending, OWNER_NOW).is_err());
     registry
         .append(artifacts::ArtifactEvent::Revoke(artifacts::StateChange {
             event_id: id("revoke.contaminated-parent"),
@@ -296,7 +478,7 @@ fn durable_owner_history_and_concurrent_training_profile() {
         let started = Instant::now();
         let reports = std::thread::scope(|scope| {
             let jobs=(0..agents).map(|agent| scope.spawn(move || {
-                let fixture=Fixture::new();let mut writer=fixture.writer_with_limit(4096);
+                let fixture=Fixture::new();let mut writer=seconds_writer(&fixture, /*limit*/ 4096);
                 let mut append_latencies=Vec::new();
                 for index in 0..pairs {
                     let t=Instant::now();
@@ -305,17 +487,17 @@ fn durable_owner_history_and_concurrent_training_profile() {
                 }
                 let t=Instant::now();
                 let data=freeze(&writer,&format!("profile.dataset.{agent}"));
-                let frozen=freeze_terminal_cell_from_owner_v1(&writer,&data,profile(1),50).unwrap();
-                let trained=fit_terminal_cell_from_owner_v1(&writer,frozen,50).unwrap();
+                let frozen=freeze_terminal_cell_from_owner_v1(&writer,&data,profile(1),OWNER_NOW).unwrap();
+                let trained=fit_terminal_cell_from_owner_v1(&writer,frozen,OWNER_NOW).unwrap();
                 let mut registry=artifacts::ArtifactRegistry::new();
                 let loaded=persist_reload(&fixture.root,&mut registry,&trained,None);
                 assert!(loaded.predict(&id("single-approved-state"),&id("read")).is_ok());
                 let fit_and_reload_us=t.elapsed().as_micros();
                 let cut=writer.witness_frontier().unwrap();drop(writer);
                 let bytes=std::fs::metadata(fixture.root.join("ledger")).unwrap().len();
-                let t=Instant::now();let recovered=fixture.recover_writer(4096,cut);let recovery_us=t.elapsed().as_micros();
+                let t=Instant::now();let recovered=recover_seconds_writer(&fixture, /*limit*/ 4096,cut);let recovery_us=t.elapsed().as_micros();
                 assert_eq!(recovered.witness_frontier().unwrap().anchor.sequence, (pairs*2) as u64);
-                let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,50).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
+                let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,OWNER_NOW).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
                 append_latencies.sort_unstable();
                 format!("OWNER_HISTORY_PROFILE agents={agents} agent={agent} records={} ledger_bytes={bytes} decision_outcome_p50_us={} p95_us={} p99_us={} fit_registry_reload_us={fit_and_reload_us} full_recovery_us={recovery_us} indexed_dataset_read_us={page_us} recovery_profile=complete_authenticated_history not_cold_compaction=true",pairs*2,append_latencies[pairs/2],append_latencies[(pairs*95/100).min(pairs-1)],append_latencies[(pairs*99/100).min(pairs-1)])
             })).collect::<Vec<_>>();
@@ -425,7 +607,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         .await
         .unwrap();
     let fixture = Fixture::new();
-    let mut ledger = fixture.writer();
+    let mut ledger = seconds_writer(&fixture, /*limit*/ 64);
     collect_with_support(
         &mut ledger,
         "shared.read",
@@ -458,7 +640,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &ledger,
             &data,
             profile(1),
-            50
+            OWNER_NOW
         )
         .await
         .is_err()
@@ -492,7 +674,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         &memory
     );
     assert!(
-        host.train(recall.policy_id(), &ledger, &data, profile(1), 50)
+        host.train(recall.policy_id(), &ledger, &data, profile(1), OWNER_NOW)
             .await
             .is_err()
     );
@@ -540,7 +722,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         replay.source_support_digest()
     );
     assert!(matches!(
-        host.train(twin_use.policy_id(), &ledger, &data, profile(1), 50)
+        host.train(twin_use.policy_id(), &ledger, &data, profile(1), OWNER_NOW)
             .await,
         Err(codex_hepta_agentd::SharedTerminalCellError::Binding(
             "decision source support"
@@ -550,14 +732,14 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     // records, writes through the artifact owner, and loads the resulting bytes.
     assert!(source.revalidate_shared_experience(&recall).await.is_err());
     let candidate = host
-        .train(replay.policy_id(), &ledger, &data, profile(1), 50)
+        .train(replay.policy_id(), &ledger, &data, profile(1), OWNER_NOW)
         .await
         .unwrap();
     let mut registry = artifacts::ArtifactRegistry::new();
     let _ = persist_reload(&fixture.root, &mut registry, candidate.artifact(), None);
     let payload = std::fs::read(fixture.root.join("payload-1")).unwrap();
     let model = host
-        .load(candidate.clone(), &ledger, &registry, &payload, 50)
+        .load(candidate.clone(), &ledger, &registry, &payload, OWNER_NOW)
         .await
         .unwrap();
     let read = host
@@ -567,7 +749,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("read"),
-            50,
+            OWNER_NOW,
         )
         .await
         .unwrap();
@@ -578,7 +760,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("abstain"),
-            50,
+            OWNER_NOW,
         )
         .await
         .unwrap();
@@ -590,7 +772,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     let mut tampered = payload.clone();
     tampered[0] ^= 1;
     assert!(
-        host.load(candidate.clone(), &ledger, &registry, &tampered, 50)
+        host.load(candidate.clone(), &ledger, &registry, &tampered, OWNER_NOW)
             .await
             .is_err()
     );
@@ -603,7 +785,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     .unwrap();
     assert!(
         wrong_scope
-            .train(replay.policy_id(), &ledger, &data, profile(1), 50)
+            .train(replay.policy_id(), &ledger, &data, profile(1), OWNER_NOW)
             .await
             .is_err()
     );
@@ -619,7 +801,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     .unwrap();
     assert!(
         wrong_workspace
-            .load(candidate.clone(), &ledger, &registry, &payload, 50)
+            .load(candidate.clone(), &ledger, &registry, &payload, OWNER_NOW)
             .await
             .is_err()
     );
@@ -639,7 +821,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("read"),
-            50
+            OWNER_NOW
         )
         .await
         .unwrap(),
@@ -663,7 +845,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &withdrawn,
             &id("single-approved-state"),
             &id("read"),
-            50
+            OWNER_NOW
         )
         .await,
         Err(codex_hepta_agentd::SharedTerminalCellError::Binding(
@@ -696,13 +878,13 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             &registry,
             &id("single-approved-state"),
             &id("read"),
-            50
+            OWNER_NOW
         )
         .await
         .is_err()
     );
     assert!(
-        host.load(candidate.clone(), &ledger, &registry, &payload, 50)
+        host.load(candidate.clone(), &ledger, &registry, &payload, OWNER_NOW)
             .await
             .is_err()
     );
