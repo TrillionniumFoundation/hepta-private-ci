@@ -15,7 +15,7 @@ fn notification_marker_requires_a_bounded_valid_identity() {
         b"another.identity".as_slice(),
         b"Trillionnium.Hepta.Native\nextra".as_slice(),
         &[255],
-        &vec![b' '; 129],
+        &[b' '; 129],
     ] {
         std::fs::write(&marker, bytes).unwrap();
         assert!(!registered_notification_identity(&marker));
