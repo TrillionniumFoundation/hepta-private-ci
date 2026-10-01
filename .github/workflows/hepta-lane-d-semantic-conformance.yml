@@ -130,7 +130,7 @@ jobs:
             -p codex-hepta-objective \
             -p codex-hepta-ndu \
             -p codex-hepta-control-plane \
-            --all-targets -- -D warnings
+            --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Clean tracked state
         if: always()

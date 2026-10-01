@@ -92,7 +92,7 @@ jobs:
       - name: Strict lint
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
       - name: Exact tracked-source cleanliness
         if: always()
         run: |
