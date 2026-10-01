@@ -342,7 +342,7 @@ runtime socket path and `operation_timeout_ms:30000`. The concrete
 `runtime-status CLIENT_JSON AGENT_UUID ORIGINAL_ID`, and
 `recover-original CLIENT_JSON AGENT_UUID ORIGINAL_ID` invoke that same client.
 These commands are qualification and operational callers; wiring the SDK into
-Agentd's capability/taskflow entry remains a separate product integration.
+The ordinary Agentd Root-enrolled capability is described below; installed Fleet activation remains separate.
 
 The 30s budget belongs only to a newly admitted complete daemon operation and
 comes from the Root service and enrolled client configuration. Every role RPC
@@ -365,6 +365,58 @@ revocation-feed expiry, four-role restart, short-budget Unknown, and real
 Root-policy expiry retained the same grant, ACK and quota history. The fixture
 policy used a deliberately short 30s validity to exercise actual expiry; it is
 not a default installed policy or permission to change existing tickets.
-No installed Fleet or signing policy was replaced. Actual Agentd integration,
+No installed Fleet or signing policy was replaced. Installed Agentd activation,
 provider-native dynamic issue/renew/revoke and the remaining capability matrix
 remain closed/unqualified; module `productCallerState` stays `not_composed`.
+
+
+### Optional ordinary Agentd original-operation capability
+
+The ordinary Linux Agentd accepts the single optional startup flag
+`--secrets-runtime-client-file /etc/hepta-secrets/agent-UID.json`. Root owns the
+strict client file and its ancestors; it contains only actual Agent UID/UUID,
+runtime UID992, public socket path and a maximum 30000ms original-operation
+budget. The existing Agent identity, private state, writer lock and lifecycle
+remain authoritative. No issuer/approval/ACK key, provider credential or new
+SQLite owner enters Agentd.
+
+Only an enrolled host advertises `secrets.original_kv_v2`. Existing control
+schema v2 adds `secrets_consume_original`, `secrets_original_status` and
+`secrets_recover_original`; each carries the same original ID, and Consume also
+carries its remaining budget. The ordinary control I/O deadline remains 2000ms.
+A lost or timed-out effect response is reconciled through that original
+Status/Recover, without dispatching a replacement. Responses contain only the
+original operation, reservation, observed cost and receipt digest. A Completed
+response comes from the protected daemon after independent FULL ACK and AuthBus
+settlement; it is not a local digest claim of credential delivery.
+
+The SDK uses four physically owned blocking workers. Agentd checks its actual
+generation/readiness before reserving a worker and again before SDK entry;
+scheduling consumes the original budget. Control cancellation retains the
+thread handle and permit. Only physical joining/reaping makes a slot reusable;
+even a poisoned owner closes admission and joins its retained threads before
+reporting failure. Runtime shutdown joins while the original Agent writer lock
+is still held. Removing the enrollment disables this optional capability;
+other Agentd controls keep their existing profile.
+
+The Linux host qualified two ordinary Agentd processes under the original
+UID986/UUID3ad2bb64-09ba-4811-b892-466c5fd952df and
+UID969/UUID10b204bc-ec72-48a2-a2c2-cf5d2f5ed730, primary and supplementary G975.
+The runtime public parent/socket had exact UID ACLs; authority/operator/consumer
+private endpoints retained G976 and kernel UID checks. Nine checks covered a
+first-frame disconnect, same-original Status/Recover, non-dev pinned-TLS KV2
+version1, independent UID983 FULL ACK and settled quota, short-budget Unknown,
+zero-budget and stale-generation rejection, and physical Agentd/role joins.
+The new isolated Root policy allowed 120s for startup; each original still had
+at most 30s and each role/preparation at most 4s, clipped to original grant,
+policy and remaining operation time. Previous nonce, ACK and clock stores were
+not moved or reissued. The reproducible `secrets_qualification_fleet` example
+refuses an existing Fleet and restricts its init/promote operations to a fresh
+`/var/lib/hepta-secrets-agentd-q-*` namespace.
+
+These isolated process checks do not claim an installed Fleet caller. Root must
+publish the normal image and enroll the actual installed original Agent PIDs.
+The compatibility workflow's complete matrix gate protects full OpenBao
+replacement claims; `--report-only` retains partial/gap evidence. Optional
+unenabled lease, transit, HA or plugin capabilities do not block exact KV
+activation and cannot be exposed before their own qualification.
