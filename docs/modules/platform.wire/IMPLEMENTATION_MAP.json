@@ -402,20 +402,28 @@
   "exactSourceEvidenceMode": "lane_a_runtime_head_tree_registered_callers_and_receipt_v2",
   "sourceObjects": [
     {
+      "path": ".github/actionlint.yaml",
+      "object": "b3c9ab916b04b01c259f20842ba1fee2b02d621c"
+    },
+    {
+      "path": ".github/workflows/actionlint.yml",
+      "object": "fd384f24eb898a1709e787f5b1d1cb1ece13adc3"
+    },
+    {
       "path": ".github/workflows/lane-a-foundation.yml",
       "object": "3b47878ad1f81e6c41f185a7083e7f4361d66ebe"
     },
     {
       "path": ".github/workflows/platform-wire-benchmark.yml",
-      "object": "e3ad6e7f926f61f4c3dfb7d394dfb108c772ee80"
+      "object": "8291cf9c0779cc0a05a5377783939e5686c03ae0"
     },
     {
       "path": ".github/workflows/platform-wire-core.yml",
-      "object": "0f969d40dc058977e8bd4c2b6b8b8fabd56985ce"
+      "object": "80545a88529244732d77bf5643080c60fcaecc2a"
     },
     {
       "path": ".github/workflows/platform-wire-exact.yml",
-      "object": "f6ca7809c9bf52dce5227a4725f10b1bf6c1d14f"
+      "object": "03ebcbf155bed20f9b968a417355fdfd1dd030d4"
     },
     {
       "path": ".github/workflows/platform-wire-fuzz.yml",
@@ -427,11 +435,11 @@
     },
     {
       "path": ".github/workflows/platform-wire-production-contract.yml",
-      "object": "13e45fffd6ecb7919f8710e5c8bb792652e03d20"
+      "object": "d367f08542e2bf8ea709df68c8185b5c58bbe35e"
     },
     {
       "path": ".github/workflows/platform-wire-production-intake.yml",
-      "object": "de8fec2718df0f4e525f5e01e5046fb49440dea5"
+      "object": "46c89d7a07be086e130250bbfbc8548acaff3867"
     },
     {
       "path": ".github/workflows/platform-wire-production-surface.yml",
@@ -443,7 +451,7 @@
     },
     {
       "path": ".github/workflows/platform-wire-target-host.yml",
-      "object": "c8793aad270af45532e3a08c165bb5341bf719e5"
+      "object": "424ffeade416f0c93a74de053e109eb38776f1f7"
     },
     {
       "path": ".github/workflows/platform-wire-worktree-export.yml",
@@ -742,24 +750,108 @@
       "object": "b9a8eeb9fb41da0e07bb7e340a32de57a1f9aaa6"
     },
     {
+      "path": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+      "object": "ef78b4acbc9766f916448639a01f71c717d6aa80"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
+      "object": "eb586923f8ab8f066589d422dbd3a2bea3e3e840"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/HPTN_V1_CONFORMANCE.json",
+      "object": "5c4f42e080aafc5ad2b93a2c01a764afb61c3d43"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/NEGATIVE_CONFORMANCE_V1.json",
+      "object": "adb156960656f2347fb27d2f4f7bb37189e3e66c"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/NEGOTIATION_V1.md",
+      "object": "d15f86f37d165f0fe765ade6c78fb1c77c6fc569"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/RUNTIME_CODEX_V3.md",
+      "object": "690a617ea9eeb782d806d3a314abbc5021172057"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "object": "7962d52fb460f3eede50b0f02a3f63558b5038aa"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.wire/WIRE_V2.md",
+      "object": "e86a09ebd61b2da5666f567fe4f9caaf2a9cad43"
+    },
+    {
+      "path": "docs/modules/platform.wire/BOUNDED_FEED.md",
+      "object": "59a9695cad8f4e0acb92f4f895342f1f40cf5545"
+    },
+    {
+      "path": "docs/modules/platform.wire/BUDGET_AND_STAGING_20260929.md",
+      "object": "df124dc42b044a75e663e4da7c725aa704bd4396"
+    },
+    {
+      "path": "docs/modules/platform.wire/CONVERGENCE_20260927.md",
+      "object": "2dae584c53dfb2899c7a8e8af380082fc9adb973"
+    },
+    {
       "path": "docs/modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md",
       "object": "a2ca6a1daee6dd5f0463ccd948f8200ff77b895f"
     },
     {
+      "path": "docs/modules/platform.wire/FUZZ_CAMPAIGN_V2.md",
+      "object": "42a05173c849fc831d841ac9d007d214b329f83b"
+    },
+    {
       "path": "docs/modules/platform.wire/HARDENED_SESSION.md",
-      "object": "dadacb423d118885d2897f7a7633d91094b4c776"
+      "object": "c5b0939ba956f948713960c6a4edd8aa66756a6e"
+    },
+    {
+      "path": "docs/modules/platform.wire/IDLE_RETENTION_20260929.md",
+      "object": "f9af89792253827f8a6afee354d9df058d6ce972"
     },
     {
       "path": "docs/modules/platform.wire/MANAGED_RECORD_STREAM.md",
       "object": "9b935fe0b774da63dc1635185373f79f5db00dd5"
     },
     {
+      "path": "docs/modules/platform.wire/MANAGED_RESOURCE_VALIDATION_20260928.md",
+      "object": "23186d7b2888e5426e11e6aa1fef2693f9081e1e"
+    },
+    {
+      "path": "docs/modules/platform.wire/PERFORMANCE_INTAKE_20260929.md",
+      "object": "2785726f774b12d943fd111e693ad7e953daa9d8"
+    },
+    {
+      "path": "docs/modules/platform.wire/PERFORMANCE_PRODUCERS.json",
+      "object": "27d2fed73f00d6dc038606ce490d8c0a1ed3905f"
+    },
+    {
+      "path": "docs/modules/platform.wire/PRODUCTION_INTAKE_20260929.md",
+      "object": "877bb59286cd141d3493af052a194b8086fcad0f"
+    },
+    {
+      "path": "docs/modules/platform.wire/PRODUCTION_PRODUCERS.json",
+      "object": "d01a302a30cdd2593119faa9989eb9946976574d"
+    },
+    {
+      "path": "docs/modules/platform.wire/PRODUCTION_VALIDATION_20260929.md",
+      "object": "d036146ebd40a1a161a91c343f20f2539fef56df"
+    },
+    {
+      "path": "docs/modules/platform.wire/QUALIFICATION_HARDENING_20260928.md",
+      "object": "7836e22ba40bc83874536a9fdfaaba2838648778"
+    },
+    {
       "path": "docs/modules/platform.wire/README.md",
       "object": "81c1728b32fd6d6055b444d4ce488e4256a2dc53"
     },
     {
+      "path": "docs/modules/platform.wire/REMEDIATION_20260928.md",
+      "object": "2b1fdecc61dc18251c668c0469a149087ab66997"
+    },
+    {
       "path": "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
-      "object": "9ca1789c7599138096e43c30a90353b6ad2ffccf"
+      "object": "d417c59bbf7b078e1054ec6c4c486473f594f405"
     },
     {
       "path": "docs/modules/platform.wire/STATUS.md",
@@ -771,7 +863,7 @@
     },
     {
       "path": "qualification/module-execution-dossiers/detail/platform.wire.md",
-      "object": "cbb84d999a48b6231c6f34b4587ced6fc54991bc"
+      "object": "a18a478cf361a336770cadfbfa858837f516e6bd"
     },
     {
       "path": "scripts/platform_wire_exact_qualification.py",
@@ -799,7 +891,7 @@
     },
     {
       "path": "scripts/platform_wire_performance_intake.py",
-      "object": "a3cbbff365b41442c7e2e0a201404ccca5d4cb48"
+      "object": "b89bc4e2e9260c3172505440bc2a39732b1e89f8"
     },
     {
       "path": "scripts/platform_wire_production_gate.py",
@@ -811,7 +903,7 @@
     },
     {
       "path": "scripts/platform_wire_production_schema.py",
-      "object": "826f170cd23c252598e7cb8f604c903b43f24fa7"
+      "object": "6502ebaf06af04aeed491c50f1d0a645685bff4c"
     },
     {
       "path": "scripts/platform_wire_production_surface.py",
@@ -847,7 +939,7 @@
     },
     {
       "path": "scripts/tests/test_platform_wire_artifact_intake.py",
-      "object": "cae00a03b5417bebf00916f0e153f6df6e045bdc"
+      "object": "a6a36a9aaa88d3b36bfa45711d895854e835b802"
     },
     {
       "path": "scripts/tests/test_platform_wire_exact_qualification.py",
@@ -873,10 +965,12 @@
   "mappingSourceIdentityMode": "exact_blob",
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "9dde2bf03f33979ef6e2dfa9e6354141d1a47c19",
-    "tree": "cb271620945d4ae38ea852e8ca1e18c19ce1649e"
+    "commit": "dadea30baf67fc47d9fa1b98b57386e8b0e5ee36",
+    "tree": "c183cd06bfe51c0ec3bb21d28c0235b9faf3233e"
   },
   "observedSourcePaths": [
+    ".github/actionlint.yaml",
+    ".github/workflows/actionlint.yml",
     ".github/workflows/lane-a-foundation.yml",
     ".github/workflows/platform-wire-benchmark.yml",
     ".github/workflows/platform-wire-core.yml",
@@ -962,10 +1056,31 @@
     "codex-rs/hepta-wire/tests/production_surface/session_escape.rs",
     "codex-rs/hepta-wire/tests/production_surface/unbound_codec.rs",
     "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
+    "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+    "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
+    "docs/lane-a-foundation/platform.wire/HPTN_V1_CONFORMANCE.json",
+    "docs/lane-a-foundation/platform.wire/NEGATIVE_CONFORMANCE_V1.json",
+    "docs/lane-a-foundation/platform.wire/NEGOTIATION_V1.md",
+    "docs/lane-a-foundation/platform.wire/RUNTIME_CODEX_V3.md",
+    "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+    "docs/lane-a-foundation/platform.wire/WIRE_V2.md",
+    "docs/modules/platform.wire/BOUNDED_FEED.md",
+    "docs/modules/platform.wire/BUDGET_AND_STAGING_20260929.md",
+    "docs/modules/platform.wire/CONVERGENCE_20260927.md",
     "docs/modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md",
+    "docs/modules/platform.wire/FUZZ_CAMPAIGN_V2.md",
     "docs/modules/platform.wire/HARDENED_SESSION.md",
+    "docs/modules/platform.wire/IDLE_RETENTION_20260929.md",
     "docs/modules/platform.wire/MANAGED_RECORD_STREAM.md",
+    "docs/modules/platform.wire/MANAGED_RESOURCE_VALIDATION_20260928.md",
+    "docs/modules/platform.wire/PERFORMANCE_INTAKE_20260929.md",
+    "docs/modules/platform.wire/PERFORMANCE_PRODUCERS.json",
+    "docs/modules/platform.wire/PRODUCTION_INTAKE_20260929.md",
+    "docs/modules/platform.wire/PRODUCTION_PRODUCERS.json",
+    "docs/modules/platform.wire/PRODUCTION_VALIDATION_20260929.md",
+    "docs/modules/platform.wire/QUALIFICATION_HARDENING_20260928.md",
     "docs/modules/platform.wire/README.md",
+    "docs/modules/platform.wire/REMEDIATION_20260928.md",
     "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
     "docs/modules/platform.wire/STATUS.md",
     "docs/modules/platform.wire/TECHNICAL.md",
