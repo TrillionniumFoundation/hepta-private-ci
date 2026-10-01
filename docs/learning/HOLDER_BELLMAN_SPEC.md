@@ -111,7 +111,18 @@ emit direct targets, action gaps, residuals and coverage diagnostics
 
 For stochastic fixtures, the reference uses a counter-based seed and a fixed number of antithetic paths per `(sensor,action)`. Sample order cannot alter results. Interpolation outside the sensor hull returns OOD rather than extrapolating.
 
-Golden vector `HBO-GV-001` uses one state dimension, sensors `[0,0.5,1]`, actions `[-0.5,0.5]`, deterministic transition `x'=clip(x+0.2a,0,1)`, reward `-(x-0.75)^2-0.1a^2`, `V_next(x)=x`, and `dt=1`. The canonical real-valued target table, ordered by sensor then action, is `[[-0.5875,-0.4875],[0.3125,0.5125],[0.8125,0.9125]]`; the greedy action is `0.5` at every sensor and the action gaps are `[0.1,0.2,0.1]`. Signed Q32 targets are `[[-2523293286,-2093796557],[1342177280,2201170739],[3489660928,3919157658]]`, with Q32 gaps `[429496730,858993459,429496730]`. The neural direct head must match this reference within the declared approximation budget.
+Golden vector `HBO-GV-001` uses one state dimension, sensors `[0,0.5,1]`, actions `[-0.5,0.5]`, deterministic transition `x'=clip(x+0.2a,0,1)`, reward `-(x-0.75)^2-0.1a^2`, `V_next(x)=x`, and `dt=1`. The real-valued target table, ordered by sensor then action, is `[[-0.5875,-0.4875],[0.3125,0.5125],[0.8125,0.9125]]`; the greedy action is `0.5` at every sensor and the real-valued action gaps are `[0.1,0.2,0.1]`.
+
+The canonical native vector quantizes each real-valued reward and continuation
+separately as `round_ties_even(value * 2^32)`, with `gamma=1` and nonterminal cells.
+Reward inputs are `[[-2523293286,-2523293286],[-375809638,-375809638],[-375809638,-375809638]]`; continuation inputs are `[[0,429496730],[1717986918,2576980378],[3865470566,4294967296]]`. Q32 multiplication rounds its scaled product to nearest, ties to even; target addition and the difference between the two action targets use checked integer arithmetic. The resulting signed Q32 targets are `[[-2523293286,-2093796556],[1342177280,2201170740],[3489660928,3919157658]]`, with exact Q32 gaps `[429496730,858993460,429496730]`. Quantizing the final real-valued target or gap once is a different computation and is not this native vector.
+
+The executable six-cell regression is
+`hbo_gv_001_uses_quantized_reward_and_continuation_inputs` in
+`codex-rs/hepta-bellman-operator/src/reference_tests.rs`. It freezes the numeric
+inputs and tests native target arithmetic, greedy actions and exact action gaps;
+it does not establish a simulator or interpolation backend. A neural direct head
+must match the canonical native reference within its declared approximation budget.
 
 ## 5. Trainable or estimated algorithm
 

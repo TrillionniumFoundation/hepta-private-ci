@@ -9,7 +9,7 @@
     {
       "id": "OP-01",
       "module": "learning.operator",
-      "requirement": "The analytic sensor and Bellman reference produces deterministic canonical targets and action gaps.",
+      "requirement": "The analytic sensor and Bellman reference produces deterministic canonical targets and action gaps, including the exact six-cell HBO-GV-001 vector and nearest-even target-builder diagnostics.",
       "tests": [
         {
           "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
@@ -18,6 +18,14 @@
         {
           "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
           "function": "op_01_tabular_reference_produces_exact_targets_and_gaps"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+          "function": "hbo_gv_001_uses_quantized_reward_and_continuation_inputs"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+          "function": "terminal_fraction_rounds_nearest_even_and_preserves_unit_interval"
         }
       ],
       "status": "native_test_mapped"
@@ -42,6 +50,10 @@
         {
           "source": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
           "function": "op_02_signed_regularity_binds_evaluator_identity_and_exact_assessment"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+          "function": "ood_false_acceptance_gate_enforces_the_exact_strict_fraction"
         }
       ],
       "status": "native_test_mapped"

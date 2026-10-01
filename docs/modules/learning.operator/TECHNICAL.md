@@ -163,9 +163,30 @@ Critical protocol schemas:
 - `OutcomeReceiptV1`
 - `RegularityProfileV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+These are registered architecture contracts and requirements for their canonical
+wire boundaries. Producers must validate output before publication and bind all
+semantic fields into the declared digest scope; consumers must validate version,
+bounds, producer identity, scope and digest before use. Compatibility is additive
+only where registered, unknown critical fields must reject, and contract meaning
+and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The current native implementation uses bounded Rust records and owner-local
+binary digest preimages. A matching Rust type name does not establish canonical
+JSON equivalence. For example, the native applicability certificate carries
+Hölder/Lipschitz profile digests and one control interval in milliseconds; the
+registered wire certificate requires the bounded profile objects, horizon and
+separate control-interval, jump and OOD policy digests. The native sensor manifest
+retains selected points but has no wire construction-algorithm or expiry fields.
+The target builder's `RegularityProfile` is diagnostic output, not the registered
+`RegularityProfileV1` wire record.
+
+This crate currently has no canonical JSON adapter or wire-schema conformance
+tests. Cross-owner publication under these contracts still requires explicit
+adapters and tests for round trips, maximum bounds, missing and unknown fields,
+invalid enums, canonical ordering and digest stability, plus preservation of the
+registered rejected, unavailable, timed out, indeterminate, quarantined and
+terminally failed outcomes. Native arithmetic, structural validation and signed
+attestation tests do not substitute for those wire-boundary checks.
 
 ## 6. Data authority, persistence and migrations
 
@@ -589,7 +610,10 @@ creating an opaque bounded terminal input. The compatible V1 freezer accepts an
 already trusted receipt and additionally checks owner context, frontier, outcome
 watermark and active records. Arbitrary historical freeze attestation is not
 recoverable from the unsigned V3 receipt alone. Fitting rechecks active records,
-trust identity and forward time; it produces a candidate with deny-all authority.
+trust identity and forward time. A signed-owner V2 frozen input also retains the
+exact attested freeze payload and signature so fit can revalidate evidence expiry,
+credential validity and scheduled revocation at its current time without
+substituting a later ledger head. It produces a candidate with deny-all authority.
 
 Both public mutable tabular predictors enforce the same structural validator as
 encoding/loading. This does not reconstruct their sample-bound training digest;
@@ -607,6 +631,10 @@ Two explicit Agentd consumers exist:
   from the whole ranking. Larger read input bounds do not widen the 128-action table.
 - `AgentdSharedReplayHostV1` trains, loads and predicts the narrow terminal profile,
   with current shared-source permission, exact Memory support and ledger checks.
+  Its `train_signed_owner_v2` entrypoint preserves the signed-owner frozen input
+  through the shared fit helper; the compatible `train` entrypoint retains the
+  trusted-receipt V1 boundary. The updated async integration test is present in
+  source; its full integration execution is not established by this document.
   Its registry reference is host supplied; this adapter does not independently
   establish signed CURRENT or live selection.
 
@@ -615,5 +643,5 @@ new-process load loop remains repository composition work. Model/simulator
 adapters and an optional tensor backend are distinct implementation profiles.
 Independent scientific review, target-host measurements, future-window efficacy,
 acceptance, canary, promotion and release remain externally evidenced gates.
-The [audit record](../../../codex-rs/hepta-bellman-operator/AUDIT_2026-10-01.md)
+The [audit record](../../../codex-rs/hepta-bellman-operator/AUDIT.md)
 records this revision's adversarial cases and executed checks.

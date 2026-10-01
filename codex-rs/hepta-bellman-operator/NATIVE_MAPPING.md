@@ -12,9 +12,10 @@ compatibility, but it delegates to `build_targets`. Its actual behavior is a
 bounded deterministic Bellman-target builder over caller-supplied continuation
 values. It does not fit a neural network or prove a complete Bellman operator.
 
-The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
-`RegularityProfile` contains only target-builder diagnostics and must not be
-interpreted as the Hölder/operator qualification profile.
+The qualification regularity gate consumes `OperatorRegularityAssessmentV1`
+through its signed V2 admission API; the legacy `RegularityProfile` contains only
+target-builder diagnostics and must not be interpreted as the Hölder/operator
+qualification profile.
 
 ## Design operation to Rust symbol
 
@@ -42,16 +43,19 @@ interpreted as the Hölder/operator qualification profile.
 
 `OperatorApplicabilityCertificateV1` binds the axis partition, domain, action
 space, Hölder/Lipschitz profiles, ellipticity lower bound, control interval,
-independent evaluator credential, fallback, expiry and decision. Non-positive
-ellipticity, expired certificates and unsupported control intervals fail before
-operator evaluation.
+evaluator credential, fallback, expiry and decision. Its validator rejects
+non-positive ellipticity, expired certificates and unsupported control intervals.
+Reference and fit APIs do not invoke that validator automatically; the host must
+compose authenticated applicability admission before qualification use.
 
 `build_sensor_core` uses deterministic farthest-point insertion over a bounded,
 canonical candidate design. It rejects duplicate identities, duplicate
 coordinates, mixed dimensions and coordinates outside normalized `[0,1]`.
-The V2 manifest binds every canonical candidate's identity, dimension and
-coordinates, as well as selected points, fill distance, separation radius, mesh
-ratio and a selected-coordinate hull digest. Coverage is measured over the finite
+The V2 digest preimage for the native `OperatorSensorCoreManifestV1` binds every
+canonical candidate's identity, dimension and coordinates, as well as selected
+points, fill distance, separation radius, mesh ratio and a selected-coordinate
+hull digest. V2 names the digest domain revision, not a new canonical wire schema
+or Rust manifest type. Coverage is measured over the finite
 candidate design, not every point in a continuous domain, and the hull digest is
 not a membership oracle. Fill distance and mesh ratio round conservatively upward;
 separation rounds downward. A zero separation radius or mesh ratio above the pilot
@@ -104,9 +108,12 @@ baselines.
   `0.05`;
 - independent approval when one component consumes more than half of the total.
 
-Unmeasured components are not silently omitted. A learned implementation must
-publish every required component under a separately reviewed model/runtime
-profile.
+The structural V1 API accepts a nonempty component list and checks its supplied
+values; it cannot establish that omitted measurements were performed. Signed V2
+qualification admission requires exactly model, sensor, reconstruction, network,
+optimization, statistical and rollout components. A non-applicable component is
+an explicit zero with evidence. A learned implementation must publish every
+required component under a separately reviewed model/runtime profile.
 
 ## World-model baseline
 
@@ -118,6 +125,13 @@ mean bounded outcome and a branch distribution whose Q32 probabilities sum
 exactly to one. `predict_transition` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
+
+The retained-model digest uses a V2 binary preimage while the native record type
+remains `TabularWorldModelV1`. It binds model/dataset identity, every state/action
+estimate, sample count, mean, canonical branch counts/probabilities and estimate
+digest. Prediction structurally validates the mutable model and recomputes this
+digest. Retained statistics cannot reconstruct the original sample-bound
+estimate digest, and digest self-consistency does not authenticate provenance.
 
 ## Authenticated qualification admission
 
@@ -172,7 +186,8 @@ validates once; its private immutable state permits O(log n) repeated prediction
 Both public mutable-artifact predictors validate bounds, deny-all authority,
 nonzero identities, complete canonical grids and attainable statistics on every
 call before lookup. Validation uses bounded ordered collections and costs
-`O(c log(s+a))` for `c` cells, `s` sensors and `a` actions. It cannot reconstruct
+`O(c log c + c log(s+a))` for `c` cells, `s` sensors and `a` actions, including
+the duplicate-evidence set. It cannot reconstruct
 sample-bound digests from sufficient statistics or authenticate a mutable
 artifact. Independent payload pins and immutable loaded state supply that
 different trust boundary and the repeated `O(log c)` prediction cost.
@@ -205,7 +220,10 @@ freeze issuer or inclusion policy. `freeze_terminal_cell_from_signed_owner_v2`
 calls the real LedgerWriter owner to authenticate the exact signed freeze
 request and derive its complete current source cut before terminal target
 derivation. Both paths revalidate records at fit, including correction,
-withdrawal, owner trust identity and time monotonicity.
+withdrawal, owner trust identity and time monotonicity. The signed-owner V2
+frozen input retains its original attested payload and signature; fitting also
+rechecks their expiry, credential validity and scheduled revocation at the fit
+time. A later owner head is not substituted for the signed frozen cut.
 
 `../hepta-agentd/src/cognitive_ranker.rs` composes a host-selected operator at the
 cognitive read boundary, checks registry/payload identity and producer, and
@@ -215,8 +233,12 @@ most 128 actions; the read API's larger input ceiling is not learned support.
 
 `../hepta-agentd/src/shared_terminal_cell.rs` exposes
 `AgentdSharedReplayHostV1::train/load/predict` for the narrow owner-derived terminal
-profile. It revalidates shared-source grants, exact Memory identity/revision/content
-support, ledger corrections/revocations and registry lineage at its boundaries.
+profile and the additive `train_signed_owner_v2` entrypoint. The latter passes the
+same signed-owner frozen input through a private shared source/fit helper;
+compatibility `train` retains the trusted-receipt V1 boundary. Both revalidate
+shared-source grants, exact Memory identity/revision/content support, ledger
+corrections/revocations and registry lineage at their boundaries. The updated
+async integration test is a source mapping, not an execution receipt here.
 Neither explicit consumer composes the default freeze/train/independent-evaluate/
 select/new-process-load learning loop. The generic simulator, continuous-domain
 coverage and optional neural/tensor backend remain separate implementation work.
