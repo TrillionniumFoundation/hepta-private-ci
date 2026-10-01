@@ -116,6 +116,10 @@ impl SchemaAttack {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "fixed in-memory compiled schema oracle never opens an owner path"
+)]
 async fn pinned_sqlx_migrator_independently_matches_migration_schema_oracle() {
     let pool = SqlitePoolOptions::new()
         .max_connections(/*max*/ 1)

@@ -306,9 +306,12 @@ compiled façade, host composition, cutover and rollback procedure. Agentd now c
 
 The focused native gate is [hepta-cognitive-store-native.yml](../../../.github/workflows/hepta-cognitive-store-native.yml).
 It qualifies both the exact source head and deterministic base-merge candidate
-with the two owner-library test suites and strict scoped Clippy. The source-head
-job also exercises crash/reopen recovery and records 256-record and 16,384-record
-durable performance samples. This gate runs independently of whole-repository
+with the two owner-library test suites. Its strict Clippy command selects only
+`codex-hepta-cognitive-store` and `codex-hepta-memory`, uses `--no-deps` and retains
+`-D warnings`; dependency compilation remains required. The source-head job also
+invokes crash/reopen recovery and the 256-record and 16,384-record durable
+performance profiles. These configured commands do not establish successful
+execution receipts. This gate runs independently of whole-repository
 document validation. It supplies scoped native evidence and does not replace
 global source/caller/document gates, Agentd integration qualification or independent
 production acceptance.

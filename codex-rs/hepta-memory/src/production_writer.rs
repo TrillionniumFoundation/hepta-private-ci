@@ -3454,6 +3454,10 @@ mod takeover_regression_tests {
 }
 
 #[cfg(all(test, unix))]
+#[expect(
+    clippy::expect_used,
+    reason = "private final-use fixtures and assertions must fail the test when their expected setup or outcome is absent"
+)]
 mod final_use_dispatch_tests {
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;

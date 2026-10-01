@@ -153,6 +153,10 @@ impl CognitiveStore {
         Ok(receipt)
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the shared transaction, access, CAS predecessor, source, memory draft and KG facts remain explicit at the atomic correction boundary"
+    )]
     pub(crate) async fn correct_with_kg_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

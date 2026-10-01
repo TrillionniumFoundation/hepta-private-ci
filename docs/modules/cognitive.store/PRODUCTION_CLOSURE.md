@@ -123,6 +123,13 @@ correction CAS, non-resurrection and rollback. Run scoped Clippy, formatting,
 caller proof and module-document/implementation-map checks against the exact
 candidate. Test invocations are not pass receipts.
 
+The focused native owner workflow runs strict Clippy for
+`codex-hepta-cognitive-store` and `codex-hepta-memory` with `--no-deps` and
+`-D warnings`. It compiles dependencies while limiting lint qualification to
+these two owner crates. Whole-repository and Agentd qualification remain
+separate gates. Crash/reopen and both configured performance profiles require
+their own successful exact-run receipts; workflow definitions are not results.
+
 The registry keeps `production_implementation=false` while current candidate
 qualification and declared module completion gates are pending. This fact does
 not erase the compiled source or named product composition. The repository does

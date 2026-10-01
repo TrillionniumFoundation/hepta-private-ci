@@ -178,7 +178,7 @@ jobs:
         run: |
           python3 ../scripts/hepta_ci_exec.py \
             --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- \
-            just clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --all-targets -- -D warnings
+            just clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --all-targets --no-deps -- -D warnings
       - name: Verify clean tracked source after every outcome
         if: always()
         env:

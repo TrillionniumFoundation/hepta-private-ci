@@ -30,6 +30,10 @@ pub(super) struct ReconciliationProgress {
 }
 
 impl ProductionDurableWriter {
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "one destination cursor remains serialized through observation; other destinations have independent async locks"
+    )]
     pub(super) async fn reconcile_target_round_robin<T>(
         &self,
         target: &T,
