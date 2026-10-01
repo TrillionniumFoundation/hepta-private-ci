@@ -148,21 +148,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests.insert(
             request.authorization.request_id.clone(),
-            model_id.to_string(),
+            /*unknown_transient_bytes*/ 0,
         );
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
         let observed = observed?;
-        if observed.terminal_observed {
+        let transient_peak = if observed.terminal_observed {
             self.active_requests
                 .remove(&request.authorization.request_id);
             loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        }
+            // Account this completed invocation's peak alongside any other
+            // request whose transient release remains unobserved.
+            observed.transient_allocation_bytes
+        } else {
+            self.active_requests
+                .entry(request.authorization.request_id.clone())
+                .and_modify(|bytes| *bytes = (*bytes).max(observed.transient_allocation_bytes))
+                .or_insert(observed.transient_allocation_bytes);
+            // Its peak is now part of the retained request charge.
+            0
+        };
         let manifest = loaded.manifest.clone();
-        self.observe_memory(
-            model_id,
-            observed.observed_memory_bytes,
-            observed.transient_allocation_bytes,
-        )?;
+        self.observe_memory(model_id, observed.observed_memory_bytes, transient_peak)?;
         validate_digest(&observed.encoder_digest, "encoder")?;
         validate_digest(&observed.head_digest, "head")?;
         let status = if !observed.terminal_observed {

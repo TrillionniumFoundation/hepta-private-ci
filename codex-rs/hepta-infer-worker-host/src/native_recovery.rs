@@ -6,6 +6,7 @@ use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativePreEffectAbortToken;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use std::time::Duration;
 
 use super::AppServerModelDriver;
@@ -17,37 +18,51 @@ use super::RPC_TIMEOUT;
 use super::Result;
 use super::remaining_before;
 
-pub(super) fn retain_observed_facts(
-    recovered: &mut NativeRunOutput,
-    previous: Option<&NativeRunOutput>,
-) {
-    let Some(previous) = previous else {
-        return;
-    };
-    // thread/read does not contain turn-local token usage. Preserve the actual
-    // observed lower bound rather than replacing it with unknown usage.
-    recovered.observed_output_tokens = previous.observed_output_tokens;
-    if matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-        recovered.owner_authority = previous.owner_authority.clone();
+pub(super) fn retain_observed_facts(recovered: &mut NativeRunOutput, record: &NativeRunRecord) {
+    if let Some(previous) = record.observation.as_ref() {
+        // thread/read does not contain turn-local token usage. Preserve the actual
+        // observed lower bound rather than replacing it with unknown usage.
+        recovered.observed_output_tokens = previous.observed_output_tokens;
+        if matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. }) {
+            recovered.owner_authority = previous.owner_authority.clone();
+        }
+        if matches!(
+            previous.boundary_status,
+            NativeBoundaryStatus::Cancelled
+                | NativeBoundaryStatus::TimedOut
+                | NativeBoundaryStatus::Quarantined
+        ) || matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. })
+        {
+            recovered.boundary_status = previous.boundary_status;
+            recovered.stop_reason = match (&previous.stop_reason, &recovered.stop_reason) {
+                (Some(previous), Some(current)) if previous != current => Some(
+                    format!("{previous}; {current}")
+                        .chars()
+                        .take(1024)
+                        .collect(),
+                ),
+                (Some(previous), _) => Some(previous.clone()),
+                (None, current) => current.clone(),
+            };
+        }
     }
-    if matches!(
-        previous.boundary_status,
-        NativeBoundaryStatus::Cancelled
-            | NativeBoundaryStatus::TimedOut
-            | NativeBoundaryStatus::Quarantined
-    ) || matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. })
+    // A crash can occur after Cancel is durable but before the first observation.
+    // Keep terminal truth so capacity can settle, without washing away that intent.
+    if record.cancel_requested
+        && !matches!(
+            recovered.boundary_status,
+            NativeBoundaryStatus::Cancelled
+                | NativeBoundaryStatus::TimedOut
+                | NativeBoundaryStatus::Quarantined
+        )
+        && !matches!(recovered.owner_authority, NativeOwnerAuthority::Lost { .. })
     {
-        recovered.boundary_status = previous.boundary_status;
-        recovered.stop_reason = match (&previous.stop_reason, &recovered.stop_reason) {
-            (Some(previous), Some(current)) if previous != current => Some(
-                format!("{previous}; {current}")
-                    .chars()
-                    .take(1024)
-                    .collect(),
-            ),
-            (Some(previous), _) => Some(previous.clone()),
-            (None, current) => current.clone(),
-        };
+        recovered.boundary_status = NativeBoundaryStatus::Cancelled;
+        let reason = "durable cancellation was requested before terminal observation";
+        recovered.stop_reason = Some(match recovered.stop_reason.take() {
+            Some(current) => format!("{reason}; {current}").chars().take(1024).collect(),
+            None => reason.to_string(),
+        });
     }
 }
 

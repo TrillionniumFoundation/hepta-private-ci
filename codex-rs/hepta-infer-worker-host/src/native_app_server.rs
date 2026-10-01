@@ -406,7 +406,7 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
-        native_recovery::retain_observed_facts(&mut output, record.observation.as_ref());
+        native_recovery::retain_observed_facts(&mut output, record);
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);

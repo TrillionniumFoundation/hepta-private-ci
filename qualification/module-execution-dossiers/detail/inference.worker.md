@@ -16,11 +16,11 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 3. State records and transaction design
 
-No authoritative fleet or grant state. Worker-local ephemeral state contains process/model generation, loaded artifact digests, bounded KV/cache handles, request handles and usage counters. Persistent model files belong to the artifact/cache owner; the worker receives read-only descriptors and verifies weights, tokenizer, preprocessing, quantization, license/SBOM and device/runtime identity.
+Target physical-driver contract: no authoritative fleet or grant state. Worker-local ephemeral state contains process/model generation, loaded artifact digests, bounded KV/cache handles, request handles and usage counters. Persistent model files belong to the artifact/cache owner; the physical driver must receive read-only descriptors and verify weights, tokenizer, preprocessing, quantization, license/SBOM and device/runtime identity. The current injected component validates host-supplied manifest/grant values; it does not consume physical model descriptors or prove those artifact checks.
 
 ## 4. Deterministic algorithm and scheduling
 
-Verify request/lease/reservation compatibility before loading or generation; load once per admitted model generation; reserve accelerator/CPU memory; perform bounded inference; observe cancellation; emit output/usage and terminality through the control port. Model-load failures release only acquired resources. A lost channel is indeterminate, not a fabricated successful response.
+Target physical-driver contract: verify request/lease/reservation compatibility before loading or generation; load once per admitted model generation; reserve accelerator/CPU memory; perform bounded inference; observe cancellation; emit output/usage and terminality through the control port. Model-load failures release only acquired resources. A lost channel is indeterminate, not a fabricated successful response. Actual accelerator/CPU allocation and asynchronous stop remain responsibilities of a future physical driver and its resource owner, not capabilities established by the injected trait.
 
 ## 5. Capacity and performance profile
 
@@ -41,7 +41,7 @@ These are required product test designs, not executed-test receipts. Each implem
 
 Attach Neuron's encoder only after the real-model qualification gate. The deterministic feature fixture remains available without claiming real-model use. Rollback cannot mix old checkpoints with new encoders; unload/drain precedes compatible reload.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+The target physical-driver integration must use all eighteen dossier receipt fields and keep immediate revocation/stop effective across frozen snapshots. The current immutable host-supplied `ResourceGrant` does not distribute live revocations or stop physical work, and the hosted final-use verifier relies on the independently qualified issuer/revocation path. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
 ## 8. Current native implementation
 
@@ -63,13 +63,13 @@ Reopened possible dispatches have a source implementation of exact-owner `thread
 
 The journal retains compatibility with legacy records; incomplete historical bindings cannot be upgraded into current execution authority. Append/sync ambiguity fences the owner, and malformed/partial/oversize replay fails without truncation. Current capacity and rollback rules are in the technical guide and runbook.
 
-For `run_intelligence`, terminal inference settlement is durable before Agentd terminal publication. Cached and recovered terminal paths retry the same exact run publication, not the model call. Publication errors retain provider terminality in the journal and return an error. Recovery preserves known usage and sticky boundary/owner-loss facts; an absent history usage field cannot erase previously observed tokens. [native_recovery.rs](../../../codex-rs/hepta-infer-worker-host/src/native_recovery.rs) owns this shared logic.
+For `run_intelligence`, terminal inference settlement is durable before Agentd terminal publication. Cached and recovered terminal paths retry the same exact run publication, not the model call. Publication errors retain provider terminality in the journal and return an error. Recovery preserves known usage and sticky boundary/owner-loss facts; an absent history usage field cannot erase previously observed tokens. Durable cancellation also applies when a crash left no observation: matching provider completion may release the slot, but cannot upgrade the cancelled boundary to success or publish Agentd success. Cached legacy cancellation plus successful terminal records likewise project a cancelled boundary before return/publication without rewriting journal history or calling the provider again. [native_recovery.rs](../../../codex-rs/hepta-infer-worker-host/src/native_recovery.rs) owns this shared logic.
 
 ### 8.3 Injected local-model component
 
 `InferenceWorker<D>` in [model_worker.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker.rs) implements `load_model`, `run`, `unload_model` and the optional Neuron-feature port. These are the native subset corresponding to the target signatures in section 2; an actual drain-deadline or asynchronous cancellation API is not supplied by the synchronous trait.
 
-The component validates supplied manifest/grant and request bindings, limits models/requests and aggregate per-model resident-memory high-water marks, and delegates physical execution to `ModelDriver`. Neuron feature buffers additionally count against observed peak memory. A resource overrun fences admission until all known idle models have been unloaded; expiry/revocation does not prevent that cleanup. An ambiguous driver run retains its active slot and blocks unload; unknown load/unload outcome creates a separate fence and cannot be retried as known cleanup. No physical stop/reconciliation API exists yet.
+The component validates supplied manifest/grant and request bindings, limits models/requests and aggregate per-model resident-memory high-water marks, and delegates physical execution to `ModelDriver`. Neuron feature buffers additionally count against observed peak memory; nonterminal transient charges remain in subsequent load/run/feature accounting, and terminal observations release only their own request charge. Physical allocation remains the driver's responsibility. A resource overrun fences admission until all known idle models have been unloaded; expiry/revocation does not prevent that cleanup. An ambiguous driver run retains its active slot and blocks unload; unknown load/unload outcome creates a separate fence and cannot be retried as known cleanup. No physical stop/reconciliation API exists yet.
 
 Its `ResourceGrant` is a host-supplied Rust value, not a signature-verifying allocator. Repository drivers are test fixtures; no physical weights/tokenizer/runtime/device consumer or production local encoder is established. Feature execution lives in [model_worker_features.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_features.rs) and shares the same owner/capacity state.
 

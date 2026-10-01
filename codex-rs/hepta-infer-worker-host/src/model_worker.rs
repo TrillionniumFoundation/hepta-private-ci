@@ -172,7 +172,11 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
-    active_requests: BTreeMap<String, String>,
+    // Request slots also retain observed feature transient peaks until that
+    // request is known terminal. A nonterminal observation does not establish
+    // that its additional allocations have been released. These are budget
+    // charges, not physical allocation reservations.
+    active_requests: BTreeMap<String, u64>,
     driver_fenced: bool,
     resource_fenced: bool,
 }
@@ -220,7 +224,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let resident_memory = self.resident_memory_bytes()?;
+        let accounted_memory = self.accounted_memory_bytes()?;
         let handle = match self.driver.load(&manifest) {
             Ok(handle) => handle,
             Err(error) => {
@@ -229,7 +233,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
         };
         let admission = validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
-            resident_memory
+            accounted_memory
                 .checked_add(handle.observed_memory_bytes)
                 .filter(|total| *total <= self.grant.maximum_memory_bytes)
                 .map(|_| ())
@@ -310,8 +314,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .active_requests
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
-        self.active_requests
-            .insert(request.request_id.clone(), model_id.to_string());
+        self.active_requests.insert(
+            request.request_id.clone(),
+            /*unknown_transient_bytes*/ 0,
+        );
         let observed = self.driver.run(&loaded.handle, &request);
         let observed = observed?;
         if observed.terminal_observed {
@@ -398,12 +404,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         validate_grant(now_ms, &self.grant)
     }
 
-    fn resident_memory_bytes(&self) -> Result<u64, Error> {
-        self.models.values().try_fold(0_u64, |total, model| {
-            total
-                .checked_add(model.resident_memory_bytes)
-                .ok_or(Error::ModelCapacity)
-        })
+    fn accounted_memory_bytes(&self) -> Result<u64, Error> {
+        self.models
+            .values()
+            .map(|model| model.resident_memory_bytes)
+            .chain(self.active_requests.values().copied())
+            .try_fold(0_u64, |total, bytes| {
+                total.checked_add(bytes).ok_or(Error::ModelCapacity)
+            })
     }
 
     fn observe_memory(
@@ -415,9 +423,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.resident_memory_bytes = loaded.resident_memory_bytes.max(observed_memory_bytes);
         let within_limit = self
-            .resident_memory_bytes()
+            .accounted_memory_bytes()
             .ok()
-            .and_then(|resident| resident.checked_add(transient_bytes))
+            .and_then(|accounted| accounted.checked_add(transient_bytes))
             .is_some_and(|peak| peak <= self.grant.maximum_memory_bytes);
         if !within_limit {
             // Keep known handles available for cleanup, but admit no further

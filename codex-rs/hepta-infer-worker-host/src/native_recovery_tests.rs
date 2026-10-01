@@ -67,6 +67,7 @@ fn recovery_releases_capacity_without_losing_usage_or_denied_boundary() {
         control.reserve_native(request("r1"), 1).unwrap();
         control.dispatch_native("r1", dispatch()).unwrap();
         control.native_started("r1", "turn".to_string()).unwrap();
+        control.cancel_native("r1").unwrap();
         let mut previous = terminal();
         previous.status = NativeRunStatus::Indeterminate;
         previous.terminal_observed = false;
@@ -83,10 +84,7 @@ fn recovery_releases_capacity_without_losing_usage_or_denied_boundary() {
         drop(control);
         let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
         let mut recovered = terminal();
-        retain_observed_facts(
-            &mut recovered,
-            reopened.native_record("r1").unwrap().observation.as_ref(),
-        );
+        retain_observed_facts(&mut recovered, reopened.native_record("r1").unwrap());
         let mut expected = previous;
         expected.status = NativeRunStatus::Completed;
         expected.terminal_observed = true;
@@ -99,6 +97,44 @@ fn recovery_releases_capacity_without_losing_usage_or_denied_boundary() {
         );
         reopened.reserve_native(request("r2"), 1).unwrap();
     }
+}
+
+#[test]
+fn durable_cancel_without_observation_survives_crash_and_late_completion() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("journal");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    control.native_started("r1", "turn".to_string()).unwrap();
+    let cancelled = control.cancel_native("r1").unwrap();
+    assert_eq!(cancelled.observation, None);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&cancelled));
+    let mut recovered = terminal();
+    recovered.observed_output_tokens = Some(42);
+    let expected = NativeRunOutput {
+        boundary_status: NativeBoundaryStatus::Cancelled,
+        stop_reason: Some(
+            "durable cancellation was requested before terminal observation".to_string(),
+        ),
+        ..recovered.clone()
+    };
+    retain_observed_facts(&mut recovered, reopened.native_record("r1").unwrap());
+    assert_eq!(recovered, expected);
+    assert!(!recovered.succeeded());
+
+    let settled = reopened.settle_native("r1", recovered).unwrap();
+    let expected_record = NativeRunRecord {
+        revision: cancelled.revision + 1,
+        state: NativeReservationState::Released,
+        observation: Some(expected),
+        ..cancelled
+    };
+    assert_eq!(settled, expected_record);
+    reopened.reserve_native(request("r2"), 1).unwrap();
 }
 
 #[test]

@@ -43,6 +43,8 @@ The Agent ID, generation, model, paths and request ID above are illustrative; us
 | `--context-query` | Optional 1–2048-byte query; requires Agentd `cognitive.context.revalidate@1`. Context is packed into the shared 8 KiB serialized budget and attached as untrusted context. |
 | `--timeout-ms` | Optional, defaults to 120000; nonzero and no more than 3600000. The timeout participates in stable request identity. |
 
+The configured execution budget starts after App Server thread/context preparation, when the worker computes the final adapted request deadline. Authority acquisition, final checks, dispatch and turn observation consume that same budget. Stdin reading and earlier owner/connection/thread/context preparation are outside it; individual RPC bounds still apply. `--timeout-ms` is therefore not the total wall-clock limit for the CLI invocation.
+
 For a host-composed intelligence run, supply all four arguments together:
 
 ```sh

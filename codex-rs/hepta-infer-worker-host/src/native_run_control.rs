@@ -123,10 +123,12 @@ impl AppServerModelDriver {
                 .as_ref()
                 .filter(|output| output.terminal_observed)
             {
+                let mut output = output.clone();
+                super::native_recovery::retain_observed_facts(&mut output, &record);
                 if let Some(binding) = intelligence {
-                    self.publish_intelligence_terminal(binding, output).await?;
+                    self.publish_intelligence_terminal(binding, &output).await?;
                 }
-                return Ok(output.clone());
+                return Ok(output);
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;

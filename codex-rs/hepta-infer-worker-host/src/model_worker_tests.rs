@@ -755,3 +755,6 @@ fn failed_feature_observation_still_validates_identity_bounds() {
         .unload_model(/*_now_ms*/ 100, "model.1")
         .expect("known terminal cleanup");
 }
+
+#[path = "model_worker_memory_tests.rs"]
+mod memory_tests;
