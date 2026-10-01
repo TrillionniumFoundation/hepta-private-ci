@@ -86,8 +86,7 @@
   "repositoryControlledGaps": [
     "Persistent product-session composition and live authority/revocation owner remain unimplemented.",
     "Authorized network and credential/file/download brokers remain disconnected.",
-    "Native pipeline-bound document and execution-time deadline admission need adapter implementation and real-worker proof.",
-    "The Node service import closure is not bound by the entry-file digest."
+    "Native pipeline-bound document and execution-time deadline admission need adapter implementation and real-worker proof."
   ],
   "externalEvidenceGates": [
     "terminal-success exact-source locked current-pin worker build and feature-graph receipt",
@@ -129,16 +128,19 @@
     "agentdExecutable": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
     "parentService": "apps/hepta-browser/src/agentd-service-main.js",
     "workerSource": "apps/hepta-browser/servo-worker/src/main.rs",
-    "interpretation": "Source navigation only. The legacy not_composed product state denotes the missing activated persistent runtime; native compilation and product execution are not asserted.",
+    "interpretation": "Source navigation with separately recorded isolated source execution. The legacy not_composed product state denotes the missing activated persistent runtime; complete Agentd all-target checks and product execution qualification are not asserted.",
     "nativeTransport": "codex-rs/hepta-agentd/src/browser_servo_transport.rs",
-    "serviceDigestScope": "Node entrypoint only; imported modules and Node/Bubblewrap runtime closure are not bound by service_sha256."
+    "serviceDigestScope": "Complete recipe-produced single .mjs JavaScript service artifact. Rust copies and hashes one opened inode before executing its private snapshot. The locked isolated actual-source harness passed 27 default tests and one explicit actual Rust-to-Node fixture, its offline test build and scoped Rust 1.95.0 Clippy; full Agentd all-target and real Servo/host qualification remain open. Node, Bubblewrap and OS/runtime bytes remain separately trusted installation identities.",
+    "serviceBundleRecipe": "apps/hepta-browser/scripts/build-service.mjs",
+    "nativeArtifact": "codex-rs/hepta-agentd/src/browser_servo_artifact.rs",
+    "nativeConfig": "codex-rs/hepta-agentd/src/browser_servo_config.rs"
   },
   "remainingImplementationWork": [
     "persistent product-session lifecycle and live authority/revocation owner",
     "authorized network broker before enabling actual web access",
     "credential-reference, upload-reference and download terminal brokers when enabled",
     "macOS/Windows isolation launchers when targeted",
-    "immutable Node service/runtime closure packaging and digest binding beyond the entrypoint file"
+    "reviewed trusted Node/Bubblewrap/runtime installation and exact-host qualification; JavaScript bundling does not establish these identities"
   ],
   "sourceIdentityInterpretation": "sourceBase is retained historical mapping provenance; the 2026-10-01 audit started from 997e7beef8151160065df36b024bc8da5c989e93. This navigation update does not renew an execution receipt or change qualification/production flags.",
   "sourceControls": {
@@ -147,10 +149,17 @@
     "journalConcurrency": "same-path process tail plus atomic writer-lock; retained on crash/uncertain write until explicit stopped-writer owner recovery",
     "journalCache": "qualified local dev/ino/size/mtimeNs/ctimeNs identity; external changes require full replay; identical retries append zero bytes",
     "workerChannel": "malformed response/EOF/pipe failure closes channel; bounded pending requests and concurrent-start cleanup",
-    "parentChannel": "cancelled authority read, 64-frame and 4-MiB queue, strict UTF-8 and error fencing",
+    "parentChannel": "Cancelled authority read and EOF-linked request signal, 64-frame and 4-MiB queue, strict UTF-8/error fencing; actual driver entry rechecks cancellation/deadline after awaited intent persistence.",
     "nativeChannel": "bounded read/write waits and queues; no indefinitely joined pipe thread; incomplete/invalid exchange permanently poisons port",
-    "servoWorkerSource": "page/document/result ownership, pre-reserved effects, 4096 operation identities and 16 host events; native build remains an evidence gate",
-    "ci": "affected-source Browser required job, exact Agentd reverse-consumer mapping, structured canonical repository/pin and complete receipt closure checks",
-    "claimLimit": "source controls and fixture results do not prove native Servo or target-qualified production execution"
+    "servoWorkerSource": "Document/current-URL/result ownership, pre-reserved effects, 4096 operation identities and 16 host events; load-completion guards and pure state tests do not prove atomic renderer pipeline admission or execution-time deadline enforcement.",
+    "ci": "Affected-source Browser required job and Agentd reverse-consumer mapping; all Browser Node gates pin Node 24 and install locked build dependencies; worker/service receipts and target source rebuild preserve exact successful-run admission.",
+    "claimLimit": "source controls and fixture results do not prove native Servo or target-qualified production execution",
+    "serviceArtifact": "Pinned esbuild 0.28.1/acorn 8.15.0 recipe; bounded static source graph, one independent .mjs, input/recipe/lock receipt, duplicate builds and target source rebuild comparison. AST checks cover recognized loaders, not arbitrary reflective JavaScript sandboxing.",
+    "nativeServiceSnapshot": "Linux nofollow/nonblock opened regular file, bounded copy/hash, private owner snapshot retained for child lifetime; verified in the locked isolated actual-source harness, not a full Agentd all-target or target-host qualification.",
+    "workerArtifact": "Bounded actual-byte reads and separately private verified-artifact directory; no writable profile alias to worker executable.",
+    "historicalReplay": "Private v1 replay observation binds original profile/principal/generation/operation/request/semantic identity and grants zero new authority; caller and service must deploy matching payload semantics.",
+    "canonicalJson": "Strict UTF-8 key-byte lexical order and finite JavaScript-safe integers, canonical integer spelling; package-private format, not RFC JCS.",
+    "journalHistory": "Previously admitted owner prefix anchors reject live deletion, rollback or rewrite. Erasure before the first admitted load still requires an external trusted history anchor.",
+    "nativeSourceVerification": "Actual browser_servo.rs and contracts path, with every dependency name/version/source matched to repository Cargo.lock; offline test build and scoped Rust 1.95.0 Clippy passed. Default tests: 27 passed, one ignored; explicit actual Rust-port-to-Node-owner fixture: one passed, signed first dispatch/revoke/historical replay/changed-deadline rejection, exactly one authority entry and one dispatch."
   }
 }

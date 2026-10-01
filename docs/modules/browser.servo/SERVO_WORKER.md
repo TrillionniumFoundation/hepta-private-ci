@@ -15,7 +15,8 @@ The Browser owner also exposes a **parent-only inherited stdio service** for the
 
 - `src/agentd-protocol.js` — bounded canonical parent protocol;
 - `src/agentd-service.js` — request dispatch + final-use challenge/dispatch-boundary handshake;
-- `src/agentd-service-main.js` — Linux private service executable.
+- `src/agentd-service-main.js` — Linux service source entry; deployment uses the standalone `.mjs` artifact from `scripts/build-service.mjs`.
+- `src/replay-evidence.js` — owner-created historical observation proof, with no new authority.
 
 There is still no Browser UDS/TCP discovery endpoint. Parent death closes the Browser service/worker ownership chain.
 
@@ -57,7 +58,7 @@ This prevents duplicate concurrent dispatch, retry-after-unknown dispatch and a 
 
 Cancelled authority verification rejects a late consumer, and dispatch uses the minimum action/profile/grant deadline. Live and persisted recovery share the profile serialization lock. Immutable historical semantics and terminal receipts survive replay/cache eviction; each admitted effect consumes its page snapshot before another effect can be proposed against it.
 
-The journal enforces terminal monotonicity, immutable scalar snapshots, non-zero semantic/result digests, strict UTF-8 and complete newline-terminated replay. Same-path instances share a serialization tail, and all journal accesses take an atomic `<journal>.writer-lock`. Uncertain durability or a crashed owner leaves the lock in place. Recovery requires confirming that the prior writer stopped, reviewing/reconciling the durable prefix and unresolved effects, syncing the reviewed state, then explicitly clearing the lock. No time-based lock stealing or redispatch is permitted. Reliable local-file metadata (`dev`, `ino`, `size`, `mtimeNs`, `ctimeNs`) guards the replay cache; external changes force full replay and identical retries append no bytes.
+The journal enforces terminal monotonicity, immutable scalar snapshots, non-zero semantic/result digests, strict UTF-8 and complete newline-terminated replay. Same-path instances share a serialization tail, and all journal accesses take an atomic `<journal>.writer-lock`. Uncertain durability or a crashed owner leaves the lock in place. Recovery requires confirming that the prior writer stopped, reviewing/reconciling the durable prefix and unresolved effects, syncing the reviewed state, then explicitly clearing the lock. No time-based lock stealing or redispatch is permitted. Reliable local-file metadata (`dev`, `ino`, `size`, `mtimeNs`, `ctimeNs`) guards the replay cache; external changes force full replay and identical retries append no bytes. Once this owner has loaded history, its admitted-prefix anchor rejects live deletion, truncation, rollback or rewriting. Complete erasure before its first admitted load still requires an external trusted history anchor.
 
 Malformed worker responses, UTF-8 errors, EOF and pipe failures close the channel and reject pending calls. Concurrent startup fails without losing the live session. Pending requests and abandoned responses are each bounded at 1024; direct driver callers must pass a bounded `AbortSignal`.
 
@@ -78,7 +79,9 @@ For `navigate_or_act`:
 
 `test/agentd-service.test.js` exercises challenge-before-dispatch ordering and fail-closed witness drift. The cross-owner Rust caller is present in `codex-rs/hepta-agentd/src/browser_servo.rs`, with `FinalUseAuthority` handoff tests and the named `hepta-agentd-browser` executable. Historical stacked PR #611 is provenance, not the current composition or qualification status. A terminal-success exact-source test is required before claiming the mutex proof passed on a candidate.
 
-The parent service limits queued input to 64 frames and 4 MiB, strictly decodes UTF-8, cancels expired authority reads and fences stream/protocol errors. The native child transport has bounded read/write queues and deadlines, and shutdown does not wait indefinitely for a descendant-retained pipe. A partial or invalid exchange permanently poisons the native port so it cannot resume on a desynchronized frame stream.
+The parent service limits queued input to 64 frames and 4 MiB, strictly decodes UTF-8, cancels expired authority reads and fences stream/protocol errors. The native child transport has bounded read/write queues and deadlines, and shutdown does not wait indefinitely for a descendant-retained pipe. A partial or invalid exchange permanently poisons the native port so it cannot resume on a desynchronized frame stream. Parent EOF aborts the active authority context; the actual driver-entry path rechecks that context and the final deadline after awaited journal persistence.
+
+Private parent v1 canonical JSON uses strict UTF-8 byte-lexical key order and finite mathematical integers within ±(2^53−1), normalized to integer spelling. This package-private format is not RFC JCS. An exact historical effect may respond before a fresh challenge only with validated `{ok,result,replay}` observation evidence binding profile/principal/generation/operation and the original request/semantic digests. Its three authority flags remain false. Caller and service must deploy matching private v1 semantics; replay cannot reauthorize or redispatch.
 
 ## 5. Typed action boundary
 
@@ -125,13 +128,15 @@ A successful probe is evidence only for the exact host/kernel/Bubblewrap tuple t
 
 Caller-provided arbitrary JavaScript is not a Browser action. Worker-owned fixed templates may use Servo's embedding API for bounded click/type/focus/scroll operations. Navigation uses `WebView::load`.
 
-Worker source now binds page/document identity and navigation-result ownership, reserves the operation before executing an effect and caps stored operation identities at 4096 and queued host events at 16. Those source changes still require native compilation and real Servo execution; current-page completion cannot stand in for evidence about a different navigation request.
+Worker source now binds page/document identity and navigation-result ownership, reserves the operation before executing an effect and caps stored operation identities at 4096 and queued host events at 16. The second round also tightens current-URL/load-completion and stale document callback guards; 13 pure Rust state tests pass. Atomic renderer-pipeline admission and execution-time deadline enforcement are still adapter work. These state tests do not compile Servo; current-page completion cannot stand in for evidence about a different navigation request.
 
 ## 8. Reproducible worker artifact gate
 
 `.github/workflows/hepta-browser-servo-worker-dev.yml` requires an exact source SHA and:
 
 - Rust 1.88.0 plus explicit Servo prerequisites;
+- Node 24 with locked esbuild 0.28.1/acorn 8.15.0 dependencies installed using `npm ci --prefix apps/hepta-browser --ignore-scripts`;
+- two independent standalone service `.mjs` builds with identical bundle and receipt bytes;
 - exact current Servo repository/pin consistency across canonical patch manifest, topology, worker dependency and resolved metadata;
 - structured Cargo resolved-feature admission, including required/forbidden Servo features and rejection of `webdriver_server`;
 - `cargo check --locked` and all Browser Node tests;
@@ -140,7 +145,10 @@ Worker source now binds page/document identity and navigation-result ownership, 
 - byte-for-byte equality of the two worker binaries;
 - dynamic-library closure inspection;
 - real worker start/stop through Bubblewrap and the private protocol;
-- worker SHA-256, deterministic SPDX-2.3 dependency SBOM and build receipt.
+- worker SHA-256, deterministic SPDX-2.3 dependency SBOM and build receipt;
+- separate `serviceSha256` / `serviceReceiptSha256`, source-input/recipe/npm-lock bindings and `reproducibleServiceBuilds` evidence.
+
+The service recipe admits at most 64 source files, 1 MiB per file, a 2 MiB total source closure and an 8 MiB bundle. It emits one `.mjs` without a source map or package-metadata dependency. AST checks cover reviewed static imports and recognized loader escapes; they do not sandbox arbitrary reflective JavaScript.
 
 A generated `Cargo.lock` is only a candidate until its exact bytes are reviewed and committed. Until a terminal-success exact-head run exists, the worker artifact is **not qualified**. The start/stop smoke exercises boot and the private protocol only; it does not prove navigation success, DOM action correctness, cross-profile isolation, terminal reconciliation, resource bounds or absence of all listeners. These workflow definitions remain opt-in and their presence is not proof that aggregate blocking CI invoked them.
 
@@ -158,11 +166,13 @@ The Browser-side half of the module port is implemented by the parent-only servi
 
 That caller must keep the real kernel revocation mutex only through `authority_enter -> Browser durable intent -> local worker pipe write -> dispatch_boundary`. It must not wait for remote page execution while holding the mutex, and it must not substitute a serialized prior verification receipt for the live authority.
 
-`service_sha256` verifies only the Node entrypoint file. Imported JavaScript modules, Node, Bubblewrap and other runtime bytes are not covered by that digest. Product deployment must separately bind a reviewed immutable service/runtime closure; this remains implementation/packaging work.
+`service_path` selects a fresh standalone `.mjs` built by the pinned recipe, and `service_sha256` binds its complete JavaScript bytes. New Linux Rust snapshot/config source copies and hashes one opened non-symlink, nonblocking regular file into a private owner snapshot before launching it; the transport retains that snapshot through child lifetime and cleanup. The original mutable service path is not executed. This round's isolated actual-source harness passed its offline test build, 27 default tests (one ignored), the separately invoked actual Rust-port-to-Node-owner fixture and scoped Rust 1.95.0 Clippy. It uses the actual contracts path, with every dependency name/version/source matched to the repository `Cargo.lock`. The fixture proves signed first dispatch, revocation, same-request historical replay and changed-deadline rejection with one authority entry and one dispatch. Full Agentd all-target checks and real Servo/host qualification remain separate gates.
+
+The worker artifact reader enforces actual byte limits and stages the verified executable in a separate private artifact directory outside the writable profile bind, removing its prior writable alias. Node, Bubblewrap, runtime libraries and OS behavior remain trusted installation dependencies outside the service digest. Exact reviewed installation and runtime qualification are still required.
 
 ## 11. Deployment qualification
 
-`.github/workflows/hepta-browser-servo-deployment-qualification.yml` defines a **main-only** trusted Linux target gate. Its reusable entry inherits its caller's event/ref and therefore preserves manual `workflow_dispatch` and main-branch admission; no automatic trigger or extra permission is needed. It requires exact source SHA/tree, an exact successful worker build run and reviewed worker SHA-256. The evidence verifier binds canonical Servo identity, actual worker/lock/SBOM digests, the smoke worker digest and the build lock to the checked-out committed source lock. Generated lock candidates are ineligible for target qualification. It records kernel/Bubblewrap identities, reruns the filesystem/IPv4-egress probe and worker start/stop, and emits a target execution receipt only after those steps pass. This is a boot/isolation probe boundary, not complete browser deployment qualification.
+`.github/workflows/hepta-browser-servo-deployment-qualification.yml` defines a **main-only** trusted Linux target gate. Its reusable entry inherits its caller's event/ref and therefore preserves manual `workflow_dispatch` and main-branch admission; no automatic trigger or extra permission is needed. It requires exact source SHA/tree, an exact successful worker build run and reviewed worker SHA-256. The evidence verifier binds canonical Servo identity, actual worker/lock/SBOM digests, the smoke worker digest and the build lock to the checked-out committed source lock. It also verifies the service bundle/receipt and independently rebuilds the service from the checked-out pinned recipe, comparing the bundle digest and complete input receipt. This rejects omitted-import manifests and self-consistent substituted bundles; manifest hashes alone are not compiler-semantics evidence. Generated lock candidates are ineligible for target qualification. It observes kernel, Node and Bubblewrap identities, reruns the filesystem/IPv4-egress probe and worker start/stop, and emits a target execution receipt only after those steps pass. The service artifact is reproduced, but `serviceExecutionQualified=false`: this workflow does not start or qualify the complete Agentd/Node/Servo service path. Observed Node/Bubblewrap executable hashes are not installation qualification. This is a boot/isolation probe boundary, not complete browser deployment qualification.
 
 That receipt deliberately leaves `operatorAcceptance=false`, `promotion=false` and `releaseQualified=false`. Independent operator/release authority is external and cannot be self-issued by this module.
 
@@ -176,7 +186,9 @@ Still required before production/release claims:
 - macOS/Windows equivalent isolation if those platforms are in the product target set;
 - functional credential-reference broker if credential use is enabled;
 - exact-source Agentd caller qualification, persistent product-session composition and a trusted live authority/revocation owner for long-running activation;
-- immutable Node service/runtime closure binding beyond the entrypoint digest;
+- complete Agentd all-target native checks and real product composition; the 27 default isolated source tests and separately invoked Rust-to-Node fixture do not replace that gate;
+- atomic renderer-pipeline document admission and execution-time deadline enforcement;
+- reviewed trusted Node/Bubblewrap/OS/runtime installation and an external journal-history anchor when rollback across first admission must be detected;
 - separately authorized network delivery, including redirects, subresources, script-initiated requests and DNS policy, when web access is enabled;
 - real navigation/download/business terminal observation and reconciliation;
 - target resource measurements;
