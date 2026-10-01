@@ -367,7 +367,8 @@ policy used a deliberately short 30s validity to exercise actual expiry; it is
 not a default installed policy or permission to change existing tickets.
 No installed Fleet or signing policy was replaced. Installed Agentd activation,
 provider-native dynamic issue/renew/revoke and the remaining capability matrix
-remain closed/unqualified; module `productCallerState` stays `not_composed`.
+remained closed/unqualified at that stage. The ordinary Agentd source
+composition and its separate qualification are described below.
 
 
 ### Optional ordinary Agentd original-operation capability
@@ -457,3 +458,74 @@ an original held reservation and every quota counter across renewal. All128
 package library tests passed with two existing skips, two threads and zero
 retries. Installed activation remains pending; retirement/archive and quota
 limit/period changes are not exposed by this maintenance entry.
+
+
+### Root first installation and policy upkeep
+
+The reviewed entries are `scripts/hepta-install-secrets-product` and
+`scripts/hepta-maintain-secrets-product`. Run them as Root using the final
+qualified runtime executable and its exact SHA256. First preparation creates
+one exclusive `/var/lib/hepta-secrets-product` namespace, bind-mounted from
+`/data/.hepta-secrets-product/namespace` on the real SSD, and configurations in
+`/etc/hepta-secrets`. It emits the canonical mount and four systemd units under
+`/etc/hepta-secrets/units`; it does not install or start those units. Repeated
+preparation verifies the original manifest. Partial or changed instances are
+refused. Root must verify the units, install them in `/etc/systemd/system`,
+reload the manager, and start `hepta-secrets-runtime.service` after publishing
+its final immutable executable.
+
+The new-instance defaults are a seven-day exact-KV policy and 1000 requests for
+**each original Agent in the original quota period**. This is not a daily or
+rolling quota. Only first preparation accepts `--policy-days 1..30` and
+`--quota 1..100000`. Changing an existing limit or period is not supported.
+The initializer does not replace any existing namespace or extend tickets.
+
+Authority UID982 holds distinct issuer/time keys; operator UID981 holds
+independent approval/revocation keys; consumer UID983 holds distinct ACK and
+settlement keys. Runtime UID992 holds no signing key. Services use endpoint
+G976, private UID directories0700 and purpose files0600. Only the runtime reads
+its existing `/var/lib/hepta-secrets-runtime/provider-token`, `provider-ca.pem`
+and `provider-read.json`; these files are not copied. During first preparation
+only a UID992 child reads the token and pinned TLS KV2 value. The independently
+verified consumer credential reaches UID983 through a private pipe; it is not
+written to a Root document or output.
+
+Root-owned `/etc/hepta-secrets/agent-986.json` and `agent-969.json`, G975/mode0640,
+enroll the two original Agent identities through the single existing startup
+flag. The evolving wrapper uses the same parser. Runtime's public socket and
+parent receive exact UID986/969 ACLs; private authority/operator/consumer
+endpoints remain G976. No Agent group, UUID, durable state or fixed launch
+generation changes. Installed acceptance still requires actual calls from the
+newly installed original Agent PIDs.
+
+To renew, physically stop/drain the runtime, keep its original authority
+trusted-clock service available, and issue one explicit maintenance intent:
+
+```text
+sudo python3 scripts/hepta-maintain-secrets-product renew --expected-revision CURRENT_REVISION --expires-at-ms NEW_ABSOLUTE_EXPIRY
+sudo python3 scripts/hepta-maintain-secrets-product revoke --expected-revision CURRENT_REVISION
+sudo python3 scripts/hepta-maintain-secrets-product apply
+```
+
+`apply` resumes only the retained pending intent after an uncertain result or
+publication interruption. It can restore only the original Root startup
+configuration to make the original authority service startable; it never
+restores a database, counter, nonce, clock or ACK. If the clock is unavailable,
+keep the pending intent, start that original authority service and use `apply`
+again. The SDK checks the same original revision-CAS, so an already committed
+successor is observed without repeating the mutation. Runtime's transient
+endpoint directory survives ordinary service stops; after boot the helper may
+recreate only that missing endpoint parent with its original UID/GID. It never
+recreates durable owners or keys. Root publication is serialized separately
+from the daemon's physical writer lock. Explicit revoke permanently closes
+new admission; terminal Status/Recover stays available. Retirement/archive,
+quota changes and renewal of a revoked policy remain unsupported.
+
+The final scripts passed twelve real non-dev checks under UID982/981/983/992
+and original Agent UID986/969 on SSD, including partial publication recovery,
+policy revision2 after four-owner restart, revision3 revocation, concurrent
+Root-writer rejection and missing transient-parent restoration without any
+durable replacement. A real isolated service-manager run separately verified
+that `RuntimeDirectoryPreserve=yes` retains the UID992/G976 directory after
+exit. All five emitted units passed manager verification. These isolated
+checks do not claim installed Fleet activation.
