@@ -38,6 +38,8 @@ pub use transport::ChildBrowserTransport;
 mod artifact;
 #[path = "browser_servo_config.rs"]
 mod config;
+#[path = "browser_servo_replay.rs"]
+mod replay;
 pub use config::BrowserServoProcessConfig;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -198,7 +200,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             &request_id,
             json!({
                 "method": call.method.wire_name(),
-                "input": call.input,
+                "input": &call.input,
             }),
         )?;
 
@@ -206,11 +208,18 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         if call.method.requires_final_use() {
             // Local admission can reject before asking Agentd to enter the
             // authority fence. Consume that complete response so a later call
-            // cannot inherit it. Success still requires the full handshake.
+            // cannot inherit it. A successful historical observation must
+            // carry explicit proof of the original immutable operation.
             if first.kind == "response" && first.request_id == request_id {
                 let payload = require_plain_object(&first.payload, "Browser response payload")?;
                 if payload.get("ok") == Some(&Value::Bool(false)) {
                     return response_result(first, &request_id);
+                }
+                if payload.get("ok") == Some(&Value::Bool(true)) {
+                    let invocation = call.final_use.as_ref().ok_or_else(|| {
+                        BrowserServoError::Invalid("missing Browser final-use invocation".into())
+                    })?;
+                    return replay::response_result(&first, &call.input, invocation);
                 }
             }
             if first.kind != "authority_challenge" || first.request_id != request_id {
@@ -514,21 +523,12 @@ fn write_canonical(
             })?)
         }
         Value::Number(number) => {
-            let valid = number
-                .as_u64()
-                .map(|value| value <= JS_SAFE_INTEGER)
-                .or_else(|| {
-                    number
-                        .as_i64()
-                        .map(|value| value.unsigned_abs() <= JS_SAFE_INTEGER)
-                })
-                .unwrap_or(false);
-            if !valid {
-                return Err(BrowserServoError::Protocol(
+            let integer = safe_integer(number).ok_or_else(|| {
+                BrowserServoError::Protocol(
                     "Browser JSON numbers must be JavaScript-safe integers".into(),
-                ));
-            }
-            output.push_str(&number.to_string());
+                )
+            })?;
+            output.push_str(&integer.to_string());
         }
         Value::Array(items) => {
             output.push('[');
@@ -569,12 +569,35 @@ fn require_plain_object<'a>(
         .ok_or_else(|| BrowserServoError::Invalid(format!("{name} must be a JSON object")))
 }
 
+fn safe_integer(number: &serde_json::Number) -> Option<i64> {
+    number
+        .as_u64()
+        .filter(|value| *value <= JS_SAFE_INTEGER)
+        .map(|value| value as i64)
+        .or_else(|| {
+            number
+                .as_i64()
+                .filter(|value| value.unsigned_abs() <= JS_SAFE_INTEGER)
+        })
+        .or_else(|| {
+            number
+                .as_f64()
+                .filter(|value| {
+                    value.is_finite()
+                        && value.fract() == 0.0
+                        && value.abs() <= JS_SAFE_INTEGER as f64
+                })
+                .map(|value| value as i64)
+        })
+}
+
 fn positive_u64(value: Option<&Value>, name: &str) -> Result<u64, BrowserServoError> {
     let value = value
-        .and_then(Value::as_u64)
-        .filter(|value| *value > 0 && *value <= JS_SAFE_INTEGER)
+        .and_then(Value::as_number)
+        .and_then(safe_integer)
+        .filter(|value| *value > 0)
         .ok_or_else(|| BrowserServoError::Protocol(format!("{name} must be a positive integer")))?;
-    Ok(value)
+    Ok(value as u64)
 }
 
 fn stable_id(value: &str, name: &str) -> Result<(), BrowserServoError> {
@@ -992,6 +1015,99 @@ mod tests {
             harness.outbound.try_recv(),
             Err(mpsc::TryRecvError::Empty)
         ));
+    }
+
+    #[test]
+    fn an_exact_historical_replay_after_dispatch_does_not_claim_authority_again() {
+        let harness = harness();
+        let input = json!({"profileId":"profile.1","principalId":"principal.1",
+            "generation":1,"operationId":"operation.1"});
+        let witness = browser_witness_digest(
+            &harness.request_digest,
+            &harness.invocation.signed_grant.grant.grant_id,
+            &harness.invocation.signed_grant.grant.nonce,
+            7,
+        );
+        let receipt = json!({
+            "kind":"BrowserEffectObservationV1","profileId":"profile.1",
+            "operationId":"operation.1","semanticDigest":hex_lower(&[0x22;32]),
+            "status":"succeeded","outcomeDigest":hex_lower(&[0x33;32]),
+            "terminalObserved":true,"observationReason":"terminal_observed",
+            "networkAuthority":false,"filesystemAuthority":false,
+            "credentialExportAuthority":false,
+        });
+        for (sequence, kind, request_id, payload) in [
+            (
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                "requestDigest":hex_lower(&harness.request_digest),"authorityEpoch":7}),
+            ),
+            (
+                2,
+                "dispatch_boundary",
+                "browser.agentd.1",
+                json!({
+                "requestDigest":hex_lower(&harness.request_digest),
+                "witnessDigest":hex_lower(&witness),"localDispatchCrossed":true}),
+            ),
+            (
+                3,
+                "response",
+                "browser.agentd.1",
+                json!({"ok":true,"result":receipt.clone()}),
+            ),
+            (
+                4,
+                "response",
+                "browser.agentd.2",
+                json!({"ok":true,"result":receipt.clone(),
+                "replay":{
+                    "schema":"hepta.browser.replay-observation.v1",
+                    "profileId":"profile.1","principalId":"principal.1",
+                    "generation":1,"operationId":"operation.1",
+                    "requestDigest":hex_lower(&harness.request_digest),
+                    "semanticDigest":hex_lower(&[0x22;32]),
+                }}),
+            ),
+        ] {
+            harness
+                .inbound
+                .send(inbound_frame(sequence, kind, request_id, payload))
+                .expect("frame");
+        }
+        let first = harness
+            .port
+            .call(
+                BrowserServoCall::effect(input.clone(), harness.invocation.clone())
+                    .expect("effect call"),
+            )
+            .expect("first dispatch");
+        harness
+            .authority
+            .update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            })
+            .expect("revoke original grant");
+        let replay = harness
+            .port
+            .call(BrowserServoCall::effect(input, harness.invocation.clone()).expect("replay call"))
+            .expect("historical observation after revocation");
+        assert_eq!(first, replay);
+        let kinds = harness
+            .outbound
+            .try_iter()
+            .map(|bytes| {
+                decode_outbound(&bytes)["kind"]
+                    .as_str()
+                    .expect("kind")
+                    .to_string()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(kinds, vec!["request", "authority_enter", "request"]);
     }
 
     #[test]
