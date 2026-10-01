@@ -24,6 +24,7 @@ use crate::ProcessDriverError;
 
 pub(crate) struct PreparedExecution {
     pub id: String,
+    pub uid: u32,
     pub relative: String,
     membership: File,
     pub launch: Option<tokio::sync::OwnedMutexGuard<()>>,
@@ -75,6 +76,7 @@ pub(super) fn create_execution(
     execution: &str,
     resources: ResourceVectorV1,
 ) -> Result<PreparedExecution, ProcessDriverError> {
+    let uid = policy.workload_uid_for(agent)?;
     let parent = Path::new("/sys/fs/cgroup")
         .join(&policy.cgroup_root)
         .join(format!("agent-{agent}"));
@@ -107,6 +109,7 @@ pub(super) fn create_execution(
         .open(path.join("cgroup.procs"))?;
     Ok(PreparedExecution {
         id: execution.into(),
+        uid,
         relative,
         membership,
         launch: None,
@@ -120,7 +123,7 @@ pub(super) fn constrain(command: &mut Command, prepared: &PreparedExecution, pol
         .env("HEPTA_FLEET_EXECUTION_ID", &prepared.id)
         .process_group(0);
     let fd = prepared.membership.as_raw_fd();
-    let uid = policy.workload_uid;
+    let uid = prepared.uid;
     let gid = policy.workload_gid;
     // Only async-signal-safe syscalls run between fork and exec. The parent
     // retains the opened protected descriptor until spawn returns; CLOEXEC
@@ -156,13 +159,14 @@ pub(super) fn protect_registry(
             "resource anti-rollback frontier must be outside the fleet state root",
         ));
     }
+    let enrolled_uids = policy.workload_uids();
     let socket_traversal = policy
         .observer_principal
-        .is_some_and(|principal| principal.uid != policy.workload_uid)
+        .is_some_and(|principal| !enrolled_uids.contains(&principal.uid))
         || policy
             .controller_principal
             .as_ref()
-            .is_some_and(|principal| principal.uid != policy.workload_uid);
+            .is_some_and(|principal| !enrolled_uids.contains(&principal.uid));
     set_owner(
         layout.fleet_root().as_path(),
         0,
@@ -212,6 +216,7 @@ pub(super) fn prepare_workload(
     layout: &HeptaAgentLayout,
     policy: &Policy,
 ) -> Result<(), ProcessDriverError> {
+    let uid = policy.workload_uid_for(layout.agent_id())?;
     protect_agent_metadata(layout, policy)?;
     for path in [
         layout.home_root(),
@@ -221,8 +226,8 @@ pub(super) fn prepare_workload(
         layout.matrix_root(),
         layout.automation_root(),
     ] {
-        if std::fs::symlink_metadata(path)?.uid() != policy.workload_uid {
-            workload_tree(path, policy, &mut 0)?;
+        if std::fs::symlink_metadata(path)?.uid() != uid {
+            workload_tree(path, uid, policy.workload_gid, &mut 0)?;
         }
     }
     let socket_root = layout
@@ -237,13 +242,13 @@ pub(super) fn prepare_workload(
     let metadata = std::fs::symlink_metadata(socket_root)?;
     if !metadata.is_dir()
         || metadata.file_type().is_symlink()
-        || ![0, policy.workload_uid].contains(&metadata.uid())
+        || ![0, uid].contains(&metadata.uid())
     {
         return Err(ProcessDriverError::new(
             "workload socket root has unsafe ownership",
         ));
     }
-    set_owner(socket_root, policy.workload_uid, policy.workload_gid, 0o700)
+    set_owner(socket_root, uid, policy.workload_gid, 0o700)
 }
 
 fn protect_tree(
@@ -306,7 +311,8 @@ fn protect_tree(
 
 fn workload_tree(
     path: &Path,
-    policy: &Policy,
+    uid: u32,
+    gid: u32,
     count: &mut usize,
 ) -> Result<(), ProcessDriverError> {
     *count += 1;
@@ -318,7 +324,7 @@ fn workload_tree(
     let metadata = std::fs::symlink_metadata(path)?;
     if metadata.file_type().is_symlink()
         || !(metadata.is_dir() || metadata.is_file())
-        || ![0, policy.workload_uid].contains(&metadata.uid())
+        || ![0, uid].contains(&metadata.uid())
     {
         return Err(ProcessDriverError::new(
             "workload tree contains a foreign or linked entry",
@@ -326,13 +332,13 @@ fn workload_tree(
     }
     if metadata.is_dir() {
         for entry in std::fs::read_dir(path)? {
-            workload_tree(&entry?.path(), policy, count)?;
+            workload_tree(&entry?.path(), uid, gid, count)?;
         }
     }
     set_owner(
         path,
-        policy.workload_uid,
-        policy.workload_gid,
+        uid,
+        gid,
         if metadata.is_dir() { 0o700 } else { 0o600 },
     )
 }

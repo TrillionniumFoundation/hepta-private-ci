@@ -302,7 +302,7 @@ async fn run_supervisord_inner(
     })?;
     let mut driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let mut selection_uid = unsafe { libc::geteuid() };
+    let mut selection_uids = std::collections::BTreeSet::from([unsafe { libc::geteuid() }]);
     let mut selection_gid = unsafe { libc::getegid() };
     let mut observer_principal = None;
     #[cfg(all(target_os = "linux", feature = "local-host"))]
@@ -323,7 +323,7 @@ async fn run_supervisord_inner(
         })
         .await?;
         let host = opened.outcome?;
-        selection_uid = host.policy.workload_uid;
+        selection_uids = host.policy.workload_uids();
         selection_gid = host.policy.workload_gid;
         observer_principal = host.policy.observer_principal;
         controller_gate = host
@@ -409,7 +409,7 @@ async fn run_supervisord_inner(
         layout.runtime_selection_socket(),
         Arc::clone(&state),
         cancellation.clone(),
-        selection_uid,
+        selection_uids,
         selection_gid,
     )
     .await?;

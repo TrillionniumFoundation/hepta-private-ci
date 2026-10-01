@@ -87,6 +87,15 @@ impl UnixProcessDriver {
         self.local_host = Some(host);
         self
     }
+
+    fn peer_uid_for(&self, agent: &AgentId) -> Result<u32, ProcessDriverError> {
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some(host) = &self.local_host {
+            return host.policy.workload_uid_for(agent);
+        }
+        let _ = agent;
+        Ok(self.peer_uid)
+    }
 }
 
 pub struct UnixManagedProcess {
@@ -270,6 +279,7 @@ impl ProcessDriver for UnixProcessDriver {
         &mut self,
         spec: &SpawnSpec,
     ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
+        let peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let mut command = Command::new(&spec.command.program);
         command
             .args(&spec.command.args)
@@ -302,7 +312,7 @@ impl ProcessDriver for UnixProcessDriver {
             _ => Ok(()),
         };
         let mut agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.id());
-        agent_control.peer_uid = self.peer_uid;
+        agent_control.peer_uid = peer_uid;
         let probe = HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()));
         // From successful spawn onward, all setup faults travel with ownership.
         let mut spawned = initialization::finish_child(
@@ -339,7 +349,7 @@ impl ProcessDriver for UnixProcessDriver {
             return Ok(Adoption::Missing);
         };
         let mut agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
-        agent_control.peer_uid = self.peer_uid;
+        agent_control.peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let health_identity = HealthProbeIdentity::Agentd(agent_control.clone());
         if prove_adoption_identity(&health_identity) {
             if reference.exited()? {
@@ -369,6 +379,7 @@ impl ProcessDriver for UnixProcessDriver {
         &mut self,
         spec: &MatrixSpawnSpec,
     ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
+        let peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let mut command = Command::new(&spec.command.program);
         command
             .args(&spec.command.args)
@@ -411,7 +422,7 @@ impl ProcessDriver for UnixProcessDriver {
             _ => Ok(()),
         };
         let mut identity = MatrixHealthProbeIdentity::from_spawn(spec, child.id());
-        identity.peer_uid = self.peer_uid;
+        identity.peer_uid = peer_uid;
         let probe = HealthProbe::spawn(HealthProbeIdentity::Matrixd(identity));
         let mut spawned = initialization::finish_child(
             child,
@@ -448,7 +459,7 @@ impl ProcessDriver for UnixProcessDriver {
             return Ok(Adoption::Missing);
         };
         let mut identity = MatrixHealthProbeIdentity::from_adopt(spec, process_id);
-        identity.peer_uid = self.peer_uid;
+        identity.peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let health_identity = HealthProbeIdentity::Matrixd(identity);
         if prove_adoption_identity(&health_identity) {
             if reference.exited()? {

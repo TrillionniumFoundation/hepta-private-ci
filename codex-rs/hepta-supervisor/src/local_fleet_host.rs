@@ -45,6 +45,8 @@ pub(crate) struct Policy {
     pub version: u32,
     pub workload_uid: u32,
     pub workload_gid: u32,
+    #[serde(default)]
+    pub agent_workload_uids: Option<crate::workload_principal::AgentWorkloadUids>,
     pub cgroup_root: String,
     pub resource_authority_frontier: PathBuf,
     pub process_thread_reserve: u64,
@@ -90,6 +92,12 @@ impl LocalFleetHost {
         if let Some(directory) = &policy.self_iteration_config_directory {
             trust::validate_root_directory(directory)?;
         }
+        crate::workload_principal::validate(
+            policy.workload_uid,
+            policy.workload_gid,
+            policy.agent_workload_uids.as_ref(),
+        )
+        .map_err(host_error)?;
         policy.validate_controller_isolation()?;
         if let Some(principal) = policy.observer_principal
             && (principal.uid == 0 || principal.gid == 0)
@@ -185,6 +193,11 @@ impl LocalFleetHost {
                 .launch_digest_prefix(&spec.command.program, LaunchDigestDomain::Agent)
                 .map_err(host_error)?;
             digest.update(serde_json::to_vec(&record.manifest)?);
+            if self.policy.agent_workload_uids.is_some() {
+                digest.update(b"hepta.host-workload-principal.v1");
+                digest.update(self.policy.workload_uid_for(&spec.agent_id)?.to_be_bytes());
+                digest.update(self.policy.workload_gid.to_be_bytes());
+            }
             digest.update(spec.generation.to_be_bytes());
             for (name, value) in &environment {
                 for bytes in [name.as_encoded_bytes(), value.as_encoded_bytes()] {
@@ -229,6 +242,11 @@ impl LocalFleetHost {
                 .launch_digest_prefix(&spec.command.program, LaunchDigestDomain::Matrix)
                 .map_err(host_error)?;
             digest.update(serde_json::to_vec(&record.manifest)?);
+            if self.policy.agent_workload_uids.is_some() {
+                digest.update(b"hepta.host-workload-principal.v1");
+                digest.update(self.policy.workload_uid_for(&spec.agent_id)?.to_be_bytes());
+                digest.update(self.policy.workload_gid.to_be_bytes());
+            }
             digest.update(spec.binding_digest.as_str());
             digest.update(spec.agent_generation.to_be_bytes());
             digest.update(spec.plane_epoch.to_be_bytes());
@@ -498,15 +516,41 @@ fn hex_digest(bytes: impl AsRef<[u8]>) -> String {
 }
 
 impl Policy {
+    pub(crate) fn workload_uid_for(&self, agent: &AgentId) -> Result<u32, ProcessDriverError> {
+        crate::workload_principal::uid_for(
+            self.workload_uid,
+            self.agent_workload_uids.as_ref(),
+            agent,
+        )
+        .map_err(host_error)
+    }
+
+    pub(crate) fn workload_uids(&self) -> std::collections::BTreeSet<u32> {
+        crate::workload_principal::enrolled_uids(
+            self.workload_uid,
+            self.agent_workload_uids.as_ref(),
+        )
+    }
+
     fn validate_controller_isolation(&self) -> Result<(), ProcessDriverError> {
+        let uids = self.workload_uids();
         if let Some(principal) = &self.controller_principal
-            && (principal.uid == self.workload_uid
+            && (uids.contains(&principal.uid)
                 || principal.gid == self.workload_gid
-                || principal.desktop_uid == self.workload_uid
+                || uids.contains(&principal.desktop_uid)
                 || principal.desktop_uid == 0)
         {
             return Err(ProcessDriverError::new(
                 "lifecycle control requires separate workload, gateway and desktop credential principals",
+            ));
+        }
+        if self.agent_workload_uids.is_some()
+            && self
+                .observer_principal
+                .is_some_and(|principal| uids.contains(&principal.uid))
+        {
+            return Err(ProcessDriverError::new(
+                "isolated Agents must not share the observer desktop identity",
             ));
         }
         Ok(())

@@ -71,6 +71,8 @@ struct Config {
     process_identity_file: PathBuf,
     socket_gid: u32,
     workload_uid: u32,
+    #[serde(default)]
+    workload_policy_file: Option<PathBuf>,
     state_directory: PathBuf,
     trust_directory: PathBuf,
     revocations_file: PathBuf,
@@ -103,6 +105,7 @@ impl Config {
         ]
         .into_iter()
         .chain(&self.allowed_executable_paths)
+        .chain(&self.workload_policy_file)
         {
             anyhow::ensure!(
                 path.is_absolute()
@@ -148,8 +151,28 @@ impl Config {
                 "invalid enrolled executable digest"
             );
         }
+        let principals = self.host_principals()?;
+        if let Some(host) = &principals {
+            for subject in &self.allowed_subject_ids {
+                crate::workload_principal::uid_for(
+                    host.workload_uid,
+                    host.agent_workload_uids.as_ref(),
+                    &codex_hepta_contracts::AgentId::parse(subject.clone())?,
+                )?;
+            }
+        }
         if let Some(relay) = &self.model_relay {
-            relay.validate(self.workload_uid)?;
+            for uid in principals.as_ref().map_or_else(
+                || BTreeSet::from([self.workload_uid]),
+                |host| {
+                    crate::workload_principal::enrolled_uids(
+                        host.workload_uid,
+                        host.agent_workload_uids.as_ref(),
+                    )
+                },
+            ) {
+                relay.validate(uid)?;
+            }
             anyhow::ensure!(
                 relay.socket != self.issuer_socket,
                 "model endpoints must be distinct"
@@ -158,8 +181,25 @@ impl Config {
         Ok(())
     }
 
+    fn host_principals(
+        &self,
+    ) -> anyhow::Result<Option<crate::workload_principal::HostPrincipalPolicy>> {
+        let Some(path) = &self.workload_policy_file else {
+            return Ok(None);
+        };
+        let host: crate::workload_principal::HostPrincipalPolicy =
+            serde_json::from_slice(&read_protected(path, 65_536, true)?)?;
+        host.validate()?;
+        anyhow::ensure!(
+            host.workload_uid == self.workload_uid
+                && host.workload_gid == self.socket_gid
+                && self.cgroup_root == Path::new("/sys/fs/cgroup").join(&host.cgroup_root),
+            "model enrollment disagrees with the Fleet host policy"
+        );
+        Ok(Some(host))
+    }
+
     fn admitted_subject(&self, uid: u32, cgroup: &str) -> anyhow::Result<String> {
-        anyhow::ensure!(uid == self.workload_uid, "unenrolled model caller UID");
         let root = self.cgroup_root.strip_prefix("/sys/fs/cgroup")?;
         let prefix = format!("0::/{}/agent-", root.display());
         let suffix = cgroup
@@ -176,6 +216,16 @@ impl Config {
                 && self.allowed_subject_ids.contains(subject),
             "unenrolled model execution"
         );
+        let host = self.host_principals()?;
+        let expected_uid = match host {
+            Some(host) => crate::workload_principal::uid_for(
+                host.workload_uid,
+                host.agent_workload_uids.as_ref(),
+                &codex_hepta_contracts::AgentId::parse(subject.to_string())?,
+            )?,
+            None => self.workload_uid,
+        };
+        anyhow::ensure!(uid == expected_uid, "unenrolled model caller UID");
         Ok(subject.to_string())
     }
 }

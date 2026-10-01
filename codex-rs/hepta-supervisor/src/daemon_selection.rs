@@ -22,7 +22,7 @@ pub(super) struct SelectionServer {
     socket_path: PathBuf,
     state: Arc<DaemonState<UnixProcessDriver>>,
     cancellation: CancellationToken,
-    uid: u32,
+    uids: std::collections::BTreeSet<u32>,
 }
 
 impl SelectionServer {
@@ -30,14 +30,14 @@ impl SelectionServer {
         socket_path: PathBuf,
         state: Arc<DaemonState<UnixProcessDriver>>,
         cancellation: CancellationToken,
-        uid: u32,
+        uids: std::collections::BTreeSet<u32>,
         gid: u32,
     ) -> Result<Self, SupervisorError> {
         use std::os::unix::fs::PermissionsExt;
         prepare_socket(&socket_path).await?;
         let listener = UnixListener::bind(&socket_path).await?;
         let parent = socket_path.parent().expect("prepared socket parent");
-        if uid != unsafe { libc::geteuid() } {
+        if uids != std::collections::BTreeSet::from([unsafe { libc::geteuid() }]) {
             use std::ffi::CString;
             for path in [parent, socket_path.as_path()] {
                 let path = CString::new(path.as_os_str().as_encoded_bytes())
@@ -56,7 +56,7 @@ impl SelectionServer {
             socket_path,
             state,
             cancellation,
-            uid,
+            uids,
         })
     }
 
@@ -69,7 +69,11 @@ impl SelectionServer {
                 joined = tasks.join_next(), if !tasks.is_empty() => { if matches!(joined, Some(Err(_))) { return Err(SupervisorError::Invalid("selection connection failed".into())); } continue; },
                 accepted = self.listener.accept() => accepted?,
             };
-            if stream.ensure_peer_user(self.uid).is_err() {
+            if !self
+                .uids
+                .iter()
+                .any(|uid| stream.ensure_peer_user(*uid).is_ok())
+            {
                 continue;
             }
             let Ok(permit) = Arc::clone(&capacity).try_acquire_owned() else {

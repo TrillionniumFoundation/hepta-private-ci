@@ -5,6 +5,7 @@ fn policy() -> Policy {
         version: 1,
         workload_uid: 65534,
         workload_gid: 65534,
+        agent_workload_uids: None,
         cgroup_root: "hepta-fixture".into(),
         resource_authority_frontier: PathBuf::from("/var/lib/hepta-frontier"),
         process_thread_reserve: 32,
@@ -146,4 +147,30 @@ print(result+' '+private)
         0o750
     );
     Ok(())
+}
+
+#[test]
+fn controller_and_desktop_must_be_distinct_from_every_agent_uid() {
+    let mut candidate = policy();
+    candidate.agent_workload_uids = Some(std::collections::BTreeMap::from([
+        (
+            AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap(),
+            65532,
+        ),
+        (
+            AgentId::parse("00000000-0000-4000-8000-000000000002").unwrap(),
+            65531,
+        ),
+    ]));
+    assert!(candidate.validate_controller_isolation().is_ok());
+    for uid in [65532, 65531] {
+        let principal = candidate.controller_principal.as_mut().unwrap();
+        principal.uid = uid;
+        assert!(candidate.validate_controller_isolation().is_err());
+        let principal = candidate.controller_principal.as_mut().unwrap();
+        principal.uid = 65533;
+        principal.desktop_uid = uid;
+        assert!(candidate.validate_controller_isolation().is_err());
+        candidate.controller_principal.as_mut().unwrap().desktop_uid = 1000;
+    }
 }

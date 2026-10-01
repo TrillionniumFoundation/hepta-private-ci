@@ -293,6 +293,11 @@ pub use daemon::run_supervisord_with_local_host;
 
 #[cfg(all(target_os = "linux", any(test, feature = "local-model-authority")))]
 mod local_model_authority;
+#[cfg(all(
+    target_os = "linux",
+    any(test, feature = "local-host", feature = "local-model-authority")
+))]
+mod workload_principal;
 #[cfg(all(target_os = "linux", feature = "local-model-relay"))]
 pub use local_model_authority::run_credential_worker;
 #[cfg(all(target_os = "linux", feature = "local-model-authority"))]

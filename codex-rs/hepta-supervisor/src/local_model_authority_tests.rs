@@ -11,6 +11,7 @@ fn config() -> Config {
         process_identity_file: "/run/hepta-model/identity.json".into(),
         socket_gid: 1000,
         workload_uid: 1000,
+        workload_policy_file: None,
         state_directory: "/var/lib/hepta-model/state".into(),
         trust_directory: "/var/lib/hepta-model-trust".into(),
         revocations_file: "/var/lib/hepta-model/revocations.json".into(),
@@ -157,5 +158,105 @@ fn actual_signed_ordinary_grant_is_exact_one_use_and_cannot_change_destination()
             .grant
             .nonce
     );
+    Ok(())
+}
+
+#[test]
+#[ignore = "requires sudo: the issuer and relay read the actual root-protected host policy"]
+fn root_host_map_binds_model_subject_to_its_unique_uid() -> anyhow::Result<()> {
+    use std::process::Command;
+    if unsafe { libc::geteuid() } != 0 {
+        let output = Command::new("sudo")
+            .arg("-n")
+            .arg(std::env::current_exe()?)
+            .args([
+                "--exact",
+                "local_model_authority::tests::root_host_map_binds_model_subject_to_its_unique_uid",
+                "--ignored",
+                "--nocapture",
+            ])
+            .output()?;
+        anyhow::ensure!(
+            output.status.success() && String::from_utf8_lossy(&output.stdout).contains("1 passed"),
+            "root qualification failed: {} {}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        return Ok(());
+    }
+    let temp = tempfile::Builder::new()
+        .prefix("hepta-model-uids-")
+        .tempdir_in("/var/lib")?;
+    std::fs::set_permissions(temp.path(), std::fs::Permissions::from_mode(0o700))?;
+    let path = temp.path().join("host.json");
+    let subject_a = "00000000-0000-4000-8000-000000000001";
+    let subject_b = "00000000-0000-4000-8000-000000000003";
+    let mut policy = serde_json::json!({"version":1,"workload_uid":1000,"workload_gid":1000,
+        "cgroup_root":"hepta-model-test","agent_workload_uids":{subject_a:65532,subject_b:65531},
+        "resource_authority_frontier":"/var/lib/fixture/frontier"});
+    let write = |value: &serde_json::Value| -> anyhow::Result<()> {
+        std::fs::write(&path, serde_json::to_vec(value)?)?;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+        Ok(())
+    };
+    write(&policy)?;
+    let mut candidate = config();
+    candidate.workload_policy_file = Some(path.clone());
+    candidate.allowed_subject_ids.insert(subject_b.into());
+    candidate.validate()?;
+    for (subject, uid, other) in [(subject_a, 65532, 65531), (subject_b, 65531, 65532)] {
+        assert_eq!(
+            candidate.admitted_subject(uid, &cgroup(subject, "main"))?,
+            subject
+        );
+        assert!(
+            candidate
+                .admitted_subject(other, &cgroup(subject, "main"))
+                .is_err()
+        );
+        assert!(
+            candidate
+                .admitted_subject(1000, &cgroup(subject, "main"))
+                .is_err()
+        );
+    }
+    #[cfg(feature = "local-model-relay")]
+    {
+        candidate.model_relay = Some(serde_json::from_value(serde_json::json!({
+            "socket":"/run/hepta-model/relay", "credential_profile_home":"/var/lib/fixture/profile",
+            "credential_uid":1000, "credential_gid":1000, "allowed_models":["fixture-model"],
+            "max_concurrent_calls":1,"ingress_timeout_ms":2000,"credential_timeout_ms":10000,
+            "call_timeout_ms":120000
+        }))?);
+        candidate.validate()?;
+        for uid in [65532, 65531] {
+            candidate.model_relay.as_mut().unwrap().credential_uid = uid;
+            assert!(candidate.validate().is_err());
+        }
+        candidate.model_relay = None;
+    }
+    policy["agent_workload_uids"][subject_b] = 65532.into();
+    write(&policy)?;
+    assert!(candidate.validate().is_err());
+    policy["agent_workload_uids"]
+        .as_object_mut()
+        .unwrap()
+        .remove(subject_b);
+    write(&policy)?;
+    assert!(candidate.validate().is_err());
+    assert!(
+        candidate
+            .admitted_subject(65531, &cgroup(subject_b, "main"))
+            .is_err()
+    );
+    policy["agent_workload_uids"][subject_b] = 65531.into();
+    policy["workload_gid"] = 1234.into();
+    write(&policy)?;
+    assert!(candidate.validate().is_err());
+    policy["workload_gid"] = 1000.into();
+    write(&policy)?;
+    candidate.validate()?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o660))?;
+    assert!(candidate.validate().is_err());
     Ok(())
 }
