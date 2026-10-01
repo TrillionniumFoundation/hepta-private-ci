@@ -132,6 +132,10 @@ mod local_fleet_host;
 pub use fleet_setup::with_offline_fleet_registry;
 #[cfg(all(target_os = "linux", feature = "local-host"))]
 pub use local_fleet_host::LocalFleetHost;
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub use local_fleet_host::LocalFleetResourceObservationV1;
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub use local_fleet_host::observe_local_fleet_resources;
 pub use model::AgentCommand;
 pub use model::AgentFault;
 pub use model::AgentRelease;

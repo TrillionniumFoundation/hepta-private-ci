@@ -64,6 +64,24 @@ impl FleetExecutionVerifier {
         Ok(Self { pool })
     }
 
+    /// Reject a backwards observation against the original owner's durable
+    /// clock floor. This read never advances the floor or initializes state;
+    /// consumers still need the protected frontier and native process checks.
+    pub async fn verify_owner_clock_floor(
+        &self,
+        observed_at_ms: u64,
+    ) -> Result<(), DurableFleetError> {
+        let floor: i64 =
+            sqlx::query_scalar("SELECT last_now_ms FROM fleet_clock WHERE singleton = 1")
+                .fetch_one(&self.pool)
+                .await
+                .map_err(sqlx_error)?;
+        if observed_at_ms < to_u64(floor)? {
+            return Err(DurableFleetError::Stale);
+        }
+        Ok(())
+    }
+
     /// Read the current allocation and native binding in the same SQLite
     /// snapshot. Both kernel checks use the original persisted PID/start/boot/
     /// cgroup witness; a replacement process or terminal hold is rejected.
@@ -255,3 +273,7 @@ fn validate_database(_database: &Path) -> Result<(), DurableFleetError> {
         "protected Fleet proof requires Unix".into(),
     ))
 }
+
+#[cfg(test)]
+#[path = "durable_process_proof_tests.rs"]
+mod tests;

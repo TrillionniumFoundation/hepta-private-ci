@@ -33,11 +33,15 @@ mod environment;
 mod maintenance;
 #[path = "local_fleet_no_effect.rs"]
 mod no_effect;
+#[path = "local_fleet_resource_observer.rs"]
+mod resource_observer;
 #[path = "local_fleet_runtime.rs"]
 mod runtime;
 #[path = "local_fleet_trust.rs"]
 mod trust;
 pub(crate) use containment::PreparedExecution;
+pub use resource_observer::LocalFleetResourceObservationV1;
+pub use resource_observer::observe_local_fleet_resources;
 
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]

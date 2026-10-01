@@ -31,6 +31,7 @@ const USAGE: &str = "hepta-fleetctl --fleet-root ABSOLUTE_PATH COMMAND [ARGS]
   allow-release|revoke-release|allow-release-live AGENT_ID RELEASE_ID
   retire|retirement-status AGENT_ID
   health | roster | snapshot|diagnostics AGENT_ID
+  resource-observe --local-host-policy ROOT_POLICY AGENT_ID REAL_PID
   start|upgrade AGENT_ID RELEASE_ID REQUEST_ID
   drain|stop|kill|restart|rollback AGENT_ID REQUEST_ID
   mutation-status|reconcile-mutation AGENT_ID REQUEST_ID
@@ -90,6 +91,27 @@ pub(super) async fn run(args: impl Iterator<Item = OsString>) -> anyhow::Result<
     let root = HeptaFleetRoot::parse(PathBuf::from(args.next("ABSOLUTE_PATH")?))?;
     let command = args.text("COMMAND")?;
     let result = match command.as_str() {
+        "resource-observe" => {
+            #[cfg(all(target_os = "linux", feature = "local-host"))]
+            {
+                anyhow::ensure!(
+                    args.text("--local-host-policy")? == "--local-host-policy",
+                    "{USAGE}"
+                );
+                let policy = PathBuf::from(args.next("ROOT_POLICY")?);
+                let agent = args.agent()?;
+                let pid = args.text("REAL_PID")?.parse::<u32>()?;
+                args.finished()?;
+                serde_json::to_value(
+                    codex_hepta_supervisor::observe_local_fleet_resources(
+                        &root, &policy, &agent, pid,
+                    )
+                    .await?,
+                )?
+            }
+            #[cfg(not(all(target_os = "linux", feature = "local-host")))]
+            anyhow::bail!("resource-observe requires the Linux local-host build")
+        }
         "init" => {
             args.finished()?;
             let registry = FleetRegistry::initialize(root.clone())?;
