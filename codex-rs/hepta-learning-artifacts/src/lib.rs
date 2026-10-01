@@ -6,6 +6,7 @@
 #![forbid(unsafe_code)]
 
 mod admin;
+mod admission_storage;
 mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
@@ -31,6 +32,11 @@ mod test_support;
 
 pub use admin::ArtifactOwnerStatusV1;
 pub use admin::inspect_artifact_owner_status_v1;
+pub use admission_storage::ArtifactAdmissionReceiptV3;
+pub use admission_storage::read_artifact_admission;
+pub use admission_storage::read_artifact_admission_by_digest;
+pub use admission_storage::read_artifact_admission_by_manifest_digest;
+pub use admission_storage::write_artifact_admission_beneath;
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;

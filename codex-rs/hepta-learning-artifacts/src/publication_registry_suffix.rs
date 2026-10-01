@@ -11,12 +11,29 @@ pub(crate) fn validate_registry_suffix(
     intent: &ArtifactPublicationIntentV1,
     registry: &ArtifactRegistry,
 ) -> Result<usize, ArtifactPublicationError> {
-    let records = registry.records();
+    validate_registry_prefix(intent, registry, registry.records().len())
+}
+
+pub(crate) fn validate_registry_prefix(
+    intent: &ArtifactPublicationIntentV1,
+    registry: &ArtifactRegistry,
+    end: usize,
+) -> Result<usize, ArtifactPublicationError> {
+    let records = registry
+        .records()
+        .get(..end)
+        .ok_or(ArtifactPublicationError::RegistryProjectionMismatch)?;
+    // A legal publication contains one registration and at most 64 changes.
+    // Searching only that suffix also bounds historical checkpoint validation.
     let start = records
         .iter()
-        .position(|record| {
+        .enumerate()
+        .rev()
+        .take(MAX_PUBLICATION_STATE_CHANGES + 1)
+        .find(|(_, record)| {
             record.predecessor_chain_digest == intent.expected_registry_predecessor_head
         })
+        .map(|(position, _)| position)
         .ok_or(ArtifactPublicationError::RegistryPredecessorMismatch)?;
     if records.len() - start > MAX_PUBLICATION_STATE_CHANGES + 1 {
         return Err(ArtifactPublicationError::RegistryProjectionMismatch);
@@ -53,10 +70,7 @@ pub(crate) fn validate_registry_suffix(
         // A suffix cannot disable the newly admitted candidate or introduce a
         // different candidate. Only already registered artifacts may be fenced.
         if change.artifact_id == v2.artifact_id
-            || !records[..start].iter().any(|prior| {
-                matches!(&prior.event, ArtifactEvent::Register { manifest, .. }
-                if manifest.artifact_id == change.artifact_id)
-            })
+            || !registry.registered_before(&change.artifact_id, start)
         {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         }

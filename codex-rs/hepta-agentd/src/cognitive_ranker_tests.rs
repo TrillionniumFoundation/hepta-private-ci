@@ -57,6 +57,7 @@ struct Fixture {
     registry: ArtifactRegistry,
     view: Arc<View>,
     ranker: Arc<PinnedCognitiveRanker>,
+    model_pin: TabularPayloadPinV1,
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
@@ -155,7 +156,7 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
                 registry_receipt,
                 manifest,
             },
-            model_pin,
+            model_pin.clone(),
             view.clone(),
         )
         .unwrap(),
@@ -165,8 +166,12 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         registry,
         view,
         ranker,
+        model_pin,
     }
 }
+
+#[path = "cognitive_ranker_owner_tests.rs"]
+mod owner_service;
 
 #[test]
 fn current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records() {

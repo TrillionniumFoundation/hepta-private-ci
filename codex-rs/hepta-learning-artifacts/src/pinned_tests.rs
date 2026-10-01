@@ -282,6 +282,167 @@ fn write_view(
     (must(File::open(directory.path(name))), receipt)
 }
 
+fn verified_view(
+    directory: &TestDirectory,
+    registry: &ArtifactRegistry,
+    name: &str,
+) -> VerifiedCurrentRegistryViewV1 {
+    let (file, receipt) = write_view(directory, registry, name);
+    // These crate-private fixtures exercise consumer checks. Signed issuance
+    // of this opaque view is covered independently by owner-host tests.
+    VerifiedCurrentRegistryViewV1::new(
+        receipt,
+        must(read_registry_snapshot(file, receipt)),
+        Digest32::of_bytes(b"verified-current-witness"),
+        Digest32::of_bytes(b"verified-current-trust"),
+    )
+}
+
+#[test]
+fn dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenance() {
+    let directory = TestDirectory::new("dataset-bindings");
+    let selected = manifest("policy", 1, None, b"value");
+    let dataset = Digest32::of_bytes(b"source-dataset");
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    let mut current = verified_view(&directory, &registry, "current");
+    assert!(current.supports_dataset(&selected, selected.support_digest));
+    assert!(!current.supports_dataset(&selected, dataset));
+    current.bind_source_datasets(BTreeMap::from([(
+        selected.artifact_id.clone(),
+        BTreeSet::from([dataset]),
+    )]));
+    assert!(current.supports_dataset(&selected, dataset));
+    assert!(!current.supports_dataset(&selected, selected.support_digest));
+    let mut substituted = selected.clone();
+    substituted.objective_digest = Digest32::of_bytes(b"another-objective");
+    assert!(!current.supports_dataset(&substituted, dataset));
+    current.bind_source_datasets(BTreeMap::from([(
+        selected.artifact_id.clone(),
+        BTreeSet::new(),
+    )]));
+    assert!(!current.supports_dataset(&selected, selected.support_digest));
+    current.restrict_eligibility(BTreeSet::from([selected.artifact_id.clone()]));
+    assert!(!current.supports_dataset(&selected, dataset));
+}
+
+#[test]
+fn changing_current_trust_closes_host_pinned_and_selected_consumers() {
+    for admission in ["host-pinned", "selected"] {
+        let directory = TestDirectory::new(admission);
+        let selected = manifest("policy", 1, None, b"value");
+        let mut registry = ArtifactRegistry::new();
+        register(&mut registry, "register", selected.clone());
+        write_payload(&directory, &registry, &selected, b"value");
+        let original = write_snapshot(&directory, &registry);
+        let loaded = must(load(&directory, original, selected));
+        let trust = Digest32::of_bytes(b"verified-current-trust");
+        let mut cached = match admission {
+            "host-pinned" => {
+                let mut cached = RevalidatingCandidate::new(loaded);
+                must(cached.with_current(verified_view(&directory, &registry, "first"), |_| ()));
+                cached
+            }
+            "selected" => RevalidatingCandidate::new_with_current_trust(
+                loaded,
+                trust,
+                CurrentProvenanceRequirement::V1Compatible,
+            ),
+            _ => unreachable!(),
+        };
+        let mut substituted = verified_view(&directory, &registry, "foreign");
+        substituted.trust_digest = Digest32::of_bytes(b"other-authority-trust");
+        assert_eq!(
+            cached.with_current(substituted, |_| panic!(
+                "foreign authority must not consume"
+            )),
+            Err(PinnedCandidateLoadError::FrontierMismatch),
+        );
+        assert_eq!(
+            cached.with_current(verified_view(&directory, &registry, "original"), |_| ()),
+            Err(PinnedCandidateLoadError::Unavailable),
+        );
+    }
+}
+
+#[test]
+fn complete_current_provenance_cannot_be_replaced_with_same_trust_raw_v1_view() {
+    let directory = TestDirectory::new("provenance-downgrade");
+    let selected = manifest("policy", 1, None, b"value");
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    write_payload(&directory, &registry, &selected, b"value");
+    let original = write_snapshot(&directory, &registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected.clone())));
+    must(cached.with_current(verified_view(&directory, &registry, "legacy"), |_| ()));
+    let mut complete = verified_view(&directory, &registry, "complete");
+    // An explicitly dataset-independent artifact still has complete provenance.
+    complete.bind_source_datasets(BTreeMap::from([(selected.artifact_id, BTreeSet::new())]));
+    must(cached.with_current(complete, |_| ()));
+    assert_eq!(
+        cached.with_current(verified_view(&directory, &registry, "downgrade"), |_| {
+            panic!("raw V1 view cannot erase full provenance checks")
+        }),
+        Err(PinnedCandidateLoadError::FrontierMismatch),
+    );
+    assert_eq!(
+        cached.with_current(verified_view(&directory, &registry, "restored"), |_| ()),
+        Err(PinnedCandidateLoadError::Unavailable),
+    );
+}
+
+#[test]
+fn panicking_verified_consumer_permanently_closes_cache() {
+    let directory = TestDirectory::new("cached-panic");
+    let bytes = b"value";
+    let selected = manifest("policy", 1, None, bytes);
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    write_payload(&directory, &registry, &selected, bytes);
+    let original = write_snapshot(&directory, &registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected)));
+    let current = verified_view(&directory, &registry, "current");
+
+    let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _ = cached.with_current::<()>(current, |_| panic!("consumer failed"));
+    }));
+    assert!(panic.is_err());
+    assert_eq!(
+        cached.with_current(verified_view(&directory, &registry, "backup"), |_| panic!(
+            "panicked consumer was revived"
+        )),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
+
+#[test]
+fn verified_equal_length_fork_closes_cache_without_consuming_bytes() {
+    let directory = TestDirectory::new("cached-equal-fork");
+    let bytes = b"value";
+    let selected = manifest("policy", 1, None, bytes);
+    let mut original_registry = ArtifactRegistry::new();
+    register(&mut original_registry, "register", selected.clone());
+    write_payload(&directory, &original_registry, &selected, bytes);
+    let original = write_snapshot(&directory, &original_registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected.clone())));
+    let mut forked = ArtifactRegistry::new();
+    register(&mut forked, "different-event", selected);
+
+    assert_eq!(
+        cached.with_current(verified_view(&directory, &forked, "fork"), |_| {
+            panic!("forked view reached consumer")
+        }),
+        Err::<(), _>(PinnedCandidateLoadError::FrontierMismatch)
+    );
+    assert_eq!(
+        cached.with_current(
+            verified_view(&directory, &original_registry, "backup"),
+            |_| panic!("forked consumer was revived")
+        ),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
+
 #[test]
 fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup() {
     let directory = TestDirectory::new("cached-revoke");

@@ -85,6 +85,7 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
         }
+        let independently_anchored = config.required_current_head.is_some();
         let host = match config.required_current_head {
             Some(current) => LearningArtifactOwnerHost::open_with_required_current_head(
                 &config.root,
@@ -100,6 +101,12 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        let current = host.discover_current_head(config.now)?;
+        if let Some(current) = current
+            && (!independently_anchored || current.signed.binding != config.storage_binding)
+        {
+            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
+        }
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -129,7 +136,13 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
-        Ok(self.host.current_registry_view(now)?)
+        let mut view = self.host.current_registry_view(now)?;
+        let provenance =
+            self.host
+                .current_provenance(view.registry(), &self.withdrawal_registry, now)?;
+        view.restrict_eligibility(provenance.ineligible);
+        view.bind_source_datasets(provenance.source_datasets);
+        Ok(view)
     }
 
     #[must_use]
@@ -197,10 +210,23 @@ impl LearningArtifactOwnerService {
                 Ok(receipt)
             }
             Err(error) => {
-                if let Some(recovery) = self.host.recover_publication(&operation_id)?
-                    && recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
-                {
-                    self.recovery_required = Some(operation_id);
+                // Recovery itself can fail after a durable effect. Fence the
+                // operation before probing and clear only on proven absence
+                // or a fully recovered terminal checkpoint.
+                self.recovery_required = Some(operation_id.clone());
+                match self.host.recover_publication(&operation_id)? {
+                    None => self.recovery_required = None,
+                    Some(recovery)
+                        if recovery.checkpoint.phase
+                            == ArtifactPublicationPhaseV1::Acknowledged =>
+                    {
+                        // Acknowledgement may be durable even when its parent
+                        // sync failed before publish_inner updated the cache.
+                        // Reconcile the authoritative CURRENT before reopening.
+                        self.registry = self.host.recover_current_registry(request.now)?;
+                        self.recovery_required = None;
+                    }
+                    Some(_) => {}
                 }
                 Err(error)
             }
@@ -221,10 +247,28 @@ impl LearningArtifactOwnerService {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
 
+        // Terminal retries still require the exact immutable request, even
+        // after the original admission or head has expired.
+        crate::verify_artifact_admission_v3(
+            &request.admission,
+            request.admission.withdrawal_head_digest,
+            request.admission.admitted_at,
+        )
+        .map_err(ArtifactPublicationError::from)?;
+        let manifest = &request.admission.validated_manifest.manifest;
+        if Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+            || request.payload.len() as u64 != manifest.encoded_size_bytes
+        {
+            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+        }
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                self.host.verify_terminal_publication_head(
+                    &request.signed_current_head,
+                    &recovery.checkpoint,
+                )?;
                 return suffix::replay_acknowledged_suffix(
                     &self.host,
                     request,
@@ -461,3 +505,7 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 #[cfg(test)]
 #[path = "owner_service_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "owner_service_adversarial_tests.rs"]
+mod adversarial_tests;

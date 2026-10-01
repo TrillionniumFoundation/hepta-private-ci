@@ -44,6 +44,26 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+The current source includes `LearningArtifactOwnerService` composed over the
+fenced `LearningArtifactOwnerHost`, independent selector verification, and an
+explicit read-only Agentd ranker attachment. The registered service-to-host
+caller is a library composition seam. No normal executable bootstrap currently
+constructs the artifact owner service, supplies Agentd's current-registry
+provider, and attaches an independently selected ranker. Source composition is
+therefore distinct from proved product startup or production execution. The
+configuration, trust, restart and recovery contract is in
+[`OWNER_SERVICE.md`](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md).
+
+Agentd separately has an explicit `--plasticity-bootstrap-descriptor` path.
+It loads a receipt-pinned V1 artifact snapshot and retains that compatibility
+registry for parameter/topology baselines and policy evidence. Recomputing the
+retained snapshot's head does not acquire a newer Owner CURRENT or withdrawal
+frontier. This existing process composition does not enforce full V2 manifest
+expiry/source withdrawal or prove continuing external freshness. Migrating these
+consumers to the complete current-view boundary remains repository work; the
+absence of the Owner/ranker bootstrap does not imply that all artifact consumers
+are absent.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -168,9 +188,54 @@ Read-only dependencies remain `cross_owner_outbox` and `operation_ledger`.
 
 The stable V1 `ArtifactRegistry` is an append-only compatibility registry with canonical create-only snapshots. A V1 `ArtifactManifest` intentionally remains readable, but it cannot represent every V2 field: V2 supports multiple source datasets, multiple lineage digests and multiple predecessors. The implementation therefore does **not** flatten the complete V2 closure into one V1 predecessor or support field.
 
-The complete V2 authority-free admission is retained by `WithdrawalBoundArtifactAdmissionV3`. A publication transaction stores that complete admission as the authoritative sidecar while verifying that the final V1 compatibility-registry record agrees on the fields V1 can faithfully represent: artifact identity, kind, generation, payload digest, producer, compatibility digest and exact byte length.
+The complete V2 authority-free admission is retained by
+`WithdrawalBoundArtifactAdmissionV3`. A publication transaction binds that
+complete admission while verifying the exact V1 compatibility projection:
+artifact identity, kind, generation, payload digest, producer, compatibility
+digest and byte length; the V2 objective-class digest becomes V1 objective digest,
+and the complete validated V2 manifest digest becomes V1 support digest. A sole
+V2 predecessor becomes the V1 predecessor. Full V2/V3 admission can represent
+multiple predecessors, but owner publication rejects that shape before Prepared
+durability while the V1 registry/read path cannot enforce all parent ancestry.
+Enabling multi-parent publication requires a versioned registry/final-use reader;
+retaining the admission alone is insufficient. The owner publishes the complete
+canonical V3 admission under `admissions/` before Prepared durability, with an
+immutable manifest-digest index for inherited parent provenance; recovery checks
+the sidecar against its independent checkpoint commitment. The V1 support commitment is not a
+substitute for a component dataset's identity. The owner-service durability and
+recovery contract is described in
+[`OWNER_SERVICE.md`](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md).
 
 Dataset withdrawal is a separate append-only digest chain. New V3 admission requires a `DatasetWithdrawalScopeV1` binding `authority_domain_id`, `registry_id` and `scope_id`. The scope participates in the scoped genesis/head derivation and the V3 admission digest, so an equal-looking event history in another namespace cannot satisfy the current admission.
+
+The owner service's current-view boundary checks every eligible V2 manifest's
+expiry, durable admission, inherited parent provenance and source datasets
+against its installed withdrawal frontier. An internal read-eligibility overlay
+excludes expired/withdrawn artifacts and their single-parent descendants while
+preserving the signed V1 history and valid unrelated consumers. Missing/corrupt
+admission or provenance closes view acquisition. Selection and cached use honor
+the overlay; a durable quarantine/revocation remains separately authorized.
+Low-level signed V1 current-view verification alone does not prove these V2 use conditions. The
+embedding authenticates and durably retains the current withdrawal input across
+restart. Logical withdrawal/revocation is not physical erasure or backup deletion.
+
+`VerifiedCurrentRegistryViewV1::supports_dataset` checks the exact eligible
+manifest against its retained V2 source membership. This is the Agentd
+evaluation/model dataset binding; the owner's V1 support field commits the full
+manifest and is not a dataset digest. Raw V1 views retain only the explicit
+legacy direct support-digest profile. Selected consumers inherit their verified
+owner trust and provenance requirement; generic pinned consumers bind the first
+accepted trust. A complete-provenance consumer cannot later accept a same-trust
+raw V1 view. Either trust substitution or provenance downgrade closes cached use
+and requires explicit new admission.
+
+The plasticity descriptor/bootstrap still uses raw V1 snapshot eligibility for
+Model/Parameters/Topology baselines, UpdateRule/MutationPolicy evidence and the
+modulator-broadcast Policy artifact. A V1 support digest cannot reveal whether
+it represents a legacy dataset digest or a complete V2 manifest commitment.
+Product composition therefore needs an explicit supported provenance profile
+and a current owner-view provider; snapshot receipt validity or descriptor TTL
+cannot establish that a source was not withdrawn during that interval.
 
 Withdrawal and lifecycle state both have canonical create-only durable snapshot adapters with independently retained receipts binding namespace/scope, chain head, file digest, record count and encoded byte count. Recovery rebuilds the semantic state and rejects non-canonical bytes, digest mismatch, scope mismatch, record-count mismatch or chain mismatch.
 
@@ -179,6 +244,12 @@ Historical lifecycle replay validates actor evidence at `event.occurred_at`. Rec
 All artifact-registry, withdrawal and lifecycle state machines share `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This is a source-enforced capacity invariant, not a target-host throughput claim.
 
 Historical V1 snapshots remain interpretable. New V2/V3/scoped records are additive surfaces; they do not reinterpret an old V1 file as carrying fields it never encoded. Any future schema migration must preserve this distinction and provide checksum-bound deterministic replay.
+
+Older owner checkpoints without complete admission sidecars cannot transparently
+reopen through the hardened owner service. Upgrade requires independently
+authenticated full original admission records and a trusted sidecar
+backfill/reprovisioning operation before service restart; unavailable provenance
+fails closed. Missing V2 closure must never be reconstructed from V1 projections.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -192,7 +263,69 @@ Preparation validates the current scoped withdrawal registry and binds the exact
 
 The transaction exposes a digest-bound snapshot and replay constructor. Crash tests recover after prepared, payload-durable and registry-durable boundaries and prove that a partial publication cannot be relabelled acknowledged. The host that composes this contract must persist the returned transaction snapshot in its fenced transaction store before treating a phase as durable; a host that does not persist/replay the contract is outside this source qualification boundary.
 
-Create-only file writers hold an exclusive advisory file lock through the empty-file check, write and `sync_all`. Readers hold shared locks for bounded reads. The crate does not own the global writer lease, product process, newest-head service or parent-directory fsync. Those are host-owned boundaries and must serialize publication, current-head discovery and final route changes.
+Create-only file writers hold an exclusive advisory file lock through the
+empty-file check, write and `sync_all`. Readers hold shared locks for bounded
+reads. The in-crate `LearningArtifactOwnerHost` verifies an externally signed
+writer lease, holds the namespace writer fence, discovers the local signed
+CURRENT chain and performs owner-publication directory synchronization on Unix. The
+embedding still owns synchronization when it uses the lower-level storage APIs,
+trusted ancestor protection, external newest-head distribution and restart-floor
+retention, authenticated withdrawal delivery, the executable process and final
+route changes. These boundaries are detailed in
+[`OWNER_SERVICE.md`](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md);
+source durability ordering does not prove target-filesystem power-loss behavior.
+
+Owner publication validates the next transaction state before writing final
+payload, snapshot or witness names. Those files, complete admissions, signed
+heads and checkpoints use synchronized temporary records and no-replace hard
+links, with containing-directory synchronization on Unix. Interrupted temporary
+writes cannot reserve their final names; exact existing bytes permit bounded
+reconciliation. Complete canonical checkpoint replay validates intent/state
+digests, phase shape and unchanged earlier receipt commitments even for terminal
+records. CURRENT and registry-by-head reads use the same validated inventory.
+
+The public Owner host also verifies transaction authority at every payload,
+registry, witness and acknowledgement mutation, and when resuming a snapshot.
+A caller-constructed publication transaction is authority-free: it must equal
+this host's latest complete durable checkpoint for that operation, and its
+producer/scope must match the currently valid signed writer lease. Missing,
+stale or changed checkpoints fail before effects. Lease rotation may authorize
+present work for the same producer/scope while preserving the original durable
+lease commitment; an unrelated producer cannot adopt the old transaction.
+
+New operations must extend the discovered signed CURRENT or trusted genesis
+before Prepared durability. Existing exact recovery keeps its original
+predecessor when CURRENT has already advanced at an uncertain boundary. The
+canonical registry registration event ID is
+`artifact-publication:<intent_digest>`; that signed-chain commitment binds the
+operation, complete admission and predecessor. Owner recovery rejects coherently
+renamed/rehashed checkpoints that cannot match this registration. Current-view
+inventory validates historical checkpoint intents against the actual CURRENT
+prefix and separately checks at most one unfinished RegistryDurable snapshot.
+Current reads verify the actual current snapshot receipt; requested operation
+recovery verifies its exact snapshot. Historical receipts retain checked shape
+and phase continuity, but every historical file is not reread to reauthenticate
+its file digest/byte count on each current view.
+In-memory phase advancement occurs only after the corresponding immutable
+record and checkpoint publication return successfully; indeterminate I/O still
+requires recovery from independently verified durable state.
+
+Global generation/authority-epoch floors govern the newest CURRENT. Historical
+links and retained restart anchors keep their enrolled per-key signature, epoch
+and time constraints; generations strictly increase and authority epochs and
+issue times never regress. Raising a live floor therefore follows publication
+of a replacement CURRENT and does not invalidate otherwise valid old history.
+
+Generation exhaustion does not invalidate the final signed CURRENT. Discovery
+does not compute a nonexistent successor for a terminal generation `u64::MAX` head.
+A new operation still rejects checked-generation overflow before admission-sidecar
+or Prepared publication.
+
+Reader handles must be independently opened and initially unlocked, without
+concurrent descriptor aliases. A cloned Linux descriptor can share lock state
+and is not an independent read capability. An embedding discards cached
+candidates on current-view acquisition failure and never substitutes a previous
+view; failed cached-candidate revalidation likewise requires explicit re-admission.
 
 Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
 
@@ -262,6 +395,15 @@ Source-enforced ceilings relevant to this module include:
 
 These bounds are safety/resource limits, not benchmark claims. Measure payload write + fsync, snapshot encode/write/reopen, withdrawal and lifecycle replay, current-head witness publication, pinned cold read/hash, current-view revalidation, crash recovery, parent-directory synchronization and orphan reconciliation on the selected target host.
 
+Registry eligibility uses a private derived index rebuilt from immutable
+records during replay. A balanced-tree lookup replaces repeated predecessor
+walks; quarantine/revocation iteratively invalidates the affected descendants.
+Exclusion is monotonic and rejected child registration cannot mutate the index.
+The cache is neither serialized nor independently authoritative, and changes no
+V1 event/chain digest or snapshot format. Full provenance/current-view checks
+still inspect bounded history and admissions; this is a source complexity
+improvement, not a measured target-host latency claim.
+
 The V1 compatibility registry remains intentionally bounded. A product that needs a larger history must introduce a new durable format or compaction/checkpoint design; it must not silently raise the in-memory limit beyond what the supported durable representation can carry.
 
 ## 11. Observability and operations
@@ -274,7 +416,8 @@ For safer filesystem integration prefer the contained prevalidated writers:
 - `write_registry_snapshot_beneath`;
 - `write_registry_head_witness_beneath`;
 - `write_dataset_withdrawal_snapshot_beneath`;
-- `write_artifact_lifecycle_snapshot_beneath`.
+- `write_artifact_lifecycle_snapshot_beneath`;
+- `write_artifact_admission_beneath` for complete canonical V3 admission sidecars.
 
 The lower-level `CreateOnlyArtifactFile` APIs remain for compatibility and capability-based composition. A host using them must reconcile empty files caused by creating a capability before later semantic validation.
 
@@ -286,7 +429,8 @@ Current operating and state-format references:
 - [codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md](../../../codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md);
 - [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md);
 - [codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md](../../../codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md);
-- [codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md](../../../codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md).
+- [codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md](../../../codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md);
+- [codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md).
 
 Target-host alerting should distinguish rejected input, capacity exhaustion, busy lock, stale/scope-mismatched evidence, corrupt durable bytes and indeterminate I/O. Concrete thresholds require the selected deployment profile.
 
@@ -311,7 +455,7 @@ A green workflow is execution evidence for its exact commit only. It is not prod
 
 ## 13. Implementation sequence and work packages
 
-The `State:` values inside the execution envelopes below are canonical planning metadata imported from the global work-package plan; they are not a live substitute for the source status in sections 2.1 and 12. A package may still display `planned` here while its source candidate exists and awaits exact-commit qualification or external activation evidence.
+The `State:` values inside the execution envelopes below are canonical planning metadata imported from the global work-package plan; they are not a live substitute for the source status in sections 2 and 12. A package may still display `planned` here while its source candidate exists and awaits exact-commit qualification or external activation evidence.
 
 Applicable work packages:
 

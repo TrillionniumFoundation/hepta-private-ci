@@ -108,6 +108,9 @@ impl ArtifactPublicationTransactionV1 {
         expected_registry_predecessor_head: Digest32,
         now: u64,
     ) -> Result<Self, ArtifactPublicationError> {
+        if admission.validated_manifest.manifest.predecessor_ids.len() > 1 {
+            return Err(ArtifactPublicationError::UnsupportedMultiPredecessorLineage);
+        }
         validate_artifact_publication_v3(&admission, withdrawal_registry, now)?;
         if registry.head_digest() != expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
@@ -290,6 +293,17 @@ impl ArtifactPublicationTransactionV1 {
     pub fn from_snapshot(
         snapshot: ArtifactPublicationTransactionSnapshotV1,
     ) -> Result<Self, ArtifactPublicationError> {
+        if snapshot
+            .intent
+            .admission
+            .validated_manifest
+            .manifest
+            .predecessor_ids
+            .len()
+            > 1
+        {
+            return Err(ArtifactPublicationError::UnsupportedMultiPredecessorLineage);
+        }
         verify_artifact_admission_v3(
             &snapshot.intent.admission,
             snapshot.intent.admission.withdrawal_head_digest,
@@ -458,6 +472,7 @@ pub enum ArtifactPublicationError {
     PayloadMismatch,
     RegistryPredecessorMismatch,
     RegistryProjectionMismatch,
+    UnsupportedMultiPredecessorLineage,
     RegistryReceiptMismatch,
     WitnessReceiptMismatch,
     AcknowledgementTime,
@@ -479,6 +494,7 @@ impl StdError for ArtifactPublicationError {
             | Self::PayloadMismatch
             | Self::RegistryPredecessorMismatch
             | Self::RegistryProjectionMismatch
+            | Self::UnsupportedMultiPredecessorLineage
             | Self::RegistryReceiptMismatch
             | Self::WitnessReceiptMismatch
             | Self::AcknowledgementTime
@@ -497,3 +513,7 @@ impl From<ArtifactAdmissionError> for ArtifactPublicationError {
 #[cfg(test)]
 #[path = "publication_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "publication_adversarial_tests.rs"]
+mod adversarial_tests;

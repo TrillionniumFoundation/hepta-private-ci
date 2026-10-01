@@ -1,5 +1,4 @@
 use super::*;
-use crate::ArtifactEvent;
 
 use codex_hepta_types::Generation;
 
@@ -11,25 +10,25 @@ use crate::LearningArtifactManifestV2;
 use crate::ProvenanceModeV1;
 use crate::admit_manifest_at_withdrawal_head_v3;
 
-fn id(value: &str) -> StableId {
+pub(super) fn id(value: &str) -> StableId {
     match StableId::new(value.to_owned()) {
         Ok(value) => value,
         Err(error) => panic!("invalid test id {value}: {error}"),
     }
 }
 
-fn digest(value: &str) -> Digest32 {
+pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn generation(value: u64) -> Generation {
+pub(super) fn generation(value: u64) -> Generation {
     match Generation::new(value) {
         Ok(value) => value,
         Err(error) => panic!("invalid generation {value}: {error}"),
     }
 }
 
-fn withdrawal_registry() -> DatasetWithdrawalRegistry {
+pub(super) fn withdrawal_registry() -> DatasetWithdrawalRegistry {
     DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
         authority_domain_id: id("dataset-authority"),
         registry_id: id("withdrawal-registry"),
@@ -37,7 +36,7 @@ fn withdrawal_registry() -> DatasetWithdrawalRegistry {
     })
 }
 
-fn v2_manifest() -> LearningArtifactManifestV2 {
+pub(super) fn v2_manifest() -> LearningArtifactManifestV2 {
     LearningArtifactManifestV2 {
         artifact_id: id("artifact-v2"),
         kind: ArtifactKind::Model,
@@ -45,8 +44,8 @@ fn v2_manifest() -> LearningArtifactManifestV2 {
         provenance_mode: ProvenanceModeV1::DatasetDerived,
         source_dataset_digests: vec![digest("dataset-a"), digest("dataset-b")],
         lineage_digests: vec![digest("lineage-a"), digest("lineage-b")],
-        predecessor_ids: vec![id("artifact-parent-a"), id("artifact-parent-b")],
-        rollback_predecessor: Some(id("artifact-parent-a")),
+        predecessor_ids: Vec::new(),
+        rollback_predecessor: None,
         bytes_digest: digest("payload"),
         encoded_size_bytes: 7,
         training_code_digest: digest("training"),
@@ -75,9 +74,9 @@ fn registry_with_candidate(predecessor_head: Digest32) -> ArtifactRegistry {
             generation: generation(2),
             predecessor_id: None,
             content_digest: digest("payload"),
-            objective_digest: v2_manifest().objective_class_digest,
+            objective_digest: digest("objective"),
             support_digest: crate::validate_artifact_manifest_v2(v2_manifest(), 20)
-                .expect("canonical fixture admission")
+                .expect("valid projection manifest")
                 .manifest_digest,
             producer_id: id("producer"),
             compatibility_digest: digest("compatibility"),
@@ -90,10 +89,10 @@ fn registry_with_candidate(predecessor_head: Digest32) -> ArtifactRegistry {
     registry
 }
 
-fn snapshot_receipt(registry: &ArtifactRegistry) -> RegistrySnapshotReceipt {
+pub(super) fn snapshot_receipt(registry: &ArtifactRegistry) -> RegistrySnapshotReceipt {
     RegistrySnapshotReceipt {
         binding: digest("publication-scope"),
-        head_digest: registry.head_digest(),
+        head_digest: registry.snapshot().head_digest,
         file_digest: digest("registry-file"),
         records: registry.records().len(),
         encoded_bytes: 128,
@@ -104,7 +103,7 @@ fn head_witness(registry: &ArtifactRegistry) -> RegistryHeadWitnessV1 {
     RegistryHeadWitnessV1 {
         registry_id: id("artifact-registry"),
         generation: generation(2),
-        head_digest: registry.head_digest(),
+        head_digest: registry.snapshot().head_digest,
         predecessor_head_digest: Digest32::ZERO,
         authority_epoch: 5,
         signer_id: id("registry-signer"),
@@ -137,7 +136,7 @@ fn witness_receipt(witness: &RegistryHeadWitnessV1) -> RegistryHeadWitnessReceip
     }
 }
 
-fn prepared() -> ArtifactPublicationTransactionV1 {
+pub(super) fn prepared() -> ArtifactPublicationTransactionV1 {
     let withdrawal = withdrawal_registry();
     let admission = match admit_manifest_at_withdrawal_head_v3(
         &withdrawal,
@@ -331,9 +330,9 @@ fn art_07_registry_projection_cannot_swap_payload_or_identity() {
             generation: generation(2),
             predecessor_id: None,
             content_digest: digest("wrong-payload"),
-            objective_digest: v2_manifest().objective_class_digest,
+            objective_digest: digest("objective"),
             support_digest: crate::validate_artifact_manifest_v2(v2_manifest(), 20)
-                .expect("canonical fixture admission")
+                .expect("valid projection manifest")
                 .manifest_digest,
             producer_id: id("producer"),
             compatibility_digest: digest("compatibility"),

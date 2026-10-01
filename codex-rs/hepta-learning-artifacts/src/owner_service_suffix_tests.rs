@@ -145,14 +145,73 @@ fn actual_suffix_registry_fsync_crash_resumes_same_owner_and_exact_ack() {
     );
     drop(recovered);
     let mut final_config = config;
-    final_config.required_current_head = Some(signed);
+    final_config.required_current_head = Some(signed.clone());
+    let mut next_restart = final_config.clone();
     let mut reopened = LearningArtifactOwnerService::open(final_config)
         .fixture("reopen acknowledged signed suffix");
     assert_eq!(reopened.registry().records(), written_records.as_slice());
     assert_eq!(
         reopened
-            .publish_with_state_changes(request, &changes)
+            .publish_with_state_changes(request.clone(), &changes)
             .fixture("terminal retry after restart"),
+        receipt
+    );
+
+    // A later real publication makes the revocation-bearing checkpoint a
+    // historical prefix. Reopen must authenticate that entire prefix, rather
+    // than mistake its final Revoke record for the canonical registration.
+    let predecessor = reopened.registry().head_digest();
+    let mut third_manifest = manifest();
+    third_manifest.artifact_id = id("third-candidate");
+    let third_admission = admit_manifest_at_withdrawal_head_v3(
+        &withdrawals,
+        withdrawals.head_digest(),
+        third_manifest,
+        /*now*/ 20,
+    )
+    .fixture("third admission");
+    let preview = ArtifactPublicationTransactionV1::begin(
+        id("third-operation"),
+        third_admission.clone(),
+        &withdrawals,
+        reopened.registry(),
+        predecessor,
+        /*now*/ 20,
+    )
+    .fixture("third actual intent");
+    let mut staged = reopened.registry().clone();
+    reopened
+        .host
+        .stage_compatibility_registration(&preview, &mut staged, /*now*/ 20)
+        .fixture("third native registration");
+    signed.witness.generation = Generation::new(3).fixture("third generation");
+    signed.witness.predecessor_head_digest = predecessor;
+    signed.witness.head_digest = staged.head_digest();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    reopened
+        .publish(LearningArtifactPublishRequestV1 {
+            operation_id: id("third-operation"),
+            admission: third_admission,
+            payload: b"payload".to_vec(),
+            signed_current_head: signed.clone(),
+            expected_registry_predecessor_head: predecessor,
+            now: 20,
+        })
+        .fixture("later actual publication");
+    drop(reopened);
+    next_restart.required_current_head = Some(signed);
+    let mut reopened = LearningArtifactOwnerService::open(next_restart)
+        .fixture("verify earlier complete native suffix in extended CURRENT");
+    let current = reopened
+        .current_registry_view(/*now*/ 20)
+        .fixture("full current provenance");
+    assert!(!current.is_eligible(&id("candidate")));
+    assert!(current.is_eligible(&id("next-candidate")));
+    assert!(current.is_eligible(&id("third-candidate")));
+    assert_eq!(
+        reopened
+            .publish_with_state_changes(request, &changes)
+            .fixture("exact historical suffix ACK under newer CURRENT"),
         receipt
     );
 }

@@ -25,6 +25,7 @@ const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 struct ArtifactEntry {
     manifest: ArtifactManifest,
     state: ArtifactState,
+    registered_at: usize,
 }
 
 /// Immutable lineage registry. It can classify candidates as eligible but has
@@ -261,6 +262,12 @@ impl ArtifactRegistry {
         Ok(())
     }
 
+    pub(crate) fn registered_before(&self, artifact_id: &StableId, position: usize) -> bool {
+        self.artifacts
+            .get(artifact_id)
+            .is_some_and(|entry| entry.registered_at < position)
+    }
+
     fn lineage_is_eligible(&self, artifact_id: &StableId) -> bool {
         self.artifacts.contains_key(artifact_id) && !self.ineligible.contains(artifact_id)
     }
@@ -297,6 +304,7 @@ impl ArtifactRegistry {
                     ArtifactEntry {
                         manifest: manifest.clone(),
                         state: ArtifactState::Candidate,
+                        registered_at: self.records.len(),
                     },
                 );
             }
@@ -428,3 +436,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 #[cfg(test)]
 #[path = "registry_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "registry_cache_tests.rs"]
+mod cache_tests;
