@@ -196,7 +196,10 @@ pub(super) fn decision_payload(
         run_snapshot_digest: intelligence_run_snapshot_digest_v1(prepared)?,
         objective_digest: prepared.envelope.objective_digest,
         policy_digest: request.policy_digest,
-        candidate_ids: prepared.candidate_ids().to_vec(),
+        candidate_ids: crate::intelligence_learning_candidates::learning_candidate_ids_v1(
+            prepared.candidate_ids(),
+        )
+        .map_err(|error| AgentdIntelligenceLearningErrorV1::InvalidValue(error.to_string()))?,
         selected_candidate_id: selected_candidate_id.clone(),
         selected_propensity,
         completeness: request.completeness.clone(),

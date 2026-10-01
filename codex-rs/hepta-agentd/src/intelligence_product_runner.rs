@@ -599,7 +599,10 @@ impl AgentdIntelligenceProductRunnerV1 {
             episode_id,
             objective_digest: prepared.envelope.objective_digest,
             policy_id,
-            candidate_ids: prepared.candidate_ids.clone(),
+            candidate_ids: crate::intelligence_learning_candidates::learning_candidate_ids_v1(
+                prepared.candidate_ids(),
+            )
+            .map_err(AgentdIntelligenceLedgerError::Currentness)?,
             selected_candidate_id: candidate_id.clone(),
             selected_propensity: *propensity,
             completeness: CandidateSetCompleteness::Complete,

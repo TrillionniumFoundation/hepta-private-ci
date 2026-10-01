@@ -190,6 +190,16 @@ neuron projections and the additional registered support/coefficient records.
 The facade must never directly replace those stores.
 
 Formal default-build Decision/Outcome adapters call only `LedgerWriter`.
+Canonical and evaluation bindings describe the policy action set. Fresh learning
+decisions project that set into the ledger's sorted, unique candidate universe
+by adding the reserved intrinsic `abstain` ID. The action set must not itself
+use that reserved ID and must have at most 127 entries, leaving one of the
+ledger's 128 slots for abstention. The provider's completeness count, candidate
+and order digests, and signed Decision evidence must cover this inclusive
+learning universe. The adapter validates those original proofs rather than
+rewriting them. An action-only proof is rejected before publication. This
+projection does not alter canonical/evaluation digests or persisted payloads.
+
 The product learning host first writes an immutable V2 payload sidecar and syncs
 it and its directory, then publishes the existing kernel.operations intent.
 The sidecar retains the original operation identity, predecessor, evidence,

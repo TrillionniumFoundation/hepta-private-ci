@@ -59,6 +59,15 @@ unchanged, preserving their digest and separate control-closure diagnostics.
 
 ## Durable compatibility
 
+Fresh Decision evidence must bind the ledger candidate universe: sorted policy
+actions plus exactly one intrinsic `abstain`, with at most 128 total entries.
+Providers compute completeness count and both candidate digests for that same
+universe before signing. Canonical/evaluation action bindings remain unchanged.
+Existing action-only completeness evidence is rejected; it is not automatically
+renewed or repaired. Persisted schema-V2 payloads retain their original candidate
+IDs, completeness, signature and operation identity. Recovery never inserts an
+abstain into historical bytes or re-signs them.
+
 SQLite migrations are append-only and versioned. Existing semantic digests,
 operation IDs, terminal evidence, outbox fences, attempt counts and tombstones
 must remain readable after upgrade. A migration may not reinterpret

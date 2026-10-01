@@ -31,6 +31,7 @@ mod intelligence_execution;
 mod intelligence_files;
 mod intelligence_ingress;
 mod intelligence_learning;
+mod intelligence_learning_candidates;
 mod intelligence_learning_runtime;
 mod intelligence_membership;
 mod intelligence_observability;

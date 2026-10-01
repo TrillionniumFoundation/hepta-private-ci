@@ -136,6 +136,14 @@ Decision, Outcome and their original ledger predecessors remain separate.
 Payload encoding and historical digest domains are retained after the codec
 split into `intelligence_learning_payload.rs`.
 
+Fresh learning Decision construction adds the ledger's intrinsic `abstain` to
+the sorted policy action IDs before verifying completeness and signatures.
+Providers sign this inclusive universe (at most 127 actions plus abstention),
+while canonical/evaluation evidence continues to bind the original action set.
+Reserved-ID collisions, duplicate actions and overflow fail closed. The adapter
+never fills in a provider's missing completeness proof. Persisted payloads are
+reconstructed exactly as stored, without adding candidates during recovery.
+
 Historical event time is Unix milliseconds, stored unchanged in `now`. Enqueue
 and each actual application use a fresh host verification clock, including
 principal/evidence expiry checks. An event queued before expiry cannot be first

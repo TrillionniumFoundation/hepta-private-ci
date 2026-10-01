@@ -95,6 +95,9 @@ pub struct AgentdIntelligenceDecisionAppendV1 {
     pub expected_ledger_predecessor: Digest32,
     pub episode_id: StableId,
     pub policy_digest: Digest32,
+    /// Proof for sorted policy actions plus the intrinsic `abstain` candidate.
+    /// Count and digests must cover at most 127 actions plus abstention, and the
+    /// generator evidence must sign that same inclusive learning universe.
     pub completeness: CandidateSetCompletenessReceiptV1,
     pub evidence: SignedLearningEvidenceV1,
     /// Historical event/enqueue time in Unix milliseconds; never replay authority.

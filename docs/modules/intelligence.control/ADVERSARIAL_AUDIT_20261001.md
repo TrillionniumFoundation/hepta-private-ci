@@ -75,6 +75,7 @@ would weaken these guarantees.
 
 | Finding | Failure scenario | Remediation boundary |
 |---|---|---|
+| Policy and ledger candidate universes are conflated | A canonical selected action prepares successfully, but both default V2 and legacy qualification writes omit ledger's mandatory intrinsic abstain | Project fresh learning candidates before completeness/signature verification; preserve canonical bindings and historical payloads |
 | Facade budget depends on adapter cooperation | A valid owner adapter ignores its budget and returns an overdue result | Measure stage and total monotonic time inside canonical composition |
 | Standalone context accepts a stale decision digest | Public decision fields are changed while retaining a nonzero prior digest | Recompute the canonical decision digest before context assembly |
 | Timeout/completion state is not linearized | Watchdog and request use separate counted flags; completion races publication | One shared worker state orders timeout accounting and completion |
@@ -314,7 +315,7 @@ and lint command records remain required for the integrated candidate.
 The integrated candidate `3de5e76dbb2bfeb5b19b951db7fa915a48422cd2`, tree
 `9a0d587e32dc1286d747a2bf884ff033fd0b83b5`, exposed two further source
 integration omissions in blocking run `36821206913`: Codespell rejected
-`reencode` in a test assertion message, and the closed caller proof omitted
+a missing hyphen in a test assertion message, and the closed caller proof omitted
 the real learning reconciler's final-use claim/dispatch calls. The spelling
 is corrected. `CALLERS.toml` now declares only that exact caller for both
 canonical boundaries. Browser-specific guards remain checked on the browser
@@ -359,3 +360,48 @@ host exited zero after compiling default test targets, with existing warnings.
 It removed one redundant clone in the owned delivery-graft regression.
 Formatting then passed. This is compilation/lint-fix evidence, not execution
 of the repaired feature assertions or a successful strict `-D warnings` gate.
+
+The next published candidate `b1f7fac4b33d34ccc78eaf142aac91acbbd6d74c`, tree
+`c63abaebc7936cd117da3bed9e4b0621b815849c`, executed all three independent
+lanes. Their ordinary intelligence/operations/ledger/native/default Agentd
+counts remained 104/52/119/63/220 passes. The feature suite reached 221 passed,
+two failed and one ignored; the revocation assertion now passed. Its two deeper
+failures exposed a one-action mutation fixture and a real candidate-universe
+adapter defect. Default `ProductionDecisionV2` construction had the same defect
+as the feature path: it copied only policy actions, while the ledger requires
+its intrinsic abstain. The actual base merge was
+`33aa51a79734431b499982fec50bda24a016f98b`, with the same candidate tree and
+main baseline. These failed results remain historical evidence, not passes for
+the follow-up repair. Later all-target/lint/projection steps were skipped.
+
+Both fresh learning adapters now use one private projection that reserves the
+intrinsic abstain slot, rejects reserved-ID collisions/duplicates/overflow and
+produces a sorted unique ledger universe. Canonical/evaluation action digests
+remain unchanged. The default adapter verifies the provider's inclusive
+completeness and signature before persisting any payload; it never supplies
+missing proof fields. Recovery does not invoke the projection or alter any
+historical candidate, completeness, signature or operation identity. The owner
+shadow adapter already uses this separation. The integrity fixture now has a
+real second action in legal, NDU and intuition inputs, with updated completeness
+and actual signed evaluation binding.
+
+New regressions cover the 127-action capacity boundary and a real durable
+`LedgerWriter`: action-only completeness and corrupted signatures must leave
+the ledger empty; inclusive signed evidence must append once and replay
+idempotently without changing the prepared canonical result. These new tests
+require execution on their own published source identity.
+
+The `b1f7fac` diagnostics lane subsequently passed 156 intelligence/operations
+assertions, 57 filtered default Agentd assertions (one ignored, 163 filtered)
+and default all-target compilation. Its strict gate again reported the same
+four memory-extension and six core lint errors. This confirms the prior source,
+not execution of the newly added candidate projection regressions.
+
+On `b1f7fac`, the core caller scanner and its lexical self-test passed. Blocking
+QA separately found one failure and one error in the existing kernel-authority
+closed-world inventory (an over-escaped regex and a missing advertised boundary).
+Its manifest, test and production boundary blobs match reviewed main. Existing
+Objective empty-action fixture failures and ten strict lint failures also match
+main; these project-wide qualification blockers are not suppressed or changed
+by this module audit. Codespell rejected a historical spelling quoted in this
+report; that quotation is corrected in the follow-up candidate.

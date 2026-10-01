@@ -78,7 +78,10 @@
         "exact_destination_observation_binds_controller_identity",
         "v2_payload_round_trip_preserves_event_time_predecessor_and_authentication",
         "historical_event_reconstruction_does_not_require_a_current_write_grant",
-        "exact_destination_recovery_requires_event_predecessor_and_witness"
+        "exact_destination_recovery_requires_event_predecessor_and_witness",
+        "action_projection_is_canonical_and_reserves_intrinsic_abstain",
+        "action_projection_preserves_the_ledger_capacity_bound",
+        "default_learning_writer_requires_signed_intrinsic_complete_candidates"
       ],
       "supportScope": "complete payload/event/predecessor matching plus real file-backed LedgerWriter witness-prefix/catch-up tests; full daemon crash cuts remain open"
     },
@@ -728,6 +731,24 @@
       "name": "fresh_recovery_publication_cancel_race_is_frozen_as_cancelled",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_publication_tests.rs",
       "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "action_projection_is_canonical_and_reserves_intrinsic_abstain",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "action_projection_preserves_the_ledger_capacity_bound",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "default_learning_writer_requires_signed_intrinsic_complete_candidates",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_learning_tests.rs",
+      "package": "codex-hepta-agentd",
       "executionStatus": "pending"
     }
   ],

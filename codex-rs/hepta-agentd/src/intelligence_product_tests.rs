@@ -419,6 +419,10 @@ fn fixture() -> Fixture {
         }],
     };
     let mut abstain = utility_contributions.contributions[0].clone();
+    let mut noop = abstain.clone();
+    noop.candidate_id = id("action.noop");
+    noop.utility[0].value = FixedQ32::ZERO;
+    utility_contributions.contributions.push(noop);
     abstain.candidate_id = id("abstain");
     abstain.utility[0].value = FixedQ32::ZERO;
     utility_contributions.contributions.push(abstain);
@@ -504,7 +508,7 @@ fn fixture() -> Fixture {
         }],
     };
 
-    let intuition_candidates = vec![CalibratedActionCandidateV1 {
+    let mut intuition_candidates = vec![CalibratedActionCandidateV1 {
         candidate_id: id("action.read"),
         legal: true,
         hard_veto: false,
@@ -514,6 +518,12 @@ fn fixture() -> Fixture {
         assignment_probability: ProbabilityQ32::ZERO,
         support_digest: digest("action-support"),
     }];
+    let mut noop = intuition_candidates[0].clone();
+    noop.candidate_id = id("action.noop");
+    noop.utility = FixedQ32::ZERO;
+    noop.support_digest = digest("noop-support");
+    intuition_candidates.push(noop);
+    intuition_candidates.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
     let intuition_candidate_digest =
         canonical_candidate_set_digest_v1(&intuition_candidates).expect("candidate digest");
     let intuition_order_digest =
@@ -540,7 +550,7 @@ fn fixture() -> Fixture {
             truncation_digest: digest("truncation"),
             candidate_set_digest: intuition_candidate_digest,
             canonical_order_digest: intuition_order_digest,
-            candidate_count: 1,
+            candidate_count: 2,
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -633,10 +643,16 @@ fn fixture() -> Fixture {
                 state_digest: objective_digest,
                 generator_id: id("intelligence.control"),
                 grammar_digest: digest("legal-grammar"),
-                candidates: vec![LegalActionCandidateV1 {
-                    candidate_id: id("action.read"),
-                    support_digest: digest("action-support"),
-                }],
+                candidates: vec![
+                    LegalActionCandidateV1 {
+                        candidate_id: id("action.read"),
+                        support_digest: digest("action-support"),
+                    },
+                    LegalActionCandidateV1 {
+                        candidate_id: id("action.noop"),
+                        support_digest: digest("noop-support"),
+                    },
+                ],
                 support_floor_ppm: 1,
             },
             budget: CanonicalBudgetV1 {
@@ -1012,6 +1028,9 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[path = "intelligence_product_learning_tests.rs"]
+mod learning;
 
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[path = "intelligence_product_qualification_integrity_tests.rs"]

@@ -344,6 +344,8 @@ impl PreparedAgentdIntelligenceRunV1 {
     pub fn canonical_snapshot(&self) -> CanonicalIntelligenceSnapshotV1 {
         self.snapshot.clone()
     }
+    /// Canonical policy action IDs. Learning additionally reserves intrinsic
+    /// `abstain`; it does not change this evaluation-bound action set.
     #[must_use]
     pub fn candidate_ids(&self) -> &[StableId] {
         &self.candidate_ids
