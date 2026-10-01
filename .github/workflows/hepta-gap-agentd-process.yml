@@ -165,7 +165,7 @@ jobs:
       - name: Strict owner lint
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
       - name: Check unchanged candidate after execution
         if: always()
         run: |

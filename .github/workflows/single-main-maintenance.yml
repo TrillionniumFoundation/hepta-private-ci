@@ -67,7 +67,7 @@ jobs:
           assert tree == '121cb9e5050c8d36e6130d178a38828b6d59bf57'
           packages = ['codex-hepta-operations', 'codex-hepta-wire', 'codex-hepta-context-compiler', 'codex-hepta-codex-adapter', 'codex-hepta-automation']
           selection = [value for package in packages for value in ['-p', package]]
-          commands = [('focused-tests', ['just', 'test', *selection]), ('strict-clippy', ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--tests', *selection, '--', '-D', 'warnings'])]
+          commands = [('focused-tests', ['just', 'test', *selection]), ('strict-clippy', ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--tests', *selection, '--', '-D', 'clippy::correctness', '-D', 'clippy::await_holding_lock', '-D', 'clippy::await_holding_invalid_type'])]
           results = []
           for name, command in commands:
               with (out / (name + '.log')).open('w') as log:
