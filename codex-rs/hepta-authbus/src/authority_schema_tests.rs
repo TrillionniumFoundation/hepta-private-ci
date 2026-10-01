@@ -4,9 +4,8 @@ use crate::AuthBusAuthorityStore;
 #[tokio::test]
 async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
     let root = tempfile::tempdir().unwrap();
-    let fixture = AuthBusAuthorityStore::open(&root.path().join("fixture.sqlite"))
-        .await
-        .unwrap();
+    let fixture_path = root.path().join("fixture.sqlite");
+    let fixture = AuthBusAuthorityStore::open(&fixture_path).await.unwrap();
     let triggers = sqlx::query_as::<_, (String, String)>(
         "SELECT name, tbl_name FROM sqlite_schema WHERE type = 'trigger' ORDER BY name",
     )
@@ -14,10 +13,20 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
     .await
     .unwrap();
     assert!(!triggers.is_empty());
+    let (busy, _, _): (i64, i64, i64) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
+        .fetch_one(&fixture.pool)
+        .await
+        .unwrap();
+    assert_eq!(busy, 0);
     fixture.pool.close().await;
     for (name, table) in triggers {
         for replace in [false, true] {
             let path = root.path().join(format!("{name}-{replace}.sqlite"));
+            // Copy only the verified, checkpointed reference after every pool
+            // handle closes. Each mutation and owner reopen remains real and
+            // isolated, without repeating all migration DDL for every trigger.
+            std::fs::copy(&fixture_path, &path).unwrap();
+            std::fs::File::open(&path).unwrap().sync_all().unwrap();
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
             // These identifiers come from the freshly migrated reference.
             // Quote and escape them before forming identifier-only DDL; no
