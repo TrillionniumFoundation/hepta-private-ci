@@ -43,8 +43,15 @@ mod product_runner;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
+mod task_lineage;
 mod temporal_evaluation;
 mod temporal_fold;
+
+pub use task_lineage::FrozenTaskSourceLineageV1;
+pub use task_lineage::TaskCrossFoldInputsV1;
+pub use task_lineage::TaskLineageError;
+pub use task_lineage::TaskSourceRecordV1;
+pub use task_lineage::TaskSourceScopeV1;
 
 pub use closure::CrossFoldPartitionV1;
 pub use closure::CrossFoldPlanReceiptV1;
