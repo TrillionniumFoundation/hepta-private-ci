@@ -15,6 +15,7 @@ use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
 use crate::SourceDraft;
+use crate::cognitive_intelligence_writer::REVISION_FACT_VERIFICATION_PAGE;
 use crate::cognitive_intelligence_writer::canonical_entity_id;
 use crate::cognitive_kg_store::MAX_PROJECTION_SCOPES;
 use crate::cognitive_test_support::agent_id;
@@ -64,6 +65,88 @@ fn facts(first_label: &str, second_key: &str) -> KgFactSetDraft {
             relation: "contributes_to".to_string(),
         }],
     }
+}
+
+#[tokio::test]
+async fn paged_fact_verification_checks_old_revisions_beyond_the_first_page() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(84);
+    let owner_layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&owner_layout).await.expect("store");
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let content = "Ada supports the retained historical project.";
+    let fact_set = facts("Ada Lovelace", "retained-project");
+    let first = store
+        .remember_with_kg(
+            &access,
+            &source("historical-source-1", content),
+            &MemoryDraft {
+                stable_key: "retained-history".to_string(),
+                revision: revision(content),
+            },
+            &fact_set,
+        )
+        .await
+        .expect("first revision");
+    let revision_count =
+        u64::try_from(REVISION_FACT_VERIFICATION_PAGE + 3).expect("bounded multi-page fixture");
+    for expected_revision in 1..revision_count {
+        store
+            .correct_with_kg(
+                &access,
+                &first.memory.id.memory_id,
+                expected_revision,
+                &source(
+                    &format!("historical-source-{}", expected_revision + 1),
+                    content,
+                ),
+                &revision(content),
+                &fact_set,
+            )
+            .await
+            .expect("retained correction");
+    }
+    store.pool.close().await;
+    drop(store);
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("all clean historical verification pages reopen on one connection");
+    let entity_trigger: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema WHERE name = 'kg_revision_entities_no_update'",
+    )
+    .fetch_one(&reopened.pool)
+    .await
+    .expect("entity trigger SQL");
+    let mut connection = reopened.pool.acquire().await.expect("tamper connection");
+    sqlx::query("DROP TRIGGER kg_revision_entities_no_update")
+        .execute(&mut *connection)
+        .await
+        .expect("drop entity trigger");
+    sqlx::query(
+        "UPDATE kg_revision_entities SET label = label || ' tampered'
+         WHERE memory_id = ? AND memory_revision = ? AND entity_key = 'ada'",
+    )
+    .bind(first.memory.id.memory_id.as_str())
+    .bind(REVISION_FACT_VERIFICATION_PAGE + 1)
+    .execute(&mut *connection)
+    .await
+    .expect("tamper a historical revision beyond page one and before current/predecessor");
+    sqlx::query(sqlx::AssertSqlSafe(entity_trigger.as_str()))
+        .execute(&mut *connection)
+        .await
+        .expect("restore exact entity trigger");
+    drop(connection);
+    reopened.pool.close().await;
+    drop(reopened);
+    let error = match CognitiveStore::open(&owner_layout).await {
+        Ok(_) => panic!("tampered historical fact beyond the first page must fail reopen"),
+        Err(error) => error,
+    };
+    assert!(matches!(
+        error,
+        CognitiveStoreError::Corrupt(message)
+            if message == "KG fact-set digest failed canonical recomputation"
+    ));
 }
 
 #[tokio::test]
@@ -674,7 +757,7 @@ async fn reopen_rejects_fact_count_and_canonical_digest_tampering() {
         .execute(&mut *count_connection)
         .await
         .expect("drop fact-set trigger");
-    sqlx::query("UPDATE kg_revision_fact_sets SET entity_count = entity_count + 1")
+    sqlx::query("UPDATE kg_revision_fact_sets SET entity_count = 10000")
         .execute(&mut *count_connection)
         .await
         .expect("tamper fact count");
@@ -683,6 +766,15 @@ async fn reopen_rejects_fact_count_and_canonical_digest_tampering() {
         .await
         .expect("restore exact fact-set trigger");
     drop(count_connection);
+    assert!(matches!(
+        crate::cognitive_intelligence_writer::verify_revision_fact_digests(
+            &count_store.pool,
+            &count_owner,
+        )
+        .await,
+        Err(CognitiveStoreError::Corrupt(message))
+            if message == "KG fact-set receipt exceeds the structured extraction bounds"
+    ));
     count_store.pool.close().await;
     drop(count_store);
     assert!(matches!(

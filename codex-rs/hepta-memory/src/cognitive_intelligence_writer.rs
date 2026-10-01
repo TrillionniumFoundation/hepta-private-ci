@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_contracts::Sha256Digest;
+use futures::TryStreamExt;
 use sha2::Digest;
 use sha2::Sha256;
 use sqlx::Row;
@@ -35,6 +36,7 @@ const MAX_KEY_BYTES: usize = 256;
 const MAX_TYPE_BYTES: usize = 128;
 const MAX_LABEL_BYTES: usize = 1024;
 const MAX_RELATION_BYTES: usize = 128;
+pub(crate) const REVISION_FACT_VERIFICATION_PAGE: i64 = 128;
 
 #[derive(Clone, Debug)]
 pub(crate) struct CanonicalEntityFact {
@@ -481,8 +483,15 @@ pub(crate) async fn verify_revision_fact_digests(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,
 ) -> Result<(), CognitiveStoreError> {
-    let rows = sqlx::query(
-        "SELECT s.memory_id, s.memory_revision, s.extractor_contract,
+    // Retained history still receives a complete integrity check. Keyset pages
+    // bound memory use and one read transaction keeps every page/fact lookup on
+    // the same cut, including when the reopen pool has only one connection.
+    let mut transaction = pool.begin().await.map_err(unavailable)?;
+    let mut after_memory_id = String::new();
+    let mut after_revision = 0_i64;
+    loop {
+        let rows = sqlx::query(
+            "SELECT s.memory_id, s.memory_revision, s.extractor_contract,
                 s.fact_set_sha256, s.source_id, s.source_revision,
                 s.entity_count, s.relation_count, m.content_sha256,
                 m.scope_kind, m.workspace_sha256
@@ -490,170 +499,197 @@ pub(crate) async fn verify_revision_fact_digests(
          JOIN memory_revisions m
            ON m.memory_id = s.memory_id AND m.revision = s.memory_revision
          WHERE m.owner_agent_id = ?
-         ORDER BY s.memory_id, s.memory_revision",
-    )
-    .bind(owner.as_str())
-    .fetch_all(pool)
-    .await
-    .map_err(unavailable)?;
-    for row in rows {
-        let extractor_contract: String = row.try_get("extractor_contract").map_err(unavailable)?;
-        if extractor_contract == "legacy_pre_g3_empty_v1" {
-            continue;
-        }
-        let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
-        let memory_revision_i64: i64 = row.try_get("memory_revision").map_err(unavailable)?;
-        let memory_revision = u64::try_from(memory_revision_i64).map_err(|_| {
-            CognitiveStoreError::Corrupt("negative KG fact-set memory revision".to_string())
-        })?;
-        let source_id: String = row.try_get("source_id").map_err(unavailable)?;
-        let source_revision_i64: i64 = row.try_get("source_revision").map_err(unavailable)?;
-        let source_revision = u64::try_from(source_revision_i64).map_err(|_| {
-            CognitiveStoreError::Corrupt("negative KG fact-set source revision".to_string())
-        })?;
-        let scope = CognitiveScope::parse(
-            row.try_get("scope_kind").map_err(unavailable)?,
-            row.try_get("workspace_sha256").map_err(unavailable)?,
+           AND (s.memory_id, s.memory_revision) > (?, ?)
+         ORDER BY s.memory_id, s.memory_revision LIMIT ?",
         )
-        .map_err(CognitiveStoreError::Corrupt)?;
-        let entity_rows = sqlx::query(
-            "SELECT entity_key, canonical_entity_id, entity_type, label,
+        .bind(owner.as_str())
+        .bind(&after_memory_id)
+        .bind(after_revision)
+        .bind(REVISION_FACT_VERIFICATION_PAGE)
+        .fetch_all(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        let Some(last) = rows.last() else {
+            break;
+        };
+        after_memory_id = last.try_get("memory_id").map_err(unavailable)?;
+        after_revision = last.try_get("memory_revision").map_err(unavailable)?;
+        for row in rows {
+            let extractor_contract: String =
+                row.try_get("extractor_contract").map_err(unavailable)?;
+            if extractor_contract == "legacy_pre_g3_empty_v1" {
+                continue;
+            }
+            let declared_entities: i64 = row.try_get("entity_count").map_err(unavailable)?;
+            let declared_relations: i64 = row.try_get("relation_count").map_err(unavailable)?;
+            if !(0..=to_i64_len(MAX_ENTITIES, "entity count")?).contains(&declared_entities)
+                || !(0..=to_i64_len(MAX_RELATIONS, "relation count")?).contains(&declared_relations)
+            {
+                return Err(CognitiveStoreError::Corrupt(
+                    "KG fact-set receipt exceeds the structured extraction bounds".to_string(),
+                ));
+            }
+            let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
+            let memory_revision_i64: i64 = row.try_get("memory_revision").map_err(unavailable)?;
+            let memory_revision = u64::try_from(memory_revision_i64).map_err(|_| {
+                CognitiveStoreError::Corrupt("negative KG fact-set memory revision".to_string())
+            })?;
+            let source_id: String = row.try_get("source_id").map_err(unavailable)?;
+            let source_revision_i64: i64 = row.try_get("source_revision").map_err(unavailable)?;
+            let source_revision = u64::try_from(source_revision_i64).map_err(|_| {
+                CognitiveStoreError::Corrupt("negative KG fact-set source revision".to_string())
+            })?;
+            let scope = CognitiveScope::parse(
+                row.try_get("scope_kind").map_err(unavailable)?,
+                row.try_get("workspace_sha256").map_err(unavailable)?,
+            )
+            .map_err(CognitiveStoreError::Corrupt)?;
+            let entity_rows = sqlx::query(
+                "SELECT entity_key, canonical_entity_id, entity_type, label,
                     source_id, source_revision
              FROM kg_revision_entities
              WHERE memory_id = ? AND memory_revision = ?
-             ORDER BY entity_key",
-        )
-        .bind(&memory_id)
-        .bind(memory_revision_i64)
-        .fetch_all(pool)
-        .await
-        .map_err(unavailable)?;
-        let declared_entities: i64 = row.try_get("entity_count").map_err(unavailable)?;
-        if declared_entities != to_i64_len(entity_rows.len(), "entity count")? {
-            return Err(CognitiveStoreError::Corrupt(
-                "KG fact-set entity count changed after publication".to_string(),
-            ));
-        }
-        let mut entities = Vec::with_capacity(entity_rows.len());
-        for entity in entity_rows {
-            let key: String = entity.try_get("entity_key").map_err(unavailable)?;
-            let canonical_id: String =
-                entity.try_get("canonical_entity_id").map_err(unavailable)?;
-            if canonical_id != canonical_entity_id(owner, &scope, &key) {
-                return Err(CognitiveStoreError::Corrupt(
-                    "stored KG entity identity failed canonical recomputation".to_string(),
-                ));
-            }
-            if entity
-                .try_get::<String, _>("source_id")
-                .map_err(unavailable)?
-                != source_id
-                || entity
-                    .try_get::<i64, _>("source_revision")
-                    .map_err(unavailable)?
-                    != source_revision_i64
+             ORDER BY entity_key LIMIT ?",
+            )
+            .bind(&memory_id)
+            .bind(memory_revision_i64)
+            .bind(to_i64_len(MAX_ENTITIES + 1, "entity verification limit")?)
+            .fetch_all(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            if entity_rows.len() > MAX_ENTITIES
+                || declared_entities != to_i64_len(entity_rows.len(), "entity count")?
             {
                 return Err(CognitiveStoreError::Corrupt(
-                    "KG entity fact does not bind the fact-set citation".to_string(),
+                    "KG fact-set entity count changed after publication".to_string(),
                 ));
             }
-            entities.push(CanonicalEntityFact {
-                key,
-                canonical_entity_id: canonical_id,
-                entity_type: entity.try_get("entity_type").map_err(unavailable)?,
-                label: entity.try_get("label").map_err(unavailable)?,
-            });
-        }
-        let relation_rows = sqlx::query(
-            "SELECT relation_key, canonical_relation_id, from_entity_key,
+            let mut entities = Vec::with_capacity(entity_rows.len());
+            for entity in entity_rows {
+                let key: String = entity.try_get("entity_key").map_err(unavailable)?;
+                let canonical_id: String =
+                    entity.try_get("canonical_entity_id").map_err(unavailable)?;
+                if canonical_id != canonical_entity_id(owner, &scope, &key) {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "stored KG entity identity failed canonical recomputation".to_string(),
+                    ));
+                }
+                if entity
+                    .try_get::<String, _>("source_id")
+                    .map_err(unavailable)?
+                    != source_id
+                    || entity
+                        .try_get::<i64, _>("source_revision")
+                        .map_err(unavailable)?
+                        != source_revision_i64
+                {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "KG entity fact does not bind the fact-set citation".to_string(),
+                    ));
+                }
+                entities.push(CanonicalEntityFact {
+                    key,
+                    canonical_entity_id: canonical_id,
+                    entity_type: entity.try_get("entity_type").map_err(unavailable)?,
+                    label: entity.try_get("label").map_err(unavailable)?,
+                });
+            }
+            let relation_rows = sqlx::query(
+                "SELECT relation_key, canonical_relation_id, from_entity_key,
                     from_canonical_entity_id, to_entity_key,
                     to_canonical_entity_id, relation, source_id, source_revision
              FROM kg_revision_relations
              WHERE memory_id = ? AND memory_revision = ?
-             ORDER BY relation_key",
-        )
-        .bind(&memory_id)
-        .bind(memory_revision_i64)
-        .fetch_all(pool)
-        .await
-        .map_err(unavailable)?;
-        let declared_relations: i64 = row.try_get("relation_count").map_err(unavailable)?;
-        if declared_relations != to_i64_len(relation_rows.len(), "relation count")? {
-            return Err(CognitiveStoreError::Corrupt(
-                "KG fact-set relation count changed after publication".to_string(),
-            ));
-        }
-        let mut relations = Vec::with_capacity(relation_rows.len());
-        for relation_row in relation_rows {
-            let from_canonical_entity_id: String = relation_row
-                .try_get("from_canonical_entity_id")
-                .map_err(unavailable)?;
-            let to_canonical_entity_id: String = relation_row
-                .try_get("to_canonical_entity_id")
-                .map_err(unavailable)?;
-            let relation: String = relation_row.try_get("relation").map_err(unavailable)?;
-            let canonical_id: String = relation_row
-                .try_get("canonical_relation_id")
-                .map_err(unavailable)?;
-            if canonical_id
-                != canonical_relation_id(
-                    owner,
-                    &scope,
-                    &from_canonical_entity_id,
-                    &relation,
-                    &to_canonical_entity_id,
-                )
-            {
-                return Err(CognitiveStoreError::Corrupt(
-                    "stored KG relation identity failed canonical recomputation".to_string(),
-                ));
-            }
-            if relation_row
-                .try_get::<String, _>("source_id")
-                .map_err(unavailable)?
-                != source_id
-                || relation_row
-                    .try_get::<i64, _>("source_revision")
-                    .map_err(unavailable)?
-                    != source_revision_i64
-            {
-                return Err(CognitiveStoreError::Corrupt(
-                    "KG relation fact does not bind the fact-set citation".to_string(),
-                ));
-            }
-            relations.push(CanonicalRelationFact {
-                key: relation_row.try_get("relation_key").map_err(unavailable)?,
-                canonical_relation_id: canonical_id,
-                from_entity_key: relation_row
-                    .try_get("from_entity_key")
-                    .map_err(unavailable)?,
-                from_canonical_entity_id,
-                to_entity_key: relation_row.try_get("to_entity_key").map_err(unavailable)?,
-                to_canonical_entity_id,
-                relation,
-            });
-        }
-        let content_sha256 = row
-            .try_get::<String, _>("content_sha256")
+             ORDER BY relation_key LIMIT ?",
+            )
+            .bind(&memory_id)
+            .bind(memory_revision_i64)
+            .bind(to_i64_len(
+                MAX_RELATIONS + 1,
+                "relation verification limit",
+            )?)
+            .fetch_all(&mut *transaction)
+            .await
             .map_err(unavailable)?;
-        let expected = fact_set_digest_from_parts(FactSetDigestParts {
-            memory_id: &memory_id,
-            memory_revision,
-            content_sha256: &content_sha256,
-            source_id: &source_id,
-            source_revision,
-            extractor_contract: &extractor_contract,
-            entities: &entities,
-            relations: &relations,
-        });
-        let stored: String = row.try_get("fact_set_sha256").map_err(unavailable)?;
-        if expected.as_str() != stored {
-            return Err(CognitiveStoreError::Corrupt(
-                "KG fact-set digest failed canonical recomputation".to_string(),
-            ));
+            if relation_rows.len() > MAX_RELATIONS
+                || declared_relations != to_i64_len(relation_rows.len(), "relation count")?
+            {
+                return Err(CognitiveStoreError::Corrupt(
+                    "KG fact-set relation count changed after publication".to_string(),
+                ));
+            }
+            let mut relations = Vec::with_capacity(relation_rows.len());
+            for relation_row in relation_rows {
+                let from_canonical_entity_id: String = relation_row
+                    .try_get("from_canonical_entity_id")
+                    .map_err(unavailable)?;
+                let to_canonical_entity_id: String = relation_row
+                    .try_get("to_canonical_entity_id")
+                    .map_err(unavailable)?;
+                let relation: String = relation_row.try_get("relation").map_err(unavailable)?;
+                let canonical_id: String = relation_row
+                    .try_get("canonical_relation_id")
+                    .map_err(unavailable)?;
+                if canonical_id
+                    != canonical_relation_id(
+                        owner,
+                        &scope,
+                        &from_canonical_entity_id,
+                        &relation,
+                        &to_canonical_entity_id,
+                    )
+                {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "stored KG relation identity failed canonical recomputation".to_string(),
+                    ));
+                }
+                if relation_row
+                    .try_get::<String, _>("source_id")
+                    .map_err(unavailable)?
+                    != source_id
+                    || relation_row
+                        .try_get::<i64, _>("source_revision")
+                        .map_err(unavailable)?
+                        != source_revision_i64
+                {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "KG relation fact does not bind the fact-set citation".to_string(),
+                    ));
+                }
+                relations.push(CanonicalRelationFact {
+                    key: relation_row.try_get("relation_key").map_err(unavailable)?,
+                    canonical_relation_id: canonical_id,
+                    from_entity_key: relation_row
+                        .try_get("from_entity_key")
+                        .map_err(unavailable)?,
+                    from_canonical_entity_id,
+                    to_entity_key: relation_row.try_get("to_entity_key").map_err(unavailable)?,
+                    to_canonical_entity_id,
+                    relation,
+                });
+            }
+            let content_sha256 = row
+                .try_get::<String, _>("content_sha256")
+                .map_err(unavailable)?;
+            let expected = fact_set_digest_from_parts(FactSetDigestParts {
+                memory_id: &memory_id,
+                memory_revision,
+                content_sha256: &content_sha256,
+                source_id: &source_id,
+                source_revision,
+                extractor_contract: &extractor_contract,
+                entities: &entities,
+                relations: &relations,
+            });
+            let stored: String = row.try_get("fact_set_sha256").map_err(unavailable)?;
+            if expected.as_str() != stored {
+                return Err(CognitiveStoreError::Corrupt(
+                    "KG fact-set digest failed canonical recomputation".to_string(),
+                ));
+            }
         }
     }
-    let active_shapes = sqlx::query(
+    let mut active_shapes = sqlx::query(
         "SELECT r.scope_kind, r.workspace_sha256, e.canonical_entity_id,
                 e.entity_type, e.label
          FROM memory_heads h
@@ -666,34 +702,35 @@ pub(crate) async fn verify_revision_fact_digests(
          ORDER BY r.scope_kind, r.workspace_sha256, e.canonical_entity_id",
     )
     .bind(owner.as_str())
-    .fetch_all(pool)
-    .await
-    .map_err(unavailable)?;
-    let mut shapes = BTreeMap::<(String, String), (String, String)>::new();
-    for row in active_shapes {
+    .fetch(&mut *transaction);
+    let mut previous_shape = None;
+    while let Some(row) = active_shapes.try_next().await.map_err(unavailable)? {
         let scope = CognitiveScope::parse(
             row.try_get("scope_kind").map_err(unavailable)?,
             row.try_get("workspace_sha256").map_err(unavailable)?,
         )
         .map_err(CognitiveStoreError::Corrupt)?;
-        let key = (
+        let key: (String, String) = (
             scope.projection_key(),
             row.try_get("canonical_entity_id").map_err(unavailable)?,
         );
-        let shape = (
+        let shape: (String, String) = (
             row.try_get("entity_type").map_err(unavailable)?,
             row.try_get("label").map_err(unavailable)?,
         );
-        if shapes
-            .insert(key.clone(), shape.clone())
-            .is_some_and(|old| old != shape)
+        if let Some((previous_key, previous_value)) = previous_shape.as_ref()
+            && previous_key == &key
+            && previous_value != &shape
         {
             return Err(CognitiveStoreError::Corrupt(format!(
                 "current KG supports disagree on canonical entity {}",
                 key.1
             )));
         }
+        previous_shape = Some((key, shape));
     }
+    drop(active_shapes);
+    transaction.commit().await.map_err(unavailable)?;
     Ok(())
 }
 

@@ -212,7 +212,13 @@ async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
         .expect("query");
     let mut transaction = store.pool.begin().await.expect("read transaction");
     let mut seeds = store
-        .entity_fts_channel_tx(&mut transaction, &access, &fts, 200)
+        .entity_fts_channel_tx(
+            &mut transaction,
+            &access,
+            &fts,
+            200,
+            RetrievalScopes::Accessible,
+        )
         .await
         .expect("seeds")
         .values;

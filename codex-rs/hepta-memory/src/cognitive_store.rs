@@ -550,11 +550,11 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             "SQLite quick_check rejected the cognitive store".to_string(),
         ));
     }
-    let foreign_key_errors = sqlx::query("PRAGMA foreign_key_check")
-        .fetch_all(pool)
+    let foreign_key_error = sqlx::query("PRAGMA foreign_key_check")
+        .fetch_optional(pool)
         .await
         .map_err(unavailable)?;
-    if !foreign_key_errors.is_empty() {
+    if foreign_key_error.is_some() {
         return Err(CognitiveStoreError::Corrupt(
             "SQLite foreign_key_check rejected the cognitive store".to_string(),
         ));
