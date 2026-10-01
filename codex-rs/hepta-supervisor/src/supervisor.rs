@@ -57,6 +57,9 @@ mod tests;
 #[path = "recovery_denial.rs"]
 mod recovery_denial;
 
+#[path = "constructor_recovery_probe.rs"]
+mod recovery_probe;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
         registry: FleetRegistry,
@@ -98,12 +101,20 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // A failed signal on an admitted, exact owned incarnation is
                 // a control retry, not corrupt durable recovery evidence.
                 // recover_slot marks all admission/hydration failures itself.
-                for restore in [
+                for (restore, evidence_present) in [
                     Self::recover_restart_budget,
                     Self::recover_release_transaction,
-                ] {
+                ]
+                .into_iter()
+                .zip([
+                    recovery_probe::restart_required(record.layout.run_root()),
+                    recovery_probe::release_required(record.layout.run_root()),
+                ]) {
                     if slot.recovery_blocker.is_some() {
                         break;
+                    }
+                    if !evidence_present {
+                        continue;
                     }
                     if let Err(error) = restore(supervisor, &agent_id, slot, now) {
                         if !Self::recovery_control_fault_is_retryable(slot, &error) {

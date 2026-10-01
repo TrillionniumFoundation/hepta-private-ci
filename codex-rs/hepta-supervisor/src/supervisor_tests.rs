@@ -2378,3 +2378,6 @@ mod automatic_restart_event_tests;
 
 #[path = "tick_control_fault_tests.rs"]
 mod tick_control_fault_tests;
+
+#[path = "constructor_absence_recovery_tests.rs"]
+mod constructor_absence_recovery_tests;
