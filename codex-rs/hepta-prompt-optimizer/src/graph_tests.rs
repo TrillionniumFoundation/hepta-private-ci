@@ -12,7 +12,6 @@ use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptFactorRelation;
 use codex_hepta_prompt_registry::PromptFactorRelationKind;
-use codex_hepta_prompt_registry::PromptRegistry;
 use codex_hepta_prompt_registry::final_use_admission_binding;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -21,9 +20,7 @@ use ed25519_dalek::SigningKey;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use crate::CandidateDisposition;
 use crate::OptimizationRequest;
-use crate::PromptCandidate;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
