@@ -19,12 +19,17 @@ def git(*args: str) -> str:
     ).strip()
 
 
-def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = None) -> dict:
+def candidate_plan(
+    *, source: str, tested: str, lane: str, base: str | None = None
+) -> dict:
     merge_lane = lane in {"base-merge", "synthetic-merge"}
     if lane != "source-head" and not merge_lane:
         raise ValueError("unknown qualification lane")
     for identity in (source, tested, *([base] if merge_lane else [])):
-        if not isinstance(identity, str) or re.fullmatch(r"[0-9a-f]{40}", identity) is None:
+        if (
+            not isinstance(identity, str)
+            or re.fullmatch(r"[0-9a-f]{40}", identity) is None
+        ):
             raise ValueError("candidate identities must be exact SHA-1 commits")
     if git("rev-parse", "HEAD") != tested:
         raise ValueError("checked-out commit differs from tested identity")
@@ -58,11 +63,15 @@ def main() -> None:
     parser.add_argument("--lane", required=True)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
-    plan = candidate_plan(source=args.source, tested=args.tested, lane=args.lane, base=args.base)
+    plan = candidate_plan(
+        source=args.source, tested=args.tested, lane=args.lane, base=args.base
+    )
     print(json.dumps(plan, sort_keys=True))
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
-            stream.write(f"run_native={str(plan['native_execution_required']).lower()}\n")
+            stream.write(
+                f"run_native={str(plan['native_execution_required']).lower()}\n"
+            )
 
 
 if __name__ == "__main__":

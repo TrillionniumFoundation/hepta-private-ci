@@ -27,7 +27,9 @@ class CargoLockVerifierTests(unittest.TestCase):
                 "Warning: truncated output (original token count: 103930)\n" + document
             )
 
-    def test_dependency_count_can_change_but_duplicate_identity_is_rejected(self) -> None:
+    def test_dependency_count_can_change_but_duplicate_identity_is_rejected(
+        self,
+    ) -> None:
         document = MODULE.DEFAULT_LOCKFILE.read_text(encoding="utf-8")
         self.assertGreater(
             MODULE.validate_lock_document(
@@ -36,7 +38,9 @@ class CargoLockVerifierTests(unittest.TestCase):
             ),
             len(MODULE.REQUIRED_PACKAGES),
         )
-        with self.assertRaisesRegex(MODULE.VerificationFailure, "duplicate package identity"):
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure, "duplicate package identity"
+        ):
             MODULE.validate_lock_document(
                 document
                 + '\n[[package]]\nname = "codex-hepta-types"\nversion = "0.0.0"\n'

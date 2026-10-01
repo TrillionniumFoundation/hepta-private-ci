@@ -14,7 +14,7 @@ def replace_once(path: str, old: str, new: str) -> None:
 
 replace_once(
     ".github/workflows/bazel.yml",
-    '''          bazel_wrapper_args=()
+    """          bazel_wrapper_args=()
           if [[ "${RUNNER_OS}" == "Windows" ]]; then
             # Release-mode compile coverage must use one coherent native ABI
             # for target crates, proc macros, SQLite, and cryptographic code.
@@ -30,8 +30,8 @@ replace_once(
             --build_metadata=TAG_job=verify-release-build
             --build_metadata=TAG_rust_debug_assertions=off
           )
-''',
-    '''          bazel_wrapper_args=()
+""",
+    """          bazel_wrapper_args=()
           bazel_build_args=(
             --compilation_mode=fastbuild
             --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no
@@ -46,24 +46,24 @@ replace_once(
             bazel_wrapper_args+=(--windows-msvc-host-platform)
             bazel_build_args+=(--platforms=//:windows_x86_64_msvc)
           fi
-''',
+""",
 )
 
 replace_once(
     "codex-rs/hepta-operator-acceptance/src/durable.rs",
-    '''#[cfg(not(unix))]
+    """#[cfg(not(unix))]
 fn verify_private_mode(
     _metadata: &std::fs::Metadata,
     _label: &str,
 ) -> Result<(), AcceptanceError> {
     Ok(())
 }
-''',
-    '''#[cfg(not(unix))]
+""",
+    """#[cfg(not(unix))]
 fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
     Ok(())
 }
-''',
+""",
 )
 
 bazel = Path(".github/workflows/bazel.yml").read_text(encoding="utf-8")

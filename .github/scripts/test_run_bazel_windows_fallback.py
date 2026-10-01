@@ -43,12 +43,10 @@ class WindowsLocalFallbackTest(unittest.TestCase):
         module = (repository_root / "MODULE.bazel").read_text(encoding="utf-8")
 
         self.assertIn('name = "local_windows_msvc"', build)
-        self.assertIn('@llvm//constraints/windows/abi:msvc', build)
+        self.assertIn("@llvm//constraints/windows/abi:msvc", build)
         self.assertIn('name = "windows_x86_64_gnullvm"', build)
-        self.assertIn('@llvm//constraints/windows/abi:gnullvm', build)
-        self.assertIn(
-            'name = "windows_gnullvm_tests_on_msvc_host_toolchain"', build
-        )
+        self.assertIn("@llvm//constraints/windows/abi:gnullvm", build)
+        self.assertIn('name = "windows_gnullvm_tests_on_msvc_host_toolchain"', build)
         self.assertIn(
             'toolchain_type = "@bazel_tools//tools/test:default_test_toolchain_type"',
             build,
@@ -76,7 +74,9 @@ class WindowsLocalFallbackTest(unittest.TestCase):
             ],
         )
 
-    def test_defaults_precede_explicit_caches_and_preserve_startup_options(self) -> None:
+    def test_defaults_precede_explicit_caches_and_preserve_startup_options(
+        self,
+    ) -> None:
         args = [
             "--output_user_root=build root",
             "build",
@@ -228,7 +228,9 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                     [command],
                 )
 
-    def test_arguments_after_separator_are_neither_interpreted_nor_removed(self) -> None:
+    def test_arguments_after_separator_are_neither_interpreted_nor_removed(
+        self,
+    ) -> None:
         payload = [
             "--config=ci-windows-cross",
             "--platforms=//:payload",
@@ -266,7 +268,9 @@ class WindowsLocalFallbackTest(unittest.TestCase):
         for runner_os in ("Linux", "macOS"):
             with self.subTest(runner_os=runner_os):
                 self.assertEqual(
-                    wrapper.bazel_args_with_remote_config(args, {"RUNNER_OS": runner_os}),
+                    wrapper.bazel_args_with_remote_config(
+                        args, {"RUNNER_OS": runner_os}
+                    ),
                     ["build", "--", "//..."],
                 )
 

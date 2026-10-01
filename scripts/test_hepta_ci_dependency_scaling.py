@@ -2,6 +2,7 @@
 
 No wall-clock threshold is used as a merge gate.
 """
+
 import unittest
 
 from hepta_ci_dependencies import Graph, select_packages
@@ -30,8 +31,11 @@ class SelectionScalingTests(unittest.TestCase):
     def test_both_dev_and_production_edge_still_propagate(self):
         graph = self.graph(
             ["helper", "consumer", "app"],
-            [("helper", "consumer", True), ("helper", "consumer", False),
-             ("consumer", "app", False)],
+            [
+                ("helper", "consumer", True),
+                ("helper", "consumer", False),
+                ("consumer", "app", False),
+            ],
         )
         selected = select_packages(["codex-rs/helper/src/lib.rs"], graph, graph)
         self.assertEqual(selected["packages"], ["app", "consumer", "helper"])
@@ -55,8 +59,12 @@ class SelectionScalingTests(unittest.TestCase):
 
     def test_unknown_and_shared_inputs_keep_full_fallback(self):
         graph = self.graph(["a", "b"], [])
-        for path in ("unknown/file", "codex-rs/Cargo.lock", "scripts/test.py",
-                     ".github/workflows/ci.yml"):
+        for path in (
+            "unknown/file",
+            "codex-rs/Cargo.lock",
+            "scripts/test.py",
+            ".github/workflows/ci.yml",
+        ):
             with self.subTest(path=path):
                 selected = select_packages([path], graph, graph)
                 self.assertTrue(selected["full_workspace"])
