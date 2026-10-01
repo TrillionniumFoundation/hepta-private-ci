@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "46a7e79bd10eae685a10b0fc229671439852a7b6",
-    "tree": "83f70d00e5c7d7d9277be8bc1fae7de5be25e364"
+    "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+    "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -320,8 +320,8 @@
     ]
   },
   "observedAtHead": {
-    "commit": "46a7e79bd10eae685a10b0fc229671439852a7b6",
-    "tree": "83f70d00e5c7d7d9277be8bc1fae7de5be25e364"
+    "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+    "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -345,6 +345,14 @@
       "object": "72d7262b40fe7970ae0cead431aae5d32f68295f"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "afb9cac35db1c57d58edb3b31c6beee31bab2560"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "object": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
       "object": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
     },
@@ -357,12 +365,20 @@
       "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+    },
+    {
       "path": "codex-rs/hepta-automation",
       "object": "90409d9839266b2992986bb98343f41f40bed4ae"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
@@ -375,6 +391,18 @@
     {
       "path": "codex-rs/hepta-contracts",
       "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+      "object": "918195da1b30ce7ebb432df54a7bc247f5154a63"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+      "object": "b8d06d5ca867f6d5b32d78f5276f9a1b4f11f5cc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "object": "1c07918ae14e7d7a8c635d1574178424ba3407b4"
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
