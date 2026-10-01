@@ -9,6 +9,7 @@ publish = false
 default = []
 agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cognitive-write", "dep:anyhow", "dep:codex-hepta-neuron", "dep:codex-hepta-agent-components"]
 test-support = []
+fixed-initial-cpu-host = ["agentd-host", "codex-hepta-agent-components/fixed-eval-host"]
 
 [lib]
 name = "codex_hepta_infer_worker_host"
@@ -63,4 +64,10 @@ test = false
 name = "hepta-evolving-agentd"
 path = "src/bin/hepta-evolving-agentd.rs"
 required-features = ["agentd-host"]
+test = false
+
+[[bin]]
+name = "hepta-initial-cpu-anchor"
+path = "src/bin/hepta-initial-cpu-anchor.rs"
+required-features = ["fixed-initial-cpu-host"]
 test = false

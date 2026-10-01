@@ -178,6 +178,16 @@ impl VerifiedCurrentRegistryViewV1 {
         !self.ineligible_artifacts.contains(artifact_id) && self.registry.is_eligible(artifact_id)
     }
 
+    /// Inspect an exact manifest in this verified view without exposing the
+    /// mutable registry. The host must acquire and revalidate CURRENT again at
+    /// final use; this borrowed projection grants no publication or selection.
+    #[must_use]
+    pub fn eligible_manifest(&self, artifact_id: &StableId) -> Option<&ArtifactManifest> {
+        self.is_eligible(artifact_id)
+            .then(|| self.registry.manifest(artifact_id))
+            .flatten()
+    }
+
     pub(crate) fn restrict_eligibility(&mut self, ineligible: BTreeSet<StableId>) {
         self.ineligible_artifacts.extend(ineligible);
     }

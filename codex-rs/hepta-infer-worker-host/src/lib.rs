@@ -10,6 +10,9 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub mod initial_cpu_anchor;
+
 #[cfg(feature = "agentd-host")]
 mod local_cpu_control;
 #[cfg(feature = "agentd-host")]

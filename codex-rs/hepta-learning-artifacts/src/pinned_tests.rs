@@ -306,6 +306,11 @@ fn dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenanc
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register", selected.clone());
     let mut current = verified_view(&directory, &registry, "current");
+    assert_eq!(
+        current.eligible_manifest(&selected.artifact_id),
+        Some(&selected)
+    );
+    assert_eq!(current.eligible_manifest(&id("missing")), None);
     assert!(current.supports_dataset(&selected, selected.support_digest));
     assert!(!current.supports_dataset(&selected, dataset));
     current.bind_source_datasets(BTreeMap::from([(
@@ -323,6 +328,7 @@ fn dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenanc
     )]));
     assert!(!current.supports_dataset(&selected, selected.support_digest));
     current.restrict_eligibility(BTreeSet::from([selected.artifact_id.clone()]));
+    assert_eq!(current.eligible_manifest(&selected.artifact_id), None);
     assert!(!current.supports_dataset(&selected, dataset));
 }
 
