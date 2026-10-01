@@ -184,6 +184,7 @@ def codex_rust_crate(
         crate_name,
         crate_features = [],
         crate_srcs = None,
+        crate_root = None,
         crate_edition = None,
         proc_macro = False,
         build_script_enabled = True,
@@ -227,10 +228,11 @@ def codex_rust_crate(
             Crates are only compiled in a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
-        unit_test_dependency_replacements: Test-only workspace dependency variants.
+        unit_test_dependency_replacements: Test-only workspace dependency variants for unit and integration harnesses.
             Replace the complete transitive closure when public types cross crates.
-        unit_test_features: Additional features for the test-only library and harness.
+        unit_test_features: Additional features for the test-only library and its unit/integration harnesses.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
+        crate_root: Optional library root for a Cargo lib.path override.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
         proc_macro: Whether this crate builds a proc-macro library.
@@ -322,11 +324,15 @@ def codex_rust_crate(
 
         maybe_deps += [name + "-build-script"]
 
+    # Production binaries use the normal library; test harnesses share the
+    # same qualification variant and transitive crate identities as Cargo dev.
+    integration_library_deps = maybe_deps
     if lib_srcs:
         lib_rule = rust_proc_macro if proc_macro else rust_library
         lib_rule(
             name = name,
             crate_name = crate_name,
+            crate_root = crate_root,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             compile_data = compile_data,
@@ -350,6 +356,7 @@ def codex_rust_crate(
                 name = unit_test_library,
                 testonly = True,
                 crate_name = crate_name,
+                crate_root = crate_root,
                 crate_features = crate_features + unit_test_features,
                 deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,
                 compile_data = compile_data,
@@ -404,6 +411,7 @@ def codex_rust_crate(
             **unit_test_kwargs
         )
 
+        integration_library_deps = maybe_deps + [unit_test_library]
         maybe_deps += [name]
 
     sanitized_binaries = []
@@ -570,10 +578,11 @@ def codex_rust_crate(
                 name = integration_test_binary,
                 crate_name = test_crate_name,
                 crate_root = test,
+                crate_features = crate_features + unit_test_features,
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -610,10 +619,11 @@ def codex_rust_crate(
                 name = test_name,
                 crate_name = test_crate_name,
                 crate_root = test,
+                crate_features = crate_features + unit_test_features,
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -685,10 +695,11 @@ def codex_rust_crate(
             name = windows_cross_test_binary,
             crate_name = test_crate_name,
             crate_root = test,
+            crate_features = crate_features + unit_test_features,
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",

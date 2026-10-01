@@ -4,11 +4,9 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 
 _UNIT_TEST_DEPENDENCIES = {
-    "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
-    "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
-    "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
-    "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
-    "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+    "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+    "//codex-rs/hepta-supervisor": "//codex-rs/hepta-supervisor:hepta-supervisor-test-lib",
+    "//codex-rs/hepta-agent-components": "//codex-rs/hepta-agent-components:hepta-agent-components-test-lib",
 }
 
 codex_rust_crate(

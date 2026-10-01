@@ -7,4 +7,5 @@ codex_rust_crate(
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
     },
+    unit_test_features = ["qualification-unverified-input"],
 )

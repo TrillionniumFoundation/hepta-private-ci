@@ -14,14 +14,6 @@ codex_rust_crate(
 )
 
 rust_binary(
-    name = "hepta-secrets-runtime",
-    srcs = ["src/bin/hepta-secrets-runtime.rs"],
-    crate_name = "hepta_secrets_runtime",
-    edition = "2024",
-    deps = [":hepta-bao-adapter"] + all_crate_deps(normal = True),
-)
-
-rust_binary(
     name = "consume-secret-example",
     testonly = True,
     srcs = ["examples/consume_secret.rs"],

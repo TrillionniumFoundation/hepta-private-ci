@@ -4,4 +4,16 @@ codex_rust_crate(
     name = "hepta-agent-components",
     crate_features = ["fixed-eval-host"],
     crate_name = "codex_hepta_agent_components",
+    # Match the Cargo dev façade while keeping one physical ledger type.
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+        "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+        "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+        "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+    },
+    unit_test_features = [
+        "qualification-legacy-learning-write",
+        "qualification-unverified-operator-input",
+    ],
 )

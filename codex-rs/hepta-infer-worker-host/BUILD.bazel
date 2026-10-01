@@ -10,7 +10,10 @@ codex_rust_crate(
     crate_name = "codex_hepta_infer_worker_host",
     extra_binaries = ["//codex-rs/hepta-agentd:codex-hepta-agentd"],
     unit_test_dependency_replacements = {
+        "//codex-rs/hepta-agentd": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "//codex-rs/hepta-agent-components": "//codex-rs/hepta-agent-components:hepta-agent-components-test-lib",
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
         "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-test-lib",
     },
+    unit_test_features = ["test-support"],
 )
