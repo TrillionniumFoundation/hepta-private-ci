@@ -82,6 +82,7 @@ use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_prompt_optimizer::PromptCandidate;
 use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
@@ -379,6 +380,14 @@ fn fixture() -> Fixture {
     let profile = objective_profile();
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
+    fixture_for_objective(profile, envelope, objective_context)
+}
+
+fn fixture_for_objective(
+    profile: ObjectiveAdmissionProfileV1,
+    envelope: ObjectiveSourceEnvelopeV1,
+    objective_context: ObjectiveAdmissionContextV1,
+) -> Fixture {
     let objective = admit_and_compile_objective_v1(&envelope, &profile, &objective_context)
         .expect("objective admission")
         .compile_result
@@ -653,7 +662,7 @@ fn fixture() -> Fixture {
             intuition_request,
             context_request,
             evaluation_request,
-            signed_evaluation: None,
+            qualified_evaluation: None,
         },
         owners,
     }

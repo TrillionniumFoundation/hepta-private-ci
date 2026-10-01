@@ -105,15 +105,15 @@ is not protocol compatibility.
 From the repository root:
 
 ```sh
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
-  -p codex-hepta-agentd --lib runtime_tasks::service_generations -- --nocapture
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
-  -p codex-hepta-agentd --lib automation::service_tests -- --nocapture
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
-  -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
+just test --locked \
+  -p codex-hepta-agentd --lib runtime_tasks::service_generations --nocapture
+just test --locked \
+  -p codex-hepta-agentd --lib automation::service_tests --nocapture
+just test --locked \
+  -p codex-hepta-agentd --test optional_module_restart forty_first_service --nocapture
+just test --locked \
   -p codex-hepta-automation --test operation_timer_fence
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
+just test --locked \
   -p codex-hepta-agentd runtime_executable
 ```
 

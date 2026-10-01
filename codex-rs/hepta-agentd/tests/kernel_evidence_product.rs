@@ -1,4 +1,8 @@
 #![cfg(unix)]
+#![allow(
+    clippy::expect_used,
+    reason = "test-only evidence fixture construction deliberately fails on invalid identities or payloads"
+)]
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;

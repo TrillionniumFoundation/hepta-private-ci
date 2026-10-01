@@ -12,6 +12,10 @@ use codex_hepta_agentd::RuntimeTasks;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
+#[expect(
+    clippy::expect_used,
+    reason = "the test host fixture must be valid before exercising shutdown outcomes"
+)]
 fn host(cancellation: CancellationToken) -> RuntimeTasks {
     RuntimeTasks::new(cancellation, Duration::from_millis(50)).expect("host")
 }
@@ -35,6 +39,27 @@ async fn already_ready_shutdown_cannot_hide_unobserved_required_failure() {
         tasks.failures().back().expect("diagnostic").name,
         "runtime.core"
     );
+    assert!(tasks.run_until(async { Ok(()) }).await.is_err());
+}
+
+#[tokio::test]
+async fn queued_required_exit_cannot_become_a_successful_shutdown() {
+    let mut tasks = host(CancellationToken::new());
+    let (exited, completed) = oneshot::channel();
+    tasks
+        .spawn_required("runtime.core", async move {
+            exited.send(()).expect("observe required exit");
+            Ok(())
+        })
+        .expect("spawn core");
+    completed.await.expect("required service exited");
+
+    // The shutdown branch is ready before JoinSet observation. The completion
+    // still records that the required service exited before cancellation.
+    assert!(tasks.run_until(async { Ok(()) }).await.is_err());
+    assert_eq!(tasks.active_count(), 0);
+    assert_eq!(tasks.failures().len(), 1);
+    assert_eq!(tasks.failures()[0].name, "runtime.core");
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
 }
 

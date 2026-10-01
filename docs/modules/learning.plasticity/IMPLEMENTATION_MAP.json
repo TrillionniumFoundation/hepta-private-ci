@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "3ae838dda71ad66a6ac370fcca6f4c23a843e416",
+    "tree": "8cb432f5fa0bf39b6415c346b3222f1402ec1e80"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -128,8 +128,10 @@
       "authority": "proposal_append_only",
       "tests": [
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
-        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_generator_evaluator_controller_collision",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_owner_refuses_qualification_with_generator_evaluator_controller_collision",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_observer_evaluator_controller_collision",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_tampered_qualification_and_stale_evaluator_use_before_append",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_changed_current_trust_before_append",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::durable_v2_evaluation_digest_binds_governed_admission_context",
         "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs::observer_and_evaluator_require_pairwise_independence",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::no_admissible_update_is_independently_attested_and_durably_recorded"
@@ -664,11 +666,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "object": "085d85fde32b89d59eb3169d8d8f6e7f005c2ac5"
+      "object": "cb3da0a3443198f481af60996616b7e00350c055"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "object": "507dc9a4e89399a3a67dc48c8f8b12f2a1a46a67"
+      "object": "3243925f190b4981eb09000372eb0a49b8664af1"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
@@ -676,7 +678,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
-      "object": "f44c8858a55886c7997562a02ba87b9a7d359bf2"
+      "object": "fcc9b3e2c819771db7f92502f228a041d45796b0"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
@@ -684,7 +686,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
-      "object": "6fb6e22b86638b60871696a691db12baf16a1347"
+      "object": "c451b338dc4854922cfc9bc741d60738e3f2b10f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
@@ -692,7 +694,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
-      "object": "8b7a329216db2cd56d3c104214414dc0ffc61c47"
+      "object": "85b51c4408b9c9371bd8d2475163e503e35846e5"
     },
     {
       "path": "codex-rs/hepta-contracts",
@@ -704,19 +706,19 @@
     },
     {
       "path": "codex-rs/hepta-evidence",
-      "object": "c64498a611cfdf3044d897a870d3398c205b48e3"
+      "object": "caa9e5d7bd578c9dd9b4ed211763b68ccea59787"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "52ab5dd3324d037475b41d258c3e75c2bcb08165"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "object": "128016bddabb5bdb6a0262d07c7b9327ffb7a8ee"
+      "object": "d1bb257b21f3c07044b7b84c5cedc93159f07499"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
-      "object": "3054c943e60078d9fdf682d5f75e8137de220f28"
+      "object": "b45c6c5584b7b174f1b0250099a0180137f81934"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
@@ -740,7 +742,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "3b76f35bd19a481b6e18b17692320c2198ac0f81"
     },
     {
       "path": "codex-rs/hepta-neuron",

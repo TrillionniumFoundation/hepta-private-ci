@@ -145,6 +145,8 @@ class WorkflowDependencyTests(unittest.TestCase):
         for target in (
             "optional_module_restart",
             "runtime_shutdown_outcomes",
+            "helper_dispatch",
+            "supervised_two_agents",
             "retirement_recovery",
             "operation_timer_fence",
             "destination_recovery_binding",

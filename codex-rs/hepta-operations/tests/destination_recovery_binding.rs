@@ -19,8 +19,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use sqlx::Row;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 const ROOT_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_ROOT";
 const MODE_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_MODE";
@@ -39,9 +37,7 @@ fn operation(payload: &[u8]) -> DestinationOperationIdentity {
 }
 
 async fn pool(path: &Path) -> SqlitePool {
-    SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(path))
+    codex_state::open_durable_sqlite_pool(path, std::num::NonZeroU32::MIN)
         .await
         .expect("open existing owner database")
 }

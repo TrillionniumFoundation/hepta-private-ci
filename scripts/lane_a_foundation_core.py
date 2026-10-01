@@ -95,6 +95,78 @@ def read_text(path: Path) -> str:
         raise VerificationError(f"cannot read UTF-8 {path}: {error}") from error
 
 
+def validate_module_order(modules: Any, root: Path = ROOT) -> None:
+    """Require the finite Lane A projection in canonical registry order."""
+    registry = read_json(root / "docs/modules/MODULES.json")
+    registered = registry.get("modules")
+    if (
+        registry.get("schema") != "hepta.module-registry.v7"
+        or registry.get("schemaVersion") != 7
+        or registry.get("documentClass") != "canonical_registry"
+        or not isinstance(registered, list)
+        or any(
+            not isinstance(row, dict) or not isinstance(row.get("id"), str)
+            for row in registered
+        )
+    ):
+        raise VerificationError("canonical module registry identity mismatch")
+    identifiers = [row["id"] for row in registered]
+    if len(identifiers) != len(set(identifiers)):
+        raise VerificationError("canonical module registry repeats an identity")
+    expected = [module for module in identifiers if module in EXPECTED_MODULES]
+    if expected != EXPECTED_MODULES:
+        raise VerificationError("Lane A canonical module order mismatch")
+    if (
+        not isinstance(modules, list)
+        or any(not isinstance(row, dict) for row in modules)
+        or [row.get("module") for row in modules] != expected
+    ):
+        raise VerificationError("closed-world module order mismatch")
+
+
+def validate_current_contract(module: str, current: str) -> None:
+    sections = SECTIONS
+    if module == "platform.types":
+        sections = [
+            "## Current executable contract",
+            "## Public symbols and source bindings",
+            "## Authority boundary",
+            "## Canonical compatibility",
+            "## Registry and numeric-profile admission",
+            "## Q32 semantic split",
+            "## Durability and product composition",
+            "## Owned target protocols still source-pending",
+            "## Verification",
+        ]
+    headings = re.findall(r"^## .+$", current, re.MULTILINE)
+    positions = [
+        headings.index(heading) if heading in headings else -1 for heading in sections
+    ]
+    if -1 in positions or positions != sorted(positions):
+        raise VerificationError(
+            f"{module}: current-contract sections missing/out of order"
+        )
+    if module == "platform.types":
+        normalized = re.sub(r"\s+", " ", current)
+        for clause in (
+            "authority-free Rust foundational-contract library",
+            "owns no clock, network, filesystem",
+            "cannot represent a grant",
+            "The module is stateless and has no durability",
+            "`productCallerState` is `not_composed`",
+            "target-host qualification and operator acceptance are separate gates",
+            "no native Rust contract exists for them in this candidate",
+            "ownership does not make the module's full target protocol inventory source complete",
+            "`RandomStreamManifestV1`",
+            "`ExternalSystemManifestV1`",
+            "`SensorCalibrationManifestV1`",
+        ):
+            if clause not in normalized:
+                raise VerificationError(
+                    f"{module}: current-contract boundary missing {clause!r}"
+                )
+
+
 def validate_anchor(owner: str, item: Any, root: Path = ROOT) -> None:
     if not isinstance(item, dict) or not isinstance(item.get("path"), str):
         raise VerificationError(f"{owner}: invalid source/test anchor")
@@ -309,8 +381,15 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "`OperationLedger` and `Outbox` remain deterministic in-memory reference",
+            "pub use durable_store::DurableOperationStore;",
+            "pub use durable_model::OperationIntentV1 as DurableOperationIntentV1;",
+        ],
+        "codex-rs/hepta-operations/src/durable_store.rs": [
+            "pub struct DurableOperationStore",
+            "codex_state::open_durable_sqlite_pool(path, connections)",
+            "MIGRATOR.run(&pool).await",
+            "verify_quick_check(&pool).await",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",

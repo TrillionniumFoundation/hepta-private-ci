@@ -439,6 +439,39 @@ class SourceConformanceTests(unittest.TestCase):
         with self.assertRaisesRegex(LANE_B.Invalid, "delegate-root escape"):
             LANE_B.verify_truth(truth, maps)
 
+    def test_lane_b_source_qualification_rejects_enlarged_owner_roots(self):
+        truth = LANE_B.load(LANE_B.TRUTH)
+        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
+        agentd = next(row for row in maps if row["module"] == "runtime.agentd")
+        agentd["resolvedRoots"].append("codex-rs/hepta-learning-ledger")
+        with self.assertRaisesRegex(LANE_B.Invalid, "registered owner roots mismatch"):
+            LANE_B.verify_truth(truth, maps)
+
+    def test_lane_b_source_qualification_rejects_ambiguous_inventory(self):
+        truth = LANE_B.load(LANE_B.TRUTH)
+        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
+        registry = LANE_B.load(LANE_B.ROOT / "docs/modules/MODULES.json")
+        for duplicate in (
+            registry["modules"][0],
+            {
+                "id": "another.owner",
+                "rootBindings": registry["modules"][0]["rootBindings"],
+            },
+        ):
+            with (
+                self.subTest(duplicate=duplicate),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory)
+                path = root / "docs/modules/MODULES.json"
+                path.parent.mkdir(parents=True)
+                changed = copy.deepcopy(registry)
+                changed["modules"].append(duplicate)
+                path.write_text(json.dumps(changed), encoding="utf-8")
+                with mock.patch.object(LANE_B, "ROOT", root):
+                    with self.assertRaisesRegex(LANE_B.Invalid, "duplicate|ambiguous"):
+                        LANE_B.verify_truth(truth, maps)
+
 
 class DependencyOwnershipTests(unittest.TestCase):
     def test_alias_and_direct_dependency_are_not_arbitrary_ownership(self) -> None:

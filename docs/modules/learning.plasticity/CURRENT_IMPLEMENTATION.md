@@ -30,7 +30,7 @@ override these machine status facts.
 | `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `durableproposalregistry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 2 |
-| `authenticated_product_composition` | `adapter_implemented_called_by_long_lived_agentd_owner_pairwise_roles_and_durable_no_change_terminal_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 6 |
+| `authenticated_product_composition` | `adapter_implemented_called_by_long_lived_agentd_owner_pairwise_roles_and_durable_no_change_terminal_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 8 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
 | `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
 | `agentd_process_bootstrap` | `source_implemented_child_process_reconstructs_owner_native_stores_from_independent_receipts_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs` | 3 |
@@ -83,7 +83,7 @@ override these machine status facts.
 | Signed generator authentication | **Implemented adapter** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
 | Typed owner-evidence resolution boundary | **Implemented with live-frontier/value binding across Dataset, Policy, NDU modulator, broadcast policy, neuron eligibility and exact parameter signals** | `ConcretePlasticityOwnerEvidenceResolverV1`, `PlasticityDynamicOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
-| Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
+| Cryptographically independent evaluator admission | **Implemented adapter** | sealed `ProductQualificationReceiptV1` + current `LearningEvidenceVerifierV1` + exact governed-use evaluator signature |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
 | Product-workspace proposal adapter | **Implemented; update and independently-attested no-admissible-update terminal paths are durable** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | Agentd parameter host adapter entrypoint | **Implemented and called by the long-lived Agentd plasticity owner; not target-host executed/qualified** | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
@@ -179,7 +179,7 @@ product-workspace adapter. It requires, before any durable proposal append:
 3. an `Observer` signature over the selected artifact, artifact-registry binding/head,
    qualification-evidence head, the canonical host-resolved owner-evidence set,
    window, generations, dataset/update/modulator/eligibility digests and generator digest;
-4. signed independent evaluation for every generated update candidate; if the deterministic generator produces no admissible update, a distinct Evaluator must instead sign the exact `NoAdmissibleUpdate` terminal payload and that no-change proposal is durably recorded;
+4. a sealed `ProductQualificationReceiptV1` from the fenced `learning.eval` product runner for every generated update candidate, with exact generator/baseline/objective/dataset/current-trust bindings, owner validation of original signed-evidence lifetimes and scheduled revocations, and a fresh Evaluator signature over that receipt plus the exact governed admission; if the deterministic generator produces no admissible update, a distinct Evaluator must instead sign the exact `NoAdmissibleUpdate` terminal payload and that no-change proposal is durably recorded;
 5. one consistent authenticated evaluator identity across update evaluations or the authenticated no-change terminal disposition;
 6. exact artifact/window/generation lineage and exact durable predecessor;
 7. a governed V2 `evaluation_digest` that durably binds candidate-evaluation evidence,
@@ -196,12 +196,18 @@ instead of trusting caller-supplied role strings.
 
 The durable V2 proposal now carries the governed-admission digest in its existing
 `evaluation_digest` field, so registry recovery retains the authenticated admission
-context instead of only the candidate-evaluation subset. The integration regression
-suite exercises the complete signed adapter path with
-deterministic Ed25519 fixtures and asserts rejection of a tampered artifact-frontier
-witness, generator/evaluator and observer/evaluator controller collisions, owner-evidence
-context substitution, and failed external-anchor persistence. These fixtures establish source behavior only; they are not proof that an
-actual production host invokes the adapter or deployment evidence.
+context instead of only the candidate-evaluation subset. Deterministic Ed25519
+fixtures exercise both owner qualification and the signed adapter path.
+`product_owner_refuses_qualification_with_generator_evaluator_controller_collision`
+checks that the fenced `learning.eval` product runner refuses to issue a sealed
+receipt when Generator and Evaluator share a controller. Separate adapter
+regressions reject Observer/Evaluator controller collisions, tampered qualification
+fields, stale governed-use signatures, changed current trust, a tampered
+artifact-frontier witness, owner-evidence context substitution and failed external
+anchor persistence. Rejected receipt or use evidence leaves the proposal registry
+empty and the external anchor uncommitted. These fixture definitions describe
+source coverage; exact-candidate execution and deployment evidence remain separate
+qualification gates.
 
 ## Rollback protection
 

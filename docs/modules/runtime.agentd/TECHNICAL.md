@@ -50,6 +50,15 @@ None.
 
 The daemon-owned run lifecycle is implemented by [codex-rs/hepta-agentd/src/lane_b_runtime.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime.rs), held by [codex-rs/hepta-agentd/src/state.rs](../../../codex-rs/hepta-agentd/src/state.rs), dispatched through [codex-rs/hepta-agentd/src/state_control.rs](../../../codex-rs/hepta-agentd/src/state_control.rs), and consumed through the typed [codex-rs/hepta-agentd/src/client.rs](../../../codex-rs/hepta-agentd/src/client.rs). The additive local protocol advertises `run.lifecycle/1.1` before clients use these methods. The explicit durable cognitive writer seam remains [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs); it is not installed by normal daemon startup. These are source navigation bindings, not proof that a canonical product caller supplies every authoritative run identity or that deployment qualification has passed. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
 
+Detailed development documentation exists across this guide, the implementation
+dossier, [runtime service extensions](../../../codex-rs/hepta-agentd/RUNTIME_EXTENSIONS.md),
+and [signed ingress and trust configuration](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md).
+The implementation map inventories the selected lifecycle, objective-admission,
+Neuron and shared Replay boundaries. It is not a closed-world inventory of every
+exported method or integration in this crate. Complete rows mean that the listed
+symbols have source mappings, not that every module operation is covered or that
+their product paths have executed successfully.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -86,9 +95,45 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its tasks through the existing `RuntimeTasks` host. The composition registers required tasks and invokes the automation-owned constructor; adding a normal optional task no longer adds a central completion enum or cleanup branch. Optional failure invokes its owner-local quarantine callback, while a failed quarantine, writer error or generation fence stops the host. Retirement uses cooperative cancellation and acknowledged owner cleanup, not a timeout relabeled as success.
 
-Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`; a runner by itself advertises nothing, compatibility `RunStart` remains distinct, and unsigned evaluation input remains rejected.
+Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`; a runner by itself advertises nothing, compatibility `RunStart` remains distinct, and unsigned evaluation input remains rejected. The canonical evaluation input is
+`AgentdQualifiedEvaluationV1`: a sealed `learning.eval::ProductQualificationReceiptV1`
+from the fenced product runner plus the current evaluator's exact use attestation.
+Agentd checks the receipt seal, current trust and owner key/epoch, original signed-evidence
+lifetimes and scheduled revocations through the receipt owner, candidate/objective and run/snapshot/context/candidate-set bindings.
+It cannot qualify caller-supplied metric intervals. The typed host input changed
+from `signed_evaluation` to `qualified_evaluation`; evaluators must sign
+`intelligence_evaluation_binding_payload_v2`. This does not implement a durable
+product-qualification recovery store or establish full runtime activation.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+
+### Executable composition profiles
+
+| Profile or attachment | Existing owner and entrypoint | Current boundary |
+|---|---|---|
+| Ordinary daemon | `main.rs` → `runtime::run` → `RuntimeTasks` | Embeds the existing App Server and attaches available owner stores; no canonical invocation provider or production cognitive writer is constructed implicitly. |
+| Signed Objective admission | `state_control.rs::ObjectiveStart` → `objective_runtime.rs::ObjectiveRuntimeHost::submit` | Publishes `RunStartRecordV1` through the learning-ledger journal, revalidates current AuthBus trust and Fleet generation/fence, then admits the run. |
+| Canonical preparation | Explicit runner plus `AgentdIntelligenceInvocationProviderV1` → `state.rs::start_canonical_intelligence` | Calls the seven existing owners and attaches the prepared context to the sole run coordinator. This preparation does not start a physical Codex turn. |
+| Durable cognitive writer | Explicit `AgentdProductionWriterHost` attachment | Uses the cognitive-store owner and independently verified writer lease; ordinary startup does not establish this attachment. |
+| Neuron and shared Replay | Explicit `AgentdNeuronOwner` / `AgentdSharedReplayHostV1` | Owner APIs are implemented; neither is an automatically activated daemon decision loop or production model-selection authority. |
+
+Supplying the CLI's three intelligence-authority options constructs the runner
+only. Canonical capability advertisement also requires a host-owned invocation
+provider. Wire requests cannot provide the seven owners' profiles, artifacts or
+trust objects. The existing compatibility `RunStart` path remains a trusted local
+host lifecycle API, separate from signed Objective admission.
+
+Canonical generation domains remain distinct. `AgentdIntelligenceInvocationV1::validate`
+requires Body's process generation to equal `identity.spawn_generation`, while the
+durable RunStart names the Fleet Running generation and exact Agent fence.
+`AgentdIntelligenceProductRunnerV1::prepare_for_run_start` checks the run/objective,
+body digest, artifact-set digest and authority epoch against that authenticated
+durable tuple before and after existing owner preparation. It then projects only
+the physical run/context request identity, lifecycle generation, fence and deadline
+to the durable values; canonical Body and owner receipt domains are preserved.
+This source binding does not prove physical execution or a successful signed
+seven-owner `ObjectiveStart` regression. Capability advertisement and component
+preparation tests remain separate from exact-candidate Running-path evidence.
 
 ### Multiscale DecisionCell integration target
 
@@ -185,6 +230,49 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+### Local lifecycle operation surface
+
+The transport types and method variants are defined by
+[hepta-agent-protocol](../../../codex-rs/hepta-agent-protocol/src/lib.rs).
+The socket is a trusted host control surface; capability advertisement identifies
+the API version and does not grant a caller effect authority.
+
+| Operation | Daemon method or embedding API | Implemented meaning |
+|---|---|---|
+| Start | `RunStart` | Validates the current Agent generation/fence and freezes a supplied tuple; it does not authenticate a signed Objective or dispatch a turn. |
+| Signed start | `ObjectiveStart` | Validates the signed structured input, publishes the owner journal record and uses current trust before lifecycle admission. |
+| Attach | `RunAttachContext` | Requires the entire frozen tuple and compilation/context identities to match. |
+| Dispatch marker | `RunMarkDispatched` | Marks the local boundary; the caller still owns the real turn invocation. |
+| Cancel | `RunCancel` | Cancels before dispatch or records a pending post-dispatch cancellation; it does not itself send App Server interrupt. |
+| Observe | `RunObserveTerminal` | Accepts the trusted host caller's phase/observation and preserves post-dispatch uncertainty; it is not a signed provider receipt. |
+| Inspect / release | `RunStatus` / `RunReleaseClosed` | Reads the local receipt / removes a closed record at its exact revision. `Indeterminate` is unresolved and cannot be released as closed. |
+| Recover | `AgentRunCoordinator::recover_indeterminate` | Explicit component API only. No recovery method is advertised by the daemon wire or typed client. Authentication of the external durable owner and daemon composition remain required work. |
+
+The current lifecycle error path maps `AgentRunError` to a protocol rejection
+message. Consumers must read the returned receipt and its revision, cancellation
+deadline and phase; neither an RPC reply nor a locally supplied terminal flag
+establishes an external effect result independently.
+
+#### Recipient identity and transport compatibility
+
+New `AgentdClient` requests include `target_agent_id=Some(expected_agent_id)`;
+the receiver rejects a mismatch before method dispatch. An absolute custom socket
+path remains supported by the client, including a path alias: it is the receiver
+identity check, not the pathname, that prevents an A-targeted request from mutating
+B. The server itself binds only its registered owner-layout control socket.
+Unix clients and servers check the kernel-reported peer OS user in addition to
+private socket permissions. This authenticates the OS user, not an individual
+Agent or a hostile process running under that same user.
+
+The target field is additive and optional for legacy requests. A legacy request
+without it retains the trusted-local compatibility semantics and does not prove
+recipient isolation. A new client connecting to an older strict decoder fails
+closed on the unknown field; there is no automatic identity-free downgrade.
+The current Windows transport retains its existing profile until equivalent peer
+identity is available. Server connection tasks belong to one `JoinSet` and are
+stopped and joined when control ingress retires. Aborting a connection does not
+cancel or settle a durable effect already owned by another task.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -209,7 +297,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 `AgentdState` owns exactly one mutex-protected `AgentRunCoordinator` for the process generation. Its active-run ceiling is the supervisor/Fleet `ResourceBudget.max_concurrent_turns` for this Agent (within the supported local bound), and it retains at most 1024 records until the terminal consumer explicitly releases a closed record. The coordinator freezes request/objective/body/artifact digests together with authority epoch and deadline; context attachment must repeat that complete tuple exactly. Attachment and dispatch re-check the deadline, cancellation records a bounded reason, and the runtime monitor continuously advances deadlines. Post-dispatch cancellation has a 3-second acknowledgement deadline; if no terminal owner observation arrives, the run becomes `Indeterminate`. Terminal observations preserve the dispatch-boundary distinction, and `RunReleaseClosed` removes a closed record only with its exact expected revision. Existing identical operations are idempotent; reused identities with changed semantics conflict.
 
-The run map is intentionally ephemeral and is not a second durable execution ledger. After process loss an external durable execution owner may supply the exact prior snapshot/revision/context/receipt identity through the recovery method; Agentd rehydrates it only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
+The run map is intentionally ephemeral and is not a second durable execution ledger.
+The component recovery method accepts an exact prior snapshot/revision/context/receipt
+identity and rehydrates it only as `Indeterminate`. That method validates structure
+and identity; it does not authenticate the external durable execution owner and is
+not composed into daemon ingress. A product recovery caller must establish that
+trust and preserve the prior dispatch identity. An absent local record cannot prove
+completion or authorize redispatch.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -217,11 +311,132 @@ The run map is intentionally ephemeral and is not a second durable execution led
 
 The daemon coordinator exposes the owner-internal `start_revalidated_run_start` bridge for a `RunStartRecordV1` that has already been revalidated by the product owner against current trust. The bridge fixes the durable-owner → daemon-owner mapping: `admission.admitted_source_digest` is the runtime request identity, and objective/body/artifact/authority/generation/fence/deadline are copied from the durable record. `ExplicitAbstain` is terminal at objective admission and is never inserted as an executable run. A retained journal record is not, by itself, proof that its signer remains current; raw-record authentication is intentionally outside this bridge.
 
+The current caller is implemented: `AgentdState::start_current_run_start_record`
+rechecks current AuthBus trust, Fleet generation and the Agent's exact fence twice
+before projection. `ObjectiveRuntimeHost::submit` uses it in compatibility mode;
+canonical preparation revalidates the same durable input after asynchronous owner
+work. `ObjectiveRuntimeHost::reconcile` skips stale, expired, abstained or revoked
+records. In a configured canonical profile, startup waits for the authenticated
+Objective retry instead of silently admitting a legacy compatibility record.
+The journal proves Objective publication, not a physical turn's dispatch or
+terminal state; complete product Decision/Outcome recovery remains separate.
+
+Admission additionally requires the live `Running` lifecycle, App Server readiness,
+critical owner stores, revocation readiness, required ports, open admission and no
+generation fence. The final lifecycle mutation holds the runtime admission lock
+through the run-coordinator mutation, so a stale readiness snapshot cannot admit
+a run after local drain closes admission. Reconciliation remains a distinct path
+for existing runs. These local locks do not freeze an external trust file or
+provide cross-owner atomicity.
+
+The runtime-to-run lock order serializes local admission with drain; it does not
+make asynchronous owner preparation plus run/context insertion one transaction.
+The prepared immutable tuple uses one admission time for local start and attachment,
+while prior durable Objective publication and owner preparation retain their own
+transaction boundaries. An admission or changed-context retry error does not roll
+back those owners' facts and must remain an explicit incomplete outcome. It cannot
+be relabelled completed preparation or external dispatch; an exact retry preserves
+the original run identity and any existing local context.
+
+### Bounded synchronous effect-owner bridge
+
+The existing HTTP effect host in `automation_effect_host.rs` runs its complete
+synchronous owner/authority/provider bridge inside `spawn_blocking`, with at most
+four admitted provider workers. The worker retains its permit and final-use
+dispatch guard after its control caller stops awaiting; cancellation of that
+caller does not undo a dispatched provider effect. Trust is reread after worker
+scheduling and a fresh dispatch clock is used before acquiring authority. Lookup
+uses the same bound and keeps the effect `Indeterminate` when capacity or a trusted
+observation is unavailable. Provider observation is checked against the owner
+fence at observation time.
+
+Before its first durable/provider await, `reserve_automation_effect_worker`
+rechecks the complete live readiness predicate while holding the same runtime lock
+used by drain observations and synchronously reserves an attached host worker
+slot. The reservation is a non-cloneable, host-bound owned value consumed by
+`execute_reserved` or `reconcile_reserved`; direct host wrappers are test-only.
+Its occupied slot is visible before durable admission and stays visible while
+awaiting or running provider work. Drain therefore cannot observe zero workers
+and then admit a late worker through a stale copied readiness state.
+
+The host binds the full revocation head, rejects changed contents at an unchanged
+frontier, and bounds reads of the opened protected configuration/revocation files
+while checking object identity. This keeps synchronous I/O off the Tokio control
+executor and preserves durable uncertainty. It is not cancellation-safe external
+effect rollback, cross-owner atomic shutdown or independently provisioned trust.
+The current host drain snapshot requires no local effect workers, no durable armed
+or indeterminate effects, no automation blockers and actual App Server drain
+acknowledgement. The reservation closes this registered HTTP host's late-admission
+window. Normal App Server drain still closes all RPC admission. Its original
+`AppServerDrainHandle` now retains an embedding-only historical observation
+capability, enabled only after request/thread-start background tasks and every
+thread writer successfully join. A timeout leaves the acknowledgement false.
+`observe_exact_submission` uses the original `StateRuntime` and pure queue
+SELECTs, rechecks the selected rollout pointer before and after the read, and
+cannot repair metadata, reopen a store, reserve a message or start a turn.
+The original State pool's cold connections no longer set `auto_vacuum`: owner
+startup initializes only a zero-page database to `INCREMENTAL` in a deferred
+snapshot before enabling WAL, preserving existing nonempty `NONE` / `FULL` /
+`INCREMENTAL` layouts. The pool retains five connections, `NORMAL` synchronous
+mode, foreign keys and a five-second busy timeout.
+[Connection source tests](../../../codex-rs/state/src/sqlite_connection_tests.rs)
+exercise five cold connections under an external writer; [observer source
+tests](../../../codex-rs/state/src/runtime/queued_client_binding_observation_tests.rs)
+exercise actual cold queue-binding and rollout-path SELECTs without changing the
+stored snapshot. These references do not establish native execution success.
+
+The historical scanner binds the owning thread, exact client ID and payload.
+For a persisted turn, only matching `TurnComplete` / `TurnAborted` records prove
+a terminal outcome; recovery-unready and restart records clear an older terminal
+observation. Without a persisted turn join, an exact queue `Cancelled` tombstone
+can report pre-turn cancellation. A matching persisted join takes precedence,
+and incomplete history remains `Unknown`. Plain
+and compressed scans require a complete record stream and are bounded at 1 MiB
+per record, 32 MiB of scanned bytes and 65,536 lines. The four-second caller
+deadline bounds waiting; it cannot cancel arbitrary kernel or network-filesystem
+I/O. A partial or over-limit scan returns `Unknown` instead of trusting a terminal record from a
+prefix. Agentd uses this capability for settlement while Draining, rechecks
+Running admission before each subsequent dispatch, and never requeues an unknown
+effect. Unresolved history does not starve later admitted drain blockers.
+
+The bounded Rollout reader opens Unix files with `O_NOFOLLOW | O_NONBLOCK`,
+requires a regular opened handle, and compares its device/inode, length and
+nanosecond modification/change times with the selected path snapshot. At complete
+EOF it rechecks both the retained handle and selected path; drift invalidates the
+scan. This closes the local FIFO-replacement blocking-open leak. Plain and zstd
+history retain stable parent-alias compatibility; a leaf symlink is rejected.
+Compressed history additionally has a 64 MiB initial encoded-file limit. The
+decoder reads the same verified file within its initial length, at most 128 KiB
+per physical read. After that budget is exhausted, a one-byte probe must find
+real EOF; any extra byte invalidates the scan rather than turning a terminal
+prefix into completion. A synchronous four-second worker budget starts at public
+open and is checked before and after each encoded read, including the probe.
+These cooperative checks cannot force cancellation of blocked kernel or
+network-filesystem I/O. The plain reader and public API are unchanged.
+[Reader source regressions](../../../codex-rs/rollout/src/bounded_reader_tests.rs)
+cover FIFO replacement with bounded cleanup, parent aliases, leaf symlinks and
+completed-prefix invalidation after append or path replacement, plus appended
+empty frames, the encoded metadata cap, valid multi-frame EOF and an expired
+worker deadline before any physical read. These source
+cases still require exact-candidate execution evidence.
+
+This closes the missing source observation path after normal RPC shutdown.
+Native and full socket/daemon drain execution evidence remain separate;
+target-host shutdown and additional downstream-owner drain/recovery contracts
+still require their own qualification.
+
 ## 8. Failure semantics, recovery and rollback
 
 Run deadlines remain live after admission: expiration before dispatch becomes a local terminal cancellation; expiration after dispatch moves the run to `Cancelling` and still requires owner terminal observation. Shutdown closes new admission before teardown, converts pre-dispatch work to local cancellation, moves dispatched work to cancelling, and keeps the control path running for a bounded drain. After the drain deadline, unresolved dispatched/cancelling work becomes `Indeterminate`; a second bounded reconciliation window accepts exact terminal observations. If uncertainty remains, shutdown reports recovery-required rather than fabricating success/failure.
 
-Recovery after process loss is explicit and non-authoritative: a durable external owner must provide the exact prior operation identity, and the new Agentd process can only rehydrate it as `Indeterminate`; the recovery API cannot redispatch. The local control server also distinguishes saturation from disappearance by returning a typed overload/retry frame instead of dropping the connection. `run.lifecycle/1.1` adds explicit closed-record release and exposes the pending cancellation-ack deadline in receipts so callers can reconcile rather than guess.
+Recovery after process loss is an explicit component seam: a trusted embedding
+caller must provide the exact prior operation identity, and the coordinator can
+only rehydrate it as `Indeterminate`. The daemon has no authenticated recovery
+ingress or automatic execution-owner reconstruction yet; the component API cannot
+redispatch. The local control server distinguishes saturation from disappearance
+by returning a typed overload/retry frame instead of dropping the connection.
+`run.lifecycle/1.1` adds explicit closed-record release and exposes the pending
+cancellation-ack deadline in receipts so callers can reconcile rather than guess.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -231,6 +446,71 @@ Owned threat entries:
 
 None.
 
+This registry fact does not mean the module has no threats. Its concrete host
+boundaries require the following controls and review:
+
+| Boundary | Current control | Remaining trust or composition requirement |
+|---|---|---|
+| Local control socket | Private owner socket, bounded frame/connections, exact Agent generation/fence | Treat socket writers as trusted host code. Owner-only Unix permissions do not isolate hostile code running as the same OS user. |
+| Signed Objective publication | Current issuer signature/expiry, replay frontier, durable journal and final-use trust/fence checks | Configure the real issuer/profile and retain their owner state across recovery; the publication grants no effect authority. |
+| Local terminal observation | Exact run/revision and permitted lifecycle transition | The caller must be the trusted execution owner; the supplied boolean is not independently authenticated provider evidence. |
+| Component recovery | Exact frozen tuple, prior revision, context identities and `Indeterminate` only | Compose an authenticated durable-owner recovery path before using it for daemon restart recovery. |
+| Private workspace / stores | Canonical manifest workspace, generation checks and existing owner stores | Test the selected OS/process profile; shared UID, worktrees and reusable caches alone do not prove hostile-Agent isolation. |
+
+The canonical intelligence freshness reader in `intelligence_authority_file.rs`
+reads at most 64 KiB plus one overflow-sentinel byte from the same opened handle.
+On Unix it validates file identity/version and the canonical namespace chain
+before and after reading; an immediate writable parent is rejected, and an upper
+writable ancestor is accepted only under the trusted sticky-directory policy.
+Stable canonical aliases remain compatible, but alias or parent-object replacement
+during the read fails closed. The runner rejects weak Ed25519 verifier keys and
+uses strict signature verification before returning current owner state.
+
+The private `OperatorNamespace` policy is also applied at file-open boundaries for
+AuthBus and Evidence trust, recovery frontiers, replay checkpoints, Objective
+journals, explicit effect configuration and plasticity bootstrap files. Startup
+checks the Fleet root and the selected home/run writer namespace. Plasticity
+mutable bootstrap opens additionally require one link and prohibit group/world
+writes on Unix, checking the path before open and the handle/path after open;
+newly created mutable handles receive the same check. Read-only bootstrap inputs
+retain their existing permissions and link contract. These open-time checks do
+not replace the native owner's receipt, anchor, signature or recovery checks.
+Prompt state
+uses descriptor-bound, private regular files before truncation or publication.
+The optional Browser/Servo profile hashes artifacts incrementally with an 8 KiB
+buffer and a size-limited handle, then launches the verified canonical paths.
+These checks reject unsafe writable ancestors; trusted sticky ancestors remain
+compatible. They do not attest a child process's loaded image.
+
+Fleet's owner now checks every registered peer subtree before legacy migration
+or control-file reads. Its private `control_file.rs` binds custody to the Fleet
+root owner (and root on Unix), rather than the reader's effective UID or the
+individual file's self-declared owner. It rechecks ancestor directory and opened
+file identity, permissions and bounded bytes; Unix nonblocking/no-follow opens
+reject a regular-file replacement by a FIFO or final symlink. Directory link
+counts may change normally, and Fleet's existing hard-link publication/recovery
+remains supported. Text control reads are capped at 1 MiB; release-manifest JSON
+reads retain their 32 KiB bound. Catalog hashing streams the same inspected handle against
+its initial length. Unsafe peer namespaces now fail before migration side
+effects, closing the prior whole-catalog source gap. Selected-platform execution
+and custody qualification remain separate.
+
+This is a bounded freshness observation within the trusted operator-UID/root
+boundary. It neither isolates malicious same-UID/root code nor holds a namespace
+lock or prevents an authority update after the observation. Non-Unix targets keep
+their existing regular-file/alias profile and available version checks; Unix inode
+and namespace guarantees are not claimed there. Reader and signature source tests
+must still execute for the selected candidate before these controls are qualified.
+
+The independently retained AuthBus replay checkpoint also revalidates private file
+and parent ownership/protection for every read/publication, checks the opened file
+against the path object, bounds read bytes, and rejects hard-link or namespace
+substitution. Replacement writes and syncs a create-only private temporary file,
+rechecks the exact predecessor, renames it and syncs the parent. A failed temporary
+creation does not remove another publisher's file. The checkpoint remains a
+Unix-specific owner boundary; a failed or ambiguous publication requires exact
+reconciliation rather than a new replay identity.
+
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
@@ -239,12 +519,69 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs) and the linked implementation components.
 
+| Enforced local bound | Current value | Owning source |
+|---|---|---|
+| Daemon active runs | Fleet `max_concurrent_turns`, validated in `1..=32` | `state.rs`, Fleet `ResourceBudget` |
+| Retained run records | 1024; closed records require explicit release | `lane_b_runtime.rs` |
+| Run identity / cancellation reason | 128 / 512 bytes | `lane_b_runtime.rs` |
+| Control connections / serialized frame | 32 / 65,536 bytes | `control.rs`, `hepta-agent-protocol` |
+| Control exchange / overload-write timeout | 2 seconds / 50 milliseconds | `control.rs` |
+| Cancellation acknowledgement | 3 seconds after dispatched cancellation | `lane_b_runtime.rs` |
+| Deadline/generation monitor | 50 millisecond polling | `runtime.rs` |
+| Run drain / later reconciliation window | 5 seconds / 2 seconds | `runtime.rs` |
+| Task shutdown acknowledgement | 3 seconds | `runtime.rs` |
+| Synchronous HTTP effect dispatch / lookup workers | 4 | `automation_effect_host.rs` |
+
+The reusable coordinator supports up to 256 active runs; the daemon uses the
+stricter Fleet budget. `Indeterminate` runs continue consuming active capacity.
+These constants describe enforcement, not throughput, fairness or target-host SLO
+measurements. A dropped client response after a durable publication requires an
+exact identity retry/reconciliation rather than a new run identity.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
 codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. `HEPTA_COGNITIVE_RETRIEVAL_MODE` is a strict product-profile selector: absent/`compatibility` selects the compatibility path, `hnmf-required` selects HNMF-required mode, and any other value is rejected. The ordinary binary does not mint a `CurrentMemoryRetrievalContext`, so HNMF-required startup without an externally composed current context fails closed. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
 The local control capability endpoint advertises the additive run lifecycle surface. SIGINT, SIGTERM, and supervisor Draining close run admission before teardown; terminal observation remains possible during the bounded drain/reconciliation window. An App Server interruption acknowledgement alone is never terminal task completion.
+
+Recipient identity, absolute custom-path compatibility, additive target-field
+rollout and Unix peer-user limits are specified in Section 5. The server validates
+the target before mutation; a response-only identity check would be too late.
+
+Control ingress retirement cancels and joins its admitted connection tasks before
+removing the socket. A dispatched effect's blocking worker can outlive that awaiter
+and retain cloned owner state, its permit and dispatch guard; connection retirement
+does not prove every durable-owner worker has stopped. Existing-socket probing has
+a bounded timeout. The live admission and runtime-to-runs lock conditions in
+Section 7 apply to run start, context attachment and dispatch marking; status,
+cancellation and terminal reconciliation retain their distinct drain-time
+availability. Error responses report the owner's lifecycle generation instead of
+copying a request-supplied generation.
+
+Supervisor bootstrap supplies `HEPTA_FLEET_ROOT`, `HEPTA_AGENT_ID`,
+`HEPTA_AGENT_GENERATION`, `HEPTA_AGENT_HOME`, `HEPTA_AGENT_RUN_ROOT` and
+`CODEX_HOME`. The process must start in the manifest's canonical workspace and at
+the expected `Starting` generation, with the exclusive writer lock available.
+AuthBus trust and external replay-checkpoint files are configured together.
+An Objective profile requires AuthBus configuration. Intelligence authority
+file/signer/verifying-key options are all-or-none; they construct a runner, while
+the host still supplies the invocation provider. HNMF-required mode requires its
+current retrieval-context attachment. Startup rejects inconsistent configuration
+instead of manufacturing trust, current context or writer authority.
+
+`main.rs` dispatches helper re-execs through `arg0_dispatch_or_else` before loading
+the daemon configuration, validating the Fleet startup state or acquiring the
+daemon writer lock. Ordinary daemon startup performs those checks inside its
+continuation; a helper must not be mistaken for a second daemon owner.
+
+Inspect `Capabilities`, `Health` and `Readiness` before admission. For post-dispatch
+shutdown, retain the run identity and exact receipt revision, deliver only actual
+owner terminal observations during reconciliation, and preserve recovery-required
+outcomes after the bounded windows. Do not use `RunReleaseClosed` to discard an
+unknown effect, erase a journal to free capacity, or infer turn completion from an
+interrupt acknowledgement. The selected execution owner must supply restart
+reconciliation; the local lifecycle map is not a durable dispatch ledger.
 
 Current operating and state-format references:
 
@@ -262,6 +599,16 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs) covers complete frozen-tuple binding, post-admission deadlines, reasoned cancellation, drain and explicit indeterminate recovery.
 - [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs) exercises the lifecycle methods through the real daemon control dispatch and verifies capability advertisement and terminal reconciliation during drain.
 - [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs) verifies that bounded shutdown keeps reconciliation live until terminal observation.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs) covers durable exact replay, protocol identity, and revoked/stale trust; `state_isolation_tests.rs` covers current-trust projection into the daemon coordinator.
+- [codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs) covers signed evaluation and owner preparation; it does not by itself establish a configured ObjectiveStart-to-provider process path.
+- [codex-rs/hepta-agentd/src/intelligence_objective_ingress_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_objective_ingress_tests.rs) defines `configured_running_objective_reaches_seven_owners_and_exact_durable_context_receipt` using actual Config/Fleet/writer lock, signed AuthBus input, durable Objective journal and the seven owner algorithms. It compares the complete `ContextAttached` receipt to the durable Running-generation tuple while Body retains its process generation. `objective_binding_rejects_mixed_lifecycle_body_epoch_and_artifacts` covers tuple substitution. These are source test identities, not pass receipts or physical provider execution.
+- [codex-rs/hepta-agentd/src/control_tests.rs](../../../codex-rs/hepta-agentd/src/control_tests.rs) covers receiver target rejection, owner-generation errors, connection retirement and backpressure; endpoint identity remains subject to the stated OS-user trust boundary.
+- [codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs) covers bounded same-handle reads, namespace/version drift and weak-key/signature rejection.
+- [codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs) covers permission/link/directory drift, exact predecessor replacement and conflicting temporary-file ownership.
+- [codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs](../../../codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs) covers unsafe ancestor/parent rejection, native snapshot substitution and namespace rechecks, plus `mutable_bootstrap_files_reject_group_or_world_write_before_owner_callback` and `hardlinked_mutable_bootstrap_file_is_rejected_before_owner_callback`. Mutable owner callbacks are rejected before unsafe input reaches them; read-only permission/link compatibility remains covered. Source cases require exact-candidate execution.
+- [codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs](../../../codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs) includes `effect_reservation_is_visible_before_durable_admission_and_drain_closes_the_gate`, exercising the actual Fleet/Agentd/Cognitive readiness gate, pre-durable worker visibility, rejected admission during drain and retained old reservation. It never fabricates a physical App Server drain acknowledgement.
+- [codex-rs/hepta-agentd/src/automation_drain_recovery_tests.rs](../../../codex-rs/hepta-agentd/src/automation_drain_recovery_tests.rs), [App Server owner tests](../../../codex-rs/app-server/src/historical_observation_tests.rs), [queue history tests](../../../codex-rs/ext/queue/src/historical_observation_tests.rs) and [StateRuntime read-only binding tests](../../../codex-rs/state/src/runtime/queued_client_binding_observation_tests.rs) cover exact historical settlement, incomplete-history uncertainty, original-owner custody, no metadata repair, and progress past indeterminate history. They are owner/DB/history cases rather than a complete socket/daemon drain receipt.
+- [Fleet peer namespace tests](../../../codex-rs/hepta-fleet/src/registry_namespace_tests.rs) and [control-file tests](../../../codex-rs/hepta-fleet/src/control_file_tests.rs) cover unsafe peers before migration, root/nonroot custody, final FIFO/symlink replacement, bounded reads and retained hard-link recovery. Root/nonroot execution requires the stated Unix privilege fixture; source presence is not target-platform qualification.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
 
@@ -392,7 +739,13 @@ The following additional work packages are source-planning envelopes introduced 
 
 The default `runtime.rs` path registers long-lived components through the existing `RuntimeTasks` host. Required component exit, generation fencing and rejected quarantine remain host-fatal; an optional scheduler failure removes its owner-local routes while unrelated App Server traffic remains available. Service retirement uses a child cancellation token, owner drain acknowledgement and a monotone service generation. Ordinary host shutdown must not permanently retire the durable timer. The real-process regression is `codex-rs/hepta-agentd/tests/optional_module_restart.rs`; shutdown outcome regressions are in `tests/runtime_shutdown_outcomes.rs`. These tests do not establish general dynamic code loading or authorize writer transfer.
 
-The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
+The configured product profile routes authenticated `ObjectiveStart` through the
+canonical runner and a host-owned invocation provider, then admits the prepared
+envelope and context through the existing Agentd lifecycle. Bare/compatibility
+profiles do not install that provider, do not advertise `intelligence.canonical_v1`,
+and compatibility `RunStart` is never counted as canonical execution. Real provider
+dispatch, an authenticated durable execution-owner recovery caller, durable product
+Decision/Outcome recovery and target-host qualification remain separate boundaries.
 
 ## 17. Source implementation receipt
 
@@ -404,8 +757,13 @@ This receipt records repository source bindings for the current documentation ca
 | `start_run` | `pub fn start_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
 | `cancel_run` | `pub fn cancel_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
 | `attach_context` | `pub fn attach_context(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `mark_dispatched`, `observe_terminal`, `recover_indeterminate`, `release_closed` | Corresponding `AgentRunCoordinator` methods | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `lane_b_runtime_tests.rs`; daemon control cases exclude component-only recovery |
+| Current-trust durable projection | `start_current_run_start_record` | `codex-rs/hepta-agentd/src/state.rs` | `codex-rs/hepta-agentd/src/state_isolation_tests.rs` |
+| Signed Objective submit/reconcile | `ObjectiveRuntimeHost::submit`, `reconcile` | `codex-rs/hepta-agentd/src/objective_runtime.rs` | `codex-rs/hepta-agentd/src/objective_runtime_tests.rs` |
+| Configured canonical admission / durable binding | `start_canonical_intelligence`, `prepare_for_run_start` | `codex-rs/hepta-agentd/src/state.rs`, `intelligence_product_runner.rs` | `intelligence_objective_ingress_tests.rs` defines signed Running admission and mixed-tuple rejection; execution receipts and physical provider qualification remain separate |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
+- `currentSourceEvidence` retains the historical lifecycle/projection provenance anchor. It is not an exact-head execution receipt or a claim that later Objective/canonical source is included in that anchor. Strict migration rebinds `sourceBase` and `sourceObjects` to the actual committed source observation; verification checks that mapped bytes still match the candidate. The qualification workflow's executed candidate identity and results remain separate evidence.
+- The map's `implementedOperationMappingComplete` refers only to its explicit inventory. `nativeSourceMappingComplete=false` and `closedWorldPublicFunctions=false` avoid asserting whole-crate API coverage.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Daemon composition and the explicitly configured preparation path have source callsites. Full canonical product execution, production implementation, deployment qualification, independent acceptance, activation and release remain unestablished until their separate evidence gates pass.

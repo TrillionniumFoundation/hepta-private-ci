@@ -4,8 +4,8 @@
   "module": "learning.plasticity",
   "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "3ae838dda71ad66a6ac370fcca6f4c23a843e416",
+    "tree": "8cb432f5fa0bf39b6415c346b3222f1402ec1e80"
   },
   "current": {
     "sourceRootPresent": true,
@@ -87,8 +87,10 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
       "tests": [
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
-        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_generator_evaluator_controller_collision",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_owner_refuses_qualification_with_generator_evaluator_controller_collision",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_observer_evaluator_controller_collision",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_tampered_qualification_and_stale_evaluator_use_before_append",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_changed_current_trust_before_append",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::durable_v2_evaluation_digest_binds_governed_admission_context",
         "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs::observer_and_evaluator_require_pairwise_independence",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::no_admissible_update_is_independently_attested_and_durably_recorded"

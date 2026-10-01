@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
-    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b"
+    "commit": "3ae838dda71ad66a6ac370fcca6f4c23a843e416",
+    "tree": "8cb432f5fa0bf39b6415c346b3222f1402ec1e80"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -167,7 +167,7 @@
     },
     {
       "operation": "automation_operation_consumer",
-      "nativeSymbol": "AutomationStore::dispatch_authorized_effect",
+      "nativeSymbol": "AutomationStore::execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "state": "second_operation_intent_consumer_source_implemented",
       "authority": "kernel.authority_final_use_consumed",
@@ -299,7 +299,7 @@
       },
       {
         "path": "codex-rs/hepta-agentd/src/config.rs",
-        "blobSha": "afb9cac35db1c57d58edb3b31c6beee31bab2560"
+        "blobSha": "0efb00e3de063258de6142fd7446094152215a14"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime.rs",
@@ -307,7 +307,7 @@
       },
       {
         "path": "codex-rs/hepta-agentd/src/state.rs",
-        "blobSha": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+        "blobSha": "e21951f756e6612c8bd602bd62a70548929fb34e"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -315,13 +315,13 @@
       },
       {
         "path": "codex-rs/hepta-agentd/src/config_tests.rs",
-        "blobSha": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
+        "blobSha": "715f31c1464136e56f2f764687013bfeb12b80b6"
       }
     ]
   },
   "observedAtHead": {
-    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
-    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b"
+    "commit": "3ae838dda71ad66a6ac370fcca6f4c23a843e416",
+    "tree": "8cb432f5fa0bf39b6415c346b3222f1402ec1e80"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -338,11 +338,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "05e4358201b8e89cff1a949517238c4536456b47"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
-      "object": "72d7262b40fe7970ae0cead431aae5d32f68295f"
+      "object": "cf491db8bc041d49c8298825f529838aa1e46038"
     },
     {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
@@ -358,7 +358,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "dd7d26214bf2bb1b97f6dc578475bd13daf89b46"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -398,7 +398,7 @@
     },
     {
       "path": "codex-rs/hepta-operations",
-      "object": "8455e7543eea71b9dda8eb9675e5d1d30f4659a4"
+      "object": "9627a35615e7a9c30909f0090df45720ee35230a"
     },
     {
       "path": "codex-rs/hepta-operations/src/ledger.rs",
@@ -422,7 +422,7 @@
     },
     {
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
-      "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
+      "object": "29d0c85fb5cac90b325c3c9ef62ee7de455b110c"
     }
   ]
 }

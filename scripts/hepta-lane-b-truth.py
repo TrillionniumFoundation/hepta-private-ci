@@ -591,24 +591,27 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         ),
         "source boundary completion contradicts module gaps or incomplete modules",
     )
-    roots = {row["module"]: row["resolvedRoots"] for row in maps}
-    # A runtime module can delegate to another registered lane. Resolve only
-    # the named schema owner; lane membership is not repository ownership.
-    from hepta_module_source_roots import resolve_source_roots
+    # A runtime module can delegate to another registered lane. The canonical
+    # inventory determines each owner; lane membership does not confer ownership.
+    from hepta_module_source_roots import registered_source_roots
 
-    registered = load(ROOT / "docs/modules/MODULES.json")["modules"]
-    owner_modules = {entry["id"]: entry for entry in registered}
-    need(len(owner_modules) == len(registered), "duplicate module owner")
+    try:
+        roots = registered_source_roots(ROOT)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise Invalid(f"registered owner inventory: {exc}") from exc
     for row in maps:
+        need(row["module"] in roots, f"{row['module']}: unregistered module owner")
+        need(
+            row["resolvedRoots"] == roots[row["module"]],
+            f"{row['module']}: registered owner roots mismatch",
+        )
         for operation in row["operations"]:
             for delegate in operation.get("delegatedCallees", []):
                 owner = delegate.get("ownerModule")
                 need(
-                    owner in owner_modules,
+                    owner in roots,
                     f"{row['module']}: unregistered delegated owner",
                 )
-                if owner not in roots:
-                    roots[owner] = resolve_source_roots(ROOT, owner_modules[owner])
     operations = tests = 0
     for row in maps:
         module = row["module"]

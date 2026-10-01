@@ -145,6 +145,44 @@ fn revocation_is_scoped_to_objective_and_subject() {
 }
 
 #[test]
+fn live_selection_and_revocation_require_a_recorded_projection() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let mut journal = NduProjectionJournalV1::new();
+    assert_eq!(
+        journal
+            .select_projection(digest("selection"), objective, subject, projection)
+            .expect_err("unrecorded projection cannot be selected"),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+    assert_eq!(
+        journal
+            .revoke_projection(digest("revocation"), objective, subject, projection)
+            .expect_err("unrecorded projection cannot be revoked"),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+    assert!(journal.entries().is_empty());
+    assert_eq!(journal.selected_projection_digest(objective, subject), None);
+
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-identity"),
+        objective,
+        subject,
+        projection,
+    ));
+    must(journal.select_projection(digest("selection"), objective, subject, projection));
+    assert_eq!(
+        journal.selected_projection_digest(objective, subject),
+        Some(projection)
+    );
+    must(journal.revoke_projection(digest("revocation"), objective, subject, projection));
+    assert_eq!(journal.selected_projection_digest(objective, subject), None);
+    assert_eq!(journal.entries().len(), 3);
+}
+
+#[test]
 fn revocation_requires_a_recorded_projection() {
     let mut journal = NduProjectionJournalV1::new();
     assert_eq!(

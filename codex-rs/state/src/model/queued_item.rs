@@ -23,6 +23,17 @@ pub enum QueuedClientBindingState {
     Cancelled,
 }
 
+/// Read-only snapshot of an exact client-message binding. A pending snapshot
+/// grants no admission or dispatch authority; absence must remain uncertain.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum QueuedClientBindingObservation {
+    Reserved,
+    Queued(QueuedUserSubmissionRecord),
+    Dispatching(QueuedUserSubmissionRecord),
+    Persisted { turn_id: String },
+    Cancelled,
+}
+
 impl QueuedClientBindingState {
     pub(crate) fn parse(value: &str) -> Result<Self> {
         match value {

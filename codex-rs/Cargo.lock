@@ -3532,6 +3532,7 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -3721,6 +3722,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
  "ed25519-dalek",
+ "libc",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4055,6 +4057,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "sqlx",
  "tempfile",
@@ -5001,6 +5004,7 @@ dependencies = [
  "codex-state",
  "codex-utils-absolute-path",
  "codex-utils-path",
+ "libc",
  "pretty_assertions",
  "regex",
  "serde",

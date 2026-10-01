@@ -22,7 +22,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.matrix = verify.read_json(verify.MATRIX_PATH)
         cls.capability_map = verify.read_json(verify.CAPABILITY_MAP_PATH)
-        cls.operations_capability_map = verify.read_json(verify.OPS_CAPABILITY_MAP_PATH)
+        cls.operations_capability_map = verify.read_json(
+            ROOT / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json"
+        )
 
     def test_exact_repository_truth_is_valid(self) -> None:
         verify.validate_matrix(self.matrix)
@@ -44,34 +46,40 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         mapped = [
             (entry["module"], entry["summary"])
             for entry in self.capability_map["entries"]
-            if entry["module"] != "kernel.operations"
         ]
-        mapped.extend(
-            ("kernel.operations", entry["summary"])
-            for entry in self.operations_capability_map["entries"]
-        )
-        mapped.append(
-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
-        )
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(len(mapped), len(set(mapped)))
         self.assertCountEqual(mapped, declared)
-        self.assertEqual(
-            self.operations_capability_map["entryCount"],
-            len(self.operations_capability_map["entries"]),
-        )
 
-    def test_operations_cannot_claim_unimplemented_durability(self) -> None:
+    def test_component_durable_mapping_is_separate_from_lane_capability_receipt(self) -> None:
+        extension = self.operations_capability_map
+        self.assertEqual(extension["schemaVersion"], 1)
+        self.assertEqual(extension["module"], "kernel.operations")
+        self.assertEqual(extension["role"], "durable_current_capability_extension")
+        self.assertEqual(extension["entryCount"], 5)
+        self.assertEqual(extension["entryCount"], len(extension["entries"]))
+        self.assertEqual(len({row["capabilityId"] for row in extension["entries"]}), 5)
+        for entry in extension["entries"]:
+            self.assertEqual(entry["durability"], "sqlite_wal_full_transactional")
+            self.assertEqual(entry["activation"], "host_composition_required")
+            self.assertIsNone(entry["productionCaller"])
+            self.assertEqual(entry["receiptStatus"], "native_workflow_required")
+            for field in ("sourceEvidence", "positiveTests", "negativeTests"):
+                self.assertTrue(entry[field])
+                for anchor in entry[field]:
+                    verify.validate_anchor(entry["capabilityId"], anchor)
+
+    def test_operations_cannot_replace_exact_durability_with_an_unqualified_label(self) -> None:
         value = deepcopy(self.matrix)
         value["modules"][3]["states"]["durability"] = "durable"
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
-    def test_authbus_cannot_claim_policy_quota_or_key_hosting(self) -> None:
+    def test_authbus_cannot_add_unmapped_or_target_only_capabilities(self) -> None:
         for capability in (
-            "authorization policy evaluation",
-            "quota reservation and settlement",
-            "host trust provisioning and key lifecycle management",
+            "unregistered authorization bypass",
+            "unregistered quota bypass",
+            "independently operated issuer key trusted-time and checkpoint services",
         ):
             with self.subTest(capability=capability):
                 value = deepcopy(self.matrix)
@@ -135,13 +143,16 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(receipt["moduleCoverage"], 7)
         self.assertEqual(
             receipt["capabilityCoverage"],
-            self.capability_map["entryCount"]
-            + self.operations_capability_map["entryCount"],
+            self.capability_map["entryCount"],
         )
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
         )
         self.assertEqual(receipt["targetArchitectureImplementation"], "partial")
+        self.assertEqual(
+            receipt["nativeQualification"], "separate_exact_candidate_receipt_required"
+        )
+        self.assertEqual(receipt["productionActivation"], "not_claimed")
         self.assertEqual(receipt["externalAcceptance"], "not_claimed")
         current = verify.validate_native_bindings()["currentSourceBinding"]
         self.assertEqual(receipt["nativeSourceObservations"], current["observations"])
@@ -212,9 +223,21 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(registry["authority"], "none")
         self.assertEqual(
             [row["module"] for row in registry["protocols"]],
-            verify.EXPECTED_MODULES,
+            [*verify.EXPECTED_MODULES[:4], "kernel.operations", *verify.EXPECTED_MODULES[4:]],
         )
-        self.assertEqual(len(registry["protocols"]), 7)
+        self.assertEqual(
+            [row["protocolId"] for row in registry["protocols"]],
+            [
+                "hepta.platform.types.primitives.v1",
+                "hepta.platform.wire.versioned-envelope.v2",
+                "hepta.kernel.authority.final-use.v1",
+                "hepta.kernel.operations.durable-ledger-outbox.v1",
+                "hepta.kernel.operations.durable-owner.v1",
+                "hepta.kernel.evidence.sqlite-lineage.v1",
+                "hepta.authbus.signed-message.v1",
+                "hepta.secrets.heptabao.kv-v2-read.v1",
+            ],
+        )
         for row in registry["protocols"]:
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])

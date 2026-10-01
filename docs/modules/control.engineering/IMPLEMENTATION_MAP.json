@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
-    "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -930,22 +930,23 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "integration_baseline",
+  "sourceBaseRole": "current_source_observation_after_squash",
   "currentCandidateIdentityAuthority": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
     "embeddedCommit": false,
-    "reason": "sourceBase is integration provenance; current operation bytes are exact Git blobs and current candidate/merge identity is established externally by CI execution receipts."
+    "reason": "sourceBase records the actual integrated source observation after squash; historical integration provenance is preserved in historicalSourceOrigin. Current operation bytes are exact Git blobs, and current candidate/merge qualification remains external CI execution evidence."
   },
   "mappingSourceIdentityMode": "exact_blob",
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "integrationBaseline": {
     "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db",
+    "role": "historical_integration_origin_not_current_source_observation"
   },
   "observedAtHead": {
-    "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
-    "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -1087,5 +1088,14 @@
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
     }
-  ]
+  ],
+  "historicalSourceOrigin": {
+    "path": "qualification/module-source-origins/20261001/control.engineering.json",
+    "archiveBlobSha": "878082e750ed7641e7216fa37f8f78c06eb8984a",
+    "snapshotCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "snapshotTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
+    "originalMapPath": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+    "originalMapBlobSha": "4de3567a2ac9bf174944c0dc4a74bf757ddfa5c1",
+    "role": "historical_only_no_execution_authority"
+  }
 }

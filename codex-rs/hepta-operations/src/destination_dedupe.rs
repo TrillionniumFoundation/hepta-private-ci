@@ -1,6 +1,6 @@
+use std::num::NonZeroU32;
 use std::path::Path;
 use std::path::PathBuf;
-use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -8,10 +8,6 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::DestinationApplyDisposition;
 use crate::DestinationApplyReceipt;
@@ -37,16 +33,9 @@ impl DestinationDedupeStore {
             std::fs::create_dir_all(parent)
                 .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
         }
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
+        let connections = NonZeroU32::try_from(4_u32)
+            .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
+        let pool = codex_state::open_durable_sqlite_pool(path, connections)
             .await
             .map_err(sqlx_error)?;
         if let Err(error) = DESTINATION_MIGRATOR.run(&pool).await {
