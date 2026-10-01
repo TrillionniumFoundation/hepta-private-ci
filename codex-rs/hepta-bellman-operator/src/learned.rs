@@ -94,6 +94,7 @@ pub enum LearnedOperatorError {
     UnknownAction(String),
     MissingCell { sensor: String, action: String },
     InsufficientCellSamples { sensor: String, action: String },
+    InvalidArtifact,
     UnsupportedCell,
     Arithmetic,
 }
@@ -161,7 +162,13 @@ pub fn fit_tabular_operator(
     let actions = plan.action_ids.iter().collect::<BTreeSet<_>>();
     let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
-    let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
+    let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v2".to_vec();
+    sample_binding.extend_from_slice(
+        &u32::try_from(plan.samples.len())
+            .map_err(|_| LearnedOperatorError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    sample_binding.reserve(plan.samples.len() * 32);
     for sample in &plan.samples {
         require_digest(sample.evidence_digest, "operator training sample")?;
         if !seen_evidence.insert(sample.evidence_digest) {
@@ -200,11 +207,13 @@ pub fn fit_tabular_operator(
         );
         group.evidence.push(sample.evidence_digest);
 
-        push_id(&mut sample_binding, &sample.sample_id);
-        push_id(&mut sample_binding, &sample.sensor_id);
-        push_id(&mut sample_binding, &sample.action_id);
-        sample_binding.extend_from_slice(&sample.target.raw().to_be_bytes());
-        sample_binding.extend_from_slice(sample.evidence_digest.as_array());
+        let mut bytes = b"hepta.bellman-operator.tabular-sample.v1".to_vec();
+        push_id(&mut bytes, &sample.sample_id);
+        push_id(&mut bytes, &sample.sensor_id);
+        push_id(&mut bytes, &sample.action_id);
+        bytes.extend_from_slice(&sample.target.raw().to_be_bytes());
+        bytes.extend_from_slice(sample.evidence_digest.as_array());
+        sample_binding.extend_from_slice(Digest32::of_bytes(&bytes).as_array());
     }
     if groups.len() > expected_cells {
         return Err(LearnedOperatorError::InvalidGrid);
@@ -262,10 +271,15 @@ pub fn fit_tabular_operator(
     }
 
     let sample_digest = Digest32::of_bytes(&sample_binding);
-    let mut artifact_bytes = b"hepta.bellman-operator.tabular-artifact.v1".to_vec();
+    let mut artifact_bytes = b"hepta.bellman-operator.tabular-artifact.v2".to_vec();
     push_id(&mut artifact_bytes, &plan.artifact_id);
     push_id(&mut artifact_bytes, &plan.producer_id);
     artifact_bytes.extend_from_slice(&plan.generation.get().to_be_bytes());
+    artifact_bytes.extend_from_slice(
+        &u32::try_from(plan.minimum_samples_per_cell)
+            .map_err(|_| LearnedOperatorError::Arithmetic)?
+            .to_be_bytes(),
+    );
     for digest in [
         plan.objective_digest,
         plan.dataset_digest,
@@ -302,6 +316,8 @@ pub fn predict_tabular_operator(
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
+    crate::loaded::validate_artifact(artifact)
+        .map_err(|_| LearnedOperatorError::InvalidArtifact)?;
     let cell = artifact
         .cells
         .iter()

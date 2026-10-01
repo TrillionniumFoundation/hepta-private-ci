@@ -20,19 +20,10 @@ use crate::fit_tabular_operator;
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, StrictLearnedOperatorError> {
-    let mut evidence = plan
-        .samples
-        .iter()
-        .map(|sample| sample.evidence_digest)
-        .collect::<Vec<_>>();
-    evidence.sort_unstable();
-    if evidence
-        .windows(2)
-        .any(|adjacent| adjacent[0] == adjacent[1])
-    {
-        return Err(StrictLearnedOperatorError::DuplicateEvidence);
-    }
-    Ok(fit_tabular_operator(plan)?)
+    fit_tabular_operator(plan).map_err(|error| match error {
+        LearnedOperatorError::DuplicateEvidence => StrictLearnedOperatorError::DuplicateEvidence,
+        error => StrictLearnedOperatorError::Learned(error),
+    })
 }
 
 pub fn predict_tabular_operator_indexed_v2(
@@ -40,12 +31,8 @@ pub fn predict_tabular_operator_indexed_v2(
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, StrictLearnedOperatorError> {
-    if artifact.cells.windows(2).any(|adjacent| {
-        (&adjacent[0].sensor_id, &adjacent[0].action_id)
-            >= (&adjacent[1].sensor_id, &adjacent[1].action_id)
-    }) {
-        return Err(StrictLearnedOperatorError::NonCanonicalArtifact);
-    }
+    crate::loaded::validate_artifact(artifact)
+        .map_err(|_| StrictLearnedOperatorError::NonCanonicalArtifact)?;
     let index = artifact
         .cells
         .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))
@@ -165,5 +152,18 @@ mod tests {
         assert_eq!(prediction.value, FixedQ32::from_raw(30));
         assert!(prediction.synthetic);
         assert!(!prediction.authority.grants_any());
+    }
+
+    #[test]
+    fn strict_fit_checks_plan_bounds_before_duplicate_evidence() {
+        let mut invalid = plan();
+        invalid.sensor_ids.clear();
+        invalid.samples[1].evidence_digest = invalid.samples[0].evidence_digest;
+        assert_eq!(
+            fit_tabular_operator_strict_v2(invalid),
+            Err(StrictLearnedOperatorError::Learned(
+                LearnedOperatorError::InvalidGrid
+            ))
+        );
     }
 }

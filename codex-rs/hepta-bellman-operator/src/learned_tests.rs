@@ -44,6 +44,19 @@ fn plan(samples: Vec<TabularOperatorSampleV1>) -> TabularOperatorPlanV1 {
     }
 }
 
+fn complete_plan() -> TabularOperatorPlanV1 {
+    plan(vec![
+        sample("s1", "sensor-a", "action-a", 10),
+        sample("s2", "sensor-a", "action-a", 20),
+        sample("s3", "sensor-a", "action-b", 10),
+        sample("s4", "sensor-a", "action-b", 20),
+        sample("s5", "sensor-b", "action-a", 10),
+        sample("s6", "sensor-b", "action-a", 20),
+        sample("s7", "sensor-b", "action-b", 10),
+        sample("s8", "sensor-b", "action-b", 20),
+    ])
+}
+
 #[test]
 fn op_05_tabular_operator_fits_complete_grid_deterministically() {
     let samples = vec![
@@ -160,4 +173,43 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
         predict_tabular_operator(&artifact, &id("sensor-unknown"), &id("action-a")),
         Err(LearnedOperatorError::UnsupportedCell)
     );
+}
+
+#[test]
+fn tabular_artifact_binds_the_minimum_support_policy() {
+    let input = complete_plan();
+    let original = fit_tabular_operator(input.clone()).expect("complete supported grid");
+    let mut lower_minimum = input;
+    lower_minimum.minimum_samples_per_cell = 1;
+    let changed = fit_tabular_operator(lower_minimum).expect("same fitted cells");
+    assert_eq!(original.cells, changed.cells);
+    assert_ne!(original.artifact_digest, changed.artifact_digest);
+}
+
+#[test]
+fn mutable_tabular_predictors_reject_invalid_artifacts_before_lookup() {
+    let artifact = fit_tabular_operator(complete_plan()).expect("complete supported grid");
+    for operation in 0..7 {
+        let mut invalid = artifact.clone();
+        match operation {
+            0 => invalid.cells[0].sample_count = 0,
+            1 => invalid.cells[0].mean_target = FixedQ32::from_raw(999),
+            2 => invalid.cells[0].evidence_digest = Digest32::ZERO,
+            3 => invalid.artifact_digest = Digest32::ZERO,
+            4 => {
+                invalid.cells.pop();
+            }
+            5 => invalid.cells.swap(0, 1),
+            6 => invalid.cells[0].sample_count = 1,
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            predict_tabular_operator(&invalid, &id("sensor-a"), &id("action-a")),
+            Err(LearnedOperatorError::InvalidArtifact)
+        );
+        assert_eq!(
+            crate::predict_tabular_operator_indexed_v2(&invalid, &id("sensor-a"), &id("action-a")),
+            Err(crate::StrictLearnedOperatorError::NonCanonicalArtifact)
+        );
+    }
 }

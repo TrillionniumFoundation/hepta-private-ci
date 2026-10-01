@@ -77,7 +77,7 @@ impl LoadedTabularOperatorV1 {
         {
             return Err(TabularPayloadError::Binding);
         }
-        validate(&artifact)?;
+        validate_artifact(&artifact)?;
         Ok(Self { artifact })
     }
 
@@ -85,6 +85,12 @@ impl LoadedTabularOperatorV1 {
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.artifact.artifact_id
+    }
+
+    /// The immutable producer identity, for checking registry provenance.
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        &self.artifact.producer_id
     }
 
     /// The immutable loaded value validates O(n) once, then looks up in O(log n).
@@ -117,7 +123,7 @@ impl LoadedTabularOperatorV1 {
 pub fn encode_tabular_payload_v1(
     artifact: &TabularOperatorArtifactV1,
 ) -> Result<Vec<u8>, TabularPayloadError> {
-    validate(artifact)?;
+    validate_artifact(artifact)?;
     let size = 8
         + 2
         + artifact.artifact_id.as_str().len()
@@ -168,7 +174,9 @@ pub fn encode_tabular_payload_v1(
     Ok(bytes)
 }
 
-fn validate(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadError> {
+pub(crate) fn validate_artifact(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<(), TabularPayloadError> {
     if artifact.authority.grants_any() {
         return Err(TabularPayloadError::Authority);
     }
@@ -194,13 +202,39 @@ fn validate(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadEr
     }
     let mut sensors = BTreeMap::<&StableId, usize>::new();
     let mut actions = BTreeSet::new();
+    let mut evidence = BTreeSet::new();
     let mut samples = 0_u64;
     for cell in &artifact.cells {
         if cell.sample_count == 0
             || cell.evidence_digest.is_zero()
+            || !evidence.insert(cell.evidence_digest)
             || cell.minimum_target > cell.mean_target
             || cell.mean_target > cell.maximum_target
         {
+            return Err(TabularPayloadError::Grid);
+        }
+        // The observed extrema must each occur in the stated sample count.
+        // Merely ordering min <= mean <= max admits impossible statistics,
+        // including a one-sample cell with distinct extrema. Match the
+        // trainer's nearest-even integer rounding at both attainable sum bounds.
+        let count = i128::from(cell.sample_count);
+        let minimum = i128::from(cell.minimum_target.raw());
+        let maximum = i128::from(cell.maximum_target.raw());
+        let [minimum_mean, maximum_mean] = [
+            (count - 1) * minimum + maximum,
+            (count - 1) * maximum + minimum,
+        ]
+        .map(|sum| {
+            let quotient = sum / count;
+            let twice_remainder = (sum % count).abs() * 2;
+            if twice_remainder > count || (twice_remainder == count && quotient % 2 != 0) {
+                quotient + sum.signum()
+            } else {
+                quotient
+            }
+        });
+        let mean = i128::from(cell.mean_target.raw());
+        if mean < minimum_mean || mean > maximum_mean {
             return Err(TabularPayloadError::Grid);
         }
         *sensors.entry(&cell.sensor_id).or_default() += 1;

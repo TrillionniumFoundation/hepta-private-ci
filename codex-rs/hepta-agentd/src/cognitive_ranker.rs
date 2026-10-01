@@ -175,6 +175,9 @@ impl PinnedCognitiveRanker {
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
         }
+        if model.producer_id() != &candidate.spec().manifest.producer_id {
+            return Err("model producer differs from selected registry artifact".to_string());
+        }
         let value = Self {
             owner,
             body_generation,

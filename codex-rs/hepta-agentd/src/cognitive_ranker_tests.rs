@@ -60,6 +60,14 @@ struct Fixture {
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
+    fixture_with_manifest_producer(items, scores, id("fixture-trainer")).unwrap()
+}
+
+fn fixture_with_manifest_producer(
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    manifest_producer: StableId,
+) -> Result<Fixture, String> {
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
     let actions: Vec<_> = items
@@ -114,7 +122,7 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         content_digest: model_pin.payload_digest,
         objective_digest: model_pin.objective_digest,
         support_digest: model_pin.dataset_digest,
-        producer_id: id("fixture-trainer"),
+        producer_id: manifest_producer,
         compatibility_digest: hash("ranker-consumer-v1"),
         encoded_size_bytes: bytes.len() as u64,
     };
@@ -145,27 +153,36 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         registry_receipt,
         Digest32::ZERO,
     )))));
-    let ranker = Arc::new(
-        PinnedCognitiveRanker::load(
-            owner(),
-            1,
-            File::open(snapshot).unwrap(),
-            File::open(payload).unwrap(),
-            PinnedCandidateSpec {
-                registry_receipt,
-                manifest,
-            },
-            model_pin,
-            view.clone(),
-        )
-        .unwrap(),
-    );
-    Fixture {
+    let ranker = Arc::new(PinnedCognitiveRanker::load(
+        owner(),
+        1,
+        File::open(snapshot).unwrap(),
+        File::open(payload).unwrap(),
+        PinnedCandidateSpec {
+            registry_receipt,
+            manifest,
+        },
+        model_pin,
+        view.clone(),
+    )?);
+    Ok(Fixture {
         directory,
         registry,
         view,
         ranker,
-    }
+    })
+}
+
+#[test]
+fn pinned_payload_requires_exact_registry_producer_identity() {
+    let items = vec![item("one"), item("two")];
+    let error = fixture_with_manifest_producer(&items, &[0, 10], id("different-trainer"))
+        .err()
+        .expect("mismatched producer must reject");
+    assert_eq!(
+        error,
+        "model producer differs from selected registry artifact"
+    );
 }
 
 #[test]

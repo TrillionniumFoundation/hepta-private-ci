@@ -5,6 +5,7 @@
 //! checks the declared regularity/error budget. It is a qualification reference,
 //! not a neural trainer, online policy, selector or runtime authority.
 
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -192,13 +193,25 @@ pub fn build_sensor_core(
             return Err(OperatorClosureError::SensorCoordinate);
         }
     }
-    for left in 0..design.candidates.len() {
-        for right in left + 1..design.candidates.len() {
-            if design.candidates[left].coordinates == design.candidates[right].coordinates {
-                return Err(OperatorClosureError::DuplicateSensorCoordinates);
-            }
+    let mut coordinates = BTreeSet::new();
+    for candidate in &design.candidates {
+        if !coordinates.insert(&candidate.coordinates) {
+            return Err(OperatorClosureError::DuplicateSensorCoordinates);
         }
     }
+    let mut candidate_binding = b"hepta.bellman-operator.sensor-candidates.v1".to_vec();
+    candidate_binding.extend_from_slice(
+        &u32::try_from(design.candidates.len())
+            .map_err(|_| OperatorClosureError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    candidate_binding.reserve(design.candidates.len() * 32);
+    for candidate in &design.candidates {
+        let mut bytes = b"hepta.bellman-operator.sensor-candidate.v1".to_vec();
+        push_sensor_point(&mut bytes, candidate)?;
+        candidate_binding.extend_from_slice(Digest32::of_bytes(&bytes).as_array());
+    }
+    let actual_candidate_digest = Digest32::of_bytes(&candidate_binding);
 
     let mut selected_flags = vec![false; design.candidates.len()];
     let mut selected_indices = vec![0_usize];
@@ -208,6 +221,7 @@ pub fn build_sensor_core(
         .iter()
         .map(|candidate| distance_squared(candidate, &design.candidates[0]))
         .collect::<Result<Vec<_>, _>>()?;
+    let mut minimum_separation_squared = u128::MAX;
     while selected_indices.len() < design.requested_count {
         let mut best: Option<(usize, u128)> = None;
         for (index, distance) in nearest_squared.iter().copied().enumerate() {
@@ -218,9 +232,10 @@ pub fn build_sensor_core(
                 best = Some((index, distance));
             }
         }
-        let Some((selected_index, _)) = best else {
+        let Some((selected_index, selected_distance)) = best else {
             return Err(OperatorClosureError::InternalInvariant);
         };
+        minimum_separation_squared = minimum_separation_squared.min(selected_distance);
         selected_flags[selected_index] = true;
         selected_indices.push(selected_index);
         for (index, candidate) in design.candidates.iter().enumerate() {
@@ -233,28 +248,21 @@ pub fn build_sensor_core(
         .iter()
         .map(|index| design.candidates[*index].clone())
         .collect::<Vec<_>>();
-    let fill_distance_raw = integer_sqrt(
-        nearest_squared
-            .iter()
-            .copied()
-            .max()
-            .ok_or(OperatorClosureError::InternalInvariant)?,
-    )?;
-    let mut minimum_separation_squared = u128::MAX;
-    for left in 0..selected_points.len() {
-        for right in left + 1..selected_points.len() {
-            minimum_separation_squared = minimum_separation_squared.min(distance_squared(
-                &selected_points[left],
-                &selected_points[right],
-            )?);
-        }
-    }
+    let fill_distance_squared = nearest_squared
+        .iter()
+        .copied()
+        .max()
+        .ok_or(OperatorClosureError::InternalInvariant)?;
+    let fill_distance_floor = integer_sqrt(fill_distance_squared)?;
+    let fill_distance_raw = fill_distance_floor
+        + u128::from(fill_distance_floor * fill_distance_floor < fill_distance_squared);
     let separation_radius_raw = integer_sqrt(minimum_separation_squared)? / 2;
     if separation_radius_raw == 0 {
         return Err(OperatorClosureError::SensorSeparation);
     }
     let mesh_ratio_raw = fill_distance_raw
         .checked_shl(32)
+        .and_then(|value| value.checked_add(separation_radius_raw - 1))
         .ok_or(OperatorClosureError::Arithmetic)?
         / separation_radius_raw;
     let fill_distance_q32 = fixed_from_u128(fill_distance_raw)?;
@@ -266,10 +274,11 @@ pub fn build_sensor_core(
 
     let hull_digest =
         digest_sensor_points(b"hepta.bellman-operator.sensor-hull.v1", &selected_points)?;
-    let mut bytes = b"hepta.bellman-operator.sensor-core.v1".to_vec();
+    let mut bytes = b"hepta.bellman-operator.sensor-core.v2".to_vec();
     push_id(&mut bytes, &design.sensor_core_id);
     bytes.extend_from_slice(design.state_axis_digest.as_array());
     bytes.extend_from_slice(design.candidate_design_digest.as_array());
+    bytes.extend_from_slice(actual_candidate_digest.as_array());
     bytes.extend_from_slice(design.seed_digest.as_array());
     bytes.extend_from_slice(
         &u32::try_from(selected_points.len())
@@ -427,16 +436,39 @@ pub fn evaluate_bellman_reference(
         });
     }
 
-    let mut bytes = b"hepta.bellman-operator.reference-receipt.v1".to_vec();
+    let mut bytes = b"hepta.bellman-operator.reference-receipt.v2".to_vec();
     push_id(&mut bytes, &plan.plan_id);
     bytes.extend_from_slice(plan.objective_digest.as_array());
     bytes.extend_from_slice(plan.sensor_core_digest.as_array());
     bytes.extend_from_slice(&plan.gamma.raw().to_be_bytes());
+    bytes.extend_from_slice(
+        &u32::try_from(plan.cells.len())
+            .map_err(|_| OperatorClosureError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for cell in &plan.cells {
+        push_id(&mut bytes, &cell.sensor_id);
+        push_id(&mut bytes, &cell.action_id);
+        bytes.extend_from_slice(&cell.reward.raw().to_be_bytes());
+        bytes.extend_from_slice(&cell.continuation_value.raw().to_be_bytes());
+        bytes.push(u8::from(cell.terminal));
+        bytes.extend_from_slice(cell.evidence_digest.as_array());
+    }
+    bytes.extend_from_slice(
+        &u32::try_from(targets.len())
+            .map_err(|_| OperatorClosureError::Arithmetic)?
+            .to_be_bytes(),
+    );
     for target in &targets {
         push_id(&mut bytes, &target.sensor_id);
         push_id(&mut bytes, &target.action_id);
         bytes.extend_from_slice(&target.target.raw().to_be_bytes());
     }
+    bytes.extend_from_slice(
+        &u32::try_from(greedy_actions.len())
+            .map_err(|_| OperatorClosureError::Arithmetic)?
+            .to_be_bytes(),
+    );
     for greedy in &greedy_actions {
         push_id(&mut bytes, &greedy.sensor_id);
         push_id(&mut bytes, &greedy.action_id);

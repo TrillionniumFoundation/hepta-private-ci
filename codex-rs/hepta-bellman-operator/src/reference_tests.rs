@@ -56,6 +56,83 @@ fn op_01_farthest_point_sensor_core_is_deterministic() {
     assert!(!manifest.authority.grants_any());
 }
 
+#[test]
+fn sensor_geometry_rounds_coverage_and_mesh_bounds_conservatively() {
+    let design = SensorCoreDesignV1 {
+        sensor_core_id: id("sensor-core-rounding"),
+        state_axis_digest: digest("axis"),
+        candidate_design_digest: digest("candidate-design"),
+        seed_digest: digest("seed"),
+        requested_count: 2,
+        candidates: vec![
+            SensorPointV1 {
+                point_id: id("point-0"),
+                coordinates: vec![FixedQ32::ZERO, FixedQ32::ZERO],
+            },
+            SensorPointV1 {
+                point_id: id("point-1"),
+                coordinates: vec![FixedQ32::from_raw(1), FixedQ32::from_raw(1)],
+            },
+            SensorPointV1 {
+                point_id: id("point-2"),
+                coordinates: vec![FixedQ32::from_raw(3), FixedQ32::ZERO],
+            },
+        ],
+    };
+    let manifest = build_sensor_core(design).expect("bounded two-dimensional design");
+    assert_eq!(manifest.fill_distance_q32, FixedQ32::from_raw(2));
+    assert_eq!(manifest.separation_radius_q32, FixedQ32::from_raw(1));
+    assert_eq!(
+        manifest.mesh_ratio_q32,
+        FixedQ32::from_raw(2 * FixedQ32::ONE.raw())
+    );
+}
+
+#[test]
+fn sensor_core_rejects_duplicate_coordinates_with_distinct_identities() {
+    let design = SensorCoreDesignV1 {
+        sensor_core_id: id("sensor-core-duplicates"),
+        state_axis_digest: digest("axis"),
+        candidate_design_digest: digest("candidate-design"),
+        seed_digest: digest("seed"),
+        requested_count: 2,
+        candidates: vec![point("point-0", 0), point("point-1", 0)],
+    };
+    assert_eq!(
+        build_sensor_core(design),
+        Err(OperatorClosureError::DuplicateSensorCoordinates)
+    );
+}
+
+#[test]
+fn sensor_manifest_binds_unselected_candidate_semantics_canonically() {
+    let design = SensorCoreDesignV1 {
+        sensor_core_id: id("sensor-core-actual-design"),
+        state_axis_digest: digest("axis"),
+        candidate_design_digest: digest("same-declared-design"),
+        seed_digest: digest("seed"),
+        requested_count: 2,
+        candidates: vec![
+            point("point-0", 0),
+            point("point-1", FixedQ32::ONE.raw() / 4),
+            point("point-2", FixedQ32::ONE.raw() / 2),
+            point("point-3", FixedQ32::ONE.raw()),
+        ],
+    };
+    let original = build_sensor_core(design.clone()).expect("valid candidate design");
+    let mut changed_design = design.clone();
+    changed_design.candidates[1].coordinates[0] = FixedQ32::from_raw(FixedQ32::ONE.raw() / 8);
+    let changed = build_sensor_core(changed_design).expect("valid changed interior point");
+    assert_ne!(original.manifest_digest, changed.manifest_digest);
+    let mut same_geometry = changed;
+    same_geometry.manifest_digest = original.manifest_digest;
+    assert_eq!(same_geometry, original);
+
+    let mut reordered = design;
+    reordered.candidates.reverse();
+    assert_eq!(build_sensor_core(reordered), Ok(original));
+}
+
 fn cell(sensor: &str, action: &str, reward: i64, continuation: i64) -> BellmanReferenceCellV1 {
     BellmanReferenceCellV1 {
         sensor_id: id(sensor),
@@ -94,6 +171,40 @@ fn op_01_tabular_reference_produces_exact_targets_and_gaps() {
     assert_eq!(receipt.greedy_actions[1].action_id, id("action-0"));
     assert_eq!(receipt.greedy_actions[1].action_gap, FixedQ32::from_raw(2));
     assert!(!receipt.evidence_digest.is_zero());
+}
+
+#[test]
+fn reference_receipt_binds_cell_evidence_and_inputs_even_when_targets_match() {
+    let plan = BellmanReferencePlanV1 {
+        plan_id: id("reference-plan"),
+        objective_digest: digest("objective"),
+        sensor_core_digest: digest("sensor-core"),
+        gamma: FixedQ32::ONE,
+        sensor_ids: vec![id("sensor-0")],
+        action_ids: vec![id("action-1"), id("action-0")],
+        cells: vec![
+            cell("sensor-0", "action-0", 0, 10),
+            cell("sensor-0", "action-1", 0, 20),
+        ],
+    };
+    let original = evaluate_bellman_reference(plan.clone()).expect("complete reference plan");
+    let mut changed_evidence = plan.clone();
+    changed_evidence.cells[0].evidence_digest = digest("replacement-evidence");
+    let replacement = evaluate_bellman_reference(changed_evidence).expect("complete changed plan");
+    assert_eq!(original.targets, replacement.targets);
+    assert_ne!(original.evidence_digest, replacement.evidence_digest);
+
+    let mut changed_decomposition = plan.clone();
+    changed_decomposition.cells[0].reward = FixedQ32::from_raw(5);
+    changed_decomposition.cells[0].continuation_value = FixedQ32::from_raw(5);
+    let replacement = evaluate_bellman_reference(changed_decomposition).expect("same target plan");
+    assert_eq!(original.targets, replacement.targets);
+    assert_ne!(original.evidence_digest, replacement.evidence_digest);
+
+    let mut reordered = plan;
+    reordered.cells.reverse();
+    reordered.action_ids.reverse();
+    assert_eq!(evaluate_bellman_reference(reordered), Ok(original));
 }
 
 #[test]
