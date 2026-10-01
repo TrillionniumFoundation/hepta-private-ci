@@ -1075,7 +1075,7 @@
       "guide": "docs/modules/cognitive.store/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.store.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "Canonical module fa\u00e7ade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
+      "apiContract": "Canonical module façade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
       "stateAndEncoding": "The semantic V1/V2 ledgers are bounded in-memory models. The physical authoritative owner is hepta-memory::CognitiveStore over cognitive_1.sqlite3. memory_ledger owns Memory/source/tombstone lineage; knowledge_fact_ledger is the memory-revision-bound authoritative fact-set subledger in kg_revision_fact_sets/entities/relations, committed with the owning Memory revision and never given an independent fact writer/head. WAL+FULL writer fencing, exact-cut recovery anchors and the active-generation pointer protect the physical owner.",
       "linearizationAndRecovery": "BEGIN IMMEDIATE/CAS mutations remain single-owner. Production semantic mutation revalidates the retained external verifier immediately before the owner mutation. Writable recovery fences ordinary store handles, copies identity-bound database/WAL/journal descriptors into a private generation, checks exact current-cut equality, schema/integrity and production authority/fence, checkpoints, then publishes the active generation; post-rename publication uncertainty is Indeterminate. Ordinary open is not a production-writer recovery fallback.",
       "algorithmAndBounds": "V2 accepts only Verified admission, reserves hard revision capacity for tombstones, bounds the intent journal and binds image receipts/frontiers to retained history. Semantic pages bind exact generation-vector+sequence. Durable pages keyset-page <=512 heads and reconstruct complete selected ancestry under 16384-revision/65536-citation page budgets while binding global deletion/source/fact/KG state.",
@@ -1106,7 +1106,7 @@
             "symbol": "AgentdProductionWriterHost"
           }
         ],
-        "stateAndRecovery": "The canonical cognitive-store fa\u00e7ade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
+        "stateAndRecovery": "The canonical cognitive-store façade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
         "testFiles": [
           "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
           "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
@@ -1320,7 +1320,7 @@
       "apiContract": "consume_source_batch(frontier,facts,corrections,tombstones); build_generation(candidate,profile); publish_generation(expectedPredecessor,generation); query_relations(snapshot,seeds,bounds).",
       "stateAndEncoding": "Rebuildable node/edge projections keyed generation+identity; edge has relation,support revisions,confidence,validity and tombstone frontier. Supports/contradicts are separate edge kinds.",
       "linearizationAndRecovery": "Build off-route,validate complete support manifest,then atomically publish pointer for one source cut. Partial generation never becomes readable. Source owner remains truth authority.",
-      "algorithmAndBounds": "Query<=4096 nodes/32768 edges/output512 refs,batch<=10000 source records. Incremental and full rebuild must be semantically equal for identical cuts. Last revoked support removes/invalidates edge.",
+      "algorithmAndBounds": "Pilot targets: 4096 nodes/32768 edges/512 references and 10000-record source batches. Native V2 one-hop kernel: 65536 nodes/262144 edges, 50000 supports per node or edge and 327680 supports per generation; cognitive SQLite scope: 10000 heads/10000 node occurrences/50000 edge occurrences; cognitive retrieval: 32 candidates per channel. Incremental and full rebuild must be semantically equal for identical cuts; last revoked support removes the edge.",
       "acceptanceOracle": "Incremental/full canonical graph digests match. Half-built graph cannot publish. Deleting sole support makes edge ineligible. Contradictions remain alternatives rather than an averaged unsupported fact.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
@@ -1338,18 +1338,37 @@
           {
             "path": "codex-rs/hepta-kg/src/generation.rs",
             "symbol": "publish_generation"
+          },
+          {
+            "path": "codex-rs/hepta-kg/src/generation.rs",
+            "symbol": "query_relations"
+          },
+          {
+            "path": "codex-rs/hepta-kg/src/prompt_factor.rs",
+            "symbol": "build_prompt_factor_projection_v1"
           }
         ],
-        "stateAndRecovery": "KnowledgeGenerationV2 is a rebuildable native projection with source/revision/validity support, generation vector and canonical digest. Publication checks an exact predecessor; projection values are not a durable source writer.",
+        "stateAndRecovery": "KnowledgeGenerationV2 binds canonical source/revision/validity support and a generation vector. The cognitive SQLite owner builds, validates exact-predecessor publication and persists receipts before CAS selection in the same transaction; reopen validates the current generation and predecessor. The prompt registry supplies a sealed factor relation source to the generation-bound optimizer. Graph projections do not become source facts or mutation authority.",
         "testFiles": [
           "codex-rs/hepta-kg/src/generation_tests.rs",
-          "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+          "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+          "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+          "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "codex-rs/hepta-kg/src/generation_audit_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-memory/LANE_C_SQLITE.md"
         ],
         "remainingWork": [
-          "Bind source deltas and generation publication to the existing cognitive SQLite KG owner; qualify restart, current tombstone propagation and real query consumers without introducing a second fact store."
+          "Obtain current exact-head and deterministic synthetic-merge executable receipts for the cognitive product caller and prompt relation chain.",
+          "Choose durable incremental publication only after target-host capacity measurements justify replacing bounded complete rebuild.",
+          "Qualify the owning prompt registry durable relation path, independent semantic acceptance and deployment on the selected host without granting authority to knowledge.graph."
         ]
       }
     },
