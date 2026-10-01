@@ -11,7 +11,7 @@ source-head 与 prospective-merge 的独立原生 CI 入口。目标主机、独
 PR base 为 `e8f8f2d0ca399b0a68abba4da90a3be5114d0735`。
 本轮最终源码为 `5489fb84cee5a51e4baa30ecfc665302e68742e7`，
 tree 为 `b0813e63eddf49863fd49f38d9383ca4c60299f2`。
-后续提交只增加当前源码导航和未签名观察材料。
+首次发布的后续提交只增加当前源码导航和未签名观察材料。
 原 `sourceBase` AA68 是不可变集成来源，不是本轮执行身份。
 
 本报告与 [本地观察](LOCAL_EXECUTION_OBSERVATION_20261001_R4.json)
@@ -122,3 +122,17 @@ fix/fmt 后没有重跑测试，遵循 AGENTS。160 个 Rust 文件的生产内�
 本报告冻结时，新候选的无过滤双平台 source/merge CI 尚待实际收据。目标主机、
 独立安全/代码/运维验收、activation 和 release 继续未建立。最终源码交叉复审没有
 再发现新的可复现实现缺陷；这是一轮限定范围的停止条件，不是所有未来优化均不存在的证明。
+
+## 发布后的 CI 导航与前置补修
+
+`7c4e0ab6acfbea85089a93a00f25bdeb1a2080af` 的 development-docs CI
+实际发现两项文档验证问题：历史 README 将已删除的 authoring workflow 路径写成
+当前文件引用；source-head 的 broad Python suite 调用真实 Justfile 回归，却没有安装
+`just`。前者现直接链接保持原始字节、Git blob 与 SHA-256 的 `.txt` 归档，并明确
+workflow 已退役；后者安装与原生资格验证一致的 pinned `just@1.51.0`。
+检查器和真实 recipe 测试的强制断言均保留，没有增加 skip。
+
+这两项补修没有改动 Rust、Python validator、原生命名测试或已有原始证据。
+更新的 archive README blob 和当前观察绑定另行核对；旧源码执行仍绑定本报告上方
+的 `5489fb8`，新 CI 结果须按各自实际 head/base 判读。完整 `just fmt` 再次成功，
+46 个无关 formatter-only 路径已还原；遵循 AGENTS，没有重跑本地测试。
