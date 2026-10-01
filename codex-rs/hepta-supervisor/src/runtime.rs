@@ -91,6 +91,9 @@ pub(crate) struct MatrixCompanionSlot<P> {
     pub restart_exhausted: bool,
     pub last_error: Option<String>,
     pub recovery_budget: Option<MatrixRestartRecovery>,
+    /// Volatile acknowledgement of this owner's successful full publication.
+    /// Recovery starts empty; visible bytes alone cannot acknowledge a sync.
+    pub durable_restart_ack: Option<crate::restart_journal::RestartBudgetJournal>,
 }
 
 impl<P> MatrixCompanionSlot<P> {
@@ -109,6 +112,7 @@ impl<P> MatrixCompanionSlot<P> {
             restart_exhausted: false,
             last_error: None,
             recovery_budget: None,
+            durable_restart_ack: None,
         }
     }
 }

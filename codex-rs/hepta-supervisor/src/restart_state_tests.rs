@@ -309,3 +309,98 @@ fn staged_exhaustion_blocks_replacement_even_without_a_live_companion() {
         (RESTART_ATTEMPT_BUDGET, None, true, true)
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn no_matrix_idle_ticks_preserve_bytes_inode_and_main_budget_after_durable_ack() -> Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let fixture = Fixture::new()?;
+    let main = RestartBudgetState {
+        schema_version: crate::restart_budget::RESTART_BUDGET_SCHEMA_VERSION,
+        window_started_unix_ms: 1_000,
+        attempts: 1,
+        pending: false,
+        next_eligible_unix_ms: 1_010,
+    };
+    write_main_restart_budget(&fixture.run_root, &main)?;
+    let mut supervisor = fixture.recover()?;
+    let config = SupervisorConfig::local_default();
+    let mut slot = AgentSlot::<NoProcess>::new(&config);
+    slot.active_release = Some(crate::AgentRelease::unversioned(crate::AgentCommand::new(
+        "/bin/true",
+        Vec::new(),
+    )?)?);
+    supervisor.start_matrix_companion(&fixture.agent, &mut slot, Instant::now());
+    assert!(slot.matrix.durable_restart_ack.is_some());
+    let path = fixture.run_root.join(RESTART_JOURNAL_FILE);
+    let bytes = std::fs::read(&path)?;
+    let inode = std::fs::metadata(&path)?.ino();
+    for _ in 0..16 {
+        supervisor.start_matrix_companion(&fixture.agent, &mut slot, Instant::now());
+    }
+    assert_eq!(
+        (std::fs::read(&path)?, std::fs::metadata(&path)?.ino()),
+        (bytes, inode)
+    );
+    assert_eq!(read_main_restart_budget(&fixture.run_root)?, Some(main));
+    // A new owner cannot infer a directory-sync acknowledgement from bytes.
+    let mut cold = AgentSlot::<NoProcess>::new(&config);
+    cold.active_release = slot.active_release.clone();
+    supervisor.start_matrix_companion(&fixture.agent, &mut cold, Instant::now());
+    assert!(cold.matrix.durable_restart_ack.is_some());
+    assert_ne!(std::fs::metadata(&path)?.ino(), inode);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn visible_matrix_budget_after_failed_directory_sync_keeps_native_retry_obligation() -> Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let fixture = Fixture::new()?;
+    let mut supervisor = fixture.recover()?;
+    let mut slot = AgentSlot::<NoProcess>::new(&SupervisorConfig::local_default());
+    slot.active_release = Some(crate::AgentRelease::unversioned(crate::AgentCommand::new(
+        "/bin/true",
+        Vec::new(),
+    )?)?);
+    crate::durability::with_qualification_fault(
+        "restart_journal.directory_sync",
+        std::io::ErrorKind::Other,
+        || {
+            supervisor.start_matrix_companion(&fixture.agent, &mut slot, Instant::now());
+        },
+    );
+    let path = fixture.run_root.join(RESTART_JOURNAL_FILE);
+    let visible = std::fs::read(&path)?;
+    assert!(slot.matrix.durable_restart_ack.is_none());
+    let retry = crate::durability::with_qualification_fault(
+        "restart_journal.file_write",
+        std::io::ErrorKind::Other,
+        || supervisor.persist_matrix_restart_budget(&fixture.agent, &mut slot),
+    );
+    assert!(
+        retry.is_err(),
+        "identical visible bytes must still retry publication"
+    );
+    assert!(slot.matrix.durable_restart_ack.is_none());
+    assert_eq!(std::fs::read(&path)?, visible);
+    supervisor.persist_matrix_restart_budget(&fixture.agent, &mut slot)?;
+    assert!(slot.matrix.durable_restart_ack.is_some());
+    let inode = std::fs::metadata(&path)?.ino();
+    supervisor.persist_matrix_restart_budget(&fixture.agent, &mut slot)?;
+    assert_eq!(std::fs::metadata(&path)?.ino(), inode);
+    // A real release/budget change invalidates the acknowledgement.
+    slot.active_release = Some(crate::AgentRelease::new(
+        "changed-release",
+        crate::AgentCommand::new("/bin/true", Vec::new())?,
+    )?);
+    slot.matrix.restart_attempt = 1;
+    slot.matrix.restart_window_started_unix_millis = Some(unix_millis_now()?);
+    supervisor.persist_matrix_restart_budget(&fixture.agent, &mut slot)?;
+    assert_ne!(std::fs::metadata(&path)?.ino(), inode);
+    assert_eq!(
+        read_restart_journal(&fixture.run_root)?,
+        slot.matrix.durable_restart_ack
+    );
+    Ok(())
+}

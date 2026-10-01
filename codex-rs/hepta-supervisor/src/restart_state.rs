@@ -35,6 +35,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
+        slot.matrix.durable_restart_ack = None;
         let Some(journal) = read_restart_journal(record.layout.owner_run_root())? else {
             return Ok(());
         };
@@ -75,7 +76,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn persist_matrix_restart_budget(
         &self,
         agent_id: &AgentId,
-        slot: &AgentSlot<D::Process>,
+        slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         let release_id = slot
             .active_release
@@ -96,7 +97,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                 window_started_unix_millis: slot.matrix.restart_window_started_unix_millis,
             },
         )?;
-        write_restart_journal(record.layout.owner_run_root(), &journal)
+        if slot.matrix.durable_restart_ack.as_ref() == Some(&journal)
+            && read_restart_journal(record.layout.owner_run_root())?.as_ref() == Some(&journal)
+        {
+            return Ok(());
+        }
+        // A failed rename/directory sync may leave identical visible bytes.
+        // Clear the old acknowledgement before trying; only the complete
+        // native publication can establish this owner's new acknowledgement.
+        slot.matrix.durable_restart_ack = None;
+        write_restart_journal(record.layout.owner_run_root(), &journal)?;
+        slot.matrix.durable_restart_ack = Some(journal);
+        Ok(())
     }
 }
 
