@@ -32,15 +32,13 @@ use crate::PromptDeliveryPrepareRequestV1;
 use crate::PromptPipelineErrorV1;
 use crate::compile_exercised_prompt_context_v1;
 use crate::prepare_prompt_delivery_v1;
+use crate::prompt_pipeline::MAX_PROMPT_FRAGMENT_TOKENS;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 
 const COMPILED_DELIVERY_DOMAIN: &[u8] = b"hepta.prompt-registry.compiled-context.v3";
 const SERIALIZED_PAYLOAD_DOMAIN: &[u8] = b"hepta.prompt-registry.serialized-context.v3";
 const SELECTED_PROMPT_GROUP_ID: &str = "prompt:exercise-selected";
-// The repository caps every individual model-visible item at 10K tokens.
-// Registry token cost is a declared bound, not an exact tokenizer attestation.
-const MAX_PROMPT_FRAGMENT_TOKENS: u32 = 10_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRegistryCompilationRequestV2 {
