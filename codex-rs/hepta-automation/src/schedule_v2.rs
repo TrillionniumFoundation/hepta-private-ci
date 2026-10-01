@@ -1069,18 +1069,35 @@ mod tests {
         let schedule = utc_daily_schedule();
         let task = create_backlog_task(&store, &schedule, AutomationMissedRunPolicy::Skip).await;
         store
-            .set_enabled(task.task_id, false, None, DAY)
+            .set_enabled(
+                task.task_id,
+                /*enabled*/ false,
+                /*resume_at_ms*/ None,
+                DAY,
+            )
             .await
             .unwrap();
         let resume = 2 * DAY + 3 * HOUR;
         let resumed = store
-            .set_enabled(task.task_id, true, Some(resume), resume)
+            .set_enabled(task.task_id, /*enabled*/ true, Some(resume), resume)
             .await
             .unwrap();
         assert_eq!(resumed.next_run_at_ms, Some(3 * DAY + 2 * HOUR));
-        assert_eq!(store.claim_due(resume, 1, 1_000).await.unwrap(), None);
+        assert_eq!(
+            store
+                .claim_due(
+                    resume, /*generation*/ 1, /*lease_duration_ms*/ 1_000
+                )
+                .await
+                .unwrap(),
+            None
+        );
         let lease = store
-            .claim_due(3 * DAY + 2 * HOUR, 1, 1_000)
+            .claim_due(
+                3 * DAY + 2 * HOUR,
+                /*generation*/ 1,
+                /*lease_duration_ms*/ 1_000,
+            )
             .await
             .unwrap()
             .unwrap();

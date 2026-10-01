@@ -784,7 +784,7 @@ mod tests {
                     fence.clone(),
                     claimed.revision,
                     crate::TaskFlowTransition::Start,
-                    20,
+                    /*now_ms*/ 20,
                 )
                 .expect("start command"),
             )
@@ -796,12 +796,12 @@ mod tests {
             .prepare_taskflow_step(
                 "effect-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 &fence,
                 &intent,
                 &payload,
                 "prepare-effect",
-                20,
+                /*now_ms*/ 20,
             )
             .await
             .expect("prepare step");
@@ -809,12 +809,12 @@ mod tests {
             .claim_taskflow_step(
                 "effect-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 &fence,
                 &intent,
                 &payload,
                 "claim-effect",
-                20,
+                /*now_ms*/ 20,
             )
             .await
             .expect("claim step");
@@ -859,7 +859,7 @@ mod tests {
                 EffectDispatchObservationKind::Indeterminate,
                 &unknown,
                 22,
-                None,
+                /*provider*/ None,
             )
             .await
             .expect("record indeterminate");
@@ -907,7 +907,7 @@ mod tests {
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 30,
-                None,
+                /*provider*/ None,
             )
             .await
             .expect("terminal reconciliation");
@@ -938,7 +938,7 @@ mod tests {
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 31,
-                None,
+                /*provider*/ None,
             )
             .await
             .expect("terminal replay");
@@ -952,7 +952,7 @@ mod tests {
                     EffectDispatchObservationKind::Failed,
                     &Sha256Digest::for_bytes(b"different-terminal"),
                     32,
-                    None,
+                    /*provider*/ None,
                 )
                 .await,
             Err(TaskFlowError::Conflict(_))
@@ -967,18 +967,18 @@ mod tests {
             .begin_effect_dispatch_attempt(
                 "effect-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 &Sha256Digest::for_bytes(b"effect-intent"),
                 &Sha256Digest::for_bytes(b"effect-payload"),
                 &digest,
                 "provider:test",
-                1,
+                /*authority_epoch*/ 1,
                 "race-grant",
                 &digest,
                 "race-record",
                 || Ok(21),
                 &fence,
-                None,
+                /*provider_contract_binding*/ None,
             )
             .await
             .expect("start");
@@ -986,10 +986,10 @@ mod tests {
             .record_effect_dispatch_observation(
                 "effect-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 EffectDispatchObservationKind::Indeterminate,
                 &digest,
-                22,
+                /*observed_at_ms*/ 22,
                 Some(EffectProviderObservation::Dispatch(
                     AuthorizedProviderDispatchStatus::Unknown,
                 )),
@@ -999,14 +999,20 @@ mod tests {
         let accepted = Sha256Digest::for_bytes(b"accepted");
         let rejected = Sha256Digest::for_bytes(b"rejected");
         let (admission, rejection) = tokio::join!(
-            store.record_effect_provider_acceptance("effect-run", "work", 1, &accepted, 23),
+            store.record_effect_provider_acceptance(
+                "effect-run",
+                "work",
+                /*attempt*/ 1,
+                &accepted,
+                /*observed_at_ms*/ 23
+            ),
             store.record_effect_dispatch_observation(
                 "effect-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 EffectDispatchObservationKind::Failed,
                 &rejected,
-                23,
+                /*observed_at_ms*/ 23,
                 Some(EffectProviderObservation::Lookup(
                     ProviderEffectAckStatus::Rejected
                 ))
@@ -1019,7 +1025,13 @@ mod tests {
         );
         if admission.is_ok() {
             store
-                .record_effect_provider_acceptance("effect-run", "work", 1, &rejected, 24)
+                .record_effect_provider_acceptance(
+                    "effect-run",
+                    "work",
+                    /*attempt*/ 1,
+                    &rejected,
+                    /*observed_at_ms*/ 24,
+                )
                 .await
                 .expect("later accepted lookup retains first witness");
             let row: (i64, String) = sqlx::query_as(

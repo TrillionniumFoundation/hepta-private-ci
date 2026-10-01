@@ -275,13 +275,13 @@ async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLeas
 
 #[tokio::test]
 async fn scheduler_does_not_backdate_first_contact_after_waiting_for_the_writer() {
-    let fixture = FleetFixture::new(1);
+    let fixture = FleetFixture::new(/*count*/ 1);
     let layout = &fixture.layouts[0];
     let store = AutomationStore::open(layout).await.unwrap();
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75032",
         AutomationSchedule::Once,
-        100,
+        /*due*/ 100,
     );
     store.create_task(&task).await.unwrap();
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root()).unwrap();
@@ -294,12 +294,12 @@ async fn scheduler_does_not_backdate_first_contact_after_waiting_for_the_writer(
     let scheduler = AutomationScheduler::new(
         store.clone(),
         Arc::clone(&queue),
-        1,
+        /*generation*/ 1,
         Duration::from_millis(100),
         Duration::from_millis(10),
     )
     .unwrap();
-    let tick = scheduler.tick(100);
+    let tick = scheduler.tick(/*now_ms*/ 100);
     tokio::pin!(tick);
     tokio::select! {
         biased;
@@ -309,7 +309,10 @@ async fn scheduler_does_not_backdate_first_contact_after_waiting_for_the_writer(
     reservation.commit().await.unwrap();
     assert_eq!(tick.await, Err(AutomationError::Conflict));
     assert_eq!(queue.admissions().await, Vec::new());
-    assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
+    assert_eq!(
+        store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+        Vec::new()
+    );
     blocker.close().await;
     store.close().await;
 }
@@ -378,7 +381,7 @@ async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
         .expect("retry claim")
         .expect("same occurrence retry");
     assert_eq!(store.drain_blockers().await.expect("active retry lease"), 1);
-    prepare_direct_dispatch(&store, &retry, 104).await;
+    prepare_direct_dispatch(&store, &retry, /*now_ms*/ 104).await;
     assert_eq!(store.drain_blockers().await.expect("retry uncertainty"), 0);
     store
         .record_occurrence_admitted(

@@ -196,7 +196,7 @@ async fn queued_renewal_rejects_a_lease_that_expires_before_writer_admission() {
         .claim_next(
             &operation.destination,
             &stable_id("worker:test"),
-            generation(1),
+            generation(/*value*/ 1),
             Duration::from_millis(500),
         )
         .await

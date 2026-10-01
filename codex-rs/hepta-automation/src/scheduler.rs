@@ -206,14 +206,28 @@ mod tests {
             "019153a4-3088-7e03-a56a-9b1964f75ddd",
             "writer wait",
             AutomationSchedule::Once,
-            100,
-            1,
+            /*first_run_at_ms*/ 100,
+            /*created_at_ms*/ 1,
         );
         store.create_task(&task).await.unwrap();
-        let lease = store.claim_due(100, 1, 10).await.unwrap().unwrap();
-        let occurrence = store.materialize_occurrence(&lease, 100).await.unwrap();
+        let lease = store
+            .claim_due(
+                /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 10,
+            )
+            .await
+            .unwrap()
+            .unwrap();
+        let occurrence = store
+            .materialize_occurrence(&lease, /*now_ms*/ 100)
+            .await
+            .unwrap();
         store
-            .prepare_occurrence_taskflow(&occurrence, &lease, 100, 10)
+            .prepare_occurrence_taskflow(
+                &occurrence,
+                &lease,
+                /*now_ms*/ 100,
+                /*lease_duration_ms*/ 10,
+            )
             .await
             .unwrap();
         let blocker = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(root).unwrap())
@@ -225,7 +239,7 @@ mod tests {
         let started_at = Instant::now();
         let contact = async {
             store
-                .record_dispatch_uncertain_from_tick(&lease, 100, started_at)
+                .record_dispatch_uncertain_from_tick(&lease, /*tick_at_ms*/ 100, started_at)
                 .await?;
             queue.enqueue(lease.admission()).await
         };
@@ -238,7 +252,10 @@ mod tests {
         reservation.commit().await.unwrap();
         assert_eq!(contact.await, Err(AutomationError::Conflict));
         assert_eq!(queue.0.load(Ordering::SeqCst), 0);
-        assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
+        assert_eq!(
+            store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+            Vec::new()
+        );
         blocker.close().await;
         store.close().await;
     }

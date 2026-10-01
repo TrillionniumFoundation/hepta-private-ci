@@ -748,8 +748,8 @@ mod tests {
         let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
             &uri,
             "oversized-ack-contract",
-            1,
-            13,
+            /*authority_epoch*/ 1,
+            /*signing_seed*/ 13,
         ))
         .expect("fixture adapter");
         let dispatch = tokio::time::timeout(
@@ -826,7 +826,12 @@ mod tests {
 
     #[test]
     fn attested_http_adapter_accepts_ipv6_loopback_fixture_only() {
-        let config = attested_fixture_config("http://[::1]:9", "ipv6-loopback-contract", 1, 14);
+        let config = attested_fixture_config(
+            "http://[::1]:9",
+            "ipv6-loopback-contract",
+            /*authority_epoch*/ 1,
+            /*signing_seed*/ 14,
+        );
         let adapter = HttpProviderEffectAdapter::new(config).expect("IPv6 loopback fixture");
         assert_eq!(
             adapter.capability(),

@@ -140,7 +140,7 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
                 owner.clone(),
                 run.revision,
                 TaskFlowTransition::Start,
-                20,
+                /*now_ms*/ 20,
             )
             .expect("start command"),
         )
@@ -218,7 +218,7 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
             owner.clone(),
             started.revision,
             transition,
-            22,
+            /*now_ms*/ 22,
         )
         .expect("command");
         assert!(matches!(
@@ -228,7 +228,12 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
     }
     assert!(matches!(
         store
-            .claim_taskflow_run("step-run", &fence(2), 1_021, 100)
+            .claim_taskflow_run(
+                "step-run",
+                &fence(/*generation*/ 2),
+                /*now_ms*/ 1_021,
+                /*lease_duration_ms*/ 100
+            )
             .await,
         Err(codex_hepta_automation::TaskFlowError::Conflict(_))
     ));
@@ -237,12 +242,12 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
             .prepare_taskflow_step(
                 "step-run",
                 "work",
-                2,
+                /*attempt*/ 2,
                 &owner,
                 &intent,
                 &payload,
                 "unsafe-retry",
-                22
+                /*now_ms*/ 22
             )
             .await,
         Err(codex_hepta_automation::TaskFlowError::Conflict(_))
@@ -277,7 +282,7 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
                 TaskFlowTransition::Indeterminate {
                     reason: "unknown".to_string(),
                 },
-                23,
+                /*now_ms*/ 23,
             )
             .expect("quarantine command"),
         )
@@ -288,12 +293,12 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
             .prepare_taskflow_step(
                 "step-run",
                 "work",
-                2,
+                /*attempt*/ 2,
                 &owner,
                 &intent,
                 &payload,
                 "quarantined-retry",
-                23
+                /*now_ms*/ 23
             )
             .await,
         Err(codex_hepta_automation::TaskFlowError::Conflict(_))
@@ -307,7 +312,7 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
             receipt_digest: Sha256Digest::for_bytes(b"final-receipt"),
             outcome: TaskFlowReconcileOutcome::Succeeded,
         },
-        24,
+        /*now_ms*/ 24,
     )
     .expect("terminal command");
     assert!(matches!(
@@ -620,7 +625,7 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                     owner.clone(),
                     run.revision,
                     TaskFlowTransition::Start,
-                    20,
+                    /*now_ms*/ 20,
                 )
                 .expect("start command"),
             )
@@ -628,13 +633,15 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
             .expect("start");
         store
             .prepare_taskflow_step(
-                "step-run", "work", 1, &owner, &intent, &payload, "prepare", 21,
+                "step-run", "work", /*attempt*/ 1, &owner, &intent, &payload, "prepare",
+                /*now_ms*/ 21,
             )
             .await
             .expect("prepare");
         store
             .claim_taskflow_step(
-                "step-run", "work", 1, &owner, &intent, &payload, "claim", 22,
+                "step-run", "work", /*attempt*/ 1, &owner, &intent, &payload, "claim",
+                /*now_ms*/ 22,
             )
             .await
             .expect("claim");
@@ -643,20 +650,20 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                 .record_taskflow_step(
                     "step-run",
                     "work",
-                    1,
+                    /*attempt*/ 1,
                     &owner,
                     &intent,
                     &payload,
                     "unknown",
                     &Sha256Digest::for_bytes(b"unknown"),
                     TaskFlowStepObservation::Indeterminate,
-                    23,
+                    /*now_ms*/ 23,
                 )
                 .await
                 .expect("unknown projection");
         }
         let before = store
-            .read_taskflow_step("step-run", "work", 1, &owner)
+            .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
             .await
             .expect("read before")
             .expect("step");
@@ -723,7 +730,7 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                     .reconcile_taskflow_step(
                         "step-run",
                         "work",
-                        1,
+                        /*attempt*/ 1,
                         &owner,
                         &intent,
                         &payload,
@@ -734,7 +741,7 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                         } else {
                             TaskFlowReconcileOutcome::Failed
                         },
-                        25,
+                        /*now_ms*/ 25,
                     )
                     .await
             } else {
@@ -742,7 +749,7 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                     .record_taskflow_step(
                         "step-run",
                         "work",
-                        1,
+                        /*attempt*/ 1,
                         &owner,
                         &intent,
                         &payload,
@@ -753,7 +760,7 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                         } else {
                             TaskFlowStepObservation::Failed
                         },
-                        25,
+                        /*now_ms*/ 25,
                     )
                     .await
             };
@@ -763,7 +770,7 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
             ));
             assert_eq!(
                 store
-                    .read_taskflow_step("step-run", "work", 1, &owner)
+                    .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
                     .await
                     .expect("read unchanged")
                     .expect("step"),
@@ -775,14 +782,14 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                 .reconcile_taskflow_step(
                     "step-run",
                     "work",
-                    1,
+                    /*attempt*/ 1,
                     &owner,
                     &intent,
                     &payload,
                     "matching",
                     &terminal,
                     TaskFlowReconcileOutcome::Succeeded,
-                    26,
+                    /*now_ms*/ 26,
                 )
                 .await
         } else {
@@ -790,14 +797,14 @@ async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
                 .record_taskflow_step(
                     "step-run",
                     "work",
-                    1,
+                    /*attempt*/ 1,
                     &owner,
                     &intent,
                     &payload,
                     "matching",
                     &terminal,
                     TaskFlowStepObservation::Succeeded,
-                    26,
+                    /*now_ms*/ 26,
                 )
                 .await
         }

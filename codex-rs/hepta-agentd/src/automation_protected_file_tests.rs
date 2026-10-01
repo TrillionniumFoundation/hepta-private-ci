@@ -39,16 +39,16 @@ fn protected_reader_enforces_privacy_and_exact_byte_limit() {
     fs::write(&file, &bytes).expect("write config");
     fs::set_permissions(&file, fs::Permissions::from_mode(0o600)).expect("private config");
     assert_eq!(
-        read_protected_file(&file, 64, "config").expect("exact limit"),
+        read_protected_file(&file, /*max_bytes*/ 64, "config").expect("exact limit"),
         bytes
     );
     assert!(matches!(
-        read_protected_file(&file, 63, "config"),
+        read_protected_file(&file, /*max_bytes*/ 63, "config"),
         Err(ProtectedFileError::Invalid(_))
     ));
     fs::set_permissions(&file, fs::Permissions::from_mode(0o640)).expect("exposed config");
     assert!(matches!(
-        read_protected_file(&file, 64, "config"),
+        read_protected_file(&file, /*max_bytes*/ 64, "config"),
         Err(ProtectedFileError::Invalid(_))
     ));
 }
@@ -63,7 +63,7 @@ fn protected_reader_rejects_noncanonical_link_paths() {
     let link = root.join("link");
     std::os::unix::fs::symlink(&file, &link).expect("link config");
     assert!(matches!(
-        read_protected_file(&link, 64, "config"),
+        read_protected_file(&link, /*max_bytes*/ 64, "config"),
         Err(ProtectedFileError::Invalid(_))
     ));
 }

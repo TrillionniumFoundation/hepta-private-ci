@@ -151,17 +151,21 @@ fn invalid_graph_and_effect_contract_fail_closed() {
 async fn registration_rejects_constructor_placeholder_before_writing() {
     let fixture = Fixture::new();
     let store = open_store(&fixture).await;
-    let mut input = definition(1);
+    let mut input = definition(/*version*/ 1);
     input.definition_digest = Sha256Digest::for_bytes(b"uncomputed-taskflow-definition");
     assert!(matches!(
         store
-            .register_taskflow_definition(&input, &fence("owner-a", 1), 10)
+            .register_taskflow_definition(
+                &input,
+                &fence("owner-a", /*generation*/ 1),
+                /*registered_at_ms*/ 10
+            )
             .await,
         Err(TaskFlowError::Corrupt(_))
     ));
     assert_eq!(
         store
-            .taskflow_definition(&input.workflow_id, 1)
+            .taskflow_definition(&input.workflow_id, /*version*/ 1)
             .await
             .expect("read"),
         None
