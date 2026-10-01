@@ -62,6 +62,8 @@ pub(super) struct Profile {
     pub native: Native,
     pub calibration: Calibration,
     pub resources: Resources,
+    #[serde(default)]
+    pub first_physical_installation: Option<Source>,
 }
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

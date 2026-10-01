@@ -46,6 +46,8 @@ struct Deployment {
     independent_report: Source,
     #[serde(default)]
     renewal: Option<renewal::Renewal>,
+    #[serde(default)]
+    first_installation_successor: Option<renewal::Renewal>,
 }
 struct Inputs {
     descriptor: Source,
@@ -58,6 +60,7 @@ struct Inputs {
     artifacts: [LearningArtifactManifestV2; 3],
     payloads: [Vec<u8>; 3],
     renewal: Option<renewal::VerifiedRenewal>,
+    first_installation_successor: bool,
 }
 impl Inputs {
     fn read(path: &Path, pin: Digest32) -> HostResult<Self> {
@@ -67,10 +70,26 @@ impl Inputs {
         };
         let descriptor_bytes = descriptor.read(32 * 1024)?;
         let deployment: Deployment = serde_json::from_slice(&descriptor_bytes)?;
+        let first_installation_successor = deployment.first_installation_successor.is_some();
         if !matches!(
-            (deployment.schema.as_str(), deployment.renewal.is_some()),
-            ("hepta.cpu-neuron.initial-product-current-inputs.v1", false)
-                | ("hepta.cpu-neuron.renewed-product-current-inputs.v1", true)
+            (
+                deployment.schema.as_str(),
+                deployment.renewal.is_some(),
+                first_installation_successor
+            ),
+            (
+                "hepta.cpu-neuron.initial-product-current-inputs.v1",
+                false,
+                false
+            ) | (
+                "hepta.cpu-neuron.renewed-product-current-inputs.v1",
+                true,
+                false
+            ) | (
+                "hepta.cpu-neuron.first-installed-profile-current-inputs.v1",
+                false,
+                true
+            )
         ) {
             return Err("initial deployment schema".into());
         }
@@ -80,7 +99,13 @@ impl Inputs {
         let renewal = deployment
             .renewal
             .map(|renewal| renewal.verify(&profile, &deployment.profile))
-            .transpose()?;
+            .transpose()?
+            .or(deployment
+                .first_installation_successor
+                .map(|history| {
+                    history.verify_first_installation_successor(&profile, &deployment.profile)
+                })
+                .transpose()?);
         let evidence = inspect_initial_neuron_operational_evidence(
             &deployment.evaluation_config.path,
             digest(&deployment.evaluation_config.digest)?,
@@ -222,12 +247,16 @@ impl Inputs {
             artifacts,
             payloads,
             renewal,
+            first_installation_successor,
         };
         inputs.revalidate()?;
         Ok(inputs)
     }
     fn revalidate(&self) -> HostResult<()> {
         self.profile.validate(now_ms()?)?;
+        if self.profile.first_physical_installation.is_some() {
+            renewal::verify_first_installation(&self.profile)?;
+        }
         self.evidence.revalidate_current()?;
         if self.descriptor.read(32 * 1024)? != self.descriptor_bytes {
             return Err("current deployment changed".into());
@@ -314,15 +343,31 @@ pub fn select_initial_cpu_anchor(path: &Path, pin: Digest32) -> HostResult<Value
 
 pub fn publish_renewed_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     let inputs = Inputs::read(path, pin)?;
-    if inputs.renewal.is_none() {
+    if inputs.renewal.is_none() || inputs.first_installation_successor {
         return Err("renewal requires original protected history and new evidence".into());
     }
     publication::publish(inputs)
 }
 pub fn select_renewed_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     let inputs = Inputs::read(path, pin)?;
-    if inputs.renewal.is_none() {
+    if inputs.renewal.is_none() || inputs.first_installation_successor {
         return Err("renewal selection requires original protected history".into());
+    }
+    selection::select(inputs)
+}
+
+pub fn publish_first_installed_cpu_profile(path: &Path, pin: Digest32) -> HostResult<Value> {
+    let inputs = Inputs::read(path, pin)?;
+    if !inputs.first_installation_successor {
+        return Err("first physical installation requires its explicit Root/E/S domain".into());
+    }
+    publication::publish(inputs)
+}
+
+pub fn select_first_installed_cpu_profile(path: &Path, pin: Digest32) -> HostResult<Value> {
+    let inputs = Inputs::read(path, pin)?;
+    if !inputs.first_installation_successor {
+        return Err("first physical installation selection requires its explicit domain".into());
     }
     selection::select(inputs)
 }

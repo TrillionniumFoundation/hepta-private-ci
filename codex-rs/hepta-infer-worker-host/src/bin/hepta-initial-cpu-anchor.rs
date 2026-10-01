@@ -31,6 +31,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 path, pin,
             )?
         }
+        "publish-first-installed-profile" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::publish_first_installed_cpu_profile(
+                path, pin,
+            )?
+        }
+        "select-first-installed-profile" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::select_first_installed_cpu_profile(
+                path, pin,
+            )?
+        }
         _ => return Err("unsupported initial operational purpose".into()),
     };
     println!("{}", serde_json::to_string(&report)?);

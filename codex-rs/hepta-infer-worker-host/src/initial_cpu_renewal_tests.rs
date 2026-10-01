@@ -63,6 +63,36 @@ fn frozen_profile_rejects_invalid_runtime_resources_before_files_or_roles() -> H
 }
 
 #[test]
+fn first_physical_installation_corrects_only_an_unusable_write_envelope() -> HostResult<()> {
+    let mut old = profile()?;
+    old.resources.write_amplification_ppm = 10_000_000;
+    let mut corrected = profile()?;
+    corrected.resources.write_amplification_ppm = 4_000_000;
+    corrected.first_physical_installation = Some(Source {
+        path: "/root-first-installation-statement".into(),
+        digest: Digest32::of_bytes(b"separate Root declaration").to_string(),
+    });
+    validate_first_installation_profile(&old, &corrected)?;
+    assert!(validate_unchanged_profile(&old, &corrected).is_err());
+    for change in 0..6 {
+        let mut value: Profile = serde_json::from_value(serde_json::to_value(&corrected)?)?;
+        match change {
+            0 => value.weights.digest = Digest32::of_bytes(b"other weights").to_string(),
+            1 => value.normalization_digest = Digest32::of_bytes(b"other transform").to_string(),
+            2 => value.selector.uid += 1,
+            3 => value.calibration.maximum_ood_ppm += 1,
+            4 => value.resources.p99_latency_micros += 1,
+            5 => value.resources.write_amplification_ppm = 5_000_000,
+            _ => unreachable!(),
+        }
+        assert!(validate_first_installation_profile(&old, &value).is_err());
+    }
+    old.resources.write_amplification_ppm = 4_000_000;
+    assert!(validate_first_installation_profile(&old, &corrected).is_err());
+    Ok(())
+}
+
+#[test]
 fn fresh_operational_scope_cannot_change_model_normalization_roles_or_gates() -> HostResult<()> {
     let original = profile()?;
     let mut fresh = profile()?;

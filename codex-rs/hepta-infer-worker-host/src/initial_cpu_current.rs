@@ -131,6 +131,20 @@ pub fn open_current_cpu_neuron(
     {
         return Err("current installed CPU plan differs from independently frozen profile".into());
     }
+    if active.inputs.profile.first_physical_installation.is_some() {
+        let declared = renewal::verify_first_installation(&active.inputs.profile)?;
+        if plan.generation_store != declared.generation_store
+            || plan.runtime_index != declared.runtime_index
+            || plan.witness != declared.witness
+            || worker.worker_id != declared.agent_id
+            || rustix::process::geteuid().as_raw() != declared.workload_uid
+            || rustix::process::getegid().as_raw() != declared.workload_gid
+        {
+            return Err(
+                "actual first physical Owner differs from Root installation statement".into(),
+            );
+        }
+    }
     let guard = CurrentAdmission {
         pointer,
         storage_binding: active.inputs.storage_binding(),

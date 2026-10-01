@@ -190,7 +190,9 @@ pub(super) fn admission(
 }
 
 fn schema(inputs: &Inputs) -> &'static str {
-    if inputs.renewal.is_some() {
+    if inputs.first_installation_successor {
+        "hepta.cpu-neuron.first-installed-profile-independent-selections.v1"
+    } else if inputs.renewal.is_some() {
         "hepta.cpu-neuron.fresh-operational-independent-selections.v1"
     } else {
         "hepta.cpu-neuron.initial-independent-selections.v1"
