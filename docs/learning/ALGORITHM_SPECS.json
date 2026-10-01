@@ -216,6 +216,7 @@
     "documentationDoesNotAdvanceClaims": true,
     "sourceAndMergeCandidateExecutionRequired": true,
     "allRequiredProtocolsRegistered": true,
+    "declaredProtocolFieldSemanticsRequired": true,
     "allRequiredDataDomainsOwned": true,
     "globalCanonicalPathClosureRequired": true,
     "globalVerifierMustInvokeAlgorithmVerifier": true,
@@ -286,6 +287,93 @@
     "RandomStreamManifestV1",
     "AlgorithmFaultReceiptV1"
   ],
+  "protocolFieldRequirements": {
+    "BellmanOperatorArtifactV1": [
+      {
+        "name": "artifactId",
+        "type": "id128",
+        "required": true,
+        "maxBytes": 128
+      },
+      {
+        "name": "applicabilityDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "sensorCoreDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "branchDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "stateTrunkDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "actionTrunkDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "rank",
+        "type": "u32",
+        "required": true
+      },
+      {
+        "name": "normalizationDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "trainingDatasetDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "trainingCodeDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "runtimeTupleDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      },
+      {
+        "name": "errorBudget",
+        "type": "bounded_object",
+        "required": true,
+        "maxBytes": 16384
+      },
+      {
+        "name": "predecessorArtifactId",
+        "type": "id128",
+        "required": false,
+        "maxBytes": 128
+      },
+      {
+        "name": "rollbackDigest",
+        "type": "sha256",
+        "required": true,
+        "maxBytes": 64
+      }
+    ]
+  },
   "requiredDataDomains": [
     "ndu_coefficient_manifest_v1",
     "ndu_well_posedness_certificate_v1",
