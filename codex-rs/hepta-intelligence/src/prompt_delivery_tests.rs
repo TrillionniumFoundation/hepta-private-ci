@@ -21,6 +21,21 @@ use codex_hepta_types::FixedQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+struct ByteTokenizer;
+
+impl codex_hepta_context_compiler::ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        digest("tokenizer")
+    }
+
+    fn count_tokens(
+        &self,
+        bytes: &[u8],
+    ) -> Result<u64, ContextCompilerV2Error> {
+        Ok(u64::try_from(bytes.len()).unwrap_or(u64::MAX))
+    }
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -250,7 +265,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
     let selected = canonical_selection(&registry, &tuple, 100);
 
-    let output = compile_prompt_registry_v2(
+    let output = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -267,12 +282,13 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 4096,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 4096,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer,
     )
     .expect("compile exercised prompt registry context");
 
@@ -281,6 +297,10 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
         vec![id("realization:verify")]
     );
     assert_eq!(output.selected_deliveries.len(), 1);
+    assert_eq!(
+        output.serialization.serialized_token_count(),
+        output.serialized_payload.len() as u64
+    );
     assert_eq!(output.selected_deliveries[0].payload, payload);
     assert_eq!(
         output.selected_deliveries[0].binding.digest(),
@@ -385,7 +405,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
         )
         .expect("final-use revocation");
 
-    let error = compile_prompt_registry_v2(
+    let error = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -402,12 +422,13 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 4096,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 4096,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer,
     )
     .expect_err("stale exercised selection must not deliver");
     assert!(matches!(
@@ -424,7 +445,7 @@ fn compiler_rejects_registry_and_context_model_drift() {
         admitted_registry(&root, b"Bound instruction");
     let selected = canonical_selection(&registry, &tuple, 100);
 
-    let error = compile_prompt_registry_v2(
+    let error = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -441,12 +462,13 @@ fn compiler_rejects_registry_and_context_model_drift() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 4096,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 4096,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer,
     )
     .expect_err("model drift must fail");
     assert!(matches!(
@@ -501,4 +523,41 @@ pub(crate) fn revoke_registry(
             cutoff,
         )
         .expect("final-use revocation");
+}
+
+#[test]
+fn registry_compatibility_bridge_without_backend_is_unavailable() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (registry, tuple, _, _, _) = admitted_registry(&temp.path().join("registry"), b"payload:a");
+    let selected = canonical_selection(&registry, &tuple, 100);
+    let result = compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        PromptRegistryCompilationRequestV2 {
+            compilation_id: id("compilation:unavailable"),
+            serialization_id: id("serialization:unavailable"),
+            attachment_id: id("attachment:unavailable"),
+            registry_model_tuple: tuple.clone(),
+            context_model_profile: ContextModelProfileV2 {
+                model_digest: tuple.model_digest,
+                provider_id_digest: digest("provider"),
+                provider_model_digest: tuple.model_digest,
+                tokenizer_digest: tuple.tokenizer_digest,
+                serializer_digest: digest("serializer"),
+                template_digest: tuple.template_digest,
+                tool_schema_digest: tuple.tool_schema_digest,
+                maximum_context_tokens: 4096,
+            },
+            now_unix_ms: 100,
+            token_budget: 4096,
+            truncation_policy_digest: digest("truncation"),
+        },
+    );
+    assert!(matches!(
+        result,
+        Err(PromptRegistryCompilationErrorV2::Pipeline(
+            PromptPipelineErrorV1::ExactTokenizerUnavailable
+        ))
+    ));
 }

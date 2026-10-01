@@ -170,6 +170,7 @@ pub enum PromptPipelineErrorV1 {
     SerializedPayloadMissing(String),
     SerializationProofDrift,
     ProviderEvidenceRequired,
+    ExactTokenizerUnavailable,
     Arithmetic,
 }
 
@@ -205,25 +206,6 @@ impl ContextAdmissionVerifierV2 for RegistryAdmissionVerifier {
             && snapshot.authority_domain_digest == self.authority_domain_digest
             && snapshot.revocation_set_complete
             && snapshot.validate_shape().is_ok()
-    }
-}
-
-#[derive(Clone, Debug)]
-struct RegistryBoundTokenizer {
-    tokenizer_digest: Digest32,
-    exact_counts: BTreeMap<Digest32, u64>,
-}
-
-impl ExactTokenizerV2 for RegistryBoundTokenizer {
-    fn tokenizer_digest(&self) -> Digest32 {
-        self.tokenizer_digest
-    }
-
-    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
-        self.exact_counts
-            .get(&Digest32::of_bytes(bytes))
-            .copied()
-            .ok_or(ContextCompilerV2Error::InvalidSerializedTokenCount)
     }
 }
 
@@ -274,12 +256,26 @@ fn admission_domains(
     )
 }
 
+/// Compatibility entry without a tokenizer capability. Registry cost metadata
+/// cannot produce an exact-tokenization proof; callers must supply the backend
+/// through `compile_exercised_prompt_context_with_tokenizer_v1`.
 pub fn compile_exercised_prompt_context_v1(
+    _registry: &DurablePromptRegistry,
+    _portfolio: &SelectedPromptPortfolioV1,
+    _request: PromptContextCompileRequestV1,
+) -> Result<PreparedPromptContextV1, PromptPipelineErrorV1> {
+    Err(PromptPipelineErrorV1::ExactTokenizerUnavailable)
+}
+
+/// Compile actual registry payload bytes with the exact model-profile tokenizer.
+pub fn compile_exercised_prompt_context_with_tokenizer_v1(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptContextCompileRequestV1,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PreparedPromptContextV1, PromptPipelineErrorV1> {
     ensure_model_tuple_matches(portfolio, &request.model_profile)?;
+    ensure_tokenizer_matches(&request.model_profile, tokenizer)?;
     if !request.base_candidates.is_empty() {
         return Err(PromptPipelineErrorV1::PortfolioContextBindingMismatch);
     }
@@ -314,7 +310,6 @@ pub fn compile_exercised_prompt_context_v1(
 
     let mut candidates = Vec::with_capacity(portfolio.selected.len());
     let mut seen = BTreeSet::new();
-    let mut counts = BTreeMap::new();
     for (selected, payload) in portfolio.selected.iter().zip(&materialization.payloads) {
         let realization = &payload.binding;
         if !seen.insert(realization.realization_id.clone()) {
@@ -328,18 +323,10 @@ pub fn compile_exercised_prompt_context_v1(
             | PromptRoleV2::DeveloperInstruction
             | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
         };
-        counts.insert(
-            realization.payload_digest,
-            u64::from(realization.token_cost),
-        );
-        let tokenizer = RegistryBoundTokenizer {
-            tokenizer_digest: realization.tokenizer_digest,
-            exact_counts: counts.clone(),
-        };
         let tokenization = TokenizationReceiptV2::from_exact_bytes(
             realization.realization_id.clone(),
             &payload.payload,
-            &tokenizer,
+            tokenizer,
         )
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
         let expires_unix_ms = realization
@@ -412,12 +399,26 @@ pub fn compile_exercised_prompt_context_v1(
     })
 }
 
+/// Compatibility entry without a tokenizer capability. The complete serialized
+/// payload must be counted by the exact backend, including framing overhead.
 pub fn prepare_prompt_delivery_v1(
+    _registry: &DurablePromptRegistry,
+    _portfolio: &SelectedPromptPortfolioV1,
+    _prepared: &PreparedPromptContextV1,
+    _request: PromptDeliveryPrepareRequestV1,
+) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
+    Err(PromptPipelineErrorV1::ExactTokenizerUnavailable)
+}
+
+/// Revalidate and prepare delivery only after exact final-payload tokenization.
+pub fn prepare_prompt_delivery_with_tokenizer_v1(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     prepared: &PreparedPromptContextV1,
     request: PromptDeliveryPrepareRequestV1,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
+    ensure_tokenizer_matches(&prepared.model_profile, tokenizer)?;
     let receipt = prepared.compiled.receipt();
     if receipt.objective_digest() != portfolio.objective_digest
         || receipt.prompt_portfolio_digest() != portfolio.receipt.receipt_digest
@@ -451,8 +452,6 @@ pub fn prepare_prompt_delivery_v1(
         .map(|payload| (payload.binding.realization_id.clone(), payload))
         .collect::<BTreeMap<_, _>>();
     let mut realizations = Vec::new();
-    let mut counts = BTreeMap::new();
-    let mut serialized_count = 0_u64;
     for item_id in prepared.compiled.receipt().selected_item_ids() {
         let payload = by_id.get(item_id).ok_or_else(|| {
             PromptPipelineErrorV1::SelectedRealizationMissing(item_id.to_string())
@@ -463,27 +462,12 @@ pub fn prepare_prompt_delivery_v1(
             | PromptRoleV2::DeveloperInstruction
             | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
         };
-        counts.insert(
-            payload.binding.payload_digest,
-            u64::from(payload.binding.token_cost),
-        );
-        serialized_count = serialized_count
-            .checked_add(u64::from(payload.binding.token_cost))
-            .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         realizations.push(ContextRealizedItemV2 {
             item_id: item_id.clone(),
             role,
             content: payload.payload.clone(),
         });
     }
-    counts.insert(
-        Digest32::of_bytes(&serialized_payload),
-        serialized_count.max(1),
-    );
-    let tokenizer = RegistryBoundTokenizer {
-        tokenizer_digest: prepared.model_profile.tokenizer_digest,
-        exact_counts: counts,
-    };
     let serializer = ExactPreparedSerializer {
         serializer_digest: prepared.model_profile.serializer_digest,
         template_digest: prepared.model_profile.template_digest,
@@ -496,7 +480,7 @@ pub fn prepare_prompt_delivery_v1(
         serialization_id,
         realizations,
         &serializer,
-        &tokenizer,
+        tokenizer,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let serialization = serialized_context.receipt().clone();
@@ -674,6 +658,19 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+fn ensure_tokenizer_matches(
+    profile: &ContextModelProfileV2,
+    tokenizer: &impl ExactTokenizerV2,
+) -> Result<(), PromptPipelineErrorV1> {
+    if tokenizer.tokenizer_digest() != profile.tokenizer_digest {
+        return Err(PromptPipelineErrorV1::ContextCompiler(format!(
+            "{:?}",
+            ContextCompilerV2Error::TokenizerProfileMismatch
+        )));
+    }
+    Ok(())
 }
 
 fn ensure_model_tuple_matches(

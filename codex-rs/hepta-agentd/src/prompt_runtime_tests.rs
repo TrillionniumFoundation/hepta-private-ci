@@ -502,7 +502,7 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
 }
 
 #[test]
-fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+fn named_agentd_pipeline_without_tokenizer_rejects_exact_context_proofs() {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let registry_root = temporary.path().join("prompt-registry");
     let runtime_root = temporary.path().join("prompt-runtime");
@@ -707,7 +707,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         policy_digest: digest("exercise-policy"),
     };
 
-    let disposition = pipeline
+    let result = pipeline
         .compile_and_stage(
             "thread:product",
             "turn:product",
@@ -734,21 +734,22 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
                 token_budget: 128,
                 truncation_policy_digest: digest("truncation:agentd-product"),
             },
-        )
-        .unwrap_or_else(|error| panic!("compile and stage: {error}"));
-    assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
-
+        );
+    assert!(matches!(
+        result,
+        Err(AgentdPromptPipelineError::ExactTokenizerUnavailable)
+    ));
     let runtime = pipeline.runtime_owner();
-    let staged = runtime
-        .prepare(PromptRuntimePrepareRequest {
-            thread_id: "thread:product".to_owned(),
-            turn_id: "turn:product".to_owned(),
-            model_context_window: Some(128),
-        })
-        .unwrap_or_else(|error| panic!("prepare staged product prompt: {error}"))
-        .unwrap_or_else(|| panic!("staged attachment missing"));
-    assert_eq!(staged.developer_fragments.len(), 1);
-    assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    assert!(
+        runtime
+            .prepare(PromptRuntimePrepareRequest {
+                thread_id: "thread:product".to_owned(),
+                turn_id: "turn:product".to_owned(),
+                model_context_window: Some(128),
+            })
+            .unwrap_or_else(|error| panic!("prepare unstaged product prompt: {error}"))
+            .is_none()
+    );
 }
 
 #[test]
