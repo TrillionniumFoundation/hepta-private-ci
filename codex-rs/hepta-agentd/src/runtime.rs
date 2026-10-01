@@ -116,6 +116,7 @@ pub async fn run(
             runtime.start(Arc::clone(host))
         })
         .transpose()?;
+    let run_store_restart = config.verified_run_store_restart()?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -125,10 +126,11 @@ pub async fn run(
         .filter(|record| record.manifest.agent_id != identity.agent_id)
         .map(|record| record.layout)
         .collect::<Vec<_>>();
-    let state = Arc::new(AgentdState::new(
+    let state = Arc::new(AgentdState::new_with_verified_restart(
         identity.clone(),
         registry,
         EVENT_CAPACITY,
+        &run_store_restart,
     )?);
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;

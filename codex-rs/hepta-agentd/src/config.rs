@@ -13,6 +13,11 @@ use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "run_store_restart_admission.rs"]
+mod run_store_restart_admission;
+pub(crate) use run_store_restart_admission::VerifiedRunStoreRestart;
+pub(crate) use run_store_restart_admission::runtime_composition;
+
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";

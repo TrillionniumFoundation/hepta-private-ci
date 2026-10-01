@@ -30,6 +30,9 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+#[path = "live_run_admission.rs"]
+mod live_run_admission;
+
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -491,15 +494,17 @@ impl AgentdState {
                 run_id,
                 expected_revision,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let mut candidate = runs.clone();
-                let receipt = candidate
-                    .mark_dispatched(now_ms()?, &run_id, expected_revision)
-                    .map_err(run_error)?;
-                if !receipt.idempotent {
-                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
-                }
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    live_run_admission::require_current_dispatch(self, runs, &run_id, generation)?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .mark_dispatched(now_ms()?, &run_id, expected_revision)
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunMarkDispatchedBound {
@@ -508,21 +513,23 @@ impl AgentdState {
                 dispatch_binding_digest,
                 pre_effect_abort_commitment_digest,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let mut candidate = runs.clone();
-                let receipt = candidate
-                    .mark_dispatched_bound(
-                        now_ms()?,
-                        &run_id,
-                        expected_revision,
-                        dispatch_binding_digest,
-                        pre_effect_abort_commitment_digest,
-                    )
-                    .map_err(run_error)?;
-                if !receipt.idempotent {
-                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
-                }
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    live_run_admission::require_current_dispatch(self, runs, &run_id, generation)?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .mark_dispatched_bound(
+                            now_ms()?,
+                            &run_id,
+                            expected_revision,
+                            dispatch_binding_digest,
+                            pre_effect_abort_commitment_digest,
+                        )
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunAbortBeforeEffect {

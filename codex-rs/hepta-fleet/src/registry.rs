@@ -271,6 +271,36 @@ impl FleetRegistry {
         sync_directory(staging_root)
     }
 
+    /// Read one exact lifecycle event from this Agent's authenticated local
+    /// history, after the original owner validates its complete contiguous
+    /// sequence. This is historical evidence, never current serving authority.
+    pub fn load_agent_lifecycle_generation(
+        &self,
+        agent_id: &AgentId,
+        generation: u64,
+    ) -> Result<AgentLifecycleState, FleetRegistryError> {
+        let record = self.load_agent(agent_id)?;
+        if generation > record.lifecycle.generation {
+            return Err(FleetRegistryError::Corrupt(
+                "requested lifecycle generation is outside the validated history".to_string(),
+            ));
+        }
+        let path = lifecycle_path(record.layout.owner_run_root(), generation);
+        let state: AgentLifecycleState =
+            serde_json::from_str(&read_regular_file(&path)?).map_err(|error| {
+                FleetRegistryError::Corrupt(format!("invalid historical lifecycle: {error}"))
+            })?;
+        if state.schema_version != AGENT_STATE_SCHEMA_VERSION
+            || &state.agent_id != agent_id
+            || state.generation != generation
+        {
+            return Err(FleetRegistryError::Corrupt(
+                "historical lifecycle does not match the exact Agent and generation".to_string(),
+            ));
+        }
+        Ok(state)
+    }
+
     /// Read and validate one registered Agent without enumerating its peers.
     ///
     /// This is a fresh owner-local control read, not a cached grant or a fleet

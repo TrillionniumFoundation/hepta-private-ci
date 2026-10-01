@@ -6,7 +6,6 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_agent_components::authbus::SignedMessage;
 use codex_hepta_agent_components::authbus::SignedMessageClaims;
 use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_agent_components::contracts::Sha256Digest;
 use codex_hepta_agent_components::fleet::AgentLifecycle;
 use codex_hepta_agent_components::fleet::FleetRegistry;
 use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
@@ -24,7 +23,6 @@ use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RunReceipt;
-use crate::RuntimeComposition;
 
 #[path = "automation_attachment.rs"]
 mod automation_attachment;
@@ -84,42 +82,38 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        Self::new_inner(identity, registry, event_capacity, None)
+    }
+
+    pub(crate) fn new_with_verified_restart(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        restart: &crate::config::VerifiedRunStoreRestart,
+    ) -> Result<Self, AgentdError> {
+        Self::new_inner(identity, registry, event_capacity, Some(restart))
+    }
+
+    fn new_inner(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        restart: Option<&crate::config::VerifiedRunStoreRestart>,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
-        let configuration_material = format!(
-            "{}|{}|{}|{}|{}",
-            identity.agent_id,
-            identity.spawn_generation,
-            identity.workspace.display(),
-            identity.home_root.display(),
-            identity.run_root.display()
-        );
-        let ports_material = format!(
-            "{}|{}|{}",
-            identity.control_socket.display(),
-            identity.app_server_socket.display(),
-            crate::AGENTD_CONTROL_SCHEMA_VERSION
-        );
+        let composition = crate::config::runtime_composition(&identity, identity.spawn_generation);
         let run_store_path = identity.run_root.join("runtime-codex-agent-runs-v1.json");
-        let run_coordinator = AgentRunCoordinator::open_durable(
-            RuntimeComposition {
-                agent_id: identity.agent_id.as_str().to_string(),
-                supervisor_generation: identity.spawn_generation,
-                agentd_generation: identity.spawn_generation,
-                configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
-                    .as_str()
-                    .to_string(),
-                ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
-                    .as_str()
-                    .to_string(),
-                max_active_runs: usize::from(identity.resources.max_concurrent_turns),
-            },
-            run_store_path,
-        )
+        let run_coordinator = match restart {
+            Some(proof) => {
+                AgentRunCoordinator::open_durable_for_restart(composition, run_store_path, proof)
+            }
+            None => AgentRunCoordinator::open_durable(composition, run_store_path),
+        }
         .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");

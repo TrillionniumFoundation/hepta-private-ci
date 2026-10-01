@@ -24,6 +24,9 @@ const MAX_CANCEL_REASON_BYTES: usize = 512;
 const CANCEL_ACK_TIMEOUT_MS: u64 = 3_000;
 const DEADLINE_CANCEL_REASON: &str = "deadline_elapsed";
 
+#[path = "lane_b_restart.rs"]
+mod restart;
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RunPhase {
