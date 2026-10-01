@@ -362,7 +362,7 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true,
-      "sourceBlob": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "sourceBlob": "4fb64e91b45e3653b77a59f6f5ed3e2650929b0e"
     },
     {
       "operation": "admit_ndu_coefficient_profile",
@@ -544,8 +544,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "f6b7b34dbc66d007877f9b12c004e3eb6e71ea5e",
+    "tree": "45b5852225033660147a26fb9f727c07402fd54e"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -583,7 +583,26 @@
     "stochasticConsumerSource": {
       "state": "candidate_implemented_in_intelligence_control_not_product_activated",
       "callSurface": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
-      "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
+      "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient",
+      "requirement": "The externally admitted complete V2 manifest must match the pinned current artifact through the owner canonical V1 projection, including objective class, complete manifest support commitment and every representable predecessor; multi-parent projections are rejected. The host separately authenticates the live withdrawal frontier; raw signed V1 CURRENT is not full owner-service provenance validation.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_authenticated_registry_objective_drift"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_authenticated_registry_support_drift"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_authenticated_registry_lineage_drift"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_lossy_multiple_predecessor_projection"
+        }
+      ]
     }
   },
   "selectedProductionWriterState": "not_established",

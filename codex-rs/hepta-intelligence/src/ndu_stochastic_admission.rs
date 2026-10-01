@@ -144,6 +144,11 @@ pub fn canonical_ndu_stochastic_solver_digest_v1(
 /// Performs final-use artifact currentness before composing the numeric and
 /// independent evaluation evidence. Successful admission remains DENY_ALL and
 /// is not artifact selection, activation, promotion or release authority.
+///
+/// The pin must use the owner's canonical V1 projection of the complete V2
+/// manifest. The host authenticates the live withdrawal frontier supplied in
+/// the request; a raw signed V1 CURRENT view does not perform the owner service's
+/// complete provenance and source-withdrawal checks by itself.
 pub fn admit_ndu_stochastic_candidate_v1(
     candidate: &mut RevalidatingCandidate,
     current_registry_view: VerifiedCurrentRegistryViewV1,
@@ -209,7 +214,11 @@ pub fn admit_ndu_stochastic_candidate_v1(
     if v1.artifact_id != manifest.artifact_id
         || v1.kind != manifest.kind
         || v1.generation != manifest.generation
+        || manifest.predecessor_ids.len() > 1
+        || v1.predecessor_id.as_ref() != manifest.predecessor_ids.first()
         || v1.content_digest != manifest.bytes_digest
+        || v1.objective_digest != manifest.objective_class_digest
+        || v1.support_digest != v2.manifest_digest
         || v1.producer_id != manifest.producer_id
         || v1.compatibility_digest != manifest.compatibility_digest
         || v1.encoded_size_bytes != manifest.encoded_size_bytes

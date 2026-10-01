@@ -74,6 +74,7 @@ pub enum IterationLedgerError {
     EvidenceAlreadyUsed(String),
     EmptyEvidenceDigest,
     EvidenceTimestampMissing,
+    EvidenceTimeWindow,
     EvidenceCandidateMismatch,
     IndependentActorConflict(String),
     EvidenceKindMismatch,
@@ -150,11 +151,6 @@ impl IterationLedgerV1 {
         candidate
             .validate(&self.envelope)
             .map_err(IterationLedgerError::InvalidCandidate)?;
-        if candidate.predecessor.as_ref() == Some(&candidate.candidate_id) {
-            return Err(IterationLedgerError::InvalidCandidate(
-                "candidate cannot roll back to itself".into(),
-            ));
-        }
         self.candidates
             .insert(candidate.candidate_id.clone(), candidate);
         Ok(())
@@ -180,6 +176,11 @@ impl IterationLedgerV1 {
         self.validate_evidence(candidate_id, &current, next, &receipt)?;
         validate_iteration_transition(current.state, next)
             .map_err(IterationLedgerError::InvalidTransition)?;
+        let mut successor = current.clone();
+        successor.state = next;
+        successor
+            .validate(&self.envelope)
+            .map_err(IterationLedgerError::InvalidCandidate)?;
         if let Some(previous) = self.evidence.get(&receipt.evidence_id) {
             if previous != &receipt {
                 return Err(IterationLedgerError::EvidenceIdentityConflict(
@@ -226,6 +227,18 @@ impl IterationLedgerV1 {
         if receipt.observed_unix_seconds == 0 {
             return Err(IterationLedgerError::EvidenceTimestampMissing);
         }
+        if receipt.observed_unix_seconds > self.envelope.expiry_unix_seconds
+            || self
+                .events
+                .iter()
+                .rev()
+                .find(|event| &event.candidate_id == candidate_id)
+                .is_some_and(|event| {
+                    event.evidence.observed_unix_seconds > receipt.observed_unix_seconds
+                })
+        {
+            return Err(IterationLedgerError::EvidenceTimeWindow);
+        }
         if requires_independent_actor(next) && receipt.actor_id == current.generator_identity {
             return Err(IterationLedgerError::IndependentActorConflict(
                 receipt.actor_id.to_string(),
@@ -249,6 +262,14 @@ impl IterationLedgerV1 {
         snapshot: IterationLedgerSnapshotV1,
     ) -> Result<Self, IterationLedgerError> {
         let mut ledger = Self::new(snapshot.envelope)?;
+        // Reject oversized public snapshots before duplicating their candidate
+        // identities or replaying attacker-supplied event collections.
+        if snapshot.candidates.len() > ledger.envelope.maximum_candidates as usize {
+            return Err(IterationLedgerError::CandidateLimitExceeded);
+        }
+        if snapshot.events.len() > MAX_ITERATION_EVENTS {
+            return Err(IterationLedgerError::EventLimitExceeded);
+        }
         let expected_states: BTreeMap<StableId, IterationCandidateStateV1> = snapshot
             .candidates
             .iter()
@@ -282,6 +303,10 @@ impl IterationLedgerV1 {
     }
 }
 
+#[cfg(test)]
+#[path = "iteration_ledger_capacity_tests.rs"]
+mod capacity_tests;
+
 const fn expected_kind(next: IterationCandidateStateV1) -> IterationEvidenceKindV1 {
     match next {
         IterationCandidateStateV1::StaticallyValidated => IterationEvidenceKindV1::StaticValidation,
@@ -308,6 +333,8 @@ const fn requires_independent_actor(next: IterationCandidateStateV1) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::test_support::FixtureValue;
     fn id(value: &str) -> StableId {
@@ -412,5 +439,72 @@ mod tests {
         ));
         let restored = IterationLedgerV1::from_snapshot(ledger.snapshot()).fixture("test fixture");
         assert_eq!(restored.snapshot(), ledger.snapshot());
+    }
+
+    #[test]
+    fn transition_rejects_missing_rollback_without_appending_evidence() {
+        let mut ledger = IterationLedgerV1::new(envelope()).fixture("valid envelope");
+        let mut value = candidate();
+        value.predecessor = None;
+        ledger
+            .append_candidate(value)
+            .fixture("draft may omit predecessor");
+        let before = ledger.snapshot();
+        assert!(matches!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::StaticallyValidated,
+                receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8),
+            ),
+            Err(IterationLedgerError::InvalidCandidate(_))
+        ));
+        assert_eq!(ledger.snapshot(), before);
+    }
+
+    #[test]
+    fn evidence_must_precede_expiry_and_follow_prior_candidate_evidence() {
+        let mut value = envelope();
+        value.expiry_unix_seconds = 10;
+        let mut ledger = IterationLedgerV1::new(value).fixture("valid envelope");
+        ledger
+            .append_candidate(candidate())
+            .fixture("valid candidate");
+        let before = ledger.snapshot();
+        let mut expired = receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8);
+        expired.observed_unix_seconds = 11;
+        assert_eq!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::StaticallyValidated,
+                expired,
+            ),
+            Err(IterationLedgerError::EvidenceTimeWindow)
+        );
+        assert_eq!(ledger.snapshot(), before);
+        let mut first = receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8);
+        first.observed_unix_seconds = 2;
+        ledger
+            .transition(
+                &id("candidate"),
+                IterationCandidateStateV1::StaticallyValidated,
+                first,
+            )
+            .fixture("first evidence precedes expiry");
+        let before = ledger.snapshot();
+        assert_eq!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::SandboxTested,
+                receipt(IterationEvidenceKindV1::Sandbox, "generator", 9),
+            ),
+            Err(IterationLedgerError::EvidenceTimeWindow)
+        );
+        assert_eq!(ledger.snapshot(), before);
+        assert_eq!(
+            IterationLedgerV1::from_snapshot(before.clone())
+                .fixture("valid history replays")
+                .snapshot(),
+            before
+        );
     }
 }

@@ -61,11 +61,27 @@ parent-directory synchronization and cross-store reconciliation, and separately
 authorizes use. File locking is not authentication or continuous revocation
 freshness. Logical revocation is not physical erasure.
 
+For complete V2 final-use checks, obtain a new
+`LearningArtifactOwnerService::current_registry_view` or an independently
+equivalent provider before each use. Raw signed owner-host/verifier views prove
+V1 compatibility history only; they do not check complete source withdrawals,
+manifest expiry or retained V2 provenance. Selector and cached-consumer checks
+honor the service's eligibility overlay, but cannot create it from V1 bytes.
+The embedding must discard cached candidates if view acquisition fails. See
+[`PINNED_LOAD.md`](PINNED_LOAD.md) and [`OWNER_SERVICE.md`](OWNER_SERVICE.md).
+Cached consumers also pin owner trust and cannot downgrade complete provenance
+to a raw V1 view under the same trust. Explicit re-admission is required after
+either trust substitution or provenance downgrade.
+
 Required tests cover read-only loading, shared readers, writer lock contention,
 transient duplicates, existing empty and truncate-to-zero targets, symlinks,
 concurrent creators and post-create interference. Test source and CI submission
-are not passed execution evidence; source-head, actual-base merge, product-matrix
-and independent review gates remain mandatory. No capability or completion state
+are not passed execution evidence. Ordinary authorized development runs affected
+package tests, normal review and development-profile navigation checks. Changes
+or execution that exercise a runtime, independent-evaluation, external-effect or
+deployment boundary additionally require that boundary's exact-candidate
+qualification and applicable product or independent evidence. A source-only edit
+does not require unrelated deployment receipts. No capability or completion state
 is advanced by this document.
 
 
@@ -78,3 +94,11 @@ scope digest as well as the chain head and file digest. Lifecycle recovery
 replays actor evidence at each immutable event's `occurred_at`, so later
 credential expiry cannot make valid history unreadable while a new post-expiry
 mutation still fails.
+
+Complete scoped V3 admissions use `admission_storage.rs` with the same contained
+create-only and bounded-read model. A receipt pins the full admission and
+manifest, withdrawal scope/head, encoded byte count and file digest. The
+digest-pinned readers require independent admission or parent-manifest
+commitments; hashes derived from the inspected file cannot authorize recovery.
+Historical reads verify the original admitted time, while publication and
+current use separately enforce live expiry and withdrawal conditions.

@@ -4,7 +4,23 @@ on:
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
+    inputs:
+      source_sha:
+        type: string
+        required: false
+      base_sha:
+        type: string
+        required: false
   workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit (defaults to the selected ref)
+        type: string
+        required: false
+      base_sha:
+        description: Exact base commit for ordered-parent synthetic qualification
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -18,8 +34,8 @@ jobs:
       matrix:
         lane: [source-head, synthetic-merge]
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -30,6 +46,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          for SHA in "$SOURCE_SHA" "$BASE_SHA"; do
+            [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] && [[ "$SHA" != 0000000000000000000000000000000000000000 ]]
+            test "$(git cat-file -t "$SHA")" = commit
+          done
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$SOURCE_SHA" != "$BASE_SHA"
           if [ '${{ matrix.lane }}' = synthetic-merge ]; then
