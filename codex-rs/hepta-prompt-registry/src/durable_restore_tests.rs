@@ -50,7 +50,7 @@ fn known_precommit_bootstrap_failures_leave_a_retryable_owner_directory() {
     for fault in ["storage-full", "blocked-staging"] {
         let temp = tempfile::tempdir().must("temp");
         let path = temp.path().join("owner");
-        let (store, stored) = Store::open(&path).must("fresh owner");
+        let (store, stored) = Store::open(&path, /*maximum_records*/ 64).must("fresh owner");
         assert!(stored.is_none());
         assert!(store.new_owner_marker);
         if fault == "storage-full" {
@@ -83,7 +83,7 @@ fn concurrent_bootstrap_cannot_create_or_steal_a_marker_before_owner_locking() {
     let directory = prepare_directory(&path).must("directory");
     directory.try_lock().must("bootstrap owner");
     assert!(matches!(
-        Store::open(&path),
+        Store::open(&path, /*maximum_records*/ 64),
         Err(DurableRegistryError::StateLocked)
     ));
     assert!(!path.join("registry.lock").exists());
@@ -102,7 +102,7 @@ fn concurrent_bootstrap_cannot_create_or_steal_a_marker_before_owner_locking() {
 fn indeterminate_initialization_and_deleted_committed_state_retain_the_owner_marker() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
-    let (store, _) = Store::open(&path).must("fresh owner");
+    let (store, _) = Store::open(&path, /*maximum_records*/ 64).must("fresh owner");
     store.fail_directory_sync_after_rename_once.set(true);
     assert!(matches!(
         store.initialize(&PromptRegistry::new(64).must("core")),

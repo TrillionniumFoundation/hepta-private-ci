@@ -94,7 +94,7 @@ impl DurablePromptRegistry {
         // previously unused state directory look like lost committed state.
         let empty_registry =
             PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?;
-        let (mut store, stored) = Store::open(directory)?;
+        let (mut store, stored) = Store::open(directory, maximum_records)?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
@@ -218,6 +218,11 @@ impl DurablePromptRegistry {
         supersedes_realization_id: Option<StableId>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.ensure_available()?;
+        // Reject impossible input before hashing caller-owned bytes or consuming
+        // a final-use nonce. The domain core repeats this bound at mutation.
+        if payload.is_empty() || payload.len() > crate::MAX_REALIZATION_PAYLOAD_BYTES {
+            return Err(DurableRegistryError::Core(Error::PayloadTooLarge));
+        }
         let factor = self
             .registry
             .factor(&binding.factor_id)
@@ -668,29 +673,8 @@ fn restore_v2(
     stored: StoredV2,
     maximum_records: usize,
 ) -> Result<PromptRegistry, DurableRegistryError> {
-    if stored.schema != STORE_SCHEMA || stored.maximum_records == 0 || maximum_records == 0 {
-        return Err(DurableRegistryError::Corrupt);
-    }
-    let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
+    let revision = validate_stored_metadata_bounds(&stored, maximum_records)?;
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
-    if stored.maximum_records != configured_maximum {
-        return Err(DurableRegistryError::ConfigurationMismatch);
-    }
-    if stored
-        .factors
-        .len()
-        .saturating_add(stored.realizations.len())
-        > configured_maximum
-    {
-        return Err(DurableRegistryError::CapacityExceeded);
-    }
-    if stored.bindings.len() > stored.realizations.len()
-        || stored.payloads.len() > stored.realizations.len()
-        || stored.supersessions.len() > stored.realizations.len()
-        || stored.lifecycle_events.len() > stored.factors.len().saturating_mul(4)
-    {
-        return Err(DurableRegistryError::Corrupt);
-    }
     let mut factors = BTreeMap::new();
     for stored_factor in stored.factors {
         let factor = decode_factor(stored_factor)?;
@@ -781,6 +765,38 @@ fn restore_v2(
     Ok(registry)
 }
 
+// The V3 owner must admit this bounded metadata before reading or hashing any
+// selected payload extents; V2 restore shares exactly the same error ordering.
+fn validate_stored_metadata_bounds(
+    stored: &StoredV2,
+    maximum_records: usize,
+) -> Result<Revision, DurableRegistryError> {
+    if stored.schema != STORE_SCHEMA || stored.maximum_records == 0 || maximum_records == 0 {
+        return Err(DurableRegistryError::Corrupt);
+    }
+    let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
+    let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
+    if stored.maximum_records != configured_maximum {
+        return Err(DurableRegistryError::ConfigurationMismatch);
+    }
+    if stored
+        .factors
+        .len()
+        .saturating_add(stored.realizations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
+    }
+    if stored.bindings.len() > stored.realizations.len()
+        || stored.payloads.len() > stored.realizations.len()
+        || stored.supersessions.len() > stored.realizations.len()
+        || stored.lifecycle_events.len() > stored.factors.len().saturating_mul(4)
+    {
+        return Err(DurableRegistryError::Corrupt);
+    }
+    Ok(revision)
+}
+
 fn migrate_v1(
     stored: StoredV1,
     maximum_records: usize,
@@ -792,6 +808,19 @@ fn migrate_v1(
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
     if stored.maximum_records != configured_maximum {
         return Err(DurableRegistryError::ConfigurationMismatch);
+    }
+    // Legacy images obey the same record budget before any decoding, indexing
+    // or synthetic lifecycle-event construction as current storage images.
+    if stored
+        .factors
+        .len()
+        .saturating_add(stored.realizations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
+    }
+    if stored.bindings.len() > stored.realizations.len() {
+        return Err(DurableRegistryError::Corrupt);
     }
     let mut factors = BTreeMap::new();
     let migration_actor =
@@ -1305,12 +1334,16 @@ enum OpenPolicy {
 }
 
 impl Store {
-    fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
-        Self::open_with_policy(directory, OpenPolicy::BootstrapAllowed)
+    fn open(
+        directory: &Path,
+        maximum_records: usize,
+    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
+        Self::open_with_policy(directory, maximum_records, OpenPolicy::BootstrapAllowed)
     }
 
     fn open_with_policy(
         directory: &Path,
+        maximum_records: usize,
         policy: OpenPolicy,
     ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
         let root = match policy {
@@ -1389,7 +1422,8 @@ impl Store {
             3 => {
                 let manifest =
                     serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?;
-                let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
+                let (payloads, state) =
+                    payloads::PayloadState::hydrate(&store.root, manifest, maximum_records)?;
                 store.payloads = payloads;
                 StoredAny::V2(state)
             }

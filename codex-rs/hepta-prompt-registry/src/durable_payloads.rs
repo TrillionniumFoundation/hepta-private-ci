@@ -23,6 +23,7 @@ use super::map_precommit_io;
 use super::open_private;
 use crate::PromptRegistry;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::IdProfileV1;
 use codex_hepta_types::StableId;
 
 pub(super) const FILE_NAME: &str = "registry.payloads";
@@ -77,12 +78,16 @@ impl PayloadState {
     pub fn hydrate(
         directory: &File,
         mut stored: StoredV3,
+        maximum_records: usize,
     ) -> Result<(Self, StoredV2), DurableRegistryError> {
         if stored.schema != 3
             || stored.state.schema != super::STORE_SCHEMA
             || !stored.state.payloads.is_empty()
-            || stored.payload_references.len() > crate::MAX_RECORDS
         {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        super::validate_stored_metadata_bounds(&stored.state, maximum_records)?;
+        if stored.payload_references.len() > stored.state.realizations.len() {
             return Err(DurableRegistryError::Corrupt);
         }
         let mut ordered = stored.payload_references;
@@ -93,6 +98,7 @@ impl PayloadState {
             if reference.offset != committed_end
                 || reference.length == 0
                 || reference.length > crate::MAX_REALIZATION_PAYLOAD_BYTES as u64
+                || StableId::with_profile(&reference.realization_id, IdProfileV1::Stable).is_err()
                 || references.contains_key(&reference.realization_id)
             {
                 return Err(DurableRegistryError::Corrupt);

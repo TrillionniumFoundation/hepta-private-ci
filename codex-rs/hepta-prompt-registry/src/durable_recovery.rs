@@ -83,8 +83,11 @@ impl DurablePromptRegistry {
     ) -> Result<Self, DurableRegistryError> {
         expected.validate()?;
         PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?;
-        let (mut store, stored) =
-            Store::open_with_policy(directory, OpenPolicy::ExistingStateRequired)?;
+        let (mut store, stored) = Store::open_with_policy(
+            directory,
+            maximum_records,
+            OpenPolicy::ExistingStateRequired,
+        )?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
