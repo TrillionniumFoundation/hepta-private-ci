@@ -10,6 +10,7 @@ use codex_login::AuthCredentialsStoreMode;
 use codex_login::AuthKeyringBackendKind;
 use codex_login::login_with_api_key;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 #[serial]
