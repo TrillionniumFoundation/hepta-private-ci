@@ -27,26 +27,7 @@ impl NativeJournal {
             maximum_in_flight,
         } = event
         {
-            validate_native_request(&request)?;
-            if !(1..=256).contains(&maximum_in_flight) {
-                return Err(Error::CapacityExceeded);
-            }
-            if self
-                .maximum_in_flight
-                .is_some_and(|limit| limit != maximum_in_flight)
-                || self.records.contains_key(&request.request_id)
-            {
-                return Err(Error::Conflict);
-            }
-            if self
-                .records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                >= maximum_in_flight
-            {
-                return Err(Error::CapacityExceeded);
-            }
+            self.validate_reserve(&request, maximum_in_flight)?;
             self.maximum_in_flight = Some(maximum_in_flight);
             self.records.insert(
                 request.request_id.clone(),
@@ -310,6 +291,82 @@ impl NativeJournal {
         Ok(())
     }
 
+    fn validate_reserve(
+        &self,
+        request: &NativeRequest,
+        maximum_in_flight: usize,
+    ) -> Result<(), Error> {
+        validate_native_request(request)?;
+        if !(1..=256).contains(&maximum_in_flight) {
+            return Err(Error::CapacityExceeded);
+        }
+        if self
+            .maximum_in_flight
+            .is_some_and(|limit| limit != maximum_in_flight)
+            || self.records.contains_key(&request.request_id)
+        {
+            return Err(Error::Conflict);
+        }
+        if self
+            .records
+            .values()
+            .filter(|record| record.state != NativeReservationState::Released)
+            .count()
+            >= maximum_in_flight
+        {
+            return Err(Error::CapacityExceeded);
+        }
+        Ok(())
+    }
+
+    fn stage_record_event(
+        &self,
+        request_id: &str,
+        event: Event,
+    ) -> Result<(NativeRunRecord, Option<usize>), Error> {
+        let event_id = match &event {
+            Event::CheckpointReference { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { request, .. } => &request.request_id,
+            Event::BindExecution { request_id, .. }
+            | Event::Dispatch { request_id, .. }
+            | Event::Started { request_id, .. }
+            | Event::RejectBeforeStart { request_id, .. }
+            | Event::Cancel { request_id }
+            | Event::Stop { request_id, .. }
+            | Event::AbortBeforeEffect { request_id, .. }
+            | Event::Observe { request_id, .. }
+            | Event::Reconcile { request_id, .. }
+            | Event::Retire { request_id, .. } => request_id,
+        };
+        if event_id != request_id {
+            return Err(Error::AssignmentMismatch);
+        }
+        if let Event::Reserve {
+            request,
+            maximum_in_flight,
+        } = &event
+        {
+            // A one-record projection cannot count the other occupied slots.
+            self.validate_reserve(request, *maximum_in_flight)?;
+        }
+        let mut staged = Self {
+            maximum_in_flight: self.maximum_in_flight,
+            ..Self::default()
+        };
+        if let Some(record) = self.records.get(request_id) {
+            staged
+                .records
+                .insert(request_id.to_string(), record.clone());
+        }
+        staged.apply(event)?;
+        // Resolve the complete candidate before the caller appends anything.
+        let record = staged
+            .records
+            .remove(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        Ok((record, staged.maximum_in_flight))
+    }
+
     fn apply_checkpoint_reference(
         &mut self,
         generation: u64,
@@ -409,3 +466,7 @@ impl NativeJournal {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "native_record_staging_tests.rs"]
+mod record_staging_tests;
