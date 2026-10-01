@@ -1,5 +1,14 @@
 use super::*;
+use codex_hepta_kg::build_prompt_factor_projection_v1;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_prompt_optimizer::canonical::*;
+use codex_hepta_types::Generation;
 
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -27,6 +36,32 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+fn sign_learning_evidence(
+    verifier: &LearningEvidenceVerifierV1,
+    key: &SigningKey,
+    principal_id: &str,
+    role: LearningEvidenceRoleV1,
+    evidence_id: &str,
+    payload: &[u8],
+    now: u64,
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id(evidence_id),
+        principal_id: id(principal_id),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: verifier.scope_digest(),
+        objective_digest: verifier.objective_digest(),
+        authority_epoch: verifier.authority_epoch(),
+        issued_at: now,
+        expires_at: now + 30_000,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
 }
 
 pub(crate) fn admitted_registry(
@@ -204,29 +239,146 @@ pub(crate) fn canonical_selection(
         },
     )
     .expect("enumerate current registry");
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:1"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![id("factor:verify")],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: 9_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
-        objective_digest: digest("objective"),
-        state_digest: digest("state"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
-        generation_vector_digest: digest("generation-vector"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
+    let generator_key = SigningKey::from_bytes(&[79; 32]);
+    let evaluator_key = SigningKey::from_bytes(&[80; 32]);
+    let evidence_scope = digest("scope:prompt-selection-evidence");
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: evidence_scope,
+        objective_digest: candidates.receipt.objective_digest,
+        authority_epoch: 1,
+        signers: [
+            (
+                "prompt.optimizer",
+                LearningEvidenceRoleV1::Generator,
+                &generator_key,
+            ),
+            (
+                "prompt-evaluator:fixture",
+                LearningEvidenceRoleV1::Evaluator,
+                &evaluator_key,
+            ),
+        ]
+        .into_iter()
+        .map(|(principal_id, role, key)| {
+            let public_key = key.verifying_key().to_bytes();
+            TrustedLearningSignerV1 {
+                principal: AuthenticatedPrincipalV1 {
+                    principal_id: id(principal_id),
+                    credential_chain_digest: digest(&format!("credential:{principal_id}")),
+                    signing_key_digest: Digest32::of_bytes(&public_key),
+                    scope_digest: evidence_scope,
+                    authority_epoch: 1,
+                    authenticated_at: 1,
+                    expires_at: now + 30_000,
+                },
+                controller_id: id(&format!("controller:{principal_id}")),
+                verifying_key: public_key,
+                roles: vec![role],
+                revoked_at: None,
+            }
+        })
+        .collect(),
+    })
+    .expect("host-pinned prompt evidence trust");
+    let completeness = CandidateSetCompletenessReceiptV1 {
+        set_id: candidates.receipt.set_id.clone(),
+        state_digest: candidates.receipt.state_digest,
+        generator_id: id("prompt.optimizer"),
+        generator_code_digest: digest("prompt-generator-fixture-code"),
+        grammar_digest: candidates.receipt.selection_grammar_digest,
+        hard_filter_digest: digest("prompt-generator-fixture-filters"),
+        truncation_digest: digest("prompt-generator-fixture-truncation"),
+        candidates_digest: candidates.candidates_digest,
+        candidate_count: u32::try_from(candidates.candidates.len()).expect("bounded candidates"),
+        omitted_count_bound: candidates.omitted_count,
+        canonical_order_digest: candidates.canonical_order_digest,
+        complete_for_generator: true,
     };
+    let completeness_evidence = sign_learning_evidence(
+        &verifier,
+        &generator_key,
+        "prompt.optimizer",
+        LearningEvidenceRoleV1::Generator,
+        "evidence:prompt-completeness",
+        &candidate_completeness_signing_payload_v1(&completeness).expect("completeness payload"),
+        now,
+    );
+    let pricing_evidence = candidates
+        .candidates
+        .iter()
+        .map(|candidate| {
+            let mut evidence = PromptPricingEvidenceV1 {
+                factor_id: candidate.factor_id.clone(),
+                state_digest: candidates.receipt.state_digest,
+                model_tuple_digest: candidates.model_tuple.digest(),
+                expected_incremental_utility_q32: FixedQ32::ONE,
+                downside_q32: FixedQ32::ZERO,
+                confidence_lower_q32: FixedQ32::ONE,
+                confidence_upper_q32: FixedQ32::ONE,
+                support_count: 10,
+                latency_cost_micros: 0,
+                interference_ppm: 0,
+                context_crowding_cost_q32: FixedQ32::ZERO,
+                privacy_cost_q32: FixedQ32::ZERO,
+                instability_cost_q32: FixedQ32::ZERO,
+                future_context_option_cost_q32: FixedQ32::ZERO,
+                support_audit_digest: digest("prompt-pricing-fixture-support"),
+                evidence: completeness_evidence.clone(),
+            };
+            evidence.evidence = sign_learning_evidence(
+                &verifier,
+                &evaluator_key,
+                "prompt-evaluator:fixture",
+                LearningEvidenceRoleV1::Evaluator,
+                &format!("evidence:pricing:{}", candidate.factor_id),
+                &pricing_evidence_signing_payload_v1(&evidence),
+                now,
+            );
+            evidence
+        })
+        .collect();
+    let policy = PromptPricingPolicyV1 {
+        policy_id: id("policy:prompt-pricing-fixture"),
+        token_cost_per_token_q32: FixedQ32::ZERO,
+        latency_cost_per_micro_q32: FixedQ32::ZERO,
+        interference_cost_per_ppm_q32: FixedQ32::ZERO,
+        downside_weight_q32: FixedQ32::ZERO,
+        minimum_support_count: 1,
+        maximum_interference_ppm: 1_000_000,
+    };
+    let vector = candidates.generation_vector_digest;
+    let priced = price_factors_v1(
+        candidates,
+        &completeness,
+        &completeness_evidence,
+        pricing_evidence,
+        &verifier,
+        &policy,
+        now,
+    )
+    .expect("price authenticated prompt candidates");
+    let source = registry
+        .registry()
+        .expect("registry")
+        .factor_graph_source_v1();
+    let projection =
+        build_prompt_factor_projection_v1(Generation::new(1).expect("generation"), vector, &source)
+            .expect("current owner prompt graph projection");
+    let portfolio = select_portfolio_v1(
+        &priced,
+        projection.generation(),
+        Vec::new(),
+        &verifier,
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:1"),
+            graph_query_id: id("query:prompt-selection-fixture"),
+            token_budget: 128,
+            maximum_selected_factors: 8,
+            requested_valid_until_unix_ms: 9_000,
+        },
+        now,
+    )
+    .expect("select sealed prompt portfolio");
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: digest("state"),
