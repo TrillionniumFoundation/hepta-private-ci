@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::MutexGuard;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -29,6 +30,9 @@ use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
+
+#[path = "state_plasticity.rs"]
+mod plasticity;
 
 pub(crate) struct AgentdState {
     pub(crate) intelligence_product:
@@ -70,7 +74,14 @@ struct RuntimeState {
     revocation_ready: bool,
     required_ports_ready: bool,
     admission_open: bool,
+    draining: bool,
     fenced: bool,
+}
+
+/// Retains the local lifecycle lock through one synchronous proposal append and
+/// anchor commit. It grants no selection, execution or promotion authority.
+pub(crate) struct PlasticityFinalAdmissionGuardV1<'a> {
+    _runtime: MutexGuard<'a, RuntimeState>,
 }
 
 impl AgentdState {
@@ -147,6 +158,7 @@ impl AgentdState {
                 revocation_ready: false,
                 required_ports_ready: false,
                 admission_open: false,
+                draining: false,
                 fenced: false,
             }),
             identity,
@@ -366,6 +378,7 @@ impl AgentdState {
                 runtime.lifecycle,
                 AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
             ) {
+                runtime.draining = true;
                 runtime.app_server_ready = false;
                 runtime.required_ports_ready = false;
             }
@@ -374,6 +387,7 @@ impl AgentdState {
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
+                && !runtime.draining
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -410,6 +424,7 @@ impl AgentdState {
             || !runtime.revocation_ready
             || !runtime.required_ports_ready
             || !runtime.admission_open
+            || runtime.draining
             || runtime.fenced
         {
             return Err(AgentdError::GenerationFenced(
@@ -434,6 +449,11 @@ impl AgentdState {
 
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        // A late readiness probe cannot reopen this process after its one-shot
+        // drain has begun or its generation has been fenced.
+        if runtime.draining || runtime.fenced {
+            return Ok(());
+        }
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
             runtime.required_ports_ready = true;
@@ -454,6 +474,7 @@ impl AgentdState {
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.draining = true;
         runtime.app_server_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
@@ -553,6 +574,7 @@ impl AgentdState {
             && runtime.revocation_ready
             && runtime.required_ports_ready
             && runtime.admission_open
+            && !runtime.draining
             && !runtime.fenced)
     }
 
@@ -564,6 +586,7 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
+            && !runtime.draining
             && !runtime.fenced)
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {

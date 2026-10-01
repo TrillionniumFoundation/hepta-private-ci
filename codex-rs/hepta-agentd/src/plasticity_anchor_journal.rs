@@ -7,6 +7,11 @@
 //! Any append I/O failure poisons the handle because the frame may already have
 //! reached storage. Drop and reopen the journal to reconcile it before retrying;
 //! the in-memory store must never be reused after an indeterminate append.
+//! Mutating operations authenticate the held file against its trusted complete
+//! history before returning success, including identical anchor retries. State
+//! getters are cached snapshots and do not authenticate current file bytes.
+//! Reopening alone cannot identify replacement by an older valid prefix: recovery
+//! still requires the independent rollback domain and trusted external history.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -25,6 +30,9 @@ const TAG_FENCE: u8 = 0;
 const TAG_ANCHOR: u8 = 1;
 const MAX_FRAMES: usize = 1_000_000;
 const MAX_FILE_BYTES: u64 = HEADER_BYTES as u64 + (FRAME_BYTES as u64 * MAX_FRAMES as u64);
+
+#[path = "plasticity_anchor_journal_integrity.rs"]
+mod integrity;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) struct AdaptiveAnchorV1 {
@@ -87,6 +95,8 @@ impl Drop for LockedFile {
 pub(crate) struct AdaptiveAnchorJournalV1 {
     file: LockedFile,
     scope: Digest32,
+    expected_header: [u8; HEADER_BYTES],
+    trusted_frame_digests: Vec<Digest32>,
     state: AdaptiveAnchorJournalStateV1,
     poisoned: bool,
 }
@@ -100,7 +110,9 @@ impl AdaptiveAnchorJournalV1 {
         if scope.is_zero() {
             return Err(AdaptiveAnchorJournalErrorV1::InvalidScope);
         }
-        let expected_header = encode_header(magic, scope);
+        let expected_header: [u8; HEADER_BYTES] = encode_header(magic, scope)
+            .try_into()
+            .map_err(|_| AdaptiveAnchorJournalErrorV1::Corrupt)?;
         let mut file = LockedFile::acquire(file)?;
         let length = file.0.metadata()?.len();
         if length > MAX_FILE_BYTES {
@@ -119,7 +131,7 @@ impl AdaptiveAnchorJournalV1 {
             if actual[..8] != magic {
                 return Err(AdaptiveAnchorJournalErrorV1::ScopeMismatch);
             }
-            if actual != expected_header {
+            if actual.as_slice() != expected_header {
                 return Err(AdaptiveAnchorJournalErrorV1::ScopeMismatch);
             }
         }
@@ -132,6 +144,7 @@ impl AdaptiveAnchorJournalV1 {
         let physical_len = file.0.metadata()?.len();
         let mut offset = HEADER_BYTES as u64;
         let mut frames = 0_usize;
+        let mut trusted_frame_digests = Vec::new();
         while physical_len.saturating_sub(offset) >= FRAME_BYTES as u64 {
             if frames >= MAX_FRAMES {
                 return Err(AdaptiveAnchorJournalErrorV1::Capacity);
@@ -140,6 +153,11 @@ impl AdaptiveAnchorJournalV1 {
             let mut frame = [0_u8; FRAME_BYTES];
             file.0.read_exact(&mut frame)?;
             apply_frame(&frame, &mut state)?;
+            trusted_frame_digests.push(Digest32::from_array(
+                frame[FRAME_BYTES - 32..]
+                    .try_into()
+                    .map_err(|_| AdaptiveAnchorJournalErrorV1::Corrupt)?,
+            ));
             offset = offset
                 .checked_add(FRAME_BYTES as u64)
                 .ok_or(AdaptiveAnchorJournalErrorV1::Capacity)?;
@@ -156,11 +174,15 @@ impl AdaptiveAnchorJournalV1 {
         Ok(Self {
             file,
             scope,
+            expected_header,
+            trusted_frame_digests,
             state,
             poisoned: false,
         })
     }
 
+    /// Last observed in-memory state; this does not authenticate the held file.
+    /// A poisoned handle may expose only its last known state for diagnostics.
     pub(crate) const fn state(&self) -> AdaptiveAnchorJournalStateV1 {
         self.state
     }
@@ -168,9 +190,7 @@ impl AdaptiveAnchorJournalV1 {
     /// Start a new registry generation. Repeated fence issuance while a generation
     /// is still unacknowledged fails closed instead of skipping fence numbers.
     pub(crate) fn issue_new_registry_fence(&mut self) -> Result<u64, AdaptiveAnchorJournalErrorV1> {
-        if self.poisoned {
-            return Err(AdaptiveAnchorJournalErrorV1::Poisoned);
-        }
+        self.ensure_live_integrity()?;
         if self.state.writer_fence != 0 && self.state.anchor.is_none() {
             return Err(AdaptiveAnchorJournalErrorV1::GenerationPending);
         }
@@ -194,9 +214,7 @@ impl AdaptiveAnchorJournalV1 {
         writer_fence: u64,
         anchor: AdaptiveAnchorV1,
     ) -> Result<(), AdaptiveAnchorJournalErrorV1> {
-        if self.poisoned {
-            return Err(AdaptiveAnchorJournalErrorV1::Poisoned);
-        }
+        self.ensure_live_integrity()?;
         if scope != self.scope
             || writer_fence == 0
             || writer_fence != self.state.writer_fence
@@ -225,23 +243,64 @@ impl AdaptiveAnchorJournalV1 {
         &mut self,
         frame: &[u8; FRAME_BYTES],
     ) -> Result<(), AdaptiveAnchorJournalErrorV1> {
-        self.poisoned = true;
-        let length = self.file.0.metadata()?.len();
-        if length
-            .checked_add(FRAME_BYTES as u64)
-            .is_none_or(|next| next > MAX_FILE_BYTES)
+        let length = match self.file.0.metadata() {
+            Ok(metadata) => metadata.len(),
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error.into());
+            }
+        };
+        let expected_length =
+            HEADER_BYTES as u64 + FRAME_BYTES as u64 * self.trusted_frame_digests.len() as u64;
+        if length != expected_length {
+            self.poisoned = true;
+            return Err(AdaptiveAnchorJournalErrorV1::Corrupt);
+        }
+        if self.trusted_frame_digests.len() >= MAX_FRAMES
+            || length
+                .checked_add(FRAME_BYTES as u64)
+                .is_none_or(|next| next > MAX_FILE_BYTES)
         {
-            self.poisoned = false;
             return Err(AdaptiveAnchorJournalErrorV1::Capacity);
         }
 
+        self.poisoned = true;
         self.file.0.seek(SeekFrom::End(0))?;
         self.file.0.write_all(frame)?;
         self.file.0.sync_all()?;
+        self.trusted_frame_digests.push(Digest32::from_array(
+            frame[FRAME_BYTES - 32..]
+                .try_into()
+                .map_err(|_| AdaptiveAnchorJournalErrorV1::Corrupt)?,
+        ));
+        integrity::verify_file(
+            &mut self.file.0,
+            &self.expected_header,
+            &self.trusted_frame_digests,
+        )?;
         self.poisoned = false;
         Ok(())
     }
+
+    fn ensure_live_integrity(&mut self) -> Result<(), AdaptiveAnchorJournalErrorV1> {
+        if self.poisoned {
+            return Err(AdaptiveAnchorJournalErrorV1::Poisoned);
+        }
+        if let Err(error) = integrity::verify_file(
+            &mut self.file.0,
+            &self.expected_header,
+            &self.trusted_frame_digests,
+        ) {
+            self.poisoned = true;
+            return Err(error);
+        }
+        Ok(())
+    }
 }
+
+#[cfg(test)]
+#[path = "plasticity_anchor_journal_integrity_tests.rs"]
+mod integrity_tests;
 
 fn encode_header(magic: [u8; 8], scope: Digest32) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(HEADER_BYTES);

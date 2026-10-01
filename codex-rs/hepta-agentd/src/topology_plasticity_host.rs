@@ -112,10 +112,15 @@ impl AgentdTopologyAnchorStoreV1 {
         self.journal.issue_new_registry_fence().map_err(Into::into)
     }
 
+    /// Fence from this handle's previously verified/committed journal history.
+    /// This cached snapshot does not certify the current file bytes.
     pub const fn fence(&self) -> u64 {
         self.journal.state().writer_fence
     }
 
+    /// Anchor from this handle's previously verified/committed journal history.
+    /// This cached snapshot does not certify the current file bytes or repair
+    /// a poisoned handle; positive commit paths validate the live journal.
     pub fn anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {
         self.journal
             .state()
@@ -126,6 +131,8 @@ impl AgentdTopologyAnchorStoreV1 {
             })
     }
 
+    /// Historical predecessor retained across a registry generation change.
+    /// This cached snapshot does not certify the current file bytes.
     pub fn previous_anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {
         self.journal
             .state()
@@ -163,13 +170,19 @@ pub struct AgentdTopologyWriterV1 {
 }
 
 impl AgentdTopologyWriterV1 {
-    pub const fn state(&self) -> AgentdTopologyWriterStateV1 {
-        self.state
+    /// Cached writer health, including sticky failures found by registry reads.
+    /// This observation does not authenticate the current file bytes.
+    pub fn state(&self) -> AgentdTopologyWriterStateV1 {
+        if self.registry.is_poisoned() {
+            AgentdTopologyWriterStateV1::Poisoned
+        } else {
+            self.state
+        }
     }
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableTopologyRegistryAnchorV1>, AgentdTopologyHostErrorV1> {
-        if self.state != AgentdTopologyWriterStateV1::Healthy {
+        if self.state() != AgentdTopologyWriterStateV1::Healthy {
             return Err(AgentdTopologyHostErrorV1::Poisoned);
         }
         self.registry.current_anchor().map_err(Into::into)
@@ -261,7 +274,7 @@ pub(crate) fn propose_agentd_topology_plasticity_with_clock_v1(
     now: u64,
     clock: &mut dyn FnMut() -> Result<u64, crate::AgentdError>,
 ) -> Result<TopologyPlasticityProductReceiptV1, AgentdTopologyHostErrorV1> {
-    if writer.state != AgentdTopologyWriterStateV1::Healthy {
+    if writer.state() != AgentdTopologyWriterStateV1::Healthy {
         return Err(AgentdTopologyHostErrorV1::Poisoned);
     }
     let resolved = resolve_agentd_topology_admission_v1(
@@ -319,6 +332,10 @@ pub(crate) fn propose_agentd_topology_plasticity_with_clock_v1(
     writer.state = AgentdTopologyWriterStateV1::Healthy;
     Ok(receipt)
 }
+
+#[cfg(test)]
+#[path = "topology_plasticity_host_integrity_tests.rs"]
+mod integrity_tests;
 
 pub fn bootstrap_agentd_topology_writer_v1(
     registry_file: File,

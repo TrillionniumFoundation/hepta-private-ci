@@ -312,7 +312,7 @@ fn multiple_records_preserve_all_bytes_on_retries_conflicts_and_capacity() {
         .append_v2(first_receipt.frame_digest, second.clone())
         .expect("second");
     let before = std::fs::read(&fixture.path).expect("history");
-    let mut observed = first_receipt.clone();
+    let mut observed = first_receipt;
     observed.disposition = AppendDisposition::Unchanged;
     assert_eq!(
         store.append_v2(second_receipt.frame_digest, first),

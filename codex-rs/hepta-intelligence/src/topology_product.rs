@@ -220,7 +220,7 @@ pub fn propose_authenticated_topology_plasticity_v1(
 }
 
 /// Run host admission and recheck all authenticated evidence time windows after
-/// preparation, immediately before the durable append.
+/// registry integrity/preflight work, immediately before the durable append.
 pub fn propose_authenticated_topology_plasticity_with_final_time_v1(
     request: TopologyPlasticityProductRequestV1,
     verifier: &LearningEvidenceVerifierV1,
@@ -314,20 +314,26 @@ pub fn propose_authenticated_topology_plasticity_with_final_time_v1(
         observer_authentication_digest,
         evaluator_authentication_digest,
     )?;
-    let final_now = final_time()?;
-    if final_now < now {
-        return Err(E::Binding("final verification clock regressed"));
-    }
-    for evidence in [
-        &request.generator_attestation,
-        &request.observer_attestation,
-        &request.evaluator_attestation,
-    ] {
-        verifier
-            .revalidate_authenticated_evidence_time(evidence, final_now)
-            .map_err(E::EvaluatorEvidence)?;
-    }
-    let durable = registry.append(request.expected_registry_predecessor, governed.clone())?;
+    let durable = registry.append_with_final_admission(
+        request.expected_registry_predecessor,
+        governed.clone(),
+        || {
+            let final_now = final_time()?;
+            if final_now < now {
+                return Err(E::Binding("final verification clock regressed"));
+            }
+            for evidence in [
+                &request.generator_attestation,
+                &request.observer_attestation,
+                &request.evaluator_attestation,
+            ] {
+                verifier
+                    .revalidate_authenticated_evidence_time(evidence, final_now)
+                    .map_err(E::EvaluatorEvidence)?;
+            }
+            Ok(())
+        },
+    )?;
     let next_registry_anchor = registry.current_anchor()?.ok_or(E::MissingAnchor)?;
 
     let mut composition = b"hepta.intelligence.topology-composition.v1\0".to_vec();
@@ -384,6 +390,9 @@ mod tests {
     use codex_hepta_plasticity::build_writer_handoff_plan_v1;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
     use tempfile::tempfile;
 
     fn id(value: &str) -> StableId {
@@ -563,13 +572,42 @@ mod tests {
         request.evaluator_attestation =
             sign(request.evaluator_attestation, &keys[2], &evaluator_payload);
 
+        let mut file = tempfile().expect("registry");
         let mut registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
-            tempfile().expect("registry"),
+            file.try_clone().expect("registry descriptor"),
             digest(b"registry-scope"),
-            9,
-            8,
+            /*writer_fence*/ 9,
+            /*maximum_records*/ 8,
         )
         .expect("registry");
+        file.seek(SeekFrom::Start(0)).expect("seek initial bytes");
+        let mut before = Vec::new();
+        file.read_to_end(&mut before).expect("read initial bytes");
+        let mut admission_called = false;
+        assert!(matches!(
+            propose_authenticated_topology_plasticity_with_final_time_v1(
+                request.clone(),
+                &verifier,
+                &mut registry,
+                /*now*/ 50,
+                || {
+                    admission_called = true;
+                    Err(TopologyPlasticityProductErrorV1::Binding(
+                        "final admission rejected",
+                    ))
+                },
+            ),
+            Err(TopologyPlasticityProductErrorV1::Binding(
+                "final admission rejected"
+            ))
+        ));
+        assert!(admission_called);
+        assert_eq!(registry.record_count(), Ok(0));
+        assert_eq!(registry.current_anchor(), Ok(None));
+        file.seek(SeekFrom::Start(0)).expect("seek unchanged bytes");
+        let mut after = Vec::new();
+        file.read_to_end(&mut after).expect("read unchanged bytes");
+        assert_eq!(after, before);
         let receipt =
             propose_authenticated_topology_plasticity_v1(request, &verifier, &mut registry, 50)
                 .expect("topology product");

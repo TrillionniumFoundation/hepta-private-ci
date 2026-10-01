@@ -8,6 +8,11 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
 use tempfile::tempfile;
 
 fn id(value: &str) -> StableId {
@@ -350,9 +355,10 @@ impl Fixture {
     }
 }
 
-#[derive(Default)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 struct AnchorCommitter {
     accept: bool,
+    persist_calls: usize,
     scope: Option<Digest32>,
     fence: Option<u64>,
     anchor: Option<DurableRegistryAnchorV1>,
@@ -364,6 +370,7 @@ impl PlasticityAnchorCommitterV1 for AnchorCommitter {
         writer_fence: u64,
         anchor: DurableRegistryAnchorV1,
     ) -> bool {
+        self.persist_calls += 1;
         if !self.accept {
             return false;
         }
@@ -382,6 +389,15 @@ fn writer() -> AnchoredPlasticityWriterV1 {
         32,
     )
     .expect("writer")
+}
+
+fn retained_file_bytes(file: &mut File) -> Vec<u8> {
+    file.seek(SeekFrom::Start(0))
+        .expect("seek retained descriptor");
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)
+        .expect("read retained descriptor");
+    bytes
 }
 
 #[test]
@@ -602,3 +618,150 @@ fn anchor_commit_failure_poison_writer_after_durable_append() {
         Err(DurableProposalRegistryError::Poisoned)
     );
 }
+
+#[test]
+fn live_registry_corruption_poison_writer_on_append_and_read_boundaries() {
+    enum Discovery {
+        Append,
+        CurrentAnchor,
+        RecordCount,
+    }
+    for discovery in [
+        Discovery::Append,
+        Discovery::CurrentAnchor,
+        Discovery::RecordCount,
+    ] {
+        let fixture = Fixture::new(/*evaluator_controller_collision*/ false);
+        let mut file = tempfile().expect("registry file");
+        let mut writer = AnchoredPlasticityWriterV1::bootstrap_new(
+            file.try_clone().expect("writer descriptor"),
+            digest("plasticity-registry-scope"),
+            /*writer_fence*/ 17,
+            /*maximum_records*/ 32,
+        )
+        .expect("writer");
+        let mut anchor_committer = AnchorCommitter {
+            accept: true,
+            ..AnchorCommitter::default()
+        };
+        let first = propose_authenticated_parameter_plasticity_v1(
+            fixture.request(),
+            &fixture.verifier,
+            &mut writer,
+            &mut anchor_committer,
+            /*now*/ 50,
+        )
+        .expect("first acknowledged proposal");
+        let retained_anchor = anchor_committer.clone();
+
+        // Retain a cloned handle before the writer locks its file. The sequential
+        // external mutation also works with Windows mandatory file locking.
+        let mut damaged_bytes = retained_file_bytes(&mut file);
+        damaged_bytes[0] ^= 1;
+        file.seek(SeekFrom::Start(0)).expect("seek damaged header");
+        file.write_all(&damaged_bytes)
+            .expect("externally corrupt registry header");
+        file.sync_all().expect("sync damaged header");
+        match discovery {
+            Discovery::Append => {
+                assert!(matches!(
+                    propose_authenticated_parameter_plasticity_v1(
+                        fixture.request(),
+                        &fixture.verifier,
+                        &mut writer,
+                        &mut anchor_committer,
+                        /*now*/ 50,
+                    ),
+                    Err(ParameterPlasticityProductErrorV1::Registry(
+                        DurableProposalRegistryError::Corrupt
+                    ))
+                ));
+            }
+            Discovery::CurrentAnchor => assert_eq!(
+                writer.current_anchor(),
+                Err(DurableProposalRegistryError::Corrupt)
+            ),
+            Discovery::RecordCount => assert_eq!(
+                writer.record_count(),
+                Err(DurableProposalRegistryError::Corrupt)
+            ),
+        }
+        assert_eq!(writer.state(), PlasticityWriterStateV1::Poisoned);
+        assert_eq!(retained_file_bytes(&mut file), damaged_bytes);
+        assert_eq!(anchor_committer, retained_anchor);
+
+        let mut next = fixture.request();
+        next.proposal_id = id("plasticity-proposal:after-corruption");
+        next.expected_registry_predecessor = first.registry.frame_digest;
+        assert!(matches!(
+            propose_authenticated_parameter_plasticity_v1(
+                next,
+                &fixture.verifier,
+                &mut writer,
+                &mut anchor_committer,
+                /*now*/ 50,
+            ),
+            Err(ParameterPlasticityProductErrorV1::Registry(
+                DurableProposalRegistryError::Poisoned
+            ))
+        ));
+        assert_eq!(writer.state(), PlasticityWriterStateV1::Poisoned);
+        assert_eq!(retained_file_bytes(&mut file), damaged_bytes);
+        assert_eq!(anchor_committer, retained_anchor);
+    }
+}
+
+#[test]
+fn final_admission_rejection_leaves_parameter_writer_healthy_and_file_unchanged() {
+    let fixture = Fixture::new(/*evaluator_controller_collision*/ false);
+    let mut file = tempfile().expect("registry file");
+    let mut writer = AnchoredPlasticityWriterV1::bootstrap_new(
+        file.try_clone().expect("writer descriptor"),
+        digest("plasticity-registry-scope"),
+        /*writer_fence*/ 17,
+        /*maximum_records*/ 32,
+    )
+    .expect("writer");
+    let before = retained_file_bytes(&mut file);
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let retained_anchor = anchor_committer.clone();
+    let mut admission_called = false;
+    assert!(matches!(
+        propose_authenticated_parameter_plasticity_with_final_time_v1(
+            fixture.request(),
+            &fixture.verifier,
+            &mut writer,
+            &mut anchor_committer,
+            /*now*/ 50,
+            || {
+                admission_called = true;
+                Err(ParameterPlasticityProductErrorV1::Binding(
+                    "final admission rejected",
+                ))
+            },
+        ),
+        Err(ParameterPlasticityProductErrorV1::Binding(
+            "final admission rejected"
+        ))
+    ));
+    assert!(admission_called);
+    assert_eq!(writer.state(), PlasticityWriterStateV1::Healthy);
+    assert_eq!(writer.record_count(), Ok(0));
+    assert_eq!(writer.current_anchor(), Ok(None));
+    assert_eq!(retained_file_bytes(&mut file), before);
+    assert_eq!(anchor_committer, retained_anchor);
+    propose_authenticated_parameter_plasticity_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        /*now*/ 50,
+    )
+    .expect("retry after rejected admission");
+    assert_eq!(writer.record_count(), Ok(1));
+    assert_eq!(anchor_committer.persist_calls, 1);
+}
+use std::fs::File;

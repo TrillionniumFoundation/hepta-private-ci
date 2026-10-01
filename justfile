@@ -55,10 +55,10 @@ fmt-check:
     @{{ python }} ../scripts/format.py --check
 
 fix *args:
-    cargo clippy --fix --tests --allow-dirty {args}
+    cargo clippy --fix --tests --allow-dirty "$@"
 
 clippy *args:
-    cargo clippy --tests {args}
+    cargo clippy --tests "$@"
 
 [unix]
 install:

@@ -462,10 +462,15 @@ impl AgentdPlasticityAnchorStoreV1 {
         self.journal.issue_new_registry_fence().map_err(Into::into)
     }
 
+    /// Fence from this handle's previously verified/committed journal history.
+    /// This cached snapshot does not certify the current file bytes.
     pub const fn fence(&self) -> u64 {
         self.journal.state().writer_fence
     }
 
+    /// Anchor from this handle's previously verified/committed journal history.
+    /// This cached snapshot does not certify the current file bytes or repair
+    /// a poisoned handle; positive commit paths validate the live journal.
     pub fn anchor(&self) -> Option<DurableRegistryAnchorV1> {
         self.journal
             .state()
@@ -476,6 +481,8 @@ impl AgentdPlasticityAnchorStoreV1 {
             })
     }
 
+    /// Historical predecessor retained across a registry generation change.
+    /// This cached snapshot does not certify the current file bytes.
     pub fn previous_anchor(&self) -> Option<DurableRegistryAnchorV1> {
         self.journal
             .state()

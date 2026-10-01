@@ -17,6 +17,8 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::ops::Deref;
 use std::ops::DerefMut;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -37,6 +39,8 @@ use crate::ParameterProposalV2;
 use crate::ProposalRegistry;
 use crate::ProposalStatus;
 use crate::ProposalWindowV2;
+use crate::live_registry_integrity::LiveRegistryIntegrity;
+use crate::live_registry_integrity::LiveRegistryIntegrityError;
 use crate::types::MAX_CANDIDATES;
 use crate::types::MAX_NORM_LAYERS;
 use crate::types::MAX_PARAMETER_DELTAS;
@@ -158,16 +162,25 @@ impl Drop for LockedFile {
 /// replacement by an older valid prefix.
 pub struct DurableProposalRegistry {
     file: LockedFile,
+    live_integrity: LiveRegistryIntegrity,
+    expected_file_bytes: u64,
     registry_scope_digest: Digest32,
     writer_fence: u64,
     maximum_records: usize,
     registry: ProposalRegistry,
     frame_digests: Vec<Digest32>,
     receipts: BTreeMap<StableId, DurableProposalAppendReceiptV1>,
-    poisoned: bool,
+    poisoned: AtomicBool,
 }
 
 impl DurableProposalRegistry {
+    /// Observe the cached sticky failure latch without reading the file.
+    /// A false value does not attest live byte integrity or grant authority.
+    #[must_use]
+    pub fn is_poisoned(&self) -> bool {
+        self.poisoned.load(Ordering::Acquire)
+    }
+
     pub fn open(
         file: File,
         registry_scope_digest: Digest32,
@@ -303,15 +316,18 @@ impl DurableProposalRegistry {
             }
         }
 
+        let live_integrity = LiveRegistryIntegrity::new(&file, expected_header, MAX_FRAME_BYTES)?;
         let mut store = Self {
             file,
+            live_integrity,
+            expected_file_bytes: HEADER_SIZE as u64,
             registry_scope_digest,
             writer_fence,
             maximum_records,
             registry: ProposalRegistry::new(maximum_records),
             frame_digests: Vec::new(),
             receipts: BTreeMap::new(),
-            poisoned: false,
+            poisoned: AtomicBool::new(false),
         };
         let mut offset = HEADER_SIZE as u64;
         let physical_len = store.file.metadata()?.len();
@@ -412,108 +428,15 @@ impl DurableProposalRegistry {
             .file
             .sync_data()
             .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
+        store.expected_file_bytes = offset;
+        store.ensure_live_integrity()?;
         Ok(store)
-    }
-
-    /// Append one verified proposal after the exact durable predecessor.
-    ///
-    /// An identical retry returns the original frame as an unchanged observation,
-    /// even when later records exist. Any semantic drift in an occupied slot or
-    /// proposal identity fails closed. A write/sync failure poisons this handle;
-    /// reopen and reconcile against an external anchor before retrying.
-    pub fn append_v2(
-        &mut self,
-        expected_predecessor_frame_digest: Digest32,
-        proposal: ParameterProposalV2,
-    ) -> Result<DurableProposalAppendReceiptV1, DurableProposalRegistryError> {
-        if self.poisoned {
-            return Err(DurableProposalRegistryError::Poisoned);
-        }
-        verify_parameter_proposal_v2(&proposal)?;
-        if let Some(existing) = self.receipts.get(&proposal.proposal_id) {
-            let stored = self
-                .registry
-                .get_v2_by_proposal_id(&proposal.proposal_id)
-                .ok_or(DurableProposalRegistryError::Corrupt)?;
-            if stored == &proposal {
-                let mut observed = existing.clone();
-                observed.disposition = AppendDisposition::Unchanged;
-                return Ok(observed);
-            }
-        }
-        let current = self.frame_digests.last().copied().unwrap_or(Digest32::ZERO);
-        if current != expected_predecessor_frame_digest {
-            return Err(DurableProposalRegistryError::Conflict);
-        }
-        if self.frame_digests.len() >= self.maximum_records {
-            return Err(DurableProposalRegistryError::Capacity);
-        }
-
-        let disposition = self.registry.preflight_v2_append(&proposal)?;
-        if disposition != AppendDisposition::Inserted {
-            return Err(DurableProposalRegistryError::Corrupt);
-        }
-        let sequence = self.frame_digests.len() as u64 + 1;
-        let (frame, frame_digest) =
-            encode_frame(sequence, expected_predecessor_frame_digest, &proposal)?;
-        let frame_total = 4_u64
-            .checked_add(frame.len() as u64)
-            .ok_or(DurableProposalRegistryError::Capacity)?;
-        let expected_offset = self.file.metadata()?.len();
-        if expected_offset < HEADER_SIZE as u64
-            || expected_offset
-                .checked_add(frame_total)
-                .is_none_or(|length| length > MAX_FILE_BYTES)
-        {
-            return Err(DurableProposalRegistryError::Capacity);
-        }
-
-        self.poisoned = true;
-        self.file.seek(SeekFrom::End(0))?;
-        self.file
-            .write_all(&(frame.len() as u32).to_be_bytes())
-            .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
-        self.file
-            .write_all(&frame)
-            .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
-        self.file
-            .sync_data()
-            .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
-
-        let receipt = DurableProposalAppendReceiptV1 {
-            registry_scope_digest: self.registry_scope_digest,
-            writer_fence: self.writer_fence,
-            sequence,
-            proposal_id: proposal.proposal_id.clone(),
-            proposal_digest: proposal.proposal_digest,
-            selected_artifact_digest: proposal.selected_artifact_digest,
-            window_id: proposal.window.window_id.clone(),
-            predecessor_frame_digest: expected_predecessor_frame_digest,
-            frame_digest,
-            disposition: AppendDisposition::Inserted,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        if self
-            .registry
-            .append_v2(proposal)
-            .map_err(|_| DurableProposalRegistryError::Corrupt)?
-            != AppendDisposition::Inserted
-        {
-            return Err(DurableProposalRegistryError::Corrupt);
-        }
-        self.frame_digests.push(frame_digest);
-        self.receipts
-            .insert(receipt.proposal_id.clone(), receipt.clone());
-        self.poisoned = false;
-        Ok(receipt)
     }
 
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableRegistryAnchorV1>, DurableProposalRegistryError> {
-        if self.poisoned {
-            return Err(DurableProposalRegistryError::Poisoned);
-        }
+        self.ensure_live_integrity()?;
         Ok(self
             .frame_digests
             .last()
@@ -528,17 +451,37 @@ impl DurableProposalRegistry {
         &self,
         proposal_id: &StableId,
     ) -> Result<Option<&ParameterProposalV2>, DurableProposalRegistryError> {
-        if self.poisoned {
-            return Err(DurableProposalRegistryError::Poisoned);
-        }
+        self.ensure_live_integrity()?;
         Ok(self.registry.get_v2_by_proposal_id(proposal_id))
     }
 
     pub fn record_count(&self) -> Result<usize, DurableProposalRegistryError> {
-        if self.poisoned {
+        self.ensure_live_integrity()?;
+        Ok(self.registry.record_count())
+    }
+
+    fn ensure_live_integrity(&self) -> Result<(), DurableProposalRegistryError> {
+        if self.poisoned.load(Ordering::Acquire) {
             return Err(DurableProposalRegistryError::Poisoned);
         }
-        Ok(self.registry.record_count())
+        self.verify_live_file()?;
+        if self.poisoned.load(Ordering::Acquire) {
+            return Err(DurableProposalRegistryError::Poisoned);
+        }
+        Ok(())
+    }
+
+    fn verify_live_file(&self) -> Result<(), DurableProposalRegistryError> {
+        self.live_integrity
+            .verify(&self.frame_digests, self.expected_file_bytes)
+            .map_err(|error| {
+                self.poisoned.store(true, Ordering::Release);
+                match error {
+                    LiveRegistryIntegrityError::Corrupt => DurableProposalRegistryError::Corrupt,
+                    LiveRegistryIntegrityError::Poisoned => DurableProposalRegistryError::Poisoned,
+                    LiveRegistryIntegrityError::Io(kind) => DurableProposalRegistryError::Io(kind),
+                }
+            })
     }
 }
 
@@ -927,6 +870,9 @@ impl<'a> ByteReader<'a> {
         StableId::new(raw.to_string()).map_err(|_| DurableProposalRegistryError::Corrupt)
     }
 }
+
+#[path = "durable_registry_append.rs"]
+mod append;
 
 #[cfg(test)]
 #[path = "durable_registry_tests.rs"]

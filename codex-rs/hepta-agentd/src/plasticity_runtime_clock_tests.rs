@@ -3,7 +3,6 @@ use super::*;
 use codex_hepta_intelligence::ParameterPlasticityProductErrorV1;
 use codex_hepta_intelligence::TopologyPlasticityProductErrorV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
-use pretty_assertions::assert_eq;
 
 use crate::AgentdError;
 use crate::AgentdPlasticityHostErrorV1;
@@ -388,3 +387,6 @@ async fn unavailable_host_clock_rejects_both_proposal_kinds_without_durable_effe
         .expect("owner shutdown");
     assert_eq!(persistent_bytes(&fixture.files), before);
 }
+
+#[path = "plasticity_runtime_admission_tests.rs"]
+mod admission_tests;

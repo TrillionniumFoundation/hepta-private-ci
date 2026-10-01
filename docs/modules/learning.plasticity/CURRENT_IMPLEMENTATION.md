@@ -1,7 +1,8 @@
 # learning.plasticity current implementation boundary
 
-The [2026-09-30 adversarial audit](ADVERSARIAL_AUDIT_20260930.md) records
-confirmed defects, remediation, validation scope and the remaining product gates.
+The [2026-09-30 adversarial audit](ADVERSARIAL_AUDIT_20260930.md) and
+[2026-10-01 follow-up](ADVERSARIAL_AUDIT_20261001.md) record confirmed defects,
+remediation, validation scope and the remaining product gates.
 
 This document is the current-state companion to `TECHNICAL.md`. `TECHNICAL.md`
 contains both target architecture and stable requirements; this file states what is
@@ -130,6 +131,33 @@ owner-evidence resolver behind a bounded typed channel. `AgentdLearningPlasticit
 the current Running/ready Agentd generation before it reaches the parameter or topology
 host entrypoint. There is no public Agentd wire method and no ambient/default writer:
 if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
+
+The owner pins its one succeeding Running generation from the immutable spawn
+identity and retains a successful-clock high-water mark across rejected requests.
+A regressed or unavailable clock fails closed. Final admission occurs after the
+registry's live-history scan, conflict/capacity checks and frame preparation. It
+rechecks cancellation and the exact Running/ready generation, then retains the
+local lifecycle mutex through synchronous append, durability confirmation and
+anchor completion. Draining is irreversible for this process and cannot be
+reopened by a late readiness probe or an older Fleet history. This mutex does not
+serialize another process's Fleet publication; a cancellation, expiry or external
+publication after admission does not undo an already admitted durable transaction.
+
+Both registries authenticate their complete live image against the retained
+expected header and trusted historical frame digests before returning positive
+history observations, and verify it again after a new synchronized write before
+returning its receipt. A detected corruption or I/O uncertainty permanently
+poisons the handle until explicit reopen and reconciliation. Writer health reflects
+this cached poison latch without performing another history scan. The scan is
+bounded by the registry file cap and uses fixed hash scratch space, but costs
+O(history bytes); target-host latency and durability evidence remain separate gates.
+
+The separate shared anchor/fence journal also checks its live retained header and
+trusted frame digests before acknowledging a fence or anchor, including an
+identical anchor retry, and confirms the image after new synchronized writes.
+Detected damage or uncertain I/O blocks later acknowledgements until reopen and
+reconciliation. Its `fence`, `anchor` and `previous_anchor` getters are historical
+snapshots; observing one does not authenticate the current file or clear poison.
 
 Immediately before admission, Agentd recomputes the current `ArtifactRegistry` and
 durable learning-ledger heads. Every owner-evidence query binds those heads, the exact
