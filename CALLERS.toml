@@ -5,6 +5,12 @@ source_roots = ["codex-rs"]
 ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
+# This proof covers declared lexical call patterns, not a complete Rust semantic
+# call graph or a runtime authority receipt. Rare method names are scanned without
+# a receiver/type-name requirement, including re-export aliases and UFCS. Generic
+# claim and free-function import aliases remain outside complete coverage; resolving
+# them requires semantic type/import analysis, not extra product-caller permission.
+
 [privileged_inventory]
 required_boundary_ids = [
   "supervisor_authorized_boot",
@@ -50,6 +56,8 @@ required_boundary_ids = [
   "authority_lease_dispatch_raw",
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
+  "final_use_async_entry",
+  "bao_authbus_final_use_consumer",
   "automation_taskflow_provider_effect_bridge",
   "final_use_guarded_effect"
 ]
@@ -148,6 +156,7 @@ caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractA
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
+call_pattern = 'FinalUseAuthority\s*::\s*open_state_dir(?:_with_clock|_with_trust|_with_issuer_keys)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
 product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
@@ -164,10 +173,10 @@ caller_markers = ["claim_final_use"]
 [[boundary]]
 id = "final_use_claim_raw"
 symbol = "FinalUseAuthority::claim"
-call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
+call_pattern = '\A(?=[\s\S]*\bFinalUseAuthority\b)[\s\S]*?(?:\.\s*claim|FinalUseAuthority\s*::\s*claim)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["authority", "binding"]
 
 [[boundary]]
@@ -189,10 +198,10 @@ caller_markers = []
 [[boundary]]
 id = "final_use_delivery_raw"
 symbol = "FinalUseAuthority::with_verified_use"
-call_pattern = "authority\\s*\\.\\s*with_verified_use\\s*\\("
+call_pattern = '(?:\.|::)\s*with_verified_use(?:\s*::\s*<[^;{}]*>)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
-product_callers = ["codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["with_verified_use", "binding"]
 
 [[boundary]]
@@ -214,7 +223,7 @@ caller_markers = []
 [[boundary]]
 id = "final_use_dispatch_raw"
 symbol = "FinalUseAuthority::with_dispatch_boundary"
-call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
+call_pattern = '(?:\.|::)\s*with_dispatch_boundary(?:\s*::\s*<[^;{}]*>)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
 product_callers = []
@@ -223,7 +232,7 @@ caller_markers = []
 [[boundary]]
 id = "final_use_revocation_update"
 symbol = "FinalUseAuthority::update_revocations"
-call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
+call_pattern = '(?:\.|::)\s*update_revocations\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
 product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
@@ -283,7 +292,7 @@ caller_markers = ["convergence_verifier", ".verify(", "FleetRevocationCoordinato
 [[boundary]]
 id = "bao_final_use_consumer"
 symbol = "BaoClient::consume_kv_v2"
-call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
+call_pattern = '(?:\.|::)\s*consume_kv_v2\s*\('
 definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
 definition_markers = ["pub async fn consume_kv_v2", "claim_final_use", "deliver_final_use"]
 product_callers = []
@@ -496,8 +505,27 @@ release = false
 [[boundary]]
 id = "final_use_async_dispatch_fence"
 symbol = "FinalUseAuthority::with_verified_use_async"
+call_pattern = '(?:\.|::)\s*with_verified_use_async(?:\s*::\s*<[^;{}]*>)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub async fn with_verified_use_async", "DispatchInProgress", "active_dispatches"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
+caller_markers = ["pub async fn execute_authorized_taskflow_effect_async", "begin_effect_dispatch_attempt", "with_verified_use_async"]
+
+[[boundary]]
+id = "final_use_async_entry"
+symbol = "FinalUseAuthority::enter_verified_use"
+call_pattern = '(?:\.|::)\s*enter_verified_use\s*\('
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn enter_verified_use", "Arc::ptr_eq", "token.enter(expected)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_authbus_final_use_consumer"
+symbol = "BaoClient::consume_kv_v2_with_authbus"
+call_pattern = '(?:\.|::)\s*consume_kv_v2_with_authbus(?:\s*::\s*<[^;{}]*>)?\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+definition_markers = ["pub async fn consume_kv_v2_with_authbus", "mark_dispatch_attempted", ".consume_kv_v2(authority, grant, request, consumer)"]
 product_callers = []
 caller_markers = []
 
@@ -514,7 +542,7 @@ caller_markers = []
 [[boundary]]
 id = "final_use_guarded_effect"
 symbol = "FinalUseAuthority::with_verified_effect"
-call_pattern = '\bauthority\s*\.\s*with_verified_effect\s*\('
+call_pattern = '(?:\.|::)\s*with_verified_effect(?:\s*::\s*<[^;{}]*>)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
