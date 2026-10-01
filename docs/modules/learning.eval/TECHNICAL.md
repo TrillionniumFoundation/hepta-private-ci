@@ -50,6 +50,8 @@ The canonical delivery path is PR #1011. PR #1051 remains unmerged comparison/hi
 
 The [Lane E matrix](../../lane-e/LANE_E_IMPLEMENTATION_MATRIX.json) retains its original closed-world `operations` source inventory: raw runner entries are classified as compatibility-only, and signed V2/V3 decisions are crate-internal primitives. These source symbols must not be interpreted as default public exports. Its `productCallsites` records identify the public recorded evaluation and archived qualification paths; the full current API and recovery mapping remains in [NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md). Source composition does not establish deployed invocation or independent acceptance.
 
+The [implementation map](IMPLEMENTATION_MAP.json) binds its source observation to an ancestor commit and that commit's exact tree. The status verifier checks the complete fixed `codex-rs/hepta-intelligence-eval` root, including unmapped source, tests, fixtures, `Cargo.toml`, `BUILD.bazel`, new tracked files and non-ignored untracked files, together with every mapped source, test and external product caller. Any change in that scope requires a new source observation; a map-only descendant may retain the observation when all observed paths remain unchanged. The canonical archived entry `RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts` is mandatory in the map. These checks establish source identity without granting runtime authority or issuing acceptance.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -58,7 +60,7 @@ Direct dependencies:
 - `learning.artifacts`
 - `kernel.evidence`
 
-Authoritative write domains from the exact registry projection:
+Qualification write-domain declarations in [DATA_AUTHORITY.json](../../data/DATA_AUTHORITY.json):
 
 - `algorithm_fault_receipt_v1`
 - `candidate_evaluation_receipt_v1`
@@ -189,7 +191,7 @@ Rust types and canonical JSON represent identical semantics where the codec is d
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains are the seven qualification domains listed in Section 3 and the exact registry projection. The earlier empty bootstrap ownership list is superseded; it must not be used to deny or widen current registry ownership.
+[DATA_AUTHORITY.json](../../data/DATA_AUTHORITY.json) declares `learning.eval` as schema owner and authoritative writer of the seven qualification domains in Section 3. [MODULES.json](../MODULES.json) simultaneously declares `writes: []` for this module. Neither registry encodes a supersession or a baseline-to-target relationship between these lists; their relation remains an explicit registry alignment obligation. The data-authority declarations do not establish an activated writer, a backing-store capability or permission to write to production or another owner's store.
 
 Bootstrap read-only data dependencies:
 
@@ -200,7 +202,7 @@ Bootstrap read-only data dependencies:
 - `operator_sensor_core_registry`
 - `qualification_evidence`
 
-The complete read inventory is in the generated registry projection. For every owned domain, this module is the only declared authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation. Actual backing stores and deployed writer bindings require their own implementation and host evidence.
+The complete read inventory is in the generated registry projection. Persistence implementing the data-authority declarations requires revision- or generation-bound mutations, idempotence for identical semantics and conflict rejection for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation. Actual backing stores and deployed writer bindings require their own implementation and host evidence.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 

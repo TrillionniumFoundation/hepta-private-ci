@@ -15,6 +15,9 @@ STATUS = ROOT / "docs/modules/learning.eval/CURRENT_STATUS.json"
 MODEL = ROOT / "scripts/learning_eval_status_model.json"
 MAP = ROOT / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
 EVAL_ROOT = ROOT / "codex-rs/hepta-intelligence-eval"
+# Fixed owned roots prevent a partial or stale implementation map from omitting
+# executable source, build inputs, fixtures or newly added files from observation.
+SOURCE_IDENTITY_ROOTS = ("codex-rs/hepta-intelligence-eval",)
 FALSE_CLAIMS = {
     "productionImplementation",
     "targetHostQualified",
@@ -39,6 +42,7 @@ TRUE_SOURCE = {
 REQUIRED_SYMBOLS = {
     "RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison",
     "RecordedProductEvaluationRunnerV1::qualify_and_persist",
+    "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts",
     "admit_signed_eligibility_v2",
     "ReconciledProductQualificationSinkV1::persist",
     "LockedFileProductEvaluationAttemptJournalV1",
@@ -237,12 +241,17 @@ def validate_map(model: dict) -> None:
     git("merge-base", "--is-ancestor", commit, "HEAD")
     for caller in model["sourceFacts"]["callers"]:
         checked_paths.add(caller["sourcePath"])
-    changed = [
-        path for path in sorted(checked_paths)
-        if git("diff", "--quiet", commit, "--", path, check=False).returncode == 1
-    ]
+    observed_paths = sorted(checked_paths | set(SOURCE_IDENTITY_ROOTS))
+    changed = sorted(set(filter(None, git(
+        "diff", "--no-ext-diff", "--name-only", "-z", commit, "--", *observed_paths
+    ).stdout.split("\0"))))
     if changed:
-        raise SystemExit("mapped executable source changed after observation: " + ", ".join(changed))
+        raise SystemExit("owned or mapped source changed after observation: " + ", ".join(changed))
+    untracked = sorted(set(filter(None, git(
+        "ls-files", "--others", "--exclude-standard", "-z", "--", *observed_paths
+    ).stdout.split("\0"))))
+    if untracked:
+        raise SystemExit("untracked owned or mapped source lacks observation: " + ", ".join(untracked))
 
 
 def validate() -> dict:
@@ -271,7 +280,11 @@ def main() -> None:
     parser.add_argument("command", choices=("write", "verify", "print"))
     args = parser.parse_args()
     if args.command == "verify":
-        for pattern in ("test_hepta_rust_identifiers.py", "test_hepta_learning_eval_projection.py"):
+        for pattern in (
+            "test_hepta_rust_identifiers.py",
+            "test_hepta_learning_eval_projection.py",
+            "test_hepta_learning_eval_status.py",
+        ):
             subprocess.run(
                 [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"), "-p", pattern],
                 check=True,

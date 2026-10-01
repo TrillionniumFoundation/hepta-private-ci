@@ -49,10 +49,10 @@
     {
       "id": "OP-03",
       "module": "learning.operator",
-      "requirement": "A high in-sample fit without future-window, retention and unlearning evidence is not eligible.",
+      "requirement": "A high in-sample fit without future-window, retention and unlearning evidence is not eligible. The operator-claim test is trusted-inprocess compatibility coverage executed by scripts/hepta-learning-eval-compat-fixture.py; the temporal-fold test remains default native coverage. Neither fixture establishes target-host qualification or acceptance.",
       "tests": [
         {
-          "source": "codex-rs/hepta-intelligence-eval/tests/operator_claim.rs",
+          "source": "codex-rs/hepta-intelligence-eval/fixtures/trusted-inprocess/tests/operator_claim.rs",
           "function": "op_03_high_fit_without_retention_is_insufficient"
         },
         {

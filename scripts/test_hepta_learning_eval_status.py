@@ -1,5 +1,6 @@
 """Adversarial checks for formatting-stable lexical source call inventory."""
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -95,6 +96,129 @@ class SourceCallInventoryTests(unittest.TestCase):
 
     def test_formatted_repository_required_source_inventory_is_present(self):
         MODULE.require_tokens()
+
+
+class SourceObservationIdentityTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.map_path = self.root / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
+        self.symbol = "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts"
+        for name, value in (
+            ("ROOT", self.root),
+            ("MAP", self.map_path),
+            ("REQUIRED_SYMBOLS", {self.symbol}),
+        ):
+            patcher = mock.patch.object(MODULE, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        self.source_path = "codex-rs/hepta-intelligence-eval/src/qualification_artifacts.rs"
+        self.codec_path = "codex-rs/hepta-intelligence-eval/src/qualification_archive_codec.rs"
+        self.test_path = "codex-rs/hepta-intelligence-eval/tests/qualification.rs"
+        self.caller_path = "codex-rs/hepta-agentd/src/intelligence_evaluation.rs"
+        for path, content in (
+            (self.source_path, "pub fn qualify_and_persist_with_artifacts() {}\n"),
+            (self.codec_path, "pub fn decode_archive() {}\n"),
+            (self.test_path, "#[test] fn qualification_round_trip() {}\n"),
+            (self.caller_path, "pub fn consume_qualification() {}\n"),
+            ("codex-rs/hepta-intelligence-eval/Cargo.toml", "[package]\nname = 'fixture'\n"),
+            ("codex-rs/hepta-intelligence-eval/BUILD.bazel", "rust_library(name = 'fixture')\n"),
+        ):
+            self.write(path, content)
+        MODULE.git("init", "--quiet")
+        MODULE.git("add", ".")
+        self.commit("observed source")
+        self.model = {
+            "sourceFacts": {"callers": [{"sourcePath": self.caller_path}]},
+            "repositoryControlledGaps": [],
+        }
+        self.value = {
+            "schema": "hepta.module-implementation-map.v3",
+            "module": "learning.eval",
+            "operations": [{
+                "nativeSymbol": self.symbol,
+                "sourcePath": self.source_path,
+                "tests": [self.test_path],
+            }],
+            "productCallers": self.model["sourceFacts"]["callers"],
+            "repositoryControlledGaps": [],
+            "claimBoundary": {
+                **{key: True for key in MODULE.TRUE_SOURCE},
+                **{key: False for key in MODULE.FALSE_CLAIMS},
+            },
+            "sourceBase": {
+                "commit": MODULE.git("rev-parse", "HEAD").stdout.strip(),
+                "tree": MODULE.git("rev-parse", "HEAD^{tree}").stdout.strip(),
+            },
+        }
+        self.write_map()
+
+    def write(self, path, content):
+        target = self.root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+
+    def write_map(self):
+        self.write(self.map_path.relative_to(self.root), json.dumps(self.value))
+
+    def commit(self, message):
+        MODULE.git(
+            "-c", "user.name=Source Observation Fixture",
+            "-c", "user.email=source-observation@example.invalid",
+            "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", message,
+        )
+
+    def test_unchanged_owned_and_mapped_source_is_accepted(self):
+        MODULE.validate_map(self.model)
+
+    def test_map_only_descendant_preserves_observed_source(self):
+        MODULE.git("add", "docs")
+        self.commit("bind observation without changing source")
+        MODULE.validate_map(self.model)
+
+    def test_changed_unmapped_archive_source_is_rejected(self):
+        self.write(self.codec_path, "pub fn decode_archive() { panic!(); }\n")
+        with self.assertRaisesRegex(SystemExit, self.codec_path):
+            MODULE.validate_map(self.model)
+
+    def test_added_tracked_unmapped_source_is_rejected(self):
+        path = "codex-rs/hepta-intelligence-eval/src/new_archive_decoder.rs"
+        self.write(path, "pub fn decode_archive_v2() {}\n")
+        MODULE.git("add", path)
+        with self.assertRaisesRegex(SystemExit, path):
+            MODULE.validate_map(self.model)
+
+    def test_added_untracked_unmapped_source_is_rejected(self):
+        path = "codex-rs/hepta-intelligence-eval/src/new_archive_decoder.rs"
+        self.write(path, "pub fn decode_archive_v2() {}\n")
+        with self.assertRaisesRegex(SystemExit, "untracked owned or mapped source"):
+            MODULE.validate_map(self.model)
+
+    def test_manifest_and_build_input_changes_are_rejected(self):
+        for name in ("Cargo.toml", "BUILD.bazel"):
+            path = "codex-rs/hepta-intelligence-eval/" + name
+            with self.subTest(path=path):
+                self.write(path, "changed build configuration\n")
+                with self.assertRaisesRegex(SystemExit, name):
+                    MODULE.validate_map(self.model)
+                MODULE.git("checkout", "--", path)
+
+    def test_changed_mapped_caller_outside_owned_root_is_rejected(self):
+        self.write(self.caller_path, "pub fn consume_qualification() { panic!(); }\n")
+        with self.assertRaisesRegex(SystemExit, self.caller_path):
+            MODULE.validate_map(self.model)
+
+    def test_changed_mapped_test_is_rejected(self):
+        self.write(self.test_path, "#[test] fn qualification_round_trip() { panic!(); }\n")
+        with self.assertRaisesRegex(SystemExit, self.test_path):
+            MODULE.validate_map(self.model)
+
+    def test_missing_canonical_archived_operation_is_rejected(self):
+        self.value["operations"] = []
+        self.write_map()
+        with self.assertRaisesRegex(SystemExit, "implementation-map operation drift"):
+            MODULE.validate_map(self.model)
 
 
 if __name__ == "__main__":
