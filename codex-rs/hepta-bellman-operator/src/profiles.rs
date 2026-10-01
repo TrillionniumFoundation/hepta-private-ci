@@ -110,6 +110,9 @@ impl TrainingProfileV1 {
     }
 
     #[must_use]
+    /// Bound for independent Bellman/generalization-error qualification. The
+    /// finite reference fitter commits this value through the profile digest;
+    /// fitting observed targets does not measure, certify or enforce this bound.
     pub const fn maximum_absolute_error(&self) -> FixedQ32 {
         self.maximum_absolute_error
     }

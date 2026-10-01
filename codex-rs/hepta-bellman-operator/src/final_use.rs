@@ -507,6 +507,7 @@ pub struct FinalUseTabularCapabilityV1<'a> {
     fence: FinalUseFenceV1,
     control: WorkControlV1,
     issued_evidence: issued::IssuedEvidenceV1<'a>,
+    issuance_memory: crate::OperatorWorkMeter,
 }
 
 impl fmt::Debug for FinalUseTabularCapabilityV1<'_> {
@@ -529,6 +530,7 @@ pub struct FinalUseWorldModelCapabilityV1<'a> {
     fence: FinalUseFenceV1,
     control: WorkControlV1,
     issued_evidence: issued::IssuedEvidenceV1<'a>,
+    issuance_memory: crate::OperatorWorkMeter,
 }
 
 impl fmt::Debug for FinalUseWorldModelCapabilityV1<'_> {
@@ -559,6 +561,7 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         receipt,
         &fence,
     )?;
+    let issuance_memory = preflight::tabular(&request, receipt, freeze_evidence, row_evidence)?;
     validate_current(
         owner,
         receipt,
@@ -592,6 +595,7 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         fence,
         control,
         issued_evidence,
+        issuance_memory,
     })
 }
 
@@ -613,6 +617,7 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         receipt,
         &fence,
     )?;
+    let issuance_memory = preflight::world(&request, receipt, freeze_evidence, row_evidence)?;
     validate_current(
         owner,
         receipt,
@@ -663,6 +668,7 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         fence,
         control,
         issued_evidence,
+        issuance_memory,
     })
 }
 
@@ -839,12 +845,24 @@ impl fmt::Debug for OpaquePinnedWorldModelV1 {
     }
 }
 
+#[cfg(test)]
 pub fn fit_tabular_final_use_v1(
     capability: FinalUseTabularCapabilityV1<'_>,
     use_witness: &FinalUseWitnessV1,
     publish_witness: &FinalUseWitnessV1,
     effective_now: impl Fn(u64) -> Result<u64, FinalUseErrorV1>,
 ) -> Result<FinalUseTabularCandidateV1, FinalUseErrorV1> {
+    fit_tabular_for_release(capability, use_witness, publish_witness, effective_now)
+        .map(|release| release.candidate)
+}
+
+pub(super) fn fit_tabular_for_release<'a>(
+    capability: FinalUseTabularCapabilityV1<'a>,
+    use_witness: &FinalUseWitnessV1,
+    publish_witness: &FinalUseWitnessV1,
+    effective_now: impl Fn(u64) -> Result<u64, FinalUseErrorV1>,
+) -> Result<FinalUseCandidateReleaseV1<'a, FinalUseTabularCandidateV1>, FinalUseErrorV1> {
+    capability.issuance_memory.checkpoint()?;
     if publish_witness.observed_at_unix_micros < use_witness.observed_at_unix_micros {
         return Err(FinalUseErrorV1::ClockRegression);
     }
@@ -900,39 +918,58 @@ pub fn fit_tabular_final_use_v1(
         verified_at_publish.into_verified_evidence(),
         capability.budget,
     )?;
+    let owner = capability.owner;
+    let fence = capability.fence;
+    let control = capability.control.clone();
+    // Vec-to-Arc conversion and dropping retained training inputs are real work.
+    // Finish them before the last owner/evidence time sample.
+    let mut candidate = FinalUseTabularCandidateV1 {
+        artifact: fit.artifact,
+        payload: payload.into(),
+        runtime_profile_digest: capability.runtime_profile_digest,
+        trust_digest: owner.verifier().trust_digest(),
+        ledger_head_digest: fence.expected_ledger_head_digest,
+        authority_epoch: fence.expected_authority_epoch,
+        stop_epoch: fence.expected_stop_epoch,
+        fit_receipt_digest: fit.receipt_digest,
+        published_at_unix_micros: 0,
+    };
+    drop(capability);
     let final_now = effective_now(publish_witness.observed_at_unix_micros)?;
     if final_now < publish_now {
         return Err(FinalUseErrorV1::ClockRegression);
     }
-    validate_temporal_current(
-        capability.owner,
-        &capability.fence,
-        &capability.control,
-        publish_witness,
-        final_now,
-    )?;
+    validate_temporal_current(owner, &fence, &control, publish_witness, final_now)?;
     // Owner materialization and signature verification above are real work.
     // Revalidate their sealed receipts without repeating hashing or signatures.
     publication_evidence.revalidate(final_now)?;
-    Ok(FinalUseTabularCandidateV1 {
-        artifact: fit.artifact,
-        payload: payload.into(),
-        runtime_profile_digest: capability.runtime_profile_digest,
-        trust_digest: capability.owner.verifier().trust_digest(),
-        ledger_head_digest: capability.fence.expected_ledger_head_digest,
-        authority_epoch: capability.fence.expected_authority_epoch,
-        stop_epoch: capability.fence.expected_stop_epoch,
-        fit_receipt_digest: fit.receipt_digest,
-        published_at_unix_micros: final_now,
+    candidate.published_at_unix_micros = final_now;
+    Ok(FinalUseCandidateReleaseV1 {
+        candidate,
+        evidence: publication_evidence,
+        checked_at: final_now,
+        model_window: None,
     })
 }
 
+#[cfg(test)]
 pub fn fit_world_model_final_use_v1(
     capability: FinalUseWorldModelCapabilityV1<'_>,
     use_witness: &FinalUseWitnessV1,
     publish_witness: &FinalUseWitnessV1,
     effective_now: impl Fn(u64) -> Result<u64, FinalUseErrorV1>,
 ) -> Result<FinalUseWorldModelCandidateV1, FinalUseErrorV1> {
+    fit_world_model_for_release(capability, use_witness, publish_witness, effective_now)
+        .map(|release| release.candidate)
+}
+
+pub(super) fn fit_world_model_for_release<'a>(
+    capability: FinalUseWorldModelCapabilityV1<'a>,
+    use_witness: &FinalUseWitnessV1,
+    publish_witness: &FinalUseWitnessV1,
+    effective_now: impl Fn(u64) -> Result<u64, FinalUseErrorV1>,
+) -> Result<FinalUseCandidateReleaseV1<'a, FinalUseWorldModelCandidateV1>, FinalUseErrorV1> {
+    capability.issuance_memory.checkpoint()?;
     if publish_witness.observed_at_unix_micros < use_witness.observed_at_unix_micros {
         return Err(FinalUseErrorV1::ClockRegression);
     }
@@ -994,26 +1031,32 @@ pub fn fit_world_model_final_use_v1(
             "world-model fit escaped the canonical final-use identity",
         ));
     }
+    let owner = capability.owner;
+    let fence = capability.fence;
+    let control = capability.control.clone();
+    let model_window = (fit.retained_until, fit.expires_at);
+    let mut candidate = FinalUseWorldModelCandidateV1 {
+        artifact: fit,
+        ledger_head_digest: fence.expected_ledger_head_digest,
+        stop_epoch: fence.expected_stop_epoch,
+        published_at_unix_micros: 0,
+    };
+    drop(capability);
     let final_now = effective_now(publish_witness.observed_at_unix_micros)?;
     if final_now < publish_now {
         return Err(FinalUseErrorV1::ClockRegression);
     }
-    validate_temporal_current(
-        capability.owner,
-        &capability.fence,
-        &capability.control,
-        publish_witness,
-        final_now,
-    )?;
+    validate_temporal_current(owner, &fence, &control, publish_witness, final_now)?;
     publication_evidence.revalidate(final_now)?;
-    if final_now > fit.retained_until || final_now > fit.expires_at {
+    if final_now > model_window.0 || final_now > model_window.1 {
         return Err(WorldModelV2Error::Expired.into());
     }
-    Ok(FinalUseWorldModelCandidateV1 {
-        artifact: fit,
-        ledger_head_digest: capability.fence.expected_ledger_head_digest,
-        stop_epoch: capability.fence.expected_stop_epoch,
-        published_at_unix_micros: final_now,
+    candidate.published_at_unix_micros = final_now;
+    Ok(FinalUseCandidateReleaseV1 {
+        candidate,
+        evidence: publication_evidence,
+        checked_at: final_now,
+        model_window: Some(model_window),
     })
 }
 
@@ -1023,6 +1066,7 @@ impl FinalUseTabularCapabilityV1<'_> {
         witness: &FinalUseWitnessV1,
         now: u64,
     ) -> Result<(), FinalUseErrorV1> {
+        self.issuance_memory.checkpoint()?;
         validate_temporal_current(self.owner, &self.fence, &self.control, witness, now)?;
         self.issued_evidence.revalidate(now)
     }
@@ -1037,6 +1081,7 @@ impl FinalUseWorldModelCapabilityV1<'_> {
         witness: &FinalUseWitnessV1,
         now: u64,
     ) -> Result<(), FinalUseErrorV1> {
+        self.issuance_memory.checkpoint()?;
         validate_temporal_current(self.owner, &self.fence, &self.control, witness, now)?;
         self.issued_evidence.revalidate(now)?;
         if now > self.plan.retained_until || now > self.plan.expires_at {
@@ -1182,6 +1227,11 @@ pub use selected::SelectedTabularOperatorV1;
 
 #[path = "final_use_issued.rs"]
 mod issued;
+#[path = "final_use_preflight.rs"]
+mod preflight;
+#[path = "final_use_release.rs"]
+mod release;
+pub(super) use release::FinalUseCandidateReleaseV1;
 #[path = "final_use_publication.rs"]
 mod publication;
 pub use publication::TabularCandidatePublicationViewV1;

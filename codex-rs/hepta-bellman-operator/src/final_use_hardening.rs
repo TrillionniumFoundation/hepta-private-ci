@@ -25,12 +25,17 @@ use crate::final_use::FinalUseWorldModelCandidateV1;
 use crate::final_use::TabularTrainingRequestV1;
 use crate::final_use::WorldModelTrainingRequestV1;
 
+#[path = "final_use_clock.rs"]
+pub(crate) mod clock;
+use clock::FinalUseClockV1;
+
 #[must_use = "the capability must be consumed by fit_tabular_final_use_v1"]
 pub struct FinalUseTabularCapabilityV1<'a> {
     inner: final_use::FinalUseTabularCapabilityV1<'a>,
     fit_context: FitContextV1,
     issued_at_unix_micros: u64,
     absolute_deadline_unix_micros: u64,
+    clock: FinalUseClockV1,
 }
 
 impl fmt::Debug for FinalUseTabularCapabilityV1<'_> {
@@ -53,6 +58,7 @@ pub struct FinalUseWorldModelCapabilityV1<'a> {
     fit_context: FitContextV1,
     issued_at_unix_micros: u64,
     absolute_deadline_unix_micros: u64,
+    clock: FinalUseClockV1,
 }
 
 impl fmt::Debug for FinalUseWorldModelCapabilityV1<'_> {
@@ -89,6 +95,7 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         issued_at_unix_micros,
     )?;
     let fit_context = control.fit_context();
+    let clock = FinalUseClockV1::new(issued_at_unix_micros);
     validate_fit_currentness(
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
@@ -111,17 +118,14 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
-    let now = effective_now(
-        issued_at_unix_micros,
-        issued_at_unix_micros,
-        fit_context.elapsed_micros(),
-    )?;
+    let now = clock.observe(issued_at_unix_micros, fit_context.elapsed_micros())?;
     inner.revalidate_issued_at(witness, now)?;
     Ok(FinalUseTabularCapabilityV1 {
         inner,
         fit_context,
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
+        clock,
     })
 }
 
@@ -145,6 +149,7 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         issued_at_unix_micros,
     )?;
     let fit_context = control.fit_context();
+    let clock = FinalUseClockV1::new(issued_at_unix_micros);
     validate_fit_currentness(
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
@@ -167,17 +172,14 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
-    let now = effective_now(
-        issued_at_unix_micros,
-        issued_at_unix_micros,
-        fit_context.elapsed_micros(),
-    )?;
+    let now = clock.observe(issued_at_unix_micros, fit_context.elapsed_micros())?;
     inner.revalidate_issued_at(witness, now)?;
     Ok(FinalUseWorldModelCapabilityV1 {
         inner,
         fit_context,
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
+        clock,
     })
 }
 
@@ -191,6 +193,7 @@ pub fn fit_tabular_final_use_v1(
         fit_context,
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
+        clock,
     } = capability;
     validate_capability_window(
         issued_at_unix_micros,
@@ -203,23 +206,23 @@ pub fn fit_tabular_final_use_v1(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
+    // Both witnesses arrive before this synchronous call. Start elapsed work
+    // from their latest trusted time floor, including a forward host jump.
+    validate_release_currentness(
+        absolute_deadline_unix_micros,
+        &fit_context,
+        clock.observe(publish_witness.observed_at(), fit_context.elapsed_micros())?,
+    )?;
     let candidate = with_fit_context_v1(&fit_context, || {
-        final_use::fit_tabular_final_use_v1(inner, use_witness, publish_witness, |observed_at| {
-            effective_now(
-                issued_at_unix_micros,
-                observed_at,
-                fit_context.elapsed_micros(),
-            )
+        final_use::fit_tabular_for_release(inner, use_witness, publish_witness, |observed_at| {
+            clock.observe(observed_at, fit_context.elapsed_micros())
         })
     })?;
     // The host witnesses are supplied before this synchronous call. Their
     // timestamps cannot stand in for time actually spent dispatching/fitting.
-    validate_fit_currentness(
-        issued_at_unix_micros,
-        absolute_deadline_unix_micros,
-        &fit_context,
-    )?;
-    Ok(candidate)
+    let released_at = clock.observe(publish_witness.observed_at(), fit_context.elapsed_micros())?;
+    validate_release_currentness(absolute_deadline_unix_micros, &fit_context, released_at)?;
+    candidate.finish(released_at)
 }
 
 pub fn fit_world_model_final_use_v1(
@@ -232,6 +235,7 @@ pub fn fit_world_model_final_use_v1(
         fit_context,
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
+        clock,
     } = capability;
     validate_capability_window(
         issued_at_unix_micros,
@@ -244,28 +248,21 @@ pub fn fit_world_model_final_use_v1(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
+    validate_release_currentness(
+        absolute_deadline_unix_micros,
+        &fit_context,
+        clock.observe(publish_witness.observed_at(), fit_context.elapsed_micros())?,
+    )?;
     let candidate = with_fit_context_v1(&fit_context, || {
-        final_use::fit_world_model_final_use_v1(
-            inner,
-            use_witness,
-            publish_witness,
-            |observed_at| {
-                effective_now(
-                    issued_at_unix_micros,
-                    observed_at,
-                    fit_context.elapsed_micros(),
-                )
-            },
-        )
+        final_use::fit_world_model_for_release(inner, use_witness, publish_witness, |observed_at| {
+            clock.observe(observed_at, fit_context.elapsed_micros())
+        })
     })?;
     // The host witnesses are supplied before this synchronous call. Their
     // timestamps cannot stand in for time actually spent dispatching/fitting.
-    validate_fit_currentness(
-        issued_at_unix_micros,
-        absolute_deadline_unix_micros,
-        &fit_context,
-    )?;
-    Ok(candidate)
+    let released_at = clock.observe(publish_witness.observed_at(), fit_context.elapsed_micros())?;
+    validate_release_currentness(absolute_deadline_unix_micros, &fit_context, released_at)?;
+    candidate.finish(released_at)
 }
 
 fn validate_capability_window(
@@ -308,20 +305,27 @@ fn validate_elapsed_deadline(
     absolute_deadline_unix_micros: u64,
     elapsed_micros: u64,
 ) -> Result<(), FinalUseErrorV1> {
-    let current_time = effective_now(issued_at_unix_micros, issued_at_unix_micros, elapsed_micros)?;
+    let current_time = issued_at_unix_micros
+        .checked_add(elapsed_micros)
+        .ok_or(FinalUseErrorV1::DeadlineExceeded)?;
     if current_time >= absolute_deadline_unix_micros {
         return Err(FinalUseErrorV1::DeadlineExceeded);
     }
     Ok(())
 }
 
-// Advance only the time used to validate owner/evidence windows. The host's
-// identity and generation witnesses are never rewritten as refreshed evidence.
-fn effective_now(issued_at: u64, observed_at: u64, elapsed: u64) -> Result<u64, FinalUseErrorV1> {
-    issued_at
-        .checked_add(elapsed)
-        .map(|now| now.max(observed_at))
-        .ok_or(FinalUseErrorV1::DeadlineExceeded)
+fn validate_release_currentness(
+    absolute_deadline_unix_micros: u64,
+    fit_context: &FitContextV1,
+    now: u64,
+) -> Result<(), FinalUseErrorV1> {
+    if fit_context.control().is_cancelled() {
+        return Err(FinalUseErrorV1::Stopped);
+    }
+    if now >= absolute_deadline_unix_micros {
+        return Err(FinalUseErrorV1::DeadlineExceeded);
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -386,16 +390,6 @@ mod tests {
         ));
         assert!(matches!(
             validate_elapsed_deadline(u64::MAX - 1, u64::MAX, 2),
-            Err(FinalUseErrorV1::DeadlineExceeded)
-        ));
-    }
-
-    #[test]
-    fn effective_now_preserves_later_host_time_and_rejects_overflow() {
-        assert_eq!(effective_now(10, 12, 15).unwrap(), 25);
-        assert_eq!(effective_now(10, 30, 15).unwrap(), 30);
-        assert!(matches!(
-            effective_now(u64::MAX - 1, u64::MAX, 2),
             Err(FinalUseErrorV1::DeadlineExceeded)
         ));
     }

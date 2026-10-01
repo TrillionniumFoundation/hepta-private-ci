@@ -40,6 +40,15 @@ mod terminal_trust_tests;
 #[path = "owner_capability_issuance_tests.rs"]
 mod capability_issuance_tests;
 
+#[path = "owner_forward_clock_tests.rs"]
+mod forward_clock_tests;
+
+#[path = "owner_issuance_resource_tests.rs"]
+mod issuance_resource_tests;
+
+#[path = "owner_candidate_release_tests.rs"]
+mod candidate_release_tests;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap()
 }
@@ -146,7 +155,7 @@ impl Fixture {
     }
 
     fn with_candidates(candidates: Vec<StableId>) -> Self {
-        Self::with_candidates_and_expiry(candidates, 90)
+        Self::with_candidates_and_expiry(candidates, /*expires_at*/ 90)
     }
 
     fn with_candidates_and_expiry(candidates: Vec<StableId>, expires_at: u64) -> Self {
@@ -180,7 +189,8 @@ impl Fixture {
     }
     fn terminal() -> Self {
         let candidates = vec![id("action"), id("abstain")];
-        let mut fixture = Self::with_candidates_and_expiry(candidates.clone(), 90_000_000);
+        let mut fixture =
+            Self::with_candidates_and_expiry(candidates.clone(), /*expires_at*/ 90_000_000);
         append_fixture_episode(
             &mut fixture.owner,
             candidates,
@@ -570,8 +580,10 @@ fn full_v3_qualification_path_profile() {
 fn world_final_use_request_cannot_relabel_authoritative_training_trust() {
     // Public issuance now checks actual elapsed time after owner verification.
     // Seconds-long signed TTLs isolate trust substitution from expiration.
-    let fixture =
-        Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000_000);
+    let fixture = Fixture::with_candidates_and_expiry(
+        vec![id("action"), id("abstain")],
+        /*expires_at*/ 90_000_000,
+    );
     let (receipt, freeze) = fixture.dataset();
     let freeze = trust_window_tests::sign_until_at(freeze, 3, 95_000_000);
     let model_id = id("world-model");
