@@ -55,12 +55,6 @@ An explicit `verify --require-path-lease-attestation` checks the separate
 activation boundary and rejects touched requests without external attestation;
 a static pass never activates a lease or grants authority.
 
-Reviewer approval, administrator enforcement and comment resolution are selected
-by the repository owner. The supplied main ruleset permits administrators to
-merge PRs without granting a direct-push bypass; ordinary required checks remain
-bound to their real publisher. These repository settings do not authorize a
-workload effect or replace independent runtime evaluation.
-
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
 code checks and merge through the configured protected branch. The qualification
@@ -138,9 +132,9 @@ Historical cleanup remains bound to the exact head/tree and 143-path deletion in
 - Current-run objectives and learning artifacts are immutable. Learning generates only next-snapshot candidates.
 - Central optimizers, NDU runtimes, prompt optimizers and learning modules select or propose; they do not execute effects or issue capabilities.
 
-## 5. Forty-module architecture and team model
+## 5. Modular architecture and team model
 
-`docs/modules/*/module.toml` is the handwritten source for the current 40 modules; `MODULES.json` is its generated identity projection. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
+`docs/modules/*/module.toml` is the handwritten source for the current modules; `MODULES.json` is its generated identity projection. Adding or retiring a module updates its manifest and generated current views without changing historical readiness inventories. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
 
 ```text
 objective.compiler
@@ -164,9 +158,9 @@ Each module has a primary owner, deputy, exclusive roots, dependencies, data aut
 
 ## 5A. Closed-world module implementation guides
 
-Every one of the forty registered modules has one stable implementation guide at `docs/modules/<module-id>/TECHNICAL.md`. `docs/modules/MODULE_DOCS.json` indexes each guide and its contracts, protocols, data domains, threats and work packages. Prose digests, byte counts and word counts retained in that index are optional generated presentation caches, not acceptance or source-selection evidence. Normal prose edits do not require refreshing them; exact candidate identity remains bound by Git and CI. Registry ownership, source paths, authority constraints and usable local links remain mandatory. `docs/modules/SOURCE_BINDINGS.json` separates declared target roots from existing implementation evidence, missing roots and the bootstrap package that must materialize each target.
+Every registered module has one stable implementation guide at `docs/modules/<module-id>/TECHNICAL.md`. `docs/modules/MODULE_DOCS.json` indexes each guide and its contracts, protocols, data domains, threats and work packages. Prose digests, byte counts and word counts retained in that index are optional generated presentation caches, not acceptance or source-selection evidence. Normal prose edits do not require refreshing them; exact candidate identity remains bound by Git and CI. Registry ownership, source paths, authority constraints and usable local links remain mandatory. `docs/modules/SOURCE_BINDINGS.json` separates declared target roots from existing implementation evidence, missing roots and the bootstrap package that must materialize each target.
 
-Source states are deliberately truthful: a module may be `existing_bound`, `existing_legacy_aggregate`, `existing_declared_unbound`, `target_partially_materialized`, `target_unmaterialized` or `external_with_adapter_target`. Documentation readiness never changes a source, activation, acceptance, promotion or release claim. `python3 scripts/hepta-module-docs.py verify` fails unless all forty guides, bindings and registry references are closed.
+Source states are deliberately truthful: a module may be `existing_bound`, `existing_legacy_aggregate`, `existing_declared_unbound`, `target_partially_materialized`, `target_unmaterialized` or `external_with_adapter_target`. Documentation readiness never changes a source, activation, acceptance, promotion or release claim. `python3 scripts/hepta-module-docs.py verify` validates all current guides, bindings and registry references.
 
 The module registries expose two separate boolean facts for every module: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The two facts are projected identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` and are validated against `docs/readiness/STATUS_MODEL.json`.
 
@@ -183,9 +177,9 @@ The implementation-level adaptive document set is globally governed, not an inde
 
 ## 5C. Pre-coding implementation-readiness closed world
 
-`docs/readiness/READINESS.json` binds nine implementation-level execution specifications, 31 bounded typed protocols, 54 closed documentation gaps, all 40 modules, seven primary implementation lanes, three cross-lane integration tracks and nine explicitly authorized external-system assimilation components. `docs/readiness/GAPS.json` separately names nine capability or evidence gates that repository documentation may never self-certify.
+`docs/readiness/READINESS.json` binds nine implementation-level execution specifications, 31 bounded typed protocols, 54 closed documentation gaps, the 40 modules in its original readiness scope, seven primary implementation lanes, three cross-lane integration tracks and nine explicitly authorized external-system assimilation components. `docs/readiness/GAPS.json` separately names nine capability or evidence gates that repository documentation may never self-certify.
 
-Every module guide includes Section 16 and maps the module to exactly one primary lane, the applicable readiness specifications, its owned and consumed readiness protocols and a common coding-entry gate. For ordinary owner-authorized repository implementation, the coding entry is a named work package, its contracts, relevant fixtures and normal review; Git and CI supply the exact candidate identity automatically. No separately handwritten or expiring receipt is required to start coding or merge an otherwise reviewed change. Frozen runtime snapshots, independently issued authority and rollback admission apply when testing or activating their actual boundary, not to unrelated prose or pure-function edits. Autonomous candidate execution remains subject to its bounded envelope and protected evaluator; this simplification grants it no additional authority. The new embodiment and assimilation work packages define source paths and predecessors without claiming that those paths are materialized.
+Each module in the original readiness scope maps to its recorded primary lane, applicable readiness specifications and owned or consumed readiness protocols. A new module declares its current ownership, dependencies, source and guide in its manifest; a historical lane assignment is required only when the new work actually extends that lane. For ordinary owner-authorized repository implementation, the coding entry is a named work package, its contracts, relevant fixtures and normal review; Git and CI supply the exact candidate identity automatically. No separately handwritten or expiring receipt is required to start coding or merge an otherwise reviewed change. Frozen runtime snapshots, independently issued authority and rollback admission apply when testing or activating their actual boundary, not to unrelated prose or pure-function edits. Autonomous candidate execution remains subject to its bounded envelope and protected evaluator; this simplification grants it no additional authority. The new embodiment and assimilation work packages define source paths and predecessors without claiming that those paths are materialized.
 
 `python3 scripts/hepta-readiness.py verify` checks document presence and registered references, protocol bounds and ownership, gap traceability, module/lane closure, package references, assimilation target-root ownership, generated status and the read-only source-head/synthetic-merge workflow. Heading wording, ordering, stock phrases and document byte counts are editorial guidance rather than proof of implementation. The global verifier invokes the readiness, CNS and HNMF verifiers; no subordinate layer may certify itself as globally complete. Documentation closure permits contract-first coding to begin through the declared lanes, but it does not imply source implementation, real model use, future-time efficacy, biomimicry, physical safety, external-system owner consent, operator acceptance, selection, promotion or release.
 
@@ -288,7 +282,7 @@ locally trainable implementation candidate, not a permanent framework dependency
 and not an already activated Hepta model. A cell owns a logical identity, bounded
 state, effective parameter identity, typed observation/action contract and learning
 history. It does not automatically own a process, database, model server, optimizer
-service or top-level module entry. The forty-module ownership model is unchanged.
+service or top-level module entry. The existing module ownership boundaries are unchanged.
 
 Default effective parameters compose a shared base, an organ adapter and a cell
 adapter/head. Independent effective parameters are real trainable parameters, not
