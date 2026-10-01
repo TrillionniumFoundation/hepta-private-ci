@@ -43,10 +43,16 @@ mod product_runner;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
+mod task_execution_lineage;
 mod task_lineage;
 mod temporal_evaluation;
 mod temporal_fold;
 
+pub use task_execution_lineage::TaskExecutionRegistrationV1;
+pub use task_execution_lineage::TaskExecutionWindowV1;
+pub use task_execution_lineage::TaskObservedOutcomeV1;
+pub use task_execution_lineage::TaskPredictionEventV1;
+pub use task_execution_lineage::TaskPredictionLineageV1;
 pub use task_lineage::FrozenTaskSourceLineageV1;
 pub use task_lineage::TaskCrossFoldInputsV1;
 pub use task_lineage::TaskLineageError;

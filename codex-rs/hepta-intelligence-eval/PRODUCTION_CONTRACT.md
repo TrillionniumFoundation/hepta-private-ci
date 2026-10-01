@@ -44,6 +44,28 @@ A `SystemLongitudinal` claim additionally requires V3 signed observer/time
 evidence. Synthetic future IDs or virtual timestamps are never future-calendar
 efficacy evidence.
 
+## Archived machine-task input lineage
+
+Statistical `principal_lineage` names a dependency component; it is
+not restricted to humans and is separate from authenticated signing principals.
+`FrozenTaskSourceLineageV1` freezes a label-free source graph with exact archive,
+file, original row and record digests. Repeated tasks and transitively shared
+dependencies stay in one principal/cluster, including unscored bridge tasks.
+Source custody must authenticate the complete graph and bind its digest into the
+frozen source/assumptions contract. A subset graph cannot replace that contract.
+Graph separation does not prove causal exchangeability or eliminate undeclared
+dependence; those remain independently reviewed assumptions of the frozen plan.
+
+`bind_prediction` maps original native decision/receipt/run identities and actual
+Unix-microsecond execution events into targets, training rows and clusters. The
+task episode persists across reruns; recovery timestamps do not create new
+samples. Archive publication time is never an execution timestamp. These pure
+adapters issue no signatures, qualification, selections or longitudinal evidence.
+An archived benchmark remains limited to its preregistered task/population and
+does not establish pretraining disjointness or future online generalization.
+The existing fenced holdout, independence, support and primary-superiority gates
+apply unchanged through `ProductEvaluationRunnerV1`.
+
 ## Final-holdout ownership
 
 ### Single host
