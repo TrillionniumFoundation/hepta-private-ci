@@ -6,6 +6,27 @@
 
 use super::*;
 
+pub(super) fn validate_witness_receipt(
+    signed: &SignedCurrentArtifactHeadV1,
+    witness_digest: Digest32,
+    receipt: RegistryHeadWitnessReceipt,
+) -> Result<(), ArtifactOwnerHostError> {
+    // The authenticated signed head commits every input to this canonical
+    // encoding. A receipt must describe those bytes exactly even if the
+    // separately persisted witness copy is no longer available.
+    let encoded = encode_head_witness(&signed.witness, signed.binding)?;
+    let expected = RegistryHeadWitnessReceipt {
+        binding: signed.binding,
+        witness_digest,
+        file_digest: Digest32::of_bytes(&encoded),
+        encoded_bytes: encoded.len(),
+    };
+    if receipt != expected {
+        return Err(ArtifactOwnerHostError::CheckpointMismatch);
+    }
+    Ok(())
+}
+
 pub(super) fn validate_intent_record(
     record: &crate::ArtifactRecord,
     intent: &crate::ArtifactPublicationIntentV1,

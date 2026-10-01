@@ -897,11 +897,12 @@ impl LearningArtifactOwnerHost {
             {
                 continue;
             }
-            if let Some(witness_receipt) = checkpoint.witness_receipt
-                && (witness_receipt.witness_digest != current.witness_digest
-                    || witness_receipt.binding != current.signed.binding)
-            {
-                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+            if let Some(witness_receipt) = checkpoint.witness_receipt {
+                registry_replay::validate_witness_receipt(
+                    &current.signed,
+                    current.witness_digest,
+                    witness_receipt,
+                )?;
             }
             match matched {
                 Some(existing) if existing != registry_receipt => {
@@ -2448,3 +2449,7 @@ mod pending_fence_tests;
 #[cfg(test)]
 #[path = "owner_pending_payload_tests.rs"]
 mod pending_payload_tests;
+
+#[cfg(test)]
+#[path = "owner_witness_receipt_tests.rs"]
+mod witness_receipt_tests;

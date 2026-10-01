@@ -282,6 +282,7 @@ impl LearningArtifactOwnerHost {
         let verified = self
             .verifier
             .verify_signed_head(signed, &requirement, false)?;
+        registry_replay::validate_witness_receipt(signed, verified.witness_digest, witness)?;
         if signed.binding != registry.binding
             || signed.witness.head_digest != registry.head_digest
             || verified.witness_digest != witness.witness_digest
