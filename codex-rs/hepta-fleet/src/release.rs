@@ -303,7 +303,7 @@ impl FleetRegistry {
             let _ = std::fs::remove_dir_all(&staging);
             return Err(error);
         }
-        resolve_catalog_release(self.layout().releases_root(), &release_id)
+        resolve_catalog_release(self, &release_id)
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -317,7 +317,7 @@ impl FleetRegistry {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        let _ = resolve_catalog_release(self.layout().releases_root(), release_id)?;
+        let _ = resolve_catalog_release(self, release_id)?;
         let manifest = release_manifest_path(self.layout().releases_root(), release_id);
         let allowance = ReleaseAllowance {
             schema_version: RELEASE_METADATA_SCHEMA_VERSION,
@@ -461,7 +461,7 @@ impl FleetRegistry {
                 "allowed release manifest changed for agent {agent_id} release {release_id}"
             )));
         }
-        resolve_catalog_release(self.layout().releases_root(), release_id)
+        resolve_catalog_release(self, release_id)
     }
 
     pub fn allowed_releases(
@@ -593,9 +593,10 @@ pub(crate) fn load_release_state(
 }
 
 fn resolve_catalog_release(
-    catalog_root: &Path,
+    registry: &FleetRegistry,
     release_id: &ReleaseId,
 ) -> Result<RegisteredRelease, FleetRegistryError> {
+    let catalog_root = registry.layout().releases_root();
     validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
     let bin_root = release_root.join("bin");
@@ -610,8 +611,11 @@ fn resolve_catalog_release(
     }
     let manifest_path = release_root.join(RELEASE_MANIFEST_FILE);
     validate_immutable_regular_file(&manifest_path, /*executable*/ false)?;
-    let metadata: CatalogReleaseMetadata =
-        read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+    let manifest = registry
+        .release_digests
+        .manifest(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+    let metadata: CatalogReleaseMetadata = serde_json::from_slice(&manifest.bytes)
+        .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))?;
     let (release_id_from_manifest, agentd, matrixd) = match metadata {
         CatalogReleaseMetadata::V2(metadata) => {
             validate_metadata(&metadata, release_id)?;
@@ -640,10 +644,10 @@ fn resolve_catalog_release(
             "release {release_id} contains an unexpected closed-world entry"
         )));
     }
-    let program = resolve_program(&release_root, &agentd, release_id)?;
+    let program = resolve_program(registry, &release_root, &agentd, release_id, &manifest)?;
     let matrixd = match matrixd {
         Some(metadata) => Some(RegisteredProgram {
-            program: resolve_program(&release_root, &metadata, release_id)?,
+            program: resolve_program(registry, &release_root, &metadata, release_id, &manifest)?,
             args: metadata.args,
         }),
         None => None,
@@ -657,14 +661,16 @@ fn resolve_catalog_release(
 }
 
 fn resolve_program(
+    registry: &FleetRegistry,
     release_root: &Path,
     metadata: &ReleaseProgramMetadata,
     release_id: &ReleaseId,
+    manifest: &crate::registry::ManifestRead,
 ) -> Result<PathBuf, FleetRegistryError> {
     let program = release_root.join(&metadata.program_relative_path);
     validate_immutable_regular_file(&program, /*executable*/ true)?;
     if std::fs::metadata(&program)?.len() != metadata.program_size_bytes
-        || sha256_file(&program)? != metadata.program_sha256
+        || registry.release_digests.sha256(&program, manifest)? != metadata.program_sha256
     {
         return Err(FleetRegistryError::Corrupt(format!(
             "release {release_id} program differs from immutable metadata"

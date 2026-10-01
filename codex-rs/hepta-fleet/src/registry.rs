@@ -6,6 +6,7 @@ use std::io::ErrorKind;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -33,6 +34,11 @@ static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 #[path = "registry_retirement.rs"]
 mod retirement;
 
+#[path = "release_digest_cache.rs"]
+mod release_digest_cache;
+pub(crate) use release_digest_cache::ManifestRead;
+use release_digest_cache::ReleaseDigestCache;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRecord {
     pub manifest: AgentManifest,
@@ -56,6 +62,7 @@ impl FleetSnapshot {
 #[derive(Clone, Debug)]
 pub struct FleetRegistry {
     layout: HeptaFleetLayout,
+    pub(crate) release_digests: Arc<ReleaseDigestCache>,
 }
 
 impl FleetRegistry {
@@ -73,12 +80,16 @@ impl FleetRegistry {
         }
         create_owner_socket_directory(&layout)?;
         sync_directory(layout.fleet_root().as_path())?;
-        Ok(Self { layout })
+        Ok(Self {
+            layout,
+            release_digests: Arc::default(),
+        })
     }
 
     pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
         let registry = Self {
             layout: fleet_root.layout(),
+            release_digests: Arc::default(),
         };
         for directory in [
             registry.layout.fleet_root().as_path(),
