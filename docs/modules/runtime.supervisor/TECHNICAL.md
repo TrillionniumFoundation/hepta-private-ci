@@ -24,7 +24,7 @@ notes are retained and classified by
 this guide or the current capability matrix.
 
 The current adversarial repair record is
-[`ADVERSARIAL_AUDIT_20261001.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001.md).
+[`ADVERSARIAL_AUDIT_20261001_R3.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R3.md).
 It records concrete failure traces, regression evidence and unresolved gates.
 
 ## 1. Mission and authority
@@ -303,7 +303,7 @@ transition from this reply alone. Exact signature, journal and admission checks
 remain under the owner; this protocol does not supply an atomic recovery envelope.
 
 The authoritative lifecycle tick remains 25 ms. Tick-only whole-fleet projection
-rebuilds are coalesced to a 100 ms interval, while a live owner request publishes
+refreshes are coalesced to a 100 ms interval, while a live owner request publishes
 immediately after it executes. This removes the unconditional 40-Hz full Fleet
 reload/projection loop without changing lifecycle authority or read freshness.
 Projection refreshes and skips are exposed in scheduler diagnostics.
@@ -315,13 +315,30 @@ those rings. At the configured maxima, cloning 256 log entries of 4096 bytes for
 each of 256 Agents could copy up to 256 MiB of log payload per refresh. This is a
 capacity upper bound, not a measured latency or allocation result.
 
+`daemon_read_projection.rs` reuses an Agent's immutable status `Arc` only after
+a fresh capture compares the complete supervisor epoch, Fleet record and runtime
+metadata with the previous input. A changed health or Matrix field, hidden CAS
+field, external Fleet write or epoch rebuilds that Agent's status even when its
+control revision did not change. Diagnostic-ring changes alone do not change
+the metadata input. Removed Agents leave both status and input maps; invalidation
+or a poisoned view prevents reuse of the old observation.
+
+Every refresh still loads the complete Fleet registry, captures metadata for
+every Agent and rereads process-ownership readiness. Lease readiness can change
+without changing a cached status, so readiness is never reused with the status
+`Arc`. A new observation gets a timestamp taken before this fresh work. This
+reduces repeated status derivation for equal inputs; it does not remove Fleet
+I/O or metadata scans and supplies no measured performance evidence.
+
 For releases without a Matrix command, an already empty companion restart
 budget causes no journal publication on idle ticks. A nonempty budget is cleared
 independently of the old companion's backoff or exhaustion state; publication
 failure retains its fields for retry and records a bounded fault.
 
-This is not yet a dirty-Agent incremental projection. A true incremental
-projection and any collect-effect-apply or per-Agent actor refactor are gated by
+The per-Agent reuse path makes `incremental_per_agent_projection` partial, with
+test source present. Dirty propagation and a refresh that reads only changed
+Agents remain unimplemented. That further optimization and any
+collect-effect-apply or per-Agent actor refactor are gated by
 the frozen target-host SLOs rather than assumed necessary from synthetic source
 fixtures.
 
@@ -331,6 +348,19 @@ Unexpected exits use a durable bounded restart window with exponential backoff
 and a fixed attempt ceiling. Restart state is generation-bound; clock rollback
 is normalized durably rather than minting a fresh budget. Matrix restart state
 cannot overwrite the main process budget.
+
+`AutomaticRestartQueued` records the charged attempt only after durable budget,
+lineage and deadline admission; exact-exit cleanup retries cannot publish it
+twice. `AutomaticRestartBudgetExhausted` records the fixed attempt ceiling and
+stops further automatic dispatch as a normal policy outcome. It does not suppress
+journal/admission errors. A tick preserves those errors alongside simultaneous
+main or Matrix cleanup faults in bounded fault events and the same `TickReport`,
+without replacing the retained process owner or creating new authority state.
+Earlier signal faults are also preserved when a later process probe, cleanup or
+main control failure leaves the tick unresolved, including a Matrix failure
+followed by a successful retry. Exact observed exit with successful cleanup
+still tolerates a failed main signal; this established cleanup contract remains
+unchanged.
 
 Durability failures at write, fsync, publish/link, rename and directory sync are
 classified according to whether the outcome is known absent, known present or
@@ -423,8 +453,8 @@ substitute for 256 real target-host processes.
 
 Scheduler diagnostics record completed owner work, pre-admission busy rejection,
 maximum tick delay, read-projection refreshes and coalesced skips. Lifecycle lock
-telemetry records acquisition, contention, wait and hold distributions in the
-qualification path. Production receipts additionally bind raw logs and durable
+telemetry records acquisition and contention counts and cumulative/maximum wait
+and hold times. Qualification separately samples wait latency. Production receipts additionally bind raw logs and durable
 snapshots before and after each injected fault cut.
 
 Connection capacity, writer admission, tick cadence and projection freshness are
@@ -500,12 +530,13 @@ The following is source navigation, not a pass receipt:
 | Start | `Supervisor::start` | `src/supervisor.rs`, `src/recovery.rs` | `src/supervisor_tests.rs`, `src/release_admission_tests.rs` |
 | Drain | `Supervisor::drain` | `src/supervisor.rs` | `src/supervisor_tests.rs`, `src/unix_tests.rs` |
 | Stop/Kill | durable control intent | `src/control.rs`, `src/control_intent.rs` | `src/control_durable_restart_tests.rs`, `src/control_completion_tests.rs` |
-| Restart | restart budget/lineage | `src/supervisor.rs`, `src/restart_*` | `tests/restart_budget*.rs` |
+| Restart | restart budget/lineage and bounded fault reporting | `src/supervisor.rs`, `src/tick.rs`, `src/restart_*` | `tests/restart_budget*.rs`, `src/automatic_restart_event_tests.rs`, `src/tick_control_fault_tests.rs` |
 | Upgrade/Rollback | release transaction | `src/release_transaction.rs`, `src/supervisor.rs` | `src/supervisor_tests.rs` |
 | Signed mutation | external grant verifier | `src/signed_authority.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs` |
 | Signed recovery | decision verification and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
 | Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
+| Per-Agent status reuse | fresh complete epoch/record/runtime comparison | `src/daemon_read_projection.rs`, `src/daemon_read_view.rs` | `src/daemon_read_projection_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
 | Local control client | request/reply association | `src/daemon_client.rs`, `src/daemon_client_validation.rs` | `src/daemon_client_validation_tests.rs` |
 | Durable file input | stable bounded descriptor read | `src/durable_publish.rs`, `src/lease.rs`, `src/restart_journal.rs` | `src/durable_read_tests.rs`, `src/lease_read_tests.rs`, `src/restart_journal_read_tests.rs` |
@@ -541,6 +572,10 @@ qualification requires current exact-head and merge receipts. Target-host
 qualification, independent acceptance, selection, promotion, activation and
 release are later, separately governed states.
 
+The 16 declared source capabilities comprise 12 implemented, 2 partial and 2
+not implemented. These categories do not establish an execution or production
+completion percentage.
+
 For the current candidate:
 
 - durable Stop/Kill identity, original deadline and restart cancellation are
@@ -549,8 +584,9 @@ For the current candidate:
   lineage remain incomplete;
 - verifier/offline signer build separation and pinned-bundle-only daemon input
   are source-implemented;
-- tick-only whole-fleet projections are coalesced, but dirty-Agent incremental
-  projection and per-Agent mutation ownership are not implemented;
+- tick-only whole-fleet refreshes are coalesced and complete-input per-Agent
+  status reuse is present; dirty-Agent propagation, selective Fleet reads and
+  per-Agent mutation ownership remain unimplemented;
 - the atomic recovery-observation envelope is not implemented;
 - exact-head, deterministic merge, target-host and independent acceptance states
   must be populated only by their actual receipts;

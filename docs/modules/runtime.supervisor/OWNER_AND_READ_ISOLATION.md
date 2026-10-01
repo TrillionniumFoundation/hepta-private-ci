@@ -2,17 +2,16 @@
 
 ## Scope and source boundary
 
-This continuation builds on PR #1057 at
+The owner-lifetime work originated in PR #1057 at
 `eb3d65c02352efc8cd1abf7158c6ca449c3cb722`, based on main
-`a126987b84737dbc2ee2592442a314117bddb4a2`. It preserves the earlier
-Agentd build prerequisite, recovery signer, typed operator caller, strict CI
-fan-in, and exact source/base-merge receipt work. It does not import other
-modules' unmerged convergence branches.
+`a126987b84737dbc2ee2592442a314117bddb4a2`. Those identities are historical
+provenance. This document describes the current owner and observation contract;
+[`TECHNICAL.md`](TECHNICAL.md), [`CAPABILITY_STATUS.json`](CAPABILITY_STATUS.json)
+and the actual candidate-bound receipts establish current status.
 
-This is source remediation, not production acceptance. The new Rust tests have
-not been compiled or run in the editing environment. No production keys have
-been generated or installed. No independent operator approval, deployment,
-activation, release, force-push, or branch-protection exception is asserted.
+Source remediation and test-source presence do not establish production
+acceptance. Target-host evidence, independently provisioned verifier material,
+operator approval, deployment, activation and release remain separate gates.
 
 ## 1. Keep the kernel owner until every possible writer is gone
 
@@ -62,6 +61,22 @@ seconds, future-dated views, a poisoned view lock and failed refreshes return
 `control_state_unavailable`; a failed capture cannot extend a previous view's
 freshness. A captured recovery-required view reports `ready = false`.
 
+`daemon_read_projection.rs` retains the previous complete input and immutable
+status `Arc` for each Agent. After a fresh Fleet load and metadata capture,
+equality of supervisor epoch, full Fleet record and full runtime metadata permits
+reuse of that status. Control revision alone is insufficient: health, Matrix,
+hidden CAS fields and external Fleet changes can invalidate equality without
+incrementing it. Diagnostic rings are absent from metadata and remain available
+through the full supervisor snapshot. Removal prunes both maps; invalidation,
+poison and an epoch change prevent serving or reusing stale inputs.
+
+Process-ownership readiness is checked afresh for every Agent on every refresh,
+including a lease that appears while all status inputs remain equal. The capture
+timestamp and module readiness belong to the new observation, never to the
+reused status. All Fleet I/O and metadata scans remain. This is partial per-Agent
+projection reuse with test source, not dirty propagation, selective Fleet reads
+or a measured latency/allocation improvement.
+
 Observations are deliberately not atomic authority reads. They can lag a
 concurrent transition within the freshness bound. `ReleaseSelection`,
 `ProductionMutationStatus` and every mutation still use the live owner path.
@@ -80,15 +95,19 @@ returning a busy rejection with no operation admitted. Cancellation of a
 waiting acquisition does not reserve or start an operation. A FIFO wait also
 avoids letting an overdue ticker continuously overtake waiting requests.
 
-The existing release resolver can run its read-only nested blocking task while
-the owner operation is awaiting it; this does not create another lifecycle
-writer. Started owner callbacks are not made cancellable by a timeout.
+Fleet release resolution runs synchronously in the existing blocking owner
+worker, outside the lifecycle mutex while retaining the one writer permit. It
+does not submit a second blocking task that could wait for capacity held by its
+caller, and it creates no additional lifecycle writer. Started owner callbacks
+are not made cancellable by a timeout.
 `spawn_blocking` does not provide that guarantee. Stuck kernel/filesystem I/O
 may hold ownership beyond the connection deadline; host-level termination
 and subsequent durable recovery remain separate operational actions.
 
 Startup registry loading/recovery is still synchronous. Mutations and tick
-still share one lifecycle mutex and a whole-fleet view refresh. This patch is
+still share one lifecycle mutex. Tick-only full-fleet captures are coalesced to
+100 ms; a live owner request refreshes immediately. Equal-input per-Agent status
+reuse does not remove the whole-fleet refresh from that owner path. This is
 not per-Agent actor isolation, a short-only global commit coordinator, or proof
 of cross-Agent mutation latency. Those remain mandatory before claiming the
 complete concurrency stage. No new public crate API or Cargo feature is added.
@@ -103,16 +122,17 @@ p95/p99 SLO receipts, durable audit records or authorization evidence.
 
 ## 3. Protect provisioned public verifier material
 
-The existing `hepta-supervisord` grant/H7 verifier CLI is retained. Public keys
-are loaded only from absolute regular-file paths using a bounded read from the
+`hepta-supervisord` accepts production verifier material only as an absolute
+authority-bundle path paired with its pinned digest. The legacy six-field
+key/signer/epoch tuple is rejected. The public bundle is read from a bounded
 opened descriptor. On Unix the loader refuses symlinks, multiple hard links,
 group/world writable files and ownership other than root/effective user. It
 checks device/inode on open and checks metadata stability after reading.
 `O_NONBLOCK` avoids waiting on a FIFO substituted at the final component.
 
-The maximum input is 128 bytes; the existing 32-raw-byte and 64-hex-character
-formats remain supported, including bounded surrounding whitespace for hex.
-The loader does not rewrite key files. Parent directories and the external
+The bundle input is bounded to 8192 bytes, with a versioned namespace, two
+signer identities/epochs and public keys, and a validated canonical digest.
+The loader does not rewrite provisioned files. Parent directories and the external
 provisioning ceremony must remain protected. Descriptor checks are not a
 cryptographic distribution or live revocation service.
 
@@ -125,10 +145,10 @@ qualification job and call it an independently provisioned production key.
 
 ## 4. Qualification contract
 
-The fixed `products` plan now also runs `--bin hepta-supervisord`, so the public
-key loader's six binary tests execute rather than merely compiling under lint.
-Both library profiles require the 15 new owner, cancellation, FIFO admission,
-shutdown and read-view tests. Receipt assembly verifies their exact `PASS`
+The fixed `products` plan runs `--bin hepta-supervisord`, including the current
+pinned-bundle option tests. Both library profiles require the reviewed owner,
+cancellation, FIFO admission, shutdown and read-view tests. Receipt assembly
+verifies the current plan's exact `PASS`
 names in addition to the existing exact candidate/context/command/log and exit
 checks. Aggregate passing counts cannot cover missing, skipped, failed or
 similarly named replacements. Parent commands omitting binary tests cannot be
@@ -142,16 +162,18 @@ document. Keep `IMPLEMENTATION_MAP.sourceBase` as provenance: the current
 commit/tree belongs in externally emitted execution receipts, not inside the
 same self-referential source commit.
 
-### Executed locally
+### Historical local verification note
 
 `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_hepta_supervisor_ci`
-passed **20 tests, zero failures, zero skips**. These are Python receipt-policy
+was recorded in the original owner-lifetime revision as passing **20 tests,
+zero failures, zero skips**. These were Python receipt-policy
 and filesystem-reader tests with synthetic runner output. They are not Rust,
 daemon, cryptographic, target-host, capacity or performance qualification.
 
-The editing environment has no Rust/Cargo/rustfmt toolchain. Rust compilation,
-formatting, Clippy and the 21 new Rust tests are pending real Linux/macOS
-source-head and synthetic-merge execution. The 256-observation Rust test is an
+The original editing-environment note about an absent Rust toolchain and 21
+pending Rust tests is historical, not the current candidate's execution status.
+Current compilation and regression claims must name their actual source and
+execution receipts. The 256-observation Rust test is an
 in-memory addressability test, not 256 running Agents or a mixed-load SLO run.
 
 ## 5. Remaining acceptance work, in order
