@@ -679,3 +679,46 @@ broaden the existing performance metrics. Extension and new-candidate Agentd
 execution are still pending here; the local 35 optimizer and 104 intelligence
 passes recorded above cannot qualify them. Tracked exact-head, merge and
 production/promotion claims remain pending or false.
+
+## Platform-fixture closing review
+
+Independent Windows review found two new registration defects before declaring
+convergence: the three provenance regressions require a durable registry that
+rejects non-Unix directories, and the installed factory regression requires an
+anchored rollback profile whose non-Unix constructor rejects the profile. These
+fixtures would fail before reaching their intended boundary. Their modules are
+now Unix-only. The two older Optimizer tests using that same registry fixture
+and its exclusive helper/imports receive the same explicit scope; pure
+Optimizer and worker-state tests retain cross-platform registration. No
+production directory, authority or permission check is weakened. Non-Unix
+canonical-profile qualification remains open.
+
+The prior local worktree actually passed all four prompt-extension assertions
+with zero skips. Its complete Agentd test command had 223 passes, one failure
+and one skipped test. The installed factory parent passed all seven child
+scenarios, and the real-producer staging assertion passed. The failure and its
+nextest retry were the existing cognitive-ranker control-socket bind receiving
+EPERM from the local environment. This remains a failed package command, not
+a pass or a newly skipped test. The new exact source/platform jobs must retain
+their own records.
+
+The same-source Cargo dependency check also found two unused operation-owner
+dependencies introduced by the materialized manifest rewrite: `serde` and
+`thiserror`. The rewrite had removed the original `publish = false` and explicit
+library/doctest metadata as well. These original package boundaries are restored
+and unused edges removed, retaining production Tokio capabilities and all
+operation logic. A six-package local `just fix` completed with exit zero before
+this manifest adjustment, without source edits. Existing unrelated lint warnings
+remain visible; this is not a strict `-D warnings` pass or post-adjustment
+verification. Fresh dependency/lock and new-source CI checks remain necessary.
+
+The adjusted operation manifest passed its actual local `just test` command:
+61 assertions passed and one was skipped. Its subsequent scoped `just fix`
+completed with exit zero without source edits. `just bazel-lock-update` hit the
+existing stale-server failure; the batch `mod deps --lockfile_mode=update`
+fallback completed with exit zero and left `MODULE.bazel.lock` unchanged.
+`Cargo.lock` changed only the two removed operation dependency edges, with no
+external version change. The final development-document verification reports
+40 module guides and 205 contracts. Two independent read-only closing passes
+found no new actionable defect in these platform/manifest adjustments. These
+local observations do not substitute for the final candidate platform jobs.

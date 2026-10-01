@@ -3,15 +3,19 @@ name = "codex-hepta-operations"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_operations"
+path = "src/lib.rs"
+doctest = false
 
 [dependencies]
 codex-hepta-contracts = { workspace = true }
 codex-hepta-types = { workspace = true }
 codex-state = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
 sqlx = { workspace = true }
-thiserror = { workspace = true }
 tokio = { workspace = true, features = ["fs", "rt", "sync", "time"] }
 
 [dev-dependencies]

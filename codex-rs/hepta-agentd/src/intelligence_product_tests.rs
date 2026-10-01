@@ -1032,6 +1032,7 @@ mod signed;
 #[path = "intelligence_product_learning_tests.rs"]
 mod learning;
 
+#[cfg(unix)]
 #[path = "config_factory_containment_tests.rs"]
 mod factory_containment;
 

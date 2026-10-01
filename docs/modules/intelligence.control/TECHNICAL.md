@@ -730,3 +730,13 @@ the final provider framing and complete physical request budget separately.
 The direct canonical prepared-delivery path retains the exact payload it
 validates. Neither path creates a model-specific live tokenizer implementation
 or independently provisions an authorized production embedding.
+
+### Platform scope of real-profile fixtures
+
+The current durable prompt registry and anchored authority rollback profile
+reject non-Unix construction. Actual registry-producer provenance and installed
+factory-containment fixtures therefore require Unix. Pure optimizer and worker
+state tests remain cross-platform; the prompt extension's in-memory asynchronous
+initialization tests require no anchored-directory profile. These registrations
+do not provide a Windows secure-handle implementation or qualify a Windows
+canonical product embedding.
