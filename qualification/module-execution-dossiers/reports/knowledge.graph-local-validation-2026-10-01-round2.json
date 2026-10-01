@@ -303,8 +303,8 @@
   },
   "finalSourceIdentity": {
     "candidate": {
-      "commit": "ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f",
-      "tree": "c731cbba7d07844d5cc1aa268d639f4dddc15441"
+      "commit": "8d83af9a09bf252fe52b6de39272ac28fbefbbc3",
+      "tree": "cc3c3c96ce10e23a8cc351990565a3a19c712f5a"
     },
     "maps": [
       {
@@ -312,12 +312,12 @@
         "passed": true,
         "mode": "path_only",
         "sourceBase": {
-          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
-          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+          "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
+          "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
         },
         "observedAtHead": {
-          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
-          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+          "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
+          "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
         },
         "sourceObjectCount": 70,
         "checkedPathCount": 70
@@ -363,8 +363,8 @@
         "passed": true,
         "mode": "path_only",
         "sourceBase": {
-          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
-          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+          "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
+          "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
         },
         "observedAtHead": null,
         "sourceObjectCount": 16,
@@ -592,5 +592,158 @@
       "claim": "No Rust clippy action failure is evidenced by this job."
     },
     "remainingNativeJobs": "in_progress_at_observation; no complete HEAD_or_merge_qualification_claim"
+  },
+  "priorSourceIdentityBeforeCiFormatRepair": {
+    "candidate": {
+      "commit": "ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f",
+      "tree": "c731cbba7d07844d5cc1aa268d639f4dddc15441"
+    },
+    "maps": [
+      {
+        "module": "knowledge.graph",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "sourceObjectCount": 70,
+        "checkedPathCount": 70
+      },
+      {
+        "module": "cognitive.store",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 19,
+        "checkedPathCount": 19
+      },
+      {
+        "module": "prompt.optimizer",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 0,
+        "checkedPathCount": 4
+      },
+      {
+        "module": "prompt.registry",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 0,
+        "checkedPathCount": 4
+      },
+      {
+        "module": "runtime.agentd",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 16,
+        "checkedPathCount": 16
+      }
+    ],
+    "allFivePassed": true,
+    "scope": "source_identity_only_not_execution_or_qualification"
+  },
+  "postCiFormatDocumentationChecks": {
+    "candidate": {
+      "commit": "8d83af9a09bf252fe52b6de39272ac28fbefbbc3",
+      "tree": "cc3c3c96ce10e23a8cc351990565a3a19c712f5a"
+    },
+    "records": [
+      {
+        "command": [
+          "python",
+          "scripts/hepta-module-docs.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exitCode": 0,
+        "result": {
+          "authorityGranted": false,
+          "historicalEvidenceRevalidated": false,
+          "modules": 40,
+          "productExecutionProved": false,
+          "sourceBindings": 40,
+          "status": "PASS_HEPTA_MODULE_DOCS_CLOSED_WORLD",
+          "technicalDocuments": 40,
+          "validationScope": "registry_ownership_paths_and_document_navigation",
+          "verificationProfile": "development"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-dossiers.py",
+          "verify"
+        ],
+        "exitCode": 0,
+        "result": {
+          "authorityGranted": false,
+          "documentationGapsClosed": 12,
+          "externalGatesRetained": 9,
+          "faultProfiles": 7,
+          "lanes": 7,
+          "modules": 40,
+          "organs": 24,
+          "performanceProfiles": 8,
+          "receiptFields": 18,
+          "runtimeCompositionClaimed": false,
+          "status": "PASS_HEPTA_MODULE_EXECUTION_DOSSIERS"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-maps.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exitCode": 0,
+        "result": {
+          "candidateBoundMaps": 0,
+          "candidateSource": {
+            "commit": "8d83af9a09bf252fe52b6de39272ac28fbefbbc3",
+            "tree": "cc3c3c96ce10e23a8cc351990565a3a19c712f5a"
+          },
+          "currentSourceIdentityRequired": false,
+          "exactObservedFallbackMaps": 39,
+          "historicalEvidenceRevalidated": false,
+          "legacyProvenanceOnlyMaps": [],
+          "maps": 40,
+          "modules": 40,
+          "productionImplementationProved": false,
+          "provenanceAnchoredExactBlobMaps": 1,
+          "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+          "sourceObservationCount": 8,
+          "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
+          "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
+          "verificationProfile": "development"
+        }
+      }
+    ]
   }
 }

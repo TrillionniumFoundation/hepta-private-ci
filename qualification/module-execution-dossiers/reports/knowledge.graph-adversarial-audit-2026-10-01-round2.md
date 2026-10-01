@@ -205,7 +205,7 @@ learning/plasticity、旧测试 lint 仍属于各自 owner 的门禁；没有为
 allow/ignore 或接入新的效应权限。全仓既有失效源码锚点也不能通过刷新
 未审模块来洗成通过。本轮只重绑定五个直接涉及模块的真实源码观察。
 
-最终源码候选观察为 `ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f`，
+CI 格式修复前的源码候选观察为 `ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f`，
 tree `c731cbba7d07844d5cc1aa268d639f4dddc15441`。原生 migrate 只检查上述
 五个模块，实际更新四张需要刷新的 map，registry 的有效锚点保持不变。
 五张 map 的严格源码身份及现有 sourceObjects 与 HEAD 核对全部通过；
@@ -227,3 +227,8 @@ KG 的 manifest 覆盖 70 个源码/见证对象。40 个模块的开发文档�
 Clippy 在 wrapper 报 `python3: Argument list too long`，尚无 Rust action
 失败证据。其余 native 作业仍在运行，base-merge success 的作业跳过了
 native 执行；此 CI 观察不构成修复后完整 HEAD/merge 或生产资格。
+
+CI 格式修复后的最终源码身份观察为 `8d83af9a09bf252fe52b6de39272ac28fbefbbc3`，
+tree `cc3c3c96ce10e23a8cc351990565a3a19c712f5a`；再次严格核对五张 map 及其现有 sourceObjects 均通过，
+40 模块开发文档、档案和 map 导航也通过。这仍是源码身份/导航证明，
+不是组件 Rust 测试重跑或完整当前 HEAD/merge 资格。
