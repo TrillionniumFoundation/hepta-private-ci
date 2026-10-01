@@ -91,6 +91,7 @@ impl AutomationTimeZoneProfileV1 {
         }
         let mut previous_at = self.valid_from_utc_ms;
         let mut expected_before = self.initial_offset_seconds;
+        let mut local_coverage = Vec::with_capacity((self.transitions.len() + 1) * 2);
         for transition in &self.transitions {
             if transition.at_utc_ms <= previous_at
                 || transition.at_utc_ms >= self.valid_until_utc_ms
@@ -100,8 +101,25 @@ impl AutomationTimeZoneProfileV1 {
             {
                 return Err(AutomationError::Invalid);
             }
+            let offset = i128::from(expected_before) * 1_000;
+            local_coverage.push((i128::from(previous_at) + offset, 1_i32));
+            local_coverage.push((i128::from(transition.at_utc_ms) + offset, -1_i32));
             previous_at = transition.at_utc_ms;
             expected_before = transition.offset_after_seconds;
+        }
+        let offset = i128::from(expected_before) * 1_000;
+        local_coverage.push((i128::from(previous_at) + offset, 1_i32));
+        local_coverage.push((i128::from(self.valid_until_utc_ms) + offset, -1_i32));
+        // First/Second disambiguates at most two UTC segments for one local
+        // label. Reject unsupported multi-overlaps before persisting a profile
+        // that would otherwise fail later as apparently corrupt schedule data.
+        local_coverage.sort_unstable();
+        let mut active = 0;
+        for (_, change) in local_coverage {
+            active += change;
+            if active > 2 {
+                return Err(AutomationError::Invalid);
+            }
         }
         Ok(())
     }
@@ -253,10 +271,31 @@ impl AutomationCalendarScheduleV2 {
         }
 
         let anchor_local = self.clock_profile.utc_to_local_ms(self.start_at_utc_ms)?;
-        let reference_local = self.clock_profile.utc_to_local_ms(reference_utc_ms)?;
         let anchor_day = anchor_local / DAY_MS;
-        let reference_day = reference_local / DAY_MS;
+        let mut minimum_offset = self.clock_profile.initial_offset_seconds;
+        let mut maximum_offset = minimum_offset;
+        for transition in &self.clock_profile.transitions {
+            minimum_offset = minimum_offset.min(transition.offset_after_seconds);
+            maximum_offset = maximum_offset.max(transition.offset_after_seconds);
+        }
+        let minimum_offset = i128::from(minimum_offset) * 1_000;
+        let maximum_offset = i128::from(maximum_offset) * 1_000;
+        // UTC order can cross local dates and even reverse local-label order
+        // around adjacent transitions. Start at the full offset envelope and
+        // retain the closest UTC result until every unseen label is farther.
+        let reference_local = i128::from(reference_utc_ms)
+            + if forward {
+                minimum_offset
+            } else {
+                maximum_offset
+            };
+        let reference_day = u64::try_from(reference_local.max(0) / i128::from(DAY_MS))
+            .map_err(|_| AutomationError::Invalid)?;
         let stride = u64::from(self.every_days);
+
+        if !forward && reference_day < anchor_day {
+            return Ok(None);
+        }
 
         let mut day = if reference_day <= anchor_day {
             anchor_day
@@ -265,6 +304,11 @@ impl AutomationCalendarScheduleV2 {
             anchor_day + (delta / stride) * stride
         };
 
+        let last_known_utc = self
+            .end_at_utc_ms
+            .unwrap_or(self.clock_profile.valid_until_utc_ms.saturating_sub(1));
+        let last_known_local = i128::from(last_known_utc) + maximum_offset;
+        let mut closest: Option<u64> = None;
         for _ in 0..MAX_CALENDAR_SCAN {
             let local = day
                 .checked_mul(DAY_MS)
@@ -284,28 +328,41 @@ impl AutomationCalendarScheduleV2 {
                     candidate < reference_utc_ms || inclusive && candidate == reference_utc_ms
                 };
                 if lower_ok && upper_ok && direction_ok {
-                    return Ok(Some(candidate));
+                    closest = Some(match closest {
+                        Some(previous) if forward => previous.min(candidate),
+                        Some(previous) => previous.max(candidate),
+                        None => candidate,
+                    });
                 }
             }
 
             if forward {
                 day = day.checked_add(stride).ok_or(AutomationError::Invalid)?;
-                let probe = day.checked_mul(DAY_MS).ok_or(AutomationError::Invalid)?;
-                if probe
-                    >= self
-                        .clock_profile
-                        .utc_to_local_ms(self.clock_profile.valid_until_utc_ms.saturating_sub(1))?
+                let next_local =
+                    i128::from(day) * i128::from(DAY_MS) + i128::from(self.local_time_ms);
+                if let Some(closest) = closest
+                    && next_local - maximum_offset >= i128::from(closest)
                 {
-                    if self.end_at_utc_ms.is_some() {
-                        return Ok(None);
+                    return Ok(Some(closest));
+                }
+                if next_local > last_known_local {
+                    if closest.is_some() || self.end_at_utc_ms.is_some() {
+                        return Ok(closest);
                     }
                     return Err(AutomationError::Unavailable);
                 }
             } else {
                 if day < anchor_day.saturating_add(stride) {
-                    return Ok(None);
+                    return Ok(closest);
                 }
                 day = day.checked_sub(stride).ok_or(AutomationError::Invalid)?;
+                let next_local =
+                    i128::from(day) * i128::from(DAY_MS) + i128::from(self.local_time_ms);
+                if let Some(closest) = closest
+                    && next_local - minimum_offset <= i128::from(closest)
+                {
+                    return Ok(Some(closest));
+                }
             }
         }
         Err(AutomationError::Unavailable)
@@ -426,6 +483,8 @@ impl AutomationStore {
             .ok_or(AutomationError::Invalid)?;
         let encoded = serde_json::to_string(schedule).map_err(|_| AutomationError::Corrupt)?;
         let digest = schedule.digest()?;
+        self.finalize_cancelled_occurrence_intents(task_id, now_ms)
+            .await?;
         let (mut tx, phase) = self.begin_timer_write().await?;
         if phase != crate::TimerPhase::Active {
             return Err(AutomationError::Conflict);
@@ -1027,6 +1086,101 @@ mod tests {
             .unwrap();
         assert_eq!(lease.scheduled_for_ms, 3 * DAY + 2 * HOUR);
         store.close().await;
+    }
+
+    #[test]
+    fn unsupported_three_way_local_overlap_is_rejected_before_scheduling() {
+        let mut calendar = utc_daily_schedule();
+        calendar.start_at_utc_ms = 0;
+        calendar.clock_profile.initial_offset_seconds = 7_200;
+        calendar.clock_profile.transitions = vec![
+            AutomationTimezoneTransitionV1 {
+                at_utc_ms: 3 * DAY,
+                offset_before_seconds: 7_200,
+                offset_after_seconds: 3_600,
+            },
+            AutomationTimezoneTransitionV1 {
+                at_utc_ms: 3 * DAY + HOUR / 2,
+                offset_before_seconds: 3_600,
+                offset_after_seconds: 0,
+            },
+        ];
+        calendar.local_time_ms = (HOUR + HOUR / 4) as u32;
+        assert_eq!(calendar.validate(), Err(AutomationError::Invalid));
+        assert_eq!(
+            calendar.first_at_or_after(3 * DAY - HOUR),
+            Err(AutomationError::Invalid)
+        );
+    }
+
+    #[test]
+    fn midnight_rollbacks_preserve_both_utc_search_directions() {
+        let mut calendar = utc_daily_schedule();
+        calendar.start_at_utc_ms = 0;
+        calendar.end_at_utc_ms = Some(9 * DAY);
+        calendar.clock_profile.valid_until_utc_ms = 10 * DAY;
+        calendar.clock_profile.initial_offset_seconds = 3_600;
+        calendar.clock_profile.transitions = vec![AutomationTimezoneTransitionV1 {
+            at_utc_ms: 3 * DAY,
+            offset_before_seconds: 3_600,
+            offset_after_seconds: -3_600,
+        }];
+        calendar.local_time_ms = (23 * HOUR + HOUR / 2) as u32;
+        calendar.dst_overlap_policy = AutomationDstOverlapPolicy::Second;
+        assert_eq!(
+            calendar.next_after(3 * DAY - 1).unwrap(),
+            Some(3 * DAY + HOUR / 2)
+        );
+        calendar.local_time_ms = (HOUR / 2) as u32;
+        calendar.dst_overlap_policy = AutomationDstOverlapPolicy::First;
+        assert_eq!(
+            calendar.latest_at_or_before(3 * DAY).unwrap(),
+            Some(3 * DAY - HOUR / 2)
+        );
+    }
+
+    #[test]
+    fn adjacent_transitions_search_utc_order_instead_of_local_label_order() {
+        let mut calendar = utc_daily_schedule();
+        calendar.start_at_utc_ms = 0;
+        calendar.end_at_utc_ms = Some(9 * DAY);
+        calendar.local_time_ms = (12 * HOUR) as u32;
+        calendar.dst_overlap_policy = AutomationDstOverlapPolicy::Second;
+        calendar.clock_profile.valid_until_utc_ms = 10 * DAY;
+        calendar.clock_profile.initial_offset_seconds = 18 * 3_600;
+        calendar.clock_profile.transitions = vec![
+            AutomationTimezoneTransitionV1 {
+                at_utc_ms: 3 * DAY,
+                offset_before_seconds: 18 * 3_600,
+                offset_after_seconds: -18 * 3_600,
+            },
+            AutomationTimezoneTransitionV1 {
+                at_utc_ms: 3 * DAY + 12 * HOUR,
+                offset_before_seconds: -18 * 3_600,
+                offset_after_seconds: 18 * 3_600,
+            },
+        ];
+        assert_eq!(
+            calendar.next_after(2 * DAY + 17 * HOUR).unwrap(),
+            Some(2 * DAY + 18 * HOUR)
+        );
+        assert_eq!(
+            calendar.latest_at_or_before(3 * DAY + 13 * HOUR).unwrap(),
+            Some(3 * DAY + 6 * HOUR)
+        );
+    }
+
+    #[test]
+    fn finite_calendar_stops_at_its_end_and_includes_the_profile_last_instant() {
+        let mut calendar = utc_daily_schedule();
+        calendar.start_at_utc_ms = 0;
+        calendar.local_time_ms = 0;
+        calendar.end_at_utc_ms = Some(3 * DAY + HOUR);
+        calendar.clock_profile.valid_until_utc_ms = 10_000 * DAY;
+        assert_eq!(calendar.next_after(3 * DAY).unwrap(), None);
+        calendar.end_at_utc_ms = Some(3 * DAY);
+        calendar.clock_profile.valid_until_utc_ms = 3 * DAY + 1;
+        assert_eq!(calendar.next_after(2 * DAY).unwrap(), Some(3 * DAY));
     }
 
     #[test]

@@ -111,6 +111,13 @@ fn frontier_is_sorted_and_fail_closed_for_blocked_states() {
     assert!(waiting.blocked);
     assert!(!waiting.terminal);
 
+    let retrying = definition
+        .structural_frontier("work", TaskFlowRunState::RetryBackoff)
+        .expect("retry-backoff frontier");
+    assert!(retrying.frontier_nodes.is_empty());
+    assert!(retrying.blocked);
+    assert!(!retrying.terminal);
+
     let terminal = definition
         .structural_frontier("success", TaskFlowRunState::Succeeded)
         .expect("terminal frontier");
