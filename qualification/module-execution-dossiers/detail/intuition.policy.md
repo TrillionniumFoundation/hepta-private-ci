@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `bb2b3368640c49f81356bb762e0795965ff399192da112705fce4071de319798`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged. |
 | `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -90,6 +90,8 @@ Final-use `commit_v4` acquires the sole writer lock before sampling `IntuitionPo
 
 Canonical product composition additionally invokes a reject-only owner fence under that writer lock. `AgentdIntelligenceProductRunnerV1::require_current_snapshot` re-reads the signed seven-owner snapshot for every disposition; `AgentdState::require_current_run_start` rechecks current run authority. Selected runs also invoke `require_current_evaluation`. The sink resamples its clock and reauthenticates policy qualification after the callback, then currentness repeats before final run/context admission. The callback receives only a read-only clock interface and does not create a durable atomic transaction across the seven owners, run registry and learning ledger.
 
+`PreparedEvaluationUseV1` retains the original signed evaluation session, exact port input, selected candidate and resulting receipt. `PreparedAgentdIntelligenceRunV1::revalidate_evaluation` repeats all evaluation proofs and compares the unchanged envelope's run, context, snapshot, objective, candidate and receipt bindings. Individual signed expiry and scheduled signer revocation remain effective independently of a longer root distribution lease. This is in-process final-use state, not a persistent recovery journal.
+
 The service retains a committed receipt if the final admission check returns either `false` or an error. That result is indeterminate for downstream admission, not evidence that the ledger append never occurred. The canonical run/context boundary now retains the complete policy receipt and typed downstream cause in process. Durable restart reconciliation and outward transport of that receipt remain separate unclosed requirements.
 
 Idempotent replay uses the deterministic record identity, exact signed evidence and original predecessor. The current host implements one bounded exact replay for a ledger-committed/witness-not-advanced error. Ordinary rejection is not retried. A later reconciliation failure must not erase an already-known durable commit; interruption tests must cover both the first append and the retry boundary. Reopen-after-clean-drop is not a substitute for killing a process after append but before witness/acknowledgement.
@@ -137,7 +139,9 @@ Additional committed test sources include:
 - `intuition_policy_product_v3.rs`: real signed qualification fixtures, durable writer append, exact idempotent replay and clean reopen;
 - `intuition_policy_commit_boundary.rs`: ten changed complete-host pins under the same identity/generation/trust, qualification expiry despite a later-valid Decision signature, clock rollback, trust-rotation rejection, scheduled signer revocation and root-signed distribution expiry, and a lock-owned fresh-clock race proving waiting expired attempts did not write;
 - `intelligence_product_final_use_tests.rs`: signed owner-generation and RunStart-entitlement changes while waiting for the writer, plus evaluation-distribution expiry before reusing a prepared product;
+- the same final-use test source retains each of three independently re-signed short evaluation proofs and exercises scheduled signer revocation while the root distribution still remains valid;
 - `intelligence_authority_read_tests.rs`: bounded unauthenticated input, file growth after metadata, and Unix symlink/writable-file rejection before owner snapshot parsing;
+- `intelligence_candidate_bound_tests.rs`: raw legal/intuition count preflight before signed input or worker use, with separate product 127 and compatibility 128 maxima; reaching Busy checks capacity only, not full product authentication;
 - `trust_distribution_tests.rs`: admitted distribution expiry and scheduled root revocation remain checked at use;
 - `intelligence_product_tests.rs`, `intelligence_product_signed_tests.rs` and `intelligence_evaluation_tests.rs`: canonical default-production profile routing, signed product and evaluation distribution-lifetime regressions;
 - host unit tests: eleven pin-binding mutations and prepared-time edge cases;

@@ -240,7 +240,7 @@ def contract_document(state: dict[str, Any]) -> str:
         "  -> authenticated generator/evaluator/observer evidence",
         "  -> native explicit risk routing / immutable host pins",
         "  -> sole writer lock / fresh owner clock / current trust and three-role revalidation",
-        "  -> reject-only canonical seven-owner / RunStart fence; selected evaluation lease check",
+        "  -> reject-only canonical seven-owner / RunStart fence; selected original evaluation proof revalidation",
         "  -> selected-only LedgerWriter commit with independent witness",
         "  -> repeated canonical currentness check / final run/context admission with retained policy receipt",
         "  -> in-process bound outcome (not a wire or durable delivery acknowledgement)",

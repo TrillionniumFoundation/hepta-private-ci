@@ -40,13 +40,14 @@
       "tests": [
         "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
         "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs",
-        "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs"
+        "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_candidate_bound_tests.rs"
       ],
       "evidence": "Exact-source, merge and independent boundary/trust logs for writer-wait expiry, scheduled revocation, distribution expiry, trust rotation and append; process interruption remains required."
     },
     {
       "id": "admission_receipt",
-      "summary": "All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged.",
+      "summary": "All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged.",
       "state": "source_partial",
       "source": "codex-rs/hepta-agentd/src/state.rs",
       "symbol": "start_canonical_intelligence",
@@ -56,7 +57,7 @@
         "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
         "codex-rs/hepta-agentd/src/intelligence_product_final_use_tests.rs"
       ],
-      "evidence": "Signed writer-wait owner/RunStart and evaluation-lease regressions plus separately required real request, durable recovery and delivery evidence."
+      "evidence": "Signed writer-wait owner/RunStart, callback-time, each retained evaluation proof expiry and scheduled signer-revocation regressions; real request, durable recovery and delivery evidence remain required."
     },
     {
       "id": "authority_read",
@@ -180,6 +181,11 @@
       "name": "AgentdIntuitionDecisionReceiptV2",
       "layer": "Host policy commit",
       "status": "Selected outcomes include the existing authoritative ledger append receipt."
+    },
+    {
+      "name": "PreparedAgentdIntelligenceRunV1 / PreparedEvaluationUseV1",
+      "layer": "Canonical selected-run preparation",
+      "status": "Original signed evaluation session, exact input, candidate and receipt retained for final-use revalidation; private in-process state, not durable recovery or outward transport."
     },
     {
       "name": "CanonicalIntuitionAdmissionV2",

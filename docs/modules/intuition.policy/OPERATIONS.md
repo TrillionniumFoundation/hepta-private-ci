@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `bb2b3368640c49f81356bb762e0795965ff399192da112705fce4071de319798`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged. |
 | `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -53,6 +53,8 @@ The product commit entry point is `commit_v4`. Its sink acquires the sole writer
 Canonical Agentd admission supplies a reject-only final-use check that re-reads the signed seven-owner snapshot and current RunStart authority for every disposition after the writer wait. Selected runs also validate their evaluation trust lease. The callback receives a read-only clock interface; the sink resamples time and reauthenticates policy qualification after callback I/O. These checks repeat before final run/context admission. The run coordinator uses nonblocking lock acquisition and returns typed overload with the acknowledged policy receipt on contention, then checks expiry again after acquiring the lock. Standalone policy commits have no seven-owner run to validate; product composition must use the canonical checked path. These checks do not replace durable handoff or restart reconciliation.
 
 The signed owner-file reader checks the same open handle's type, permissions and size, reads at most 64 KiB plus one byte, and rejects excess actual bytes before JSON or cryptography. Unix also rejects symlinks and verifies path/handle identity. A valid metadata length cannot authorize an unbounded later read.
+
+Selected prepared runs retain the original signed evaluation session, generator/evaluator/use proofs and exact evaluation input. Final-use and run-admission checks repeat evaluation under current time, bind the result to the existing context/snapshot/candidate/receipt and reject any shorter proof expiry or effective signer revocation even while the root lease remains valid. This retained state is private and in memory; process restart still requires the unimplemented durable handoff/reconciliation path.
 
 The canonical serving gate now emits bounded OpenTelemetry metrics and a tracing span through the process-global Codex telemetry clients. That source integration does not by itself establish deployed entitlement integration, a configured exporter endpoint, dashboard delivery, alert routing, diagnostic audit delivery or operator acceptance. Those remain separate release gates.
 

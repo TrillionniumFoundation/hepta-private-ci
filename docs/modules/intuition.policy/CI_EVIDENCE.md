@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `bb2b3368640c49f81356bb762e0795965ff399192da112705fce4071de319798`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged. |
 | `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |

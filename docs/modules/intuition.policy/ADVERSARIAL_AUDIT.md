@@ -25,7 +25,9 @@
 | P1 | 激活信任时检查分布有效期，后续使用可能继续消费过期分布或已到期的根撤销状态；评估路径也存在租约遗漏。 | 激活记录保留根签发分布租约和预定根撤销；ledger 使用及 Agentd 最终提交复验租约，评估使用边界同步复验。加入预定签名者撤销、分布到期及信任轮换回归。 |
 | P1 | canonical owner 计算沿历史政策入口，而认证提交使用产品 V4 profile，合法产品请求可能因语义不一致被拒绝。 | 产品组合向纯计算传入认证调用使用的同一不可变 profile；显式开发兼容路径保留既有语义，新增产品路由回归。 |
 | P1 | 政策证据在 writer 内复验，但 canonical 七 owner 快照、所选运行的评估信任租约与 RunStart 权限可能在 writer 等待期间改变；回调 I/O 还可能跨越资格有效期。 | 每种 disposition 在 writer 锁内、append 前复查签名快照与 RunStart；所选运行额外查评估租约；回调后重采时间并重验政策资格，final admission 再次复验。回调仅接收只读 clock 接口。新增 owner 代际、entitlement、回调期间资格过期及评估租约回归；仍不代替持久交接。 |
+| P1 | 原始 evaluation 三份签名材料在 Ready 生成后被消费丢弃，只复查较长的 root lease 可能放过较早的 proof expiry 或预定 signer revocation。 | selected preparation 保留原 session、三证明和 exact input/candidate/receipt；final-use 与 admission 重新 evaluate 全部证据，并绑定既有 context/snapshot/candidate/receipt。新增三份合法短签名与预定撤销用例，尚需新候选执行。 |
 | P2 | 纯内核允许 128 个真实候选，但产品学习记录还需一个 abstain 项，超过 ledger 的 128 项上限。 | Agentd 产品准备最多允许 127 个真实候选，提前返回稳定错误；内核仍允许 128，不截断完整集、不扩大 ledger 上限。覆盖 127 个候选加 abstain 的持久往返和 128 个产品候选的提前拒绝。 |
+| P2 | ingress 和 canonical runner 在 host 的 127 预检之前已复制候选/ID 或占用 worker。 | raw legal/intuition 两类数量在复制或 worker 使用前 O(1) 校验，product 127、compatibility 128，数量不一致拒绝；Busy fixture 仅证明边界可到 worker，不宣称产品请求已认证成功。 |
 | P2 | 多个候选承诺入口在数量校验之前分配并哈希候选内容。 | 在承诺入口共享执行 1..128 预检，保持已接受历史字节与 digest 不变。 |
 | P2 | V4 热路径反复复制整个候选向量，增加分配及尾延迟成本。 | 私有路由与 native helper 借用请求；保留公开调用签名、风险语义和历史 digest。128 候选的本地分配观测由 517 次降至 239 次。 |
 | P2 | 严格 Clippy 被冗余闭包阻塞；旧源码修改工作流、编码运输及过时 finalizer 标记妨碍资格证据解释。 | 修复闭包，移除候选中的源码修改工作流和运输脚手架，更新只读 inventory；full／independent 计划检查规范状态并执行 canonical product 回归，三套计划强制执行信任分布测试。 |

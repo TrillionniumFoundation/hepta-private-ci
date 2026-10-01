@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `bb2b3368640c49f81356bb762e0795965ff399192da112705fce4071de319798`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `2b3494ed4f9d4b4e0129408ccf862ab31e4602cf9ae37d949105a111e773230d`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | All canonical dispositions recheck seven-owner currentness and RunStart authority after writer waits; selected runs also recheck evaluation leases; complete receipt survives in process; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | All canonical dispositions recheck owner currentness and RunStart after writer waits; selected runs retain and reverify original evaluation proofs, leases and exact bindings at final use; receipt remains in process and outward V1 is unchanged. |
 | `authority_read` | `source_present` | Canonical signed owner files use one checked handle and at most 64 KiB plus one byte before JSON or cryptography; actual size and Unix path/handle, symlink and permission checks fail closed. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -53,6 +53,8 @@ This stable document is the implementation guide for `intuition.policy`. Normati
 **Current source boundary:** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, the canonical serving hook and in-process receipt binding exist in source. Final-use `commit_v4` retains the original signed qualification and samples the owner clock only after acquiring the sole learning-writer lock; it revalidates the root-signed trust lease, current trust generation, signatures, controller separation, lifetime and host pins before append. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish source, execution and production acceptance; no production acceptance or promotion is asserted here.
 
 The canonical Agentd composition also rechecks its frozen seven-owner snapshot and current RunStart authority for every disposition after the writer wait, before policy append. Selected runs additionally recheck their evaluation trust lease. The sink samples time again and revalidates policy qualification after the reject-only callback; callback I/O cannot reuse an earlier qualification time. Currentness is repeated before final run/context admission. These checks do not constitute a durable cross-owner transaction or restart journal.
+
+Selected preparation retains the original signed evaluation session and exact input, candidate and receipt in `PreparedEvaluationUseV1`. Final use and final admission repeat full evaluation verification, including each signed proof's expiry and scheduled signer revocation, and bind it to the unchanged envelope's context, snapshot, candidate and receipt. A root distribution lease cannot extend a shorter proof's validity.
 
 ## 1. Identity, mission and ownership
 
@@ -251,6 +253,8 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
 
 The pure policy kernel and candidate commitment encoders admit 1..128 real candidates. The Agentd product host admits at most 127 real candidates because its learning Decision includes the reserved abstain entry within the existing 128-entry ledger bound. `prepare_v3` rejects larger product sets with `agentd.intuition.product_candidate_limit` before hashing, cloning or signature verification. It neither truncates the legal set nor changes the ledger bound. The product fixture exercises 127 real candidates plus abstain and rejects 128 real candidates at that boundary.
+
+Canonical ingress and the owner runner also check raw legal and intuition candidate counts before copying request IDs/candidate vectors or acquiring the worker. Product inputs remain limited to 127 and explicit compatibility inputs to 128; mismatched counts reject. This preflight does not replace separate wire-decoding or request-body capacity qualification.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
