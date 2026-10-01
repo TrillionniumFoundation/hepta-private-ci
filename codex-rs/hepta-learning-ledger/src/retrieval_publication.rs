@@ -201,3 +201,6 @@ impl LearningLedger {
     }
 }
 
+#[cfg(test)]
+#[path = "retrieval_publication_tests.rs"]
+pub(crate) mod tests;
