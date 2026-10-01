@@ -43,7 +43,7 @@
 | 累计本地观察（不替代当前候选结果） | 可证明范围 |
 | --- | --- |
 | kernel 37/37；intelligence／ledger 201/201，另有 1 个 ignored | 已执行的对应包测试；ignored 不计为通过，不能替代完整 Agentd 产品执行。 |
-| 67 个 intuition Python 回归、685 个 development-docs Python 回归及 docs self-test 通过；唯一 Cargo registry 对齐 | 证据脚本、拒绝规则、投影一致性、文档导航及载体归属；部分测试使用明确标注的合成工件。完整 docs verifier 与新 Rust 修复仍须在提交后的候选复验。 |
+| 69 个 intuition Python 回归、685 个 development-docs Python 回归及 docs self-test 通过；唯一 Cargo registry 对齐 | 证据脚本、拒绝规则、投影一致性、文档导航及载体归属；部分测试使用明确标注的合成工件。完整 docs verifier 与新 Rust 修复仍须在提交后的候选复验。 |
 | intuition／intelligence／ledger 三包 all-targets 严格 Clippy 通过，执行 `--no-deps -- -D warnings`；`just fmt` 完成 | 对应三包及其测试、示例的检查；固定夹具的 panic lint 例外限定在有原因说明的函数内。完整 Agentd 检查仍待精确 CI。 |
 | 最终本地性能 gates 通过；曾发生并发执行失败并保留失败记录 | 对应环境下的 V4 内核 gate 观测；不代表组合请求、writer／witness、目标机容量或稳定 SLO。 |
 | 256 次普通 fuzz smoke 与 1024 个 seeded cases | 有限输入烟测；不是 sanitizer 检测、长时间 fuzz 或完整覆盖证明。 |
