@@ -77,6 +77,52 @@ pub struct PromptPortfolioReceipt {
     pub marginal_excluded_gain: FixedQ32,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
+    sealed_output_digest: Digest32,
+}
+
+impl PromptPortfolioReceipt {
+    /// Verifies that observable output still matches the optimizer-owned seal.
+    /// Receipt construction is restricted to the optimizer; cloning permits
+    /// inspection but cannot authenticate altered selections or accounting.
+    pub fn validate(&self) -> Result<(), Error> {
+        if self.selected.len() > MAX_SELECTED
+            || self.decisions.len() > MAX_CANDIDATES
+            || self.authority.grants_any()
+            || self.receipt_digest.is_zero()
+            || self.sealed_output_digest != self.compute_output_digest()
+        {
+            return Err(Error::InvalidPortfolioReceipt);
+        }
+        Ok(())
+    }
+
+    fn compute_output_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.prompt-optimizer.portfolio-output-seal.v1".to_vec();
+        push_id(&mut bytes, &self.decision_id);
+        bytes.extend_from_slice(
+            &u64::try_from(self.selected.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        for selected in &self.selected {
+            push_id(&mut bytes, selected);
+        }
+        bytes.extend_from_slice(
+            &u64::try_from(self.decisions.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        for decision in &self.decisions {
+            push_id(&mut bytes, &decision.candidate_id);
+            bytes.push(disposition_code(decision.disposition));
+        }
+        bytes.extend_from_slice(&self.total_cost.to_be_bytes());
+        bytes.extend_from_slice(&self.total_expected_gain.raw().to_be_bytes());
+        bytes.extend_from_slice(&self.unspent_budget.to_be_bytes());
+        bytes.extend_from_slice(&self.marginal_excluded_gain.raw().to_be_bytes());
+        bytes.extend_from_slice(self.receipt_digest.as_array());
+        Digest32::of_bytes(&bytes)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -90,6 +136,7 @@ pub enum Error {
     RegistrySnapshotMismatch(String),
     Arithmetic,
     FactorGraph(String),
+    InvalidPortfolioReceipt,
 }
 
 impl fmt::Display for Error {
@@ -198,7 +245,7 @@ pub(crate) fn optimize_with_factor_graph_constraints(
         marginal_excluded_gain,
     );
 
-    Ok(PromptPortfolioReceipt {
+    let mut receipt = PromptPortfolioReceipt {
         decision_id: request.decision_id,
         selected,
         decisions,
@@ -208,7 +255,11 @@ pub(crate) fn optimize_with_factor_graph_constraints(
         marginal_excluded_gain,
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
-    })
+        sealed_output_digest: Digest32::ZERO,
+    };
+    receipt.sealed_output_digest = receipt.compute_output_digest();
+    receipt.validate()?;
+    Ok(receipt)
 }
 
 fn validate_request(request: &OptimizationRequest) -> Result<(), Error> {
