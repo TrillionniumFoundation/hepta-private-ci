@@ -45,6 +45,7 @@ mod sequential;
 mod signed_evaluation;
 mod task_execution_lineage;
 mod task_lineage;
+mod task_lineage_plan;
 mod temporal_evaluation;
 mod temporal_fold;
 
