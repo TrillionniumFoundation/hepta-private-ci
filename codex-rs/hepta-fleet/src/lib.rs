@@ -26,6 +26,8 @@ mod durable_grant_tx;
 #[cfg(feature = "durable-store")]
 mod durable_grants;
 #[cfg(feature = "durable-store")]
+mod durable_local_renewal;
+#[cfg(feature = "durable-store")]
 mod durable_metrics;
 mod durable_model;
 #[cfg(feature = "durable-store")]
@@ -90,6 +92,8 @@ pub use durable_execution::FleetExecutionContextV1;
 pub use durable_execution::FleetExecutionHoldV1;
 #[cfg(feature = "durable-store")]
 pub use durable_execution::FleetFailureDispositionV1;
+#[cfg(feature = "durable-store")]
+pub use durable_local_renewal::LocalRenewalRequestV1;
 pub use durable_model::DURABLE_FLEET_LINEAGE;
 pub use durable_model::DURABLE_FLEET_SCHEMA_VERSION;
 pub use durable_model::DurableFleetError;

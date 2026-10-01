@@ -36,10 +36,15 @@ pub(crate) async fn initialize_schema(
             .fetch_optional(&mut *tx)
             .await
             .map_err(sqlx_error)?;
+    let existing_version = existing
+        .as_ref()
+        .map(|row| row.try_get::<i64, _>("schema_version").map_err(sqlx_error))
+        .transpose()?;
     if let Some(row) = existing {
         let version: i64 = row.try_get("schema_version").map_err(sqlx_error)?;
         let lineage: String = row.try_get("lineage").map_err(sqlx_error)?;
-        if lineage != DURABLE_FLEET_LINEAGE || ![1, DURABLE_FLEET_SCHEMA_VERSION].contains(&version)
+        if lineage != DURABLE_FLEET_LINEAGE
+            || ![1, 2, DURABLE_FLEET_SCHEMA_VERSION].contains(&version)
         {
             return Err(DurableFleetError::Corrupt(format!(
                 "unsupported supervisor fleet schema {version}/{lineage}"
@@ -77,6 +82,35 @@ pub(crate) async fn initialize_schema(
     }
     for statement in include_str!("durable_execution_schema.sql").split(';') {
         if !statement.trim().is_empty() {
+            sqlx::query(statement)
+                .execute(&mut *tx)
+                .await
+                .map_err(sqlx_error)?;
+        }
+    }
+    // Additive local-maintenance obligations preserve active v2 holds and all
+    // original receipts. This is not the v1 execution-identity migration.
+    let columns: Vec<String> =
+        sqlx::query_scalar("SELECT name FROM pragma_table_info('fleet_execution_holds')")
+            .fetch_all(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
+    for (name, statement) in [
+        (
+            "local_renewal_pending_operation_id",
+            "ALTER TABLE fleet_execution_holds ADD COLUMN local_renewal_pending_operation_id TEXT",
+        ),
+        (
+            "local_renewal_confirmed_operation_id",
+            "ALTER TABLE fleet_execution_holds ADD COLUMN local_renewal_confirmed_operation_id TEXT",
+        ),
+    ] {
+        if !columns.iter().any(|column| column == name) {
+            if existing_version == Some(DURABLE_FLEET_SCHEMA_VERSION) {
+                return Err(DurableFleetError::Corrupt(format!(
+                    "missing local renewal column {name}"
+                )));
+            }
             sqlx::query(statement)
                 .execute(&mut *tx)
                 .await

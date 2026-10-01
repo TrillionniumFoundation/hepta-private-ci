@@ -9,7 +9,7 @@ use crate::AllocationGrant;
 use crate::FleetAuthorityError;
 use crate::ResourceVectorV1;
 
-pub const DURABLE_FLEET_SCHEMA_VERSION: i64 = 2;
+pub const DURABLE_FLEET_SCHEMA_VERSION: i64 = 3;
 pub const DURABLE_FLEET_LINEAGE: &str = "hepta.runtime.fleet.supervisor-owner.v1";
 pub const MAX_DURABLE_ACTIVE_GRANTS: i64 = 16_384;
 pub const MAX_DURABLE_HISTORY_ROWS: i64 = 65_536;

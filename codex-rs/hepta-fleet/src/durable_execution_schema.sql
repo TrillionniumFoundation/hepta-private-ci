@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS fleet_execution_holds (
     containment_dev INTEGER NOT NULL,
     containment_ino INTEGER NOT NULL,
     stopped_at_ms INTEGER,
+    local_renewal_pending_operation_id TEXT,
+    local_renewal_confirmed_operation_id TEXT,
     CHECK((process_id IS NULL AND process_group IS NULL AND process_start_ticks IS NULL)
        OR (process_id > 0 AND process_group > 0 AND process_start_ticks >= 0)),
     CHECK(state != 'stopped' OR stopped_at_ms IS NOT NULL)
