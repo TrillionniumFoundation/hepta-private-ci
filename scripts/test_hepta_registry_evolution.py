@@ -258,7 +258,9 @@ class RegistryEvolutionTests(unittest.TestCase):
         with mock.patch.object(module, "subordinate_state", side_effect=extended):
             with mock.patch.object(module, "status_text", return_value=status):
                 with contextlib.redirect_stdout(io.StringIO()):
-                    self.assertEqual(module.verify(), 0)
+                    # This exercises current registry growth, not the separately
+                    # qualified historical source/execution receipts.
+                    self.assertEqual(module.verify(profile="development"), 0)
 
 
 if __name__ == "__main__":
