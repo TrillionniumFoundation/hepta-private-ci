@@ -13,7 +13,6 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
 use std::fs::File;
-use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
@@ -62,6 +61,12 @@ mod relations;
 #[path = "durable_input_validation.rs"]
 mod input_validation;
 
+#[path = "durable_bootstrap.rs"]
+mod bootstrap;
+
+#[path = "durable_lifecycle_validation.rs"]
+mod lifecycle_validation;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -102,7 +107,7 @@ impl DurablePromptRegistry {
         if store.payloads.is_initialized() {
             store.payloads.discard_unselected_tail(&store.root)?;
         } else {
-            store.persist(&registry)?;
+            store = store.initialize(&registry)?;
         }
         Ok(Self {
             registry,
@@ -957,6 +962,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
     let mut last_event_revision = 0_u64;
     let mut last_native_revision = 0_u64;
     let mut latest_revocation_revision = 0_u64;
+    let mut admission_grants = BTreeSet::new();
     for event in &registry.lifecycle_events {
         let event_revision = event.revision.get();
         if event_revision > registry.revision.get()
@@ -964,6 +970,19 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             || event.event_digest != event.compute_digest()
             || !registry.factors.contains_key(&event.factor_id)
         {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        lifecycle_validation::validate_event(event, &registry.factors[&event.factor_id])?;
+        if let Some(grant_id) = &event.admission_grant_id
+            && !admission_grants.insert(grant_id.clone())
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        if event.kind == LifecycleEventKind::Imported {
+            if last_native_revision != 0 {
+                return Err(DurableRegistryError::Corrupt);
+            }
+        } else if event_revision <= last_event_revision || event_revision <= 1 {
             return Err(DurableRegistryError::Corrupt);
         }
         last_event_revision = event_revision;
@@ -1035,7 +1054,8 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         return Err(DurableRegistryError::Corrupt);
     }
     for (factor_id, factor) in &registry.factors {
-        if replayed.get(factor_id) != Some(&factor.lifecycle)
+        if factor.content_digest.is_zero()
+            || replayed.get(factor_id) != Some(&factor.lifecycle)
             || (factor.source == FactorSource::ExternalUntrusted
                 && factor.lifecycle == Lifecycle::Admitted)
         {
@@ -1072,6 +1092,8 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
                 || factor.lifecycle != Lifecycle::Admitted
                 || !active_profiles.insert((
                     binding.factor_id.clone(),
+                    binding.model_id.clone(),
+                    binding.model_version.clone(),
                     binding.model_digest,
                     binding.tokenizer_digest,
                     binding.template_digest,
@@ -1115,15 +1137,21 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             return Err(DurableRegistryError::Corrupt);
         }
     }
+    // Validate each suffix once, retaining cycle rejection for long histories.
+    let mut validated = BTreeSet::new();
     for start in registry.realization_supersessions.keys() {
         let mut visited = BTreeSet::new();
         let mut current = start;
         while let Some(predecessor) = registry.realization_supersessions.get(current) {
+            if validated.contains(current) {
+                break;
+            }
             if !visited.insert(current.clone()) {
                 return Err(DurableRegistryError::Corrupt);
             }
             current = predecessor;
         }
+        validated.extend(visited);
     }
     Ok(())
 }
@@ -1293,6 +1321,7 @@ enum StoredAny {
 struct Store {
     root: File,
     _lock: File,
+    new_owner_marker: bool,
     payloads: payloads::PayloadState,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
@@ -1301,85 +1330,6 @@ struct Store {
 }
 
 impl Store {
-    fn open(
-        directory: &Path,
-        maximum_records: usize,
-    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
-        let root = prepare_directory(directory)?;
-        let initialized = entry_exists(&root, "registry.lock")?;
-        let lock = open_private(&root, "registry.lock", Access::Create)?;
-        lock.try_lock()
-            .map_err(|_| DurableRegistryError::StateLocked)?;
-        let mut store = Self {
-            root,
-            _lock: lock,
-            payloads: payloads::PayloadState::default(),
-            #[cfg(test)]
-            fail_directory_sync_after_rename_once: Cell::new(false),
-            #[cfg(test)]
-            fail_storage_full_before_rename_once: Cell::new(false),
-        };
-        let has_state = entry_exists(&store.root, "registry.json")?;
-        if !has_state {
-            if initialized {
-                return Err(DurableRegistryError::Corrupt);
-            }
-            return Ok((store, None));
-        }
-        let mut bytes = Vec::new();
-        open_private(&store.root, "registry.json", Access::Read)?
-            .take(MAX_STATE_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(|_| DurableRegistryError::Unavailable)?;
-        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
-            return Err(DurableRegistryError::Corrupt);
-        }
-        let value: serde_json::Value =
-            serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?;
-        let schema = value
-            .get("schema")
-            .and_then(serde_json::Value::as_u64)
-            .ok_or(DurableRegistryError::Corrupt)?;
-        let stored = match schema {
-            1 => StoredAny::V1(
-                serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
-            ),
-            2 => StoredAny::V2(
-                serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
-            ),
-            3 => {
-                let manifest =
-                    serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
-                let (payloads, state) =
-                    payloads::PayloadState::hydrate(&store.root, manifest, maximum_records)?;
-                store.payloads = payloads;
-                StoredAny::V2(state)
-            }
-            4 => {
-                let manifest: StoredV4 =
-                    serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
-                if manifest.schema != 4 || manifest.relations.len() > crate::MAX_RECORDS {
-                    return Err(DurableRegistryError::Corrupt);
-                }
-                // Reuse the unchanged extent verifier. Full V4 semantic digest
-                // validation includes relations after hydration, before any trim.
-                let (payloads, state) = payloads::PayloadState::hydrate(
-                    &store.root,
-                    payloads::StoredV3 {
-                        schema: 3,
-                        state: manifest.state,
-                        payload_references: manifest.payload_references,
-                    },
-                    maximum_records,
-                )?;
-                store.payloads = payloads;
-                StoredAny::V4(state, manifest.relations)
-            }
-            _ => return Err(DurableRegistryError::Corrupt),
-        };
-        Ok((store, Some(stored)))
-    }
-
     fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
         let successor = self.payloads.successor(registry)?;
         let bytes = serde_json::to_vec(&StoredV4 {
@@ -1422,6 +1372,7 @@ impl Store {
 enum Access {
     Read,
     Create,
+    CreateNew,
 }
 
 #[cfg(unix)]
@@ -1429,11 +1380,11 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
 
-    if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
-        && error.kind() != std::io::ErrorKind::AlreadyExists
-    {
-        return Err(DurableRegistryError::Unavailable);
-    }
+    let created = match std::fs::DirBuilder::new().mode(0o700).create(root) {
+        Ok(()) => true,
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => false,
+        Err(_) => return Err(DurableRegistryError::Unavailable),
+    };
     let directory: File = rustix::fs::open(
         root,
         rustix::fs::OFlags::RDONLY
@@ -1453,6 +1404,17 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
     {
         return Err(DurableRegistryError::UnsafeStateDirectory);
     }
+    if created {
+        // Syncing files and the owner directory cannot make a new directory's
+        // name durable in its parent. Fence that first-publication boundary too.
+        let parent = root
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        File::open(parent)
+            .and_then(|parent| parent.sync_all())
+            .map_err(map_precommit_io)?;
+    }
     Ok(directory)
 }
 
@@ -1467,7 +1429,11 @@ fn open_private(
     let flags = match access {
         Access::Read => rustix::fs::OFlags::RDONLY,
         Access::Create => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
+        Access::CreateNew => {
+            rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::EXCL
+        }
     } | rustix::fs::OFlags::NOFOLLOW
+        | rustix::fs::OFlags::NONBLOCK
         | rustix::fs::OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(
         directory,
@@ -2905,3 +2871,7 @@ mod relation_tests;
 #[cfg(all(test, unix))]
 #[path = "durable_input_bounds_tests.rs"]
 mod input_bounds_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_restore_integrity_tests.rs"]
+mod restore_integrity_tests;
