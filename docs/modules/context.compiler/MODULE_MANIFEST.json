@@ -72,7 +72,10 @@
     "scripts/test_context_compiler_state.py",
     "codex-rs/hepta-context-compiler/src/v2_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
-    "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs"
+    "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
+    "codex-rs/.config/nextest.toml"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -186,19 +189,6 @@
       "source-head",
       "synthetic-merge"
     ],
-    "localPythonTestsPassed": 20,
-    "localPythonScope": "Historical prior follow-up: candidate identity and execution-summary parser; not re-executed by this runtime follow-up.",
-    "nativeRegressionsAdded": 40,
-    "nativeRegressionBreakdown": {
-      "earlierFollowup": 19,
-      "runtimeFollowup": 21
-    },
-    "nativeRegressionsExecutedLocally": false,
-    "targetHostQualified": false,
-    "runtimeFollowupPythonTestsPassed": 10,
-    "runtimeFollowupPythonScope": "Current-state generation, retained inventories and exact source-blob drift tests only. Not Rust execution.",
-    "lifecycleFollowupNativeRegressionsAdded": 17,
-    "lifecycleFollowupNativeExecutedLocally": false,
     "nativeNames": {
       "owner-lifecycle-regressions": [
         "exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages",
@@ -230,20 +220,14 @@
         "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration",
         "exact_context_delivery::storage_hardening_tests::lock_links_and_symlink_ancestors_cannot_redirect_the_owner",
         "exact_context_delivery::storage_hardening_tests::replacing_the_lock_fences_the_pinned_owner"
+      ],
+      "owner-diagnostic-regressions": [
+        "prompt_runtime::errors::tests::pipeline_diagnostics_redact_dynamic_owner_and_adapter_details",
+        "prompt_runtime::errors::tests::public_exact_diagnostic_preserves_recovery_action_without_exposing_internal_error"
       ]
     },
-    "lifecycleFollowupPythonTestsPassed": 61,
-    "lifecycleFollowupPythonScope": "Local editing-source identity, state generation, source-navigation, named-log/profile parsing and consumer projection only; not Rust, authenticated E2E or target-host acceptance.",
-    "adversarialAuditLocalChecks": {
-      "compilerTestsPassed": 55,
-      "pythonTestsPassed": 61,
-      "isolatedStorageHarnessTestsPassed": 6,
-      "storageHarnessScope": "Production store methods and module; substituted schema migration/validation and metrics. Not a full agentd crate pass.",
-      "consumerNativeExecution": "blocked_by_shared_disk_exhaustion",
-      "bazelLockUpdate": "blocked_by_dependency_TLS_certificate_validation",
-      "immutableDualLaneExecution": "unverified",
-      "compilerStrictAllTargetsClippy": "passed with -D warnings"
-    },
+    "targetHostQualified": false,
+    "executionEvidencePolicy": "Read command and native/profile results from current immutable PR/workflow receipts; source state contains no cached test outcomes.",
     "runner": "scripts/context_compiler_execution.py"
   },
   "knownOpenItems": [
@@ -266,13 +250,13 @@
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "fb4e39d5cfc419bb9d197b7636866b679ec88fd91c8a806d035c6ba76f8fe044",
+    "stateSha256": "4e23afebf12740d4b7fba90f10ad526f68c4c8beb50caeb8e5b376ec30fb5689",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "db57c5c3f446dfc6442caf5964b216392dce3932",
-  "runtimeSourceTree": "6aca7a8d4845da8943786a3827ee9330dc08eda0",
+  "runtimeSourceAnchor": "959f81f82df0ac5dd832435fbcd99767d0f18fa4",
+  "runtimeSourceTree": "8c575b7ad9b5e37327a7377b33f290cf64692896",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -402,7 +386,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-      "blobSha": "04b28b77709a94a85c673309967ab5177016266f"
+      "blobSha": "8c039700c28f7314dd13e6c66e84f01539388927"
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
@@ -442,7 +426,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "94cd9588ea43c0087ed22d53bd50448c99c8e2cb"
+      "blobSha": "655428df8d52e0b6b03a49c647328c6c50393004"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -450,11 +434,11 @@
     },
     {
       "path": "scripts/context_compiler_qualification.py",
-      "blobSha": "de1793b98572dec53bfb893696b3b124ec728f3e"
+      "blobSha": "bec6f78e1c0b8050650db27fdd55021efd8001ee"
     },
     {
       "path": "scripts/generate_context_compiler_module_docs.py",
-      "blobSha": "37187b03513ff1c7f1b4c94b6ce8071ad89021a2"
+      "blobSha": "d6557c976273a0bddaef5a4ff74ec0eef688e404"
     },
     {
       "path": "scripts/test_context_compiler_named_evidence.py",
@@ -487,6 +471,18 @@
     {
       "path": "codex-rs/hepta-context-compiler/src/provider_closure.rs",
       "blobSha": "5d4224d1860a1734f9628e9503ca38baf0be4d7d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
+      "blobSha": "cfdcfa9969d58587e29e07ffd1e94340d20ba401"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
+      "blobSha": "0ee4d688d31458746d3afd6434a54b7568d11a2d"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "blobSha": "5c61526c4421c840847a270b6ed788aba1e95d3c"
     }
   ],
   "consumerExecution": [
@@ -770,6 +766,36 @@
         }
       ],
       "command": "owner-storage-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "raw-free-owner-diagnostics",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
+        "symbol": "reason_code"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
+        "symbol": "impl fmt::Display for AgentdPromptPipelineError",
+        "call": "self.reason_code()"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "prompt_runtime::errors::tests::pipeline_diagnostics_redact_dynamic_owner_and_adapter_details",
+        "prompt_runtime::errors::tests::public_exact_diagnostic_preserves_recovery_action_without_exposing_internal_error"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
+          "name": "prompt_runtime::errors::tests::pipeline_diagnostics_redact_dynamic_owner_and_adapter_details"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
+          "name": "prompt_runtime::errors::tests::public_exact_diagnostic_preserves_recovery_action_without_exposing_internal_error"
+        }
+      ],
+      "command": "owner-diagnostic-regressions",
       "authenticatedProductE2E": "unverified",
       "exactExecution": "CI_EXACT_HEAD"
     }

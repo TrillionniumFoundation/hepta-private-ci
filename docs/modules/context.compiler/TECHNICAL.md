@@ -1,7 +1,7 @@
 # context.compiler technical development guide
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `fb4e39d5cfc419bb9d197b7636866b679ec88fd91c8a806d035c6ba76f8fe044`. Source anchor: `db57c5c3f446dfc6442caf5964b216392dce3932`.
+State SHA-256: `4e23afebf12740d4b7fba90f10ad526f68c4c8beb50caeb8e5b376ec30fb5689`. Source anchor: `959f81f82df0ac5dd832435fbcd99767d0f18fa4`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -18,7 +18,7 @@ The source anchor is provenance, not the final tested head. Only external execut
 
 ## 2. Direct-source changes in this follow-up
 
-- Earlier direct-source follow-up added the Responses developer/input_text slot guard and before-await exact observer reservation, plus exclusive expiry checks. Those changes and their nineteen unexecuted Rust regressions are retained.
+- Earlier direct-source follow-up added the Responses developer/input_text slot guard and before-await exact observer reservation, plus exclusive expiry checks. Those changes and their nineteen registered Rust regressions are retained.
 - Agentd now reserves one preparation per turn before tokenizer await; concurrent preparation and unresolved durable attempts cannot authorize another physical send. Cancellation releases only the pre-commit reservation.
 - Tokenizer stdin, stdout and exit share a deadline. Input and bounded output progress concurrently; errors kill the child and bound the cleanup wait. Cancellation retains kill-on-drop rather than claiming guaranteed synchronous reaping.
 - Tokenizer executable and vocabulary require externally supplied expected SHA-256 pins. Configuration freezes after first successful load, artifacts are streamed through SHA-256 and rechecked around execution. Immutable interpreter/runtime and replace-and-restore qualification remain open.
@@ -44,7 +44,7 @@ The source anchor is provenance, not the final tested head. Only external execut
 - AgentdPromptPipelineOwner::clear_turn coordinates explicit unused/settled-turn retirement with the same two owners. Runtime schema 2 records raw-free retired turn identities; schema 1 remains readable and cannot carry invented retirement. Old dispatches remain queryable and cannot admit new attempts.
 - New admissions preserve bounded terminal headroom: 64 KiB per unresolved exact attempt and 128 KiB per unresolved runtime projection attempt. Producer-side record limits protect the reservation. Unknown observations cannot spend the final reserve, and final reconciliation can consume its own reservation. Legacy states acquire no fabricated historical reservation.
 - The existing owner records seventeen bounded process-local phase measurements, including failed/cancelled scopes, with last-256 nearest-rank p50/p95/p99 and lifetime saturating totals/maxima. Unobserved phases remain null. Nested measurements overlap and are not additive latency; no target-host improvement is asserted.
-- Seventeen new native regressions cover 257 sequential exact-owner turns, runtime validation/capacity/post-rename failures, preparation-clear exclusion, tool/unknown retention, schema retirement/reopen, terminal headroom and bounded timing. These are registered source tests, not locally executed Rust evidence.
+- Seventeen new native regressions cover 257 sequential exact-owner turns, runtime validation/capacity/post-rename failures, preparation-clear exclusion, tool/unknown retention, schema retirement/reopen, terminal headroom and bounded timing. These are registered source tests, execution status belongs to exact-candidate receipts.
 - Exact-candidate qualification now requires the reviewed fully qualified native test names as well as command success and aggregate counts. It binds a 257-turn protocol-fixture profile to the command log and source/merge identity without promoting it to provider or selected-host acceptance.
 - Consumer execution rows distinguish actual source callsites from absent authenticated ingress and absent external-security consumption. Receipt projection records native results separately from unverified authenticated product E2E, independent acceptance, activation and release.
 - Exact-attempt observer terminal binding was already implemented in ext/hepta-prompt/src/exact_body.rs before this follow-up; it is retained rather than repeatedly listed as missing source.
@@ -53,6 +53,8 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Empty selections validate compilation scope and revocation domain before attachment or delivery preparation.
 - Unix exact-delivery storage pins a private directory descriptor, rejects symbolic/hard links and non-private files before truncation, and permanently fences an owner whose directory or lock identity changes. Six previously dormant/new storage regressions are registered in the owner module and qualification command.
 - Strict compiler all-targets Clippy findings are resolved without changing the published V2 evidence-owner call shape.
+- Pipeline/runtime diagnostics redact dynamic adapter, registry and compiler errors. Public exact-delivery diagnostics expose stable reason codes through an opaque wrapper rather than a private internal error type.
+- The 257-turn full-owner fixture retains subprocesses and fsync with a bounded dedicated watchdog and disk-workload group. CI records disabled debug/incremental artifacts to reduce combined Cargo/Bazel disk pressure; no test or security gate is skipped.
 
 ## 3. Current product call path
 
@@ -104,11 +106,13 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 
 ## 6. Verification
 
-The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 23 exact native names (17 lifecycle/capacity/metrics plus 6 Unix storage); the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
+The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 25 exact native names (17 lifecycle/capacity/metrics, 6 Unix storage and 2 raw-free diagnostic cases); the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
 
 The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
 
 ## 7. Retained detailed design
+
+Active V3 contracts and development workflow: [V3 development guide](../../../docs/modules/context.compiler/V3_DEVELOPMENT.md).
 
 The complete previous technical guide, implementation map, dossier and product-path design are preserved byte-for-byte below. Their earlier completion statements are historical, not current acceptance evidence. Algorithms, proof objects, byte identities, capacity requirements, threat controls, migration targets and test design remain available in full.
 
@@ -131,6 +135,7 @@ The complete previous technical guide, implementation map, dossier and product-p
 | `authenticated-app-server-ingress` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::compile_and_stage_v3` | Not composed | `none` | unverified |
 | `external-security-consumption` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityCapabilitiesV3` | Not composed | `none` | unverified |
 | `private-storage` | `codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs::verify_identity` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::ensure_available` | `owner-storage-regressions` | unverified |
+| `raw-free-owner-diagnostics` | `codex-rs/hepta-agentd/src/prompt_runtime_errors.rs::reason_code` | `codex-rs/hepta-agentd/src/prompt_runtime_errors.rs::impl fmt::Display for AgentdPromptPipelineError` | `owner-diagnostic-regressions` | unverified |
 
 These are reviewed source anchors, not compiler reachability or execution evidence. The exact-candidate receipt records each required native name and command/log identity; native fixture passes never qualify authenticated ingress, independent provider truth or a target host.
 
