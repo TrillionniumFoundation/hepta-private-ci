@@ -12,6 +12,22 @@ impl<D: super::ModelDriver> super::InferenceWorker<D> {
     }
 }
 
+impl<D: super::ModelDriver> super::InferenceWorker<D> {
+    pub(super) fn resident_memory_bytes(&self) -> Result<u64, Error> {
+        if self.load_uncertain {
+            return Err(Error::ModelUnavailable);
+        }
+        self.models.values().try_fold(0_u64, |total, loaded| {
+            if loaded.cleanup_pending {
+                return Err(Error::ModelUnavailable);
+            }
+            total
+                .checked_add(loaded.handle.observed_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })
+    }
+}
+
 #[derive(Debug)]
 pub(super) enum WorkerResources {
     Legacy(ResourceGrant),

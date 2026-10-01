@@ -166,6 +166,17 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Physical model execution and cleanup owned by the local runtime driver.
+///
+/// A failed load must release acquired resources when no handle is returned.
+/// If load unwinds without a handle, abandon the fenced worker generation and
+/// physically clean driver resources before creating a new isolated worker.
+/// Concurrently loaded models must have distinct opaque handle identities.
+/// An aliased handle also requires abandoning the fenced worker generation
+/// and physically cleaning driver resources before creating a new worker.
+/// `unload` must drain outstanding work and return `Ok` only after the handle's
+/// resources are confirmed released. Failed unloads may be retried with the
+/// same handle; the worker keeps uncertain models fenced until that succeeds.
 pub trait ModelDriver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
@@ -181,6 +192,7 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    cleanup_pending: bool,
 }
 
 #[derive(Debug)]
@@ -191,6 +203,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
+    load_uncertain: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -213,6 +226,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            load_uncertain: false,
         })
     }
 
@@ -236,11 +250,49 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > limits.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        let resident_memory_bytes = self.resident_memory_bytes()?;
+        if resident_memory_bytes >= limits.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
+        }
+        // A caller may catch the driver's unwind; unknown allocation stays fenced.
+        self.load_uncertain = true;
+        let loaded = self.driver.load(&manifest);
+        self.load_uncertain = false;
+        let handle = loaded?;
+        if self
+            .models
+            .values()
+            .any(|loaded| loaded.handle.opaque_id == handle.opaque_id)
+        {
+            // Releasing this alias could invalidate an existing model's handle.
+            self.load_uncertain = true;
+            return Err(Error::ModelUnavailable);
+        }
+        let handle_validation =
+            validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
+                let memory_bytes = resident_memory_bytes
+                    .checked_add(handle.observed_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                if memory_bytes > limits.maximum_memory_bytes {
+                    return Err(Error::ModelCapacity);
+                }
+                Ok(())
+            });
+        if let Err(error) = handle_validation {
+            let model_id = manifest.model_id.clone();
+            let cleanup_handle = handle.clone();
+            self.models.insert(
+                model_id.clone(),
+                LoadedModel {
+                    manifest,
+                    handle,
+                    active_requests: 0,
+                    cleanup_pending: true,
+                },
+            );
+            self.driver.unload(cleanup_handle)?;
+            self.models.remove(&model_id);
+            return Err(error);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -255,6 +307,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                cleanup_pending: false,
             },
         );
         Ok(observation)
@@ -278,7 +331,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let resident_memory_bytes = self.resident_memory_bytes()?;
+        if resident_memory_bytes > limits.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.cleanup_pending {
+            return Err(Error::ModelUnavailable);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -313,16 +373,32 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
+        loaded.cleanup_pending = true;
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                loaded.cleanup_pending = true;
+                return Err(error);
+            }
+        };
+        let other_memory_bytes = resident_memory_bytes - loaded.handle.observed_memory_bytes;
+        loaded.handle.observed_memory_bytes = loaded
+            .handle
+            .observed_memory_bytes
+            .max(observed.observed_memory_bytes);
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > limits.maximum_memory_bytes {
+        if other_memory_bytes
+            .checked_add(loaded.handle.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)?
+            > limits.maximum_memory_bytes
+        {
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
@@ -340,6 +416,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
+        loaded.cleanup_pending = !terminal_observed;
         Ok(InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,
@@ -359,15 +436,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.grant
-            .current_limits(now_ms, &self.worker_id, self.generation)?;
+        match self.validate_current_resources(now_ms) {
+            Ok(()) | Err(Error::GrantExpired | Error::GrantRevoked) => {}
+            Err(error) => return Err(error),
+        }
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
-        if loaded.active_requests != 0 {
+        if loaded.active_requests != 0 && !loaded.cleanup_pending {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.cleanup_pending = true;
+        self.driver.unload(loaded.handle.clone())?;
+        self.active_requests
+            .retain(|_, active_model_id| active_model_id != model_id);
+        self.models.remove(model_id);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -375,11 +458,6 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 }
-
-
-
-
-
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronFeatureRequest {
@@ -459,12 +537,25 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let resident_memory_bytes = self.resident_memory_bytes()?;
+        if resident_memory_bytes > limits.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.cleanup_pending {
+            return Err(Error::ModelUnavailable);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
         {
             return Err(Error::ModelMismatch);
+        }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
         }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
@@ -500,13 +591,37 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
+        loaded.cleanup_pending = true;
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > limits.maximum_memory_bytes {
+        let mut observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                loaded.cleanup_pending = true;
+                return Err(error);
+            }
+        };
+        let other_memory_bytes = resident_memory_bytes - loaded.handle.observed_memory_bytes;
+        loaded.handle.observed_memory_bytes = loaded
+            .handle
+            .observed_memory_bytes
+            .max(observed.observed_memory_bytes);
+        if other_memory_bytes
+            .checked_add(loaded.handle.observed_memory_bytes)
+            .and_then(|total| total.checked_add(observed.transient_allocation_bytes))
+            .ok_or(Error::ArithmeticOverflow)?
+            > limits.maximum_memory_bytes
+        {
             return Err(Error::ModelCapacity);
+        }
+        validate_digest(&observed.encoder_digest, "encoder")?;
+        validate_digest(&observed.head_digest, "head")?;
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            return Err(Error::FeatureOutputMismatch);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
@@ -516,6 +631,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        if status != ExecutionStatus::Succeeded {
+            observed.drive_q24 = Vec::new();
+            observed.prediction_q24 = Vec::new();
+        }
+        loaded.cleanup_pending = !observed.terminal_observed;
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,

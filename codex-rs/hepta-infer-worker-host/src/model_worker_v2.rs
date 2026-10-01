@@ -20,6 +20,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            load_uncertain: false,
         })
     }
 }
