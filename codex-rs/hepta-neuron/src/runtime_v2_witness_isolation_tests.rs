@@ -101,6 +101,11 @@ fn witness_publication_outage_does_not_hide_committed_truth_or_guarded_use() {
     ));
     assert_eq!(execute_calls.load(Ordering::SeqCst), 1);
 
+    assert!(matches!(
+        runtime.current_tick_anchor(),
+        Err(NeuronRuntimeV2Error::PendingOperation)
+    ));
+
     match checked(runtime.query_input_operation(&request)) {
         NeuronOperationStatusV2::Committed {
             witness_acknowledged,
@@ -115,6 +120,13 @@ fn witness_publication_outage_does_not_hide_committed_truth_or_guarded_use() {
             WitnessStoreError::Unavailable
         ))
     ));
+    witness.set_compare_and_swap_unavailable(false);
+    checked(runtime.reconcile());
+    assert_eq!(
+        checked(runtime.current_tick_anchor()),
+        checked(witness.current())
+    );
+    assert_eq!(execute_calls.load(Ordering::SeqCst), 1);
 }
 
 #[test]

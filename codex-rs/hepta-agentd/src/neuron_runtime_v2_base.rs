@@ -281,6 +281,18 @@ where
 }
 
 trait ProductNeuronOwnerV2: Send + Sync {
+    fn current_tick_anchor(
+        &self,
+    ) -> Result<
+        (
+            Generation,
+            Option<codex_hepta_agent_components::neuron::JournalAnchor>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+
     fn export_archive_control(
         &self,
     ) -> Result<

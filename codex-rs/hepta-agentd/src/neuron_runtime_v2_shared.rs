@@ -202,6 +202,25 @@ where
     P: DurableNeuronInferenceControlPort + Send,
     G: NeuronAdmissionGuard + Send,
 {
+    fn current_tick_anchor(
+        &self,
+    ) -> Result<
+        (
+            Generation,
+            Option<codex_hepta_agent_components::neuron::JournalAnchor>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        let locked = self.lock_control()?;
+        let runtime = &locked.owner.runtime;
+        Ok((
+            runtime.configuration().generation,
+            runtime
+                .current_tick_anchor()
+                .map_err(AgentdNeuronControlErrorV2::Runtime)?,
+        ))
+    }
+
     fn export_archive_control(
         &self,
     ) -> Result<

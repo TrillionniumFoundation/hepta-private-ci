@@ -268,6 +268,24 @@ impl AgentdNeuronGenerationControllerV2 {
         self.start()
     }
 
+    /// Read a new tick's generation and acknowledged head from the active
+    /// serialized owner. This neither reconciles nor dispatches pending work.
+    pub fn current_tick_anchor(
+        &self,
+    ) -> Result<
+        (
+            Generation,
+            Option<codex_hepta_agent_components::neuron::JournalAnchor>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        let state = self.lock_state()?;
+        if state.lifecycle != AgentdNeuronLifecycleStateV2::Serving {
+            return Err(AgentdNeuronControlErrorV2::NotServing);
+        }
+        state.active.current_tick_anchor()
+    }
+
     pub fn prepare(
         &self,
         run_id: StableId,

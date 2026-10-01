@@ -28,6 +28,18 @@ where
 }
 
 impl AgentdNeuronHandleV2 {
+    pub(crate) fn current_tick_anchor(
+        &self,
+    ) -> Result<
+        (
+            Generation,
+            Option<codex_hepta_agent_components::neuron::JournalAnchor>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        self.owner.current_tick_anchor()
+    }
+
     pub fn configuration_digest(&self) -> Digest32 {
         self.config_digest
     }

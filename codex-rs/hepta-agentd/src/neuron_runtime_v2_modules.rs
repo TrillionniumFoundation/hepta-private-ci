@@ -35,3 +35,7 @@ mod decision_cell_tests;
 #[cfg(test)]
 #[path = "neuron_runtime_v2_lock_metrics_tests.rs"]
 pub(crate) mod lock_metrics_tests;
+
+#[cfg(test)]
+#[path = "neuron_runtime_v2_tick_context_tests.rs"]
+mod tick_context_tests;
