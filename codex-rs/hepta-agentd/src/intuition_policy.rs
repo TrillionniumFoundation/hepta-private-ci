@@ -554,6 +554,10 @@ impl AgentdIntuitionPolicyHostV1 {
     /// Canonical serving adds its current owner and ingress fences while the
     /// sole learning writer is locked. Historical public host calls retain
     /// their existing signature and error type.
+    #[allow(
+        clippy::result_large_err,
+        reason = "The checked seam preserves the public service error payload and complete acknowledged receipts"
+    )]
     pub(crate) fn commit_v4_checked<F>(
         &self,
         agent_id: &AgentId,

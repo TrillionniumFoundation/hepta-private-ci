@@ -45,6 +45,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile;
+#[cfg(test)]
 use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
 use codex_hepta_intelligence::CanonicalIntelligenceError;
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
@@ -560,6 +561,10 @@ impl PreparedAgentdIntelligenceRunV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "Preserve the public V1 outcome payload type and complete immutable prepared run"
+)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
     Ready(PreparedAgentdIntelligenceRunV1),
     Abstained,
@@ -569,6 +574,10 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 /// Result of the canonical runner after the exact prepared envelope has also
 /// crossed the Agentd-owned run-admission and context-attachment boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "Preserve the public V1 admission payload types and complete prepared run and receipt"
+)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
         prepared: PreparedAgentdIntelligenceRunV1,
