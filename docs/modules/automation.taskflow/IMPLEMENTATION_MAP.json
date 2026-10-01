@@ -178,13 +178,32 @@
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
+      "productCallers": [
+        {
+          "role": "configured_product_effect_host",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "pub(crate) async fn execute(",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::AutomationExecuteEffect",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "typed_product_client",
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "symbol": "pub async fn automation_execute_effect(",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
       "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     }
   ],
@@ -218,11 +237,12 @@
     "externalEffectAsyncBridgeComplete": true,
     "externalEffectExactWireBindingComplete": true,
     "externalEffectDurableRecoveryIdentityComplete": true,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "configuredHttpEffectControlComposed": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productCallerState": "agentd_app_server_calendar_v2_and_configured_http_effect_control_composed",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -264,20 +284,25 @@
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_service.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "codex-rs/model-provider/src/provider_effect.rs"
   ],
   "repositoryControlledProductCompositionGaps": [
-    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
+    "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
+    "Automatic safe provider contract/scope/endpoint rotation lacks per-attempt original host-contract binding; pending effects require original lookup continuity."
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
@@ -299,6 +324,16 @@
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "execute",
+      "state": "configured_async_http_final_use_effect_control"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "AutomationReconcileEffect",
+      "state": "generation_fenced_exact_attempt_recovery_control"
     }
   ],
   "sourceObjects": [
