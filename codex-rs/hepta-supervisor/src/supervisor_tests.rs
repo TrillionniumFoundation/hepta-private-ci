@@ -725,15 +725,29 @@ fn flapping_running_agent_stops_after_restart_budget_is_exhausted() -> Result<()
 
     control.set_exit(&fleet.first);
     let exhausted = supervisor.tick(now);
-    assert_eq!(exhausted.faults.len(), 1);
-    assert_eq!(exhausted.faults[0].agent_id, fleet.first);
-    assert!(exhausted.faults[0].message.contains("restart budget"));
+    assert_eq!(exhausted, TickReport::default());
     let stopped = supervisor
         .snapshot(&fleet.first)
         .expect("exhausted snapshot");
     assert!(!stopped.active);
     assert!(!stopped.restart_pending);
     assert_eq!(stopped.restart_attempt, 3);
+    assert_eq!(
+        stopped
+            .events
+            .iter()
+            .filter(|event| {
+                event.kind == SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            })
+            .count(),
+        1
+    );
+    assert_eq!(
+        fleet.registry.load()?.agents[&fleet.first]
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
     assert_eq!(control.spawn_count(&fleet.first), 4);
 
     assert_eq!(
@@ -1695,6 +1709,10 @@ fn ready_paired_supervisor(
 fn stop_supersedes_inflight_paired_restart_after_matrix_exits() -> Result<(), SupervisorError> {
     let (fleet, control, mut supervisor, now) =
         ready_paired_supervisor("paired-stop-supersedes-restart")?;
+    // Durable Stop deadlines use wall time even while this fixture holds its
+    // Instant fixed. This test exercises supersession, not deadline expiry;
+    // fsync and concurrent qualification work must not consume its grace.
+    supervisor.config.stop_grace = Duration::from_secs(5);
     let peer_before = supervisor.snapshot(&fleet.second).expect("peer snapshot");
 
     supervisor.restart(&fleet.first, now)?;
@@ -2354,3 +2372,9 @@ mod matrix_budget_tests;
 
 #[path = "supervisor_snapshot_tests.rs"]
 mod snapshot_tests;
+
+#[path = "automatic_restart_event_tests.rs"]
+mod automatic_restart_event_tests;
+
+#[path = "tick_control_fault_tests.rs"]
+mod tick_control_fault_tests;

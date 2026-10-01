@@ -11,6 +11,7 @@ use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::TickReport;
 use crate::control::pending;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
@@ -38,16 +39,27 @@ enum RuntimeTickOutcome {
 }
 
 impl<D: ProcessDriver> Supervisor<D> {
+    #[cfg(test)]
     pub(crate) fn tick_slot(
         &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.tick_slot_with_report(agent_id, slot, now, &mut TickReport::default())
+    }
+
+    pub(crate) fn tick_slot_with_report(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+        report: &mut TickReport,
+    ) -> Result<(), SupervisorError> {
         let mut post_exit_fault = None;
         let mut companion_ticked = false;
         if let Some(mut runtime) = slot.runtime.take() {
-            let outcome = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
+            let outcome = match self.tick_runtime(agent_id, slot, &mut runtime, now, report) {
                 Ok(outcome) => outcome,
                 Err(error) => {
                     runtime.healthy = false;
@@ -55,12 +67,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     // Main storage/probe failure does not abandon companion
                     // containment. Retain both faults without masking the first.
                     if let Err(companion) = self.tick_matrix_companion(agent_id, slot, now) {
-                        slot.event(
-                            0,
-                            SupervisorEventKind::DriverFault(bounded_message(
-                                companion.to_string(),
-                            )),
-                        );
+                        Self::record_slot_fault(agent_id, slot, &companion, report);
                     }
                     return Err(error);
                 }
@@ -72,70 +79,84 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
         }
-        if slot.has_recovery_denial() {
-            // Corrupt durable recovery evidence permits only containment and
-            // exact exit cleanup. It cannot drive release or restart work.
-            return self.tick_matrix_companion(agent_id, slot, now);
-        }
-        if slot.runtime.is_none() {
-            slot.pending_control = None;
-            // Poll and finalize the retained companion before a replacement
-            // checks absence. Otherwise its lease denial can starve the poll
-            // needed to observe that companion's exact exit.
-            self.tick_matrix_companion(agent_id, slot, now)?;
-            companion_ticked = true;
-            // Exit continuation can fail after ownership was finalized. Keep
-            // retrying its retained release change on later owner ticks.
-            let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
-            self.finish_failed_restart_spawn(agent_id, slot)?;
-        }
-        if slot.runtime.is_none()
-            && slot.release_change.is_none()
-            && slot.restart_pending
-            && slot.matrix.runtime.is_none()
-            && crate::lease::read_matrix_lease(
-                self.record(agent_id)?.layout.matrixd_process_lease(),
-            )?
-            .is_none()
-            && slot
-                .restart_not_before
-                .is_none_or(|eligible| now >= eligible)
-        {
-            let release = slot.active_release.clone().or_else(|| {
-                slot.last_command
-                    .clone()
-                    .and_then(|command| crate::AgentRelease::unversioned(command).ok())
-            });
-            let release =
-                release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-            let record = self.record(agent_id)?;
-            let claim = crate::restart_budget::pending_restart(
-                record.layout.run_root(),
-                self.config.restart_max_attempts,
-            )
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-            .ok_or_else(|| {
-                SupervisorError::Invalid("queued restart has no durable budget claim".to_string())
-            })?;
-            if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
-                if matches!(&error, SupervisorError::Driver { .. }) && slot.runtime.is_none() {
-                    slot.failed_restart_spawn = Some(claim);
-                    if let Err(cancellation) = self.finish_failed_restart_spawn(agent_id, slot) {
-                        slot.event(
-                            0,
-                            SupervisorEventKind::DriverFault(bounded_message(
-                                cancellation.to_string(),
-                            )),
-                        );
-                    }
-                }
-                return Err(error);
+        let continuation = (|| {
+            if slot.has_recovery_denial() {
+                // Corrupt durable recovery evidence permits only containment and
+                // exact exit cleanup. It cannot drive release or restart work.
+                return self.tick_matrix_companion(agent_id, slot, now);
             }
-            slot.restart_pending = false;
+            if slot.runtime.is_none() {
+                slot.pending_control = None;
+                // Poll and finalize the retained companion before a replacement
+                // checks absence. Otherwise its lease denial can starve the poll
+                // needed to observe that companion's exact exit.
+                self.tick_matrix_companion(agent_id, slot, now)?;
+                companion_ticked = true;
+                // Exit continuation can fail after ownership was finalized. Keep
+                // retrying its retained release change on later owner ticks.
+                let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                self.finish_failed_restart_spawn(agent_id, slot)?;
+            }
+            if slot.runtime.is_none()
+                && slot.release_change.is_none()
+                && slot.restart_pending
+                && slot.matrix.runtime.is_none()
+                && crate::lease::read_matrix_lease(
+                    self.record(agent_id)?.layout.matrixd_process_lease(),
+                )?
+                .is_none()
+                && slot
+                    .restart_not_before
+                    .is_none_or(|eligible| now >= eligible)
+            {
+                let release = slot.active_release.clone().or_else(|| {
+                    slot.last_command
+                        .clone()
+                        .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+                });
+                let release =
+                    release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+                let record = self.record(agent_id)?;
+                let claim = crate::restart_budget::pending_restart(
+                    record.layout.run_root(),
+                    self.config.restart_max_attempts,
+                )
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .ok_or_else(|| {
+                    SupervisorError::Invalid(
+                        "queued restart has no durable budget claim".to_string(),
+                    )
+                })?;
+                if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
+                    if matches!(&error, SupervisorError::Driver { .. }) && slot.runtime.is_none() {
+                        slot.failed_restart_spawn = Some(claim);
+                        if let Err(cancellation) = self.finish_failed_restart_spawn(agent_id, slot)
+                        {
+                            slot.event(
+                                0,
+                                SupervisorEventKind::DriverFault(bounded_message(
+                                    cancellation.to_string(),
+                                )),
+                            );
+                        }
+                    }
+                    return Err(error);
+                }
+                slot.restart_pending = false;
+            }
+            if !companion_ticked {
+                self.tick_matrix_companion(agent_id, slot, now)?;
+            }
+            Ok(())
+        })();
+        if continuation.is_err()
+            && let Some(error) = post_exit_fault.as_ref()
+        {
+            // A later companion/release failure cannot erase admission's
+            // already observed storage error from this tick's bounded report.
+            Self::record_slot_fault(agent_id, slot, error, report);
         }
-        if !companion_ticked {
-            self.tick_matrix_companion(agent_id, slot, now)?;
-        }
+        continuation?;
         if let Some(error) = post_exit_fault {
             return Err(error);
         }
@@ -262,12 +283,31 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
+                // Publish the charged attempt only after durable budget and
+                // exact predecessor admission. Exit-finalization retries use
+                // observed_exit and cannot re-admit or duplicate this event.
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
+                );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
-                Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
+                // Exhaustion is a normal bounded-policy outcome. Validation
+                // established attempts <= maximum before returning Exhausted,
+                // so this is the exact durable count, even after recovery.
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
+                None
             }
             Err(error) => {
                 slot.restart_pending = false;
@@ -283,6 +323,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         runtime: &mut AgentRuntime<D::Process>,
         now: Instant,
+        report: &mut TickReport,
     ) -> Result<RuntimeTickOutcome, SupervisorError> {
         // A failed registry read or process probe cannot preserve stale readiness.
         runtime.healthy = false;
@@ -310,14 +351,28 @@ impl<D: ProcessDriver> Supervisor<D> {
                         slot.event(runtime.generation, SupervisorEventKind::KillRequested);
                     })
             };
-            let observation = runtime
+            let observation = match runtime
                 .process
                 .poll(self.config.driver_poll_batch)
-                .map_err(|error| driver_error(agent_id, error))?;
+                .map_err(|error| driver_error(agent_id, error))
+            {
+                Ok(observation) => observation,
+                Err(error) => {
+                    if let Err(termination) = &termination {
+                        Self::record_slot_fault(agent_id, slot, termination, report);
+                    }
+                    return Err(error);
+                }
+            };
             self.push_logs(slot, observation.logs);
             if let ProcessState::Exited(exit) = observation.state {
                 slot.observed_exit = Some(exit);
-                self.finalize_exit(agent_id, slot, runtime, exit)?;
+                if let Err(error) = self.finalize_exit(agent_id, slot, runtime, exit) {
+                    if let Err(termination) = &termination {
+                        Self::record_slot_fault(agent_id, slot, termination, report);
+                    }
+                    return Err(error);
+                }
                 slot.pending_control = None;
                 return Ok(RuntimeTickOutcome::Exited {
                     restart_fault: None,
@@ -383,10 +438,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Ok(Some(event)) = &control_result {
             slot.events.push(event.clone());
         }
-        let observation = runtime
+        let observation = match runtime
             .process
             .poll(self.config.driver_poll_batch)
-            .map_err(|error| driver_error(agent_id, error))?;
+            .map_err(|error| driver_error(agent_id, error))
+        {
+            Ok(observation) => observation,
+            Err(error) => {
+                if let Err(control) = &control_result {
+                    Self::record_slot_fault(agent_id, slot, control, report);
+                }
+                if let Some(companion) = companion_fault.as_ref() {
+                    Self::record_slot_fault(agent_id, slot, companion, report);
+                }
+                return Err(error);
+            }
+        };
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
             // Persist the automatic-restart claim before the lifecycle/lease
@@ -404,13 +471,29 @@ impl<D: ProcessDriver> Supervisor<D> {
                 None
             };
             slot.observed_exit = Some(exit);
-            self.finalize_exit(agent_id, slot, runtime, exit)?;
+            if let Err(error) = self.finalize_exit(agent_id, slot, runtime, exit) {
+                if let Some(restart_fault) = restart_fault.as_ref() {
+                    Self::record_slot_fault(agent_id, slot, restart_fault, report);
+                }
+                if let Err(control) = &control_result {
+                    Self::record_slot_fault(agent_id, slot, control, report);
+                }
+                if let Some(companion) = companion_fault.as_ref() {
+                    Self::record_slot_fault(agent_id, slot, companion, report);
+                }
+                return Err(error);
+            }
             slot.pending_control = None;
             return Ok(RuntimeTickOutcome::Exited {
                 restart_fault: restart_fault.or(companion_fault),
             });
         }
-        control_result?;
+        if let Err(error) = control_result {
+            if let Some(companion) = companion_fault.as_ref() {
+                Self::record_slot_fault(agent_id, slot, companion, report);
+            }
+            return Err(error);
+        }
         if let Some(error) = companion_fault {
             return Err(error);
         }

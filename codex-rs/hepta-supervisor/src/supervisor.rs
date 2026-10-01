@@ -1212,7 +1212,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         let agent_ids: Vec<_> = self.slots.keys().cloned().collect();
         for agent_id in agent_ids {
             let result = self.with_slot(&agent_id, |supervisor, slot| {
-                supervisor.tick_slot(&agent_id, slot, now)
+                supervisor.tick_slot_with_report(&agent_id, slot, now, &mut report)
             });
             if let Err(error) = result {
                 self.record_fault(&agent_id, &error, &mut report);
@@ -1263,18 +1263,32 @@ impl<D: ProcessDriver> Supervisor<D> {
         error: &SupervisorError,
         report: &mut TickReport,
     ) {
-        let message = bounded_message(error.to_string());
         if let Some(slot) = self.slots.get_mut(agent_id) {
-            let generation = slot
-                .runtime
-                .as_ref()
-                .map(|runtime| runtime.generation)
-                .unwrap_or(0);
-            slot.event(
-                generation,
-                SupervisorEventKind::DriverFault(message.clone()),
-            );
+            Self::record_slot_fault(agent_id, slot, error, report);
+        } else {
+            report.faults.push(AgentFault {
+                agent_id: agent_id.clone(),
+                message: bounded_message(error.to_string()),
+            });
         }
+    }
+
+    pub(crate) fn record_slot_fault(
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        error: &SupervisorError,
+        report: &mut TickReport,
+    ) {
+        let message = bounded_message(error.to_string());
+        let generation = slot
+            .runtime
+            .as_ref()
+            .map(|runtime| runtime.generation)
+            .unwrap_or(0);
+        slot.event(
+            generation,
+            SupervisorEventKind::DriverFault(message.clone()),
+        );
         report.faults.push(AgentFault {
             agent_id: agent_id.clone(),
             message,
