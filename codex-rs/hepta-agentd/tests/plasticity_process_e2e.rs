@@ -12,6 +12,8 @@ use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
+use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
@@ -31,6 +33,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
 
@@ -225,6 +228,52 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         &artifacts,
         artifact_binding,
     )?;
+    let artifact_owner_key = SigningKey::from_bytes(&[44; 32]);
+    let artifact_registry_id = id("plasticity-process-artifacts");
+    let artifact_withdrawal_scope = digest("plasticity-process-artifact-withdrawal-scope");
+    let artifact_head_signer_id = id("owner:plasticity-process-artifacts");
+    let mut artifact_current_head = SignedCurrentArtifactHeadV1 {
+        withdrawal_scope_digest: artifact_withdrawal_scope,
+        binding: artifact_binding,
+        witness: RegistryHeadWitnessV1 {
+            registry_id: artifact_registry_id.clone(),
+            generation: generation(u64::try_from(artifact_receipt.records)?),
+            head_digest: artifact_receipt.head_digest,
+            predecessor_head_digest: Digest32::ZERO,
+            authority_epoch: 1,
+            signer_id: artifact_head_signer_id.clone(),
+            signing_key_digest: Digest32::of_bytes(&artifact_owner_key.verifying_key().to_bytes()),
+            issued_at: 40,
+            expires_at: 100,
+        },
+        signature: [0; 64],
+    };
+    artifact_current_head.signature = artifact_owner_key
+        .sign(&artifact_current_head.signing_bytes())
+        .to_bytes();
+    let artifact_current_head_path = root.join("artifact-registry.CURRENT");
+    let artifact_current_signature = artifact_current_head
+        .signature
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    fs::write(
+        &artifact_current_head_path,
+        format!(
+            "HEPTA-ARTIFACT-CURRENT-HEAD-V1\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{artifact_current_signature}\n",
+            artifact_current_head.withdrawal_scope_digest,
+            artifact_current_head.binding,
+            artifact_current_head.witness.registry_id,
+            artifact_current_head.witness.generation.get(),
+            artifact_current_head.witness.head_digest,
+            artifact_current_head.witness.predecessor_head_digest,
+            artifact_current_head.witness.authority_epoch,
+            artifact_current_head.witness.signer_id,
+            artifact_current_head.witness.signing_key_digest,
+            artifact_current_head.witness.issued_at,
+            artifact_current_head.witness.expires_at,
+        ),
+    )?;
 
     let modulator_values = vec![FixedQ32::from_raw(FixedQ32::ONE.raw() / 2)];
     let ndu_subject_digest = digest("plasticity-process-ndu-subject");
@@ -328,6 +377,15 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let parameter_anchor = root.join("parameter-anchor");
     let topology_registry = root.join("topology-registry");
     let topology_anchor = root.join("topology-anchor");
+    let artifact_current_signer = json!({
+        "signer_id": artifact_head_signer_id.as_str(),
+        "verifying_key_hex": hex32(artifact_owner_key.verifying_key().to_bytes()),
+        "minimum_authority_epoch": 1,
+        "maximum_authority_epoch": 1,
+        "valid_from": 40,
+        "expires_at": 100,
+        "revoked_at": null,
+    });
 
     let descriptor_path = root.join("plasticity-bootstrap.json");
     let descriptor = json!({
@@ -344,6 +402,16 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "file_digest": artifact_receipt.file_digest.to_string(),
                 "records": artifact_receipt.records,
                 "encoded_bytes": artifact_receipt.encoded_bytes,
+            },
+            "current": {
+                "current_head_path": artifact_current_head_path,
+                "registry_id": artifact_registry_id.as_str(),
+                "withdrawal_scope_digest": artifact_withdrawal_scope.to_string(),
+                "minimum_registry_generation": 1,
+                "genesis_predecessor_head_digest": Digest32::ZERO.to_string(),
+                "minimum_authority_epoch": 1,
+                "writer_signers": [artifact_current_signer.clone()],
+                "head_signers": [artifact_current_signer],
             },
             "observed_at": 40,
             "expires_at": 60,
