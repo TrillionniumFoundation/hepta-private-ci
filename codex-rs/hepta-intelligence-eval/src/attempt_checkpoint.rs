@@ -19,6 +19,8 @@ const MAX_CHECKPOINT_BYTES: u64 = MAX_BYTES;
 
 #[path = "attempt_checkpoint_prefix.rs"]
 mod prefix;
+#[path = "attempt_checkpoint_read.rs"]
+mod bounded_read;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct CheckpointRecord {
@@ -146,10 +148,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
         }
         checkpoint.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        let mut checkpoint_bytes = Vec::with_capacity(checkpoint_len as usize);
-        checkpoint
-            .read_to_end(&mut checkpoint_bytes)
-            .map_err(io_error)?;
+        let checkpoint_bytes = bounded_read::read_exact_length(&mut checkpoint, checkpoint_len)?;
+        if checkpoint.metadata().map_err(io_error)?.len() != checkpoint_len {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+        }
         let (record, snapshot) = decode_checkpoint_file(&checkpoint_bytes)?;
         if record.binding != binding
             || record.event_count != retained.event_count
