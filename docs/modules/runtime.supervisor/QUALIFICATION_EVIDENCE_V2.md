@@ -1,17 +1,34 @@
 # Supervisor qualification evidence v2
 
+This guide preserves the original v2 qualification contract and its historical
+source-only checkpoint. Current command/profile/roster construction is in
+[`scripts/hepta_supervisor_ci_v3.py`](../../../scripts/hepta_supervisor_ci_v3.py)
+and its base helper, with current product build separation in
+`PRODUCTION_BOUNDARY.md`. Later native outcomes are recorded in the
+[R3 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R3.json)
+and [R4 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R4.json),
+with candidate scope and unresolved gates in the
+[R4 audit](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md).
+Historical counts, command profiles and toolchain limitations below do not
+describe the current candidate. Each observation applies only to its bound
+source and selected commands; no parent observation certifies a child commit
+or an unfiltered current-head pass.
+
 ## Scope and provenance
 
-This continuation extends PR #1057 on
-`fix/runtime-supervisor-remediation-20260927`. Its reviewed parent is
-`9809ba0842e372783ea131038592bc841631606b`; the observed main is
-`a126987b84737dbc2ee2592442a314117bddb4a2`. It does not import other convergence
-branches, change branch protection, or authorize a merge or release.
+The original v2 continuation extended PR #1057 on
+`fix/runtime-supervisor-remediation-20260927`. Its reviewed parent was
+`9809ba0842e372783ea131038592bc841631606b`; the observed main was
+`a126987b84737dbc2ee2592442a314117bddb4a2`. Those are historical provenance,
+not the current candidate or current main. That continuation did not import
+other convergence branches, change branch protection, or authorize a merge or
+release.
 
 The parent already contains the recovery signer, operator client, Agentd
 executable prerequisite, instance-lock lifetime, blocking owner lane, immutable
 read observations and timing counters. Those are preserved, not claimed as new
-work here. Their native execution remains a separate prerequisite.
+work here. Their native execution was not established by that checkpoint;
+later bound observations remain separate from target-host acceptance.
 
 `IMPLEMENTATION_MAP.sourceBase` remains historical provenance. A tracked source
 file cannot contain its own final commit hash. Candidate SHA, ordered merge
@@ -29,14 +46,14 @@ product library or daemon rejects a runtime-supplied verifier.
 `tests/default_authority_denied.rs` instead links the normal library and launches
 the actual `CARGO_BIN_EXE_hepta-supervisord` without production features. Both
 cases require the specific `ProductionAuthorityFeatureDisabled` outcome before
-fleet creation. The binary case supplies syntactically and cryptographically
-valid public keys and verifies that the keys are unchanged. An unrelated key
+fleet creation. The current binary case supplies a pinned public authority
+bundle and verifies that its bytes are unchanged. An unrelated key
 parse, filesystem or startup error is not an acceptable substitute. The process
 has a bounded observation deadline and an owned kill/reap guard.
 
 The deterministic public fixture key is test material, not an installed trust
-anchor. These two Rust tests have been written but not executed in the editing
-container.
+anchor. The original v2 checkpoint contained these two test sources without
+native execution; later outcomes must be read from their bound observations.
 
 ### Exact binary/test identity
 
@@ -89,8 +106,12 @@ records in addition to the receipt. This is not external immutable retention.
 
 ## Required execution matrix
 
-The reusable workflow dispatches these independent suites in each applicable
-Linux/macOS source-head and deterministic base-merge lane:
+This is the historical v2 suite matrix. Current v3 commands and mandatory
+binary/test pairs are defined by the helper linked above, including separate
+default, production-verifier and qualification/offline-authority profiles; the
+old seven-suite roster is not a current command recipe. The v2 reusable workflow
+dispatched these independent suites in each applicable Linux/macOS source-head
+and deterministic base-merge lane:
 
 | Suite | Evidence requirement |
 | --- | --- |
@@ -111,7 +132,8 @@ Helper and policy-test changes themselves trigger the qualification path.
 
 ## Evidence actually obtained
 
-In the editing container, the following command executed successfully:
+At the original v2 editing checkpoint, the following command executed
+successfully:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v \
@@ -126,11 +148,12 @@ The workflow fan-in shell was also executed over all 100 combinations of scope,
 applicability and native result represented by its fixture table. Neither result
 is Rust execution, a live process qualification, or independent acceptance.
 
-The editing environment has no Rust toolchain and cannot resolve the GitHub
-host for a native clone/build. No Rust, rustfmt, Clippy, default-daemon integration,
-full receipt-assembly execution or target-host outcome is asserted here. Actual
-source/base-merge Actions results must be read for the resulting commit; queued
-or running jobs are not passes.
+That editing environment had no Rust toolchain and could not resolve the GitHub
+host for a native clone/build. That checkpoint asserted no Rust, rustfmt,
+Clippy, default-daemon integration, full receipt-assembly execution or target-host
+outcome. Subsequent local native outcomes and their limitations are in the
+observations above. Actual source/base-merge Actions results must still be read
+for the resulting commit; queued or running jobs are not passes.
 
 ## Evidence classification and remaining gates
 
@@ -142,7 +165,7 @@ but uses `AllowVerifier`, not an external authority distribution ceremony. The
 
 | Requested stage | Remaining completion evidence |
 | --- | --- |
-| Trusted main | Green exact candidate CI required, Architecture required, Agentd and Supervisor qualification; resolve native formatting/lint/manifest/projection failures; merge without bypass and recheck the resulting exact main. |
+| Trusted main | Source integration follows the currently observed owner-selected repository policy in [DEVELOPMENT.md](../../DEVELOPMENT.md). Qualification still requires green exact-candidate, Architecture, Agentd and Supervisor checks and rechecking exact landed main. An administrator merge supplies no runtime qualification or independent acceptance evidence. |
 | Production control chain | Full named caller -> pinned verifier -> real process -> durable state -> audit path; closed public writer API/permission inventory; independently provisioned keys and rotation/revocation/recovery drill. The existing CLI and signer are source components, not proof of this chain. |
 | Concurrency | Per-agent mutation/tick ownership and short global registry commit coordination. The existing mutation worker remains serialized and whole-fleet observation refresh/startup I/O remains. Obtain actual 256-process isolation and latency distributions. |
 | Target hosts | Final deployment artifacts, not merely source trees, on named Linux/macOS hosts through SIGKILL, ENOSPC, torn writes, directory fsync, PID/lease reuse, drain, restart budget, upgrade/rollback, permission failures, service-manager restart and soak. |

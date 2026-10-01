@@ -39,6 +39,15 @@ before running. Normal daemon completion reports an error after owner failure.
 
 ### Lock file rules
 
+Startup first checks the existing Fleet, state, run, releases and agents roots
+as physical directories without modifying them. `acquire_for_fleet` then takes
+the exact owner lock before `FleetRegistry::open_existing`, whose legacy Matrix
+directory migration may create directories or repair modes. A losing contender
+therefore performs no such migration. Registry-open failure releases this
+startup guard before any control socket is served or ready observation is
+published. These named-directory checks do not pin every ancestor inode; trusted
+parent directories remain a deployment requirement.
+
 `daemon_owner.rs` opens with `O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC`, checks the
 opened descriptor's regular-file type, effective-user ownership and single
 link, and acquires `flock` before changing mode or contents. It verifies the
@@ -180,7 +189,7 @@ in-memory addressability test, not 256 running Agents or a mixed-load SLO run.
 
 | Gate | Required evidence |
 | --- | --- |
-| Trusted main | All applicable exact-head and ordered-parent synthetic-merge checks terminal green, then merge without bypass and recheck exact main. Resolve remaining dependency, feature-policy, lint and projection failures rather than hiding them. |
+| Trusted main | Source integration follows the currently observed owner-selected repository policy in [DEVELOPMENT.md](../../DEVELOPMENT.md). Qualification requires all applicable exact-head and ordered-parent synthetic-merge checks terminal green and rechecking exact landed main. An administrator merge does not establish execution qualification, independent runtime acceptance or activation. |
 | Production control | Execute real operator caller -> pinned-verifier daemon -> process -> durable intent/release state -> audit observation; provision independent keys; close writer API/permission inventory and authenticated rotation/revocation. |
 | Concurrency | Split per-Agent ownership without weakening global registry/release CAS; retain a short shared commit boundary; remove whole-fleet I/O from unrelated Agent mutation waits; obtain mixed-load measurements and actual histograms. |
 | Target-host faults | Final deployment binaries, pinned platform/filesystem and raw receipts for every row below; CI runner smoke or source fixtures are insufficient. |

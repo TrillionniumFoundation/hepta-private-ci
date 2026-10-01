@@ -4,33 +4,33 @@ Status: source recovery protocol and qualification plan. This document does not 
 
 ## 1. Automatic restart policy
 
-The native supervisor applies one bounded automatic restart policy to the main agent process and the optional Matrix companion:
+The main process and optional Matrix companion use independent bounded restart domains. Main policy comes from `SupervisorConfig`; its defaults are a 300-second window, three attempts and a 250 ms base delay. Matrix uses the fixed `restart_policy.rs` policy with the same window, budget and initial delays of 250 ms, 500 ms and 1 s. Matrix delay is capped at 30 seconds; main backoff uses checked arithmetic for its configured policy.
 
-- recovery window: 300 seconds;
-- automatic restart attempt budget: 3;
-- exponential delay: 250 ms, 500 ms, 1 s for attempts 1-3;
-- the delay function is capped at 30 seconds if the fixed budget is changed in a future reviewed revision;
-- a fourth restart request inside the active window is not executed. The main agent records `AutomaticRestartBudgetExhausted`; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
-- explicit operator restart/new release start resets the recovery budget for that release;
-- explicit stop/kill never schedules an automatic restart;
-- an unexpected main-process exit while Starting/AwaitingHealth or Running schedules restart; a health-deadline failure schedules restart after the failed child exits;
-- a missing/rejected live child discovered during supervisor recovery enters the same bounded restart path;
-- Matrix readiness recovery does not immediately zero the flap counter, preventing short healthy intervals from bypassing the fixed budget.
+Current main-process dispatch rules are:
+
+- A fresh automatic claim follows an exact unexpected exit from an unfenced `Running` runtime, with no release transition, existing pending restart or control retry. `AutomaticRestartQueued` is emitted only after durable budget, lineage and deadline admission.
+- An initial `Starting`/`AwaitingHealth` exit does not create a new automatic claim. A health deadline marks the lifecycle failed and stages bounded Stop/Kill containment; the resulting exit does not itself create a new automatic claim.
+- A charged replacement that exits before establishing health cancels that pending operation while retaining its consumed attempt. It is not respawned indefinitely under the same charge.
+- Constructor `Missing`/`Rejected` adoption does not by itself create a claim. Recovery resumes only an existing durable pending claim whose exact predecessor/replacement lineage permits continuation; an unresolved or rejected lease cannot prove process absence.
+- Explicit operator Restart uses the next bounded claim rather than resetting the main budget. Start or a release change does not erase acknowledged main charges. A terminal main window may replenish only after its configured duration expires; a pending claim is retained across window expiry.
+- Explicit Stop/Kill durably cancels pending main restart before terminal reconciliation and does not schedule a new automatic restart.
+- Automatic main budget exhaustion records `AutomaticRestartBudgetExhausted` and stops further dispatch as a policy outcome; journal, lineage and driver failures remain errors.
+
+Matrix faults use their separate release-bound window. `MatrixRestartBudgetExhausted` leaves the companion degraded. `start_matrix_companion` clears that companion budget only when there is no active release or the selected release has no Matrix command. A new Matrix-enabled release does not refund charges. Recovery does not erase charges merely because the committed release differs from an in-flight adopted release; a healthy readiness observation does not zero the flap counter or reset the main budget.
+
+These rules describe `tick.rs`, `control.rs`, `recovery.rs`, `restart_budget.rs` and `matrix.rs`; they do not promise automatic retries for every startup or adoption failure.
 
 ### Durable restart counter
 
-The restart counter is persisted in the agent run root as `supervisor-restart-budget.json`. The journal:
+One physical codec in `restart_journal.rs` owns the bounded, digest-protected schema-v2 `supervisor-restart-budget.json` in each Agent run root. Its independent `main` and `companion` fields cannot overwrite one another. The companion retains exact Agent/release binding; main continuation additionally requires the Agent/process-bound `restart_lineage.rs` witness.
 
-- is bound to the exact `agent_id` and active `release_id`;
-- stores independent main-agent and Matrix restart windows;
-- is bounded in size and digest-protected;
-- is written to a same-directory staging file, file-synchronized, and atomically published with a durable same-directory replacement;
-- is restored before daemon recovery decides whether a missing/rejected live child may consume another automatic attempt;
-- is reset when an explicit start/restart begins a new operator-directed recovery sequence or when the active release identity changes;
-- treats wall-clock rollback conservatively: rollback cannot buy additional attempts and restores the affected window as exhausted;
-- fails safe on journal persistence failure: the automatic retry is disabled/exhausted rather than proceeding without a durable counter witness.
+- Main state persists its window origin, attempts, pending flag and `next_eligible_unix_ms`. Recovery converts the original eligibility into the remaining delay and reconciles the exact lineage before dispatch. Completion or cancellation clears pending without refunding attempts; ordinary Start and release changes do not reset the main window.
+- Matrix persists attempts and window origin but no next-eligible timestamp. Recovery conservatively reapplies the full backoff for the retained attempt rather than accelerating its retry. The no-Matrix-command clear affects only that companion domain and retries a failed persistence acknowledgement.
+- The shared record is written to a same-directory staging file, file-synchronized, and atomically published with directory durability acknowledgement. Claim or admission failure cannot authorize a spawn without the required durable witnesses.
+- Main wall-clock rollback rejects budget validation and remains fail-closed. Matrix rollback restores an exhausted window and durably normalizes that state before adoption. Neither path grants additional attempts.
+- Damaged or ambiguous records deny continuation; source recovery and its pending state must not be rewritten by an operator to create a fresh budget.
 
-The restart-attempt count therefore survives supervisord process restart. The exact pending retry timer is intentionally not a durable command queue: a supervisord crash may lose a future retry deadline and therefore perform **fewer** automatic restarts, but it must not gain an additional attempt. Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
+The restart-attempt count and main pending eligibility therefore survive supervisord process restart. Durable pending state is not proof that a replacement may launch: exact process ownership, lineage, control-intent cancellation and release admission must still permit continuation. Target-host SIGKILL/fault-injection evidence remains required before claiming deployment qualification.
 
 ## 2. Signed production mutation effect boundary
 
@@ -46,11 +46,11 @@ The `Prepared` publication is the effect boundary. Before that boundary, validat
 
 The signed path runs inside `with_slot()`, which temporarily removes the agent slot from `Supervisor::slots`. Signed preflight and revision arithmetic therefore operate directly on the borrowed slot. They must not call helpers that re-query `self.slots` for the same agent.
 
-## 3. Explicit signed-intent recovery ceremony
+## 3. Legacy offline signed-intent abort ceremony
 
 The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+The offline ceremony in this section supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not prove that the source release is active or that a rollback completed. The separate online signed production-recovery path may reconcile `committed` or `rolled_back` only from an independently signed decision, exact durable transaction and release witnesses, and live daemon fence validation. Follow [PRODUCTION_CONTROL_RUNBOOK.md](PRODUCTION_CONTROL_RUNBOOK.md) for that path; do not run online signed recovery and offline abort concurrently. Neither path permits an operator to mark an unproved outcome successful.
 
 ### 3.1 Inspect
 

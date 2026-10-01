@@ -44,11 +44,15 @@ introduced by this change.
 ## 2. Build and trust-anchor prerequisites
 
 Use the repository's approved build wrapper and exact candidate toolchain. The
-production-authority feature must be deliberately enabled for the supervisor
-binary. The default build remains authority-denied. A production build alone is
-not a production activation.
+daemon artifact enables `production-verifier` and excludes `qualification` and
+`offline-authority-tools`. The compatibility feature `production-authority` is
+implied by the verifier feature; new product manifests must not request it
+directly. Build `hepta-authority-signer` separately with `offline-authority-tools`
+and keep its private-key loader and binaries outside the daemon artifact. The
+default build remains authority-denied. These build identities do not establish
+production activation.
 
-The preferred production verifier configuration is one externally distributed,
+The supported production verifier configuration is one externally distributed,
 public-only authority bundle pinned by its exact digest:
 
 ```text
@@ -61,29 +65,22 @@ versioned object. The daemon validates the bundle's internal digest and requires
 the operator-supplied exact bundle digest before constructing either verifier.
 The bundle contains no private signing material and does not select a release.
 
-The direct six-option verifier tuple remains a compatibility path:
-
-```text
---grant-verifier-key ABSOLUTE_PUBLIC_KEY_FILE
---grant-signer-id APPROVED_GRANT_SIGNER_ID
---grant-signer-epoch APPROVED_GRANT_SIGNER_EPOCH
---h7-verifier-key ABSOLUTE_PUBLIC_KEY_FILE
---h7-signer-id APPROVED_H7_SIGNER_ID
---h7-signer-epoch APPROVED_H7_SIGNER_EPOCH
-```
-
-Use exactly one configuration form together with `--fleet-root`. The public
+The legacy six-option key/signer/epoch tuple is rejected by `hepta-supervisord`.
+Supply both bundle options together with an absolute `--fleet-root`. The public
 verifier material must come from an independently authenticated external custody
 process, not from a request field, fixture seed, repository-generated key, or
-self-approved receipt. Neither form establishes a key-distribution service by
-itself.
+self-approved receipt. This interface does not establish a key-distribution
+service by itself. The source contracts are
+[Cargo.toml](../../../codex-rs/hepta-supervisor/Cargo.toml),
+[main.rs](../../../codex-rs/hepta-supervisor/src/main.rs) and
+[PRODUCTION_BOUNDARY.md](PRODUCTION_BOUNDARY.md).
 
 Before deployment, the external custodian must provide a versioned manifest
 binding signer ID, signer epoch, key fingerprint, purpose, approved environment,
 activation/revocation dates and approver identity. The installer must verify this
-manifest out of band, stage immutable public-key files, validate file and parent
-directory ownership, and record the installed fingerprints and daemon artifact
-digest. No such external custody receipt is claimed in this branch.
+manifest out of band, stage the immutable public-only bundle, validate file and
+parent directory ownership, and record the installed fingerprints and daemon
+artifact digest. No such external custody receipt is claimed in this branch.
 
 For rotation or revocation, close admission and preserve unresolved intents,
 install the independently approved successor key/epoch bundle, restart under the

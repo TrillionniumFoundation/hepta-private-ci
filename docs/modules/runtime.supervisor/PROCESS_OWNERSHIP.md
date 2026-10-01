@@ -5,6 +5,15 @@ source implementation, not successful native execution or deployment approval.
 The existing Supervisor remains the lifecycle owner. No new durable writer,
 production grant, key source, acceptance authority or CI exception is introduced.
 
+The source-only observations below belong to their original repair checkpoints.
+Subsequent native outcomes are recorded in the
+[R3 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R3.json)
+and [R4 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R4.json),
+with candidate scope and remaining gates in the
+[R4 audit](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md).
+An observation applies only to its bound source and selected commands; it does
+not certify a later candidate, an unfiltered suite or target-host acceptance.
+
 ## Main Agent launch
 
 `start_release_slot` installs the exact spawned handle in the per-Agent slot
@@ -110,10 +119,11 @@ publication, foreign-lease rejection, and failed initial CAS/registry reads.
 absence rejection, failed-sync/reappearance rejection, and same-owner unlink
 retry. The existing Matrix tick fixture is extended by eight containment tests;
 four additional Matrix cleanup tests exercise the filesystem witness directly.
-All nineteen new ownership test functions use explicit process doubles or
-filesystem fixtures. None has been compiled or executed in the editing
-environment; none is a real-child or target-host receipt. They are separate from
-the five actual-process lifetime Rust test sources in `PROCESS_LIFETIME.md`.
+These nineteen functions were the original ownership repair's source inventory;
+that checkpoint had no native execution. They use explicit process doubles or
+filesystem fixtures and are not real-child or target-host receipts. Subsequent
+native outcomes are bound separately in the observations above. The five
+actual-process lifetime sources are described in `PROCESS_LIFETIME.md`.
 
 Run both library profiles and the product qualification, not just these slices:
 
@@ -154,9 +164,10 @@ just test --locked -p codex-hepta-supervisor --lib recovery::ownership_tests
 just test --locked -p codex-hepta-supervisor --lib matrix::tick::tests::containment
 ```
 
-These commands and source tests have not been executed by this continuation.
-The editing environment has no Rust compiler, Cargo or rustfmt. Exact source
-blob checks and Git patch roundtrips establish only source-delivery integrity.
+At the original paired-recovery repair checkpoint, these commands had not been
+executed and that editing environment had no Rust compiler, Cargo or rustfmt.
+Its source blob and patch-roundtrip checks established source-delivery integrity
+only. Subsequent native outcomes are recorded in the observations above.
 Complete default/production product tests, strict lint and format checks on the
 actual final source and ordered-parent merge remain mandatory.
 
@@ -178,8 +189,10 @@ process probe returned Missing. The paired recovery path still attempts Matrix
 recovery even when main admission fails.
 
 This closes the post-decode main lease/control/deadline admission boundary.
-Unreadable/undecodable lease identity and the earlier `Supervisor::recover`
-hydration path remain separate: no identity is invented from corrupt bytes.
+The constructor now attempts independent lease-bound main and Matrix acquisition
+even when semantic preparation fails; a release hydration error cannot suppress
+that ownership attempt. Unreadable/undecodable lease bytes still cannot supply a
+process identity or authorize a signal.
 
 ## Stop/Kill completion and restart cancellation cuts
 
@@ -234,28 +247,32 @@ just test --locked -p codex-hepta-supervisor --lib
 just test --locked -p codex-hepta-supervisor --features production-authority --lib
 ```
 
-These are 23 written Rust test functions, not 23 passing executions. The editing
-environment did not have Rust/Cargo/rustfmt; source-byte and patch checks are not
-native compilation, formatting, Clippy, product or selected-host evidence. The
-full existing default/production/product/source/merge gates remain mandatory.
+These 23 functions were the added source inventory at a checkpoint without
+Rust/Cargo/rustfmt, rather than passing execution evidence from that checkpoint.
+Source-byte and patch checks were not native compilation, formatting, Clippy,
+product or selected-host evidence. The observations above record later native
+outcomes and their limits. Full default/production/product/source/merge gates
+remain mandatory for the final candidate.
 No workflow, receipt requirement or branch protection is relaxed.
 
 ## Still requiring implementation or qualification
 
 Post-acquisition driver initialization failures now retain acquired handles in
-`unix_initialization.rs`; their native regressions still require execution.
-Hydration in `Supervisor::recover` before `recover_slot`, undecodable lease
-identity, daemon death before a recoverable launch record, directory-inode
-replacement, durable Stop/Kill release-change supersession and no-runtime paths
-with unresolved owners, restart predecessor/replacement identity, restart-internal
-cross-daemon deadlines and exit finalization remain separate gaps.
+`unix_initialization.rs`; execution evidence must be matched to the candidate.
+The constructor acquisition, durable operator intent, original Stop deadline and
+limited idle-cancellation paths described above supersede the original repair's
+open-item list. Undecodable lease identity, daemon death before a recoverable
+launch record, directory-inode replacement, complete release/control supersession
+and predecessor/replacement crash coverage, restart-internal cross-daemon
+deadlines and durable exit-cleanup witnesses remain separate gaps. Unresolved
+owners never qualify for the idle-cancellation shortcut.
 Matrix recovery now owns a successfully proven child before semantic hydration;
 this does not establish a durable main-fault Matrix quarantine across reopen.
-The previously prepared Stage A+B transformation is not source closure or an accepted v2
-restart-lineage implementation. Its replacement-exit, original predecessor
-control/deadline and durable Matrix-quarantine boundaries still require repair.
-The local launch/cleanup witnesses do not close any cross-daemon requirement. Matrix stop retry/deadline semantics
-must also be qualified independently from the fenced hard-kill path.
+An earlier prepared Stage A+B transformation was not execution or acceptance
+evidence. Current `restart_lineage.rs` remains partial under
+`CAPABILITY_STATUS.json`; local launch/cleanup witnesses do not close the
+cross-daemon requirement. Matrix stop retry/deadline semantics must also be
+qualified independently from the fenced hard-kill path.
 
 Current exact-head/source-merge Rust, formatting, strict lint and full product
 receipts remain mandatory. Named Linux/macOS artifact-bound fault/load runs,

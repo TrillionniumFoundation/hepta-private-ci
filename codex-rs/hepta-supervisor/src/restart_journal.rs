@@ -346,15 +346,6 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    let Ok(recovery_window_millis) = u64::try_from(RESTART_RECOVERY_WINDOW.as_millis()) else {
-        // An unrepresentable recovery policy must not reset the restart budget.
-        return (
-            RESTART_ATTEMPT_BUDGET,
-            Some(now),
-            Some(now_unix_millis),
-            true,
-        );
-    };
     let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
         // Wall-clock rollback is not allowed to buy extra restart attempts.
         return (
@@ -364,7 +355,7 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    if elapsed_millis >= recovery_window_millis {
+    if u128::from(elapsed_millis) >= RESTART_RECOVERY_WINDOW.as_millis() {
         return (0, None, None, false);
     }
     let elapsed = Duration::from_millis(elapsed_millis);

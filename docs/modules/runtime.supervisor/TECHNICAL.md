@@ -24,7 +24,7 @@ notes are retained and classified by
 this guide or the current capability matrix.
 
 The current adversarial repair record is
-[`ADVERSARIAL_AUDIT_20261001_R3.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R3.md).
+[`ADVERSARIAL_AUDIT_20261001_R4.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md).
 It records concrete failure traces, regression evidence and unresolved gates.
 
 ## 1. Mission and authority
@@ -129,6 +129,12 @@ adoption retains the platform audit-token identity and exit registration.
 Lifetime identity is acquired before the child identity handshake and checked
 again afterward. Unsupported hosts and failed acquisition reject; there is no
 adopted bare-PID signal fallback.
+
+Every Agentd health/drain and Matrix health connection also checks the kernel
+socket peer PID before sending a request: Linux uses `SO_PEERCRED`, macOS uses
+`LOCAL_PEERPID`. The listener must belong to the exact process being owned or
+adopted; a JSON response's self-reported PID cannot substitute for that binding.
+This retains the lifetime reference and all generation, nonce and root checks.
 
 Main and Matrix processes whose lease publication fails remain retained and
 fenced until exact exit is observed and same-owner cleanup is durable. A failed
@@ -330,6 +336,14 @@ without changing a cached status, so readiness is never reused with the status
 reduces repeated status derivation for equal inputs; it does not remove Fleet
 I/O or metadata scans and supplies no measured performance evidence.
 
+Constructor recovery retains its initial full Fleet load and independent
+process-owner recovery. It omits restart/release recovery only when every
+corresponding durable witness is explicitly absent under a physical run
+directory. Present files, symlinks, FIFOs and I/O errors retain the original
+fresh full-Fleet and bounded-codec recovery path. This removes two redundant
+full Fleet reads for an empty Agent; it neither caches admission nor narrows
+global validation and supplies no target-host performance result.
+
 For releases without a Matrix command, an already empty companion restart
 budget causes no journal publication on idle ticks. A nonempty budget is cleared
 independently of the old companion's backoff or exhaustion state; publication
@@ -345,8 +359,9 @@ fixtures.
 ## 10. Failure and recovery semantics
 
 Unexpected exits use a durable bounded restart window with exponential backoff
-and a fixed attempt ceiling. Restart state is generation-bound; clock rollback
-is normalized durably rather than minting a fresh budget. Matrix restart state
+and a fixed attempt ceiling. Restart state is generation-bound; main clock
+rollback fails closed, while Matrix rollback is durably normalized to an
+exhausted budget rather than minting fresh attempts. Matrix restart state
 cannot overwrite the main process budget.
 
 `AutomaticRestartQueued` records the charged attempt only after durable budget,
