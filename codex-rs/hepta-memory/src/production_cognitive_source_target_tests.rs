@@ -315,7 +315,10 @@ async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_tr
     ));
     assert_eq!(
         target.observe_terminal(&request).await,
-        CognitiveSourceTerminalObservation::NotApplied
+        CognitiveSourceTerminalObservation::Unavailable {
+            reason: "destination outcome is unknown: source absence is not terminal proof"
+                .to_string(),
+        }
     );
 }
 
@@ -376,3 +379,6 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
         LocalOutcomeState::Committed
     );
 }
+
+#[path = "production_cognitive_source_observer_tests.rs"]
+mod observer_tests;

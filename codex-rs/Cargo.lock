@@ -3642,7 +3642,10 @@ name = "codex-hepta-compact-engine"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-learning-ledger",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "pretty_assertions",
 ]
 
 [[package]]
@@ -3935,6 +3938,7 @@ dependencies = [
  "base64 0.22.1",
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
+ "codex-hepta-compact-engine",
  "codex-hepta-contracts",
  "codex-hepta-kg",
  "codex-hepta-memory-federation",

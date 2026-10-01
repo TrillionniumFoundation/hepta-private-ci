@@ -1386,19 +1386,51 @@
           {
             "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
             "symbol": "prove_compaction"
+          },
+          {
+            "path": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+            "symbol": "compaction_qualification_payload_v1"
+          },
+          {
+            "path": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+            "symbol": "prove_compaction_with_signed_evidence_v1"
+          },
+          {
+            "path": "codex-rs/hepta-compact-engine/src/publication.rs",
+            "symbol": "new"
+          },
+          {
+            "path": "codex-rs/hepta-compact-engine/src/publication.rs",
+            "symbol": "revalidate"
+          },
+          {
+            "path": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+            "symbol": "encode_restart_body_v1"
+          },
+          {
+            "path": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+            "symbol": "restore_compaction_publication_body_v1"
           }
         ],
-        "stateAndRecovery": "Native checkpoints retain references and explicit omissions from one snapshot; the qualified path preserves protected live support and requires separate loss/reconstruction observations. It neither rewrites source facts nor persists a selected checkpoint.",
+        "stateAndRecovery": "Native bounded checkpoints/candidates retain references, explicit omissions and terminal tombstone evidence without rewriting source facts. Signed observations and sealed publication proposals bind current host trust/source/policy/selection; signatures authenticate declarations rather than execute obligations. The complete 65,536-byte restart body restores frozen policy/input/signature preimages through current admission. The existing cognitive SQLite owner separately supplies complete original lineage and current-head eligibility. No native durable publication, selected pointer, persisted-body loading/recovery or named product composition is implemented.",
         "testFiles": [
           "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
-          "codex-rs/hepta-compact-engine/src/lib_tests.rs"
+          "codex-rs/hepta-compact-engine/src/lib_tests.rs",
+          "codex-rs/hepta-compact-engine/src/authenticated_tests.rs",
+          "codex-rs/hepta-compact-engine/src/publication_tests.rs",
+          "codex-rs/hepta-compact-engine/src/publication_body_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/compact.engine/TECHNICAL.md",
           "docs/learning/NEURAL_BIOMIMICRY_SPEC.md"
         ],
         "remainingWork": [
-          "Bind independent holdout/reconstruction evidence and owner publication/reload. Target replay scheduling and skill induction are separate capabilities, not implied by checkpoint construction."
+          "Compose a named execution-spine host through the registered cognitive.read/kernel.operations ports, deriving frozen external generations, scope, purpose, current trust/policy and protected retention inputs from their actual owners; test adapters and Cargo dependencies do not establish product composition.",
+          "Implement compact-owned publication under the existing durable-writer fence and exact-payload final-use grant held across the asynchronous transaction. Acquire BEGIN IMMEDIATE before projection; compare every submitted source record one-to-one in both directions with the complete current eligible lineage by record ID/revision/record digest, including all original revisions and terminal tombstone ancestry, and repeat proposal/current-source/trust admission in that same transaction.",
+          "Persist complete bounded restart bytes with actual payload and semantic intent identities, immutable generation receipts, destination dedupe/conflict checks and selected-pointer CAS. Larger native proposals require bounded verified staged storage rather than truncation or process-local caches; an unavailable or indeterminate destination observation is not evidence of NotApplied, and cancellation is not rollback.",
+          "Implement the registered DomainRead::compact_checkpointV1 port and a named kernel.evidence consumer, selected-pointer reload, complete recovery digest and independent latest witness, exact cold-support resolution and compatible-predecessor rollback under current source/signature revocations; reopening or restoring a backup must not resurrect revoked support.",
+          "Execute candidate-specific independent retained-query, reconstruction, contradiction and deletion oracles and COMPACT-01..04 against the composed publication/read/recovery path. Bind exact source/host/body/configuration, concurrent correction/deletion, CAS conflicts, crash/reopen and acknowledgement-loss outcomes, rollback and target-host resource measurements in the existing module execution receipt; source tests and signatures alone cannot close product or external acceptance states.",
+          "Implement and qualify target replay scheduling and skill induction as separate capabilities with source permissions, deletion propagation, bounded quotas, explicit skill preconditions/effects/termination/recovery and independent evidence; checkpoint construction does not imply these APIs exist."
         ]
       }
     },

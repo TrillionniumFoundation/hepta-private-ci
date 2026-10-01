@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "bdaab7f7ce1cea5707ea0ed25dc1c4360e5cf7de",
+    "tree": "93e9b2ea87f1e151560d8e4008738f3a65cfa4b3"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compact",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
@@ -51,16 +55,119 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "compaction_qualification_payload_v1",
+      "nativeSymbol": "compaction_qualification_payload_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/authenticated_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compaction_qualification_payload_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prove_compaction_with_signed_evidence_v1",
+      "nativeSymbol": "prove_compaction_with_signed_evidence_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/authenticated_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prove_compaction_with_signed_evidence_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_publication_proposal_v1",
+      "nativeSymbol": "new",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_publication_proposal_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/authenticated.rs",
+        "codex-rs/hepta-compact-engine/src/candidate.rs"
+      ]
+    },
+    {
+      "operation": "revalidate_publication_proposal_v1",
+      "nativeSymbol": "revalidate",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_publication_proposal_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/authenticated.rs",
+        "codex-rs/hepta-compact-engine/src/candidate.rs"
+      ]
+    },
+    {
+      "operation": "encode_restart_publication_body_v1",
+      "nativeSymbol": "encode_restart_body_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "encode_restart_publication_body_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/publication_body_codec.rs",
+        "codex-rs/hepta-compact-engine/src/publication_body_restore.rs",
+        "codex-rs/hepta-compact-engine/src/authenticated.rs"
+      ]
+    },
+    {
+      "operation": "restore_publication_body_v1",
+      "nativeSymbol": "restore_compaction_publication_body_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "restore_publication_body_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/publication_body_codec.rs",
+        "codex-rs/hepta-compact-engine/src/publication_body_restore.rs",
+        "codex-rs/hepta-compact-engine/src/authenticated.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose a named product consumer of the existing SQLite owner lane_c_lineage observation with frozen external context and policy/input validation; test composition is not product execution.",
+    "Implement compact-owned fenced atomic publication for the sealed proposal and complete small restart body, immutable receipt storage, selected-generation CAS and revocation-aware reload/recovery. Revalidate current host/source eligibility in that transaction. Larger proposals still need bounded immutable staged bodies.",
+    "Provision host trust and scope/objective/epoch mappings, execute the signed candidate-specific evaluation obligations independently, and revalidate sealed proof/source bindings at every use.",
+    "Implement target replay planning and skill proposal separately; neither is implied by checkpoint construction.",
+    "Run exact-head and deterministic synthetic-merge checks and named COMPACT-01..04 product acceptance before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

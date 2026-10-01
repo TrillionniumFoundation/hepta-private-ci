@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "bdaab7f7ce1cea5707ea0ed25dc1c4360e5cf7de",
+    "tree": "93e9b2ea87f1e151560d8e4008738f3a65cfa4b3"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -225,6 +225,70 @@
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
       "sourcePathExists": true
+    },
+    {
+      "operation": "lane_c_lineage",
+      "nativeSymbol": "lane_c_lineage",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
+      "state": "durable_snapshot_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_lineage_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_metadata.rs",
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::begin_read"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::lineage"
+        }
+      ]
+    },
+    {
+      "operation": "lane_c_whole_scope_snapshot",
+      "nativeSymbol": "lane_c_snapshot",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "state": "sealed_bound_owner_read_transaction_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::snapshot"
+        }
+      ]
+    },
+    {
+      "operation": "lane_c_lineage_read_revalidation",
+      "nativeSymbol": "revalidate_lane_c_lineage",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
+      "state": "sealed_bound_owner_read_transaction_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+          "symbol": "LaneCOwnerTransaction::revalidate_lineage"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -305,11 +369,11 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "cb5864bf5be19e88e8335a722ac5933d97dfe5cb"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
-      "object": "6ace80385bed98c5306a00b63898214887e435bb"
+      "object": "2887e7dd1d46642263c08282f43898dcbfef6249"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
@@ -333,11 +397,35 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "4373abad74b9ee121d01b4cc606c1d390997fcc1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
+      "object": "ecd97ec042353a378ef7499d3d2e385b5c587c86"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs",
+      "object": "13564683106c5c30c3291ceaba03a611a3c18a4f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_lineage_tests.rs",
+      "object": "a1baa210616d66bf75ca7e7c508aae91240f1f83"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_metadata.rs",
+      "object": "62c0008fba0c9faf65ea1e9c3cc8fb91b3b5a592"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction.rs",
+      "object": "f137d8b8b4acb49d4e82a1d0aa50e340f03a3fa5"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_owner_transaction_tests.rs",
+      "object": "ef1bbd31061bac88d736d8ccd287c85b240459b1"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "object": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
+      "object": "69ce1538021038840efbad48d57170bf2e750449"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
@@ -345,7 +433,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "92d6c80463e5d9e44971b7d8b74f1ac6272951ba"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience.rs",
@@ -361,7 +449,7 @@
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+      "object": "db096989fb43b0e0dc1b4b6f3cabe501cf443b4b"
     }
   ]
 }

@@ -2,18 +2,38 @@
 
 #![forbid(unsafe_code)]
 
+mod authenticated;
+mod publication;
+mod publication_body;
 mod qualified;
+mod resources;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use authenticated::AuthenticatedCompactionError;
+pub use authenticated::AuthenticatedCompactionProofV1;
+pub use authenticated::CompactionSourceAuthorityBindingV1;
+pub use authenticated::SignedCompactionEvidenceV1;
+pub use authenticated::compaction_qualification_payload_v1;
+pub use authenticated::prove_compaction_with_signed_evidence_v1;
+pub use publication::COMPACTION_PUBLICATION_DESTINATION_V1;
+pub use publication::CompactionPublicationContextV1;
+pub use publication::CompactionPublicationError;
+pub use publication::CompactionPublicationProposalV1;
+pub use publication::CompactionPublicationRequestV1;
+pub use publication::CompactionSelectedStateV1;
+pub use publication_body::CompactionPublicationBodyError;
+pub use publication_body::MAX_COMPACTION_PUBLICATION_BODY_BYTES_V1;
+pub use publication_body::restore_compaction_publication_body_v1;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;
@@ -24,6 +44,9 @@ pub use qualified::QualifiedCompactionCandidateV2;
 pub use qualified::QualifiedCompactionError;
 pub use qualified::build_qualified_candidate;
 pub use qualified::prove_compaction;
+pub use resources::CompactionResourceError;
+pub use resources::MAX_COMPACTION_CITATIONS;
+pub use resources::MAX_COMPACTION_ENCODED_BYTES;
 
 const MAX_INPUT_RECORDS: usize = 65_536;
 
@@ -40,9 +63,11 @@ pub struct CompactCheckpoint {
 pub enum Error {
     EmptySourceSnapshot,
     InputLimitExceeded,
+    ResourceBudgetExceeded(CompactionResourceError),
     InvalidRecord(String),
     DuplicateRevision(String),
     BrokenLineage(String),
+    ResurrectionDenied(String),
 }
 
 impl fmt::Display for Error {
@@ -58,11 +83,13 @@ pub fn compact(
     source_snapshot_digest: Digest32,
     mut records: Vec<MemoryRecord>,
 ) -> Result<CompactCheckpoint, Error> {
-    if source_snapshot_digest.is_zero() {
-        return Err(Error::EmptySourceSnapshot);
-    }
     if records.len() > MAX_INPUT_RECORDS {
         return Err(Error::InputLimitExceeded);
+    }
+    resources::preflight_records(&records, /*digest_references*/ 0)
+        .map_err(Error::ResourceBudgetExceeded)?;
+    if source_snapshot_digest.is_zero() {
+        return Err(Error::EmptySourceSnapshot);
     }
     records.sort_by(|left, right| {
         left.record_id
@@ -83,6 +110,9 @@ pub fn compact(
                 || record.predecessor_digest != Some(previous.record_digest())
             {
                 return Err(Error::BrokenLineage(record.record_id.to_string()));
+            }
+            if previous.state == RecordState::Tombstone && record.state == RecordState::Live {
+                return Err(Error::ResurrectionDenied(record.record_id.to_string()));
             }
         } else if record.revision.get() != 1 {
             return Err(Error::BrokenLineage(record.record_id.to_string()));

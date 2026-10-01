@@ -37,6 +37,7 @@ tokio = { workspace = true, features = ["time"] }
 unicode-segmentation = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-compact-engine = { path = "../hepta-compact-engine" }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

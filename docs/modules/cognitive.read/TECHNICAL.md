@@ -291,3 +291,11 @@ The bootstrap source implementation for `cognitive.read` is materialized by work
 - `codex-rs/hepta-cognitive-read`
 
 The source package is now classified `source_implemented_execution_pending`. `.github/workflows/hepta-consolidated-source.yml` is the intended exact-candidate gate for closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. Until a current candidate run is observed, this document does not claim those checks passed. Even a passing source receipt grants no independent acceptance, model/provider authority, promotion or release.
+
+## Bounded SQLite owner lineage follow-up
+
+The existing physical owner exposes `lane_c_lineage` as a read-only, scope-authorized full-ancestry observation for compaction. It preserves original revisions and binds physical head coverage, excluded-head eligibility metadata and the eligible source cut in one read transaction. Unverified, expired or future live heads exclude their whole chain; terminal tombstones preserve deletion evidence. Capacity failure rejects the cut. Whole and paged reads use metadata-only byte-length guards before TEXT projection and reject missing, stale or foreign-scope head pointers and citation sources. This creates no database, schema, writer or authority.
+
+After the shared join/filter-column caps, [lane_c_metadata.rs](../../../codex-rs/hepta-memory/src/lane_c_metadata.rs) uses fixed-width global `EXISTS` checks to reject head/citation references with no matching memory revision before scoped projection. Corruption inserted after open with foreign keys disabled is rejected by whole snapshot, lineage and page reads, including outside the requested workspace; an inner join must not silently erase the orphan. [lane_c_lineage_guard_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs) records these source cases without asserting execution or acceptance.
+
+The concrete API, source bindings, resource profile and remaining publication requirements are documented in [compact.engine stage contracts](../compact.engine/TECHNICAL.md#19-owner-lineage-and-authenticated-observation-stage). A fresh read revalidation is separate from the same-transaction source check required for future checkpoint publication. Source regression tests do not prove product execution or independent acceptance.

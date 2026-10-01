@@ -16,3 +16,8 @@ workspace = true
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
+pretty_assertions = { workspace = true }

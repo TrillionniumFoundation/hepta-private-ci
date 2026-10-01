@@ -171,6 +171,8 @@ Ordinary mutation uses targeted current-row checks. Full append-only chain verif
 
 Crash before source commit leaves no dispatch identity. Crash after source commit reopens the exact queued identity. Once target entry may have occurred, the durable state remains indeterminate until an independent destination observer proves `Applied`, `NotApplied`, `Quarantined` or an unavailable/indeterminate continuation.
 
+The existing [CognitiveSource observer](../../../codex-rs/hepta-memory/src/production_cognitive_source_target.rs) distinguishes exact committed semantics, a conflicting identity and absence in one SQLite statement snapshot. An absent row reports `Unavailable`, because a live or cancelled destination effect can still commit; absence is neither terminal `NotApplied` nor rollback proof. Observer-only reconciliation leaves the operation unresolved without repeated `StillIndeterminate` appends or redispatch. An actual predecessor/CAS rejection inside destination dispatch remains deterministic `NotApplied`.
+
 Stale claimants, stale generations, changed semantic digests and changed predecessor expectations fail closed. Owner handoff preserves immutable operation/outbox identity and requires a strictly newer fence.
 
 Source qualification includes transaction fault cuts, deterministic `SQLITE_FULL`, corruption/tamper checks, reopen, claim takeover and lost-ack reconciliation. These are not physical power-loss certification; target-host filesystem/storage/controller evidence remains external.
@@ -230,6 +232,7 @@ Focused source tests cover:
 - predecessor mismatch -> deterministic `NotApplied`;
 - final-use mismatch/revocation before target entry;
 - target commit + lost acknowledgement -> indeterminate -> observer-only reconcile.
+- [production_cognitive_source_observer_tests.rs](../../../codex-rs/hepta-memory/src/production_cognitive_source_observer_tests.rs): live/cancelled absence stays unresolved; exact committed semantics, conflicting identity and observation failure remain distinct.
 
 Run the applicable Rust package tests, strict lint, exact-head qualification and deterministic synthetic-merge qualification. Test names in source are not pass receipts. Any PR-head movement invalidates prior exact-candidate evidence.
 
