@@ -186,6 +186,46 @@ reconciliation may mark the control complete, so a stale restart claim cannot
 resurrect the journaled generation. Record identity conflicts, generation drift
 and uncertain persistence fail closed.
 
+A successful driver Drain or Stop request clears `pending_control`, but the
+acknowledged Draining or Stopping phase still retains its original deadline.
+If the initial signal fails, the already admitted request instead remains
+pending for the same spawn. Previously, repeatedly failing process polls could
+prevent the later phase escalation from running. Complete Fleet validation
+could also fail first because of an unrelated Agent's damaged manifest,
+blocking an admitted due request or pending Kill. Neither failure cancels the
+already admitted containment operation or makes its deadline fresh again.
+
+The combined Drain/Stop deadline must first be representable.
+`Supervisor::recover` checks the supplied `now + drain_timeout + stop_grace`
+before acquiring process owners. `drain_slot` repeats the checked calculation
+at its actual invocation time before Matrix deferral, fencing, lifecycle CAS
+or a driver signal. Overflow rejects rather than interpreting an unrepresentable
+budget such as `Duration::MAX` as an expired deadline or Kill authority.
+
+For an exact retained, unfenced main-process handle, tick attempts containment
+before fallible registry observation and process polling when its acknowledged
+Draining/Stopping phase has expired, an already admitted current-spawn pending
+Drain/Stop is due, or its current-spawn pending request is Kill. This includes
+initial Drain/Stop signals that never succeeded. Stale or fenced pending
+requests do not grant this continuation; a Drain/Stop request before its
+deadline still follows complete Fleet validation. An expired Drain uses its
+original deadline plus `stop_grace`, rather than granting another grace from
+the delayed tick; if that entire budget has elapsed, containment can proceed
+directly to Kill. Merging cannot downgrade an existing same-incarnation pending
+Kill, and the same tick reuses its control result without a second signal for
+the unchanged generation. A previously observed exact exit remains the first
+branch and retries durable finalization without another signal or poll.
+
+The continuation grants no new admission authority and retains independently
+observed signal, registry and poll faults once on unresolved paths. Signal
+acceptance does not manufacture a Drain acknowledgement, exit or cleanup
+completion. The owner and lease remain until exact exit and the existing
+durable finalization succeed.
+Ordinary admission and not-yet-due Drain/Stop work retain complete Fleet
+validation. This ordering does not make kernel/filesystem calls preemptible,
+establish a Stop latency SLO or close the separate Matrix deadline and
+cross-daemon cleanup gaps.
+
 This closes the previously documented control-kind, deadline and restart
 supersession gap for the journaled generation. It does not yet make the local
 failed-publication exit-cleanup witness durable, nor does it prove complete
@@ -228,6 +268,47 @@ Ambiguous signed transitions enter `recovery_required`. Read-only status and the
 signed recovery ceremony remain available; Start, Restart and release changes
 are denied while Stop and Kill retain their containment role. A decision may terminalize
 only an observed committed or rolled-back state and cannot move release bytes.
+
+`apply_production_grant` completes signature, catalog and preflight validation,
+and constructs its digest-bound Prepared/Queued/RecoveryRequired records before
+the first durable Prepared publication attempt. From that attempt onward, a
+failed publication, revision update or release-state-machine step returns
+`SignedMutationIndeterminate`; both signed RPC paths map that variant to
+`operation_indeterminate`. The owner retains a trusted RecoveryRequired intent
+and the original bounded fault diagnostic, with a best-effort durable recovery
+marker. Even a Prepared directory-sync failure before confirmed process
+delivery is indeterminate: an attempted publication is not proof of absence.
+Signature, catalog and preflight rejections before this boundary retain their
+safe rejection semantics and publish or deliver nothing through this operation.
+
+`resolve_production_recovery` likewise performs decision, frontier, outcome and
+replay checks before attempting terminal transaction publication. Failure after
+that boundary retains the trusted recovery preimage and possibly published
+terminal bytes for the same signed decision's retry; it does not overwrite
+those bytes with a rollback marker. Both terminal records and the control
+revision must acknowledge before this owner releases quarantine. Failure does
+not advance its revision; an exact successful retry advances it once. These
+outcomes claim neither physical execution nor independent authority acceptance,
+and do not release a retained process owner or lease.
+
+Recovery support remains narrower than quarantine. A Prepared intent can exist
+without a release transaction after a crash or failed first publication
+acknowledgement. `resolve_production_recovery` requires that exact transaction
+and a signed decision binding its digest; it cannot terminalize the no-journal
+case. This crash boundary already existed before the indeterminate-error repair.
+The legacy offline `abort` command writes a digest-only directive, with no
+production consumer, and therefore cannot clear this quarantine or manufacture
+Aborted. Such a case remains blocked pending a separately designed and
+authorized recovery protocol; exact process exit alone is insufficient.
+
+Three source regressions in `src/signed_effect_boundary_tests.rs` cover pure
+signature/preflight rejection, Queued publication failure after Drain delivery,
+and Prepared directory-sync failure without claimed delivery. The existing
+`signed_explicit_rollback_source_restoration_can_recover_without_new_dispatch`
+case in `src/release_signed_recovery_tests.rs` also exercises terminal
+transaction/intent write, sync, rename and directory-sync cuts and exact retry.
+These use real durable files and explicit process-driver doubles; their presence
+does not establish current-head or target-host execution.
 
 For an explicit rollback, `rolled_back` may mean either a healthy rollback target
 or restoration of the source after the target failed. Recovery distinguishes
@@ -280,9 +361,23 @@ and is checked for forbidden signer artifacts.
 ```
 
 The bundle contains public material, has a versioned namespace and canonical
-digest, rejects relative paths, links, unsafe permissions, oversized or changing
-files, and is pinned before Fleet state is opened. The old six-argument
-key/signer/epoch tuple has been removed from the daemon parser.
+digest, and is pinned before Fleet state is opened. Its Unix reader rejects
+relative paths, links, nonregular or oversized files, ownership other than the
+effective user and any group/other permissions. After the initial path metadata
+check, `O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC` prevents a final-component FIFO
+substitution from blocking before descriptor validation. The opened descriptor
+must still be a bounded regular file with the same device/inode and safe
+owner/link/mode. Reading is bounded to 8193 bytes for the 8192-byte maximum;
+there is no after-read metadata recheck. Canonical self-digest, external pinned
+digest and verifier construction remain separate validations. The old
+six-argument key/signer/epoch tuple has been removed from the daemon parser.
+
+`authority_bundle::open_tests::fifo_swap_after_regular_metadata_is_rejected_before_watchdog_release`
+in `src/authority_bundle_open_tests.rs` uses a real regular-file metadata capture
+followed by FIFO replacement at the same open helper. Its watchdog releases the
+old blocking path to make that regression fail in bounded time; the repaired
+path must reject without that release. Source presence does not certify native
+execution, protected parent directories or external key provisioning.
 
 Detailed deployment requirements are in
 [`PRODUCTION_BOUNDARY.md`](PRODUCTION_BOUNDARY.md).
@@ -395,6 +490,18 @@ followed by a successful retry. Exact observed exit with successful cleanup
 still tolerates a failed main signal; this established cleanup contract remains
 unchanged.
 
+The initial Matrix fencing/kill result also survives a later poll, complete
+Fleet read or exact lease-cleanup failure. All owning tick branches pass the
+same `TickReport`; an unresolved later error retains the original signal fault
+once alongside that observation or cleanup fault. A direct signal error returned
+as the primary failure is not recorded twice. Exact observed exit followed by
+successful cleanup retains the existing terminal-success contract. Once exit is
+stored, only cleanup is retried, with no additional kill or poll and no early
+release of the retained owner. The shared Matrix containment helper also honors
+this stored exit, including callers that precede cleanup after a main-generation
+fence: it marks the companion unhealthy and fenced without signaling, changing
+its phase to Killing or emitting another MatrixKillRequested event.
+
 Durability failures at write, fsync, publish/link, rename and directory sync are
 classified according to whether the outcome is known absent, known present or
 ambiguous. Ambiguity quarantines rather than reporting success. Truncated or
@@ -408,6 +515,47 @@ and after reading. `O_NOFOLLOW` and `O_NONBLOCK` protect the final component;
 supervisor-owned parent directories remain a deployment requirement. Lease files
 are published with mode 0600, and staging hard links are removed before the
 directory durability acknowledgement so acknowledged leases have one link.
+
+The private `regular_file_io.rs` helper also validates regular-file type and
+the existing byte limit on the opened descriptor before bounded maximum-plus-one
+reads. Unix opens use NOFOLLOW/NONBLOCK/CLOEXEC. Its callers retain their own
+identity, permission and protocol checks:
+
+| Input | Existing bound and retained checks |
+| --- | --- |
+| Matrix public binding | 64 KiB; prior/opened device and inode must agree |
+| External signer request path | 8 MiB; strict request parsing and buffer zeroization |
+| Three final-use signer/approver seed paths | exactly 32 bytes; effective UID, private mode, one link and Zeroizing storage |
+| Authority-bundle constructor public key path | 8 KiB input; absolute path and exactly 32 raw bytes or 64 trimmed hex characters |
+
+Stdin and explicit key-descriptor stream protocols retain their original
+semantics. The helper does not introduce a path-based signing-key source or
+relax any authority check. Source regressions cover real FIFO key/request paths,
+an opened file growing beyond its bound, and a Matrix binding swapped to a FIFO
+after its metadata check.
+
+The Fleet dependency has its own private descriptor reader. Registry/lifecycle
+text uses its captured metadata length as the bound, while release JSON and
+admission-frontier markers retain 32 KiB bounds. Source copying and program
+hashing read at most captured length plus one and require the final byte count
+to equal that original length; no new executable-size ceiling is invented.
+Opened regular type, size and prior/opened inode checks precede consumption.
+Complete Fleet/catalog validation, immutable modes, canonical workspace checks,
+digests, seals and lifecycle/release CAS remain required. Fleet adds only a Unix
+direct edge to the existing workspace `libc`, without a version change. Its two
+Unix source regressions exercise actual registry/catalog FIFO substitutions;
+they are not Fleet platform execution receipts.
+
+Four Supervisor directory-sync uses—durable journal publication, main lease
+sync, Matrix lease cleanup and the bundle-construction CLI—share a Unix
+O_DIRECTORY/NOFOLLOW/NONBLOCK/CLOEXEC open followed by descriptor directory
+validation and `sync_all`. Fleet uses the same directory-open pattern in its
+own private helper. Existing durability fault-hook ordering and error propagation
+remain; Windows branches retain their existing behavior. The real directory-to-
+FIFO regression must reject without its old blocking-path watchdog release.
+These checks prevent final-component special-file waits; they neither preempt
+blocked regular storage nor prove ancestor integrity or durable parent-inode
+binding, and establish no filesystem or owner-callback latency SLO.
 
 Constructor recovery isolates damaged evidence per Agent. It retains any exact
 main and Matrix process owners, fences serving, and retries containment until
@@ -617,17 +765,19 @@ The following is source navigation, not a pass receipt:
 | Start | `Supervisor::start` | `src/supervisor.rs`, `src/recovery.rs` | `src/supervisor_tests.rs`, `src/release_admission_tests.rs` |
 | Drain | `Supervisor::drain` | `src/supervisor.rs` | `src/supervisor_tests.rs`, `src/unix_tests.rs` |
 | Stop/Kill | durable control intent | `src/control.rs`, `src/control_intent.rs` | `src/control_durable_restart_tests.rs`, `src/control_completion_tests.rs` |
+| Control deadline continuation | checked budget, expired owned phase and admitted due/Kill request | `src/control_pending.rs`, `src/tick.rs`, `src/control.rs` | `src/tick_control_deadline_tests.rs`, `src/tick_control_budget_tests.rs`, `src/tick_pending_deadline_tests.rs` |
+| Matrix fault reporting | preserve unresolved faults and terminal cleanup-only containment | `src/matrix_tick.rs`, `src/matrix.rs`, `src/tick.rs` | `src/tick_matrix_fault_tests.rs` |
 | Restart | restart budget/lineage and bounded fault reporting | `src/supervisor.rs`, `src/tick.rs`, `src/restart_*` | `tests/restart_budget*.rs`, `src/automatic_restart_event_tests.rs`, `src/tick_control_fault_tests.rs` |
 | Upgrade/Rollback | release transaction | `src/release_transaction.rs`, `src/supervisor.rs` | `src/supervisor_tests.rs` |
-| Signed mutation | external grant verifier | `src/signed_authority.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs` |
-| Signed recovery | decision verification and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
+| Signed mutation | verifier and publication-effect boundary | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs`, `src/signed_effect_boundary_tests.rs`, `src/authority_bundle_open_tests.rs` |
+| Signed recovery | decision verification, indeterminate acknowledgement and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
 | Constructor recovery | retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/constructor_hydration.rs`, `src/recovery.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs` |
 | Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
 | Per-Agent status reuse | fresh complete epoch/record/runtime comparison | `src/daemon_read_projection.rs`, `src/daemon_read_view.rs` | `src/daemon_read_projection_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
 | Local control client | request/reply association | `src/daemon_client.rs`, `src/daemon_client_validation.rs` | `src/daemon_client_validation_tests.rs` |
-| Durable file input | stable bounded descriptor read | `src/durable_publish.rs`, `src/lease.rs`, `src/restart_journal.rs` | `src/durable_read_tests.rs`, `src/lease_read_tests.rs`, `src/restart_journal_read_tests.rs` |
+| Durable file input | bounded regular-descriptor read and directory sync | `src/durable_publish.rs`, `src/regular_file_io.rs`, `src/directory_io.rs`, `src/lease.rs`, `src/restart_journal.rs` | `src/durable_read_tests.rs`, `src/regular_file_io_tests.rs`, `src/directory_io_tests.rs`, `src/matrix_binding_io_tests.rs`, `src/lease_read_tests.rs`, `src/restart_journal_read_tests.rs` |
 | Managed-process control I/O | exact-peer exchange with one elapsed-time budget | `src/unix.rs`, `src/unix_control_io.rs` | `src/unix_control_io_tests.rs`, `src/unix_control_io_linux_tests.rs`, `src/unix_peer_identity_tests.rs` |
 
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance. The tested SHA is

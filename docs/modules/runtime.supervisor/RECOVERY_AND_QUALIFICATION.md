@@ -37,20 +37,43 @@ The restart-attempt count and main pending eligibility therefore survive supervi
 `apply_production_grant()` has a strict semantic boundary:
 
 1. validate external authority, release binding, lifecycle generation, control revision and transition preconditions;
-2. build a `Prepared` signed intent;
+2. build digest-bound `Prepared`, `Queued` and `RecoveryRequired` signed intents;
 3. publish the `Prepared` intent durably;
 4. advance the in-memory control revision and queue the existing release transition state machine;
 5. publish `Queued` and later `Committed` after the release transition commits.
 
-The `Prepared` publication is the effect boundary. Before that boundary, validation failures are safe rejections. At or after that boundary, an error is reported as `SignedIntentRecoveryRequired`; it must not be reported as an ordinary safe rejection and clients must not blindly replay the grant.
+The first `Prepared` publication attempt is the effect boundary. Before that
+attempt, signature, catalog and preflight failures are safe rejections. From
+that attempt onward, failed publication, acknowledgement or continuation returns
+`SignedMutationIndeterminate`, mapped by the signed RPC handler to
+`operation_indeterminate`. The owner retains trusted RecoveryRequired intent,
+the original bounded diagnostic and a best-effort durable recovery marker.
+Even a directory-sync failure before confirmed process delivery cannot prove
+absence of effect. Clients must inspect durable state rather than replay the
+grant. A later ordinary mutation is rejected as `signed_intent_recovery_required`
+while quarantine remains.
 
 The signed path runs inside `with_slot()`, which temporarily removes the agent slot from `Supervisor::slots`. Signed preflight and revision arithmetic therefore operate directly on the borrowed slot. They must not call helpers that re-query `self.slots` for the same agent.
 
-## 3. Legacy offline signed-intent abort ceremony
+## 3. Signed recovery limits and legacy abort directives
 
 The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
 
-The offline ceremony in this section supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not prove that the source release is active or that a rollback completed. The separate online signed production-recovery path may reconcile `committed` or `rolled_back` only from an independently signed decision, exact durable transaction and release witnesses, and live daemon fence validation. Follow [PRODUCTION_CONTROL_RUNBOOK.md](PRODUCTION_CONTROL_RUNBOOK.md) for that path; do not run online signed recovery and offline abort concurrently. Neither path permits an operator to mark an unproved outcome successful.
+The supported online signed recovery path may reconcile `committed` or
+`rolled_back` only from an independently signed decision, the exact durable
+release transaction and signed intent, current release witnesses and live daemon
+fence validation. Follow [PRODUCTION_CONTROL_RUNBOOK.md](PRODUCTION_CONTROL_RUNBOOK.md)
+for that path. The legacy offline `abort` command only writes a digest-bound
+directive; there is no production consumer and it is not a terminalization
+procedure. It cannot clear quarantine, produce Aborted or prove rollback.
+
+A Prepared intent can exist without a release transaction after a crash between
+those publications or an unacknowledged first intent write. This boundary
+predates the indeterminate-error repair. `resolve_production_recovery` requires
+an existing transaction and the decision must bind its digest, so the no-journal
+case currently has no authorized terminalization API. Retain its quarantine and
+durable evidence pending a separately designed and authorized recovery protocol.
+Neither process exit nor an offline directive supplies that missing authority.
 
 ### 3.1 Inspect
 
@@ -73,7 +96,7 @@ Record at minimum:
 
 Do not proceed if the run root or agent binding is uncertain.
 
-### 3.2 Authorize abort
+### 3.2 Legacy directive output
 
 Use the exact `intent_sha256` returned by the immediately preceding inspection:
 
@@ -81,21 +104,34 @@ Use the exact `intent_sha256` returned by the immediately preceding inspection:
 hepta-supervisor-intent-recovery abort <agent-run-root> <intent-sha256>
 ```
 
-The tool publishes `supervisor-signed-intent-recovery.json`. The directive is digest-bound to the exact unresolved intent; if the intent changes, the stale directive does not apply.
+The tool publishes `supervisor-signed-intent-recovery.json` only. It verifies
+the exact unresolved intent digest, but that digest is not an independently
+signed production recovery decision. Current daemon recovery does not consume
+the directive. Successful CLI output therefore establishes neither terminal
+intent state nor permission to resume ordinary mutation.
 
-### 3.3 Restart supervisord and reconcile
+### 3.3 Restart supervisord without inferring terminalization
 
-On recovery, supervisord:
+Absent an exact terminal release-transaction witness, current recovery:
 
 - refuses to infer target success;
 - fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
+- retains RecoveryRequired intent and denies ordinary mutation;
+- keeps status and the supported signed recovery interface reachable;
+- does not read the legacy abort directive or publish Aborted because a process exited.
 
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
+Process exit permits only the existing exact lease-cleanup path; restarting
+again does not close the missing-transaction gap. With an exact transaction,
+use the independently signed recovery decision procedure and retain both
+terminal durability acknowledgements. Without one, preserve the blocked state
+for an authorized future protocol. Do not delete journals or leases, fabricate
+a transaction or alter status to make admission pass.
 
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+`tests/signed_intent_recovery.rs` contains
+`digest_only_abort_directive_cannot_terminalize_an_unresolved_signed_intent`:
+even an exact directive leaves the intent unchanged and ordinary Start blocked.
+The codec's Aborted variant is not evidence that this CLI/current daemon path
+can authorize that state. Source coverage does not establish target-host recovery.
 
 ## 4. Crash-consistency qualification matrix
 
@@ -157,7 +193,7 @@ Repository-controlled verification for this change includes at least:
 - `restart_policy` unit tests for exponential delay, fixed budget and window reset;
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
-- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and rejection of digest-only abort as terminalization authority;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.

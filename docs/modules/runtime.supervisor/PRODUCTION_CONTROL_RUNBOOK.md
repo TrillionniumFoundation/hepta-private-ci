@@ -3,9 +3,10 @@
 Status: implementation candidate; not a deployment approval.
 
 This runbook is the operator-facing companion to `TECHNICAL.md` and
-`RECOVERY_AND_QUALIFICATION.md`. For the choice between legacy abort and signed
-terminal recovery, use the decision procedure below rather than interpreting
-legacy abort as proof that a rollback completed. Source integration, execution
+`RECOVERY_AND_QUALIFICATION.md`. Use the supported signed recovery procedure
+below only when its exact durable journal witnesses exist. The legacy abort
+command writes a directive with no production consumer and cannot terminalize
+quarantine or prove rollback. Source integration, execution
 qualification, target-host qualification, independent acceptance, activation,
 and release are separate facts.
 
@@ -120,7 +121,10 @@ substitute a release name for immutable release-byte identity.
 ## 4. Recovery decision procedure
 
 Use signed terminal recovery only when the current durable release outcome is
-independently observable and agrees with a terminal release transaction. The
+independently observable and agrees with the exact durable release transaction
+and signed intent. The transaction must support the quarantined outcome or
+the same decision's exact terminal retry; a release name or process exit alone
+is insufficient. The
 signer request operation is `production_recovery`. It contains every field:
 
 ```text
@@ -142,6 +146,13 @@ shorter approved ceremony window. Times are explicit Unix seconds. The verifier
 rejects future-issued and expired decisions, wrong signer/key epoch, wrong agent,
 authority epoch or lifecycle generation, and every mismatched intent,
 transaction, manifest or executable digest.
+
+If a Prepared/RecoveryRequired intent exists but its release transaction is
+absent, stop this procedure: the current API requires that transaction and a
+decision binding its digest. This pre-existing crash cut has no authorized
+terminalization path. Preserve the evidence and quarantine pending a separately
+designed and authorized recovery protocol. Do not create a dummy transaction,
+remove journals or use the legacy abort directive to bypass the requirement.
 
 The offline invocation is:
 
@@ -201,7 +212,17 @@ Retain the original request, signed response, submission result and subsequent
 observation together. A caller's stdout is not a substitute for daemon-owned
 durable evidence or an independent audit receipt.
 
-## 6. Legacy inspect and abort are not signed success recovery
+After the first durable publication attempt, a failed signed mutation or
+recovery acknowledgement reports `operation_indeterminate`, not proof of
+rejection or execution. The lifecycle owner retains trusted recovery intent
+and bounded fault diagnostics. For recovery, possibly published terminal bytes
+remain bound to the same decision; quarantine is released only after both
+terminal publications and the revision update acknowledge. Reinspect before an
+exact retry; a failed recovery does not advance the revision, and a successful
+exact retry advances once. The grant path makes a best-effort durable quarantine
+marker, whose failure still leaves in-memory quarantine.
+
+## 6. Legacy inspect and abort do not terminalize production quarantine
 
 The existing offline commands remain available:
 
@@ -210,17 +231,21 @@ hepta-supervisor-intent-recovery inspect "$RUN_ROOT"
 hepta-supervisor-intent-recovery abort "$RUN_ROOT" "$EXACT_INTENT_SHA256"
 ```
 
-Use this conservative path when the effect is ambiguous and cannot be proved to
-have committed or rolled back. First close admission and fence the ambiguous
-work under the established operator procedure. Abort writes the existing
-exact-intent-bound directive; it does not assert that a predecessor is active,
-roll back external effects, authorize a new release, or convert uncertainty into
-success. Do not manually edit or delete intent/restart/transaction files to make
-the daemon ready. A failed or conflicting abort requires re-inspection.
+Inspect is read-only. Abort validates the unresolved intent's digest and writes
+`supervisor-signed-intent-recovery.json`; it does not mutate the signed intent,
+and current production recovery never consumes that directive. Successful CLI
+output does not produce Aborted, clear quarantine, restore a predecessor, roll
+back effects or authorize a new release. It is not a fallback terminalization
+procedure when a release transaction is missing.
 
-Online signed recovery and offline abort must not be run concurrently. They are
-different terminalization procedures with different evidence requirements, not
-fallback implementations of the same successful operation.
+The existing source regression
+`signed_intent_recovery::digest_only_abort_directive_cannot_terminalize_an_unresolved_signed_intent`
+proves that an exact directive leaves the intent retained and Start blocked.
+Use the supported independently signed decision only with its exact transaction
+and release witnesses. If that transaction is absent, preserve the blocked
+state until a separately authorized recovery protocol exists. Do not edit or
+delete intent/restart/transaction files to make the daemon ready. An offline
+inspection or directive is not a physical-effect or deployment-acceptance receipt.
 
 ## 7. Candidate execution evidence
 
