@@ -13,6 +13,43 @@ use super::SqliteConfig;
 use super::SqliteRecoveryError;
 use sqlx::SqlitePool;
 
+#[cfg(unix)]
+fn write_recovery_bundle(
+    directory: &std::path::Path,
+    files: &[(&std::path::Path, &[u8])],
+    mut write: impl FnMut(&mut std::fs::File, &[u8]) -> std::io::Result<()>,
+    mut sync: impl FnMut(&std::fs::File) -> std::io::Result<()>,
+) -> Result<(), SqliteRecoveryError> {
+    use std::fs::OpenOptions;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    let mut created = Vec::new();
+    let result = (|| {
+        for (path, bytes) in files {
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                .open(path)
+                .map_err(super::indeterminate)?;
+            // Ownership begins at successful create_new, including a file
+            // whose first write or fsync fails. A collision is never ours.
+            created.push(path.to_path_buf());
+            write(&mut file, bytes).map_err(super::indeterminate)?;
+            sync(&file).map_err(super::indeterminate)?;
+        }
+        let directory = std::fs::File::open(directory).map_err(super::indeterminate)?;
+        directory.sync_all().map_err(super::indeterminate)
+    })();
+    if result.is_err() {
+        for path in created.into_iter().rev() {
+            let _ = std::fs::remove_file(path);
+        }
+    }
+    result
+}
+
 impl SqliteConfig {
     /// Materialize one identity-bound writable recovery candidate from retained
     /// descriptors into a new private path under this SQLite home.
@@ -38,10 +75,8 @@ impl SqliteConfig {
         #[cfg(unix)]
         {
             use super::RetainedOptionalObject;
-            use std::fs::OpenOptions;
             use std::io::Write;
             use std::os::unix::fs::FileExt;
-            use std::os::unix::fs::OpenOptionsExt;
 
             const MAX_DATABASE_BYTES: u64 = 128 * 1024 * 1024;
             const MAX_SIDECAR_BYTES: u64 = 128 * 1024 * 1024;
@@ -119,41 +154,19 @@ impl SqliteConfig {
 
             let target_wal = super::sqlite_sidecar_path(target, "-wal");
             let target_journal = super::sqlite_sidecar_path(target, "-journal");
-            let mut created = Vec::new();
-            let write_private =
-                |path: &std::path::Path, bytes: &[u8]| -> Result<(), SqliteRecoveryError> {
-                    let mut file = OpenOptions::new()
-                        .write(true)
-                        .create_new(true)
-                        .mode(0o600)
-                        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-                        .open(path)
-                        .map_err(super::indeterminate)?;
-                    file.write_all(bytes).map_err(super::indeterminate)?;
-                    file.sync_all().map_err(super::indeterminate)
-                };
-
-            let result = (|| {
-                write_private(target, &database)?;
-                created.push(target.to_path_buf());
-                if let Some(bytes) = wal.as_deref() {
-                    write_private(&target_wal, bytes)?;
-                    created.push(target_wal.clone());
-                }
-                if let Some(bytes) = journal.as_deref() {
-                    write_private(&target_journal, bytes)?;
-                    created.push(target_journal.clone());
-                }
-                let directory = std::fs::File::open(self.home()).map_err(super::indeterminate)?;
-                directory.sync_all().map_err(super::indeterminate)?;
-                Ok(())
-            })();
-            if result.is_err() {
-                for path in created.into_iter().rev() {
-                    let _ = std::fs::remove_file(path);
-                }
+            let mut files = vec![(target, database.as_slice())];
+            if let Some(bytes) = wal.as_deref() {
+                files.push((target_wal.as_path(), bytes));
             }
-            result
+            if let Some(bytes) = journal.as_deref() {
+                files.push((target_journal.as_path(), bytes));
+            }
+            write_recovery_bundle(
+                self.home(),
+                &files,
+                std::fs::File::write_all,
+                std::fs::File::sync_all,
+            )
         }
         #[cfg(not(unix))]
         {

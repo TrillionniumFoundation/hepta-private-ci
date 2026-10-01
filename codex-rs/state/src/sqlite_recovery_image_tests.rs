@@ -2,7 +2,108 @@ use super::*;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
+
+#[derive(Clone, Copy, Debug)]
+enum CopyFailure {
+    Write,
+    Sync,
+}
+
+#[test]
+fn failed_private_bundle_removes_partial_files_and_allows_same_path_retry() -> anyhow::Result<()> {
+    for failure in [CopyFailure::Write, CopyFailure::Sync] {
+        for fail_at in 0..3 {
+            let home = unique_temp_dir();
+            std::fs::create_dir(&home)?;
+            let paths = [
+                home.join("candidate.sqlite3"),
+                home.join("candidate.sqlite3-wal"),
+                home.join("candidate.sqlite3-journal"),
+            ];
+            let bytes: [&[u8]; 3] = [b"database bytes", b"wal bytes", b"journal bytes"];
+            let files: Vec<_> = paths
+                .iter()
+                .zip(bytes)
+                .map(|(path, bytes)| (path.as_path(), bytes))
+                .collect();
+            let mut writes = 0;
+            let mut syncs = 0;
+            let result = write_recovery_bundle(
+                &home,
+                &files,
+                |file, bytes| {
+                    let index = writes;
+                    writes += 1;
+                    if matches!(failure, CopyFailure::Write) && index == fail_at {
+                        file.write_all(&bytes[..1])?;
+                        return Err(std::io::Error::other("injected partial write failure"));
+                    }
+                    file.write_all(bytes)
+                },
+                |file| {
+                    let index = syncs;
+                    syncs += 1;
+                    if matches!(failure, CopyFailure::Sync) && index == fail_at {
+                        return Err(std::io::Error::other("injected fsync failure"));
+                    }
+                    file.sync_all()
+                },
+            );
+            assert_eq!(result, Err(SqliteRecoveryError::Indeterminate));
+            assert_eq!(paths.each_ref().map(|path| path.exists()), [false; 3]);
+            write_recovery_bundle(
+                &home,
+                &files,
+                std::fs::File::write_all,
+                std::fs::File::sync_all,
+            )?;
+            for (path, bytes) in files {
+                assert_eq!(std::fs::read(path)?, bytes);
+            }
+            std::fs::remove_dir_all(home)?;
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn private_bundle_collision_never_removes_preexisting_file() -> anyhow::Result<()> {
+    for collision_at in 0..3 {
+        let home = unique_temp_dir();
+        std::fs::create_dir(&home)?;
+        let paths = [
+            home.join("candidate.sqlite3"),
+            home.join("candidate.sqlite3-wal"),
+            home.join("candidate.sqlite3-journal"),
+        ];
+        std::fs::write(&paths[collision_at], b"preexisting unrelated bytes")?;
+        let files: Vec<_> = paths
+            .iter()
+            .map(|path| (path.as_path(), b"copy bytes".as_slice()))
+            .collect();
+        assert_eq!(
+            write_recovery_bundle(
+                &home,
+                &files,
+                std::fs::File::write_all,
+                std::fs::File::sync_all,
+            ),
+            Err(SqliteRecoveryError::Indeterminate)
+        );
+        assert_eq!(
+            std::fs::read(&paths[collision_at])?,
+            b"preexisting unrelated bytes"
+        );
+        assert_eq!(
+            paths.each_ref().map(|path| path.exists()),
+            std::array::from_fn(|index| index == collision_at)
+        );
+        std::fs::remove_dir_all(home)?;
+    }
+    Ok(())
+}
 
 #[tokio::test]
 async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result<()> {
