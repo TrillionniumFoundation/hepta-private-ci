@@ -124,12 +124,23 @@ fn load_at(
         8 * 1024 * 1024,
         true,
     )?;
-    let ledger = DurableLedger::recover(
-        ledger_file,
-        descriptor.ledger_binding,
-        descriptor.maximum_records,
-        LedgerRecovery::Acknowledged(frontier.anchor),
-    )
+    let ledger = if frontier.anchor.sequence == 0 {
+        if !frontier.anchor.chain_digest.is_zero() {
+            return Err("retrieval learning empty witness has a nonempty digest".to_string());
+        }
+        DurableLedger::recover_initialized_empty(
+            ledger_file,
+            descriptor.ledger_binding,
+            descriptor.maximum_records,
+        )
+    } else {
+        DurableLedger::recover(
+            ledger_file,
+            descriptor.ledger_binding,
+            descriptor.maximum_records,
+            LedgerRecovery::Acknowledged(frontier.anchor),
+        )
+    }
     .map_err(|error| error.to_string())?;
     if descriptor.minimum_acknowledged_sequence > 0 {
         let index = usize::try_from(descriptor.minimum_acknowledged_sequence - 1)

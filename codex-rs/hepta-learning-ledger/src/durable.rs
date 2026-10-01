@@ -126,6 +126,40 @@ impl DurableLedger {
         })
     }
 
+    /// Reopen only a previously initialized, physically empty journal.
+    /// The caller must separately retain the canonical empty witness. This
+    /// entry point never repairs a tail, clears history, or creates a store.
+    pub fn recover_initialized_empty(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+    ) -> Result<Self, DurableLedgerError> {
+        validate_domain(binding, max_records)?;
+        let mut file = LockedFile::acquire(file)?;
+        if file.metadata()?.len() != HEADER as u64 {
+            return Err(DurableLedgerError::UnwitnessedTail);
+        }
+        let (core, cursor, length) = replay_frames(
+            &mut file,
+            binding,
+            max_records,
+            LedgerRecovery::Unacknowledged,
+        )?;
+        if !core.records().is_empty() || cursor != length {
+            return Err(DurableLedgerError::UnwitnessedTail);
+        }
+        file.sync_all()
+            .map_err(|_| DurableLedgerError::Indeterminate)?;
+        Ok(Self {
+            file,
+            core,
+            binding,
+            max_records,
+            durable_length: cursor,
+            poisoned: false,
+        })
+    }
+
     /// Replay complete canonical frames. Validate any external acknowledgement
     /// before repairing an incomplete final frame. Full corruption never repairs.
     /// All recovered data is synced before it becomes an exposed committed result.

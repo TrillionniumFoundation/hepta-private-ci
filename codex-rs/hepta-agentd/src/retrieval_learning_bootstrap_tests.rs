@@ -268,6 +268,20 @@ fn bootstrap_rejects_wrong_pin_identity_signature_stale_anchor_and_expired_trust
 }
 
 #[test]
+fn empty_witness_never_repairs_or_discards_a_nonempty_journal_tail() {
+    use std::io::Write;
+    let fixture = Fixture::new();
+    let pin = fixture.write(&fixture.descriptor);
+    let ledger_path = Path::new(fixture.descriptor["ledger_path"].as_str().unwrap());
+    let mut file = OpenOptions::new().append(true).open(ledger_path).unwrap();
+    file.write_all(&[1, 2, 3]).unwrap();
+    file.sync_all().unwrap();
+    let before = fs::read(ledger_path).unwrap();
+    assert!(load_at(&fixture.path, pin, &fixture.identity, fixture.now).is_err());
+    assert_eq!(fs::read(ledger_path).unwrap(), before);
+}
+
+#[test]
 fn missing_or_aliased_owner_files_never_become_new_empty_stores() {
     let fixture = Fixture::new();
     let pin = fixture.write(&fixture.descriptor);
