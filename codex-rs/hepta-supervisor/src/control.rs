@@ -280,10 +280,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         // owned main or companion process.
         let cancellation = self.cancel_pending_restart(agent_id, slot);
         slot.deferred_agent_action = None;
-        // Close the network companion first, but collect its result so failure
-        // cannot skip the already-owned main process's emergency termination.
-        let companion = self.kill_matrix_now(agent_id, slot);
-        // Prepare the main lifecycle independently of companion success.
+        // Prepare and signal the main independently of companion work. A slow
+        // companion driver must not delay the already-owned main's emergency
+        // termination.
         let preparation = (|| {
             let lifecycle = self.record(agent_id)?.lifecycle;
             let generation = active_runtime(agent_id, slot)?.generation;
@@ -333,6 +332,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 pending::apply_to_slot(agent_id, slot, Instant::now(), self.config.stop_grace)
             })
         };
+        // Both results are collected: a main signal or preparation failure
+        // still cannot suppress containment of an already-owned companion.
+        let companion = self.kill_matrix_now(agent_id, slot);
         let acknowledgement = if intent.is_ok() && main.is_ok() {
             self.record(agent_id).and_then(|record| {
                 control_intent::mark_kill_requested(record.layout.run_root())

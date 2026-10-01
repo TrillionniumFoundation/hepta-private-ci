@@ -1777,8 +1777,8 @@ fn kill_supersedes_inflight_paired_restart_without_replacement() -> Result<(), S
         .position(|event| event.kind == SupervisorEventKind::KillRequested)
         .expect("agent kill event");
     assert!(
-        matrix_kill < agent_kill,
-        "Matrix must be killed before agentd"
+        agent_kill < matrix_kill,
+        "emergency Kill must signal agentd before entering the Matrix driver"
     );
 
     control.set_exit(&fleet.first);

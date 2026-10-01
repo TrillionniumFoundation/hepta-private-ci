@@ -48,6 +48,8 @@ enum Failure {
 }
 
 struct State {
+    name: &'static str,
+    kill_order: Arc<Mutex<Vec<&'static str>>>,
     failure: Failure,
     observation: ProcessState,
     stops: usize,
@@ -86,6 +88,11 @@ impl ManagedProcess for Process {
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
         let mut state = self.0.lock().expect("test process state");
+        state
+            .kill_order
+            .lock()
+            .expect("kill order")
+            .push(state.name);
         state.kills += 1;
         if state.failure == Failure::Kill {
             return Err(ProcessDriverError::new("injected kill failure"));
@@ -149,7 +156,10 @@ impl Fixture {
             starting.generation,
             AgentLifecycle::Running,
         )?;
+        let kill_order = Arc::new(Mutex::new(Vec::new()));
         let main = Arc::new(Mutex::new(State {
+            name: "main",
+            kill_order: Arc::clone(&kill_order),
             failure: Failure::None,
             observation: ProcessState::Running {
                 healthy: true,
@@ -160,6 +170,8 @@ impl Fixture {
             drops: 0,
         }));
         let companion = Arc::new(Mutex::new(State {
+            name: "matrix",
+            kill_order,
             failure: Failure::None,
             observation: ProcessState::Running {
                 healthy: false,
@@ -429,3 +441,6 @@ fn deferred_companion_stop_retries_the_unacknowledged_signal() -> Result<()> {
 
 #[path = "matrix_containment_tests.rs"]
 mod containment;
+
+#[path = "matrix_control_order_tests.rs"]
+mod control_order;
