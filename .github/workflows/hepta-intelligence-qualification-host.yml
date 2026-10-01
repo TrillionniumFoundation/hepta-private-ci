@@ -204,6 +204,7 @@ jobs:
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
           }
           run_probe "$AGENTD_TEST_BINARY" explicit_hard_timeout_terminates_a_real_child_process
+          run_probe "$AGENTD_TEST_BINARY" installed_canonical_factory_contains_actual_work_after_caller_detaches
           run_probe "$AGENTD_TEST_BINARY" aborted_owner_work_retains_its_budget_until_computation_finishes
           run_probe "$AGENTD_TEST_BINARY" single_slot_alternates_instead_of_starving_new_work
           run_probe "$AGENTD_TEST_BINARY" replay_verification_uses_current_time_not_frozen_event_time
@@ -213,6 +214,7 @@ jobs:
           run_probe "$OPERATIONS_TEST_BINARY" acknowledgement_loss_stays_indeterminate_until_terminal_observer
           run_probe "$OPERATIONS_TEST_BINARY" exact_claim_freezes_the_adopted_intent_generation
           run_probe "$OPERATIONS_TEST_BINARY" exact_claim_recovers_only_an_unused_expired_lease
+          run_probe "$OPERATIONS_TEST_BINARY" exact_claim::clock_tests
           run_probe "$OPERATIONS_TEST_BINARY" newer_generation_adopts_unsettled_dispatch_and_fences_predecessor
           run_probe "$INFER_WORKER_TEST_BINARY" intelligence_prompt_substitution_fails_before_provider_contact
           run_probe "$SUPERVISOR_TEST_BINARY" restart_drains_one_agent_and_spawns_a_new_generation

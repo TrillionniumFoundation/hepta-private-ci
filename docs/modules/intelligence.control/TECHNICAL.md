@@ -235,7 +235,19 @@ preparation may omit this fence, but cannot be advertised as
 The host-owned invocation factory has its own bounded in-flight policy and
 absolute deadline derived from the durable RunStart. It runs inside the runner's
 supervised lifetime, so a detached or stuck factory cannot evade the canonical
-process fence. Signed-evaluation manifest reads and final all-owner revalidation
+process fence. The runner calls `build_in_canonical_worker`; the built-in provider
+executes the actual factory in that worker, retaining its permit until return.
+This covers both atomic profile installation and the separate runner/provider
+builders. A timed-out nested proxy cannot finish and disarm the real factory's
+observer. Custom host-owned providers must retain actual work in the supervised
+call and must not detach it into an unobserved thread. Standalone `build` retains
+its independently configured thread and timeout policy. The supervised budget
+also preserves a shorter built-in factory policy timeout; it never exceeds the
+remaining durable RunStart deadline or the runner's thirty-second ingress cap.
+The provider's timeout and exit-grace accessors are pure configuration reads,
+with no owner IO. Canonical supervision uses the shorter configured factory
+and runner exit grace; an absent factory grace cannot disable the runner fence.
+Signed-evaluation manifest reads and final all-owner revalidation
 also run inside supervised work and share the remaining monotonic cognition
 budget. Owner call latency is recorded before propagating either success or
 failure.
@@ -297,6 +309,14 @@ after SQLite grants the immediate writer transaction. Monotonic elapsed budgets
 remain owner-local and absolute. See the
 [decision record](ADR-001-DURABLE-OPERATION-RECOVERY.md) and
 [runbook](OPERATIONS_RUNBOOK.md).
+
+Exact interactive claims and pre-dispatch deferrals use that same owned clock
+after writer admission and check the durable rollback floor. That floor includes
+both active ledger and associated outbox timestamps, including outbox-only lease
+recovery updates; settled rows remain excluded. They never mix a
+system-clock timestamp with an injected owner clock or use a pre-lock lease
+observation after a competing writer finishes. Deferral still requires the exact
+live Prepared lease; a lease that expired while waiting cannot be requeued.
 
 See [the effective restart contract](RESTART_RECONCILIATION.md). Event time is
 historical Unix milliseconds; current evidence validation reads the host clock

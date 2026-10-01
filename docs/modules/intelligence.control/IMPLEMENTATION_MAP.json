@@ -81,7 +81,10 @@
       "symbols": [
         "pub fn from_run_start",
         "objective_run_fence_digest_v1",
-        "HostOwnedAgentdIntelligenceInvocationProviderV1"
+        "HostOwnedAgentdIntelligenceInvocationProviderV1",
+        "fn build_in_canonical_worker",
+        "fn canonical_worker_timeout",
+        "fn canonical_worker_exit_grace"
       ]
     },
     {
@@ -197,7 +200,9 @@
       "symbols": [
         "defer_pre_dispatch_claim_v1",
         "l.state = 'prepared'",
-        "l.semantic_digest = ?"
+        "l.semantic_digest = ?",
+        "let now = self.now_millis()?",
+        "ensure_clock_not_behind"
       ]
     },
     {
@@ -403,6 +408,14 @@
         "learning_candidate_ids_v1",
         "MAX_LEARNING_CANDIDATES",
         "reserved intrinsic abstain action"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-operations/src/exact_claim.rs",
+      "symbols": [
+        "pub async fn claim_operation",
+        "let now = self.now_millis()?",
+        "ensure_clock_not_behind"
       ]
     }
   ],

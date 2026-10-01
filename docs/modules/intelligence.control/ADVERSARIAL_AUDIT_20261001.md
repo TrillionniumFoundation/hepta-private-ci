@@ -475,3 +475,96 @@ RSS. Decimal representation does not promise nanosecond measurement accuracy.
 Real-process helper regressions cover successful execution, CPU/log capture,
 failure, timeout cleanup and invalid inputs. Fresh workflow measurements must
 retain their own source identity; the prior run is not relabeled as their pass.
+
+### Continued independent audit of the completed measurement candidate
+
+The follow-up source `7339a9e49eff3b2fc2cdab2158355c1c7ffadcd9`, tree
+`3be7776f9838b5968adcf6f88a10e4b15362a40a`, completed host run `36835222160`.
+Artifact `11151402827` has independently checked SHA256
+`949287ce48f2c8fa35c18932ad2b413b768b7879548b5e5177e257d90334965f`.
+Eight actual measurement-tool tests passed. The raw release logs contain 32
+passed assertion invocations across 22 distinct tests, with zero failures.
+All nine full-precision CSV rows match their nanosecond metadata, and all seven
+distributions recompute exactly from the raw data. Signature/hard-kill sample
+counts are 2,000/nine. Process wall p50/p99 are 7.490144/15.574651 milliseconds;
+signature p50/p99 are 45.652/60.594 microseconds; spawn-to-exit-70 p50/p99 are
+45.823064/45.957615 milliseconds. CPU mean is 72.9723 percent; child peak RSS
+p50/maximum are 17,640/17,788 KiB. The nine-sample p99 is the observed maximum,
+not a production tail estimate. Four acceptance/release flags remain false;
+the GitHub qualification-host flag identifies only the observation scope.
+
+That source also passed all six package commands in all three Linux lanes,
+with the documented ignored cases retained. The actually tested base merge
+was `c6b659faaec919b56187a08b0f00957fd558e9a4`, with ordered main/source parents,
+the same candidate tree and unchanged before/after checkout state. macOS again
+passed 156 intelligence/operations and 60 Agentd assertions. Strict lint still
+failed on the ten previously identified dependency diagnostics; these completed
+results do not execute the subsequent source repairs below.
+
+A new independent review found two further P1 defects in actual composition:
+
+1. The guarded runner supervised `provider.build`, but the built-in provider
+   detached the actual factory into a second thread. Its timeout returned from
+   the supervised proxy, allowing that proxy to disarm its watchdog while the
+   factory remained stuck with a retained slot. Both canonical configuration
+   routes now invoke the additive `build_in_canonical_worker` method. The
+   built-in factory stays in the real supervised worker, and its shorter policy
+   timeout bounds that worker too. Request abandonment cannot release its
+   permit or disarm supervision. Existing standalone provider behavior and
+   custom-provider source compatibility remain intact. A real installed-profile
+   child regression covers atomic/manual installation, caller timeout/abort,
+   shorter policy timeout and explicit factory exit grace, normal return and
+   failure, with exactly one factory
+   entry per child. The existing runner's sub-millisecond grace is preserved.
+2. Exact claims and pre-dispatch deferrals were missed by the injected-clock
+   integration. They read the system clock before SQLite writer admission,
+   mixing clock domains and retaining stale lease observations across a lock
+   wait. Both now use the store's trusted clock after `BEGIN IMMEDIATE` and
+   enforce its rollback floor. The floor includes outbox-only recovery updates
+   associated with active operations; settled timestamps remain excluded. Nine
+   regressions cover retry eligibility,
+   post-recovery resampling, rollback without mutation, blocked writer admission
+   expiry while waiting, unrelated active outbox rollback and settled-row
+   exclusion. No persistent schema, historical timestamp,
+   semantic identity, grant or unknown-effect disposition is rewritten.
+
+Fresh Windows compilation also exposed ten test calls left behind by the
+existing `UpstreamResponseEvents` signature change, and three Unix RPC fixtures
+registered on Windows. The calls are adapted without changing assertions;
+only Unix transport fixtures receive Unix registration. Shared identity and
+recovery tests remain registered. Bazel test-only client/adapter/Agentd variants
+preserve test witness constructors exclusively in test graphs and keep one
+concrete client type across each graph. Production client features remain
+unchanged. These build fixes do not establish non-Unix secure-handle parity.
+
+The ten known strict diagnostics receive local source cleanup: eight obsolete
+argument-count expectations are removed, the private test-only cognitive
+constructor is registered only for tests, and an unused private helper is
+removed. Production constructors, policy checks, lint thresholds and authority
+mechanisms remain unchanged. The embedding example also wraps its configured
+runner in the `Arc` required by the actual profile API. Execution of these new
+repairs must be recorded separately on their own source identity. Kernel QA,
+Objective, SDK and other independently inherited blockers are not weakened.
+
+
+The continued source repairs were separated into operation-clock, factory
+containment, integration cleanup, and Bazel-fixture commits for review. Local
+`just test -p codex-hepta-operations` executed all nine new clock assertions and
+finished with 61 passed and one existing skipped test. Eight actual macro/BUILD
+emission tests passed; cached upstream generator and Rust-test implementation
+were independently checked for dependency metadata and inherited crate edges.
+Bazel package loading did not complete because its generated crates repository
+was not cached. This is not a Bazel analysis or compilation pass. The emission
+regressions are also registered in the module CI with their relevant source
+triggers. Independent follow-up reviews of actual factory lifetime, policy
+compatibility, active outbox clock floors and fixture-type identity found no new
+confirmed actionable source defect in those inspected paths.
+
+The new local scoped `just fix` attempt reached `codex-core` compilation and
+ended with exit 101 after its compiler received SIGKILL. It produced no scoped
+lint pass. Shared disk space had also been exhausted during the attempt; only
+two already-completed task-owned test executables were removed, retaining
+source, logs and dependency libraries. No compiler was killed by this audit.
+The source repairs require their own remote compilation, factory child
+regression, strict lint and platform results; previous candidate passes are
+not substituted for those checks.

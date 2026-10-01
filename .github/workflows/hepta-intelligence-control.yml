@@ -3,6 +3,10 @@ name: intelligence.control independent qualification
 on:
   push:
     paths:
+      - "defs.bzl"
+      - "codex-rs/app-server-client/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "scripts/test_bazel_unit_test_variants.py"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-worker-host/**"
@@ -26,6 +30,10 @@ on:
       - ".github/actions/hepta-synthetic-merge/**"
   pull_request:
     paths:
+      - "defs.bzl"
+      - "codex-rs/app-server-client/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "scripts/test_bazel_unit_test_variants.py"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-worker-host/**"
@@ -135,6 +143,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-intelligence-control-status.py --check-tracked
           python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/test_bazel_unit_test_variants.py
           python3 scripts/hepta-intelligence-readiness-tests.py
           python3 scripts/hepta-intelligence-fault-matrix.py --check-tracked
           python3 scripts/hepta-intelligence-fault-matrix-tests.py

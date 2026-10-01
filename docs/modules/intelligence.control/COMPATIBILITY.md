@@ -76,6 +76,29 @@ schema values fail as corruption rather than falling back to a permissive state.
 
 `DurableOperationClock` changes clock ownership, not the persisted timestamp
 format. Values remain Unix milliseconds and rollback remains fail-closed.
+Exact claims and pre-dispatch deferrals now honor that same clock and sample it
+after writer admission. Existing timestamps and operation identities are not
+rewritten to accommodate an older injected clock. The rollback floor also
+includes timestamps from outboxes associated with active operations, so an
+outbox-only recovery update cannot be bypassed; settled operations stay excluded.
+
+`AgentdIntelligenceInvocationProviderV1::build_in_canonical_worker` is an additive
+provided method, so existing custom providers remain source-compatible. The
+built-in provider executes its actual factory inside the caller's supervised
+worker for both canonical configuration paths; its standalone `build`, `new`
+and `with_policy` behavior remains separate. A custom canonical implementation
+must not detach actual factory work beyond that supervised lifetime.
+The additive timeout accessor defaults to the existing thirty-second ingress
+cap; the built-in provider preserves its shorter configured policy timeout.
+The provided exit-grace accessor defaults to no additional factory policy. A
+configured factory grace can shorten the runner fence, never disable or delay it.
+
+Unix-socket RPC fixtures are registered only on Unix; shared pure identity and
+recovery assertions remain available on other platforms. This does not establish
+non-Unix no-follow or production execution parity. Bazel's client/adapter/Agentd
+unit-test variants carry `test-support` only in `testonly` dependency graphs,
+with shared concrete client types. Production libraries and binaries keep the
+ordinary client without test witness constructors.
 
 Completed native message text supplements the retained live trace by item
 identity; a terminal summary does not duplicate the corresponding streamed

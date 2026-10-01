@@ -324,9 +324,9 @@ The authorized application composes existing objects through the atomic
 production profile:
 
 ```rust,ignore
-let runner = runner
+let runner = Arc::new(runner
     .with_authority_rollback_guard(rollback_guard)?
-    .with_hard_timeout_process_exit(hard_timeout_grace)?;
+    .with_hard_timeout_process_exit(hard_timeout_grace)?);
 let execution = Arc::new(NativeIntelligenceProductEmbeddingV1::new(
     NativeIntelligenceProductHostV1::new(driver, agentd_client, learning_host),
     existing_native_journal,

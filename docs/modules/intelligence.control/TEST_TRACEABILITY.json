@@ -98,7 +98,16 @@
         "exact_claim_freezes_the_adopted_intent_generation",
         "exact_claim_recovers_only_an_unused_expired_lease",
         "recovery_disposition_is_effect_boundary_aware",
-        "writer_samples_clock_after_immediate_transaction_admission"
+        "writer_samples_clock_after_immediate_transaction_admission",
+        "exact_claim_resamples_owned_clock_after_expiry_recovery",
+        "deferral_uses_owned_clock_for_retry_eligibility",
+        "exact_claim_rejects_second_transaction_clock_rollback_without_mutation",
+        "deferral_rejects_global_clock_rollback_without_mutating_live_claim",
+        "deferral_samples_owned_clock_only_after_writer_admission",
+        "deferral_does_not_requeue_a_lease_expired_during_writer_wait",
+        "recovered_outbox_clock_floor_rejects_exact_claims_without_mutation",
+        "recovered_outbox_clock_floor_rejects_other_live_deferral_without_mutation",
+        "settled_outbox_timestamp_does_not_block_new_prepared_work"
       ],
       "supportScope": "scheduler arithmetic, typed retry/reconcile projection, serialized injected-clock sampling and real SQLite cursor/claim invariants; not end-to-end daemon fault scheduling"
     },
@@ -109,7 +118,8 @@
         "independent_watchdog_observes_detached_work",
         "explicit_hard_timeout_terminates_a_real_child_process",
         "request_timeout_before_watchdog_is_counted_once",
-        "delayed_observer_uses_completion_time_instead_of_wakeup_time"
+        "delayed_observer_uses_completion_time_instead_of_wakeup_time",
+        "installed_canonical_factory_contains_actual_work_after_caller_detaches"
       ],
       "supportScope": "real OS thread and child-process supervision; production Supervisor replacement-generation proof remains open"
     },
@@ -749,6 +759,66 @@
       "name": "default_learning_writer_requires_signed_intrinsic_complete_candidates",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_learning_tests.rs",
       "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "exact_claim_resamples_owned_clock_after_expiry_recovery",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "deferral_uses_owned_clock_for_retry_eligibility",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "exact_claim_rejects_second_transaction_clock_rollback_without_mutation",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "deferral_rejects_global_clock_rollback_without_mutating_live_claim",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "deferral_samples_owned_clock_only_after_writer_admission",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "deferral_does_not_requeue_a_lease_expired_during_writer_wait",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "installed_canonical_factory_contains_actual_work_after_caller_detaches",
+      "sourcePath": "codex-rs/hepta-agentd/src/config_factory_containment_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "recovered_outbox_clock_floor_rejects_exact_claims_without_mutation",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "recovered_outbox_clock_floor_rejects_other_live_deferral_without_mutation",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "settled_outbox_timestamp_does_not_block_new_prepared_work",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+      "package": "codex-hepta-operations",
       "executionStatus": "pending"
     }
   ],

@@ -59,7 +59,8 @@
         "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
         "codex-rs/hepta-agentd/src/prompt_runtime.rs",
         "codex-rs/hepta-agentd/src/intelligence_product_qualification_integrity_tests.rs",
-        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/config_factory_containment_tests.rs"
       ],
       "reviewGlobs": [
         "codex-rs/hepta-agentd/src/intelligence_product*",
@@ -80,7 +81,8 @@
         "codex-rs/hepta-agentd/src/intelligence_worker_state.rs",
         "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
         "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/config_factory_containment_tests.rs"
       ],
       "requirementIds": [
         "generation_fence",
@@ -113,7 +115,9 @@
         "codex-rs/hepta-operations/src/durable_store.rs",
         "codex-rs/hepta-operations/src/pre_dispatch_defer.rs",
         "codex-rs/hepta-operations/src/reconciliation_cursor.rs",
-        "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs"
+        "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
+        "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
+        "codex-rs/hepta-operations/src/exact_claim.rs"
       ],
       "reviewGlobs": [
         "codex-rs/hepta-agentd/src/intelligence_learning*",
