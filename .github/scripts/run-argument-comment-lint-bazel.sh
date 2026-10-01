@@ -56,6 +56,9 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
   # non-test code while avoiding non-Rust wrapper targets such as platform_data.
   final_build_targets=()
   while IFS= read -r label; do
+    # Native Windows query stdout uses CRLF. read removes LF; remove only
+    # that record's single trailing CR, preserving the label itself.
+    label="${label%$'\r'}"
     [[ -n "$label" ]] || continue
     final_build_targets+=("$label")
   done < <(read_query_labels 'kind("rust_library rule", //codex-rs/...) union kind("rust_binary rule", //codex-rs/...) union kind("rust_proc_macro rule", //codex-rs/...)')

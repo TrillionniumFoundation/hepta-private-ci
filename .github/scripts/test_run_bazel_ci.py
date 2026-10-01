@@ -37,7 +37,12 @@ command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
 if command == 'info':
     print(os.environ['BAZEL_PROBE_TESTLOGS'])
 elif command == 'query':
-    print('//codex-rs/fake:library')
+    if os.environ.get('BAZEL_PROBE_QUERY_FILE'):
+        sys.stdout.buffer.write(Path(os.environ['BAZEL_PROBE_QUERY_FILE']).read_bytes())
+    elif os.environ.get('BAZEL_PROBE_QUERY_CRLF') == '1':
+        sys.stdout.buffer.write(b'//codex-rs/fake:library\\r\\n')
+    else:
+        print('//codex-rs/fake:library')
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -160,7 +165,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         driver = self.root / "driver.sh"
         driver.write_text(
-            'mapfile -d "" -t ci_args < "$1"\nsource "$2" "${ci_args[@]}"\n',
+            "if type mapfile >/dev/null 2>&1; then enable -n mapfile; fi\n"
+            "ci_args=()\n"
+            'while IFS= read -r -d "" ci_arg; do ci_args+=("$ci_arg"); done < "$1"\n'
+            'source "$2" "${ci_args[@]}"\n',
             encoding="utf-8",
         )
         physical = self.root / "physical-arguments.jsonl"
@@ -285,19 +293,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
 
     def test_windows_argument_lint_uses_the_shared_split_abi_wrapper(self) -> None:
-        result = subprocess.run(
-            [
-                self.bash,
-                str(SCRIPTS / "run-argument-comment-lint-bazel.sh"),
-                "--config=argument-comment-lint",
-                "--platforms=//:local_windows",
-            ],
-            env=self.env,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
+        self.env["BAZEL_PROBE_QUERY_CRLF"] = "1"
+        result = self.run_argument_lint()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         calls = [
             json.loads(line)
@@ -314,6 +311,54 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertNotIn("--platforms=//:local_windows", build)
         self.assertIn("--skip_incompatible_explicit_targets", build)
         self.assertEqual(build[build.index("--") + 1 :], ["//codex-rs/fake:library"])
+
+    def run_argument_lint(self) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS / "run-argument-comment-lint-bazel.sh"),
+                "--config=argument-comment-lint",
+                "--platforms=//:local_windows",
+            ],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+
+    def test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster(
+        self,
+    ) -> None:
+        targets = [
+            f"//long_package_{index:04d}/native_component:library"
+            for index in range(900)
+        ]
+        targets.append("//路径:library")
+        roster = self.root / "query labels.txt"
+        roster.write_bytes(("\r\n".join(targets) + "\r\n").encode("utf-8"))
+        physical = self.root / "physical-arguments.jsonl"
+        self.env.update(
+            BAZEL_PROBE_QUERY_FILE=str(roster),
+            BAZEL_PROBE_TRANSPORT_LOG=str(physical),
+            BAZEL_PROBE_ARGV_LIMIT="32767",
+        )
+        result = self.run_argument_lint()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        calls = [
+            json.loads(line)
+            for line in self.log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(len(calls), 2)
+        build = calls[1]
+        self.assertEqual(build[build.index("--") + 1 :], targets)
+        native_args = json.loads(physical.read_text(encoding="utf-8").splitlines()[1])
+        pattern_file = next(
+            arg.split("=", 1)[1]
+            for arg in native_args
+            if arg.startswith("--target_pattern_file=")
+        )
+        self.assertFalse(Path(pattern_file).exists())
 
     def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
         self,
