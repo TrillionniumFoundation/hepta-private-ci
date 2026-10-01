@@ -13,6 +13,7 @@ mod allocation;
 mod allocation_digest;
 mod allocation_model;
 mod allocation_validation;
+mod control_file;
 mod error;
 mod model;
 mod module_catalog;

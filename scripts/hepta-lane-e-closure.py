@@ -7,10 +7,12 @@ import argparse
 import json
 import re
 import sys
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
 from hepta_workflow_commands import workflow_commands
+from hepta_module_registry import load_module_registry
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,7 +35,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 13)),
 }
@@ -93,6 +95,12 @@ EXPECTED_OPERATIONS = {
         "admit_operator_regularity",
         "fit_transition_model",
         "predict_transition",
+        "validate_applicability_with_signed_evidence_v2",
+        "admit_operator_regularity_with_signed_evidence_v2",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
     },
     "learning.eval": {
         "estimate_ope",
@@ -233,7 +241,22 @@ def verify_matrix(
         "module_closed_world",
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
+    try:
+        registered = {
+            row["id"]: row
+            for row in load_module_registry(ROOT / "docs/modules/MODULES.json")
+        }
+    except (OSError, ValueError) as error:
+        findings.add("canonical_registry_invalid", str(error))
+        registered = {}
     for module, item in modules.items():
+        bindings = registered.get(module, {}).get("rootBindings", [])
+        owner_roots = [binding["path"] for binding in bindings]
+        findings.require(
+            bool(owner_roots) and item.get("sourceRoot") in owner_roots,
+            "canonical_owner_root",
+            f"{module} source root is not registered to its canonical owner",
+        )
         required_paths = ["sourceRoot", "stableGuide", "dossier", "nativeMapping"]
         if module == "learning.eval":
             required_paths.append("productionContract")
@@ -268,15 +291,35 @@ def verify_matrix(
             ):
                 findings.add("invalid_operation", f"{module} has an invalid operation")
                 continue
-            operations[operation["operation"]] = operation
+            name = operation["operation"]
+            if name in operations:
+                findings.add("duplicate_operation", f"{module} repeats {name}")
+                continue
+            operations[name] = operation
         findings.require(
-            set(operations) == EXPECTED_OPERATIONS[module],
+            set(operations) == EXPECTED_OPERATIONS.get(module, set()),
             "operation_closed_world",
             f"{module} operation set differs from the required closed world",
         )
         for operation_name, operation in operations.items():
             source_path = relative_path(
                 operation.get("source"), findings, f"{module}.{operation_name}.source"
+            )
+            source_name = operation.get("source")
+            source_owners = {
+                owner
+                for owner, row in registered.items()
+                for binding in row["rootBindings"]
+                if isinstance(source_name, str)
+                and (
+                    source_name == binding["path"]
+                    or source_name.startswith(binding["path"] + "/")
+                )
+            }
+            findings.require(
+                source_owners == {module},
+                "canonical_operation_owner",
+                f"{module}.{operation_name} has an unknown, foreign or ambiguous source owner",
             )
             symbol = operation.get("nativeSymbol")
             if source_path is None or not source_path.is_file():
@@ -625,6 +668,188 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
         )
 
 
+def rust_code(text: str) -> str:
+    """Mask Rust comments/literals without changing source offsets."""
+    code = list(text)
+    index = 0
+    raw_literal = re.compile(r'(?:br|cr|r)(#*)"')
+    char_literal = re.compile(
+        r"'(?:\\(?:x[0-9a-fA-F]{2}|u\{[0-9a-fA-F_]+\}|.)|[^'\\\n])'"
+    )
+    while index < len(text):
+        end = index
+        if text.startswith("//", index):
+            end = text.find("\n", index)
+            if end < 0:
+                end = len(text)
+        elif text.startswith("/*", index):
+            depth = 1
+            end = index + 2
+            while end < len(text) and depth:
+                if text.startswith("/*", end):
+                    depth += 1
+                    end += 2
+                elif text.startswith("*/", end):
+                    depth -= 1
+                    end += 2
+                else:
+                    end += 1
+        else:
+            raw = raw_literal.match(text, index)
+            if raw and (index == 0 or not text[index - 1].isalnum()):
+                closing = '"' + raw[1]
+                stop = text.find(closing, raw.end())
+                end = len(text) if stop < 0 else stop + len(closing)
+            elif text[index] == '"':
+                end = index + 1
+                while end < len(text):
+                    if text[end] == "\\":
+                        end += 2
+                    elif text[end] == '"':
+                        end += 1
+                        break
+                    else:
+                        end += 1
+            elif text[index] == "'":
+                char = char_literal.match(text, index)
+                if char:
+                    end = char.end()
+        if end > index:
+            for offset in range(index, min(end, len(code))):
+                if code[offset] != "\n":
+                    code[offset] = " "
+            index = end
+        else:
+            index += 1
+    return "".join(code)
+
+
+def without_qualification_items(text: str, feature: str) -> str:
+    """Remove only items carrying the exact, independently checked feature gate.
+
+    An any()/cfg_attr()/unknown gate is not an exemption. Item bodies are
+    balanced on masked code, so braces in comments and literals cannot enlarge
+    the excluded region or hide a following product writer.
+    """
+    code = rust_code(text)
+    output = list(text)
+    gate = re.compile(
+        r'#\[\s*cfg\s*\(\s*feature\s*=\s*"' + re.escape(feature) + r'"\s*\)\s*\]'
+    )
+    for match in gate.finditer(text):
+        if code[match.start()] != "#":
+            continue
+        start = match.end()
+        while True:
+            attributes = re.match(r"\s*#\[[^\]]*\]", code[start:])
+            if not attributes:
+                break
+            start += attributes.end()
+        item = re.match(
+            r"\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:fn|use)\b", code[start:]
+        )
+        if not item:
+            continue
+        cursor = start + item.end()
+        brackets: list[str] = []
+        body = False
+        complete = False
+        while cursor < len(code):
+            char = code[cursor]
+            if char in "([{":
+                if char == "{" and not brackets:
+                    body = True
+                brackets.append(char)
+            elif char in ")]}":
+                if not brackets or {"(": ")", "[": "]", "{": "}"}[brackets[-1]] != char:
+                    break
+                brackets.pop()
+                if body and not brackets:
+                    cursor += 1
+                    complete = True
+                    break
+            elif char == ";" and not brackets:
+                cursor += 1
+                complete = True
+                break
+            cursor += 1
+        else:
+            continue
+        if brackets or not complete:
+            continue
+        for offset in range(match.start(), cursor):
+            if output[offset] != "\n":
+                output[offset] = " "
+    return "".join(output)
+
+
+def feature_is_explicit(manifest: dict[str, Any], feature: str) -> bool:
+    features = manifest.get("features", {})
+    if (
+        not isinstance(features, dict)
+        or feature not in features
+        or not all(
+            isinstance(members, list)
+            and all(isinstance(member, str) for member in members)
+            for members in features.values()
+        )
+    ):
+        return False
+    pending = list(features.get("default", []))
+    seen: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if not isinstance(name, str) or name == feature:
+            return False
+        if name not in seen:
+            seen.add(name)
+            pending.extend(features.get(name, []))
+    return True
+
+
+def legacy_writer_uses(
+    text: str,
+    *,
+    qualification_feature: str | None = None,
+    read_only_journal: bool = False,
+) -> list[str]:
+    if qualification_feature is not None:
+        text = without_qualification_items(text, qualification_feature)
+    code = rust_code(text)
+    # A narrow read-only match arm extracts an existing record's identity. Any
+    # constructor, mutable arm, alternative expression or raw append still fails.
+    code = re.sub(
+        r"\bLedgerEvent\s*::\s*(Decision|Outcome|Credit|Revocation)\s*\(\s*([A-Za-z_]\w*)\s*\)\s*=>\s*&\s*\2\s*\.\s*record_id\s*(?=,|})",
+        "",
+        code,
+    )
+    if read_only_journal:
+        code = re.sub(
+            r"\buse\s+codex_hepta_learning_ledger\s*::\s*DurableLearningJournal\s*;",
+            "",
+            code,
+        )
+    forbidden = {
+        r"\bDurableLearningJournal\b": "unresolved legacy durable journal use",
+        r"\bLedgerEvent\s*::\s*Decision\b": "raw V1 Decision construction or unresolved use",
+        r"\bLedgerEvent\s*::\s*Outcome\b": "raw V1 Outcome construction or unresolved use",
+        r"\bLedgerEvent\s*::\s*Credit\b": "raw V1 Credit construction or unresolved use",
+        r"\bLedgerEvent\s*::\s*Revocation\b": "raw V1 Revocation construction or unresolved use",
+        r"\bLedgerEvent\s*(?:as\b|::\s*[\{*])": "ambiguous legacy event alias/import",
+        r"\btype\s+\w+\s*=\s*(?:\w+\s*::\s*)*LedgerEvent\b": "ambiguous legacy event type alias",
+        r"\.\s*append_qualification\s*\(": "qualification append in the product surface",
+    }
+    if read_only_journal and re.search(r"\bDurableLearningJournal\b", rust_code(text)):
+        forbidden[r"\.\s*append_decision\s*\("] = (
+            "ambiguous legacy journal Decision append"
+        )
+    return [
+        description
+        for pattern, description in forbidden.items()
+        if re.search(pattern, code)
+    ]
+
+
 def verify_product_writer_exclusivity(findings: Findings) -> None:
     """Prevent product crates from bypassing LedgerWriter with raw V1 appends."""
 
@@ -632,13 +857,35 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         "codex-rs/hepta-learning-ledger",
         "codex-rs/hepta-shadow-qualification",
     }
-    forbidden = {
-        r"\bDurableLearningJournal\b": "legacy durable journal trait",
-        r"LedgerEvent::Decision\b": "raw V1 Decision append",
-        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
-        r"LedgerEvent::Credit\b": "raw V1 Credit append",
-        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
-    }
+    agent_feature = "qualification-legacy-learning-write"
+    ledger_feature = "qualification-legacy-write"
+    try:
+        agent_manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text()
+        )
+        ledger_manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-learning-ledger/Cargo.toml").read_text()
+        )
+        qualification_only = (
+            feature_is_explicit(agent_manifest, agent_feature)
+            and feature_is_explicit(ledger_manifest, ledger_feature)
+            and agent_manifest["features"][agent_feature]
+            == ["codex-hepta-learning-ledger/" + ledger_feature]
+        )
+        journal = (ROOT / "codex-rs/hepta-learning-ledger/src/journal.rs").read_text()
+        journal = rust_code(without_qualification_items(journal, ledger_feature))
+        trait = re.search(
+            r"pub\s+trait\s+DurableLearningJournal\s*:\s*sealed\s*::\s*Journal\s*\{([^{}]*)\}",
+            journal,
+        )
+        read_only_journal = bool(
+            qualification_only
+            and trait
+            and set(re.findall(r"\bfn\s+(\w+)\s*\(", trait[1]))
+            == {"snapshot", "anchor"}
+        )
+    except (OSError, ValueError, KeyError):
+        qualification_only = read_only_journal = False
 
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
@@ -655,9 +902,24 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
-        for pattern, description in forbidden.items():
-            findings.require(
-                re.search(pattern, text) is None,
+        if not any(
+            token in text
+            for token in (
+                "LedgerEvent",
+                "DurableLearningJournal",
+                "append_qualification",
+            )
+        ):
+            continue
+        feature = (
+            agent_feature
+            if qualification_only and relative.startswith("codex-rs/hepta-agentd/")
+            else None
+        )
+        for description in legacy_writer_uses(
+            text, qualification_feature=feature, read_only_journal=read_only_journal
+        ):
+            findings.add(
                 "legacy_learning_writer_product_bypass",
                 f"{relative} uses {description}; product learning writes must use LedgerWriter",
             )

@@ -22,6 +22,7 @@ use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
+use std::num::NonZeroU32;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -297,18 +298,9 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        let connections =
+            NonZeroU32::try_from(5_u32).map_err(|error| Error::Protocol(error.to_string()))?;
+        open_durable_sqlite_pool(path, connections).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.
@@ -381,3 +373,44 @@ impl SqliteConfig {
             .await
     }
 }
+
+/// Open an owner-managed durable SQLite store with a nonzero concurrency bound.
+///
+/// WAL, FULL synchronous writes, foreign keys and the five-second busy timeout
+/// are fixed by this shim. The owning store supplies its migration and corruption
+/// policy; this entrypoint never applies rebuildable state-database recovery.
+pub async fn open_durable_sqlite_pool(
+    path: &Path,
+    max_connections: NonZeroU32,
+) -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(max_connections.get())
+        .connect_with(options)
+        .await
+}
+
+/// Open an isolated single-connection in-memory schema reference.
+///
+/// This accepts neither a filename nor arbitrary connection options. References
+/// contain compiled schema only and cannot become a second durable data owner.
+pub async fn open_sqlite_schema_reference_pool() -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .in_memory(true)
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(options)
+        .await
+}
+
+#[cfg(test)]
+#[path = "sqlite_connection_tests.rs"]
+mod connection_tests;

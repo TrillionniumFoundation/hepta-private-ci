@@ -13,7 +13,7 @@ use codex_uds::UnixListener;
 
 use super::*;
 
-async fn fixture() -> (tempfile::TempDir, FleetRegistry, AgentdState) {
+pub(super) async fn fixture() -> (tempfile::TempDir, FleetRegistry, AgentdState) {
     let temp = tempfile::tempdir().expect("temporary owner");
     let root = temp.path().canonicalize().expect("canonical owner");
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");

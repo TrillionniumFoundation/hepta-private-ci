@@ -36,7 +36,7 @@ The legacy evaluator is retained as a compatibility entry with an explicit `lega
 
 ## 3. State, receipts and authority separation
 
-`NduSolverIterationReceipt` and `NduSolverTerminationReceipt` are local deterministic solver evidence. Successful termination records both terminal residual and the true maximum residual observed across iterations. Exhausting the registered 64-iteration bound returns `NduError::PreferenceSolverUnavailable`; the bounded state at exhaustion is not exposed as a successful terminal state.
+`NduSolverIterationReceipt` and `NduSolverTerminationReceipt` are local deterministic solver evidence. Successful termination records both terminal residual and the maximum residual across the initial state and all emitted iteration receipts. Exhausting the registered 64-iteration bound returns `NduError::IterationExhausted { iterations, terminal_residual_raw }`; the bounded state at exhaustion is not exposed as a successful terminal state.
 
 They are deliberately not named `NduConvergenceCertificateV1`. That canonical certificate remains owned by `learning.eval` and additionally requires independent evaluator identity, conservation, stability and spectral-radius evidence. A local solver cannot certify itself for activation.
 

@@ -240,3 +240,23 @@ fn a_replaced_lock_inode_cannot_publish_under_the_retired_lock() {
     );
     assert!(!root.join(STATE_FILE).exists());
 }
+
+#[cfg(unix)]
+#[test]
+fn owner_directory_entry_changes_preserve_the_live_store_identity() {
+    use std::os::unix::fs::MetadataExt;
+
+    let temporary = tempfile::tempdir().expect("private fixture");
+    let root = temporary.path().join("runtime");
+    let owner = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("owner");
+    let before = fs::metadata(&root).expect("owner directory");
+    fs::create_dir(root.join("owner-child")).expect("trusted owner directory entry");
+    let after = fs::metadata(&root).expect("same owner directory");
+    assert_eq!((after.dev(), after.ino()), (before.dev(), before.ino()));
+    owner
+        .commit_state(|_| Ok(()))
+        .expect("publish with a live directory");
+    drop(owner);
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("reopen published state");
+    assert_eq!(reopened.staged_count().expect("staged count"), 0);
+}

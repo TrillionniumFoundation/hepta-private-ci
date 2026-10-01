@@ -41,6 +41,9 @@ const MAX_TURN_PAGES: usize = 16;
 const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
 const RECOVERY_REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 
+#[path = "automation_drain_recovery.rs"]
+mod drain_recovery;
+
 enum TurnLookup {
     Found(Turn),
     Continue(String),
@@ -53,6 +56,12 @@ pub(crate) async fn reconcile_one(
     identity: &AgentdIdentity,
     now_ms: u64,
 ) -> Result<bool, AgentdError> {
+    if let Some(observer) = state.automation_draining_observer()? {
+        if !observer.historical_observation_ready() {
+            return Ok(false);
+        }
+        return drain_recovery::reconcile_one(store, state, identity, &observer).await;
+    }
     if reconcile_one_unknown_dispatch(store, state, identity).await? {
         return Ok(true);
     }
@@ -185,7 +194,6 @@ async fn reconcile_one_unknown_dispatch(
                 AutomationOccurrenceTerminalState::Cancelled,
                 observation_digest(&response)?,
                 now_ms,
-                identity.spawn_generation,
             )
             .await?;
         }
@@ -262,7 +270,6 @@ async fn reconcile_work(
                     AutomationOccurrenceTerminalState::Succeeded,
                     observation_digest(&turn)?,
                     now_ms,
-                    identity.spawn_generation,
                 )
                 .await
             }
@@ -273,7 +280,6 @@ async fn reconcile_work(
                     AutomationOccurrenceTerminalState::Failed,
                     observation_digest(&turn)?,
                     now_ms,
-                    identity.spawn_generation,
                 )
                 .await
             }
@@ -284,7 +290,6 @@ async fn reconcile_work(
                     AutomationOccurrenceTerminalState::Cancelled,
                     observation_digest(&turn)?,
                     now_ms,
-                    identity.spawn_generation,
                 )
                 .await
             }
@@ -354,7 +359,6 @@ async fn reconcile_admitted_without_turn(
                 AutomationOccurrenceTerminalState::Cancelled,
                 observation_digest(&response)?,
                 now_ms,
-                identity.spawn_generation,
             )
             .await
         }
@@ -382,19 +386,17 @@ async fn complete_work(
     terminal: AutomationOccurrenceTerminalState,
     receipt_digest: Sha256Digest,
     now_ms: u64,
-    recovery_generation: u64,
 ) -> Result<(), AgentdError> {
     store
         .ensure_admitted_taskflow_uncertainty(work, now_ms)
         .await
         .map_err(taskflow_error)?;
-    store
-        .reconcile_occurrence_taskflow_terminal_with_recovery(
+    let canonical_receipt = store
+        .reconcile_occurrence_taskflow_historical_terminal(
             work,
             terminal,
             &receipt_digest,
             now_ms,
-            recovery_generation,
             RECOVERY_RUN_LEASE_MS,
         )
         .await
@@ -404,7 +406,7 @@ async fn complete_work(
             work.occurrence.task_id,
             work.occurrence.occurrence,
             terminal,
-            &receipt_digest,
+            &canonical_receipt,
             now_ms,
         )
         .await?;

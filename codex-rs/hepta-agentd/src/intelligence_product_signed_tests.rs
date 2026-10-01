@@ -44,7 +44,7 @@ fn signed_fixture_with_body(
         selected_candidate_id: id("action.read"),
     };
     let (trust, signed) = evidence_fixture(&binding, wall_clock_ms().expect("clock"));
-    value.inputs.signed_evaluation = Some(signed);
+    value.inputs.qualified_evaluation = Some(signed);
     (value, trust)
 }
 
@@ -53,7 +53,7 @@ fn signed_fixture_with_body(
 mod objective_ingress_tests;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
+async fn qualified_evaluation_completes_existing_owner_preparation_and_run_admission() {
     let (value, trust) = signed_fixture();
     let directory = tempfile::tempdir().expect("directory");
     let path = directory.path().join("authority.json");

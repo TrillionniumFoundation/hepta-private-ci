@@ -10,6 +10,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from hepta_module_source_roots import registered_source_roots
+
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
 
@@ -167,13 +169,22 @@ def verify(root: Path = ROOT) -> int:
     entries = truth.get("modules")
     need(isinstance(entries, list) and entries, "module index")
 
+    canonical_path(
+        root, "docs/modules/MODULES.json", "module registry", require_file=True
+    )
+    try:
+        roots = registered_source_roots(root)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise Invalid(f"registered owner inventory: {exc}") from exc
+
     maps: dict[str, dict[str, Any]] = {}
-    roots: dict[str, list[str]] = {}
     for entry in entries:
         need(isinstance(entry, dict), "module index entry")
         module = entry.get("module")
         map_path = entry.get("mapPath")
         need(isinstance(module, str) and bool(module), "module identity")
+        need(module not in maps, f"{module}: duplicate module index")
+        need(module in roots, f"{module}: unregistered module owner")
         path = canonical_path(root, map_path, f"{module}: map", require_file=True)
         row = load(path)
         need(row.get("module") == module, f"{module}: map identity")
@@ -186,8 +197,11 @@ def verify(root: Path = ROOT) -> int:
         )
         for owner_root in resolved_roots:
             canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
+        need(
+            resolved_roots == roots[module],
+            f"{module}: registered owner roots mismatch",
+        )
         maps[module] = row
-        roots[module] = resolved_roots
 
     operations = tests = delegates = 0
     for module, row in maps.items():

@@ -6,7 +6,7 @@
 
 `runtime.agentd` 已具有真实的单 Agent 宿主、Codex App Server 组成、Fleet 代数约束、私有存储接入、本地控制协议和 run 生命周期实现。核心宿主与若干产品路径已经落地；canonical intelligence 的物理执行闭环、跨重启执行身份恢复和目标部署验收仍有缺口。
 
-本次多轮对抗审计发现了接收目标绑定、readiness 与 drain 竞态、信任文件边界、弱验签公钥、状态转换原子性、监督任务退出认证以及异步宿主中的同步 effect 执行问题。整改已写入代码，并补充针对性回归。最终 canonical generation 精确域投影、真实 signed 七 owner / Config 回归，以及 effect worker 生命周期调整均已落盘，仍待集中原生验证。
+本次多轮对抗审计发现了接收目标绑定、readiness 与 drain 竞态、信任文件边界、弱验签公钥、状态转换原子性、监督任务退出认证以及异步宿主中的同步 effect 执行问题。整改已写入代码，并补充针对性回归。后续复审继续关闭了 Fleet 全目录读取和正常 drain 后的历史观察边界，并修复实际 macOS CI 暴露的跨平台问题。评估消费已改为正式 learning.eval owner 的封存回执，同时补齐完整 decision 封印与消费时的定时撤销检查。验证按第 7 节逐项记录。
 
 本文区分三类证据：源代码及调用关系可审阅；回归测试已编写但尚未执行成功；命令已执行且得到成功结果。文档齐备、测试存在、局部独立实验、产品接线和部署验收分别记录，不能相互替代。本报告不提供缺少定义和分母的完成百分比。
 
@@ -45,7 +45,7 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | AuthBus / Objective | 已有 signed ingress、durable journal、checkpoint 与 final-use 信任检查 | checkpoint、journal、路径边界及 helper dispatch 修复；durable / canonical admission 复用最终 gate | admission journal 不等于 dispatch ledger；跨重启产品 handoff 未闭环 |
 | Cognitive read / writer 接口 | 已有实际 owner store、context、revalidation 和显式 writer seam | readiness 回归使用真实 Cognitive owner fixture | 受治理写入、HNMF、ranker 等依赖显式外部 owner 组成和当前权威 |
 | Canonical intelligence | 具备 runner、七 owner invocation provider 和 Objective ingress 的显式组成 | 最终生命周期 gate；`prepare_for_run_start` 已实现精确域投影，真实 Config/Fleet/writer lock、signed Objective 与七 owner 回归已落盘 | 最后 generation 变更已通过编译 / Clippy，行为执行待 CI；物理 start / interrupt 与可信 terminal observer 未组成完整产品闭环 |
-| Automation / effect | 已有可选 scheduler、显式受保护 effect host、durable recovery 组成 | 信任 head、文件 currentness、恢复时间界限；有限 blocking worker、runtime 锁内 typed reservation 与 drain 计数调整 | 最后 worker 变更已通过编译 / Clippy，行为执行待 CI；正常 drain 后的 App Server 终态观察 RPC 通路仍有缺口 |
+| Automation / effect | 已有可选 scheduler、显式受保护 effect host、durable recovery 组成 | 信任 head、文件 currentness、恢复时间界限；有限 blocking worker、runtime 锁内 typed reservation 与 drain 计数调整 | 正常 drain 后已有原 App Server owner 的只读历史 capability；原生/完整进程与目标部署验收另行记录 |
 | Plasticity / Neuron | 显式 bootstrap / producer / owner 接口存在 | plasticity 使用完整 admission gate | 不是默认自动制造的 owner；`AgentdNeuronOwner` 未由默认路径完成全部产品组成 |
 | 监督与 shutdown | 已有 RuntimeTasks、required / optional 策略和 bounded reconciliation | required 任务过早成功退出不再被认证为成功 shutdown；连接与 effect worker 分别管理 | 活跃任务退出、外部终态、目标平台资源与 drain 资格仍需实际验证 |
 | 重启恢复 | checkpoint、frontier 与若干 owner recovery 已实现 | 恢复观察的 timeout、fence 与正常 drain 语义加强 | `recover_indeterminate` 仍为 coordinator 组件 API，无 daemon wire/client 和认证 durable-owner 产品 caller |
@@ -85,47 +85,52 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 
 最后 canonical generation 调整已落盘，保留不同 owner 的真实语义：Body/process launch generation 与 durable Fleet lifecycle generation 分开，只有在 Body、artifact、authority epoch 等完整身份一致后才投影 daemon run tuple。新增 `intelligence_objective_ingress_tests.rs::configured_running_objective_reaches_seven_owners_and_exact_durable_context_receipt` 从真实 Config/Fleet/writer lock 的 Starting 1 开始，经过 Running 2、signed AuthBus/Objective durable admission 和七 owner 组成，核对 ContextAttached 的完整 receipt 与实际 durable RunStart 的 lifecycle generation 2、fence、deadline，保留 immutable Body generation 1；`objective_binding_rejects_mixed_lifecycle_body_epoch_and_artifacts` 拒绝混用 lifecycle、Body epoch 和 artifacts。上述测试已写入，尚无执行通过证据。不能通过取消 generation 检查或将两个 epoch 混同来取得表面兼容。
 
-## 7. 验证记录
+## 7. 验证记录与候选区分
 
-| 命令 / 证据 | 当前结果 | 能说明的范围 |
+此前候选 `37bbd8c418b4f1356b0dbe0e1110de99dc2c9f8a` 的本地 Protocol 13/13 和 scoped production/tests Clippy 成功仍是历史证据。本地 Agentd codegen 的 SIGKILL/磁盘不足也保留为失败，不能视为测试通过。
+
+该候选随后获得真实 macOS 原生结果：[source-head job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36784424472/job/110127794842) 执行了五个 package 的 448 项测试，372 passed、76 failed、0 skipped。失败包括 Prompt 目录身份检查、release 重命名权限，以及旧 macOS fixture/源文本断言。它们已经成为本轮实际整改输入。merge-candidate macOS job 因共享等价树而跳过原生步骤，其 success 不计为另一次原生通过。Linux jobs 当时仍 queued。
+
+| 本轮检查 | 已观察结果 | 证据边界 |
 |---|---|---|
-| `python3 scripts/hepta_workspace.py` | 通过：193 local manifests，0 errors | 工作区 manifest / 结构校验，未执行 Rust |
-| `python3 -m unittest discover -v -s scripts -p test_hepta_agentd_ci.py` | 通过：15 tests | Agentd CI 脚本行为 |
-| `just fmt` | 执行成功；无关 Python formatter 变更已恢复原字节 | Rust 候选格式化；不包含无关脚本重排 |
-| `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-agentd --profile dev-small` | 最后 RW 补丁落盘后重新执行通过，退出 0，用时 36.87 秒；复用独立 target cache | 最终源候选的协议与 Agentd production、lib tests 和 integration tests 编译 / Clippy 检查；不是测试执行通过 |
-| 新测试编译修正 | 大型 fixture `json!` 已拆分；三处不存在的 `pretty_assertions` 导入已去除；最终源候选原生编译 / Clippy 检查通过 | 未提高 crate recursion limit、未新增依赖或改 Bazel lock |
-| 最后 Plasticity RW 补丁 | 局部 rustfmt、`git diff --check` 通过；上述最终源候选 Clippy 已包含其两项新回归 | Agentd 行为回归执行仍待结果；编译不能代替执行 |
-| 原生测试构建前几次尝试 | 初次多依赖 SIGKILL；两次低资源构建遇到磁盘不足；一次 Clippy 依赖 core 因内存被终止 | 资源失败记录保留，不能据此声称测试通过或推断测试逻辑失败 |
-| 较早 scoped nextest 尝试 | Protocol 构建在最终链接失败（退出 101），当时共享磁盘 100% 满；该次没有进入测试运行 | 历史资源失败；后续成功执行另列，不能把失败当作已运行 |
-| 最终 Protocol scoped nextest | 清理本任务不用的旧 debug cache 释放资源后，`just test` 成功执行 13/13，无 skip，退出 0；日志 `agentd-protocol-final-tests.log` | 仅协议 package 原生测试通过；Agentd 库及进程回归结果另列，全模块及目标平台验收未由此成立 |
-| 最终 Agentd scoped nextest：`just test --locked --cargo-profile dev-small -p codex-hepta-agentd --lib --test-threads=2` | 构建依赖 `codex-core` 在 codegen 阶段被 signal 9 / SIGKILL 终止，退出 101；当时共享磁盘也已满 | 未进入 Agentd 测试运行；没有 Agentd 行为通过证据；进程回归由已补齐的 CI 入口继续执行 |
-| 进程回归 CI 入口 | 已加入 `helper_dispatch`、`supervised_two_agents`；保留 shutdown / retirement 原 suite | 最终 source / merge candidate 原生 CI 尚在等待；Linux / macOS 未取得候选通过结果 |
-| `python3 -m unittest discover -v -s scripts -p test_hepta_implementation*.py` | 通过：130 tests | 原 provenance / 精确身份 / 迁移保护回归；ancestry 拒绝规则保留 |
-| 严格源码、文档与派生校验 | 全部 40 maps、40 technical documents、40 bindings 通过；registry aligned；派生投影 / index 检查通过 | 仅 ownership、当前源码对象及文档导航；productExecutionProved / authorityGranted 未提升 |
-| `git diff --check` | 通过 | 补丁 whitespace 检查 |
-| 初审 / 整改 / 独立再审 | 源码检查已实际完成，多轮局部缺陷修复后收口 | 在明示的 trusted operator-UID/root 边界内，不能证明不存在所有未来问题 |
-| ingress 独立 baseline / fixed 小实验 | 0666 checkpoint 从允许读取转为拒绝；外部 symlink target mode 从被改写转为保留 | 局部边界观察，不能代替正式 crate 测试或产品资格 |
+| Objective scoped nextest | 61 passed，2 个原有 ignored 未执行，退出 0 | 修正 JSON fixture 与 owner 的空 legal action set 合约矛盾；没有放宽 validator |
+| 全部 `scripts/test_hepta_*.py` | guards 修复阶段 710/710 passed | Python 回归；后续正式 schema 与 Lane A 同步后须再次执行 |
+| Lane B path guard / truth | 11 modules、62 operations、20 delegated owners、86 bindings 对齐 | canonical 全局 owner 解析；仍拒绝未注册、重复、重叠和歧义根 |
+| Lane E closure verify | `findingCount=0`、`ok=true`、退出 0 | 静态边界验收；不等于 native/product execution qualification |
+| Fleet dependency / Bazel lock | Unix libc、AuthBus/Operations state shim 依赖须通过官方 lock 命令同步 | 不手工伪造 lock/provenance；最终结果另补 |
+| 最终 native suites / Clippy / 格式 / 精确源码绑定 | 集中验证进行中 | 未完成的命令不记为通过 |
 
-测试源码、编译 / Clippy 成功、测试执行与外部部署验收分别记录。最终交付时应检查 exact-candidate CI 输出，不能把历史结果、未运行测试或文档中的验收设计提升为当前产品完成证据。
+原生测试、编译、文档导航、真实产品组成与目标部署验收分别记账。后续最终结果必须绑定实际发布源码对象，不能把历史成功或 skipped job 归入当前候选。
 
-## 8. 尚未闭环的产品与部署工作
+## 8. 后续复审发现与已落盘优化
 
-| 未完成边界 | 已有能力 | 下一项必须产生的证据 |
-|---|---|---|
-| Canonical physical execution | 已认证 Objective ingress、runner + invocation provider、daemon run tuple | 相同冻结身份到实际 `turn/start` / `interrupt` 的 caller，以及可信 owner terminal observation；取消 / failure / restart 的真实闭环 |
-| Durable Decision / Outcome handoff | Objective admission journal 与局部 run 生命周期 | 独立 execution / dispatch ledger 的精确身份交接与跨重启恢复；没有记录时拒绝猜测完成或重新 dispatch |
-| Run recovery daemon 产品入口 | coordinator `recover_indeterminate` | 有认证 durable-owner 供给的 wire / client / caller 与重启证据；恢复只能复建不确定状态，不能自行发明终态 |
-| Drain 后 external observation（P1） | 有限 recovery deadline、正常 Draining 代数允许观察、effect worker drain 计数 | App Server drain 关闭 RPC 后仍能读取历史终态的 owner-supported 通路；readonly observation 与新 admission 的明确区分 |
-| 默认 Neuron / plasticity 与高阶 profiles | 显式 owner / bootstrap / currentness 接口 | 已授权的完整 owner 组成和产品调用证据；不能把存在的类型或 CLI flag 算成已组成 |
-| Fleet 全目录读取的 namespace（P1） | Agentd 已检查 Fleet root、选中 home/run 和各实际文件边界 | Fleet owner 的全目录 startup traversal 仍须在打开每个 Agent 子树前验证权限漂移；可写 peer 子目录存在阻塞风险，尚未证明认证绕过 |
-| 目标平台与部署验收 | 本地进程、结构和回归入口 | 目标 host 上 authenticated socket / generation、saturation、drain / restart、资源预算测量，以及独立 acceptance / promotion / release |
+| 确证问题 | 本轮修复及兼容边界 |
+|---|---|
+| Prompt directory 的 nlink 会随合法目录项变化，旧 generic identity 导致 macOS 首次 owner open 被判损坏 | 目录比较稳定 dev/ino/uid/mode；regular private files 保留 nlink=1。回归验证合法目录项创建后 commit/reopen，继续拒绝换 inode、硬链接与宽权限 |
+| Fleet startup 遍历在校验前读取 peer 子树；text/JSON metadata 预检后仍可能无界读，FIFO/symlink 替换可阻塞 | owner 级 ControlRoot/DirectoryGuard 在 migration、scan 和每个读取边界校验完整 namespace；同 handle 有界读并前后核身份。Unix no-follow/nonblocking；信任锚是 Fleet root owner/root。保留合法 0644/0444/0555、root 读 nonroot 整树及原 hardlink crash recovery |
+| macOS 不允许 rename 已不可写的 staging directory | rename 前保留 owner write，发布后封存和 fsync。精确 pending retry 校验完整 manifest/files/digest/program/args；一般 admission 拒绝未封存根。rename 后 seal/fsync 失败保留 destination，不删除可能已被认可的 release；故障注入覆盖这些窗口 |
+| App Server drain 关闭原 RPC，automation 无法获得后续历史终态 | 原 owner Rust capability 只持 SQLite SELECT owner 与 QueueStore，不持 dispatcher/manager/event sink。后台任务与线程真实 join 才开放；timeout 不 ack。当前 rollout pointer 前后纯 SELECT、完整绑定 thread/client/payload/turn；禁止 repair、resume、start、reserve、wake |
+| 新 observer 若使用普通 thread read 会隐藏写入；旧 Indeterminate 可饿死后续 drain blocker；历史 JSONL 可无界分配/解压 | 使用无 repair 的 current pointer；专用 selector 优先 admitted/running；每 record 1MiB、扫描 32MiB/65536 lines/4s、zstd window 32MiB，完整扫描才接受 terminal。超界/截断/未知保留 uncertainty，Missing unknown dispatch 不重新派发 |
+| public 低层 evaluation V2 让 Agentd/plasticity 绕过 fenced holdout、sealed estimator 与 durable publication；receipt seal 漏 disposition/baseline/failed metrics | V2 收为 crate-internal；两个消费者和 evaluated-shadow 统一消费真实 ProductEvaluationRunner 封存回执。新封印绑定完整 decision；当前 owner verifier 重验原 Generator/Evaluator/Observer 窗口与 scheduled revocation，另验证精确 use signature。没有公共 unsigned wrapper |
+| CI 文档与 fixture 漂移，包括 operation counts、跨 lane owner、NDU/Objective/migration fixture、陈旧源字符串测试 | 按正式 registry、owner 合约、真实 runner 和原生行为同步。global outbox capacity fixture 分散 issuer 以保留原 per-issuer 512 限额；不扩大容量或删除 replay/active-row保护。原始七份历史来源快照保持不变 |
+| AuthBus/Operations 绕过中央 SQLite shim，strict Clippy 拒绝 | 集中固定 WAL/FULL/FK/busy timeout 的 durable pool 和隔离 schema-reference memory pool，保留 owner 原连接上限；每连接 disk-full 故障测试仅保留明确 test-only 定点例外 |
 
-这些缺口涉及现有跨 owner API 或独立部署权威。它们须以真实接口与操作证据补齐，不应通过改映射布尔值、制造 trust 文件、放松 fence 或把 timeout 当作成功来关闭。
+新增 Rust API 是 embedding capability，不是新增 RPC 允许 drain 期间 admission。`AgentdQualifiedEvaluationV1` 与 v2 use-signing payload 是明确的 typed API 迁移；旧 bundle/role/gate 输入不能自行制造产品资格。回执目前是进程内封存结构，不能序列化恢复，因此本轮不宣称 evaluation 跨进程恢复完成。
 
-## 9. 收口标准
+## 9. 尚未闭环的产品与部署工作
 
-本次已完成多个独立领域的初审、整改与再审。包含最后 Plasticity RW mode/link 补丁的最终源候选已重新通过 production / tests 编译与 Clippy；格式及结构检查通过。Protocol 原生测试已成功执行 13/13，无 skip；Agentd lib 原生构建因依赖 codegen SIGKILL 失败，没有进入运行；进程 suite 与目标 CI 仍待实际通过，全模块执行和部署资格尚未完成。此前资源失败记录保留。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
+| 未完成边界 | 必须补齐的真实组成与证据 |
+|---|---|
+| Canonical physical execution | 同一冻结身份到实际 turn/start、interrupt 和可信 terminal owner 的完整 caller；取消/failure/restart 闭环 |
+| Durable Decision / Outcome handoff | 独立 dispatch/execution ledger 的精确交接与跨重启恢复；缺记录不得猜完成或 redispatch |
+| Run recovery daemon 产品入口 | 有认证 durable execution owner 的 wire/client/caller；现 coordinator recovery 只能复建 Indeterminate |
+| 默认 Neuron / plasticity 与高阶 profiles | 明确授权的完整 owner 组成和实际调用证据；已有类型/flag 不等于自动激活 |
+| 目标平台、完整 drain 进程与部署验收 | authenticated socket/generation、饱和、真实进程 drain/restart、资源预算测量，以及独立 acceptance/promotion/release |
 
-审阅阶段按依赖拆分为：控制与监督、共享文件 namespace 与启动边界、canonical 身份、effect / admission / drain 组成、Browser / Prompt 可选 profile、文档及派生绑定。最先可独立落地的是接收目标绑定与监督修复；组成层必须连同实际调用方和回归一起审阅。
+Fleet 全目录防护与正常 drain 历史观察的源代码 P1 已有实现及行为回归。它们的源码闭合与原生/进程验收状态不同；不能借此宣称任意 downstream effect owner 已经具备原子 shutdown 或整个项目已完成。
 
-后续收口顺序是：在资源充足的 CI 完成 scoped 原生测试运行；用跨 owner 的实际 observer / execution caller 关闭第 8 节对应项；在目标平台取得独立验收。只有各项证据实际存在时，才更新对应完成度断言。
+## 10. 迭代停止标准
+
+本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation 与 publication cleanup。收口需在最终冻结源码上完成适当验证、严格源码绑定与独立复审；仍有确证问题则继续修复。
+
+停止代表在已审边界与既定可信 operator/root 模型内，当前轮没有新的可独立修补发现。它不代表所有未来风险为零，也不能把第 9 节缺失的产品或部署证据改成已完成。

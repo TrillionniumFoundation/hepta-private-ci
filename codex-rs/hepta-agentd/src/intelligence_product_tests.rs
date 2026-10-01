@@ -662,7 +662,7 @@ fn fixture_for_objective(
             intuition_request,
             context_request,
             evaluation_request,
-            signed_evaluation: None,
+            qualified_evaluation: None,
         },
         owners,
     }

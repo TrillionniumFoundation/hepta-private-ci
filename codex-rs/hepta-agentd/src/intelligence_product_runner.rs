@@ -113,7 +113,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
-        let evaluation_session = match inputs.signed_evaluation.take() {
+        let evaluation_session = match inputs.qualified_evaluation.take() {
             None => None,
             Some(signed) => {
                 let trust = self

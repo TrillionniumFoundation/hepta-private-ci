@@ -114,6 +114,17 @@ impl ProductQualificationEvidenceSinkV1 for Sink {
     }
 }
 
+struct ZeroPublicationSink;
+impl ProductQualificationEvidenceSinkV1 for ZeroPublicationSink {
+    fn persist(
+        &mut self,
+        _execution_digest: Digest32,
+        _decision: &SignedEvaluationDecisionV1,
+    ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
+        Ok(Digest32::ZERO)
+    }
+}
+
 struct Fixture {
     cross_fold: CrossFoldPlanV1,
     roles: Vec<MetricRoleContractV2>,
@@ -511,10 +522,62 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert!(!qualified.evidence_digest.is_zero());
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
+    qualified
+        .validate_current(&verifier, 50)
+        .expect("current original evidence");
+    assert!(matches!(
+        qualified.validate_current(&verifier, 91),
+        Err(ProductEvaluationError::Signed(
+            SignedEvaluationError::Evidence(
+                codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+            )
+        ))
+    ));
 
-    let mut changed_generator = qualified;
-    changed_generator.generator.principal_id = id("substituted-generator");
-    assert!(changed_generator.validate_integrity().is_err());
+    for field in 0..5 {
+        let mut tampered = qualified.clone();
+        match field {
+            0 => tampered.generator.principal_id = id("substituted-generator"),
+            1 => tampered.decision.decision.baseline_id = id("substituted-baseline"),
+            2 => tampered.decision.decision.evaluation_id = id("substituted-evaluation"),
+            3 => tampered
+                .decision
+                .decision
+                .failed_metrics
+                .push(id("substituted-metric")),
+            _ => {
+                tampered.decision.decision.disposition = match tampered
+                    .decision
+                    .decision
+                    .disposition
+                {
+                    crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                        crate::IndependentEvaluationDispositionV1::Ineligible
+                    }
+                    crate::IndependentEvaluationDispositionV1::Ineligible
+                    | crate::IndependentEvaluationDispositionV1::InsufficientEvidence => {
+                        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+                    }
+                }
+            }
+        }
+        assert!(
+            tampered.validate_integrity().is_err(),
+            "unsealed decision field {field}"
+        );
+    }
+    assert!(matches!(
+        runner.qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+            &mut ZeroPublicationSink
+        ),
+        Err(ProductEvaluationError::Integrity("publication digest"))
+    ));
 
     let mut tampered = temporal.clone();
     tampered.metrics[0].candidate.lower = FixedQ32::ZERO;
@@ -559,4 +622,81 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
             .is_err()
     );
     assert_eq!(fixture.provider.release_count, 0);
+}
+
+#[test]
+fn an_ineligible_product_decision_cannot_be_upgraded_by_a_receipt_consumer() {
+    let mut fixture = fixture();
+    fixture.roles[0].role = MetricRoleV2::PrimarySuperiority {
+        minimum_improvement: FixedQ32::ONE,
+    };
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles.clone(),
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    )
+    .expect("freeze rejecting product threshold");
+    let owner = FencedFinalHoldoutOwnerV1::initialize(
+        MemoryCas::default(),
+        digest("ineligible-holdout-binding"),
+        HoldoutWriterFenceV1 {
+            owner_id: id("evaluation-owner"),
+            generation: 1,
+            lease_digest: digest("lease-1"),
+        },
+    )
+    .expect("fenced owner");
+    let mut runner = ProductEvaluationRunnerV1::new(owner);
+    let temporal = runner
+        .evaluate_temporal_comparison(
+            &frozen,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+        )
+        .expect("real temporal evaluation");
+    let generator_key = SigningKey::from_bytes(&[41; 32]);
+    let evaluator_key = SigningKey::from_bytes(&[42; 32]);
+    let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
+        principal_id: id(name),
+        credential_chain_digest: digest(&format!("{name}-credential")),
+        signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+        scope_digest: digest("product-eval-scope"),
+        authority_epoch: 7,
+        authenticated_at: 1,
+        expires_at: 100,
+    };
+    let context = ProductQualificationContextV1 {
+        generator: principal("generator", &generator_key),
+        evaluator: principal("evaluator", &evaluator_key),
+        retention_receipt_digests: Vec::new(),
+        unlearning_receipt_digest: Digest32::ZERO,
+    };
+    let bundle = runner
+        .qualification_bundle(&temporal, &context)
+        .expect("bound bundle");
+    let (_, evidence, verifier) = signed_context(&bundle, &fixture.roles);
+    let mut receipt = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+            &mut Sink::default(),
+        )
+        .expect("durably publish rejecting decision");
+    assert_eq!(
+        receipt.decision.decision.disposition,
+        crate::IndependentEvaluationDispositionV1::Ineligible
+    );
+    receipt
+        .validate_integrity()
+        .expect("genuine rejecting receipt");
+    receipt.decision.decision.disposition =
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection;
+    assert!(receipt.validate_integrity().is_err());
 }

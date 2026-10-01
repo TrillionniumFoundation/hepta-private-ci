@@ -286,6 +286,7 @@ pub(crate) struct MessageProcessorArgs {
     pub(crate) remote_control_handle: Option<RemoteControlHandle>,
     pub(crate) plugin_startup_tasks: crate::PluginStartupTasks,
     pub(crate) turn_queue_capacity: Option<NonZeroUsize>,
+    pub(crate) graceful_drain: Option<crate::AppServerDrainHandle>,
     pub(crate) hepta: HeptaExtensionBindings,
 }
 
@@ -312,6 +313,7 @@ impl MessageProcessor {
             remote_control_handle,
             plugin_startup_tasks,
             turn_queue_capacity,
+            graceful_drain,
             hepta,
         } = args;
         let hepta = hepta.validated();
@@ -335,6 +337,17 @@ impl MessageProcessor {
             ThreadStoreConfig::InMemory { .. } => None,
         };
         let environment_manager_for_requests = Arc::clone(&environment_manager);
+        if let (Some(drain), Some(queue), Some(database)) = (
+            graceful_drain.as_ref(),
+            queue_store.as_ref(),
+            state_db.as_ref(),
+        ) {
+            drain.bind_historical_owner(
+                config.codex_home.clone(),
+                Arc::clone(database),
+                Arc::clone(queue),
+            );
+        }
         let environment_manager_for_extensions = Arc::clone(&environment_manager);
         let restriction_product = session_source.restriction_product();
         let executor_skill_provider: Arc<dyn codex_skills_extension::SkillProvider> = Arc::new(
@@ -812,12 +825,12 @@ impl MessageProcessor {
             .await;
     }
 
-    pub(crate) async fn drain_background_tasks(&self) {
+    pub(crate) async fn drain_background_tasks(&self) -> bool {
         self.models_refresh_worker.shutdown();
         if let Some(worker) = &self.turn_cost_worker {
             worker.shutdown();
         }
-        self.thread_processor.drain_background_tasks().await;
+        self.thread_processor.drain_background_tasks().await
     }
 
     pub(crate) async fn cancel_active_login(&self) {
@@ -828,8 +841,8 @@ impl MessageProcessor {
         self.thread_processor.clear_all_thread_listeners().await;
     }
 
-    pub(crate) async fn shutdown_threads(&self) {
-        self.thread_processor.shutdown_threads().await;
+    pub(crate) async fn shutdown_threads(&self) -> bool {
+        self.thread_processor.shutdown_threads().await
     }
 
     pub(crate) async fn connection_closed(

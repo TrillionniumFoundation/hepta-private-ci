@@ -73,8 +73,16 @@ fn damped_preference_update_emits_local_solver_receipts() {
         receipts
             .iter()
             .map(|receipt| receipt.residual_raw)
+            .chain(std::iter::once(FixedQ32::ONE.raw()))
             .max()
             .expect("maximum residual")
+    );
+    // The maximum includes the initial distance (one Q32 unit), before the
+    // first damped update reduces it to three quarters of a unit.
+    assert_eq!(termination.maximum_residual_raw, FixedQ32::ONE.raw());
+    assert_eq!(
+        receipts.first().expect("first damped update").residual_raw,
+        3_i64 << 30
     );
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }

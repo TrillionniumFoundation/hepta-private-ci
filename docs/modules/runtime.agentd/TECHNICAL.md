@@ -95,7 +95,15 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its tasks through the existing `RuntimeTasks` host. The composition registers required tasks and invokes the automation-owned constructor; adding a normal optional task no longer adds a central completion enum or cleanup branch. Optional failure invokes its owner-local quarantine callback, while a failed quarantine, writer error or generation fence stops the host. Retirement uses cooperative cancellation and acknowledged owner cleanup, not a timeout relabeled as success.
 
-Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`; a runner by itself advertises nothing, compatibility `RunStart` remains distinct, and unsigned evaluation input remains rejected.
+Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`; a runner by itself advertises nothing, compatibility `RunStart` remains distinct, and unsigned evaluation input remains rejected. The canonical evaluation input is
+`AgentdQualifiedEvaluationV1`: a sealed `learning.eval::ProductQualificationReceiptV1`
+from the fenced product runner plus the current evaluator's exact use attestation.
+Agentd checks the receipt seal, current trust and owner key/epoch, original signed-evidence
+lifetimes and scheduled revocations through the receipt owner, candidate/objective and run/snapshot/context/candidate-set bindings.
+It cannot qualify caller-supplied metric intervals. The typed host input changed
+from `signed_evaluation` to `qualified_evaluation`; evaluators must sign
+`intelligence_evaluation_binding_payload_v2`. This does not implement a durable
+product-qualification recovery store or establish full runtime activation.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
@@ -359,12 +367,28 @@ effect rollback, cross-owner atomic shutdown or independently provisioned trust.
 The current host drain snapshot requires no local effect workers, no durable armed
 or indeterminate effects, no automation blockers and actual App Server drain
 acknowledgement. The reservation closes this registered HTTP host's late-admission
-window. A separate existing cross-owner gap remains: normal App Server drain closes
-the RPC path used by automation to obtain historical terminal observations. A
-read-only owner-supported observation path must remain available after new
-admission closes; local control reconciliation and worker counts do not provide
-that path. Target-host shutdown and additional downstream-owner drain/recovery
-contracts still require their own qualification.
+window. Normal App Server drain still closes all RPC admission. Its original
+`AppServerDrainHandle` now retains an embedding-only historical observation
+capability, enabled only after request/thread-start background tasks and every
+thread writer successfully join. A timeout leaves the acknowledgement false.
+`observe_exact_submission` uses the original `StateRuntime` and pure queue
+SELECTs, rechecks the selected rollout pointer before and after the read, and
+cannot repair metadata, reopen a store, reserve a message or start a turn.
+
+The historical scanner binds the owning thread, exact client ID and payload.
+Only matching `TurnComplete` / `TurnAborted` records prove a terminal outcome;
+recovery-unready and restart records clear an older terminal observation. Plain
+and compressed scans require a complete record stream and are bounded at 1 MiB
+per record, 32 MiB of scanned bytes, 65,536 lines and four seconds. A partial or
+over-limit scan returns `Unknown` instead of trusting a terminal record from a
+prefix. Agentd uses this capability for settlement while Draining, rechecks
+Running admission before each subsequent dispatch, and never requeues an unknown
+effect. Unresolved history does not starve later admitted drain blockers.
+
+This closes the missing source observation path after normal RPC shutdown.
+Native and full socket/daemon drain execution evidence remain separate;
+target-host shutdown and additional downstream-owner drain/recovery contracts
+still require their own qualification.
 
 ## 8. Failure semantics, recovery and rollback
 
@@ -421,11 +445,20 @@ uses descriptor-bound, private regular files before truncation or publication.
 The optional Browser/Servo profile hashes artifacts incrementally with an 8 KiB
 buffer and a size-limited handle, then launches the verified canonical paths.
 These checks reject unsafe writable ancestors; trusted sticky ancestors remain
-compatible. They do not attest a child process's loaded image. Fleet's own
-whole-catalog startup traversal has a remaining owner-level namespace-check gap
-for peer Agent subtrees before its readers open them. Writable peer subtrees can
-block startup; the finding is not an established authentication bypass. The
-current Agentd Fleet-root and selected-writer checks do not close this P1 gap.
+compatible. They do not attest a child process's loaded image.
+
+Fleet's owner now checks every registered peer subtree before legacy migration
+or control-file reads. Its private `control_file.rs` binds custody to the Fleet
+root owner (and root on Unix), rather than the reader's effective UID or the
+individual file's self-declared owner. It rechecks ancestor directory and opened
+file identity, permissions and bounded bytes; Unix nonblocking/no-follow opens
+reject a regular-file replacement by a FIFO or final symlink. Directory link
+counts may change normally, and Fleet's existing hard-link publication/recovery
+remains supported. Text control reads are capped at 1 MiB; release-manifest JSON
+reads retain their 32 KiB bound. Catalog hashing streams the same inspected handle against
+its initial length. Unsafe peer namespaces now fail before migration side
+effects, closing the prior whole-catalog source gap. Selected-platform execution
+and custody qualification remain separate.
 
 This is a bounded freshness observation within the trusted operator-UID/root
 boundary. It neither isolates malicious same-UID/root code nor holds a namespace
@@ -539,6 +572,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs) covers permission/link/directory drift, exact predecessor replacement and conflicting temporary-file ownership.
 - [codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs](../../../codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs) covers unsafe ancestor/parent rejection, native snapshot substitution and namespace rechecks, plus `mutable_bootstrap_files_reject_group_or_world_write_before_owner_callback` and `hardlinked_mutable_bootstrap_file_is_rejected_before_owner_callback`. Mutable owner callbacks are rejected before unsafe input reaches them; read-only permission/link compatibility remains covered. Source cases require exact-candidate execution.
 - [codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs](../../../codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs) includes `effect_reservation_is_visible_before_durable_admission_and_drain_closes_the_gate`, exercising the actual Fleet/Agentd/Cognitive readiness gate, pre-durable worker visibility, rejected admission during drain and retained old reservation. It never fabricates a physical App Server drain acknowledgement.
+- [codex-rs/hepta-agentd/src/automation_drain_recovery_tests.rs](../../../codex-rs/hepta-agentd/src/automation_drain_recovery_tests.rs), [App Server owner tests](../../../codex-rs/app-server/src/historical_observation_tests.rs), [queue history tests](../../../codex-rs/ext/queue/src/historical_observation_tests.rs) and [StateRuntime read-only binding tests](../../../codex-rs/state/src/runtime/queued_client_binding_observation_tests.rs) cover exact historical settlement, incomplete-history uncertainty, original-owner custody, no metadata repair, and progress past indeterminate history. They are owner/DB/history cases rather than a complete socket/daemon drain receipt.
+- [Fleet peer namespace tests](../../../codex-rs/hepta-fleet/src/registry_namespace_tests.rs) and [control-file tests](../../../codex-rs/hepta-fleet/src/control_file_tests.rs) cover unsafe peers before migration, root/nonroot custody, final FIFO/symlink replacement, bounded reads and retained hard-link recovery. Root/nonroot execution requires the stated Unix privilege fixture; source presence is not target-platform qualification.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
 

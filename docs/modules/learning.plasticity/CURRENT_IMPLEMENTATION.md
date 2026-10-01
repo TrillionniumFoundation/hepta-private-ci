@@ -83,7 +83,7 @@ override these machine status facts.
 | Signed generator authentication | **Implemented adapter** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
 | Typed owner-evidence resolution boundary | **Implemented with live-frontier/value binding across Dataset, Policy, NDU modulator, broadcast policy, neuron eligibility and exact parameter signals** | `ConcretePlasticityOwnerEvidenceResolverV1`, `PlasticityDynamicOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
-| Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
+| Cryptographically independent evaluator admission | **Implemented adapter** | sealed `ProductQualificationReceiptV1` + current `LearningEvidenceVerifierV1` + exact governed-use evaluator signature |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
 | Product-workspace proposal adapter | **Implemented; update and independently-attested no-admissible-update terminal paths are durable** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | Agentd parameter host adapter entrypoint | **Implemented and called by the long-lived Agentd plasticity owner; not target-host executed/qualified** | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
@@ -179,7 +179,7 @@ product-workspace adapter. It requires, before any durable proposal append:
 3. an `Observer` signature over the selected artifact, artifact-registry binding/head,
    qualification-evidence head, the canonical host-resolved owner-evidence set,
    window, generations, dataset/update/modulator/eligibility digests and generator digest;
-4. signed independent evaluation for every generated update candidate; if the deterministic generator produces no admissible update, a distinct Evaluator must instead sign the exact `NoAdmissibleUpdate` terminal payload and that no-change proposal is durably recorded;
+4. a sealed `ProductQualificationReceiptV1` from the fenced `learning.eval` product runner for every generated update candidate, with exact generator/baseline/objective/dataset/current-trust bindings, owner validation of original signed-evidence lifetimes and scheduled revocations, and a fresh Evaluator signature over that receipt plus the exact governed admission; if the deterministic generator produces no admissible update, a distinct Evaluator must instead sign the exact `NoAdmissibleUpdate` terminal payload and that no-change proposal is durably recorded;
 5. one consistent authenticated evaluator identity across update evaluations or the authenticated no-change terminal disposition;
 6. exact artifact/window/generation lineage and exact durable predecessor;
 7. a governed V2 `evaluation_digest` that durably binds candidate-evaluation evidence,

@@ -10,6 +10,29 @@ use super::poisoned_state;
 use crate::AgentdError;
 
 impl AgentdState {
+    /// Historical observation has a separate gate from new timer admission.
+    /// The exact original App Server owner remains readable after its writers
+    /// have joined, while all Running-only readiness gates stay closed.
+    pub(crate) fn automation_draining_observer(
+        &self,
+    ) -> Result<Option<codex_app_server::AppServerDrainHandle>, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        Ok(
+            (runtime.lifecycle == AgentLifecycle::Draining && !runtime.fenced)
+                .then(|| self.app_server_drain.clone()),
+        )
+    }
+
+    pub(crate) fn automation_recovery_ready(&self) -> Result<bool, AgentdError> {
+        if self.automation_admission_ready()? {
+            return Ok(true);
+        }
+        Ok(self
+            .automation_draining_observer()?
+            .is_some_and(|handle| handle.historical_observation_ready()))
+    }
+
     pub(crate) async fn request_drain(
         &self,
         automation: Option<&AutomationStore>,

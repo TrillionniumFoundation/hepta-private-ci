@@ -260,7 +260,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if !state.automation_is_available()? {
             return wait_for_cancellation(&cancellation).await;
         }
-        let ready = match state.automation_admission_ready() {
+        let ready = match state.automation_recovery_ready() {
             Ok(ready) => ready,
             Err(error @ AgentdError::GenerationFenced(_)) => {
                 state.mark_fenced();
@@ -279,15 +279,30 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         // Reconcile one durable historical occurrence before admitting new
         // work. This is bounded to one item/turn-page chain per tick and does
         // not prevent an overlap-allowed scheduler from also making progress.
+        let running_before_recovery = state.automation_admission_ready()?;
         if let Err(error) =
             automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
                 .await
         {
+            // Closing the transport can race a Running-only observation.
+            // Preserve its durable uncertainty and retry through the original
+            // historical owner after drain; no queue request is resubmitted.
+            if running_before_recovery
+                && !matches!(error, AgentdError::GenerationFenced(_))
+                && state.automation_draining_observer()?.is_some()
+            {
+                continue;
+            }
             return stop_after_recovery_error(error, &state, &cancellation).await;
         }
 
         if cancellation.is_cancelled() {
             return Ok(());
+        }
+        // Historical settlement remains available during graceful drain, but
+        // an observation never grants permission for another timer dispatch.
+        if !state.automation_admission_ready()? {
+            continue;
         }
         // Recovery can wait for remote turn history. Issue the next lease
         // against the current clock rather than the timestamp from before

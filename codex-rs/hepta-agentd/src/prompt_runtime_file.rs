@@ -45,7 +45,7 @@ impl PromptDirectory {
         let before = fs::symlink_metadata(path).map_err(unavailable)?;
         validate_directory(&before)?;
         let physical = path.canonicalize().map_err(unavailable)?;
-        if !same_identity(
+        if !same_directory_identity(
             &before,
             &fs::symlink_metadata(&physical).map_err(unavailable)?,
         ) {
@@ -60,7 +60,7 @@ impl PromptDirectory {
             let handle = File::open(&physical).map_err(unavailable)?;
             let opened = handle.metadata().map_err(unavailable)?;
             validate_directory(&opened)?;
-            if !same_identity(&before, &opened) {
+            if !same_directory_identity(&before, &opened) {
                 return Err(AgentdPromptRuntimeError::CorruptState);
             }
             namespace.verify(&probe, &opened).map_err(corrupt)?;
@@ -70,7 +70,7 @@ impl PromptDirectory {
             let after = handle.metadata().map_err(unavailable)?;
             validate_directory(&after)?;
             if !same_inode_owner(&before, &after)
-                || !same_identity(
+                || !same_directory_identity(
                     &after,
                     &fs::symlink_metadata(&physical).map_err(unavailable)?,
                 )
@@ -96,12 +96,13 @@ impl PromptDirectory {
     fn verify(&self) -> Result<(), AgentdPromptRuntimeError> {
         let after = fs::symlink_metadata(&self.path).map_err(unavailable)?;
         validate_directory(&after)?;
-        if !same_identity(&self.before, &after) {
+        if !same_directory_identity(&self.before, &after) {
             return Err(AgentdPromptRuntimeError::CorruptState);
         }
         #[cfg(unix)]
         {
-            if !same_identity(&self.before, &self.handle.metadata().map_err(unavailable)?) {
+            if !same_directory_identity(&self.before, &self.handle.metadata().map_err(unavailable)?)
+            {
                 return Err(AgentdPromptRuntimeError::CorruptState);
             }
             self.namespace
@@ -288,6 +289,21 @@ fn same_inode_owner(before: &Metadata, after: &Metadata) -> bool {
     #[cfg(not(unix))]
     {
         before.file_type() == after.file_type()
+    }
+}
+
+// Directory entry changes are normal for this mutable store. Unix directory
+// link counts can change when entries are created; inode, owner and mode still
+// identify the directory. Regular files retain their single-link checks.
+fn same_directory_identity(before: &Metadata, after: &Metadata) -> bool {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        same_inode_owner(before, after) && before.mode() == after.mode()
+    }
+    #[cfg(not(unix))]
+    {
+        same_inode_owner(before, after)
     }
 }
 
