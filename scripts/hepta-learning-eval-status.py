@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate conservative lexical source truth for learning.eval."""
+
 from __future__ import annotations
 
 import argparse
@@ -185,7 +186,7 @@ def require_tokens() -> None:
         for call in calls:
             expected = rust_code_tokens(call)
             if not any(
-                tokens[index:index + len(expected)] == expected
+                tokens[index : index + len(expected)] == expected
                 and (index == 0 or tokens[index - 1] not in (".", ":"))
                 for index in range(len(tokens) - len(expected) + 1)
             ):
@@ -206,7 +207,10 @@ def external_references(symbol: str) -> list[str]:
 
 def validate_map(model: dict) -> None:
     value = json.loads(MAP.read_text(encoding="utf-8"))
-    if value.get("schema") != "hepta.module-implementation-map.v3" or value.get("module") != "learning.eval":
+    if (
+        value.get("schema") != "hepta.module-implementation-map.v3"
+        or value.get("module") != "learning.eval"
+    ):
         raise SystemExit("implementation-map identity drift")
     rows = value.get("operations", [])
     symbols = [row.get("nativeSymbol") for row in rows]
@@ -236,22 +240,55 @@ def validate_map(model: dict) -> None:
         raise SystemExit("external claim self-issued")
     source = value.get("sourceBase", {})
     commit, tree = source.get("commit", ""), source.get("tree", "")
-    if len(commit) != 40 or git("rev-parse", f"{commit}^{{tree}}").stdout.strip() != tree:
+    if (
+        len(commit) != 40
+        or git("rev-parse", f"{commit}^{{tree}}").stdout.strip() != tree
+    ):
         raise SystemExit("source observation identity drift")
     git("merge-base", "--is-ancestor", commit, "HEAD")
     for caller in model["sourceFacts"]["callers"]:
         checked_paths.add(caller["sourcePath"])
     observed_paths = sorted(checked_paths | set(SOURCE_IDENTITY_ROOTS))
-    changed = sorted(set(filter(None, git(
-        "diff", "--no-ext-diff", "--name-only", "-z", commit, "--", *observed_paths
-    ).stdout.split("\0"))))
+    changed = sorted(
+        set(
+            filter(
+                None,
+                git(
+                    "diff",
+                    "--no-ext-diff",
+                    "--name-only",
+                    "-z",
+                    commit,
+                    "--",
+                    *observed_paths,
+                ).stdout.split("\0"),
+            )
+        )
+    )
     if changed:
-        raise SystemExit("owned or mapped source changed after observation: " + ", ".join(changed))
-    untracked = sorted(set(filter(None, git(
-        "ls-files", "--others", "--exclude-standard", "-z", "--", *observed_paths
-    ).stdout.split("\0"))))
+        raise SystemExit(
+            "owned or mapped source changed after observation: " + ", ".join(changed)
+        )
+    untracked = sorted(
+        set(
+            filter(
+                None,
+                git(
+                    "ls-files",
+                    "--others",
+                    "--exclude-standard",
+                    "-z",
+                    "--",
+                    *observed_paths,
+                ).stdout.split("\0"),
+            )
+        )
+    )
     if untracked:
-        raise SystemExit("untracked owned or mapped source lacks observation: " + ", ".join(untracked))
+        raise SystemExit(
+            "untracked owned or mapped source lacks observation: "
+            + ", ".join(untracked)
+        )
 
 
 def validate() -> dict:
@@ -286,7 +323,16 @@ def main() -> None:
             "test_hepta_learning_eval_status.py",
         ):
             subprocess.run(
-                [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"), "-p", pattern],
+                [
+                    sys.executable,
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    str(ROOT / "scripts"),
+                    "-p",
+                    pattern,
+                ],
                 check=True,
             )
     output = canonical(validate())
@@ -296,9 +342,19 @@ def main() -> None:
         STATUS.write_text(output, encoding="utf-8")
         print(json.dumps({"written": str(STATUS.relative_to(ROOT))}))
     elif not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != output:
-        raise SystemExit("learning.eval status is stale; run scripts/hepta-learning-eval-status.py write")
+        raise SystemExit(
+            "learning.eval status is stale; run scripts/hepta-learning-eval-status.py write"
+        )
     else:
-        print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": 6}))
+        print(
+            json.dumps(
+                {
+                    "status": "ok",
+                    "evidenceClass": "lexical_source_inventory",
+                    "documentsChecked": 6,
+                }
+            )
+        )
 
 
 if __name__ == "__main__":

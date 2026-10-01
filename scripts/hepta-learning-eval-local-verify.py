@@ -8,6 +8,7 @@ acceptance, or authorize activation/release. The heavier Rust, fault, coverage,
 exact-head, and ordered-parent merge matrices remain in their dedicated
 qualification workflows.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -41,9 +42,7 @@ def evidence_hash(value: dict[str, Any]) -> str:
 
 
 def git(root: Path, *args: str) -> str:
-    return subprocess.check_output(
-        ["git", "-C", str(root), *args], text=True
-    ).strip()
+    return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
 
 
 def source_identity(root: Path, expected_commit: str | None = None) -> dict[str, str]:
@@ -153,7 +152,9 @@ def python_sources(root: Path) -> list[str]:
     }
     missing = sorted(required - set(unique))
     if missing:
-        raise ValueError(f"local verification source inventory is incomplete: {missing}")
+        raise ValueError(
+            f"local verification source inventory is incomplete: {missing}"
+        )
     return unique
 
 
@@ -188,7 +189,11 @@ def command_inventory(root: Path, output: Path) -> list[tuple[str, list[str]]]:
         ),
         (
             "control-plane-identity-tests",
-            [python, "scripts/test_hepta_learning_eval_control_plane_identity.py", "-v"],
+            [
+                python,
+                "scripts/test_hepta_learning_eval_control_plane_identity.py",
+                "-v",
+            ],
         ),
         (
             "trusted-reporter-tests",
@@ -238,7 +243,9 @@ def validate_summary(value: dict[str, Any]) -> None:
         "releaseAuthorized",
     ):
         if claims.get(external) is not False:
-            raise ValueError(f"local deterministic run exceeded claim scope: {external}")
+            raise ValueError(
+                f"local deterministic run exceeded claim scope: {external}"
+            )
     commands = value.get("commands")
     if not isinstance(commands, list) or not commands:
         raise ValueError("local deterministic command inventory is missing")
@@ -330,7 +337,9 @@ def main(argv: list[str] | None = None) -> int:
         source = locals().get("before", {"commit": "", "tree": ""})
         summary = build_summary(source, commands, started, utc_now())
     path = output / "local-deterministic-summary.json"
-    path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(path)
     return 0 if summary["claims"]["localDeterministicVerifiedByThisRun"] else 1
 

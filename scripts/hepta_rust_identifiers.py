@@ -4,6 +4,7 @@ Comments and literals are ignored; qualified names and aliases retain the exact
 source identifier. cfg expressions and macro bodies are deliberately retained:
 removing them without the compiler's configuration can hide production callers.
 """
+
 from __future__ import annotations
 
 import re
@@ -56,7 +57,10 @@ def rust_code_tokens(source: str) -> tuple[str, ...]:
         # A lifetime is not a character literal. Match only a closed character
         # (including escaped and unicode forms); never skip an arbitrary span.
         if source[cursor] == "'":
-            char = re.match(r"'(?:\\u\{[0-9a-fA-F_]+\}|\\x[0-9a-fA-F]{2}|\\.|[^'\\\n])'", source[cursor:])
+            char = re.match(
+                r"'(?:\\u\{[0-9a-fA-F_]+\}|\\x[0-9a-fA-F]{2}|\\.|[^'\\\n])'",
+                source[cursor:],
+            )
             if char:
                 cursor += char.end()
                 tokens.append("<literal>")

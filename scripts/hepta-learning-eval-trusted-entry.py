@@ -16,6 +16,7 @@ to express in GitHub Actions YAML:
 Candidate source and artifacts remain untrusted data. This script imports the
 lower-level reporter from the trusted default-branch checkout only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -178,7 +179,9 @@ def artifact_files(root: Path) -> list[Path]:
 def load_strict_json(path: Path) -> Any:
     size = path.stat().st_size
     if not 0 < size <= MAX_SUMMARY_BYTES:
-        raise ValueError(f"artifact JSON size is outside the allowed bound: {path.name}")
+        raise ValueError(
+            f"artifact JSON size is outside the allowed bound: {path.name}"
+        )
     return json.loads(
         path.read_text(encoding="utf-8"),
         object_pairs_hook=reject_duplicate_pairs,
@@ -257,7 +260,9 @@ def normalized_job_conclusions(
         if not isinstance(name, str) or not name:
             raise ValueError("producer job lacks a terminal name")
         if not isinstance(raw, str) or raw not in CONCLUSION_NORMALIZATION:
-            raise ValueError(f"producer job has an unapproved conclusion: {name}={raw!r}")
+            raise ValueError(
+                f"producer job has an unapproved conclusion: {name}={raw!r}"
+            )
         if name in conclusions:
             raise ValueError(f"duplicate producer job name: {name}")
         if str(job.get("run_attempt", run_attempt)) != run_attempt:
@@ -298,9 +303,7 @@ def validate_trusted_control_plane_identity(
 ) -> None:
     module = reporter()
     for path in TRUSTED_CONTROL_PLANE_PATHS:
-        candidate = module.fetch_candidate_workflow(
-            repository, path, source_sha, token
-        )
+        candidate = module.fetch_candidate_workflow(repository, path, source_sha, token)
         validate_control_plane_text(candidate, path, root=root)
 
 
@@ -354,9 +357,7 @@ def validate_marker_inventory(body: str, marker: str) -> None:
         if body.find(start) > body.find(end):
             raise ValueError("PR body machine marker endpoints are reversed")
     if legacy_start:
-        if body.find(LEGACY_SOURCE_MARKER[0]) > body.find(
-            LEGACY_SOURCE_MARKER[1]
-        ):
+        if body.find(LEGACY_SOURCE_MARKER[0]) > body.find(LEGACY_SOURCE_MARKER[1]):
             raise ValueError("PR body legacy marker endpoints are reversed")
 
 
@@ -386,8 +387,7 @@ def replace_single_marker(body: str, block: str, marker: str) -> str:
     if next_body.count(start) != 1 or next_body.count(end) != 1:
         raise ValueError("PR marker replacement did not produce one canonical block")
     if marker == "source" and (
-        LEGACY_SOURCE_MARKER[0] in next_body
-        or LEGACY_SOURCE_MARKER[1] in next_body
+        LEGACY_SOURCE_MARKER[0] in next_body or LEGACY_SOURCE_MARKER[1] in next_body
     ):
         raise ValueError("legacy marker survived canonical replacement")
     return next_body
@@ -402,9 +402,7 @@ def validate_final_pr_scope(
     source_sha: str,
 ) -> None:
     module = reporter()
-    module.validate_current_pull_request(
-        current, repository, pull_request, source_sha
-    )
+    module.validate_current_pull_request(current, repository, pull_request, source_sha)
     if current.get("number") != pull_request:
         raise ValueError("current pull request number mismatch")
     if current.get("draft") is not True:
@@ -413,10 +411,7 @@ def validate_final_pr_scope(
     if not isinstance(base, dict):
         raise ValueError("current pull request base identity is missing")
     base_repo = base.get("repo")
-    if (
-        not isinstance(base_repo, dict)
-        or base_repo.get("full_name") != repository
-    ):
+    if not isinstance(base_repo, dict) or base_repo.get("full_name") != repository:
         raise ValueError("current pull request base repository mismatch")
     if marker == "exact":
         if summary.get("baseCommit") != base.get("sha"):
@@ -483,9 +478,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if SUMMARY_NAMES[args.marker] != args.summary_name:
             raise ValueError("summary filename does not match the selected marker")
-        summary = load_strict_summary(
-            args.artifact_root.resolve(), args.summary_name
-        )
+        summary = load_strict_summary(args.artifact_root.resolve(), args.summary_name)
         module = reporter()
         module.job_conclusions = normalized_job_conclusions
         if not hasattr(module, "_strict_original_validate_actual_job_results"):

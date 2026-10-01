@@ -24,9 +24,16 @@ SPEC.loader.exec_module(MODULE)
 class ControlPlaneIdentityTests(unittest.TestCase):
     def git_tree(self):
         return {
-            "sha": "2" * 40, "truncated": False,
-            "tree": [{"path": "scripts/tool.py", "mode": "100644",
-                      "type": "blob", "sha": "3" * 40}],
+            "sha": "2" * 40,
+            "truncated": False,
+            "tree": [
+                {
+                    "path": "scripts/tool.py",
+                    "mode": "100644",
+                    "type": "blob",
+                    "sha": "3" * 40,
+                }
+            ],
         }
 
     def candidate_layout(self, tree, commit=None):
@@ -63,10 +70,21 @@ class ControlPlaneIdentityTests(unittest.TestCase):
             target.write_bytes(content)
         subprocess.run(["git", "init", "-q", str(root)], check=True)
         subprocess.run(["git", "-C", str(root), "add", "--all"], check=True)
-        subprocess.run([
-            "git", "-C", str(root), "-c", "user.name=Inventory test",
-            "-c", "user.email=inventory@example.invalid", "commit", "-qm", "fixture",
-        ], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "-c",
+                "user.name=Inventory test",
+                "-c",
+                "user.email=inventory@example.invalid",
+                "commit",
+                "-qm",
+                "fixture",
+            ],
+            check=True,
+        )
         return workflows, auxiliary, values
 
     def test_exact_candidate_bytes_and_workflow_inventory_are_bound(self):
@@ -88,7 +106,9 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                 paths=auxiliary,
                 fetcher=fetcher,
                 workflow_fetcher=lambda *_: workflows,
-                import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(root),
+                import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(
+                    root
+                ),
             )
             self.assertEqual(
                 result["schema"],
@@ -106,17 +126,27 @@ class ControlPlaneIdentityTests(unittest.TestCase):
             workflows, auxiliary, values = self.fixture(root)
 
             for changed in (auxiliary[0], "scripts/just-shell.py"):
-                def fetcher(_repository: str, path: str, _sha: str, _token: str) -> bytes:
+
+                def fetcher(
+                    _repository: str, path: str, _sha: str, _token: str
+                ) -> bytes:
                     return values[path] + (b"drift" if path == changed else b"")
 
-                with self.subTest(changed=changed), self.assertRaisesRegex(
-                    ValueError, "differs from trusted"
+                with (
+                    self.subTest(changed=changed),
+                    self.assertRaisesRegex(ValueError, "differs from trusted"),
                 ):
                     MODULE.verify_control_plane(
-                        "owner/repository", "b" * 40, "token", root=root,
-                        paths=auxiliary, fetcher=fetcher,
+                        "owner/repository",
+                        "b" * 40,
+                        "token",
+                        root=root,
+                        paths=auxiliary,
+                        fetcher=fetcher,
                         workflow_fetcher=lambda *_: workflows,
-                        import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(root),
+                        import_layout_fetcher=lambda *_: (
+                            MODULE.trusted_python_import_layout(root)
+                        ),
                     )
 
     def test_module_addition_deletion_and_package_replacement_fail_closed(self):
@@ -124,13 +154,23 @@ class ControlPlaneIdentityTests(unittest.TestCase):
             root = Path(directory)
             workflows, auxiliary, values = self.fixture(root)
             trusted = MODULE.trusted_python_import_layout(root)
-            without_first = tuple(row for row in trusted if row[0] != "scripts/first.py")
-            changed_layouts = [without_first, without_first + (("scripts/first/__init__.py", "100644"),)]
+            without_first = tuple(
+                row for row in trusted if row[0] != "scripts/first.py"
+            )
+            changed_layouts = [
+                without_first,
+                without_first + (("scripts/first/__init__.py", "100644"),),
+            ]
             for path in (
-                "scripts/subprocess.py", "scripts/subprocess/__init__.py",
-                "scripts/subprocess.pyc", "scripts/subprocess.pyo",
-                "scripts/subprocess.cpython-313-x86_64-linux-gnu.so", "scripts/subprocess.pyd",
-                "json.py", "json/__init__.py", "codex-rs/json/__init__.py",
+                "scripts/subprocess.py",
+                "scripts/subprocess/__init__.py",
+                "scripts/subprocess.pyc",
+                "scripts/subprocess.pyo",
+                "scripts/subprocess.cpython-313-x86_64-linux-gnu.so",
+                "scripts/subprocess.pyd",
+                "json.py",
+                "json/__init__.py",
+                "codex-rs/json/__init__.py",
                 "codex-rs/namespace/nested/observer.py",
             ):
                 changed_layouts.append(trusted + ((path, "100644"),))
@@ -138,12 +178,17 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                 parsed_layout = MODULE.python_import_layout(
                     (path, mode, "blob") for path, mode in layout
                 )
-                with self.subTest(layout=layout), self.assertRaisesRegex(
-                    ValueError, "Python import layout differs"
+                with (
+                    self.subTest(layout=layout),
+                    self.assertRaisesRegex(ValueError, "Python import layout differs"),
                 ):
                     MODULE.verify_control_plane(
-                        "owner/repository", "a" * 40, "token", root=root,
-                        paths=auxiliary, fetcher=lambda _, path, *__: values[path],
+                        "owner/repository",
+                        "a" * 40,
+                        "token",
+                        root=root,
+                        paths=auxiliary,
+                        fetcher=lambda _, path, *__: values[path],
                         workflow_fetcher=lambda *_: workflows,
                         import_layout_fetcher=lambda *_: parsed_layout,
                     )
@@ -165,16 +210,27 @@ class ControlPlaneIdentityTests(unittest.TestCase):
         tree = self.git_tree()
         invalid = []
         for key, value in (("truncated", True), ("truncated", None), ("sha", "5" * 40)):
-            changed = json.loads(json.dumps(tree)); changed[key] = value
+            changed = json.loads(json.dumps(tree))
+            changed[key] = value
             invalid.append(changed)
-        changed = json.loads(json.dumps(tree)); changed.pop("truncated"); invalid.append(changed)
-        changed = json.loads(json.dumps(tree)); changed["tree"] *= 2; invalid.append(changed)
+        changed = json.loads(json.dumps(tree))
+        changed.pop("truncated")
+        invalid.append(changed)
+        changed = json.loads(json.dumps(tree))
+        changed["tree"] *= 2
+        invalid.append(changed)
         for field, value in (
-            ("path", "../subprocess.py"), ("path", "/subprocess.py"),
-            ("path", "scripts/./subprocess.py"), ("path", "scripts\\subprocess.py"),
-            ("sha", "bad"), ("mode", "120000"), ("type", "tree"), ("mode", {}),
+            ("path", "../subprocess.py"),
+            ("path", "/subprocess.py"),
+            ("path", "scripts/./subprocess.py"),
+            ("path", "scripts\\subprocess.py"),
+            ("sha", "bad"),
+            ("mode", "120000"),
+            ("type", "tree"),
+            ("mode", {}),
         ):
-            changed = json.loads(json.dumps(tree)); changed["tree"][0][field] = value
+            changed = json.loads(json.dumps(tree))
+            changed["tree"][0][field] = value
             invalid.append(changed)
         for changed in invalid:
             with self.subTest(tree=changed), self.assertRaises(ValueError):
@@ -202,17 +258,25 @@ class ControlPlaneIdentityTests(unittest.TestCase):
     def test_duplicate_truncation_keys_and_oversize_api_response_are_rejected(self):
         responses = [
             json.dumps({"sha": "1" * 40, "tree": {"sha": "2" * 40}}).encode(),
-            ('{"sha":"' + "2" * 40 + '","truncated":true,"truncated":false,"tree":[]}').encode(),
+            (
+                '{"sha":"'
+                + "2" * 40
+                + '","truncated":true,"truncated":false,"tree":[]}'
+            ).encode(),
         ]
         with mock.patch.object(MODULE, "read_response", side_effect=responses):
             with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
-                MODULE.fetch_candidate_python_import_layout("owner/repository", "1" * 40, "token")
+                MODULE.fetch_candidate_python_import_layout(
+                    "owner/repository", "1" * 40, "token"
+                )
         response = mock.MagicMock()
         response.__enter__.return_value = response
         response.read.return_value = b"x" * 33
         with mock.patch.object(MODULE, "urlopen", return_value=response):
             with self.assertRaisesRegex(ValueError, "too large"):
-                MODULE.read_response(MODULE.github_request("https://api.github.com", "token"), 32)
+                MODULE.read_response(
+                    MODULE.github_request("https://api.github.com", "token"), 32
+                )
 
     def test_candidate_workflow_addition_or_removal_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -228,7 +292,9 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                     paths=auxiliary,
                     fetcher=fetcher,
                     workflow_fetcher=lambda *_: workflows[:-1],
-                    import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(root),
+                    import_layout_fetcher=lambda *_: (
+                        MODULE.trusted_python_import_layout(root)
+                    ),
                 )
             with self.assertRaisesRegex(ValueError, "workflow inventory differs"):
                 MODULE.verify_control_plane(
@@ -238,9 +304,12 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                     root=root,
                     paths=auxiliary,
                     fetcher=fetcher,
-                    workflow_fetcher=lambda *_: workflows
-                    + (".github/workflows/hepta-learning-eval-extra.yml",),
-                    import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(root),
+                    workflow_fetcher=lambda *_: (
+                        workflows + (".github/workflows/hepta-learning-eval-extra.yml",)
+                    ),
+                    import_layout_fetcher=lambda *_: (
+                        MODULE.trusted_python_import_layout(root)
+                    ),
                 )
 
     def test_local_symlink_component_is_rejected_before_read(self):
@@ -271,7 +340,9 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                     paths=auxiliary,
                     fetcher=fetcher,
                     workflow_fetcher=lambda *_: workflows,
-                    import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(root),
+                    import_layout_fetcher=lambda *_: (
+                        MODULE.trusted_python_import_layout(root)
+                    ),
                 )
             with self.assertRaisesRegex(ValueError, "empty or duplicated"):
                 MODULE.verify_control_plane(
@@ -282,7 +353,9 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                     paths=(auxiliary[0], auxiliary[0]),
                     fetcher=fetcher,
                     workflow_fetcher=lambda *_: workflows,
-                    import_layout_fetcher=lambda *_: MODULE.trusted_python_import_layout(root),
+                    import_layout_fetcher=lambda *_: (
+                        MODULE.trusted_python_import_layout(root)
+                    ),
                 )
 
     def test_main_redacts_exception_payload_and_token(self):

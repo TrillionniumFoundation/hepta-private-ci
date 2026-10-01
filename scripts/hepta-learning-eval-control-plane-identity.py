@@ -7,6 +7,7 @@ are fetched as untrusted data and must match the trusted checkout exactly. It
 does not execute candidate code or issue qualification, acceptance, activation,
 promotion, or release authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -109,10 +110,11 @@ def trusted_learning_eval_workflow_paths(root: Path = ROOT) -> tuple[str, ...]:
 
 
 def contents_url(repository: str, path: str, source_sha: str) -> str:
-    encoded = "/".join(quote(part, safe="") for part in validate_relative_path(path).parts)
+    encoded = "/".join(
+        quote(part, safe="") for part in validate_relative_path(path).parts
+    )
     return (
-        f"https://api.github.com/repos/{repository}/contents/{encoded}"
-        f"?ref={source_sha}"
+        f"https://api.github.com/repos/{repository}/contents/{encoded}?ref={source_sha}"
     )
 
 
@@ -158,7 +160,9 @@ def fetch_candidate_file(
     try:
         decoded = base64.b64decode("".join(value["content"].split()), validate=True)
     except (ValueError, binascii.Error) as error:
-        raise ValueError(f"candidate control-plane base64 is invalid: {path}") from error
+        raise ValueError(
+            f"candidate control-plane base64 is invalid: {path}"
+        ) from error
     if not 0 < len(decoded) <= MAX_FILE_BYTES:
         raise ValueError(f"candidate control-plane file size is invalid: {path}")
     declared_size = value.get("size")
@@ -194,9 +198,13 @@ def fetch_candidate_workflow_paths(
             continue
         path = f"{WORKFLOW_DIRECTORY}/{name}"
         if entry.get("type") != "file" or entry.get("path") != path:
-            raise ValueError(f"candidate learning.eval workflow is not a regular file: {path}")
+            raise ValueError(
+                f"candidate learning.eval workflow is not a regular file: {path}"
+            )
         if path in seen:
-            raise ValueError(f"candidate workflow inventory contains a duplicate: {path}")
+            raise ValueError(
+                f"candidate workflow inventory contains a duplicate: {path}"
+            )
         seen.add(path)
         selected.append(path)
     if not selected:
@@ -204,7 +212,9 @@ def fetch_candidate_workflow_paths(
     return tuple(sorted(selected))
 
 
-def python_import_layout(entries: Iterable[tuple[str, str, str]]) -> tuple[tuple[str, str], ...]:
+def python_import_layout(
+    entries: Iterable[tuple[str, str, str]],
+) -> tuple[tuple[str, str], ...]:
     """Bind committed import paths and kinds without freezing unrelated file bodies.
 
     Python launched from the repository or codex-rs can reach namespace packages,
@@ -214,27 +224,52 @@ def python_import_layout(entries: Iterable[tuple[str, str, str]]) -> tuple[tuple
     seen: set[str] = set()
     for path, mode, kind in entries:
         parts = path.split("/")
-        if not path or "\\" in path or not path.isprintable() or any(
-            part in ("", ".", "..") for part in parts
+        if (
+            not path
+            or "\\" in path
+            or not path.isprintable()
+            or any(part in ("", ".", "..") for part in parts)
         ):
             raise ValueError("Git tree contains a noncanonical import path")
         if path in seen:
             raise ValueError("Git tree contains a duplicate path")
         seen.add(path)
-        if not isinstance(kind, str) or not isinstance(mode, str) or kind not in {
-            "blob", "tree", "commit",
-        } or mode not in {
-            "100644", "100755", "120000", "040000", "160000",
-        } or (kind, mode) not in {
-            ("blob", "100644"), ("blob", "100755"), ("blob", "120000"),
-            ("tree", "040000"), ("commit", "160000"),
-        }:
+        if (
+            not isinstance(kind, str)
+            or not isinstance(mode, str)
+            or kind
+            not in {
+                "blob",
+                "tree",
+                "commit",
+            }
+            or mode
+            not in {
+                "100644",
+                "100755",
+                "120000",
+                "040000",
+                "160000",
+            }
+            or (kind, mode)
+            not in {
+                ("blob", "100644"),
+                ("blob", "100755"),
+                ("blob", "120000"),
+                ("tree", "040000"),
+                ("commit", "160000"),
+            }
+        ):
             raise ValueError("Git tree entry kind and mode disagree")
-        import_root_path = path.startswith("scripts/") or len(parts) == 1 or (
-            len(parts) == 2 and parts[0] == "codex-rs"
+        import_root_path = (
+            path.startswith("scripts/")
+            or len(parts) == 1
+            or (len(parts) == 2 and parts[0] == "codex-rs")
         )
         if mode in {"120000", "160000"} and import_root_path:
-            raise ValueError("Python import root contains an opaque symlink or submodule")
+            raise ValueError(
+                "Python import root contains an opaque symlink or submodule"
+            )
         if path.endswith(PYTHON_MODULE_SUFFIXES):
             if kind != "blob" or mode not in {"100644", "100755"}:
                 raise ValueError("Python module path is not a regular committed file")
@@ -245,7 +280,8 @@ def python_import_layout(entries: Iterable[tuple[str, str, str]]) -> tuple[tuple
 def trusted_python_import_layout(root: Path = ROOT) -> tuple[tuple[str, str], ...]:
     with subprocess.Popen(
         ["git", "-C", str(root), "ls-tree", "-rz", "--full-tree", "HEAD"],
-        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
     ) as process:
         assert process.stdout is not None
         raw = process.stdout.read(MAX_DIRECTORY_RESPONSE_BYTES + 1)
@@ -268,32 +304,53 @@ def trusted_python_import_layout(root: Path = ROOT) -> tuple[tuple[str, str], ..
 
 
 def fetch_candidate_python_import_layout(
-    repository: str, source_sha: str, token: str,
+    repository: str,
+    source_sha: str,
+    token: str,
 ) -> tuple[tuple[str, str], ...]:
     validate_identity(repository, source_sha)
     base = f"https://api.github.com/repos/{repository}/git"
-    commit = json.loads(read_response(
-        github_request(f"{base}/commits/{source_sha}", token), MAX_FILE_RESPONSE_BYTES,
-    ).decode("utf-8"), object_pairs_hook=unique_json_object)
+    commit = json.loads(
+        read_response(
+            github_request(f"{base}/commits/{source_sha}", token),
+            MAX_FILE_RESPONSE_BYTES,
+        ).decode("utf-8"),
+        object_pairs_hook=unique_json_object,
+    )
     tree = commit.get("tree") if isinstance(commit, dict) else None
     tree_sha = tree.get("sha") if isinstance(tree, dict) else None
-    if not isinstance(commit, dict) or commit.get("sha") != source_sha or not isinstance(tree_sha, str) or (
-        SHA1_RE.fullmatch(tree_sha) is None
+    if (
+        not isinstance(commit, dict)
+        or commit.get("sha") != source_sha
+        or not isinstance(tree_sha, str)
+        or (SHA1_RE.fullmatch(tree_sha) is None)
     ):
         raise ValueError("candidate commit/tree identity is invalid")
-    value = json.loads(read_response(
-        github_request(f"{base}/trees/{tree_sha}?recursive=1", token),
-        MAX_DIRECTORY_RESPONSE_BYTES,
-    ).decode("utf-8"), object_pairs_hook=unique_json_object)
-    if not isinstance(value, dict) or value.get("sha") != tree_sha or (
-        value.get("truncated") is not False
-    ) or not isinstance(value.get("tree"), list):
-        raise ValueError("candidate Git tree inventory is incomplete or has the wrong identity")
+    value = json.loads(
+        read_response(
+            github_request(f"{base}/trees/{tree_sha}?recursive=1", token),
+            MAX_DIRECTORY_RESPONSE_BYTES,
+        ).decode("utf-8"),
+        object_pairs_hook=unique_json_object,
+    )
+    if (
+        not isinstance(value, dict)
+        or value.get("sha") != tree_sha
+        or (value.get("truncated") is not False)
+        or not isinstance(value.get("tree"), list)
+    ):
+        raise ValueError(
+            "candidate Git tree inventory is incomplete or has the wrong identity"
+        )
     entries = []
     for entry in value["tree"]:
-        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str) or (
-            not isinstance(entry.get("sha"), str)
-            or SHA1_RE.fullmatch(entry["sha"]) is None
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("path"), str)
+            or (
+                not isinstance(entry.get("sha"), str)
+                or SHA1_RE.fullmatch(entry["sha"]) is None
+            )
         ):
             raise ValueError("candidate Git tree entry is malformed")
         entries.append((entry["path"], entry.get("mode"), entry.get("type")))
@@ -327,7 +384,9 @@ def verify_control_plane(
     trusted_imports = trusted_python_import_layout(root)
     candidate_imports = import_layout_fetcher(repository, source_sha, token)
     if candidate_imports != trusted_imports:
-        raise ValueError("candidate Python import layout differs from trusted committed source")
+        raise ValueError(
+            "candidate Python import layout differs from trusted committed source"
+        )
     selected = trusted_workflows + tuple(paths)
     if not selected or len(selected) != len(set(selected)):
         raise ValueError("control-plane path inventory is empty or duplicated")
@@ -341,9 +400,14 @@ def verify_control_plane(
                 f"from trusted default branch: {path}"
             )
         digests[path] = hashlib.sha256(trusted).hexdigest()
-    aggregate = hashlib.sha256(canonical({
-        "files": digests, "pythonImportLayout": trusted_imports,
-    })).hexdigest()
+    aggregate = hashlib.sha256(
+        canonical(
+            {
+                "files": digests,
+                "pythonImportLayout": trusted_imports,
+            }
+        )
+    ).hexdigest()
     return {
         "schema": "hepta.learning-eval.control-plane-identity.v2",
         "repository": repository,

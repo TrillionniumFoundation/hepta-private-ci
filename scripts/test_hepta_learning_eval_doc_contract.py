@@ -126,14 +126,23 @@ class DocumentationContractTests(unittest.TestCase):
         workflow = (
             CONTRACT.ROOT / ".github/workflows/hepta-learning-eval-convergence.yml"
         ).read_text(encoding="utf-8")
-        block = workflow.split('python3 - "$out/storage-profile.json" <<\'PY\'\n', 1)[1]
-        code = compile(textwrap.dedent(block.split("\n          PY", 1)[0]), "storage-check", "exec")
+        block = workflow.split("python3 - \"$out/storage-profile.json\" <<'PY'\n", 1)[1]
+        code = compile(
+            textwrap.dedent(block.split("\n          PY", 1)[0]),
+            "storage-check",
+            "exec",
+        )
         profile = {
             "schema": "hepta.learning-eval.storage-profile.v1",
             "attempts": {"attemptCount": 1024, "eventCount": 7168},
-            "holdout": {"fenceTransitions": 512, "planRecords": 512,
-                        "retryPreserved": True, "anchorPreserved": True,
-                        "beforeBytes": 4096, "afterBytes": 2048},
+            "holdout": {
+                "fenceTransitions": 512,
+                "planRecords": 512,
+                "retryPreserved": True,
+                "anchorPreserved": True,
+                "beforeBytes": 4096,
+                "afterBytes": 2048,
+            },
         }
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "profile.json"
@@ -141,8 +150,10 @@ class DocumentationContractTests(unittest.TestCase):
                 path.write_text(json.dumps(profile), encoding="utf-8")
                 exec(code, {})
                 for field, value in (
-                    ("planRecords", None), ("planRecords", 0),
-                    ("retryPreserved", None), ("retryPreserved", False),
+                    ("planRecords", None),
+                    ("planRecords", 0),
+                    ("retryPreserved", None),
+                    ("retryPreserved", False),
                 ):
                     changed = json.loads(json.dumps(profile))
                     if value is None:
@@ -150,8 +161,9 @@ class DocumentationContractTests(unittest.TestCase):
                     else:
                         changed["holdout"][field] = value
                     path.write_text(json.dumps(changed), encoding="utf-8")
-                    with self.subTest(field=field, value=value), self.assertRaises(
-                        (AssertionError, KeyError)
+                    with (
+                        self.subTest(field=field, value=value),
+                        self.assertRaises((AssertionError, KeyError)),
                     ):
                         exec(code, {})
 

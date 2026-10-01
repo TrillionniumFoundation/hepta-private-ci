@@ -1,4 +1,5 @@
 """Adversarial checks for formatting-stable lexical source call inventory."""
+
 import importlib.util
 import json
 from pathlib import Path
@@ -15,7 +16,9 @@ SPEC.loader.exec_module(MODULE)
 
 
 class SourceCallInventoryTests(unittest.TestCase):
-    def require_fixture(self, source, call="archive.verify(verifier, now)", literals=()):
+    def require_fixture(
+        self, source, call="archive.verify(verifier, now)", literals=()
+    ):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "source.rs").write_text(source, encoding="utf-8")
@@ -51,8 +54,9 @@ class SourceCallInventoryTests(unittest.TestCase):
             "archive.verify(other_verifier, now);",
             "archive.verify(verifier, now + 1);",
         ):
-            with self.subTest(source=source), self.assertRaisesRegex(
-                SystemExit, "missing code call"
+            with (
+                self.subTest(source=source),
+                self.assertRaisesRegex(SystemExit, "missing code call"),
             ):
                 self.require_fixture(source)
 
@@ -62,8 +66,9 @@ class SourceCallInventoryTests(unittest.TestCase):
             "archive.ver ify(verifier, now);",
             "archive.verify(veri fier, now);",
         ):
-            with self.subTest(source=source), self.assertRaisesRegex(
-                SystemExit, "missing code call"
+            with (
+                self.subTest(source=source),
+                self.assertRaisesRegex(SystemExit, "missing code call"),
             ):
                 self.require_fixture(source)
 
@@ -76,8 +81,9 @@ class SourceCallInventoryTests(unittest.TestCase):
             'let text = br#"archive.verify(verifier, now)"#;',
             'archive "literal barrier" .verify(verifier, now);',
         ):
-            with self.subTest(source=source), self.assertRaisesRegex(
-                SystemExit, "missing code call"
+            with (
+                self.subTest(source=source),
+                self.assertRaisesRegex(SystemExit, "missing code call"),
             ):
                 self.require_fixture(source)
 
@@ -104,7 +110,9 @@ class SourceObservationIdentityTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
         self.map_path = self.root / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
-        self.symbol = "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts"
+        self.symbol = (
+            "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts"
+        )
         for name, value in (
             ("ROOT", self.root),
             ("MAP", self.map_path),
@@ -113,8 +121,12 @@ class SourceObservationIdentityTests(unittest.TestCase):
             patcher = mock.patch.object(MODULE, name, value)
             patcher.start()
             self.addCleanup(patcher.stop)
-        self.source_path = "codex-rs/hepta-intelligence-eval/src/qualification_artifacts.rs"
-        self.codec_path = "codex-rs/hepta-intelligence-eval/src/qualification_archive_codec.rs"
+        self.source_path = (
+            "codex-rs/hepta-intelligence-eval/src/qualification_artifacts.rs"
+        )
+        self.codec_path = (
+            "codex-rs/hepta-intelligence-eval/src/qualification_archive_codec.rs"
+        )
         self.test_path = "codex-rs/hepta-intelligence-eval/tests/qualification.rs"
         self.caller_path = "codex-rs/hepta-agentd/src/intelligence_evaluation.rs"
         for path, content in (
@@ -122,8 +134,14 @@ class SourceObservationIdentityTests(unittest.TestCase):
             (self.codec_path, "pub fn decode_archive() {}\n"),
             (self.test_path, "#[test] fn qualification_round_trip() {}\n"),
             (self.caller_path, "pub fn consume_qualification() {}\n"),
-            ("codex-rs/hepta-intelligence-eval/Cargo.toml", "[package]\nname = 'fixture'\n"),
-            ("codex-rs/hepta-intelligence-eval/BUILD.bazel", "rust_library(name = 'fixture')\n"),
+            (
+                "codex-rs/hepta-intelligence-eval/Cargo.toml",
+                "[package]\nname = 'fixture'\n",
+            ),
+            (
+                "codex-rs/hepta-intelligence-eval/BUILD.bazel",
+                "rust_library(name = 'fixture')\n",
+            ),
         ):
             self.write(path, content)
         MODULE.git("init", "--quiet")
@@ -136,11 +154,13 @@ class SourceObservationIdentityTests(unittest.TestCase):
         self.value = {
             "schema": "hepta.module-implementation-map.v3",
             "module": "learning.eval",
-            "operations": [{
-                "nativeSymbol": self.symbol,
-                "sourcePath": self.source_path,
-                "tests": [self.test_path],
-            }],
+            "operations": [
+                {
+                    "nativeSymbol": self.symbol,
+                    "sourcePath": self.source_path,
+                    "tests": [self.test_path],
+                }
+            ],
             "productCallers": self.model["sourceFacts"]["callers"],
             "repositoryControlledGaps": [],
             "claimBoundary": {
@@ -164,9 +184,16 @@ class SourceObservationIdentityTests(unittest.TestCase):
 
     def commit(self, message):
         MODULE.git(
-            "-c", "user.name=Source Observation Fixture",
-            "-c", "user.email=source-observation@example.invalid",
-            "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", message,
+            "-c",
+            "user.name=Source Observation Fixture",
+            "-c",
+            "user.email=source-observation@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--quiet",
+            "-m",
+            message,
         )
 
     def test_unchanged_owned_and_mapped_source_is_accepted(self):
@@ -210,7 +237,9 @@ class SourceObservationIdentityTests(unittest.TestCase):
             MODULE.validate_map(self.model)
 
     def test_changed_mapped_test_is_rejected(self):
-        self.write(self.test_path, "#[test] fn qualification_round_trip() { panic!(); }\n")
+        self.write(
+            self.test_path, "#[test] fn qualification_round_trip() { panic!(); }\n"
+        )
         with self.assertRaisesRegex(SystemExit, self.test_path):
             MODULE.validate_map(self.model)
 
