@@ -34,6 +34,7 @@ use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
+use crate::supervisor::ConstructorHydration;
 
 #[path = "adopted_release.rs"]
 mod adopted_release;
@@ -475,6 +476,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
         now: Instant,
+        hydration: ConstructorHydration<'_>,
     ) -> Result<(), SupervisorError> {
         // Acquire the main owner first. Then attempt semantic hydration, but do
         // not propagate its failure before the independent Matrix acquisition.
@@ -484,12 +486,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         {
             slot.recovery_blocker = Some(bounded_message(error.to_string()));
         }
-        let hydration = if slot.recovery_blocker.is_some() {
-            Ok(())
-        } else {
-            self.record(agent_id)
-                .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh))
-        };
+        let hydration =
+            if slot.recovery_blocker.is_some() || hydration.observes_idle(agent_id, slot, record) {
+                Ok(())
+            } else {
+                self.record(agent_id)
+                    .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh))
+            };
         if let Err(error) = &hydration {
             slot.recovery_blocker = Some(bounded_message(error.to_string()));
         }
@@ -527,12 +530,12 @@ impl<D: ProcessDriver> Supervisor<D> {
             && let Err(signal) = self.kill_matrix_now(agent_id, slot)
         {
             slot.event(
-                0,
+                /*generation*/ 0,
                 SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
             );
         }
         slot.event(
-            0,
+            /*generation*/ 0,
             SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
         );
     }

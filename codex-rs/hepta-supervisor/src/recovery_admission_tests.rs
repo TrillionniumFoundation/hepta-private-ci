@@ -214,7 +214,13 @@ fn corrupt_control_retains_and_fences_the_identity_proven_main() -> Result<()> {
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     fixture.assert_owned_quarantine()?;
@@ -247,7 +253,13 @@ fn valid_control_for_another_process_does_not_discard_the_owned_main() -> Result
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     fixture.assert_owned_quarantine()
@@ -261,7 +273,13 @@ fn invalid_lifecycle_distance_is_rejected_after_retaining_exact_ownership() -> R
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     fixture.assert_owned_quarantine()
@@ -276,7 +294,13 @@ fn missing_identity_never_erases_a_rejected_control_journal_or_lease() -> Result
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     assert!(fixture.slot.runtime.is_none());
@@ -303,7 +327,13 @@ fn rejected_identity_cannot_gain_signal_authority_from_corrupt_control() -> Resu
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     assert!(fixture.slot.runtime.is_none());
@@ -352,7 +382,13 @@ fn failed_fallback_deadline_still_retains_the_acquired_owner() -> Result<()> {
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     fixture.assert_owned_quarantine()
@@ -366,7 +402,13 @@ fn repeated_containment_never_downgrades_an_acknowledged_kill() -> Result<()> {
     assert!(
         fixture
             .supervisor
-            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .recover_slot(
+                &fixture.agent,
+                &mut fixture.slot,
+                &record,
+                fixture.now,
+                crate::supervisor::ConstructorHydration::Fresh,
+            )
             .is_err()
     );
     super::admission::reject_owned(&fixture.agent, &mut fixture.slot, fixture.now);

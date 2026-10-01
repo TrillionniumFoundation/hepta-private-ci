@@ -250,8 +250,13 @@ impl Fixture {
 
     fn recover(&mut self) -> Result<(), crate::SupervisorError> {
         let record = self.registry.load_agent(&self.agent)?;
-        self.supervisor
-            .recover_slot(&self.agent, &mut self.slot, &record, self.now)
+        self.supervisor.recover_slot(
+            &self.agent,
+            &mut self.slot,
+            &record,
+            self.now,
+            crate::supervisor::ConstructorHydration::Fresh,
+        )
     }
 
     fn assert_no_spawn(&self) {

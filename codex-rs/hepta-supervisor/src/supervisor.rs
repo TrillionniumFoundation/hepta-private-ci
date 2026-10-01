@@ -60,6 +60,15 @@ mod recovery_denial;
 #[path = "constructor_recovery_probe.rs"]
 mod recovery_probe;
 
+#[path = "constructor_hydration.rs"]
+mod constructor_hydration;
+
+pub(crate) use constructor_hydration::ConstructorHydration;
+use constructor_hydration::ConstructorHydrationObservation;
+
+#[path = "constructor_recovery.rs"]
+mod constructor_recovery;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
         registry: FleetRegistry,
@@ -82,61 +91,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             slots,
         };
         let mut report = TickReport::default();
+        let mut hydration = ConstructorHydrationObservation::default();
         for (agent_id, record) in snapshot.agents {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
-                let mut faults = supervisor.validate_durable_recovery(&agent_id, &record);
-                if let Err(error) = supervisor.restore_release_state(&agent_id, slot, &record) {
-                    faults.push(error);
-                }
-                if let Some(error) = faults.first() {
-                    // Deny semantic replay before acquisition, while leaving
-                    // both independent lease-bound adoption attempts enabled.
-                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
-                }
-                // Even failed semantic preparation cannot skip independent
-                // lease-bound acquisition of main and Matrix ownership.
-                if let Err(error) = supervisor.recover_slot(&agent_id, slot, &record, now) {
-                    faults.push(error);
-                }
-                // A failed signal on an admitted, exact owned incarnation is
-                // a control retry, not corrupt durable recovery evidence.
-                // recover_slot marks all admission/hydration failures itself.
-                for (restore, evidence_present) in [
-                    Self::recover_restart_budget,
-                    Self::recover_release_transaction,
-                ]
-                .into_iter()
-                .zip([
-                    recovery_probe::restart_required(record.layout.run_root()),
-                    recovery_probe::release_required(record.layout.run_root()),
-                ]) {
-                    if slot.recovery_blocker.is_some() {
-                        break;
-                    }
-                    if !evidence_present {
-                        continue;
-                    }
-                    if let Err(error) = restore(supervisor, &agent_id, slot, now) {
-                        if !Self::recovery_control_fault_is_retryable(slot, &error) {
-                            slot.recovery_blocker = Some(bounded_message(error.to_string()));
-                        }
-                        faults.push(error);
-                    }
-                }
-                // A retryable release Drain must not hide independent signed
-                // authority recovery. Its exact staged control remains owned.
-                if slot.recovery_blocker.is_none()
-                    && let Err(error) = supervisor.recover_signed_intent(&agent_id, slot, &record)
-                {
-                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
-                    faults.push(error);
-                }
-                if slot.recovery_blocker.is_some()
-                    && let Some(error) = faults.first()
-                {
-                    supervisor.deny_failed_recovery(&agent_id, slot, error, now);
-                }
-                Ok(faults)
+                Ok(supervisor.recover_constructor_slot(
+                    &agent_id,
+                    slot,
+                    &record,
+                    now,
+                    ConstructorHydration::Observe(&mut hydration),
+                ))
             });
             match result {
                 Ok(faults) => {
@@ -144,9 +108,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                         supervisor.record_fault(&agent_id, &error, &mut report);
                     }
                 }
-                Err(error) => return Err(error),
+                Err(error) => supervisor.record_fault(&agent_id, &error, &mut report),
             }
         }
+        supervisor.settle_constructor_hydration(hydration, now, &mut report);
         Ok((supervisor, report))
     }
 
