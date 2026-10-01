@@ -176,37 +176,16 @@ impl DurableFleetStore {
         }
         let (kind, outcome, witness) = match disposition {
             DurableLeaseDispositionV1::Renew { expires_at_ms } => {
-                let host = select_host_tx(&mut tx, &current.host_id)
-                    .await?
-                    .ok_or_else(|| DurableFleetError::Missing(current.host_id.clone()))?;
-                if now_ms >= host.valid_until_ms
-                    || host.generation != current.host_generation
-                    || expires_at_ms <= now_ms
-                    || expires_at_ms > host.valid_until_ms
-                {
-                    return Err(DurableFleetError::Stale);
-                }
-                let witness = authority.verify_renew_witness(
+                let witness = renew_grant_tx(
+                    &mut tx,
+                    authority,
                     authority_lease_id,
                     expected_authority_revision,
                     &current,
                     expires_at_ms,
-                )?;
-                sqlx::query(
-                    "UPDATE fleet_grants SET
-                        lease_generation = ?, expires_at_ms = ?,
-                        authority_witness_json = ?, updated_at_ms = ?
-                     WHERE allocation_id = ? AND lease_generation = ?",
+                    now_ms,
                 )
-                .bind(to_i64(next_generation)?)
-                .bind(to_i64(expires_at_ms)?)
-                .bind(encode_json(&witness)?)
-                .bind(to_i64(now_ms)?)
-                .bind(allocation_id)
-                .bind(to_i64(expected_lease_generation)?)
-                .execute(&mut *tx)
-                .await
-                .map_err(sqlx_error)?;
+                .await?;
                 (
                     FleetMutationKindV1::Renew,
                     FleetMutationOutcomeV1::Updated,
@@ -425,7 +404,7 @@ async fn insert_grant_tx(
     Ok(())
 }
 
-fn same_grant(left: &AllocationGrant, right: &AllocationGrant) -> bool {
+pub(crate) fn same_grant(left: &AllocationGrant, right: &AllocationGrant) -> bool {
     left.allocation_id == right.allocation_id
         && left.request_id == right.request_id
         && left.principal_id == right.principal_id
@@ -437,4 +416,50 @@ fn same_grant(left: &AllocationGrant, right: &AllocationGrant) -> bool {
         && left.expires_at_ms == right.expires_at_ms
         && left.resources == right.resources
         && left.semantic_digest == right.semantic_digest
+}
+
+pub(crate) async fn renew_grant_tx(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    authority: &FleetAuthorityPort,
+    authority_lease_id: &str,
+    expected_authority_revision: u64,
+    current: &AllocationGrant,
+    expires_at_ms: u64,
+    now_ms: u64,
+) -> Result<codex_hepta_contracts::VerifiedUseTokenWitnessV1, DurableFleetError> {
+    let next_generation = current
+        .lease_generation
+        .checked_add(1)
+        .ok_or_else(|| DurableFleetError::Invalid("lease generation overflow".into()))?;
+    let host = select_host_tx(tx, &current.host_id)
+        .await?
+        .ok_or_else(|| DurableFleetError::Missing(current.host_id.clone()))?;
+    if now_ms >= host.valid_until_ms
+        || host.generation != current.host_generation
+        || expires_at_ms <= now_ms
+        || expires_at_ms > host.valid_until_ms
+    {
+        return Err(DurableFleetError::Stale);
+    }
+    let witness = authority.verify_renew_witness(
+        authority_lease_id,
+        expected_authority_revision,
+        current,
+        expires_at_ms,
+    )?;
+    sqlx::query(
+        "UPDATE fleet_grants SET lease_generation = ?, expires_at_ms = ?,
+         authority_witness_json = ?, updated_at_ms = ?
+         WHERE allocation_id = ? AND lease_generation = ?",
+    )
+    .bind(to_i64(next_generation)?)
+    .bind(to_i64(expires_at_ms)?)
+    .bind(encode_json(&witness)?)
+    .bind(to_i64(now_ms)?)
+    .bind(&current.allocation_id)
+    .bind(to_i64(current.lease_generation)?)
+    .execute(&mut **tx)
+    .await
+    .map_err(sqlx_error)?;
+    Ok(witness)
 }
