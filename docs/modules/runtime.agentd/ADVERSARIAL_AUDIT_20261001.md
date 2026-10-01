@@ -31,7 +31,7 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 
 本次检查同时发现历史映射与当前 source 不一致：部分已接线的 final-use AuthBus/Fleet 校验仍被标成缺失；组件 API 恢复曾被描述得接近 daemon 产品恢复；canonical capability 与 CLI runner 选项之间的区别不够清楚。对应技术指南、映射和 dossier 已更新。
 
-严格源码绑定检查另发现七份基线映射引用真实但非当前 main 祖先的旁支提交。已在 [历史来源快照](../../../qualification/module-source-origins/20261001/README.md) 完整保留原 map、commit/tree/blob、角色和观察；以实际集成基线重新建立 sourceBase，再用原严格迁移器刷新当前路径对象。没有添加 Git 父关系、放松 ancestry 校验或提升 boolean 资格。全部 40 份实施映射和技术文档校验随后通过；历史导航证据不成为执行凭证。
+严格源码绑定检查另发现七份基线映射引用真实但非当前 main 祖先的旁支提交。已在 [历史来源快照](../../../qualification/module-source-origins/20261001/README.md) 完整保留原 map、commit/tree/blob、角色和观察；以实际集成基线重新建立 sourceBase，再用原严格迁移器刷新当前路径对象。没有添加 Git 父关系、放松 ancestry 校验或提升 boolean 资格。迁移后的候选已通过全部 40 份实施映射和技术文档校验；最终发布对象仍按第 7 节再次精确核验。历史导航证据不成为执行凭证。
 
 当前 Agentd map 登记 20 个边界操作，每个都有测试文件引用；这些引用不等于完整函数清单、具体分支覆盖率或测试执行成功。全项目 40 份 map 的额外审查发现部分操作仍没有测试绑定、许多引用仅到文件级，因此没有以文档存在或路径存在计算模块完成百分比。
 
@@ -105,8 +105,8 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | Lane E closure verify | `findingCount=0`、`ok=true`、退出 0 | 静态边界验收；不等于 native/product execution qualification |
 | Fleet / Rollout dependency 与 Bazel lock | 完整 Cargo metadata 更新实际 dependency graph；官方 `just bazel-lock-update` 三次退出 0，MODULE.bazel.lock 无漂移 | 原 workspace 已有 libc / State，Cargo.lock 保留真实新增关系；未手工伪造 lock |
 | Agentd native / scoped Clippy | 完整 nextest 在 dependency codegen 被 SIGKILL，退出 101；第一次 `just fix` 因磁盘满退出 101；实际 PathBuf 类型与测试依赖导入错误均已修复；最终 `just fix` 和 qualification-cognitive-write / all-targets / no-deps / `-D warnings` scoped Clippy 均退出 0 | 编译覆盖生产、library 与 integration test targets；没有 Agentd 原生 test execution，通过编译不等于行为通过 |
-| State / Rollout focused native 与 Rollout scoped Clippy | 第一次 native dependency codegen SIGKILL、退出 101，未执行测试；清理本任务缓存后最终 scoped `just fix` 与 no-deps/all-targets/`-D warnings` Clippy 均退出 0，针对性 native 重跑进行中 | 不把失败或未完成的命令计为通过；普通 unbounded reader 保持原合约 |
-| 格式 / workspace preflight / 精确源码绑定 | `just fmt` 和 diff 检查已执行；preflight 193 manifests、0 errors；最终 source observation 刷新进行中 | canonical maps 一处已删除的 Rust 测试引用在严格迁移时被拒绝，已按真实 owner 回归修正文档，未放宽 validator |
+| State / Rollout focused native 与 scoped Clippy | 首次 codegen SIGKILL/101、无测试执行；随后 13 项执行为 11 passed / 2 failed；新 fixture 的 SQLx 0.9 动态 SQL 类型错误也已修复。最后原生重跑 15/15 passed、退出 0，337 项因筛选条件未执行；Rollout scoped fix/strict Clippy 已退出 0，State/Rollout 最后 scoped fix 和 all-targets/no-deps/`-D warnings` strict 均退出 0 | 实际执行 FIFO/plain/zstd/EOF 回归、三个 vacuum 模式下冷连接和原 owner queue/state pointer 在外部 writer+未提交 UPDATE 下读取 committed snapshot；未把筛掉的用例计为执行 |
+| 格式 / workspace preflight / 精确源码绑定 | `just fmt` 和 diff 检查已执行；preflight 193 manifests、0 errors；候选 `49cc18a305` 的 40 maps 精确 SHA/tree verify、40 技术文档及 derived/index checks 均通过；最新 State 修复对象须再次绑定 | 严格校验曾拒绝已删除的 Rust 测试引用及 intelligence.control 未登记的公开 signing-payload 函数，均按真实符号和回归补齐；36 个公开函数对应36登记项，未放宽 closed-world 校验 |
 
 原生测试、编译、文档导航、真实产品组成与目标部署验收分别记账。后续最终结果必须绑定实际发布源码对象，不能把历史成功或 skipped job 归入当前候选。
 
@@ -121,8 +121,10 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | App Server drain 关闭原 RPC，automation 无法获得后续历史终态 | 原 owner Rust capability 只持 SQLite SELECT owner 与 QueueStore，不持 dispatcher/manager/event sink。后台任务与线程真实 join 才开放；timeout 不 ack。当前 rollout pointer 前后纯 SELECT、完整绑定 thread/client/payload/turn；禁止 repair、resume、start、reserve、wake |
 | 新 observer 若使用普通 thread read 会隐藏写入；旧 Indeterminate 可饿死后续 drain blocker；历史 JSONL 可无界分配/解压 | 使用无 repair 的 current pointer；专用 selector 优先 admitted/running；每 record 1MiB、扫描 32MiB/65536 lines/4s、zstd window 32MiB，完整扫描才接受 terminal。超界/截断/未知保留 uncertainty，Missing unknown dispatch 不重新派发 |
 | 历史 rollout 在 regular metadata 预检后被替换为 FIFO，4 秒 caller deadline 返回后 blocking open 线程仍可能永久等待 | Unix 同 fd `O_NOFOLLOW | O_NONBLOCK` 打开并验证 regular/dev/ino/len/mtime/ctime，完整 EOF 再验 retained handle 与 selected path；任何变化保留 Unknown。plain/zstd 与稳定父目录 alias 兼容，拒绝 leaf symlink；真实 FIFO 故障窗口回归带受控清理。该修复不承诺强取消任意 kernel/networkFS I/O |
+| 合法 zstd 空 frames 不产生 decoded 字节，外层 decoded 上限和 caller deadline 无法约束后台 encoded 读取工作 | compressed-only 新增64MiB initial encoded上限、同fd原始长度预算与128KiB physical-read上限，并在读前后检查从 public open 起的4s工作期限。预算耗尽仍以1byte探测真实EOF；追加数据报InvalidData/Unknown，不能忽略尾部或伪造前缀完成。保留正常多frame、window25、API与plainreader，任意blocked kernelIO仍不能强制取消；真实decoder四回归已落盘、scoped fix/strict均通过，原生执行待本轮命令完成 |
 | TaskFlow 历史终态恢复曾混用 spawn generation，且 RPC→history receipt 与恢复 claim 后崩溃不能稳定重放 | Running/Draining 共用 owner API；核验已 Reconciled 的真实 step intent/payload/outcome，复用不可覆写 canonical receipt。有效 lease 使用原 TaskFlow fence，过期才用 owner counter 与完整原行 CAS claim；不得 dispatch、续租或改物理执行身份 |
 | public 低层 evaluation V2 让 Agentd/plasticity 绕过 fenced holdout、sealed estimator 与 durable publication；receipt seal 漏 disposition/baseline/failed metrics | V2 收为 crate-internal；两个消费者和 evaluated-shadow 统一消费真实 ProductEvaluationRunner 封存回执。新封印绑定完整 decision；当前 owner verifier 重验原 Generator/Evaluator/Observer 窗口与 scheduled revocation，另验证精确 use signature。没有公共 unsigned wrapper |
+| 新历史 SELECT observer 复用正确原 State owner，但连接池 lazy reconnect 重发 `auto_vacuum=INCREMENTAL`，可在另一 writer 持锁时隐式争夺写锁 | database-global vacuum 只在 startup deferred snapshot 内，对真正 zero-page 新库设置 INCREMENTAL，然后建立 WAL；后续 pool connections 不重发该 SET。保留既有 NONE/FULL/INCREMENTAL、max5/Normal/FK/busy5s，原 owner pure SELECT 不重建 store、不 repair。真实持4关1强制 cold 的 queue/state path，以及五连接/外部未提交 UPDATE 的回归均已实际通过 |
 | CI 文档与 fixture 漂移，包括 operation counts、跨 lane owner、NDU/Objective/migration fixture、陈旧源字符串测试 | 按正式 registry、owner 合约、真实 runner 和原生行为同步。global outbox capacity fixture 分散 issuer 以保留原 per-issuer 512 限额；不扩大容量或删除 replay/active-row保护。原始七份历史来源快照保持不变 |
 | AuthBus/Operations 绕过中央 SQLite shim，strict Clippy 拒绝 | 集中固定 WAL/FULL/FK/busy timeout 的 durable pool 和隔离 schema-reference memory pool，保留 owner 原连接上限；每连接 disk-full 故障测试仅保留明确 test-only 定点例外 |
 
@@ -142,6 +144,10 @@ Fleet 全目录防护与正常 drain 历史观察的源代码 P1 已有实现及
 
 ## 10. 迭代停止标准
 
-本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换和实际编译接线错误。最后两轮只读独立复审已核验 Agentd lint 变更和 Rollout fd/EOF 窄修，未发现新的具体问题；其结论只覆盖静态审阅范围。最终源码绑定与实际执行结果仍按第 7 节分别记录；仍有确证问题则继续修复。
+本轮持续执行“独立发现→owner 修复→行为回归→再审”，新发现包括 scheduled Generator revocation、background drain 超时、隐藏 read repair、drain starvation、publication cleanup、Fleet alias ABA、历史 rollout FIFO 替换、实际 SQLite 冷连接写锁、压缩 fixture 冲突、zstd空frame encoded资源预算和编译接线错误。最后独立复审已核验 Agentd lint、Rollout fd/EOF、SQLite startup snapshot、真实 cold-reader fixture 与 zstd encoded/CPU 工作预算，未发现新的具体问题；其结论只覆盖静态审阅范围。最终源码绑定与实际执行结果仍按第 7 节分别记录；仍有确证问题则继续修复。
 
 停止代表在已审边界与既定可信 operator/root 模型内，当前轮没有新的可独立修补发现。它不代表所有未来风险为零，也不能把第 9 节缺失的产品或部署证据改成已完成。
+
+## 11. 审阅与落地分段
+
+当前审计 PR 跨越 owner 边界，包含历史映射快照和派生索引，不能按总行数把它作为一个简单局部补丁。建议按实际依赖拆成以下审阅段：先审 targeted control/readiness/run 原子性；再审可信文件和 Fleet publication；然后联合审 App Server drain、原 State/Queue/Rollout 历史观察与 TaskFlow 对账；独立审 learning.eval 封存及 Agentd/plasticity 消费迁移；最后核验源码绑定、文档和 CI 真值。最小可先落地段是 additive destination target 校验及相应接收端/双 Agent 回归，其公开兼容不依赖后续历史恢复能力。当前交付保持 draft，尚未合并到 main。

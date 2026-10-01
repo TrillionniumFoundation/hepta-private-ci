@@ -4,6 +4,8 @@ use std::io;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Duration;
+use std::time::Instant;
 
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
@@ -17,6 +19,48 @@ pub struct BoundedRolloutLineReader {
 enum Reader {
     Plain(tokio::io::BufReader<tokio::fs::File>),
     Compressed(Option<std::io::BufReader<Box<dyn io::Read + Send>>>),
+}
+
+const MAX_ENCODED_ROLLOUT_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_ENCODED_READ_BYTES: usize = 128 * 1024;
+const READ_WORK_BUDGET: Duration = Duration::from_secs(4);
+
+struct BoundedEncodedRead<R> {
+    inner: R,
+    remaining: u64,
+    deadline: Instant,
+}
+
+impl<R: io::Read> io::Read for BoundedEncodedRead<R> {
+    fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
+        if bytes.is_empty() {
+            return Ok(0);
+        }
+        if Instant::now() >= self.deadline {
+            return Err(incomplete_file("compressed rollout work deadline expired"));
+        }
+        let mut eof_probe = [0];
+        let output = if self.remaining == 0 {
+            // Never manufacture EOF at a byte budget: appended empty frames
+            // could otherwise make an observed terminal prefix look complete.
+            &mut eof_probe[..]
+        } else {
+            let maximum = self.remaining.min(MAX_ENCODED_READ_BYTES as u64) as usize;
+            let limit = bytes.len().min(maximum);
+            &mut bytes[..limit]
+        };
+        let read = self.inner.read(output).map_err(incomplete_file)?;
+        if Instant::now() >= self.deadline {
+            return Err(incomplete_file("compressed rollout work deadline expired"));
+        }
+        if read as u64 > self.remaining {
+            return Err(incomplete_file(
+                "compressed rollout exceeds its initial byte budget",
+            ));
+        }
+        self.remaining -= read as u64;
+        Ok(read)
+    }
 }
 
 struct SelectedFile {
@@ -104,10 +148,13 @@ fn open_regular_rollout(path: &Path, expected: &std::fs::Metadata) -> io::Result
 /// or appending. Both compressed and plain records have the same byte limit.
 /// Unix opens reject leaf symlinks and special files without waiting for FIFO
 /// writers. This does not promise cancellation of arbitrary filesystem I/O.
+/// Compressed input is bounded independently of decoded records; its worker
+/// checks a work deadline before and after each bounded physical read.
 pub async fn open_bounded_rollout_line_reader(
     path: &Path,
     max_line_bytes: usize,
 ) -> io::Result<BoundedRolloutLineReader> {
+    let deadline = Instant::now() + READ_WORK_BUDGET;
     if max_line_bytes == 0 || max_line_bytes == usize::MAX {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -128,6 +175,9 @@ pub async fn open_bounded_rollout_line_reader(
         ));
     }
     let (inner, guard) = tokio::task::spawn_blocking(move || {
+        if Instant::now() >= deadline {
+            return Err(incomplete_file("rollout open work deadline expired"));
+        }
         let file = open_regular_rollout(&path, &metadata)?;
         let guard = Arc::new(SelectedFile {
             path,
@@ -139,7 +189,17 @@ pub async fn open_bounded_rollout_line_reader(
             .extension()
             .is_some_and(|extension| extension == "zst")
         {
-            let mut decoder = zstd::stream::read::Decoder::new(file)?;
+            if guard.metadata.len() > MAX_ENCODED_ROLLOUT_BYTES {
+                return Err(incomplete_file(
+                    "compressed rollout exceeds its encoded byte limit",
+                ));
+            }
+            let encoded = BoundedEncodedRead {
+                inner: file,
+                remaining: guard.metadata.len(),
+                deadline,
+            };
+            let mut decoder = zstd::stream::read::Decoder::new(encoded)?;
             // This must precede the first decoder read: a small frame header
             // can otherwise request a multi-gigabyte history window.
             decoder.window_log_max(25)?;

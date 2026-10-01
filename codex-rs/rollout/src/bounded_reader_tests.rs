@@ -22,8 +22,10 @@ async fn a_tiny_zstd_header_cannot_request_an_unbounded_decoder_window() {
 
 #[tokio::test]
 async fn plain_and_compressed_readers_reject_oversized_or_truncated_records() {
-    let directory = tempfile::tempdir().unwrap();
     for suffix in ["jsonl", "jsonl.zst"] {
+        // Resolution prefers a plain sibling, even when given the .zst path.
+        // Isolate representations so the truncated plain case cannot shadow zstd.
+        let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join(format!("rollout.{suffix}"));
         for data in [
             b"small\n".as_slice(),
@@ -199,4 +201,106 @@ async fn a_changed_file_or_selected_path_invalidates_a_complete_prefix() {
             std::fs::remove_file(&path).unwrap();
         }
     }
+}
+
+#[test]
+fn appended_empty_frames_cannot_turn_an_encoded_budget_into_eof() {
+    use std::io::Seek;
+
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("rollout.jsonl.zst");
+    let prefix = zstd::stream::encode_all(b"terminal\n".as_slice(), /*level*/ 3).unwrap();
+    let empty = zstd::stream::encode_all(b"".as_slice(), /*level*/ 3).unwrap();
+    std::fs::write(&path, &prefix).unwrap();
+    let metadata = std::fs::symlink_metadata(&path).unwrap();
+    let file = open_regular_rollout(&path, &metadata).unwrap();
+    std::fs::OpenOptions::new()
+        .append(true)
+        .open(&path)
+        .unwrap()
+        .write_all(&empty.repeat(/*n*/ 1024))
+        .unwrap();
+
+    let encoded = BoundedEncodedRead {
+        inner: file,
+        remaining: metadata.len(),
+        deadline: Instant::now() + READ_WORK_BUDGET,
+    };
+    let decoder = zstd::stream::read::Decoder::new(encoded).unwrap();
+    let mut reader = std::io::BufReader::new(decoder);
+    let mut line = Vec::new();
+    io::BufRead::read_until(&mut reader, b'\n', &mut line).unwrap();
+    assert_eq!(line, b"terminal\n");
+    line.clear();
+    assert_eq!(
+        io::BufRead::read_until(&mut reader, b'\n', &mut line)
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::InvalidData
+    );
+    // The same production wrapper consumed at most the original snapshot and
+    // one true-EOF probe, rather than traversing the appended empty frames.
+    let mut encoded = reader.into_inner().finish().into_inner();
+    assert_eq!(encoded.inner.stream_position().unwrap(), metadata.len() + 1);
+    assert_eq!(encoded.remaining, 0);
+}
+
+#[tokio::test]
+async fn oversized_encoded_history_is_rejected_before_decompression() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("rollout.jsonl.zst");
+    let file = std::fs::File::create(&path).unwrap();
+    // A sparse file exercises the metadata limit without allocating the input.
+    file.set_len(MAX_ENCODED_ROLLOUT_BYTES + 1).unwrap();
+    let result = open_bounded_rollout_line_reader(&path, /*max_line_bytes*/ 32).await;
+    let error = result.err().unwrap();
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    assert_eq!(
+        error.to_string(),
+        "compressed rollout exceeds its encoded byte limit"
+    );
+}
+
+#[tokio::test]
+async fn complete_multiframe_compressed_history_reaches_real_eof() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("rollout.jsonl.zst");
+    let mut encoded = Vec::new();
+    for decoded in [b"first\n".as_slice(), b"", b"second\n", b""] {
+        encoded.extend(zstd::stream::encode_all(decoded, /*level*/ 3).unwrap());
+    }
+    std::fs::write(&path, encoded).unwrap();
+    let mut reader = open_bounded_rollout_line_reader(&path, /*max_line_bytes*/ 32)
+        .await
+        .unwrap();
+    assert_eq!(reader.next_line().await.unwrap(), Some("first".to_string()));
+    assert_eq!(
+        reader.next_line().await.unwrap(),
+        Some("second".to_string())
+    );
+    assert_eq!(reader.next_line().await.unwrap(), None);
+}
+
+#[test]
+fn an_expired_encoded_worker_deadline_prevents_physical_reads() {
+    use std::io::Read;
+    use std::io::Seek;
+
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("rollout.jsonl.zst");
+    let encoded = zstd::stream::encode_all(b"complete\n".as_slice(), /*level*/ 3).unwrap();
+    std::fs::write(&path, &encoded).unwrap();
+    let input = BoundedEncodedRead {
+        inner: std::fs::File::open(&path).unwrap(),
+        remaining: encoded.len() as u64,
+        deadline: Instant::now() - Duration::from_secs(/*secs*/ 1),
+    };
+    let mut decoder = zstd::stream::read::Decoder::new(input).unwrap();
+    assert_eq!(
+        decoder.read(&mut [0; 1]).unwrap_err().kind(),
+        io::ErrorKind::InvalidData
+    );
+    let mut input = decoder.finish().into_inner();
+    assert_eq!(input.inner.stream_position().unwrap(), 0);
+    assert_eq!(input.remaining, encoded.len() as u64);
 }

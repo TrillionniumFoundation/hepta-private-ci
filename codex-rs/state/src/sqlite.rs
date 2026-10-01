@@ -17,7 +17,6 @@ use sqlx::Connection;
 use sqlx::Error;
 use sqlx::SqlitePool;
 use sqlx::migrate::Migrator;
-use sqlx::sqlite::SqliteAutoVacuum;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -281,14 +280,42 @@ impl SqliteConfig {
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Normal)
-            .auto_vacuum(SqliteAutoVacuum::Incremental)
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
+        // auto_vacuum changes database-global state and takes a writer lock
+        // even when INCREMENTAL is already selected. Apply it only to a new
+        // zero-page database, before WAL creates its header. Pool reconnects
+        // must not turn otherwise read-only SELECTs into implicit writers.
+        // Existing NONE/FULL/INCREMENTAL databases retain their vacuum mode;
+        // changing an existing layout is explicit owner maintenance.
+        let mut initialization = options.connect().await?;
+        let initialize = async {
+            // A deferred read snapshot binds the empty-page decision to the
+            // setting. BEGIN IMMEDIATE would itself create page one before
+            // auto_vacuum can select the new database's layout.
+            let mut initial_layout = initialization.begin().await?;
+            let pages: i64 = sqlx::query_scalar("PRAGMA page_count")
+                .fetch_one(&mut *initial_layout)
+                .await?;
+            if pages == 0 {
+                sqlx::query("PRAGMA auto_vacuum=INCREMENTAL")
+                    .execute(&mut *initial_layout)
+                    .await?;
+            }
+            initial_layout.commit().await?;
+            sqlx::query("PRAGMA journal_mode=WAL")
+                .execute(&mut initialization)
+                .await?;
+            Ok::<(), Error>(())
+        }
+        .await;
+        let close = initialization.close().await;
+        initialize?;
+        close?;
         SqlitePoolOptions::new()
             .max_connections(5)
-            .connect_with(options)
+            .connect_with(options.journal_mode(SqliteJournalMode::Wal))
             .await
     }
 

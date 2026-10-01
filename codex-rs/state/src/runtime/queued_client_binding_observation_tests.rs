@@ -94,6 +94,18 @@ async fn binding_snapshot(queue: &SqliteQueueStore) -> Vec<String> {
     .unwrap()
 }
 
+async fn force_next_query_to_open_a_cold_connection(
+    pool: &sqlx::SqlitePool,
+) -> Vec<sqlx::pool::PoolConnection<sqlx::Sqlite>> {
+    let mut held = Vec::new();
+    for _ in 0..5 {
+        held.push(pool.acquire().await.unwrap());
+    }
+    held.pop().unwrap().close().await.unwrap();
+    assert_eq!(pool.size(), 4);
+    held
+}
+
 #[tokio::test]
 async fn observation_reads_exact_queue_without_writing_under_another_writer_lock() {
     let (runtime, thread_id) = runtime_with_thread().await;
@@ -101,7 +113,17 @@ async fn observation_reads_exact_queue_without_writing_under_another_writer_lock
     let (payload, digest) = bound_payload("client-a", "first message");
     let record = queue_exact(queue, thread_id, "client-a", &payload, &digest).await;
     let before = binding_snapshot(queue).await;
-    let writer = queue.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
+    let writer_pool = runtime
+        .sqlite()
+        .open_read_write_pool(&runtime.sqlite().queue_db_path())
+        .await
+        .unwrap();
+    let held = force_next_query_to_open_a_cold_connection(queue.pool.as_ref()).await;
+    let mut writer = writer_pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
+    sqlx::query("UPDATE queued_client_bindings SET updated_at_ms=updated_at_ms+1")
+        .execute(&mut *writer)
+        .await
+        .unwrap();
     let observed = tokio::time::timeout(
         Duration::from_secs(/*secs*/ 1),
         queue.observe_client_binding(thread_id, "client-a", &digest),
@@ -129,6 +151,48 @@ async fn observation_reads_exact_queue_without_writing_under_another_writer_lock
     );
     assert_eq!(binding_snapshot(queue).await, before);
     writer.rollback().await.unwrap();
+    drop(held);
+    writer_pool.close().await;
+}
+
+#[tokio::test]
+async fn rollout_path_observation_uses_a_cold_connection_under_another_writer_lock() {
+    let (runtime, thread_id) = runtime_with_thread().await;
+    let expected = runtime
+        .find_rollout_path_by_id(thread_id, /*archived_only*/ None)
+        .await
+        .unwrap();
+    assert!(expected.is_some());
+    let writer_pool = runtime
+        .sqlite()
+        .open_read_write_pool(&runtime.sqlite().state_db_path())
+        .await
+        .unwrap();
+    let held = force_next_query_to_open_a_cold_connection(runtime.pool.as_ref()).await;
+    let mut writer = writer_pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
+    sqlx::query("UPDATE threads SET rollout_path='uncommitted-path' WHERE id=?")
+        .bind(thread_id.to_string())
+        .execute(&mut *writer)
+        .await
+        .unwrap();
+    let observed = tokio::time::timeout(
+        Duration::from_secs(/*secs*/ 1),
+        runtime.find_rollout_path_by_id(thread_id, /*archived_only*/ None),
+    )
+    .await
+    .expect("rollout path observation must not acquire the SQLite writer lock")
+    .unwrap();
+    assert_eq!(observed, expected);
+    writer.rollback().await.unwrap();
+    assert_eq!(
+        runtime
+            .find_rollout_path_by_id(thread_id, /*archived_only*/ None)
+            .await
+            .unwrap(),
+        expected
+    );
+    drop(held);
+    writer_pool.close().await;
 }
 
 #[tokio::test]

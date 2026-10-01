@@ -374,6 +374,16 @@ thread writer successfully join. A timeout leaves the acknowledgement false.
 `observe_exact_submission` uses the original `StateRuntime` and pure queue
 SELECTs, rechecks the selected rollout pointer before and after the read, and
 cannot repair metadata, reopen a store, reserve a message or start a turn.
+The original State pool's cold connections no longer set `auto_vacuum`: owner
+startup initializes only a zero-page database to `INCREMENTAL` in a deferred
+snapshot before enabling WAL, preserving existing nonempty `NONE` / `FULL` /
+`INCREMENTAL` layouts. The pool retains five connections, `NORMAL` synchronous
+mode, foreign keys and a five-second busy timeout.
+[Connection source tests](../../../codex-rs/state/src/sqlite_connection_tests.rs)
+exercise five cold connections under an external writer; [observer source
+tests](../../../codex-rs/state/src/runtime/queued_client_binding_observation_tests.rs)
+exercise actual cold queue-binding and rollout-path SELECTs without changing the
+stored snapshot. These references do not establish native execution success.
 
 The historical scanner binds the owning thread, exact client ID and payload.
 Only matching `TurnComplete` / `TurnAborted` records prove a terminal outcome;
@@ -392,9 +402,19 @@ nanosecond modification/change times with the selected path snapshot. At complet
 EOF it rechecks both the retained handle and selected path; drift invalidates the
 scan. This closes the local FIFO-replacement blocking-open leak. Plain and zstd
 history retain stable parent-alias compatibility; a leaf symlink is rejected.
+Compressed history additionally has a 64 MiB initial encoded-file limit. The
+decoder reads the same verified file within its initial length, at most 128 KiB
+per physical read. After that budget is exhausted, a one-byte probe must find
+real EOF; any extra byte invalidates the scan rather than turning a terminal
+prefix into completion. A synchronous four-second worker budget starts at public
+open and is checked before and after each encoded read, including the probe.
+These cooperative checks cannot force cancellation of blocked kernel or
+network-filesystem I/O. The plain reader and public API are unchanged.
 [Reader source regressions](../../../codex-rs/rollout/src/bounded_reader_tests.rs)
 cover FIFO replacement with bounded cleanup, parent aliases, leaf symlinks and
-completed-prefix invalidation after append or path replacement. These source
+completed-prefix invalidation after append or path replacement, plus appended
+empty frames, the encoded metadata cap, valid multi-frame EOF and an expired
+worker deadline before any physical read. These source
 cases still require exact-candidate execution evidence.
 
 This closes the missing source observation path after normal RPC shutdown.
