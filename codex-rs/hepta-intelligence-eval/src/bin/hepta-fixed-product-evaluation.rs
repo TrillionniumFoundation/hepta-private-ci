@@ -13,6 +13,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 std::path::Path::new(&args[1]),
             );
         }
+        if args.len() == 2 && args[0] == "--resume-calibration-evaluation" {
+            return codex_hepta_intelligence_eval::resume_fixed_calibration_evaluation(
+                std::path::Path::new(&args[1]),
+            );
+        }
     }
-    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --run-calibration-cycle ROOT_CONFIG".into())
+    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG".into())
 }

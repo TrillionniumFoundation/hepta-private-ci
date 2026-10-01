@@ -17,6 +17,10 @@ use std::process::Command;
 use std::process::Stdio;
 type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
 
+#[path = "fixed_calibration_cycle_resume.rs"]
+mod resume;
+pub use resume::resume_fixed_calibration_evaluation;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Source {
@@ -261,6 +265,50 @@ pub fn run_fixed_calibration_cycle(path: &Path) -> HostResult<()> {
         let raw = read_root_review_input(&work.join(name), 4 * 1024 * 1024)?;
         require_fresh_native_stream(&raw, &expected, started, observed_now)?;
     }
+    let independent = execute_independent_evaluation(
+        &config,
+        uid,
+        gid,
+        evaluator_program,
+        &eval_bytes,
+        Digest32::of_bytes(&bytes),
+    )?;
+    if Digest32::of_bytes(&source(&config.custody_program, 128 * 1024 * 1024)?) != custody_program
+        || Digest32::of_bytes(&source(&config.evaluator_program, 128 * 1024 * 1024)?)
+            != evaluator_program
+    {
+        return Err("cycle executable changed during execution".into());
+    }
+    write_new(
+        &config.phase_directory.join("completion.json"),
+        &serde_json::to_vec(&serde_json::json!({
+            "schema":"hepta.fixed-calibration-cycle.completed.v1","config_digest":Digest32::of_bytes(&bytes).to_string(),
+            "original_inputs":current,"native_started_at_ms":started,"completed_at_ms":now_ms()?,
+            "independent_result_digest":Digest32::of_bytes(&independent.bytes).to_string(),"independent_evaluation":independent.evaluation,
+            "scope":"calibration-only","qualified":false,"holdout_consumed":false,"production_activation":false,
+            "authority_grants_any":false
+        }))?,
+    )?;
+    println!(
+        "{}",
+        serde_json::json!({"schema":"hepta.fixed-calibration-cycle.status.v1","completed":true,
+        "completion_path":config.phase_directory.join("completion.json"),"qualified":false,"holdout_consumed":false,"production_activation":false})
+    );
+    Ok(())
+}
+
+struct IndependentCycleResult {
+    bytes: Vec<u8>,
+    evaluation: Value,
+}
+fn execute_independent_evaluation(
+    config: &Config,
+    uid: u32,
+    gid: u32,
+    evaluator_program: Digest32,
+    eval_bytes: &[u8],
+    config_digest: Digest32,
+) -> HostResult<IndependentCycleResult> {
     let eval_output = write_new(&config.phase_directory.join("evaluator.stdout.json"), &[])?;
     let eval_errors = write_new(&config.phase_directory.join("evaluator.stderr.log"), &[])?;
     let status = Command::new("/usr/bin/systemd-run")
@@ -269,7 +317,7 @@ pub fn run_fixed_calibration_cycle(path: &Path) -> HostResult<()> {
         .args(["--quiet", "--wait", "--pipe", "--collect"])
         .arg(format!(
             "--unit=hepta-fixed-calibration-eval-cycle-{}-{}",
-            &Digest32::of_bytes(&bytes).to_string()[..16],
+            &config_digest.to_string()[..16],
             std::process::id()
         ))
         .args([
@@ -305,37 +353,26 @@ pub fn run_fixed_calibration_cycle(path: &Path) -> HostResult<()> {
     if !status.success() {
         return Err("actual independent evaluator failed; retain original cycle".into());
     }
+    read_independent_evaluation(config, evaluator_program, eval_bytes)
+}
+fn read_independent_evaluation(
+    config: &Config,
+    evaluator_program: Digest32,
+    eval_bytes: &[u8],
+) -> HostResult<IndependentCycleResult> {
     let result = read_root_review_input(
         &config.phase_directory.join("evaluator.stdout.json"),
         64 * 1024,
     )?;
     let evaluation =
-        read_fixed_calibration_result(&eval_bytes, evaluator_program, &result, now_ms()?)?;
+        read_fixed_calibration_result(eval_bytes, evaluator_program, &result, now_ms()?)?;
     if evaluation["current_authentication"] != true {
         return Err("cycle did not produce authenticated current independent evidence".into());
     }
-    if Digest32::of_bytes(&source(&config.custody_program, 128 * 1024 * 1024)?) != custody_program
-        || Digest32::of_bytes(&source(&config.evaluator_program, 128 * 1024 * 1024)?)
-            != evaluator_program
-    {
-        return Err("cycle executable changed during execution".into());
-    }
-    write_new(
-        &config.phase_directory.join("completion.json"),
-        &serde_json::to_vec(&serde_json::json!({
-            "schema":"hepta.fixed-calibration-cycle.completed.v1","config_digest":Digest32::of_bytes(&bytes).to_string(),
-            "original_inputs":current,"native_started_at_ms":started,"completed_at_ms":now_ms()?,
-            "independent_result_digest":Digest32::of_bytes(&result).to_string(),"independent_evaluation":evaluation,
-            "scope":"calibration-only","qualified":false,"holdout_consumed":false,"production_activation":false,
-            "authority_grants_any":false
-        }))?,
-    )?;
-    println!(
-        "{}",
-        serde_json::json!({"schema":"hepta.fixed-calibration-cycle.status.v1","completed":true,
-        "completion_path":config.phase_directory.join("completion.json"),"qualified":false,"holdout_consumed":false,"production_activation":false})
-    );
-    Ok(())
+    Ok(IndependentCycleResult {
+        bytes: result,
+        evaluation,
+    })
 }
 fn now_ms() -> HostResult<u64> {
     Ok(u64::try_from(
