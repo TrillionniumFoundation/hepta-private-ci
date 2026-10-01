@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, open, readFile, rm, stat } from "node:fs/promises";
+import { appendFile, mkdtemp, open, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -364,4 +364,63 @@ test("complete-looking bytes after failed sync cannot be blessed by a different 
     /owner recovery/,
   );
   await assert.rejects(reopened.recordDispatch(record()), /owner recovery/);
+});
+
+
+test("a journal replaced during fsync cannot acknowledge a dispatch in a detached file", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  let replaced = false;
+  observeSync(t, prototype, async (event) => {
+    if (event.kind !== "file" || replaced) return;
+    replaced = true;
+    await rename(path, `${path}.detached`);
+    await writeFile(path, "", { mode: 0o600 });
+  });
+  await assert.rejects(journal.recordDispatch(record()), /file identity changed/);
+  await assert.rejects(new FileBrowserOperationJournal(path).getOperation("profile.1", 1, "operation.1"), /owner recovery/);
+  assert.equal(await readFile(path, "utf8"), "");
+  assert.match(await readFile(`${path}.detached`, "utf8"), /operation.1/);
+});
+
+test("growth during a bounded snapshot read is rejected and cannot allocate beyond the statted length", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const before = await readFile(path);
+  const read = prototype.read;
+  let mutated = false;
+  t.mock.method(prototype, "read", async function (buffer, offset, length, position) {
+    assert.ok(buffer.length <= before.length + 1);
+    if (!mutated) {
+      mutated = true;
+      await appendFile(path, before);
+    }
+    return read.call(this, buffer, offset, length, position);
+  });
+  const reopened = new FileBrowserOperationJournal(path);
+  await assert.rejects(reopened.getOperation("profile.1", 1, "operation.1"), /changed while reading/);
+  assert.equal(mutated, true);
+  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /owner recovery/);
+});
+
+test("a FIFO substituted at the journal path fails before blocking on a reader", async (t) => {
+  if (process.platform === "win32") return t.skip("Unix named pipe boundary");
+  const { path } = await fixture(t);
+  const fifo = spawnSync("mkfifo", ["-m", "600", path], { encoding: "utf8", timeout: 2000 });
+  if (fifo.error?.code === "ENOENT") return t.skip("mkfifo unavailable");
+  assert.equal(fifo.status, 0, fifo.stderr);
+  const source = new URL("../src/journal.js", import.meta.url).href;
+  const code = `import { FileBrowserOperationJournal } from ${JSON.stringify(source)};
+    try {
+      await new FileBrowserOperationJournal(${JSON.stringify(path)}).getOperation("profile.1", 1, "operation.1");
+      process.exit(1);
+    } catch (error) {
+      process.stderr.write(error.message);
+      process.exit(73);
+    }`;
+  const child = spawnSync(process.execPath, ["--input-type=module", "-e", code], {
+    encoding: "utf8", timeout: 2000,
+  });
+  assert.equal(child.error, undefined, child.error?.message);
+  assert.equal(child.status, 73, child.stderr);
+  assert.match(child.stderr, /regular file/);
 });

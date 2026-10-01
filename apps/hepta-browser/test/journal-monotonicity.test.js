@@ -21,6 +21,9 @@ import {
   MemoryBrowserOperationJournal,
 } from "../src/journal.js";
 
+import { BrowserProfileHost } from "../src/runtime.js";
+import { browserActionDigest } from "../src/action.js";
+
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
 const D3 = "3".repeat(64);
@@ -333,20 +336,27 @@ test("file: same-size tampering is detected even when an external writer restore
   );
 });
 
-test("file: replacing the journal invalidates a live owner's verified record cache", async (t) => {
+test("file: a replacement cannot discard a live owner's verified history", async (t) => {
   const { path, journal } = await fixture(t);
   await journal.recordDispatch(record());
-  await writeFile(
-    `${path}.replacement`,
-    line("dispatch", record({ operationId: "operation.2" })),
-    { mode: 0o600 },
-  );
+  await writeFile(`${path}.replacement`,
+    line("dispatch", record({ operationId: "operation.2" })), { mode: 0o600 });
   await rename(`${path}.replacement`, path);
-  assert.equal(await journal.getOperation("profile.1", 1, "operation.1"), null);
-  assert.deepEqual(
-    await journal.getOperation("profile.1", 1, "operation.2"),
-    record({ operationId: "operation.2" }),
-  );
+  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /append-only history/);
+  await assert.rejects(new FileBrowserOperationJournal(path).recordDispatch(record()), /owner recovery/);
+});
+
+test("file: replacement with the same prefix and a valid append preserves prior terminal results", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  await journal.recordObservation(terminal());
+  const prior = await readFile(path);
+  await writeFile(`${path}.replacement`, Buffer.concat([
+    prior, Buffer.from(line("dispatch", record({ operationId: "operation.2" }))),
+  ]), { mode: 0o600 });
+  await rename(`${path}.replacement`, path);
+  assert.deepEqual(await journal.getOperation("profile.1", 1, "operation.1"), terminal());
+  assert.deepEqual(await journal.getOperation("profile.1", 1, "operation.2"), record({ operationId: "operation.2" }));
 });
 
 test("file: concurrent instances serialize admission and preserve both unrelated operations", async (t) => {
@@ -395,28 +405,104 @@ test("file: an existing external writer lock is never stolen or bypassed", async
   );
 });
 
-test("file: verified cache avoids full replay until an external journal mutation", async (t) => {
+test("file: a cached owner observes external appends without losing prior terminal state", async (t) => {
   const { path, journal } = await fixture(t);
-  const { open } = await import("node:fs/promises");
-  const probe = await open(`${path}.probe`, "w", 0o600);
-  const prototype = Object.getPrototypeOf(probe);
-  await probe.close();
-  const readFile = prototype.readFile;
-  let fullReads = 0;
-  t.mock.method(prototype, "readFile", async function (...args) {
-    fullReads += 1;
-    return readFile.apply(this, args);
-  });
   await journal.recordDispatch(record());
   await journal.recordObservation(terminal());
   await journal.getOperation("profile.1", 1, "operation.1");
-  await journal.listOperations("profile.1", 1);
-  assert.equal(fullReads, 0);
-  await appendFile(
-    path,
-    line("dispatch", record({ operationId: "operation.2" })),
-  );
-  assert.equal((await journal.listOperations("profile.1", 1)).length, 2);
-  await journal.getOperation("profile.1", 1, "operation.1");
-  assert.equal(fullReads, 1);
+  await appendFile(path, line("dispatch", record({ operationId: "operation.2" })));
+  assert.deepEqual(await journal.listOperations("profile.1", 1), [
+    terminal(), record({ operationId: "operation.2" }),
+  ]);
+  assert.deepEqual(await journal.getOperation("profile.1", 1, "operation.1"), terminal());
+});
+
+test("file: deleting verified history cannot turn a previous operation into a fresh dispatch", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  await journal.recordObservation(terminal());
+  await rm(path);
+  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /history disappeared/);
+  await assert.rejects(journal.recordDispatch(record()), /owner recovery/);
+  await assert.rejects(new FileBrowserOperationJournal(path).getOperation("profile.1", 1, "operation.1"), /owner recovery/);
+  await assert.rejects(readFile(path), { code: "ENOENT" });
+});
+
+test("file: restoring an older valid-checksum snapshot cannot roll back an observed result", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const dispatch = await readFile(path);
+  await journal.recordObservation(terminal());
+  await writeFile(path, dispatch, { mode: 0o600 });
+  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /append-only history/);
+  await assert.rejects(new FileBrowserOperationJournal(path).listOperations("profile.1", 1), /owner recovery/);
+  assert.deepEqual(await readFile(path), dispatch);
+});
+
+test("file: an initialized owner rejects substitution of its private parent directory", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const bytes = await readFile(path);
+  const parent = dirname(path);
+  const detached = `${parent}.detached`;
+  t.after(() => rm(detached, { recursive: true, force: true }));
+  await rename(parent, detached);
+  await mkdir(parent, { mode: 0o700 });
+  await writeFile(path, bytes, { mode: 0o600 });
+  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /parent identity changed/);
+  await assert.rejects(journal.recordDispatch(record()), /owner recovery/);
+});
+
+
+test("file: a restarted runtime cannot redispatch when its previously verified journal history disappears", async (t) => {
+  const { path, journal } = await fixture(t);
+  const action = { kind: "navigate", url: "https://example.com/", policyDigest: D1, expectedRevision: 1 };
+  const finalPayloadDigest = browserActionDigest(action);
+  let dispatches = 0;
+  let authorizations = 0;
+  const driver = {
+    async start() { return { started: true, processId: "servo.process.1" }; },
+    async observe() { throw new Error("bootstrap navigation needs no page observation"); },
+    async dispatch() {
+      dispatches += 1;
+      return { terminalObserved: true, status: "succeeded", outcomeDigest: D3 };
+    },
+    async reconcile() { throw new Error("no second effect or reconciliation is permitted"); },
+    async stop() { return { stopped: true }; },
+  };
+  const authority = {
+    async withVerifiedUse(request, consumer) {
+      authorizations += 1;
+      return consumer({ authorized: true, witnessDigest: D3,
+        authorityEpoch: request.authorityEpoch, requestDigest: request.requestDigest });
+    },
+  };
+  const profile = {
+    profileId: "profile.1", principalId: "principal.1", generation: 1,
+    manifestDigest: D1, grantDigest: D2, expiresAtMs: 10000,
+    allowedOrigins: ["https://example.com"],
+    effectGrants: [{ grantDigest: D3, action: "navigate", destinationOrigin: "https://example.com",
+      finalPayloadDigest, authorityEpoch: 7, expiresAtMs: 9500 }],
+  };
+  const operation = {
+    profileId: "profile.1", principalId: "principal.1", generation: 1,
+    operationId: "operation.1", pageGeneration: 0, typedAction: action,
+    destinationOrigin: "https://example.com", finalPayloadDigest,
+    effectGrantDigest: D3, authorityEpoch: 7, deadlineMs: 9000,
+  };
+  const makeHost = (operationJournal) => new BrowserProfileHost({
+    driver, authority, journal: operationJournal, clock: () => 1000, driverCallTimeoutMs: 1000,
+  });
+  const first = makeHost(journal);
+  await first.openProfile(profile);
+  assert.equal((await first.navigateOrAct(operation)).status, "succeeded");
+  await rm(path);
+  const restarted = makeHost(journal);
+  await restarted.openProfile(profile);
+  await assert.rejects(restarted.navigateOrAct(operation), /history disappeared/);
+  const recovered = makeHost(new FileBrowserOperationJournal(path));
+  await recovered.openProfile(profile);
+  await assert.rejects(recovered.navigateOrAct(operation), /owner recovery/);
+  assert.equal(dispatches, 1);
+  assert.equal(authorizations, 1);
 });

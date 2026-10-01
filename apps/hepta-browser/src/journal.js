@@ -31,6 +31,10 @@ function checksum(value) {
   return createHash("sha256").update(canonical(value)).digest("hex");
 }
 
+function checksumBytes(bytes) {
+  return createHash("sha256").update(bytes).digest("hex");
+}
+
 function keyOf(record) {
   return `${record.profileId}\u0000${record.generation}\u0000${record.operationId}`;
 }
@@ -162,9 +166,23 @@ async function requirePrivateParent(path) {
         "browser journal parent permissions or owner are unsafe",
       );
     }
+    return `${info.dev}:${info.ino}`;
   } finally {
     await handle.close();
   }
+}
+
+async function readSnapshot(handle, size) {
+  // Read at most the statted size plus one sentinel byte. readFile() can keep
+  // allocating if an unrelated process grows the file while it is reading.
+  const buffer = Buffer.alloc(size + 1);
+  let offset = 0;
+  while (offset < buffer.length) {
+    const { bytesRead } = await handle.read(buffer, offset, buffer.length - offset, offset);
+    if (bytesRead === 0) break;
+    offset += bytesRead;
+  }
+  return buffer.subarray(0, offset);
 }
 
 async function syncDirectory(path) {
@@ -174,9 +192,11 @@ async function syncDirectory(path) {
     (constants.O_NOFOLLOW ?? 0);
   const handle = await open(path, flags);
   try {
-    if (!(await handle.stat()).isDirectory())
+    const info = await handle.stat();
+    if (!info.isDirectory())
       throw new TypeError("journal parent is not a directory");
     await handle.sync();
+    return `${info.dev}:${info.ino}`;
   } finally {
     await handle.close();
   }
@@ -222,9 +242,12 @@ export class MemoryBrowserOperationJournal {
 export class FileBrowserOperationJournal {
   #path;
   #parentInitialized = false;
+  #parentIdentity = null;
   #uncertainWrite = null;
   #cacheIdentity = null;
   #cacheRecords = new Map();
+  #cacheSize = 0;
+  #cacheHash = createHash("sha256");
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
@@ -289,9 +312,10 @@ export class FileBrowserOperationJournal {
     let handle;
     await this.#prepareParent();
     try {
-      handle = await open(this.#path, constants.O_RDONLY | noFollow);
+      handle = await open(this.#path, constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0));
     } catch (error) {
       if (error?.code === "ENOENT") {
+        if (this.#cacheIdentity !== null) this.#historyFailure("disappeared");
         this.#cacheIdentity = null;
         this.#cacheRecords = new Map();
         return this.#cacheRecords;
@@ -299,15 +323,19 @@ export class FileBrowserOperationJournal {
       throw error;
     }
     let bytes;
+    let raw;
     let identity;
     try {
       const info = await handle.stat({ bigint: true });
       requirePrivateFile(info);
       identity = fileIdentity(info);
       if (identity === this.#cacheIdentity) return this.#cacheRecords;
-      const raw = await handle.readFile();
-      if (raw.length > MAX_FILE_BYTES)
-        throw new TypeError("browser journal exceeds byte limit");
+      raw = await readSnapshot(handle, Number(info.size));
+      const after = await handle.stat({ bigint: true });
+      if (raw.length !== Number(info.size) || fileIdentity(after) !== identity) {
+        this.#historyFailure("changed while reading");
+      }
+      requirePrivateFile(after);
       try {
         bytes = STRICT_UTF8.decode(raw);
       } catch {
@@ -360,8 +388,15 @@ export class FileBrowserOperationJournal {
       }
       records.set(key, applyRecord(prior, record, envelope.type));
     }
+    if (this.#cacheIdentity !== null &&
+        (raw.length < this.#cacheSize ||
+         checksumBytes(raw.subarray(0, this.#cacheSize)) !== this.#cacheHash.copy().digest("hex"))) {
+      this.#historyFailure("was truncated or rewritten");
+    }
     this.#cacheIdentity = identity;
     this.#cacheRecords = records;
+    this.#cacheSize = raw.length;
+    this.#cacheHash = createHash("sha256").update(raw);
     return records;
   }
 
@@ -376,7 +411,8 @@ export class FileBrowserOperationJournal {
     await this.#prepareParent();
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags =
-      constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
+      constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow |
+      (constants.O_NONBLOCK ?? 0);
     // Once opening/creating the file starts, any failure can leave an uncertain
     // durable prefix. Fence this owner rather than treating a retry as success.
     try {
@@ -397,17 +433,36 @@ export class FileBrowserOperationJournal {
         }
         await handle.writeFile(line, "utf8");
         await handle.sync();
-        identity = fileIdentity(await handle.stat({ bigint: true }));
+        const after = await handle.stat({ bigint: true });
+        if (after.size !== BigInt(this.#cacheSize + lineBytes)) {
+          this.#historyFailure("changed while appending");
+        }
+        identity = fileIdentity(after);
       } finally {
         await handle.close();
       }
-      await syncDirectory(dirname(this.#path));
+      if (await syncDirectory(dirname(this.#path)) !== this.#parentIdentity) {
+        this.#historyFailure("parent identity changed while appending");
+      }
+      const current = await open(this.#path,
+        constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0));
+      try {
+        const info = await current.stat({ bigint: true });
+        requirePrivateFile(info);
+        if (fileIdentity(info) !== identity) {
+          this.#historyFailure("file identity changed before acknowledgement");
+        }
+      } finally {
+        await current.close();
+      }
       const key = keyOf(record);
       this.#cacheRecords.set(
         key,
         applyRecord(this.#cacheRecords.get(key), record, type),
       );
       this.#cacheIdentity = identity;
+      this.#cacheSize += lineBytes;
+      this.#cacheHash.update(line, "utf8");
     } catch (error) {
       this.#uncertainWrite = error;
       throw error;
@@ -420,7 +475,9 @@ export class FileBrowserOperationJournal {
       if ((await realpath(parent)) !== resolve(parent)) {
         throw new TypeError("browser journal parent path contains a symlink");
       }
-      await requirePrivateParent(parent);
+      if (await requirePrivateParent(parent) !== this.#parentIdentity) {
+        this.#historyFailure("parent identity changed");
+      }
       return;
     }
     try {
@@ -431,7 +488,7 @@ export class FileBrowserOperationJournal {
       if ((await realpath(parent)) !== resolve(parent)) {
         throw new TypeError("browser journal parent path contains a symlink");
       }
-      await requirePrivateParent(parent);
+      const identity = await requirePrivateParent(parent);
       // Persist every new directory and the entry that names it before a
       // dispatch can become visible to the worker.
       const last = firstCreated === undefined ? parent : dirname(firstCreated);
@@ -441,11 +498,17 @@ export class FileBrowserOperationJournal {
         if (directory === last) break;
         directory = dirname(directory);
       }
+      this.#parentIdentity = identity;
       this.#parentInitialized = true;
     } catch (error) {
       this.#uncertainWrite = error;
       throw error;
     }
+  }
+
+  #historyFailure(reason) {
+    this.#uncertainWrite = new TypeError(`browser journal append-only history ${reason}; owner recovery required`);
+    throw this.#uncertainWrite;
   }
 
   #assertHealthy() {
