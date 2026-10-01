@@ -3,6 +3,7 @@
 //! Unknown execution retains that slot; unknown token usage remains `None`.
 
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -166,11 +167,13 @@ pub struct NativeDispatch {
 /// In-memory proof that this live process has durably prepared one dispatch but
 /// has not crossed the external App Server effect boundary.
 ///
-/// The token is deliberately non-cloneable and non-serializable. Recovery can
-/// never recreate it, so a recovered Dispatching record remains reconcile-only.
+/// The token is deliberately non-cloneable and non-serializable, and is bound
+/// to the exact control owner that issued it. A reopened or different owner
+/// cannot use it, so a recovered Dispatching record remains reconcile-only.
 pub struct NativePreEffectAbortToken {
     request_id: String,
     dispatch_revision: u64,
+    owner: Arc<()>,
 }
 
 impl std::fmt::Debug for NativePreEffectAbortToken {
@@ -333,6 +336,7 @@ impl DurableInferenceControl {
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                owner: Arc::clone(&self.pre_effect_owner),
             },
         ))
     }
@@ -345,6 +349,9 @@ impl DurableInferenceControl {
         token: NativePreEffectAbortToken,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
+        if !Arc::ptr_eq(&token.owner, &self.pre_effect_owner) {
+            return Err(Error::InvalidTransition);
+        }
         let record = self
             .native
             .records

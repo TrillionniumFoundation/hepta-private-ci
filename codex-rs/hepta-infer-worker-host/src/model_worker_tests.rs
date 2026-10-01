@@ -17,6 +17,7 @@ struct Driver {
     load_memory_bytes: Option<u64>,
     run_memory_bytes: Option<u64>,
     transient_allocation_bytes: Option<u64>,
+    feature_output_width: Option<usize>,
 }
 
 impl ModelDriver for Driver {
@@ -89,14 +90,17 @@ impl NeuronFeatureDriver for Driver {
         } else {
             request.head_digest.clone()
         };
+        let output_width = self
+            .feature_output_width
+            .unwrap_or(request.expected_output_width);
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
                 succeeded: false,
                 encoder_digest: request.encoder_digest.clone(),
                 head_digest,
-                drive_q24: vec![1 << 24; request.expected_output_width],
-                prediction_q24: vec![0; request.expected_output_width],
+                drive_q24: vec![1 << 24; output_width],
+                prediction_q24: vec![0; output_width],
                 observed_memory_bytes: 1_024,
                 transient_allocation_bytes: 2_048,
                 queue_age_micros: 11,
@@ -108,8 +112,8 @@ impl NeuronFeatureDriver for Driver {
             succeeded: !self.fail_terminal,
             encoder_digest: request.encoder_digest.clone(),
             head_digest,
-            drive_q24: vec![1 << 24; request.expected_output_width],
-            prediction_q24: vec![0; request.expected_output_width],
+            drive_q24: vec![1 << 24; output_width],
+            prediction_q24: vec![0; output_width],
             observed_memory_bytes: self.run_memory_bytes.unwrap_or(1_024),
             transient_allocation_bytes: self.transient_allocation_bytes.unwrap_or(2_048),
             queue_age_micros: 11,
@@ -559,6 +563,44 @@ fn neuron_feature_nonsuccess_drops_outputs_and_preserves_typed_receipt_status() 
 }
 
 #[test]
+fn nonsuccess_feature_observations_release_oversized_driver_vector_allocations() {
+    for indeterminate in [false, true] {
+        let driver = Driver {
+            fail_terminal: !indeterminate,
+            indeterminate,
+            feature_output_width: Some(4_096),
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let observed = worker
+            .run_neuron_features(100, "model.1", neuron_feature_request())
+            .expect("nonsuccess observation");
+        assert_eq!(
+            (
+                observed.drive_q24.len(),
+                observed.drive_q24.capacity(),
+                observed.prediction_q24.len(),
+                observed.prediction_q24.capacity(),
+                observed.status,
+            ),
+            (
+                0,
+                0,
+                0,
+                0,
+                if indeterminate {
+                    ExecutionStatus::Indeterminate
+                } else {
+                    ExecutionStatus::Failed
+                },
+            )
+        );
+    }
+}
+
+#[test]
 fn neuron_feature_identity_drift_is_fenced_even_when_driver_did_not_succeed() {
     for indeterminate in [false, true] {
         let driver = Driver {
@@ -709,4 +751,131 @@ fn invalid_handle_cleanup_panic_retains_handle_until_confirmed_retry() {
     worker
         .run(100, "model.1", request())
         .expect("recovered execution");
+}
+
+#[derive(Debug, Default)]
+struct AliasingDriver {
+    physical_handles: BTreeMap<String, ModelManifest>,
+    loads: usize,
+    runs: usize,
+    unloads: usize,
+}
+
+impl ModelDriver for AliasingDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        self.loads += 1;
+        let opaque_id = "handle.shared".to_string();
+        self.physical_handles
+            .insert(opaque_id.clone(), manifest.clone());
+        Ok(DriverModelHandle {
+            opaque_id,
+            observed_memory_bytes: 1_024,
+        })
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        _request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        self.runs += 1;
+        if !self.physical_handles.contains_key(&handle.opaque_id) {
+            return Err(Error::DriverFailure("released handle".to_string()));
+        }
+        Ok(DriverRunObservation {
+            terminal_observed: true,
+            succeeded: true,
+            output_digest: Some("9".repeat(64)),
+            consumed_tokens: 16,
+            observed_memory_bytes: 1_024,
+        })
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.unloads += 1;
+        self.physical_handles.remove(&handle.opaque_id);
+        Ok(())
+    }
+}
+
+impl NeuronFeatureDriver for AliasingDriver {
+    fn run_neuron_features(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.runs += 1;
+        Err(Error::DriverFailure(
+            "unexpected feature execution".to_string(),
+        ))
+    }
+}
+
+#[test]
+fn duplicate_physical_handle_fences_generation_without_automatically_releasing_alias() {
+    // The smaller budget also proves alias detection precedes rejected-load cleanup.
+    for maximum_memory_bytes in [4_096, 1_500] {
+        let mut budget = grant();
+        budget.maximum_memory_bytes = maximum_memory_bytes;
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.1".to_string(),
+            3,
+            budget,
+            AliasingDriver::default(),
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("known load");
+        let mut second = manifest();
+        second.model_id = "model.2".to_string();
+        assert_eq!(
+            worker.load_model(100, second.clone()),
+            Err(Error::ModelUnavailable)
+        );
+        assert_eq!(
+            &worker.driver.physical_handles,
+            &BTreeMap::from([("handle.shared".to_string(), second.clone())])
+        );
+        assert_eq!(
+            (
+                worker.driver.loads,
+                worker.driver.runs,
+                worker.driver.unloads,
+                worker.models.len()
+            ),
+            (2, 0, 0, 1)
+        );
+        for model_id in ["model.1", "model.2"] {
+            assert_eq!(
+                worker.run(100, model_id, request()),
+                Err(Error::ModelUnavailable)
+            );
+            assert_eq!(
+                worker.run_neuron_features(100, model_id, neuron_feature_request()),
+                Err(Error::ModelUnavailable)
+            );
+        }
+        worker
+            .unload_model(100, "model.1")
+            .expect("known alias cleanup");
+        assert_eq!(worker.load_model(100, second), Err(Error::ModelUnavailable));
+        assert_eq!(
+            worker.run(100, "model.1", request()),
+            Err(Error::ModelUnavailable)
+        );
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::ModelUnavailable)
+        );
+        assert_eq!(
+            (
+                worker.driver.loads,
+                worker.driver.runs,
+                worker.driver.unloads,
+                worker.models.len(),
+                worker.driver.physical_handles.len()
+            ),
+            (2, 0, 1, 0, 0)
+        );
+    }
 }

@@ -164,6 +164,9 @@ impl StdError for Error {}
 /// A failed load must release acquired resources when no handle is returned.
 /// If load unwinds without a handle, abandon the fenced worker generation and
 /// physically clean driver resources before creating a new isolated worker.
+/// Concurrently loaded models must have distinct opaque handle identities.
+/// An aliased handle also requires abandoning the fenced worker generation
+/// and physically cleaning driver resources before creating a new worker.
 /// `unload` must drain outstanding work and return `Ok` only after the handle's
 /// resources are confirmed released. Failed unloads may be retried with the
 /// same handle; the worker keeps uncertain models fenced until that succeeds.
@@ -247,6 +250,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let loaded = self.driver.load(&manifest);
         self.load_uncertain = false;
         let handle = loaded?;
+        if self
+            .models
+            .values()
+            .any(|loaded| loaded.handle.opaque_id == handle.opaque_id)
+        {
+            // Releasing this alias could invalidate an existing model's handle.
+            self.load_uncertain = true;
+            return Err(Error::ModelUnavailable);
+        }
         let handle_validation =
             validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
                 let memory_bytes = resident_memory_bytes
@@ -625,8 +637,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             ExecutionStatus::Failed
         };
         if status != ExecutionStatus::Succeeded {
-            observed.drive_q24.clear();
-            observed.prediction_q24.clear();
+            observed.drive_q24 = Vec::new();
+            observed.prediction_q24 = Vec::new();
         }
         loaded.cleanup_pending = !observed.terminal_observed;
         Ok(NeuronFeatureExecutionObservation {

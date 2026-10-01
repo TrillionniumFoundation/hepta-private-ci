@@ -130,7 +130,14 @@ pub fn build_neuron_feature_receipt_v1(
 ) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
     let request_digest = neuron_feature_request_digest_v1(request)?;
     validate_runtime_tuple(request, &runtime_tuple)?;
-    validate_observation(request, &observation)?;
+    validate_observation(
+        request,
+        observation.encoder_digest,
+        observation.head_digest,
+        observation.status,
+        &observation.drive_q24,
+        &observation.prediction_q24,
+    )?;
     let runtime_tuple_digest = digest_runtime_tuple(&runtime_tuple)?;
     let output_digest = digest_output(&runtime_tuple, &observation)?;
     let mut receipt = NeuronFeatureReceiptV1 {
@@ -170,6 +177,14 @@ pub fn verify_neuron_feature_receipt_v1(
     if receipt.runtime_tuple_digest != runtime_tuple_digest {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
+    validate_observation(
+        request,
+        receipt.encoder_digest,
+        receipt.head_digest,
+        receipt.status,
+        &receipt.drive_q24,
+        &receipt.prediction_q24,
+    )?;
     let observation = NeuronFeatureObservationV1 {
         encoder_digest: receipt.encoder_digest,
         head_digest: receipt.head_digest,
@@ -181,7 +196,6 @@ pub fn verify_neuron_feature_receipt_v1(
         latency_micros: receipt.latency_micros,
         status: receipt.status,
     };
-    validate_observation(request, &observation)?;
     if receipt.output_digest != digest_output(&receipt.runtime_tuple, &observation)? {
         return Err(NeuronFeatureContractError::OutputIdentityMismatch);
     }
@@ -241,21 +255,22 @@ fn validate_runtime_tuple(
 
 fn validate_observation(
     request: &NeuronFeatureRequestV1,
-    observation: &NeuronFeatureObservationV1,
+    encoder_digest: Digest32,
+    head_digest: Digest32,
+    status: NeuronFeatureTerminalStatusV1,
+    drive_q24: &[i64],
+    prediction_q24: &[i64],
 ) -> Result<(), NeuronFeatureContractError> {
-    match observation.status {
+    match status {
         NeuronFeatureTerminalStatusV1::Succeeded => {
-            if observation.encoder_digest != request.encoder_digest
-                || observation.head_digest != request.head_digest
-            {
+            if encoder_digest != request.encoder_digest || head_digest != request.head_digest {
                 return Err(NeuronFeatureContractError::OutputIdentityMismatch);
             }
-            if observation.drive_q24.len() != request.expected_output_width
-                || observation.prediction_q24.len() != request.expected_output_width
-                || observation
-                    .drive_q24
+            if drive_q24.len() != request.expected_output_width
+                || prediction_q24.len() != request.expected_output_width
+                || drive_q24
                     .iter()
-                    .chain(&observation.prediction_q24)
+                    .chain(prediction_q24)
                     .any(|value| !(-H..=H).contains(value))
             {
                 return Err(NeuronFeatureContractError::OutputLimit);
@@ -264,7 +279,7 @@ fn validate_observation(
         NeuronFeatureTerminalStatusV1::Failed
         | NeuronFeatureTerminalStatusV1::Cancelled
         | NeuronFeatureTerminalStatusV1::Indeterminate => {
-            if !observation.drive_q24.is_empty() || !observation.prediction_q24.is_empty() {
+            if !drive_q24.is_empty() || !prediction_q24.is_empty() {
                 return Err(NeuronFeatureContractError::NonTerminalOutputPresent);
             }
         }

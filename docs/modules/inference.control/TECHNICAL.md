@@ -183,6 +183,8 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+The native one-shot pre-effect abort proof is bound to the exact live control instance that issued it, as well as its request and dispatch revision. Another journal or a reopened instance cannot consume a retained proof, even when request IDs and revisions match. The instance identity is never serialized; recovery retains uncertain capacity until exact terminal evidence arrives. Feature receipt verification validates borrowed output vectors before copying them, using the existing status, identity, width and range rules.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls

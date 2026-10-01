@@ -294,6 +294,70 @@ fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
 }
 
 #[test]
+fn pre_effect_abort_cannot_release_another_control_owners_unknown_dispatch() {
+    let first_path = path("pre-effect-first-owner");
+    let second_path = path("pre-effect-second-owner");
+    let mut first = DurableInferenceControl::open(&first_path, 8).unwrap();
+    let mut second = DurableInferenceControl::open(&second_path, 8).unwrap();
+    first.reserve_native(request("r1"), 1).unwrap();
+    second.reserve_native(request("r1"), 1).unwrap();
+    let (first_record, first_token) = first
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let (second_record, second_token) = second
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    assert_eq!(first_record, second_record);
+    // The second caller discarded its proof before a possibly sent effect.
+    // A different owner's matching request/revision cannot replace that proof.
+    drop(second_token);
+    assert_eq!(
+        second.abort_native_before_effect(first_token, "foreign proof".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(first.native_record("r1"), Some(&first_record));
+    assert_eq!(second.native_record("r1"), Some(&second_record));
+    assert_eq!(
+        second.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(first);
+    drop(second);
+    let mut reopened = DurableInferenceControl::open(&second_path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&second_record));
+    assert_eq!(
+        reopened.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+    std::fs::remove_file(first_path).unwrap();
+    std::fs::remove_file(second_path).unwrap();
+}
+
+#[test]
+fn retained_pre_effect_abort_cannot_release_a_reopened_control_owner() {
+    let path = path("pre-effect-retained-on-reopen");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (prepared, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.abort_native_before_effect(token, "previous owner proof".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(reopened.native_record("r1"), Some(&prepared));
+    assert_eq!(
+        reopened.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
     let path = path("pre-effect-recovery");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
