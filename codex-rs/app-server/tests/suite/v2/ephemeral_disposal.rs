@@ -3,6 +3,7 @@ use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
 use app_test_support::create_mock_responses_server_repeating_assistant;
 use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ThreadEphemeralDisposalParams;
 use codex_app_server_protocol::ThreadLoadedListParams;
 use codex_app_server_protocol::ThreadLoadedListResponse;
@@ -26,7 +27,6 @@ use tempfile::TempDir;
 use super::connection_handling_websocket::connect_websocket;
 use super::connection_handling_websocket::read_error_for_id;
 use super::connection_handling_websocket::read_response_for_id;
-use super::connection_handling_websocket::send_initialize_request;
 use super::connection_handling_websocket::send_request;
 use super::connection_handling_websocket::spawn_websocket_server;
 
@@ -55,21 +55,19 @@ async fn ephemeral_disposal_requires_exact_idle_session_and_keeps_persistent_thr
         (&persistent.id, &persistent.session_id),
         (&ephemeral.id, &persistent.session_id),
     ] {
-        let rejected = client
-            .request::<ThreadUnsubscribeResponse>(|request_id| ClientRequest::ThreadUnsubscribe {
-                request_id,
-                params: ThreadUnsubscribeParams {
-                    thread_id: thread_id.clone(),
-                    ephemeral_disposal: Some(ThreadEphemeralDisposalParams {
-                        expected_session_id: session_id.clone(),
-                    }),
-                },
+        let rejected_id = client
+            .send_thread_unsubscribe_request(ThreadUnsubscribeParams {
+                thread_id: thread_id.clone(),
+                ephemeral_disposal: Some(ThreadEphemeralDisposalParams {
+                    expected_session_id: session_id.clone(),
+                }),
             })
-            .await;
-        assert!(
-            rejected.is_err(),
-            "persistent/wrong-session disposal must fail"
-        );
+            .await?;
+        let rejected = client
+            .read_stream_until_error_message(RequestId::Integer(rejected_id))
+            .await?;
+        assert_eq!(rejected.error.code, -32600);
+        assert!(rejected.error.message.contains("exact ephemeral session"));
     }
     let disposed: ThreadUnsubscribeResponse = client
         .request(|request_id| ClientRequest::ThreadUnsubscribe {
@@ -156,21 +154,19 @@ async fn ephemeral_disposal_refuses_active_turn_then_disposes_after_true_complet
         })
         .await?;
     server.wait_for_request_count(/*count*/ 1).await;
-    let rejected = client
-        .request::<ThreadUnsubscribeResponse>(|request_id| ClientRequest::ThreadUnsubscribe {
-            request_id,
-            params: ThreadUnsubscribeParams {
-                thread_id: thread.id.clone(),
-                ephemeral_disposal: Some(ThreadEphemeralDisposalParams {
-                    expected_session_id: thread.session_id.clone(),
-                }),
-            },
+    let rejected_id = client
+        .send_thread_unsubscribe_request(ThreadUnsubscribeParams {
+            thread_id: thread.id.clone(),
+            ephemeral_disposal: Some(ThreadEphemeralDisposalParams {
+                expected_session_id: thread.session_id.clone(),
+            }),
         })
-        .await;
-    assert!(
-        rejected.is_err(),
-        "an active original turn must remain running"
-    );
+        .await?;
+    let rejected = client
+        .read_stream_until_error_message(RequestId::Integer(rejected_id))
+        .await?;
+    assert_eq!(rejected.error.code, -32600);
+    assert!(rejected.error.message.contains("active ephemeral session"));
     gate_tx
         .send(())
         .expect("original provider request is still live");
@@ -204,10 +200,22 @@ async fn ephemeral_disposal_keeps_a_session_until_its_other_subscriber_unsubscri
     let (mut process, address) = spawn_websocket_server(home.path()).await?;
     let mut owner = connect_websocket(address).await?;
     let mut observer = connect_websocket(address).await?;
-    send_initialize_request(&mut owner, /*id*/ 1, "ephemeral-owner").await?;
-    read_response_for_id(&mut owner, /*id*/ 1).await?;
-    send_initialize_request(&mut observer, /*id*/ 1, "ephemeral-observer").await?;
-    read_response_for_id(&mut observer, /*id*/ 1).await?;
+    for (client, name) in [
+        (&mut owner, "ephemeral-owner"),
+        (&mut observer, "ephemeral-observer"),
+    ] {
+        send_request(
+            client,
+            "initialize",
+            /*id*/ 1,
+            Some(serde_json::json!({
+                "clientInfo":{"name":name,"version":"fixture"},
+                "capabilities":{"experimentalApi":true}
+            })),
+        )
+        .await?;
+        read_response_for_id(client, /*id*/ 1).await?;
+    }
     send_request(
         &mut owner,
         "thread/start",
