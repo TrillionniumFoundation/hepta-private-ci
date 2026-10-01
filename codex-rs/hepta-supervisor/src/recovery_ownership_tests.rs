@@ -477,8 +477,12 @@ fn acknowledged_matrix_kill_preserves_owner_and_lease_until_exit() -> Result<()>
         MatrixRuntimePhase::Killing
     ));
     f.driver.matrix.lock().expect("matrix state").exited = true;
-    f.supervisor
-        .tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;
+    f.supervisor.tick_matrix_companion(
+        &f.agent,
+        &mut f.slot,
+        f.now,
+        &mut crate::TickReport::default(),
+    )?;
     assert!(f.slot.matrix.runtime.is_none());
     assert!(read_matrix_lease(f.record()?.layout.matrixd_process_lease())?.is_none());
     assert_eq!(f.driver.matrix.lock().expect("matrix state").drops, 1);

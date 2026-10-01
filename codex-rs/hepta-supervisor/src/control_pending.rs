@@ -173,6 +173,28 @@ pub(crate) fn apply<P: ManagedProcess>(
     now: Instant,
     stop_grace: Duration,
 ) -> Result<Option<SupervisorEvent>, SupervisorError> {
+    if !runtime.fenced {
+        let expired = match runtime.phase {
+            RuntimePhase::Draining { deadline } if now >= deadline => Some(PendingControl::Drain {
+                spawn_generation: runtime.spawn_generation,
+                deadline,
+            }),
+            RuntimePhase::Stopping { deadline } if now >= deadline => Some(PendingControl::Stop {
+                spawn_generation: runtime.spawn_generation,
+                deadline,
+            }),
+            RuntimePhase::AwaitingHealth { .. }
+            | RuntimePhase::Running
+            | RuntimePhase::Draining { .. }
+            | RuntimePhase::Stopping { .. }
+            | RuntimePhase::Killing => None,
+        };
+        if let Some(expired) = expired {
+            // An acknowledged signal clears pending, but its original phase
+            // deadline remains authority to contain this exact owned process.
+            *pending = Some(pending.map_or(expired, |current| current.merge(expired)));
+        }
+    }
     let Some(request) = *pending else {
         return Ok(None);
     };

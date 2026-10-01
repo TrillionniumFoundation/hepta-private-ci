@@ -16,6 +16,7 @@ use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::TickReport;
 use crate::lease::MATRIX_PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::MatrixProcessLease;
 use crate::runtime::AgentSlot;
@@ -30,6 +31,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
+        report: &mut TickReport,
     ) -> Result<(), SupervisorError> {
         if let Some(runtime) = slot.matrix.runtime.as_mut() {
             runtime.healthy = false;
@@ -67,10 +69,19 @@ impl<D: ProcessDriver> Supervisor<D> {
                     state: ProcessState::Exited(exit),
                     logs: Vec::new(),
                 },
-                None => runtime
+                None => match runtime
                     .process
                     .poll(self.config.driver_poll_batch)
-                    .map_err(|error| driver_error(agent_id, error))?,
+                    .map_err(|error| driver_error(agent_id, error))
+                {
+                    Ok(observation) => observation,
+                    Err(error) => {
+                        if let Err(control) = &control_result {
+                            Self::record_slot_fault(agent_id, slot, control, report);
+                        }
+                        return Err(error);
+                    }
+                },
             };
             for mut log in observation
                 .logs
@@ -82,7 +93,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             if let ProcessState::Exited(exit) = observation.state {
                 slot.matrix.observed_exit = Some(exit);
-                let record = self.record(agent_id)?;
+                let record = match self.record(agent_id) {
+                    Ok(record) => record,
+                    Err(error) => {
+                        if let Err(control) = &control_result {
+                            Self::record_slot_fault(agent_id, slot, control, report);
+                        }
+                        return Err(error);
+                    }
+                };
                 let lease = MatrixProcessLease {
                     schema_version: MATRIX_PROCESS_LEASE_SCHEMA_VERSION,
                     agent_id: agent_id.clone(),
@@ -99,7 +118,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .matrix
                     .exit_lease_removal
                     .get_or_insert_with(|| MatrixProcessLeaseRemoval::new(path, &lease));
-                removal.finish(path, &lease)?;
+                if let Err(error) = removal.finish(path, &lease) {
+                    if let Err(control) = &control_result {
+                        Self::record_slot_fault(agent_id, slot, control, report);
+                    }
+                    return Err(error);
+                }
                 let was_fenced = runtime.fenced;
                 let generation = runtime.attached_agent_generation;
                 // Both exit and durable lease cleanup succeeded. Only now may

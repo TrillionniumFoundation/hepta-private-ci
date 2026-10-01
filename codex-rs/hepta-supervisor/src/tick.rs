@@ -66,7 +66,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.runtime = Some(runtime);
                     // Main storage/probe failure does not abandon companion
                     // containment. Retain both faults without masking the first.
-                    if let Err(companion) = self.tick_matrix_companion(agent_id, slot, now) {
+                    if let Err(companion) = self.tick_matrix_companion(agent_id, slot, now, report)
+                    {
                         Self::record_slot_fault(agent_id, slot, &companion, report);
                     }
                     return Err(error);
@@ -83,14 +84,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot.has_recovery_denial() {
                 // Corrupt durable recovery evidence permits only containment and
                 // exact exit cleanup. It cannot drive release or restart work.
-                return self.tick_matrix_companion(agent_id, slot, now);
+                return self.tick_matrix_companion(agent_id, slot, now, report);
             }
             if slot.runtime.is_none() {
                 slot.pending_control = None;
                 // Poll and finalize the retained companion before a replacement
                 // checks absence. Otherwise its lease denial can starve the poll
                 // needed to observe that companion's exact exit.
-                self.tick_matrix_companion(agent_id, slot, now)?;
+                self.tick_matrix_companion(agent_id, slot, now, report)?;
                 companion_ticked = true;
                 // Exit continuation can fail after ownership was finalized. Keep
                 // retrying its retained release change on later owner ticks.
@@ -145,7 +146,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_pending = false;
             }
             if !companion_ticked {
-                self.tick_matrix_companion(agent_id, slot, now)?;
+                self.tick_matrix_companion(agent_id, slot, now, report)?;
             }
             Ok(())
         })();
@@ -381,7 +382,50 @@ impl<D: ProcessDriver> Supervisor<D> {
             termination?;
             return Ok(RuntimeTickOutcome::Keep);
         }
-        let registry_generation = self.record(agent_id)?.lifecycle.generation;
+        // An expired phase or already admitted due intention permits only
+        // containment of this retained incarnation before a fallible Fleet
+        // read. It cannot admit work or authorize lease removal.
+        let overdue_control = if matches!(
+            runtime.phase,
+            RuntimePhase::Draining { deadline } | RuntimePhase::Stopping { deadline }
+                if now >= deadline
+        ) || slot.pending_control.is_some_and(|control| {
+            control.applies_to(runtime)
+                && (matches!(control, pending::PendingControl::Kill { .. })
+                    || matches!(
+                        control,
+                        pending::PendingControl::Drain { deadline, .. }
+                            | pending::PendingControl::Stop { deadline, .. }
+                            if now >= deadline
+                    ))
+        }) {
+            Some(
+                match pending::apply(
+                    agent_id,
+                    runtime,
+                    &mut slot.pending_control,
+                    now,
+                    self.config.stop_grace,
+                ) {
+                    Ok(Some(event)) => {
+                        slot.events.push(event);
+                        Ok(None)
+                    }
+                    result => result,
+                },
+            )
+        } else {
+            None
+        };
+        let registry_generation = match self.record(agent_id) {
+            Ok(record) => record.lifecycle.generation,
+            Err(error) => {
+                if let Some(Err(control)) = overdue_control.as_ref() {
+                    Self::record_slot_fault(agent_id, slot, control, report);
+                }
+                return Err(error);
+            }
+        };
         let needs_companion_fence = registry_generation != runtime.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             // Logical fencing is immediate. A failed signal is not an
@@ -400,6 +444,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             .pending_control
             .is_some_and(|pending| pending.applies_to(runtime));
         let control_result = if runtime.fenced {
+            if let Some(Err(control)) = overdue_control.as_ref() {
+                Self::record_slot_fault(agent_id, slot, control, report);
+            }
             // Fencing revokes serving authority, not ownership of the exact
             // adopted child. Retry termination independently of ordinary
             // pending-control admission, which correctly rejects fenced work.
@@ -418,6 +465,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                         })
                     })
             }
+        } else if let Some(result) = overdue_control {
+            // The successful event was already emitted before registry I/O.
+            // Reusing the result also prevents a second signal on this tick.
+            result
         } else {
             pending::apply(
                 agent_id,
@@ -546,10 +597,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.events.push(event);
                 }
             }
-            RuntimePhase::Draining { deadline: limit } if drained || now >= limit => {
+            RuntimePhase::Draining { deadline: limit } if drained => {
                 slot.pending_control = Some(pending::PendingControl::Stop {
                     spawn_generation: runtime.spawn_generation,
-                    deadline: deadline(now, self.config.stop_grace)?,
+                    deadline: deadline(now.min(limit), self.config.stop_grace)?,
                 });
                 if let Some(event) = pending::apply(
                     agent_id,

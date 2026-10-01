@@ -69,6 +69,9 @@ use constructor_hydration::ConstructorHydrationObservation;
 #[path = "constructor_recovery.rs"]
 mod constructor_recovery;
 
+#[path = "signed_effect.rs"]
+mod signed_effect;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
         registry: FleetRegistry,
@@ -77,6 +80,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(Self, TickReport), SupervisorError> {
         config.validate()?;
+        // Reject an unrepresentable drain-to-termination budget before any
+        // recovery attempt can acquire process ownership.
+        let drain_deadline = crate::runtime::deadline(now, config.drain_timeout)?;
+        let _ = crate::runtime::deadline(drain_deadline, config.stop_grace)?;
         let snapshot = registry.load()?;
         let slots = snapshot
             .agents
@@ -690,31 +697,43 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SignedIntentStatus::Prepared,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &intent)
+            // Prepare every digest-bound status before publication starts.
+            // A failed first write can already have renamed valid Prepared
+            // bytes before its directory-sync acknowledgment fails.
+            let recovery = intent
+                .with_status(SignedIntentStatus::RecoveryRequired)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            Self::set_control_revision_for_slot(slot, next_control_revision)?;
-            slot.signed_intent = Some(intent.clone());
-            let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
-            if let Err(error) = supervisor.upgrade_slot(
-                agent_id,
-                slot,
-                target,
-                now,
-                explicit_rollback,
-                Some((grant.digest().clone(), expected_authority_epoch)),
-            ) {
-                let recovery = intent
-                    .with_status(SignedIntentStatus::RecoveryRequired)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
-                slot.signed_intent = Some(recovery);
-                return Err(error);
-            }
             let queued = intent
                 .with_status(SignedIntentStatus::Queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &queued)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
+            let publication = (|| {
+                write_intent(record.layout.run_root(), &intent)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                Self::set_control_revision_for_slot(slot, next_control_revision)?;
+                slot.signed_intent = Some(intent.clone());
+                supervisor.upgrade_slot(
+                    agent_id,
+                    slot,
+                    target,
+                    now,
+                    explicit_rollback,
+                    Some((grant.digest().clone(), expected_authority_epoch)),
+                )?;
+                write_intent(record.layout.run_root(), &queued)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                Ok::<(), SupervisorError>(())
+            })();
+            if let Err(error) = publication {
+                // Preserve quarantine even when the filesystem cannot publish
+                // its recovery marker. Neither failure proves no effect.
+                if let Err(recovery_error) = write_intent(record.layout.run_root(), &recovery) {
+                    let recovery_error = SupervisorError::Invalid(recovery_error.to_string());
+                    let _ = signed_effect::indeterminate(agent_id, slot, &recovery_error);
+                }
+                slot.signed_intent = Some(recovery);
+                return Err(signed_effect::indeterminate(agent_id, slot, &error));
+            }
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
                 grant,
@@ -1141,14 +1160,23 @@ impl<D: ProcessDriver> Supervisor<D> {
             if !already_acknowledged {
                 // Republish both records on an ambiguous acknowledgment; an
                 // on-disk terminal value alone cannot discharge this owner.
-                write_release_transaction(record.layout.run_root(), &terminal_transaction)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.release_transaction = Some(terminal_transaction);
-                write_intent(record.layout.run_root(), &terminal_intent)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                let publication = (|| {
+                    write_release_transaction(record.layout.run_root(), &terminal_transaction)
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    slot.release_transaction = Some(terminal_transaction);
+                    write_intent(record.layout.run_root(), &terminal_intent)
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    Self::set_control_revision_for_slot(slot, next_control_revision)
+                })();
+                if let Err(error) = publication {
+                    // Do not overwrite a terminal record that may already be
+                    // visible. Its exact signed decision remains the retry
+                    // witness; this owner retains quarantine until both
+                    // publications acknowledge their durability boundaries.
+                    slot.signed_intent = Some(recovery_intent);
+                    return Err(signed_effect::indeterminate(agent_id, slot, &error));
+                }
                 slot.signed_intent = Some(terminal_intent.clone());
-
-                Self::set_control_revision_for_slot(slot, next_control_revision)?;
             }
             Ok(ProductionMutationReceipt {
                 grant_sha256: terminal_intent.grant_sha256,

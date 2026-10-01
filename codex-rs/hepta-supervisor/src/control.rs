@@ -39,6 +39,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        // Prove both phases before deferral, fencing, lifecycle CAS or signals.
+        let drain_deadline = deadline(now, self.config.drain_timeout)?;
+        let _ = deadline(drain_deadline, self.config.stop_grace)?;
         if self.defer_agent_action_for_matrix(
             agent_id,
             slot,
@@ -48,7 +51,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         self.fence_runtime(agent_id, slot)?;
-        let drain_deadline = deadline(now, self.config.drain_timeout)?;
         let lifecycle = self.record(agent_id)?.lifecycle;
         if lifecycle.lifecycle == AgentLifecycle::Running {
             let next = self.registry.compare_and_transition(

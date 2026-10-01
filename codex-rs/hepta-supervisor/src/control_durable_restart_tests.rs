@@ -408,8 +408,12 @@ fn deferred_companion_stop_continuation_does_not_cancel_the_restart_claim() -> R
         kind: DeferredAgentActionKind::Stop,
         spawn_generation: f.slot.runtime.as_ref().expect("runtime").spawn_generation,
     });
-    f.supervisor
-        .tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;
+    f.supervisor.tick_matrix_companion(
+        &f.agent,
+        &mut f.slot,
+        f.now,
+        &mut crate::TickReport::default(),
+    )?;
     assert!(f.pending()?);
     assert!(f.slot.restart_pending);
     assert!(f.slot.deferred_agent_action.is_none());

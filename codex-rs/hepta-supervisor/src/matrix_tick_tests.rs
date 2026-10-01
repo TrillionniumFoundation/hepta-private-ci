@@ -218,8 +218,12 @@ impl Fixture {
     }
 
     fn tick(&mut self, now: Instant) -> Result<(), SupervisorError> {
-        self.supervisor
-            .tick_matrix_companion(&self.agent, &mut self.slot, now)
+        self.supervisor.tick_matrix_companion(
+            &self.agent,
+            &mut self.slot,
+            now,
+            &mut crate::TickReport::default(),
+        )
     }
 
     fn assert_retained(&self) {
