@@ -197,7 +197,7 @@ pub fn observe_retrieval_assignment(
         return Err(AssignmentErrorV1::RecallUnionMismatch);
     }
     if recall.packet.engram.is_none() {
-        let expected = crate::recall(
+        let expected = crate::generation_bound::recall(
             cue,
             policy,
             input
