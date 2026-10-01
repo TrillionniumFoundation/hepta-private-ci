@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -189,11 +189,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "2ea9cdb16a001ba24acaef262025dbfe7219a840"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
-      "object": "eb4bb55f02209c7c52939e8004b9e1f560e632d3"
+      "object": "714d653b5c7efe29b51e0cbedf96ffdd04e15cb1"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -341,5 +341,18 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-cognitive-read"
-  ]
+  ],
+  "navigationRebindProvenance": {
+    "previousSourceBase": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "previousObservedAtHead": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
+    "historicalExecutionRevalidated": false,
+    "authorityGranted": false
+  }
 }

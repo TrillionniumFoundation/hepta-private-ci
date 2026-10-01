@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -344,7 +344,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "3f65d12b793a45b26f185aff52407d97b2d3c71b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -388,7 +388,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "1527ba60b00b14659ef5a13e125bafe520510bac"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
@@ -406,5 +406,15 @@
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
       "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
     }
-  ]
+  ],
+  "navigationRebindProvenance": {
+    "previousSourceBase": {
+      "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+      "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    },
+    "previousObservedAtHead": null,
+    "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
+    "historicalExecutionRevalidated": false,
+    "authorityGranted": false
+  }
 }

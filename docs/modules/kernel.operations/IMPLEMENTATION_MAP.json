@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -320,8 +320,8 @@
     ]
   },
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -338,7 +338,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "3f65d12b793a45b26f185aff52407d97b2d3c71b"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
@@ -424,5 +424,18 @@
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
       "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
     }
-  ]
+  ],
+  "navigationRebindProvenance": {
+    "previousSourceBase": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "previousObservedAtHead": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
+    "historicalExecutionRevalidated": false,
+    "authorityGranted": false
+  }
 }

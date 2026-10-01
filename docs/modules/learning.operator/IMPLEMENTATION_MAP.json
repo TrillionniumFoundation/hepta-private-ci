@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -394,8 +394,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
+    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -417,7 +417,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "2ea9cdb16a001ba24acaef262025dbfe7219a840"
     },
     {
       "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
@@ -425,79 +425,92 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "1527ba60b00b14659ef5a13e125bafe520510bac"
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "ed9f5bcd8b01a4cf3280ad749f6999c83ee24944"
+      "object": "1c6e11c94fb6ef1d3c44db8f2e24bf2f2fa10911"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
-      "object": "b051815e3f38374fd4a3261d5e977de0a897e47c"
+      "object": "4ba4d9c3b4159d014f18f80c7db798b10cb5c2b6"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
-      "object": "ed4b15661af4628e650f82f62c6dc72573f23eea"
+      "object": "a53b104a64337d167c101d2f1597de6065fdfaf8"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
-      "object": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
+      "object": "16a523850134e59cac9c2423196659aefba51291"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
-      "object": "036363db56af7278e4442bf5c6b8463b49ec6e32"
+      "object": "286816bbd9e6c6aab12b95a0d597ea5685e56133"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned.rs",
-      "object": "893f0d5bf8f1313cd0c20fdd13ab50fad3257293"
+      "object": "43351a2f97bc598536da130bbd4665dafd371638"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-      "object": "63efa2f84b011b41d8a4bc58c24aced6cef2b873"
+      "object": "d08c9b1b831323cd9bb87f953889051377c96f15"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
-      "object": "db6ca93d904e0c8e6fd603ddf99686d0eb23b57b"
+      "object": "8047369e8ff8bc4eebaa75bb01df390e0a48841d"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "object": "4ab6f3074524e87a66777e9dfbb34b1426adbe72"
+      "object": "fd6dde72ef4621819213d00cb48cfe67a5324689"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
-      "object": "1888954078a6879b4cdfb94141befa257d3d1f86"
+      "object": "0dd2f92bce47cdc9e5169ea234f6d389b25a94a4"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
-      "object": "2f8452594305cf0d05ce1c034a33a6e004be55b2"
+      "object": "73bd01e21936c634fee147432c7ede9cdf4ae6e1"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
-      "object": "0bb48f6156893f6c6253bb40ce987afd6068bb05"
+      "object": "111ac237a71c908c1f9ab9e023349214ea920e57"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
-      "object": "a66b1b9098116911a79ffee154caa8c94e857ce2"
+      "object": "03064255dc1abfe9076cff1e81589c2ede965a68"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/reference.rs",
-      "object": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
+      "object": "473104c28892f0d37df8d28c13edee4d2bfe9c9c"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
-      "object": "c2c4a486a66c6c64cd6d2bb53bb29340203ff40e"
+      "object": "3a2d5f79cfe3f9c8fcd0b206994ba17c17f4f595"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-      "object": "0c1494d4a627f1eeaffd8315a1cc4aed048ca7eb"
+      "object": "2442ac1682ef58b81a4504c16ad74afbafea34e2"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
-      "object": "23244f3c86315ff454df6fe62e09887596d0ac1c"
+      "object": "d9956a68c467444342e5a62145856bc19280d01e"
     },
     {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
-      "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
+      "object": "65925a32de6502ca8003301cf3dd91d06475df7a"
     }
-  ]
+  ],
+  "navigationRebindProvenance": {
+    "previousSourceBase": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "previousObservedAtHead": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
+    "historicalExecutionRevalidated": false,
+    "authorityGranted": false
+  }
 }
