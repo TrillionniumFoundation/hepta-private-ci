@@ -202,6 +202,87 @@ fn governed_topology_for_runtime(
 }
 
 #[cfg(unix)]
+fn governed_topology_nonfirst_alternative_for_runtime(
+    label: &str,
+    current: &crate::RuntimeTopologySnapshotV1,
+    successor: &crate::RuntimeTopologySnapshotV1,
+) -> (
+    codex_hepta_plasticity::GovernedTopologyProposalV1,
+    StableId,
+    Digest32,
+) {
+    use codex_hepta_plasticity::TopologyOperationV2;
+    use codex_hepta_plasticity::TopologyProposalRequestV2;
+    use codex_hepta_plasticity::admit_governed_topology_v1;
+    use codex_hepta_plasticity::build_writer_handoff_plan_v1;
+    use codex_hepta_plasticity::propose_topology_v2;
+
+    let (base, _) = governed_topology_for_runtime(label, current, successor);
+    let first_handoff = base.handoffs[0].clone();
+    let alternative_handoff = build_writer_handoff_plan_v1(
+        first_handoff.module_id.clone(),
+        first_handoff.from_owner.clone(),
+        first_handoff.to_owner.clone(),
+        first_handoff.predecessor_writer_fence,
+        first_handoff.successor_writer_fence,
+        first_handoff.source_store_digest,
+        first_handoff.migration_digest,
+        first_handoff.rollback_digest,
+        Digest32::of_bytes(b"runtime-alternative-acknowledgement-contract"),
+    )
+    .expect("alternative writer handoff");
+    let base_change = base
+        .proposal
+        .candidates
+        .iter()
+        .find_map(|candidate| candidate.changes.first())
+        .expect("base topology change")
+        .clone();
+    let mut alternative_change = base_change.clone();
+    alternative_change.operation = TopologyOperationV2::Rewire;
+    alternative_change.writer_handoff_digest = alternative_handoff.plan_digest;
+    let mut handoffs = vec![first_handoff, alternative_handoff];
+    handoffs.sort_by(|left, right| left.plan_digest.cmp(&right.plan_digest));
+    let selected_handoff_digest = handoffs[1].plan_digest;
+    let proposal = &base.proposal;
+    let proposal = propose_topology_v2(TopologyProposalRequestV2 {
+        proposal_id: proposal.proposal_id.clone(),
+        proposer_id: proposal.proposer_id.clone(),
+        evaluator_id: proposal.evaluator_id.clone(),
+        selected_artifact_digest: proposal.selected_artifact_digest,
+        window: proposal.window.clone(),
+        baseline_generation: proposal.baseline_generation,
+        candidate_generation: proposal.candidate_generation,
+        evaluation_digest: proposal.evaluation_digest,
+        rollback_predecessor_digest: proposal.rollback_predecessor_digest,
+        changes: vec![base_change, alternative_change],
+    })
+    .expect("alternative topology proposal");
+    let selected_candidate_id = proposal
+        .candidates
+        .iter()
+        .find(|candidate| {
+            candidate
+                .changes
+                .first()
+                .is_some_and(|change| change.writer_handoff_digest == selected_handoff_digest)
+        })
+        .expect("nonfirst handoff candidate")
+        .candidate_id
+        .clone();
+    let governed = admit_governed_topology_v1(
+        proposal,
+        handoffs,
+        base.source_authentication_digest,
+        base.evaluation_authentication_digest,
+    )
+    .expect("governed alternatives");
+    assert_eq!(governed.handoffs[1].plan_digest, selected_handoff_digest);
+    assert_ne!(governed.handoffs[0].plan_digest, selected_handoff_digest);
+    (governed, selected_candidate_id, selected_handoff_digest)
+}
+
+#[cfg(unix)]
 #[derive(Debug)]
 struct RuntimeTopologyMigrationFixture {
     handoff_plan_digest: Digest32,
@@ -262,7 +343,10 @@ fn runtime_topology_migration_for(
     let handoff = governed
         .handoffs
         .iter()
-        .find(|handoff| handoff.module_id == change.module_id)
+        .find(|handoff| {
+            handoff.module_id == change.module_id
+                && handoff.plan_digest == change.writer_handoff_digest
+        })
         .expect("writer handoff");
     let migrations = Arc::new(AtomicUsize::new(0));
     let rollbacks = Arc::new(AtomicUsize::new(0));
@@ -481,6 +565,115 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     let report: serde_json::Value = serde_json::from_slice(&organs.status_json()?)?;
     assert_eq!(report["status"], "ready");
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn same_module_alternative_uses_exact_nonfirst_handoff_for_apply_and_fault_recovery() -> Result<()>
+{
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join(format!("hepta-topology-alternative-{}", std::process::id(),)),
+    )?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
+    let current = organs
+        .topology_snapshot()
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let next = build_host_generation(root.clone(), Arc::clone(&state), Generation::new(2)?)?;
+    let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let (governed, candidate_id, selected_handoff_digest) =
+        governed_topology_nonfirst_alternative_for_runtime(
+            "alternative-apply",
+            &current,
+            &successor.snapshot(),
+        );
+    let (migration, migration_calls, rollback_calls) =
+        runtime_topology_migration_for(&governed, &candidate_id);
+    let apply_request = RuntimeTopologyApplyRequestV1 {
+        governed,
+        candidate_id,
+        accepted_subject_id: StableId::new("operator:alternative-apply")?,
+        migration,
+        successor,
+    };
+    let apply_binding = runtime_topology_final_use_binding_v1(&current, &apply_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let (_apply_dir, apply_authority, apply_grant) = final_use_authority_and_grant(
+        apply_binding,
+        "grant:runtime-alternative:apply",
+        deterministic_test_nonce(b"runtime-alternative-apply-nonce"),
+    );
+    let apply_receipt = organs
+        .apply_governed_topology(&apply_authority, &apply_grant, apply_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(apply_receipt.handoff_plan_digest, selected_handoff_digest);
+    assert_eq!(apply_receipt.predecessor_generation, Generation::new(1)?);
+    assert_eq!(apply_receipt.successor_generation, Generation::new(2)?);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
+    assert!(organs.status_json().is_ok());
+
+    // Recovery executes another selected alternative after a real host failure.
+    {
+        let mut guard = organs
+            .host
+            .lock()
+            .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
+        let live = guard.as_mut().map_err(|error| anyhow::anyhow!("{error}"))?;
+        live.host.stop_all()?;
+    }
+    assert!(organs.status_json().is_err());
+    let failed = organs
+        .topology_snapshot()
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let next = build_host_generation(root, state, Generation::new(3)?)?;
+    let recovery_successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let (recovery_governed, recovery_candidate_id, recovery_handoff_digest) =
+        governed_topology_nonfirst_alternative_for_runtime(
+            "alternative-recovery",
+            &failed,
+            &recovery_successor.snapshot(),
+        );
+    let (recovery_migration, recovery_calls, recovery_rollbacks) =
+        runtime_topology_migration_for(&recovery_governed, &recovery_candidate_id);
+    let recovery_request = RuntimeTopologyApplyRequestV1 {
+        governed: recovery_governed,
+        candidate_id: recovery_candidate_id,
+        accepted_subject_id: StableId::new("operator:alternative-recovery")?,
+        migration: recovery_migration,
+        successor: recovery_successor,
+    };
+    let recovery_binding =
+        runtime_topology_recovery_final_use_binding_v1(&failed, &recovery_request)
+            .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let (_recovery_dir, recovery_authority, recovery_grant) = final_use_authority_and_grant(
+        recovery_binding,
+        "grant:runtime-alternative:recovery",
+        deterministic_test_nonce(b"runtime-alternative-recovery-nonce"),
+    );
+    let recovery_receipt = organs
+        .recover_governed_topology(&recovery_authority, &recovery_grant, recovery_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(
+        recovery_receipt.handoff_plan_digest,
+        recovery_handoff_digest
+    );
+    assert_eq!(recovery_receipt.predecessor_generation, Generation::new(2)?);
+    assert_eq!(recovery_receipt.successor_generation, Generation::new(3)?);
+    assert_eq!(recovery_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(recovery_rollbacks.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        organs
+            .topology_snapshot()
+            .map_err(|error| anyhow::anyhow!("{error}"))?
+            .generation(),
+        Generation::new(3)?,
+    );
+    assert!(organs.status_json().is_ok());
     Ok(())
 }
 

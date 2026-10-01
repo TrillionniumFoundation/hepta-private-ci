@@ -4,8 +4,8 @@
   "module": "learning.plasticity",
   "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
+    "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
   },
   "current": {
     "sourceRootPresent": true,
@@ -37,7 +37,8 @@
       "state": "source_implemented_product_and_agentd_host_composed_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
       "tests": [
-        "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_and_profile"
+        "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_and_profile",
+        "codex-rs/hepta-plasticity/src/lib_tests.rs::parameter_verifier_rejects_norm_capacity_before_layer_validation"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "state": "source_implemented_agentd_host_composed_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-plasticity/src/generator_v3.rs",
       "tests": [
-        "codex-rs/hepta-plasticity/src/generator_v3.rs::tests::generator_is_deterministic_complete_and_content_identified"
+        "codex-rs/hepta-plasticity/src/generator_v3.rs::tests::generator_is_deterministic_complete_and_content_identified",
+        "codex-rs/hepta-plasticity/src/generator_v3.rs::tests::generator_authorizes_the_maximum_bounded_signal_set"
       ]
     },
     {
@@ -78,7 +80,13 @@
       "sourcePath": "codex-rs/hepta-plasticity/src/durable_registry.rs",
       "tests": [
         "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::append_reopen_and_anchor_preserve_exact_record",
-        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state"
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state",
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_repairs_every_exact_partial_enrollment_header",
+        "codex-rs/hepta-plasticity/src/live_registry_integrity_tests.rs::every_parameter_positive_boundary_rejects_live_corruption_and_stays_poisoned",
+        "codex-rs/hepta-plasticity/src/live_registry_integrity_tests.rs::intact_parameter_queries_share_one_serialized_reader_across_threads",
+        "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs::parameter_final_admission_gates_insert_and_retry_without_poisoning_rejection",
+        "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs::parameter_corrupt_preflight_never_calls_final_admission",
+        "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs::parameter_postwrite_verification_rejects_callback_phase_corruption"
       ]
     },
     {
@@ -100,7 +108,9 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
       "tests": [
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::anchor_commit_failure_poison_writer_after_durable_append",
-        "codex-rs/hepta-intelligence/src/plasticity_product.rs::tests::product_writer_refuses_unanchored_nonempty_bootstrap"
+        "codex-rs/hepta-intelligence/src/plasticity_product.rs::tests::product_writer_refuses_unanchored_nonempty_bootstrap",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::live_registry_corruption_poison_writer_on_append_and_read_boundaries",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::final_admission_rejection_leaves_parameter_writer_healthy_and_file_unchanged"
       ]
     },
     {
@@ -109,7 +119,8 @@
       "sourcePath": "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs",
       "tests": [
         "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::protected_surface_fails_closed",
-        "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::canonical_mutation_grammar_digest_is_mandatory_and_bound"
+        "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::canonical_mutation_grammar_digest_is_mandatory_and_bound",
+        "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::authorization_rejects_inverted_request_bounds_inside_the_allowlist"
       ]
     },
     {
@@ -128,7 +139,19 @@
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
-        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs::parameter_owner_receipt_that_expires_during_preparation_cannot_be_appended",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs::parameter_signature_that_expires_during_preparation_cannot_be_appended",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs::final_clock_failure_or_regression_rejects_without_durable_effects",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_admission_tests.rs::parameter_losing_final_admission_preserves_registry_and_anchor_bytes",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_admission_tests.rs::topology_losing_final_admission_preserves_registry_and_anchor_bytes",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_admission_tests.rs::rejected_expired_parameter_cannot_be_revived_by_cross_request_clock_rollback",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_admission_tests.rs::rejected_revoked_topology_cannot_be_revived_by_cross_request_clock_rollback",
+        "codex-rs/hepta-agentd/src/state_plasticity_tests.rs::final_guard_pins_running_epoch_while_owner_starts_in_starting",
+        "codex-rs/hepta-agentd/src/state_plasticity_tests.rs::late_readiness_cannot_reopen_local_drain",
+        "codex-rs/hepta-agentd/src/state_plasticity_tests.rs::late_readiness_cannot_reopen_local_fence",
+        "codex-rs/hepta-agentd/src/state_plasticity_tests.rs::old_owner_cannot_adopt_restarted_running_epoch",
+        "codex-rs/hepta-agentd/src/state_plasticity_tests.rs::observed_fleet_drain_cannot_be_undone_by_history_rollback_and_late_probe"
       ]
     },
     {
@@ -197,7 +220,12 @@
       "sourcePath": "codex-rs/hepta-plasticity/src/topology_registry.rs",
       "tests": [
         "codex-rs/hepta-plasticity/src/topology_registry.rs::tests::topology_registry_reopen_and_old_idempotent_retry_preserve_original_frame",
-        "codex-rs/hepta-plasticity/src/topology_registry.rs::tests::topology_resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state"
+        "codex-rs/hepta-plasticity/src/topology_registry.rs::tests::topology_resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state",
+        "codex-rs/hepta-plasticity/src/live_registry_integrity_tests.rs::every_topology_positive_boundary_rejects_live_corruption_and_stays_poisoned",
+        "codex-rs/hepta-plasticity/src/live_registry_integrity_tests.rs::intact_topology_queries_share_one_serialized_reader_across_threads",
+        "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs::topology_final_admission_gates_insert_and_retry_without_poisoning_rejection",
+        "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs::topology_corrupt_preflight_never_calls_final_admission",
+        "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs::topology_postwrite_verification_rejects_callback_phase_corruption"
       ]
     },
     {
@@ -216,7 +244,8 @@
       "tests": [
         "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_anchor_store_preserves_fence_and_anchor",
         "codex-rs/hepta-intelligence/src/topology_product.rs::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
-        "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
+        "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart",
+        "codex-rs/hepta-agentd/src/topology_plasticity_host_integrity_tests.rs::read_discovered_corruption_closes_topology_writer_and_preserves_both_files"
       ]
     },
     {
@@ -226,7 +255,12 @@
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover",
         "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs::tests::journal_repairs_only_an_incomplete_crash_tail",
-        "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs::tests::journal_never_discards_a_complete_invalid_frame"
+        "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs::tests::journal_never_discards_a_complete_invalid_frame",
+        "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity_tests.rs::live_journal_identical_ack_authenticates_the_full_trusted_history",
+        "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity_tests.rs::live_journal_anchor_advance_rejects_lost_or_replaced_history_before_writing",
+        "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity_tests.rs::live_journal_fence_advance_rejects_lost_or_replaced_history_before_writing",
+        "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity_tests.rs::live_journal_retry_append_and_rollover_preserve_authenticated_history",
+        "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity_tests.rs::live_journal_detects_valid_replacement_that_reopen_alone_cannot_authenticate"
       ]
     },
     {
@@ -239,7 +273,9 @@
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::any_safety_violation_aborts_terminally",
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::receipt_binds_the_full_plan_and_observation_history",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_governed_topology_persists_then_accepts_bounded_canary",
-        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_safety_violation_aborts_after_durable_admission"
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_safety_violation_aborts_after_durable_admission",
+        "codex-rs/hepta-plasticity/src/topology_alternative_tests.rs::canary_plan_and_receipts_bind_the_registry_scope_and_writer_generation",
+        "codex-rs/hepta-plasticity/src/topology_alternative_tests.rs::canary_cumulative_regressions_cannot_decrease_or_advance_rejected_observation"
       ]
     },
     {
@@ -265,7 +301,8 @@
       "state": "source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "tests": [
-        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
+        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics",
+        "codex-rs/hepta-runtime/src/organs_tests.rs::same_module_alternative_uses_exact_nonfirst_handoff_for_apply_and_fault_recovery"
       ]
     },
     {

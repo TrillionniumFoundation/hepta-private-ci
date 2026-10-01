@@ -63,6 +63,21 @@ pub fn propose_v2(request: ParameterProposalRequestV2) -> Result<ParameterPropos
 }
 
 pub fn verify_parameter_proposal_v2(proposal: &ParameterProposalV2) -> Result<(), Error> {
+    // Public typed records need the same resource bounds as construction and
+    // durable decoding before cloning any caller-controlled collections.
+    if !(1..=MAX_NORM_LAYERS).contains(&proposal.norm_profile.layers.len()) {
+        return Err(Error::NormLayerCountOutOfRange);
+    }
+    if !(1..=MAX_CANDIDATES).contains(&proposal.candidates.len()) {
+        return Err(Error::CandidateCountOutOfRange);
+    }
+    let mut total_deltas = 0_usize;
+    for candidate in &proposal.candidates {
+        total_deltas = total_deltas
+            .checked_add(candidate.parameter_deltas.len())
+            .filter(|count| *count <= MAX_PARAMETER_DELTAS)
+            .ok_or(Error::ParameterLimitExceeded)?;
+    }
     validate_v2_header(
         &proposal.proposer_id,
         &proposal.evaluator_id,

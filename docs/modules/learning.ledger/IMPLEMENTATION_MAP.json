@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -420,7 +420,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+      "object": "a895efbe7bc10e348b9f3ba1a9ef1a75fd5c46a0"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -480,7 +480,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
-      "object": "61d8f2b30d97b6134b17f604d67f5940391ba0e5"
+      "object": "70e23b5ad1de1dba9d3f6f1d6b05a9390e6986a4"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
@@ -501,6 +501,16 @@
     {
       "path": "docs/modules/learning.ledger/TECHNICAL.md",
       "object": "9ddcc6bf01d6ce9a61a804f0c38fdbfa3d690d54"
+    }
+  ],
+  "priorNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "reason": "Retained historical navigation only: this pre-merge branch commit is not an ancestor of the audited main candidate; it does not qualify current source or execution. Current navigation is explicitly rebound below.",
+      "reviewRecord": "docs/modules/learning.plasticity/ADVERSARIAL_AUDIT_20260930.md"
     }
   ]
 }

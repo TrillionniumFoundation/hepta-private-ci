@@ -421,6 +421,43 @@ fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
 }
 
 #[test]
+fn parameter_verifier_rejects_candidate_capacity_before_norm_profile_validation() {
+    let mut proposal = must(propose_v2(v2_request()));
+    proposal.candidates = vec![proposal.candidates[0].clone(); crate::types::MAX_CANDIDATES + 1];
+    proposal.norm_profile.profile_digest = Digest32::ZERO;
+    assert_eq!(
+        verify_parameter_proposal_v2(&proposal),
+        Err(Error::CandidateCountOutOfRange),
+    );
+}
+
+#[test]
+fn parameter_verifier_rejects_norm_capacity_before_layer_validation() {
+    let mut proposal = must(propose_v2(v2_request()));
+    proposal.norm_profile.layers =
+        vec![proposal.norm_profile.layers[0].clone(); crate::types::MAX_NORM_LAYERS + 1];
+    proposal.norm_profile.layers[0].baseline_squared_l2_raw_q64 = 0;
+    assert_eq!(
+        verify_parameter_proposal_v2(&proposal),
+        Err(Error::NormLayerCountOutOfRange),
+    );
+}
+
+#[test]
+fn parameter_verifier_rejects_aggregate_delta_capacity_before_candidate_validation() {
+    let mut proposal = must(propose_v2(v2_request()));
+    let delta = parameter_delta("layer:a", "parameter:repeated", 1, b"delta");
+    proposal.candidates[0].parameter_deltas =
+        vec![delta.clone(); crate::types::MAX_PARAMETER_DELTAS / 2];
+    proposal.candidates[1].parameter_deltas =
+        vec![delta; crate::types::MAX_PARAMETER_DELTAS / 2 + 1];
+    assert_eq!(
+        verify_parameter_proposal_v2(&proposal),
+        Err(Error::ParameterLimitExceeded),
+    );
+}
+
+#[test]
 fn update_candidates_reject_empty_zero_duplicate_and_unprofiled_deltas() {
     let mut request = v2_request();
     request.candidates[0].parameter_deltas.clear();
@@ -624,7 +661,7 @@ fn read_validation_rejects_tampered_metrics_digest_and_profile() {
         Err(Error::ProposalDigestMismatch)
     );
 
-    let mut tampered = proposal.clone();
+    let mut tampered = proposal;
     tampered.norm_profile.profile_digest = digest(b"tampered-profile");
     assert_eq!(
         verify_parameter_proposal_v2(&tampered),

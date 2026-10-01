@@ -252,6 +252,49 @@ impl LearningEvidenceVerifierV1 {
         if payload.len() > MAX_PAYLOAD_BYTES {
             return Err(SignedEvidenceError::PayloadLimit);
         }
+        let signer = self.validate_context_and_time(expected_role, evidence, now)?;
+        if Digest32::of_bytes(payload) != evidence.payload_digest {
+            return Err(SignedEvidenceError::PayloadMismatch);
+        }
+        VerifyingKey::from_bytes(&signer.verifying_key)
+            .map_err(|_| SignedEvidenceError::InvalidKey)?
+            .verify_strict(
+                &evidence.signing_bytes(),
+                &Signature::from_bytes(&evidence.signature),
+            )
+            .map_err(|_| SignedEvidenceError::InvalidSignature)?;
+        Ok(VerifiedLearningEvidenceV1 {
+            principal: signer.principal.clone(),
+            controller_id: signer.controller_id.clone(),
+            role: expected_role,
+            trust_digest: self.trust_digest,
+            objective_digest: self.objective_digest,
+            payload_digest: evidence.payload_digest,
+            issued_at: evidence.issued_at,
+            expires_at: evidence.expires_at,
+            revoked_at: signer.revoked_at,
+        })
+    }
+
+    /// Recheck time, principal validity and scheduled revocation after this
+    /// exact evidence has been authenticated under this immutable trust snapshot.
+    /// This does not authenticate its signature, payload or provenance, and
+    /// deliberately produces no verified evidence token or authority.
+    pub fn revalidate_authenticated_evidence_time(
+        &self,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<(), SignedEvidenceError> {
+        self.validate_context_and_time(evidence.role, evidence, now)
+            .map(|_| ())
+    }
+
+    fn validate_context_and_time(
+        &self,
+        expected_role: LearningEvidenceRoleV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<&TrustedLearningSignerV1, SignedEvidenceError> {
         if evidence.role != expected_role {
             return Err(SignedEvidenceError::RoleMismatch);
         }
@@ -281,27 +324,7 @@ impl LearningEvidenceVerifierV1 {
         {
             return Err(SignedEvidenceError::ValidityWindow);
         }
-        if Digest32::of_bytes(payload) != evidence.payload_digest {
-            return Err(SignedEvidenceError::PayloadMismatch);
-        }
-        VerifyingKey::from_bytes(&signer.verifying_key)
-            .map_err(|_| SignedEvidenceError::InvalidKey)?
-            .verify_strict(
-                &evidence.signing_bytes(),
-                &Signature::from_bytes(&evidence.signature),
-            )
-            .map_err(|_| SignedEvidenceError::InvalidSignature)?;
-        Ok(VerifiedLearningEvidenceV1 {
-            principal: signer.principal.clone(),
-            controller_id: signer.controller_id.clone(),
-            role: expected_role,
-            trust_digest: self.trust_digest,
-            objective_digest: self.objective_digest,
-            payload_digest: evidence.payload_digest,
-            issued_at: evidence.issued_at,
-            expires_at: evidence.expires_at,
-            revoked_at: signer.revoked_at,
-        })
+        Ok(signer)
     }
 }
 

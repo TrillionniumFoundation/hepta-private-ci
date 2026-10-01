@@ -112,6 +112,11 @@ impl From<DurableTopologyRegistryErrorV1> for TopologyPlasticityProductErrorV1 {
 pub fn topology_generation_signing_payload_v1(
     request: &TopologyPlasticityProductRequestV1,
 ) -> Result<Vec<u8>, TopologyPlasticityProductErrorV1> {
+    if request.changes.len() > 31 || request.handoffs.len() > 31 {
+        return Err(TopologyPlasticityProductErrorV1::Binding(
+            "topology change/handoff limit",
+        ));
+    }
     if request.selected_artifact_digest.is_zero()
         || request.window.window_digest.is_zero()
         || request.rollback_predecessor_digest != request.selected_artifact_digest
@@ -124,7 +129,9 @@ pub fn topology_generation_signing_payload_v1(
     let mut changes = request.changes.clone();
     changes.sort();
     let mut handoffs = request.handoffs.clone();
-    handoffs.sort_by(|left, right| left.module_id.cmp(&right.module_id));
+    handoffs.sort_by(|left, right| {
+        (&left.module_id, left.plan_digest).cmp(&(&right.module_id, right.plan_digest))
+    });
     let mut bytes = b"hepta.intelligence.topology-generation.v1\0".to_vec();
     push_id(&mut bytes, &request.proposer_generation_id);
     bytes.extend_from_slice(request.selected_artifact_digest.as_array());
@@ -202,6 +209,24 @@ pub fn propose_authenticated_topology_plasticity_v1(
     verifier: &LearningEvidenceVerifierV1,
     registry: &mut DurableTopologyProposalRegistryV1,
     now: u64,
+) -> Result<TopologyPlasticityProductReceiptV1, TopologyPlasticityProductErrorV1> {
+    propose_authenticated_topology_plasticity_with_final_time_v1(
+        request,
+        verifier,
+        registry,
+        now,
+        || Ok(now),
+    )
+}
+
+/// Run host admission and recheck all authenticated evidence time windows after
+/// registry integrity/preflight work, immediately before the durable append.
+pub fn propose_authenticated_topology_plasticity_with_final_time_v1(
+    request: TopologyPlasticityProductRequestV1,
+    verifier: &LearningEvidenceVerifierV1,
+    registry: &mut DurableTopologyProposalRegistryV1,
+    now: u64,
+    final_time: impl FnOnce() -> Result<u64, TopologyPlasticityProductErrorV1>,
 ) -> Result<TopologyPlasticityProductReceiptV1, TopologyPlasticityProductErrorV1> {
     use TopologyPlasticityProductErrorV1 as E;
 
@@ -289,7 +314,26 @@ pub fn propose_authenticated_topology_plasticity_v1(
         observer_authentication_digest,
         evaluator_authentication_digest,
     )?;
-    let durable = registry.append(request.expected_registry_predecessor, governed.clone())?;
+    let durable = registry.append_with_final_admission(
+        request.expected_registry_predecessor,
+        governed.clone(),
+        || {
+            let final_now = final_time()?;
+            if final_now < now {
+                return Err(E::Binding("final verification clock regressed"));
+            }
+            for evidence in [
+                &request.generator_attestation,
+                &request.observer_attestation,
+                &request.evaluator_attestation,
+            ] {
+                verifier
+                    .revalidate_authenticated_evidence_time(evidence, final_now)
+                    .map_err(E::EvaluatorEvidence)?;
+            }
+            Ok(())
+        },
+    )?;
     let next_registry_anchor = registry.current_anchor()?.ok_or(E::MissingAnchor)?;
 
     let mut composition = b"hepta.intelligence.topology-composition.v1\0".to_vec();
@@ -346,6 +390,9 @@ mod tests {
     use codex_hepta_plasticity::build_writer_handoff_plan_v1;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
     use tempfile::tempfile;
 
     fn id(value: &str) -> StableId {
@@ -476,6 +523,25 @@ mod tests {
             evaluator_attestation: blank(2, LearningEvidenceRoleV1::Evaluator),
             expected_registry_predecessor: Digest32::ZERO,
         };
+        let alternative_handoff = build_writer_handoff_plan_v1(
+            id("module:adapter"),
+            id("owner:old"),
+            id("owner:alternative"),
+            3,
+            4,
+            digest(b"source-store"),
+            digest(b"alternative-migration"),
+            digest(b"alternative-rollback"),
+            digest(b"ack-contract"),
+        )
+        .expect("alternative handoff");
+        let mut alternative = request.changes[0].clone();
+        alternative.operation = TopologyOperationV2::Rewire;
+        alternative.migration_digest = alternative_handoff.migration_digest;
+        alternative.rollback_digest = alternative_handoff.rollback_digest;
+        alternative.writer_handoff_digest = alternative_handoff.plan_digest;
+        request.changes.push(alternative);
+        request.handoffs.push(alternative_handoff);
 
         fn sign(
             mut evidence: SignedLearningEvidenceV1,
@@ -489,6 +555,13 @@ mod tests {
 
         let generation_payload =
             topology_generation_signing_payload_v1(&request).expect("generation payload");
+        let mut reordered = request.clone();
+        reordered.changes.reverse();
+        reordered.handoffs.reverse();
+        assert_eq!(
+            topology_generation_signing_payload_v1(&reordered).expect("reordered payload"),
+            generation_payload
+        );
         request.admission.generation_digest = Digest32::of_bytes(&generation_payload);
         request.generator_attestation =
             sign(request.generator_attestation, &keys[0], &generation_payload);
@@ -499,13 +572,42 @@ mod tests {
         request.evaluator_attestation =
             sign(request.evaluator_attestation, &keys[2], &evaluator_payload);
 
+        let mut file = tempfile().expect("registry");
         let mut registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
-            tempfile().expect("registry"),
+            file.try_clone().expect("registry descriptor"),
             digest(b"registry-scope"),
-            9,
-            8,
+            /*writer_fence*/ 9,
+            /*maximum_records*/ 8,
         )
         .expect("registry");
+        file.seek(SeekFrom::Start(0)).expect("seek initial bytes");
+        let mut before = Vec::new();
+        file.read_to_end(&mut before).expect("read initial bytes");
+        let mut admission_called = false;
+        assert!(matches!(
+            propose_authenticated_topology_plasticity_with_final_time_v1(
+                request.clone(),
+                &verifier,
+                &mut registry,
+                /*now*/ 50,
+                || {
+                    admission_called = true;
+                    Err(TopologyPlasticityProductErrorV1::Binding(
+                        "final admission rejected",
+                    ))
+                },
+            ),
+            Err(TopologyPlasticityProductErrorV1::Binding(
+                "final admission rejected"
+            ))
+        ));
+        assert!(admission_called);
+        assert_eq!(registry.record_count(), Ok(0));
+        assert_eq!(registry.current_anchor(), Ok(None));
+        file.seek(SeekFrom::Start(0)).expect("seek unchanged bytes");
+        let mut after = Vec::new();
+        file.read_to_end(&mut after).expect("read unchanged bytes");
+        assert_eq!(after, before);
         let receipt =
             propose_authenticated_topology_plasticity_v1(request, &verifier, &mut registry, 50)
                 .expect("topology product");
@@ -518,6 +620,8 @@ mod tests {
             principals[2].principal_id
         );
         assert_eq!(registry.record_count(), Ok(1));
+        assert_eq!(receipt.governed.proposal.candidates.len(), 3);
+        assert_eq!(receipt.governed.handoffs.len(), 2);
         assert!(!receipt.composition_digest.is_zero());
     }
 }

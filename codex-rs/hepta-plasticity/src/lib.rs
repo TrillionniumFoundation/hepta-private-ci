@@ -11,6 +11,7 @@
 mod durable_registry;
 mod generator_v3;
 mod legacy;
+mod live_registry_integrity;
 mod parameter_mutation_policy_v1;
 mod parameter_v2;
 mod registry;
@@ -159,3 +160,7 @@ pub fn read_versioned_proposal(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "live_registry_integrity_tests.rs"]
+mod live_registry_integrity_tests;

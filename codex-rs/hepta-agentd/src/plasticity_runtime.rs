@@ -31,8 +31,8 @@ use crate::AgentdTopologyHostErrorV1;
 use crate::AgentdTopologyWriterV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
-use crate::propose_agentd_plasticity_v1;
-use crate::propose_agentd_topology_plasticity_v1;
+use crate::plasticity_host::propose_agentd_plasticity_with_clock_v1;
+use crate::topology_plasticity_host::propose_agentd_topology_plasticity_with_clock_v1;
 
 const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 
@@ -40,6 +40,7 @@ const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 pub enum PlasticityRuntimeCallErrorV1 {
     Unavailable,
     Closed,
+    ClockUnavailable,
     Parameter(AgentdPlasticityHostErrorV1),
     Topology(AgentdTopologyHostErrorV1),
 }
@@ -54,14 +55,12 @@ impl StdError for PlasticityRuntimeCallErrorV1 {}
 enum PlasticityRuntimeCommandV1 {
     Parameter {
         request: Box<ParameterPlasticityProductRequestV1>,
-        now: u64,
         response: oneshot::Sender<
             Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
         >,
     },
     Topology {
         request: Box<TopologyPlasticityProductRequestV1>,
-        now: u64,
         response: oneshot::Sender<
             Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
         >,
@@ -76,16 +75,19 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// Queue a proposal for validation against the owner's Unix-millisecond
+    /// clock when it is processed. `now` is retained for API compatibility and
+    /// cannot set the verification time or extend the evidence validity window.
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        let _ = now;
         let (response, receive) = oneshot::channel();
         self.sender
             .send(PlasticityRuntimeCommandV1::Parameter {
                 request: Box::new(request),
-                now,
                 response,
             })
             .await
@@ -95,16 +97,18 @@ impl PlasticityRuntimeHandleV1 {
             .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
     }
 
+    /// Queue a topology proposal. The compatibility `now` argument is ignored;
+    /// the owner checks evidence against its current Unix-millisecond clock.
     pub async fn propose_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        let _ = now;
         let (response, receive) = oneshot::channel();
         self.sender
             .send(PlasticityRuntimeCommandV1::Topology {
                 request: Box::new(request),
-                now,
                 response,
             })
             .await
@@ -182,6 +186,12 @@ impl PlasticityRuntimeBootstrapV1 {
 /// Exact mutable owner retained for the lifetime of the Agentd generation.
 pub struct PlasticityRuntimeOwnerV1 {
     receiver: mpsc::Receiver<PlasticityRuntimeCommandV1>,
+    // The daemon chooses this clock at composition; producers cannot supply or
+    // override it. Private injection keeps lifetime/queue tests deterministic.
+    clock: Box<dyn FnMut() -> Result<u64, AgentdError> + Send>,
+    // Every successful sample advances this owner-lifetime floor, even when
+    // the proposal is subsequently rejected. Rollback cannot revive evidence.
+    last_observed_unix_ms: Option<u64>,
     artifacts: ArtifactRegistry,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
@@ -212,6 +222,8 @@ pub fn plasticity_runtime_channel_v1(
         PlasticityRuntimeHandleV1 { sender },
         PlasticityRuntimeOwnerV1 {
             receiver,
+            clock: Box::new(crate::authbus_ingress::now_ms),
+            last_observed_unix_ms: None,
             artifacts,
             ledger,
             owner_evidence_resolver,
@@ -232,6 +244,62 @@ fn validate_plasticity_runtime_capacity(capacity: usize) -> Result<(), AgentdErr
         )));
     }
     Ok(())
+}
+
+fn observe_plasticity_clock_v1(
+    clock: &mut dyn FnMut() -> Result<u64, AgentdError>,
+    last_observed_unix_ms: &mut Option<u64>,
+) -> Result<u64, AgentdError> {
+    let now = clock()?;
+    if last_observed_unix_ms.is_some_and(|previous| now < previous) {
+        return Err(AgentdError::Protocol(
+            "plasticity host clock regressed".to_string(),
+        ));
+    }
+    *last_observed_unix_ms = Some(now);
+    Ok(now)
+}
+
+struct FinalPlasticityAdmissionV1<'a> {
+    state: &'a AgentdState,
+    cancellation: &'a CancellationToken,
+    generation: u64,
+    guard: Option<crate::state::PlasticityFinalAdmissionGuardV1<'a>>,
+    unavailable: bool,
+}
+
+impl FinalPlasticityAdmissionV1<'_> {
+    fn observe(
+        &mut self,
+        clock: &mut dyn FnMut() -> Result<u64, AgentdError>,
+        last_observed_unix_ms: &mut Option<u64>,
+    ) -> Result<u64, AgentdError> {
+        // Clock callbacks can expose fencing, draining or cancellation. Sample
+        // before acquiring the runtime mutex, then retain the admission guard
+        // through the synchronous registry append and external anchor update.
+        let now = observe_plasticity_clock_v1(clock, last_observed_unix_ms)?;
+        if self.cancellation.is_cancelled() {
+            self.unavailable = true;
+            return Err(AgentdError::GenerationFenced(
+                "plasticity owner cancelled before final admission".to_string(),
+            ));
+        }
+        let guard = self
+            .state
+            .plasticity_final_admission_guard(self.generation)
+            .inspect_err(|_| self.unavailable = true)?;
+        if self.cancellation.is_cancelled() {
+            self.unavailable = true;
+            return Err(AgentdError::GenerationFenced(
+                "plasticity owner cancelled before final admission".to_string(),
+            ));
+        }
+        // This is the admission linearization point. Later cancellation lets
+        // this already admitted synchronous transaction finish; it cannot undo
+        // durable work. Local lifecycle changes serialize on the retained lock.
+        self.guard = Some(guard);
+        Ok(now)
+    }
 }
 
 pub(crate) fn compose_plasticity_runtime_v1(
@@ -273,6 +341,15 @@ impl PlasticityRuntimeOwnerV1 {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
+        // An owner created while Starting still belongs to its one succeeding
+        // Running generation. Never adopt a generation refreshed by a request.
+        let owner_generation = state
+            .identity()
+            .spawn_generation
+            .checked_add(1)
+            .ok_or_else(|| {
+                AgentdError::GenerationFenced("plasticity owner generation overflow".to_string())
+            })?;
         loop {
             let command = tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
@@ -285,50 +362,102 @@ impl PlasticityRuntimeOwnerV1 {
                 return Ok(());
             };
 
-            let ready = state.plasticity_admission_ready()?;
+            let ready = !cancellation.is_cancelled()
+                && state.plasticity_admission_ready()?
+                && state.current_generation()? == owner_generation;
             match command {
-                PlasticityRuntimeCommandV1::Parameter {
-                    request,
-                    now,
-                    response,
-                } => {
+                PlasticityRuntimeCommandV1::Parameter { request, response } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
-                    let result = propose_agentd_plasticity_v1(
-                        *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
-                        now,
-                    )
-                    .map_err(PlasticityRuntimeCallErrorV1::Parameter);
+                    let Ok(now) = observe_plasticity_clock_v1(
+                        self.clock.as_mut(),
+                        &mut self.last_observed_unix_ms,
+                    ) else {
+                        let _ = response.send(Err(PlasticityRuntimeCallErrorV1::ClockUnavailable));
+                        continue;
+                    };
+                    let result = {
+                        let mut admission = FinalPlasticityAdmissionV1 {
+                            state: &state,
+                            cancellation: &cancellation,
+                            generation: owner_generation,
+                            guard: None,
+                            unavailable: false,
+                        };
+                        let result = {
+                            let mut final_clock = || {
+                                admission
+                                    .observe(self.clock.as_mut(), &mut self.last_observed_unix_ms)
+                            };
+                            propose_agentd_plasticity_with_clock_v1(
+                                *request,
+                                &self.artifacts,
+                                &self.ledger,
+                                self.owner_evidence_resolver.as_ref(),
+                                &self.owner_evidence_policy,
+                                &self.verifier,
+                                &mut self.parameter_writer,
+                                &mut self.parameter_anchor_store,
+                                now,
+                                &mut final_clock,
+                            )
+                        };
+                        result.map_err(|error| {
+                            if admission.unavailable {
+                                PlasticityRuntimeCallErrorV1::Unavailable
+                            } else {
+                                PlasticityRuntimeCallErrorV1::Parameter(error)
+                            }
+                        })
+                    };
                     let _ = response.send(result);
                 }
-                PlasticityRuntimeCommandV1::Topology {
-                    request,
-                    now,
-                    response,
-                } => {
+                PlasticityRuntimeCommandV1::Topology { request, response } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
-                    let result = propose_agentd_topology_plasticity_v1(
-                        *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        &self.verifier,
-                        &mut self.topology_writer,
-                        &mut self.topology_anchor_store,
-                        now,
-                    )
-                    .map_err(PlasticityRuntimeCallErrorV1::Topology);
+                    let Ok(now) = observe_plasticity_clock_v1(
+                        self.clock.as_mut(),
+                        &mut self.last_observed_unix_ms,
+                    ) else {
+                        let _ = response.send(Err(PlasticityRuntimeCallErrorV1::ClockUnavailable));
+                        continue;
+                    };
+                    let result = {
+                        let mut admission = FinalPlasticityAdmissionV1 {
+                            state: &state,
+                            cancellation: &cancellation,
+                            generation: owner_generation,
+                            guard: None,
+                            unavailable: false,
+                        };
+                        let result = {
+                            let mut final_clock = || {
+                                admission
+                                    .observe(self.clock.as_mut(), &mut self.last_observed_unix_ms)
+                            };
+                            propose_agentd_topology_plasticity_with_clock_v1(
+                                *request,
+                                &self.artifacts,
+                                &self.ledger,
+                                &self.verifier,
+                                &mut self.topology_writer,
+                                &mut self.topology_anchor_store,
+                                now,
+                                &mut final_clock,
+                            )
+                        };
+                        result.map_err(|error| {
+                            if admission.unavailable {
+                                PlasticityRuntimeCallErrorV1::Unavailable
+                            } else {
+                                PlasticityRuntimeCallErrorV1::Topology(error)
+                            }
+                        })
+                    };
                     let _ = response.send(result);
                 }
             }

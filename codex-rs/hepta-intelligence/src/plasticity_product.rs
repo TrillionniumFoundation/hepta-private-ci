@@ -261,21 +261,27 @@ impl AnchoredPlasticityWriterV1 {
         })
     }
 
-    pub const fn state(&self) -> PlasticityWriterStateV1 {
-        self.state
+    /// Cached writer health, including sticky integrity failures discovered by
+    /// registry reads. This observation does not authenticate current file bytes.
+    pub fn state(&self) -> PlasticityWriterStateV1 {
+        if self.registry.is_poisoned() {
+            PlasticityWriterStateV1::Poisoned
+        } else {
+            self.state
+        }
     }
 
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableRegistryAnchorV1>, DurableProposalRegistryError> {
-        if self.state != PlasticityWriterStateV1::Healthy {
+        if self.state() != PlasticityWriterStateV1::Healthy {
             return Err(DurableProposalRegistryError::Poisoned);
         }
         self.registry.current_anchor()
     }
 
     pub fn record_count(&self) -> Result<usize, DurableProposalRegistryError> {
-        if self.state != PlasticityWriterStateV1::Healthy {
+        if self.state() != PlasticityWriterStateV1::Healthy {
             return Err(DurableProposalRegistryError::Poisoned);
         }
         self.registry.record_count()
@@ -349,9 +355,31 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     anchor_committer: &mut impl PlasticityAnchorCommitterV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
+    propose_authenticated_parameter_plasticity_with_final_time_v1(
+        request,
+        verifier,
+        writer,
+        anchor_committer,
+        now,
+        || Ok(now),
+    )
+}
+
+/// Authenticate and prepare the proposal, then obtain host-controlled final
+/// verification time after registry integrity/preflight work, immediately before
+/// changing writer state or appending.
+/// The callback must fail closed if host admission is no longer valid.
+pub fn propose_authenticated_parameter_plasticity_with_final_time_v1(
+    request: ParameterPlasticityProductRequestV1,
+    verifier: &LearningEvidenceVerifierV1,
+    writer: &mut AnchoredPlasticityWriterV1,
+    anchor_committer: &mut impl PlasticityAnchorCommitterV1,
+    now: u64,
+    final_time: impl FnOnce() -> Result<u64, ParameterPlasticityProductErrorV1>,
+) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
     use ParameterPlasticityProductErrorV1 as E;
 
-    if writer.state != PlasticityWriterStateV1::Healthy {
+    if writer.state() != PlasticityWriterStateV1::Healthy {
         return Err(E::Registry(DurableProposalRegistryError::Poisoned));
     }
     verify_generated_parameter_candidates_v3(
@@ -359,6 +387,20 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         &request.generated,
     )?;
     validate_admission_binding(&request)?;
+    if request.evaluations.len() > request.generated.candidates.len() {
+        return Err(E::Binding("candidate evaluation limit"));
+    }
+    let mut temporal_evidence = vec![
+        request.generator_attestation.clone(),
+        request.admission_attestation.clone(),
+    ];
+    temporal_evidence.extend(request.no_change_attestation.iter().cloned());
+    for evaluation in &request.evaluations {
+        temporal_evidence.extend([
+            evaluation.evidence.generator_plan.clone(),
+            evaluation.evidence.evaluator_bundle.clone(),
+        ]);
+    }
 
     let generator_payload = parameter_generator_signing_payload_v3(&request.generated);
     let generator = verifier
@@ -540,24 +582,40 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         candidates: request.generated.candidates.clone(),
     })?;
 
-    writer.state = PlasticityWriterStateV1::AppendPendingAnchor;
-    let registry = match writer
-        .registry
-        .append_v2(request.expected_registry_predecessor, proposal.clone())
-    {
+    let writer_state = &mut writer.state;
+    let registry = match writer.registry.append_v2_with_final_admission(
+        request.expected_registry_predecessor,
+        proposal.clone(),
+        || {
+            let final_now = final_time()?;
+            if final_now < now {
+                return Err(E::Binding("final verification clock regressed"));
+            }
+            for evidence in &temporal_evidence {
+                verifier
+                    .revalidate_authenticated_evidence_time(evidence, final_now)
+                    .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+            }
+            *writer_state = PlasticityWriterStateV1::AppendPendingAnchor;
+            Ok(())
+        },
+    ) {
         Ok(receipt) => receipt,
         Err(error) => {
             writer.state = if matches!(
                 error,
-                DurableProposalRegistryError::Indeterminate
-                    | DurableProposalRegistryError::Poisoned
-                    | DurableProposalRegistryError::Io(_)
+                E::Registry(
+                    DurableProposalRegistryError::Corrupt
+                        | DurableProposalRegistryError::Indeterminate
+                        | DurableProposalRegistryError::Poisoned
+                        | DurableProposalRegistryError::Io(_)
+                )
             ) {
                 PlasticityWriterStateV1::Poisoned
             } else {
                 PlasticityWriterStateV1::Healthy
             };
-            return Err(E::Registry(error));
+            return Err(error);
         }
     };
     let committed_registry_anchor = match writer.registry.current_anchor() {

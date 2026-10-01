@@ -68,13 +68,33 @@ impl ProposalRegistry {
     ///
     /// Registry insertion is not independent evaluation, selection or activation.
     pub fn append_v2(&mut self, proposal: ParameterProposalV2) -> Result<AppendDisposition, Error> {
-        verify_parameter_proposal_v2(&proposal)?;
+        let disposition = self.preflight_v2_append(&proposal)?;
+        if disposition == AppendDisposition::Unchanged {
+            return Ok(disposition);
+        }
+        let slot = ProposalRegistrySlotV2 {
+            selected_artifact_digest: proposal.selected_artifact_digest,
+            window_id: proposal.window.window_id.clone(),
+        };
+        self.parameter_v2_ids
+            .insert(proposal.proposal_id.clone(), slot.clone());
+        self.parameter_v2.insert(slot, proposal);
+        Ok(AppendDisposition::Inserted)
+    }
+
+    /// Check the same insertion invariants without copying or mutating history.
+    /// The durable owner keeps exclusive access between this check and commit.
+    pub(crate) fn preflight_v2_append(
+        &self,
+        proposal: &ParameterProposalV2,
+    ) -> Result<AppendDisposition, Error> {
+        verify_parameter_proposal_v2(proposal)?;
         let slot = ProposalRegistrySlotV2 {
             selected_artifact_digest: proposal.selected_artifact_digest,
             window_id: proposal.window.window_id.clone(),
         };
         if let Some(existing) = self.parameter_v2.get(&slot) {
-            if existing == &proposal {
+            if existing == proposal {
                 return Ok(AppendDisposition::Unchanged);
             }
             return Err(Error::RegistrySlotConflict(format!(
@@ -90,9 +110,6 @@ impl ProposalRegistry {
         if self.record_count() >= self.maximum_records {
             return Err(Error::RegistryCapacityExceeded);
         }
-        self.parameter_v2_ids
-            .insert(proposal.proposal_id.clone(), slot.clone());
-        self.parameter_v2.insert(slot, proposal);
         Ok(AppendDisposition::Inserted)
     }
 

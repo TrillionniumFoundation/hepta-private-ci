@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
-    "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -930,12 +930,12 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "integration_baseline",
+  "sourceBaseRole": "current_source_navigation_anchor",
   "currentCandidateIdentityAuthority": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
     "embeddedCommit": false,
-    "reason": "sourceBase is integration provenance; current operation bytes are exact Git blobs and current candidate/merge identity is established externally by CI execution receipts."
+    "reason": "The active sourceBase binds current source navigation; integrationBaseline and priorNavigationAnchors retain historical integration provenance. Current operation bytes are exact Git blobs, and candidate/merge execution qualification is established externally by CI receipts."
   },
   "mappingSourceIdentityMode": "exact_blob",
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -944,8 +944,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
-    "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -1086,6 +1086,30 @@
     {
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
+    }
+  ],
+  "priorNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
+        "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c"
+      },
+      "reason": "Retained historical navigation only: this pre-merge branch commit is not an ancestor of the audited main candidate; it does not qualify current source or execution. Current navigation is explicitly rebound below.",
+      "reviewRecord": "docs/modules/learning.plasticity/ADVERSARIAL_AUDIT_20260930.md",
+      "observedAtHead": {
+        "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
+        "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+      },
+      "observedSourcePaths": [
+        "tools/hepta-engineering-control"
+      ],
+      "sourceBaseRole": "integration_baseline",
+      "currentCandidateIdentityAuthority": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
+        "embeddedCommit": false,
+        "reason": "sourceBase is integration provenance; current operation bytes are exact Git blobs and current candidate/merge identity is established externally by CI execution receipts."
+      }
     }
   ]
 }

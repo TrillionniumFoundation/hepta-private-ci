@@ -116,6 +116,9 @@ pub fn verify_parameter_mutation_policy_v1(
     if policy.mutation_grammar_digest.is_zero() {
         return Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar);
     }
+    if policy.rules.len() > MAX_MUTATION_RULES_V1 {
+        return Err(ParameterMutationPolicyErrorV1::RuleLimit);
+    }
     let mut rules = policy.rules.clone();
     validate_context(policy.selected_artifact_digest, &policy.window, &mut rules)?;
     if rules != policy.rules || policy.policy_digest.is_zero() {
@@ -136,35 +139,77 @@ pub fn authorize_parameter_mutation_v1(
     lower_bound: FixedQ32,
     upper_bound: FixedQ32,
 ) -> Result<(), ParameterMutationPolicyErrorV1> {
-    verify_parameter_mutation_policy_v1(policy)?;
-    if policy.selected_artifact_digest != selected_artifact_digest {
-        return Err(ParameterMutationPolicyErrorV1::ArtifactMismatch);
+    VerifiedParameterMutationPolicyV1::new(policy)?.authorize(
+        selected_artifact_digest,
+        window,
+        layer_id,
+        parameter_id,
+        lower_bound,
+        upper_bound,
+    )
+}
+
+/// An immutable, already verified policy borrowed for one bounded generation.
+///
+/// The private field ensures rules cannot be checked without first validating
+/// their canonical order and digest. Borrowing also prevents the policy from
+/// changing between that validation and any subsequent signal authorization.
+pub(crate) struct VerifiedParameterMutationPolicyV1<'a> {
+    policy: &'a ParameterMutationPolicyV1,
+}
+
+impl<'a> VerifiedParameterMutationPolicyV1<'a> {
+    pub(crate) fn new(
+        policy: &'a ParameterMutationPolicyV1,
+    ) -> Result<Self, ParameterMutationPolicyErrorV1> {
+        verify_parameter_mutation_policy_v1(policy)?;
+        Ok(Self { policy })
     }
-    if &policy.window != window {
-        return Err(ParameterMutationPolicyErrorV1::WindowMismatch);
+
+    pub(crate) fn authorize(
+        &self,
+        selected_artifact_digest: Digest32,
+        window: &ProposalWindowV2,
+        layer_id: &StableId,
+        parameter_id: &StableId,
+        lower_bound: FixedQ32,
+        upper_bound: FixedQ32,
+    ) -> Result<(), ParameterMutationPolicyErrorV1> {
+        let policy = self.policy;
+        if policy.selected_artifact_digest != selected_artifact_digest {
+            return Err(ParameterMutationPolicyErrorV1::ArtifactMismatch);
+        }
+        if &policy.window != window {
+            return Err(ParameterMutationPolicyErrorV1::WindowMismatch);
+        }
+        if lower_bound > upper_bound {
+            return Err(ParameterMutationPolicyErrorV1::InvertedBounds(
+                parameter_id.to_string(),
+            ));
+        }
+        let rule = policy
+            .rules
+            .binary_search_by(|rule| rule.parameter_id.cmp(parameter_id))
+            .ok()
+            .and_then(|index| policy.rules.get(index))
+            .ok_or_else(|| ParameterMutationPolicyErrorV1::MissingRule(parameter_id.to_string()))?;
+        if &rule.layer_id != layer_id {
+            return Err(ParameterMutationPolicyErrorV1::LayerMismatch(
+                parameter_id.to_string(),
+            ));
+        }
+        if rule.surface != ParameterMutationSurfaceV1::LearnableParameter {
+            return Err(ParameterMutationPolicyErrorV1::ProtectedSurface(
+                parameter_id.to_string(),
+            ));
+        }
+        if lower_bound < rule.minimum_delta || upper_bound > rule.maximum_delta {
+            return Err(ParameterMutationPolicyErrorV1::BoundsEscape(
+                parameter_id.to_string(),
+            ));
+        }
+        Ok(())
     }
-    let rule = policy
-        .rules
-        .binary_search_by(|rule| rule.parameter_id.cmp(parameter_id))
-        .ok()
-        .and_then(|index| policy.rules.get(index))
-        .ok_or_else(|| ParameterMutationPolicyErrorV1::MissingRule(parameter_id.to_string()))?;
-    if &rule.layer_id != layer_id {
-        return Err(ParameterMutationPolicyErrorV1::LayerMismatch(
-            parameter_id.to_string(),
-        ));
-    }
-    if rule.surface != ParameterMutationSurfaceV1::LearnableParameter {
-        return Err(ParameterMutationPolicyErrorV1::ProtectedSurface(
-            parameter_id.to_string(),
-        ));
-    }
-    if lower_bound < rule.minimum_delta || upper_bound > rule.maximum_delta {
-        return Err(ParameterMutationPolicyErrorV1::BoundsEscape(
-            parameter_id.to_string(),
-        ));
-    }
-    Ok(())
 }
 
 fn validate_context(
@@ -280,6 +325,63 @@ mod tests {
             FixedQ32::from_raw(10),
         )
         .expect("authorized");
+    }
+
+    #[test]
+    fn authorization_rejects_inverted_request_bounds_inside_the_allowlist() {
+        let artifact = digest(b"artifact");
+        let policy = build_parameter_mutation_policy_v1(
+            id("policy:inverted-request"),
+            digest(b"mutation-grammar"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+        )
+        .expect("policy");
+        assert_eq!(
+            authorize_parameter_mutation_v1(
+                &policy,
+                artifact,
+                &window(),
+                &id("layer:1"),
+                &id("parameter:1"),
+                FixedQ32::from_raw(50),
+                FixedQ32::from_raw(-50),
+            ),
+            Err(ParameterMutationPolicyErrorV1::InvertedBounds(
+                "parameter:1".to_string(),
+            )),
+        );
+    }
+
+    #[test]
+    fn verified_policy_rejects_tampered_rules_before_authorization() {
+        let artifact = digest(b"artifact");
+        let mut policy = build_parameter_mutation_policy_v1(
+            id("policy:tampered-request"),
+            digest(b"mutation-grammar"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::Authority)],
+        )
+        .expect("policy");
+        policy.rules[0].surface = ParameterMutationSurfaceV1::LearnableParameter;
+        assert!(matches!(
+            VerifiedParameterMutationPolicyV1::new(&policy),
+            Err(ParameterMutationPolicyErrorV1::DigestMismatch),
+        ));
+        assert_eq!(
+            authorize_parameter_mutation_v1(
+                &policy,
+                artifact,
+                &window(),
+                &id("layer:1"),
+                &id("parameter:1"),
+                FixedQ32::from_raw(-50),
+                FixedQ32::from_raw(50),
+            ),
+            Err(ParameterMutationPolicyErrorV1::DigestMismatch),
+        );
     }
 
     #[test]

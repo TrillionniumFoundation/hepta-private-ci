@@ -1,4 +1,5 @@
 """Exercise actual process deadlines; no mocked process or fabricated test success."""
+
 from __future__ import annotations
 
 import contextlib
@@ -29,10 +30,14 @@ class CommandDeadlineTests(unittest.TestCase):
         started = time.monotonic()
         with contextlib.redirect_stdout(io.StringIO()):
             record = executor.execute_logged(
-                [sys.executable, "-c", code], self.log,
-                timeout_seconds=0.75, **kwargs,
+                [sys.executable, "-c", code],
+                self.log,
+                timeout_seconds=0.75,
+                **kwargs,
             )
-        self.assertLess(time.monotonic() - started, 10, "command lifecycle did not converge")
+        self.assertLess(
+            time.monotonic() - started, 10, "command lifecycle did not converge"
+        )
         data = self.log.read_bytes()
         self.assertEqual(record["log_bytes"], len(data))
         self.assertEqual(record["log_sha256"], hashlib.sha256(data).hexdigest())
@@ -45,39 +50,57 @@ class CommandDeadlineTests(unittest.TestCase):
         self.assertEqual(record["observed_passed_tests"], 0)
 
     def test_diagnostics_before_timeout_survive(self):
-        record = self.execute("import time; print('before timeout', flush=True); time.sleep(60)")
+        record = self.execute(
+            "import time; print('before timeout', flush=True); time.sleep(60)"
+        )
         self.assertTrue(record["timed_out"])
         self.assertEqual(self.log.read_bytes(), b"before timeout\n")
 
     @unittest.skipUnless(os.name == "posix", "POSIX process-group semantics")
     def test_eof_is_not_completion(self):
-        record = self.execute("import os,time; os.close(1); os.close(2); time.sleep(60)")
+        record = self.execute(
+            "import os,time; os.close(1); os.close(2); time.sleep(60)"
+        )
         self.assertTrue(record["timed_out"])
         self.assertNotEqual(record["returncode"], 0)
 
     @unittest.skipUnless(sys.platform == "linux", "Linux process-state observation")
     def test_exited_parent_cannot_leave_a_running_pipe_holder(self):
+        child_code = (
+            "import os,time; from pathlib import Path; "
+            "print(os.getpid(),Path('/proc/self/stat').read_text().strip(),flush=True); "
+            "time.sleep(60)"
+        )
         record = self.execute(
             "import subprocess,sys\n"
-            "child=subprocess.Popen([sys.executable,'-c','import time; time.sleep(60)'])\n"
-            "print(child.pid, flush=True)\n"
+            f"subprocess.Popen([sys.executable,'-c',{child_code!r}])\n"
         )
         self.assertTrue(record["timed_out"])
-        self.assertEqual(record["returncode"], 0, "parent itself should have exited normally")
-        child_pid = int(self.log.read_text().strip())
+        self.assertEqual(
+            record["returncode"], 0, "parent itself should have exited normally"
+        )
+        namespace_pid, initial_stat = self.log.read_text().strip().split(" ", 1)
+        child_pid = int(namespace_pid)
+        proc_pid = int(initial_stat.split(" ", 1)[0])
+        starttime = initial_stat.rsplit(")", 1)[1].split()[19]
+        # The mounted procfs may expose a different PID namespace. Observe the
+        # child's own procfs identity and never mistake a reused PID for it.
         # An orphan may briefly remain a zombie until init reaps it. It must no
         # longer execute or retain a pipe after process-group cancellation.
         for _ in range(100):
-            stat = Path(f"/proc/{child_pid}/stat")
+            stat = Path(f"/proc/{proc_pid}/stat")
             try:
-                state = stat.read_text().rsplit(")", 1)[1].split()[0]
-            except FileNotFoundError:
+                fields = stat.read_text().rsplit(")", 1)[1].split()
+            except (FileNotFoundError, ProcessLookupError):
                 break
-            if state == "Z":
+            if fields[19] != starttime or fields[0] == "Z":
                 break
             time.sleep(0.01)
         else:
-            os.kill(child_pid, signal.SIGKILL)
+            try:
+                os.kill(child_pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
             self.fail("descendant survived process-group cancellation")
 
     @unittest.skipUnless(os.name == "posix", "POSIX session semantics")
@@ -108,25 +131,35 @@ class CommandDeadlineTests(unittest.TestCase):
         self.assertFalse(record["output_limit_exceeded"])
 
     def test_output_cap_remains_independent_of_deadline(self):
-        record = self.execute("import sys; sys.stdout.write('x'*100000)", maximum_bytes=73)
+        record = self.execute(
+            "import sys; sys.stdout.write('x'*100000)", maximum_bytes=73
+        )
         self.assertTrue(record["output_limit_exceeded"])
         self.assertFalse(record["timed_out"])
         self.assertEqual(self.log.read_bytes(), b"x" * 73)
 
     def test_invalid_bounds_dispatch_nothing(self):
         for bound in (0, -1, True, float("nan"), float("inf")):
-            with self.subTest(bound=bound), patch.object(executor.subprocess, "Popen") as popen:
+            with (
+                self.subTest(bound=bound),
+                patch.object(executor.subprocess, "Popen") as popen,
+            ):
                 with self.assertRaises(ValueError):
-                    executor.execute_logged(["not-dispatched"], self.log, timeout_seconds=bound)
+                    executor.execute_logged(
+                        ["not-dispatched"], self.log, timeout_seconds=bound
+                    )
                 popen.assert_not_called()
         self.assertFalse(self.log.exists())
 
     def test_cli_retains_failed_receipt_instead_of_successful_parent_exit(self):
         repo = self.root / "repo"
         repo.mkdir()
+
         def git(*args):
-            return subprocess.check_output(["git", "-C", str(repo), *args],
-                                           text=True, stderr=subprocess.PIPE).strip()
+            return subprocess.check_output(
+                ["git", "-C", str(repo), *args], text=True, stderr=subprocess.PIPE
+            ).strip()
+
         git("init", "-q")
         git("config", "user.name", "deadline fixture")
         git("config", "user.email", "deadline@example.invalid")
@@ -135,12 +168,32 @@ class CommandDeadlineTests(unittest.TestCase):
         git("commit", "-qm", "fixture")
         sha = git("rev-parse", "HEAD")
         output = self.root / "result.json"
-        command = [sys.executable, str(Path(executor.__file__).resolve()),
-                   "--output", str(output), "--timeout-seconds", "0.5", "--",
-                   sys.executable, "-c", "import time; time.sleep(60)"]
-        result = subprocess.run(command, cwd=repo, capture_output=True, text=True, timeout=10,
-                                env={**os.environ, "SOURCE_SHA": sha, "TESTED_SHA": sha,
-                                     "BASE_SHA": sha, "HEPTA_CI_LANE": "source-head"})
+        command = [
+            sys.executable,
+            str(Path(executor.__file__).resolve()),
+            "--output",
+            str(output),
+            "--timeout-seconds",
+            "0.5",
+            "--",
+            sys.executable,
+            "-c",
+            "import time; time.sleep(60)",
+        ]
+        result = subprocess.run(
+            command,
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env={
+                **os.environ,
+                "SOURCE_SHA": sha,
+                "TESTED_SHA": sha,
+                "BASE_SHA": sha,
+                "HEPTA_CI_LANE": "source-head",
+            },
+        )
         record = json.loads(output.read_text())
         self.assertEqual(result.returncode, 124, result.stderr)
         self.assertEqual(record["status"], "failed")

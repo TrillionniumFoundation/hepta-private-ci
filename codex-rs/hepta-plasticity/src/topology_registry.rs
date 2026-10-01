@@ -15,6 +15,8 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::ops::Deref;
 use std::ops::DerefMut;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -32,6 +34,8 @@ use crate::TopologyGovernanceErrorV1;
 use crate::TopologyOperationV2;
 use crate::TopologyProposalV2;
 use crate::admit_governed_topology_v1;
+use crate::live_registry_integrity::LiveRegistryIntegrity;
+use crate::live_registry_integrity::LiveRegistryIntegrityError;
 
 const MAGIC: &[u8; 8] = b"HPTTOP02";
 const PAYLOAD_MAGIC: &[u8; 8] = b"HPTTGV02";
@@ -143,6 +147,8 @@ impl Drop for LockedFile {
 
 pub struct DurableTopologyProposalRegistryV1 {
     file: LockedFile,
+    live_integrity: LiveRegistryIntegrity,
+    expected_file_bytes: u64,
     scope: Digest32,
     writer_fence: u64,
     maximum_records: usize,
@@ -150,10 +156,17 @@ pub struct DurableTopologyProposalRegistryV1 {
     by_id: BTreeMap<StableId, TopologySlotV1>,
     receipts: BTreeMap<StableId, DurableTopologyAppendReceiptV1>,
     frame_digests: Vec<Digest32>,
-    poisoned: bool,
+    poisoned: AtomicBool,
 }
 
 impl DurableTopologyProposalRegistryV1 {
+    /// Observe the cached sticky failure latch without reading the file.
+    /// A false value does not attest live byte integrity or grant authority.
+    #[must_use]
+    pub fn is_poisoned(&self) -> bool {
+        self.poisoned.load(Ordering::Acquire)
+    }
+
     #[must_use]
     pub const fn scope_digest(&self) -> Digest32 {
         self.scope
@@ -180,8 +193,9 @@ impl DurableTopologyProposalRegistryV1 {
     }
 
     /// Resume a newly enrolled generation only if no complete topology proposal
-    /// frame exists. Incomplete first-frame crash tails are repairable; complete
-    /// unacknowledged frames are preserved for explicit reconciliation.
+    /// frame exists. Exact partial enrollment headers and incomplete first-frame
+    /// crash tails are repairable; complete unacknowledged frames are preserved
+    /// for explicit reconciliation.
     pub fn resume_unacknowledged_bootstrap(
         file: File,
         scope: Digest32,
@@ -255,19 +269,36 @@ impl DurableTopologyProposalRegistryV1 {
                 .and_then(|_| file.sync_all())
                 .map_err(|_| DurableTopologyRegistryErrorV1::Indeterminate)?;
         } else {
-            if length < HEADER_SIZE as u64 {
+            if length < HEADER_SIZE as u64
+                && !matches!(policy, RecoveryPolicy::ResumeUnacknowledgedBootstrap)
+            {
                 return Err(DurableTopologyRegistryErrorV1::Corrupt);
             }
-            let mut actual = vec![0_u8; HEADER_SIZE];
+            let header_bytes = usize::try_from(length.min(HEADER_SIZE as u64))
+                .map_err(|_| DurableTopologyRegistryErrorV1::Corrupt)?;
+            let mut actual = vec![0_u8; header_bytes];
             file.read_exact(&mut actual)?;
-            validate_header(&actual)?;
-            if actual != expected_header {
-                return Err(DurableTopologyRegistryErrorV1::ContextMismatch);
+            if actual.len() < HEADER_SIZE {
+                if actual != expected_header[..header_bytes] {
+                    return Err(DurableTopologyRegistryErrorV1::ContextMismatch);
+                }
+                file.write_all(&expected_header[header_bytes..])
+                    .and_then(|_| file.sync_all())
+                    .map_err(|_| DurableTopologyRegistryErrorV1::Indeterminate)?;
+            } else {
+                validate_header(&actual)?;
+                if actual != expected_header {
+                    return Err(DurableTopologyRegistryErrorV1::ContextMismatch);
+                }
             }
         }
 
+        let live_integrity =
+            LiveRegistryIntegrity::new(&file, expected_header, MAX_PAYLOAD_BYTES + 76)?;
         let mut store = Self {
             file,
+            live_integrity,
+            expected_file_bytes: HEADER_SIZE as u64,
             scope,
             writer_fence,
             maximum_records,
@@ -275,7 +306,7 @@ impl DurableTopologyProposalRegistryV1 {
             by_id: BTreeMap::new(),
             receipts: BTreeMap::new(),
             frame_digests: Vec::new(),
-            poisoned: false,
+            poisoned: AtomicBool::new(false),
         };
         let physical_length = store.file.metadata()?.len();
         let mut offset = HEADER_SIZE as u64;
@@ -365,98 +396,22 @@ impl DurableTopologyProposalRegistryV1 {
                 .and_then(|_| store.file.sync_all())
                 .map_err(|_| DurableTopologyRegistryErrorV1::Indeterminate)?;
         }
-        Ok(store)
-    }
-
-    pub fn append(
-        &mut self,
-        expected_predecessor_frame_digest: Digest32,
-        record: GovernedTopologyProposalV1,
-    ) -> Result<DurableTopologyAppendReceiptV1, DurableTopologyRegistryErrorV1> {
-        if self.poisoned {
-            return Err(DurableTopologyRegistryErrorV1::Poisoned);
-        }
-        let verified = admit_governed_topology_v1(
-            record.proposal.clone(),
-            record.handoffs.clone(),
-            record.source_authentication_digest,
-            record.evaluation_authentication_digest,
-        )?;
-        if verified != record {
-            return Err(DurableTopologyRegistryErrorV1::Corrupt);
-        }
-        if let Some(slot) = self.by_id.get(&record.proposal.proposal_id)
-            && let Some(existing) = self.by_slot.get(slot)
-            && existing == &record
-        {
-            let mut receipt = self
-                .receipts
-                .get(&record.proposal.proposal_id)
-                .cloned()
-                .ok_or(DurableTopologyRegistryErrorV1::Corrupt)?;
-            receipt.disposition = AppendDisposition::Unchanged;
-            return Ok(receipt);
-        }
-        let current = self.frame_digests.last().copied().unwrap_or(Digest32::ZERO);
-        if current != expected_predecessor_frame_digest {
-            return Err(DurableTopologyRegistryErrorV1::Conflict);
-        }
-        if self.frame_digests.len() >= self.maximum_records {
-            return Err(DurableTopologyRegistryErrorV1::Capacity);
-        }
-
-        let mut candidate_slots = self.by_slot.clone();
-        let mut candidate_ids = self.by_id.clone();
-        insert_maps(
-            &mut candidate_slots,
-            &mut candidate_ids,
-            record.clone(),
-            self.maximum_records,
-        )?;
-
-        let sequence = self.frame_digests.len() as u64 + 1;
-        let (frame, frame_digest) =
-            encode_frame(sequence, expected_predecessor_frame_digest, &record)?;
-        let offset = self.file.metadata()?.len();
-        let next = offset
-            .checked_add(4 + frame.len() as u64)
-            .ok_or(DurableTopologyRegistryErrorV1::Capacity)?;
-        if next > MAX_FILE_BYTES {
-            return Err(DurableTopologyRegistryErrorV1::Capacity);
-        }
-
-        self.poisoned = true;
-        self.file.seek(SeekFrom::End(0))?;
-        self.file
-            .write_all(&(frame.len() as u32).to_be_bytes())
-            .and_then(|_| self.file.write_all(&frame))
-            .and_then(|_| self.file.sync_data())
+        // A complete recovered suffix may have reached the page cache before
+        // its previous writer failed to sync. Stabilize it before exposing
+        // receipts that a host can acknowledge without another append.
+        store
+            .file
+            .sync_data()
             .map_err(|_| DurableTopologyRegistryErrorV1::Indeterminate)?;
-        let receipt = DurableTopologyAppendReceiptV1 {
-            sequence,
-            proposal_id: record.proposal.proposal_id.clone(),
-            proposal_digest: record.proposal.proposal_digest,
-            admission_digest: record.admission_digest,
-            frame_digest,
-            predecessor_frame_digest: expected_predecessor_frame_digest,
-            disposition: AppendDisposition::Inserted,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        self.by_slot = candidate_slots;
-        self.by_id = candidate_ids;
-        self.receipts
-            .insert(receipt.proposal_id.clone(), receipt.clone());
-        self.frame_digests.push(frame_digest);
-        self.poisoned = false;
-        Ok(receipt)
+        store.expected_file_bytes = offset;
+        store.ensure_live_integrity()?;
+        Ok(store)
     }
 
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableTopologyRegistryAnchorV1>, DurableTopologyRegistryErrorV1> {
-        if self.poisoned {
-            return Err(DurableTopologyRegistryErrorV1::Poisoned);
-        }
+        self.ensure_live_integrity()?;
         Ok(self
             .frame_digests
             .last()
@@ -468,11 +423,8 @@ impl DurableTopologyProposalRegistryV1 {
     }
 
     pub fn record_count(&self) -> Result<usize, DurableTopologyRegistryErrorV1> {
-        if self.poisoned {
-            Err(DurableTopologyRegistryErrorV1::Poisoned)
-        } else {
-            Ok(self.by_slot.len())
-        }
+        self.ensure_live_integrity()?;
+        Ok(self.by_slot.len())
     }
 
     pub(crate) fn canary_binding(
@@ -482,9 +434,7 @@ impl DurableTopologyProposalRegistryV1 {
         Option<(&GovernedTopologyProposalV1, &DurableTopologyAppendReceiptV1)>,
         DurableTopologyRegistryErrorV1,
     > {
-        if self.poisoned {
-            return Err(DurableTopologyRegistryErrorV1::Poisoned);
-        }
+        self.ensure_live_integrity()?;
         let Some(slot) = self.by_id.get(proposal_id) else {
             return Ok(None);
         };
@@ -510,6 +460,34 @@ impl DurableTopologyProposalRegistryV1 {
             self.maximum_records,
         )
     }
+
+    fn ensure_live_integrity(&self) -> Result<(), DurableTopologyRegistryErrorV1> {
+        if self.poisoned.load(Ordering::Acquire) {
+            return Err(DurableTopologyRegistryErrorV1::Poisoned);
+        }
+        self.verify_live_file()?;
+        if self.poisoned.load(Ordering::Acquire) {
+            return Err(DurableTopologyRegistryErrorV1::Poisoned);
+        }
+        Ok(())
+    }
+
+    fn verify_live_file(&self) -> Result<(), DurableTopologyRegistryErrorV1> {
+        self.live_integrity
+            .verify(&self.frame_digests, self.expected_file_bytes)
+            .map_err(|error| {
+                self.poisoned.store(true, Ordering::Release);
+                match error {
+                    LiveRegistryIntegrityError::Corrupt => DurableTopologyRegistryErrorV1::Corrupt,
+                    LiveRegistryIntegrityError::Poisoned => {
+                        DurableTopologyRegistryErrorV1::Poisoned
+                    }
+                    LiveRegistryIntegrityError::Io(kind) => {
+                        DurableTopologyRegistryErrorV1::Io(kind)
+                    }
+                }
+            })
+    }
 }
 
 fn insert_maps(
@@ -518,12 +496,31 @@ fn insert_maps(
     record: GovernedTopologyProposalV1,
     maximum_records: usize,
 ) -> Result<AppendDisposition, DurableTopologyRegistryErrorV1> {
+    let disposition = preflight_maps(by_slot, by_id, &record, maximum_records)?;
+    if disposition == AppendDisposition::Unchanged {
+        return Ok(disposition);
+    }
+    let slot = TopologySlotV1 {
+        selected_artifact_digest: record.proposal.selected_artifact_digest,
+        window_id: record.proposal.window.window_id.clone(),
+    };
+    by_id.insert(record.proposal.proposal_id.clone(), slot.clone());
+    by_slot.insert(slot, record);
+    Ok(AppendDisposition::Inserted)
+}
+
+fn preflight_maps(
+    by_slot: &BTreeMap<TopologySlotV1, GovernedTopologyProposalV1>,
+    by_id: &BTreeMap<StableId, TopologySlotV1>,
+    record: &GovernedTopologyProposalV1,
+    maximum_records: usize,
+) -> Result<AppendDisposition, DurableTopologyRegistryErrorV1> {
     let slot = TopologySlotV1 {
         selected_artifact_digest: record.proposal.selected_artifact_digest,
         window_id: record.proposal.window.window_id.clone(),
     };
     if let Some(existing) = by_slot.get(&slot) {
-        if existing == &record {
+        if existing == record {
             return Ok(AppendDisposition::Unchanged);
         }
         return Err(DurableTopologyRegistryErrorV1::Conflict);
@@ -531,8 +528,6 @@ fn insert_maps(
     if by_id.contains_key(&record.proposal.proposal_id) || by_slot.len() >= maximum_records {
         return Err(DurableTopologyRegistryErrorV1::Conflict);
     }
-    by_id.insert(record.proposal.proposal_id.clone(), slot.clone());
-    by_slot.insert(slot, record);
     Ok(AppendDisposition::Inserted)
 }
 
@@ -945,6 +940,13 @@ impl<'a> Reader<'a> {
     }
 }
 
+#[path = "topology_registry_append.rs"]
+mod append;
+
+#[cfg(test)]
+#[path = "topology_header_recovery_tests.rs"]
+mod header_recovery_tests;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1005,6 +1007,10 @@ mod tests {
     }
 
     fn governed(label: &str) -> GovernedTopologyProposalV1 {
+        governed_with_proposal_id(label, id(&format!("proposal:{label}")))
+    }
+
+    fn governed_with_proposal_id(label: &str, proposal_id: StableId) -> GovernedTopologyProposalV1 {
         let module_id = id(&format!("module:{label}"));
         let migration = digest(&format!("migration:{label}"));
         let rollback = digest(&format!("rollback:{label}"));
@@ -1022,7 +1028,7 @@ mod tests {
         .expect("handoff");
         let artifact = digest(&format!("artifact:{label}"));
         let proposal = propose_topology_v2(TopologyProposalRequestV2 {
-            proposal_id: id(&format!("proposal:{label}")),
+            proposal_id,
             proposer_id: id("generator:topology"),
             evaluator_id: id("evaluator:topology"),
             selected_artifact_digest: artifact,
@@ -1132,10 +1138,10 @@ mod tests {
                     .expect("bootstrap");
             let first_receipt = store.append(Digest32::ZERO, first.clone()).expect("first");
             let second_receipt = store
-                .append(first_receipt.frame_digest, second.clone())
+                .append(first_receipt.frame_digest, second)
                 .expect("second");
             let replay = store
-                .append(second_receipt.frame_digest, first.clone())
+                .append(second_receipt.frame_digest, first)
                 .expect("replay");
             assert_eq!(replay.disposition, AppendDisposition::Unchanged);
             assert_eq!(replay.sequence, first_receipt.sequence);
@@ -1149,5 +1155,72 @@ mod tests {
             DurableTopologyProposalRegistryV1::reopen_anchored(file.open(), scope, 21, 8, anchor)
                 .expect("reopen");
         assert_eq!(reopened.record_count(), Ok(2));
+    }
+
+    #[test]
+    fn multiple_records_preserve_all_bytes_on_retries_conflicts_and_capacity() {
+        let file = TestFile::new();
+        let mut store = DurableTopologyProposalRegistryV1::bootstrap_empty(
+            file.create(),
+            digest("scope"),
+            17,
+            3,
+        )
+        .expect("registry");
+        let first = governed("first");
+        let first_receipt = store.append(Digest32::ZERO, first.clone()).expect("first");
+        let second_receipt = store
+            .append(first_receipt.frame_digest, governed("second"))
+            .expect("second");
+        let before = std::fs::read(&file.0).expect("history");
+        let mut observed = first_receipt;
+        observed.disposition = AppendDisposition::Unchanged;
+        assert_eq!(
+            store.append(second_receipt.frame_digest, first.clone()),
+            Ok(observed)
+        );
+        let mut oversized = governed("third");
+        oversized.handoffs = vec![oversized.handoffs[0].clone(); 32];
+        assert!(matches!(
+            store.append(second_receipt.frame_digest, oversized),
+            Err(DurableTopologyRegistryErrorV1::Governance(
+                TopologyGovernanceErrorV1::UnexpectedHandoff(_)
+            ))
+        ));
+        assert_eq!(
+            std::fs::read(&file.0).expect("unchanged after oversized input"),
+            before
+        );
+        for (predecessor, candidate) in [
+            (Digest32::ZERO, governed("third")),
+            (
+                second_receipt.frame_digest,
+                governed_with_proposal_id("third", first.proposal.proposal_id),
+            ),
+            (
+                second_receipt.frame_digest,
+                governed_with_proposal_id("second", id("proposal:slot-drift")),
+            ),
+        ] {
+            assert_eq!(
+                store.append(predecessor, candidate),
+                Err(DurableTopologyRegistryErrorV1::Conflict)
+            );
+            assert_eq!(std::fs::read(&file.0).expect("unchanged history"), before);
+            assert_eq!(store.record_count(), Ok(2));
+        }
+        let third_receipt = store
+            .append(second_receipt.frame_digest, governed("third"))
+            .expect("third");
+        let full = std::fs::read(&file.0).expect("full history");
+        assert_eq!(
+            store.append(third_receipt.frame_digest, governed("fourth")),
+            Err(DurableTopologyRegistryErrorV1::Capacity)
+        );
+        assert_eq!(
+            std::fs::read(&file.0).expect("unchanged full history"),
+            full
+        );
+        assert_eq!(store.record_count(), Ok(3));
     }
 }

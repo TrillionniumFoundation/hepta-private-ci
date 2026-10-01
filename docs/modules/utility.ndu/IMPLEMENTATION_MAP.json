@@ -540,8 +540,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -686,6 +686,16 @@
     {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
+    }
+  ],
+  "priorNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+        "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+      },
+      "reason": "Retained historical navigation only: this pre-merge branch commit is not an ancestor of the audited main candidate; it does not qualify current source or execution. Current navigation is explicitly rebound below.",
+      "reviewRecord": "docs/modules/learning.plasticity/ADVERSARIAL_AUDIT_20260930.md"
     }
   ]
 }

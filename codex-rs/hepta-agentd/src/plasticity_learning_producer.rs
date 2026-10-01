@@ -6,6 +6,8 @@
 //! re-resolves current owner frontiers, revalidates independent
 //! Generator/Observer/Evaluator evidence and withholds success until the
 //! rollback-domain anchor commit succeeds.
+//! Submission time is compatibility metadata only. Evidence validity is checked
+//! against the daemon's Unix-millisecond clock when the owner processes it.
 
 use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
