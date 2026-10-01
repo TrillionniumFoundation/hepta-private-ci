@@ -41,7 +41,7 @@
           "symbol": "canonical_generation_from_projection"
         }
       ],
-      "sourceBlob": "092926c948ef22ff00131a25707bcee1dc0dd591"
+      "sourceBlob": "788b87678166952cba8edc9467a78e16ca32ab7d"
     },
     {
       "operation": "apply_incremental_delta",
@@ -57,7 +57,7 @@
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "092926c948ef22ff00131a25707bcee1dc0dd591"
+      "sourceBlob": "788b87678166952cba8edc9467a78e16ca32ab7d"
     },
     {
       "operation": "publish_generation",
@@ -91,7 +91,7 @@
           "symbol": "refresh_scope_projection_tx"
         }
       ],
-      "sourceBlob": "092926c948ef22ff00131a25707bcee1dc0dd591"
+      "sourceBlob": "788b87678166952cba8edc9467a78e16ca32ab7d"
     },
     {
       "operation": "query_relations",
@@ -128,7 +128,7 @@
           "symbol": "optimize_with_factor_graph"
         }
       ],
-      "sourceBlob": "092926c948ef22ff00131a25707bcee1dc0dd591"
+      "sourceBlob": "788b87678166952cba8edc9467a78e16ca32ab7d"
     },
     {
       "operation": "build_prompt_factor_projection_v1",
@@ -161,9 +161,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Current exact-head and deterministic synthetic-merge qualification must execute nonempty kernel/prompt/cognitive/crash/history/Agentd test sets. Local Rust compilation was blocked by shared filesystem exhaustion; no successful Rust execution receipt is claimed.",
-    "The durable writer retains complete bounded generation rebuild per logical mutation. Canonical graph capacity, high-support growth, RSS and target-host latency require measured acceptance budgets before choosing a durable incremental writer.",
-    "The prompt.registry source/projection/optimizer chain is library-composed. optimize_with_factor_graph has test callers but no named Agentd product caller; prompt.registry durability and governed runtime integration remain separate owner gates."
+    "Current source-head and deterministic synthetic-merge deep qualification remain required. Local native library and ignored-workload results are recorded separately in the third-pass audit; navigation metadata grants no execution claim.",
+    "Complete generation rebuild remains the selected durable writer. The 256-write support-growth baseline is distinct from canonical large-graph capacity, retention/startup budgets and approved target-host measurements; local shape/hash reuse does not establish a measured latency improvement.",
+    "The durable prompt.registry source/projection/optimizer chain is library-composed. The sealed KG source/projection/selection route is not composed into the existing Agentd compiler/runtime host; no additional dispatch authority follows from the library APIs."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -212,6 +212,12 @@
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_candidate_source_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_portfolio.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_source.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_source_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_temporal.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs",
     "codex-rs/hepta-prompt-optimizer/src/graph.rs",
     "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
     "codex-rs/hepta-prompt-optimizer/src/lib.rs",
@@ -221,6 +227,8 @@
     "qualification/knowledge-graph/AUDIT_20261001.md",
     "qualification/knowledge-graph/QUERY_CLOSURE_20260927.md",
     "qualification/knowledge-graph/TARGET_HOST.md",
+    "qualification/knowledge-graph/evidence/native-round3.json",
+    "qualification/knowledge-graph/evidence/ordinary-ci-round3.json",
     "qualification/module-execution-dossiers/detail/knowledge.graph.md",
     "scripts/hepta-knowledge-graph-budget-check.py",
     "scripts/hepta-knowledge-graph-target-measure.py",
@@ -228,8 +236,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "9a49a17de1a8754442ed8b172759b10948aa2188",
-    "tree": "0494a19b2422ed85573c0e9b29b53acae1faf556"
+    "commit": "bb128794be863d30335f07f57558e19f1584e752",
+    "tree": "2cb7c6f519913f944c148f11fa7a37b83bbbbd5f"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -275,6 +283,12 @@
     "codex-rs/hepta-memory/src/lib.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
     "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_candidate_source_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_portfolio.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_source.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_source_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_temporal.rs",
+    "codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs",
     "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
     "codex-rs/hepta-prompt-optimizer/src/graph.rs",
     "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
@@ -290,6 +304,8 @@
     "qualification/knowledge-graph/QUERY_CLOSURE_20260927.md",
     "qualification/knowledge-graph/SECOND_PASS_AUDIT_20261001.md",
     "qualification/knowledge-graph/TARGET_HOST.md",
+    "qualification/knowledge-graph/evidence/native-round3.json",
+    "qualification/knowledge-graph/evidence/ordinary-ci-round3.json",
     "qualification/module-execution-dossiers/detail/knowledge.graph.md",
     "scripts/hepta-knowledge-graph-budget-check.py",
     "scripts/hepta-knowledge-graph-target-measure.py",
@@ -310,7 +326,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
-      "object": "f242264c27ed17ca05da54cd0f9a299415677470"
+      "object": "717ca63ad37f280dc7baaf3e04ee31857889e3af"
     },
     {
       "path": ".github/workflows/hepta-knowledge-graph-target-host.yml",
@@ -318,11 +334,11 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "0ae6e40e6cd51017bb51089cee8de6e4dcbe8159"
+      "object": "db3332ed81c9e47a6dc1f337222a511222e7bd5d"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+      "object": "0dc2d028a50d0214631a19a0255cd03182711eb7"
     },
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
@@ -338,7 +354,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/Cargo.toml",
-      "object": "5d13cd8f355bab3ecb95f8c068517de200dd143f"
+      "object": "0e2088225f2d0bf26e1599f15bd96c5e79382dab"
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
@@ -370,11 +386,11 @@
     },
     {
       "path": "codex-rs/hepta-kg",
-      "object": "a9ba6bd93e28ce683000c358d7492a0b4cb607c0"
+      "object": "d166fa3e41d7deef3e928a5675c2a7f409cba02f"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation.rs",
-      "object": "092926c948ef22ff00131a25707bcee1dc0dd591"
+      "object": "788b87678166952cba8edc9467a78e16ca32ab7d"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation_budget.rs",
@@ -398,11 +414,11 @@
     },
     {
       "path": "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
-      "object": "620039a60dfee11bed96ad4318e9ecb09dce9528"
+      "object": "6880ee41c22093a1c0c581b5eaa0ac5cb6858ad9"
     },
     {
       "path": "codex-rs/hepta-kg/src/query_closure_tests.rs",
-      "object": "6d9ca1d11eaa9e4ace1fd20835dbdfa88e352d80"
+      "object": "05242eb1672b0e402036376fe1a81d4d9be44d05"
     },
     {
       "path": "codex-rs/hepta-memory/Cargo.toml",
@@ -426,7 +442,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
-      "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
+      "object": "4504ee3dea914b558a262df110342ac76bd88f53"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
@@ -434,7 +450,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-      "object": "1373eb59c7af146a78ce65aca19f65b3c970a501"
+      "object": "ac1d6876ee530f586a33a53739a95decf270201e"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
@@ -442,11 +458,11 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "a3e06697c9e6213f1bd51fa5b221ba86312f41d2"
+      "object": "09447ebfa09aa9887838f8b50245fd5be347baec"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "f1ada3d6aa7b2df59309c99ea039e70aff57b642"
+      "object": "cf29e7d12b6ae250eee93dd84d456cc80b31ed7d"
     },
     {
       "path": "codex-rs/hepta-memory/src/lib.rs",
@@ -457,12 +473,36 @@
       "object": "f463e790c182452434287c7ccba68dd78a7c69ca"
     },
     {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_candidate_source_tests.rs",
+      "object": "95b2f36ab3ac69fa39141d8538bf8436e8bc0890"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_portfolio.rs",
+      "object": "eae03498104fd80f03465a2dd87a3c0b908aaa10"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_source.rs",
+      "object": "9331e970e23ecdc927cb585fdea10f88fc40819e"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_source_tests.rs",
+      "object": "9daccc22ce2bc48a6e019db22f8adcaa1389c972"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_temporal.rs",
+      "object": "376258e02209ec680b21e14c63b05db24c489c0f"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs",
+      "object": "81ed5374c072923d4ce7c9696a1099da4f8871c9"
+    },
+    {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
       "object": "ca35d1c0ce579e652363f467dc8b96b3b568f883"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
-      "object": "a02318892f1ca160bd0edda86fd185b135bf5b8d"
+      "object": "c90a4942773a8afa9109820acb1bf739b8eb37eb"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
@@ -482,7 +522,7 @@
     },
     {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "387d9834a77a3531b43db5f048661aa153265bf9"
+      "object": "482fd484f1f07dd425611aa46679b26fb9bbd704"
     },
     {
       "path": "qualification/knowledge-graph/AUDIT_20261001.md",
@@ -497,8 +537,16 @@
       "object": "1781ced0ad0b347fa7f76684a1eaf5b1bf4a2e32"
     },
     {
+      "path": "qualification/knowledge-graph/evidence/native-round3.json",
+      "object": "be74ea300edbae46dd8b9976b1dd1c46d4f007ab"
+    },
+    {
+      "path": "qualification/knowledge-graph/evidence/ordinary-ci-round3.json",
+      "object": "fb01527ce916a76439349cfed7172dd8f3646b46"
+    },
+    {
       "path": "qualification/module-execution-dossiers/detail/knowledge.graph.md",
-      "object": "e3870d64c951510e535af9081d07284fd8a9c0eb"
+      "object": "94c14a615d0cc140bb1255120abaac1eec37efea"
     },
     {
       "path": "scripts/hepta-knowledge-graph-budget-check.py",
