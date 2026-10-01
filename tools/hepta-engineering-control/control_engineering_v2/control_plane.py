@@ -83,8 +83,27 @@ def _schema_sql_path() -> Path:
 def _normalize_schema_sql(value: str | None) -> str | None:
     if value is None:
         return None
-    result = re.sub(r"\bIF\s+NOT\s+EXISTS\b", "", value, flags=re.IGNORECASE)
-    return " ".join(result.split()).lower()
+    # SQL keywords ignore case and token whitespace, while quoted literals
+    # and identifiers retain their bytes. Lowercasing an entire declaration
+    # would hide a changed CHECK constraint such as 'active' -> 'ACTIVE'.
+    tokens = re.findall(
+        r"""'(?:[^']|'')*'|"(?:[^"]|"")*"|`(?:[^`]|``)*`|\[[^\]]*\]|--[^\n]*|/\*[\s\S]*?\*/|[\w$]+|[^\s]""",
+        value,
+    )
+    normalized = [
+        token if token[0] in "'\"`[" else token.lower()
+        for token in tokens
+        if not token.startswith(("--", "/*"))
+    ]
+    result: list[str] = []
+    index = 0
+    while index < len(normalized):
+        if normalized[index:index + 3] == ["if", "not", "exists"]:
+            index += 3
+        else:
+            result.append(normalized[index])
+            index += 1
+    return " ".join(result)
 
 
 def _schema_manifest(connection: sqlite3.Connection) -> dict[tuple[str, str], tuple[str, str | None]]:
@@ -328,6 +347,9 @@ class EngineeringStore:
         self.database = Path(database)
         self.connection = sqlite3.connect(str(self.database), timeout=30.0)
         self.connection.row_factory = sqlite3.Row
+        self._owner_transaction_depth = 0
+        self._owner_transaction_aborted = False
+        self._owner_transaction_unrecoverable = False
         try:
             self.connection.execute("PRAGMA foreign_keys=ON")
             version, metadata_version, tables = self._schema_version_state()
@@ -414,22 +436,32 @@ class EngineeringStore:
         return self
 
     def __exit__(self, exc_type, exc, traceback) -> None:
-        if exc_type is None:
-            self.connection.commit()
-        else:
-            self.connection.rollback()
-        self.connection.close()
+        try:
+            if not self._owner_transaction_unrecoverable:
+                if exc_type is None:
+                    self.connection.commit()
+                else:
+                    self.connection.rollback()
+        finally:
+            self.connection.close()
 
     def close(self) -> None:
         """Durably flush successful owner writes before releasing the database."""
         try:
-            self.connection.commit()
+            if not self._owner_transaction_unrecoverable:
+                self.connection.commit()
         finally:
             self.connection.close()
 
     @contextmanager
     def _transaction(self):
         """Own one immediate transaction across state, frontier and audit writes."""
+        if self._owner_transaction_unrecoverable:
+            _error("owner_transaction_unrecoverable")
+        if self._owner_transaction_depth:
+            if self._owner_transaction_aborted or not self.connection.in_transaction:
+                self._owner_transaction_aborted = True
+                _error("owner_transaction_aborted")
         outermost = not self.connection.in_transaction
         if outermost:
             self.connection.execute("BEGIN IMMEDIATE")
@@ -440,19 +472,50 @@ class EngineeringStore:
             self._savepoint_sequence = getattr(self, "_savepoint_sequence", 0) + 1
             savepoint = f"engineering_owner_{self._savepoint_sequence}"
             self.connection.execute(f"SAVEPOINT {savepoint}")
+        self._owner_transaction_depth += 1
         try:
             yield
+            if self._owner_transaction_unrecoverable:
+                _error("owner_transaction_unrecoverable")
+            if self._owner_transaction_aborted or not self.connection.in_transaction:
+                self._owner_transaction_aborted = True
+                _error("owner_transaction_aborted")
             if outermost:
                 self.connection.commit()
             else:
                 self.connection.execute(f"RELEASE {savepoint}")
-        except BaseException:
-            if outermost:
-                self.connection.rollback()
+        except BaseException as error:
+            # SQLITE_FULL/IOERR can roll back the entire SQLite transaction,
+            # including all savepoints. Preserve that original failure and
+            # poison the still-active owner scope instead of opening a new
+            # independently committed transaction after a caller catches it.
+            if self._owner_transaction_unrecoverable:
+                pass
+            elif not self.connection.in_transaction:
+                self._owner_transaction_aborted = True
             else:
-                self.connection.execute(f"ROLLBACK TO {savepoint}")
-                self.connection.execute(f"RELEASE {savepoint}")
+                try:
+                    if outermost or self._owner_transaction_aborted:
+                        self.connection.rollback()
+                    else:
+                        self.connection.execute(f"ROLLBACK TO {savepoint}")
+                        self.connection.execute(f"RELEASE {savepoint}")
+                except sqlite3.DatabaseError as cleanup_error:
+                    self._owner_transaction_aborted = True
+                    self._owner_transaction_unrecoverable = True
+                    error.add_note(f"owner transaction rollback failed: {cleanup_error}")
+                    # No subsequent call or close may commit partially rolled
+                    # back state. Dispose this connection; a fresh owner must
+                    # reopen and validate its durable predecessor.
+                    try:
+                        self.connection.close()
+                    except sqlite3.DatabaseError as close_error:
+                        error.add_note(f"owner connection close failed: {close_error}")
             raise
+        finally:
+            self._owner_transaction_depth -= 1
+            if not self._owner_transaction_depth and not self._owner_transaction_unrecoverable:
+                self._owner_transaction_aborted = False
 
     def _create_schema(self, source_version: int) -> None:
         schema = _schema_sql_path().read_text(encoding="utf-8")
@@ -697,11 +760,11 @@ class EngineeringStore:
         now_ns: int | None = None,
     ) -> WorkEnvelope:
         value = _validate_envelope(envelope)
-        now = self._now(now_ns)
-        if value.expires_unix_ns <= now:
-            _error("expired_envelope")
         digest = semantic_digest(asdict(value))
         with self._transaction():
+            now = self._now(now_ns)
+            if value.expires_unix_ns <= now:
+                _error("expired_envelope")
             existing = self.connection.execute(
                 "SELECT semantic_digest FROM work_envelopes WHERE envelope_id=?",
                 (value.envelope_id,),
@@ -777,13 +840,15 @@ class EngineeringStore:
     ) -> LeaseReceipt:
         checked_id(lease_id, "lease_id")
         checked_id(holder, "holder")
-        now = self._now(now_ns)
         if type(authority_epoch) is not int or authority_epoch < 1:
             _error("invalid_authority_epoch")
-        if type(expires_unix_ns) is not int or expires_unix_ns <= now:
+        if type(expires_unix_ns) is not int:
             _error("invalid_lease_expiry")
         normalized = canonical_paths(paths)
         with self._transaction():
+            now = self._now(now_ns)
+            if expires_unix_ns <= now:
+                _error("invalid_lease_expiry")
             envelope = self._get_envelope(envelope_id, now)
             if expires_unix_ns > int(envelope["expires_unix_ns"]):
                 _error("lease_expiry_outside_envelope")
@@ -866,10 +931,10 @@ class EngineeringStore:
         now_ns: int | None = None,
     ) -> LeaseReceipt:
         checked_id(lease_id, "lease_id")
-        now = self._now(now_ns)
         if disposition not in {"renew", "release", "revoke"}:
             _error("invalid_lease_transition")
         with self._transaction():
+            now = self._now(now_ns)
             self._expire_leases(now)
             row = self.connection.execute(
                 "SELECT * FROM path_leases WHERE lease_id=?",
@@ -963,7 +1028,6 @@ class EngineeringStore:
         now_ns: int | None = None,
     ) -> ScheduleReceipt:
         checked_id(generation_id, "generation_id")
-        now = self._now(now_ns)
         raw_packages = bounded_tuple(
             packages,
             MAX_PACKAGES,
@@ -983,6 +1047,7 @@ class EngineeringStore:
         )
         self._verify_package_graph(package_values, completed_set)
         with self._transaction():
+            now = self._now(now_ns)
             envelope = self._get_envelope(envelope_id, now)
             allowed = tuple(
                 json.loads(bytes(envelope["allowed_paths_json"]).decode("utf-8"))

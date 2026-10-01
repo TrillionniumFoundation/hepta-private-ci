@@ -63,9 +63,6 @@ def renew_worker_registration(
         receipt, WorkerRegistrationRenewalReceipt
     ):
         raise EngineeringError("worker_registration_renewal_required")
-    now = time.time_ns() if now_ns is None else now_ns
-    if type(now) is not int or not 0 <= now <= 2**63 - 1:
-        raise EngineeringError("invalid_time")
     checked_id(receipt.worker_id, "worker_id")
     checked_id(receipt.worker_signing_identity, "worker_signing_identity")
     checked_id(receipt.signing_identity, "signing_identity")
@@ -108,6 +105,9 @@ def renew_worker_registration(
     digest = semantic_digest(profile)
     receipt_digest = semantic_digest(asdict(receipt))
     with store._transaction():
+        now = time.time_ns() if now_ns is None else now_ns
+        if type(now) is not int or not 0 <= now <= 2**63 - 1:
+            raise EngineeringError("invalid_time")
         current = store.connection.execute(
             "SELECT * FROM worker_registrations WHERE worker_id=?", (receipt.worker_id,)
         ).fetchone()
@@ -159,35 +159,25 @@ def renew_worker_registration(
         )
         if used and changed_binding:
             raise EngineeringError("worker_registration_rotation_with_active_claims")
-        # A savepoint also protects callers that catch a nested operation's
-        # failure and continue their enclosing owner transaction.
-        store.connection.execute("SAVEPOINT engineering_worker_renewal")
-        try:
-            updated = store.connection.execute(
-                "UPDATE worker_registrations SET profile_digest=?,worker_signing_identity=?,"
-                "skills_json=?,allowed_paths_json=?,capacity_units=?,issuer=?,"
-                "authority_signing_identity=?,observed_unix_ns=?,expires_unix_ns=?,"
-                "revision=revision+1,recorded_unix_ns=? WHERE worker_id=? AND revision=?",
-                (digest, receipt.worker_signing_identity, canonical_json(skills),
-                 canonical_json(paths), receipt.capacity_units, receipt.issuer,
-                 receipt.signing_identity, receipt.observed_unix_ns,
-                 receipt.expires_unix_ns, now, receipt.worker_id, receipt.expected_revision),
-            )
-            if updated.rowcount != 1:
-                raise EngineeringError("stale_worker_revision")
-            store._append_audit("worker_registration_renewed", {
-                "workerId": receipt.worker_id,
-                "expectedRevision": receipt.expected_revision,
-                "resultingRevision": receipt.expected_revision + 1,
-                "predecessorProfileDigest": receipt.predecessor_profile_digest,
-                "profileDigest": digest,
-                "receiptDigest": receipt_digest,
-                "expiresUnixNs": receipt.expires_unix_ns,
-            }, now)
-        except BaseException:
-            store.connection.execute("ROLLBACK TO engineering_worker_renewal")
-            store.connection.execute("RELEASE engineering_worker_renewal")
-            raise
-        else:
-            store.connection.execute("RELEASE engineering_worker_renewal")
+        updated = store.connection.execute(
+            "UPDATE worker_registrations SET profile_digest=?,worker_signing_identity=?,"
+            "skills_json=?,allowed_paths_json=?,capacity_units=?,issuer=?,"
+            "authority_signing_identity=?,observed_unix_ns=?,expires_unix_ns=?,"
+            "revision=revision+1,recorded_unix_ns=? WHERE worker_id=? AND revision=?",
+            (digest, receipt.worker_signing_identity, canonical_json(skills),
+             canonical_json(paths), receipt.capacity_units, receipt.issuer,
+             receipt.signing_identity, receipt.observed_unix_ns,
+             receipt.expires_unix_ns, now, receipt.worker_id, receipt.expected_revision),
+        )
+        if updated.rowcount != 1:
+            raise EngineeringError("stale_worker_revision")
+        store._append_audit("worker_registration_renewed", {
+            "workerId": receipt.worker_id,
+            "expectedRevision": receipt.expected_revision,
+            "resultingRevision": receipt.expected_revision + 1,
+            "predecessorProfileDigest": receipt.predecessor_profile_digest,
+            "profileDigest": digest,
+            "receiptDigest": receipt_digest,
+            "expiresUnixNs": receipt.expires_unix_ns,
+        }, now)
     return digest
