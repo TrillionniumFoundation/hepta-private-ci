@@ -45,6 +45,25 @@ that verifier from the remote evaluation request. The additional final-use and
 capacity rules are normative in
 [`RECOVERY_TRUST_CAPACITY_CONTRACT.md`](RECOVERY_TRUST_CAPACITY_CONTRACT.md).
 
+The mutable single-outcome `ProductQualificationReceiptV1` is integrity-bound
+under `hepta.intelligence-eval.product-qualification.v4`, including the complete
+signed decision: evaluation/candidate/baseline IDs, disposition, failed-metric
+length and order, evidence/trust/authentication digests and authority. The outer
+receipt-seal domain remains v1. Domain-v3 in-memory receipts require renewed
+verification of the real evaluation/archive evidence and a fresh receipt;
+downstream candidate/use signatures over the old evidence digest must be
+reissued. Archive, journal and publication wire formats remain unchanged. This
+does not rewrite published history or authorize an additional effect.
+
+Selected-host final publication reloads and binds the complete archive bytes
+and original `holdout_record_digest` before re-verifying current V2/V3 evidence
+and the exact decision. Initial qualification uses one privately prepared byte
+sequence for archive persistence and the final-use guard. Cold recovery derives
+the expected byte and holdout digests from validated anchored lifecycle history;
+replacement disk contents cannot redefine that identity. A changed archive,
+including only its outer holdout binding, rejects before the writer. An attempt
+already at `PublicationPending` remains unresolved for read reconciliation.
+
 1. Register scoped Ed25519 public keys, role assignments, controlling authorities,
    credential lifetimes, objective and authority epoch in host-owned trust state.
 2. Persist the frozen evaluation plan before accessing its holdout. The generator

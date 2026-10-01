@@ -37,6 +37,17 @@ publication owner. Both distribution expiry and signature expiry can independent
 reject this boundary. Rejection creates no publication and retains Pending for
 read-only reconciliation; it is not permission to retry an unknown write.
 
+Before decoding or trusting the reloaded archive, the guard compares the digest
+of all archived bytes with the originally prepared canonical byte digest. It
+also verifies the original outer `holdout_record_digest`; a valid signed inner
+payload cannot excuse a substituted outer binding. The same private prepared
+bytes supply the initial durable `QualificationArtifactsPersisted` event and
+guard identity. Cold recovery derives the expected byte digest from that
+phase's `terminal_digest` and the holdout digest from `ComparisonSealed` in
+validated anchored history. It never adopts an expected identity from the
+reloaded disk archive. A mismatch leaves Pending unresolved and does not submit
+to the publication owner.
+
 Agentd consumers also check activation currentness independently of subject
 signature validity. The verifier embedded in an activation does not itself
 retain the root distribution's expiry.

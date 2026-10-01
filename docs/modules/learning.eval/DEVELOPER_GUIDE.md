@@ -77,6 +77,15 @@ The supported public namespace is `codex_hepta_intelligence_eval::product`. The 
 `ProductEvaluationRunnerV1`, direct decision primitives, and in-memory attempt journal are
 not part of that canonical product facade.
 
+The single-outcome receipt evidence domain is
+`hepta.intelligence-eval.product-qualification.v4`. Integrity validation binds
+every signed-decision field, including disposition, identities and the ordered
+failed-metric list. Its outer receipt-seal domain remains v1. A domain-v3
+in-memory receipt must be regenerated after verifying the original evaluation
+or typed archive; candidate/use signatures over its old evidence digest must
+also be reissued. Archive, journal and publication wire formats are unchanged.
+Regeneration does not permit another publication of an existing effect.
+
 ## 4. State machine
 
 A new attempt owns one plan digest. Reusing that plan under another attempt conflicts.
@@ -134,6 +143,14 @@ Crash handling is fail-closed:
 A real deployment must additionally qualify directory durability, mount options,
 linearizable lock/CAS semantics, power-loss behavior, and failure-domain independence.
 
+Immediately before a selected-host first publication write, the guard reloads
+the entire archive and compares its byte digest and original holdout-record
+digest, then samples current clock/trust and re-verifies the exact decision.
+Cold recovery derives the expected identity from validated anchored attempt
+history, rather than accepting a fresh digest calculated from replacement disk
+contents. An archive or outer holdout substitution after `PublicationPending`
+creates no publication and remains unresolved for read reconciliation.
+
 ## 6. Statistical contract
 
 Plans bind the objective, dataset, folds, estimand, metric roles, support rules, temporal
@@ -141,6 +158,24 @@ windows, cluster assignments, and confidence procedure. Fixed-analysis qualifica
 not import adaptive thresholds after holdout use. Multi-outcome evaluation preserves each
 native measurement channel; renaming a metric cannot substitute for independent measured
 outcomes.
+
+ESS admission uses finite Q32 outward bounds on the original propensity ratios
+and, for sequential OPE, their products at every depth. Nearest/ties-to-even
+weights and receipt ESS are point diagnostics. Admission requires a proven
+lower bound at the frozen floor or exact positive-weight equality proving
+`ESS = n` at a floor no greater than `n`. An upper bound can prove insufficient
+support; a nonuniform unresolved interval returns `NumericalSupportGap`. It must never be
+reported as a proof that true ESS either passes or fails the floor.
+
+At the maximum floor `ESS = n`, identical positive true weights satisfy the
+Cauchy equality check even when their probabilities have different encodings.
+Sequential equality uses fixed 129-limb buffers for `horizon <= 128`, including
+the `2^8192` endpoint; it is an equality proof, not arbitrary exact rational ESS.
+See the [production contract](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md#ess-certification-from-original-propensities)
+for the bound formulas and retained resource caps. Near-floor nonuniform data
+can remain a numerical support gap. A strict boundary regression separates two
+ESS values by approximately `2.4e-20`; it demonstrates threshold correctness,
+not a measurable practical effect or statistical power gain.
 
 Repository tests can establish deterministic estimators, digest binding, fold separation,
 capacity, and recovery behavior. Real future-window provenance, statistical power,
@@ -253,6 +288,9 @@ The following failure cases must remain regression obligations:
 | Observed returns look bounded while an unobserved admissible trajectory has greater weighted return | Confidence envelopes cover the complete plan-level estimator range, including nuisance predictions and numerical error. A sample maximum cannot establish a Hoeffding range. |
 | Subject signatures outlive the root-signed trust distribution | Agentd rejects the expired activation even when the underlying signatures still verify. |
 | Archive or journal work advances time after ingress verification | Selected-host publication rechecks the clock, activation and original signed archive at the actual sink boundary. Expiry preserves unresolved history without publishing. |
+| A public single-outcome decision header is changed without changing its old evidence digest | The v4 receipt integrity check rejects changed disposition, IDs or failed-metric content/order. |
+| Complete archive bytes or only the outer holdout digest are substituted after Pending | Compare the original byte and holdout digests from prepared inputs or validated cold history before any publication. Retain unresolved Pending on rejection. |
+| Rounded weights yield an ESS at the floor while true propensity weights differ | Certify original ratios with outward bounds; exact positive-weight equality can establish `ESS = n`, while unresolved nonuniform data returns a numerical support gap. |
 | A publicly constructible CAS record encodes a noncanonical journal state | The exact state reproduced by the proposed persisted event must equal the entire candidate record before writing. |
 | A valid checkpoint is paired with a different same-length journal prefix | Recovery verifies the original framed prefix digest, event count and byte frontier before restoring reducer state. |
 | Complete post-anchor frames remain readable after an unknown sync result | Recovery synchronizes the locked journal before acknowledging its recovered frontier or advancing the independent anchor. |

@@ -353,7 +353,42 @@ Ledger tables are append-only, keyed by stable IDs and semantic digests. Project
 
 Probability arithmetic and published estimates use fixed-point or reproducible decimal accumulation with deterministic summation order. Denominators below the registered floor fail rather than overflow. Weight caps are objective-class configuration; pilot cap is `20`, while any unclipped maximum above `50` blocks promotion.
 
-Evaluation is streaming `O(n*k)` where `k` is the bounded candidate count; no unbounded episode materialization is required. Pilot limits are candidate count `<=128`, episode events `<=4096`, evaluation batch `<=1,000,000` rows, encoded row `<=256 KiB`, and one confidence computation wall-clock budget declared in the package. Resource use and incomplete/censored counts accompany every estimate.
+The native ESS admission profile certifies original propensity ratios, independently
+of nearest/ties-to-even point estimates. Let `S = 2^32` and let `e,b` be the raw
+evaluation/behavior probability integers. Single-step bounds are
+`L = floor(e*S/b)` and `U = ceil(e*S/b)`, enclosing the true weight in
+`[L/S, U/S]`. Sequential prefixes start at
+`L = U = S` and carry `floor(L*e/b)` and `ceil(U*e/b)` at every depth.
+Nonnegative weights imply
+`(sum L)^2/sum U^2 <= true ESS <= (sum U)^2/sum L^2` where the denominators
+are nonzero. Admission requires the Q32 floor of the lower certificate to meet
+the frozen raw minimum, or exact positive-weight equality proving `ESS = n`
+at a minimum no greater than `n`. A finite upper certificate below the minimum
+proves insufficient support. Nonuniform unresolved bounds return `NumericalSupportGap`.
+Zero upper sum of squares proves no support; a zero lower sum of squares does
+not supply an upper certificate. True ESS cannot exceed the number `n` of
+rows/trajectories, so an upper certificate at least `n` need not be represented.
+This profile uses checked bounded integer arithmetic, rather than `f64` or
+unbounded exact rational ESS; unresolved support cannot be silently accepted or
+reported as a proven ESS breach.
+
+At a frozen floor exactly equal to `n`, positive identical true weights satisfy
+the Cauchy equality condition. Single-step equality uses `u128` cross-products
+of original probabilities. Sequential equality uses two fixed 129-limb `u64`
+buffers for prefix cross-products through `horizon <= 128`; each side has at
+most 256 factors bounded by `2^32`, and the `2^8192` endpoint needs 8,193 bits.
+Different encodings of one ratio remain equal. These buffers prove equality
+only; near-floor nonuniform data can still require a stronger preregistered
+numerical profile. The nearest ESS values in golden vectors remain diagnostics.
+The current sequential caps are 4,096 trajectories and 65,536 total steps.
+
+The single-decision OPE core is streaming `O(n*k)` where `n` is the row count and `k` is the bounded candidate count; no unbounded episode materialization is required. Pilot limits are candidate count `<=128`, episode events `<=4096`, evaluation batch `<=1,000,000` rows, encoded row `<=256 KiB`, and one confidence computation wall-clock budget declared in the package. Resource use and incomplete/censored counts accompany every estimate.
+
+Sequential equality fallback for `n` trajectories of horizon `h <= 128` uses
+`O(n*h^2)` limb operations, bounded by approximately 17 million under the
+65,536-total-step cap. It runs only when support bounds require equality
+resolution. Its two fixed product limb arrays total 2,064 bytes; retained
+original-prefix bound values occupy at most 2 MiB, apart from container metadata.
 
 Confidence intervals use episode/principal clustering when repeated decisions are correlated. Pilot bootstrap uses at least `2,000` counter-based replicates; small-sample exact or conservative intervals replace asymptotic intervals when assumptions fail.
 
