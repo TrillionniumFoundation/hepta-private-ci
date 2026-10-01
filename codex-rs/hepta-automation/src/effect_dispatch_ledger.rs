@@ -130,13 +130,21 @@ impl AutomationStore {
         grant_id: &str,
         grant_nonce_digest: &Sha256Digest,
         record_command_id: &str,
-        started_at_ms: u64,
+        admitted_at: impl FnOnce() -> Result<u64, TaskFlowError> + Send,
         fence: &TaskFlowFence,
         provider_contract_binding: Option<&Sha256Digest>,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
         if fence.owner_agent_id != *self.taskflow_owner_agent_id() {
             return Err(TaskFlowError::StaleFence);
         }
+        // Acquire the writer before sampling the injected logical clock.
+        // A queued SQLite write must not admit using a pre-wait lease time.
+        let mut tx = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let started_at_ms = admitted_at()?;
         let inserted = sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_attempts (
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
@@ -198,8 +206,10 @@ impl AutomationStore {
         .bind(step_id)
         .bind(i64::from(attempt))
         .bind(record_command_id)
-        .execute(self.taskflow_pool())
+        .execute(&mut *tx)
         .await;
+        // Release the reservation before the replay/read paths use the pool.
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
 
         match inserted {
             Ok(result) => {
@@ -832,7 +842,7 @@ mod tests {
                 "grant-1",
                 &nonce,
                 "record-effect",
-                21,
+                || Ok(21),
                 &fence,
                 Some(&provider_contract_binding),
             )
@@ -966,7 +976,7 @@ mod tests {
                 "race-grant",
                 &digest,
                 "race-record",
-                21,
+                || Ok(21),
                 &fence,
                 None,
             )

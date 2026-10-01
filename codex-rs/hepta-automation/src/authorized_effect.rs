@@ -9,6 +9,7 @@
 
 use std::future::Future;
 use std::pin::Pin;
+use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
@@ -560,6 +561,36 @@ where
     }
 }
 
+// Admission refusal is a TaskFlow error, distinct from the driver's own
+// before-contact rejection. Neither branch invokes the provider.
+enum EffectConsumerError {
+    Admission(TaskFlowError),
+    Driver(AuthorizedEffectDriverError),
+}
+
+fn check_effect_consumer_clock(
+    now_ms: u64,
+    started_at: Instant,
+    lease_expires_at_ms: u64,
+) -> Result<(), EffectConsumerError> {
+    let now_ms = effect_now_ms(now_ms, started_at).map_err(EffectConsumerError::Admission)?;
+    if now_ms >= lease_expires_at_ms {
+        return Err(EffectConsumerError::Admission(TaskFlowError::StaleFence));
+    }
+    Ok(())
+}
+
+fn effect_now_ms(now_ms: u64, started_at: Instant) -> Result<u64, TaskFlowError> {
+    let elapsed = u64::try_from(started_at.elapsed().as_millis())
+        .map_err(|_| TaskFlowError::Invalid("effect admission clock overflow".to_string()))?;
+    let refreshed = now_ms
+        .checked_add(elapsed)
+        .ok_or_else(|| TaskFlowError::Invalid("effect admission clock overflow".to_string()))?;
+    i64::try_from(refreshed)
+        .map_err(|_| TaskFlowError::Invalid("effect admission clock overflow".to_string()))?;
+    Ok(refreshed)
+}
+
 fn provider_effect_intent(
     owner_agent_id: &AgentId,
     intent: &AuthorizedEffectIntent,
@@ -824,6 +855,7 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let started_at = Instant::now();
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -883,7 +915,7 @@ impl AutomationStore {
             };
         }
 
-        self.check_effect_admission(intent, fence, command_id, now_ms)
+        self.check_effect_admission(intent, fence, command_id, now_ms, started_at)
             .await?;
         let token = authority
             .claim(signed_grant, expected_binding)
@@ -902,7 +934,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
-                now_ms,
+                || effect_now_ms(now_ms, started_at),
                 fence,
                 /*provider_contract_binding*/ None,
             )
@@ -927,6 +959,12 @@ impl AutomationStore {
             }
         };
 
+        let lease_expires_at_ms = self
+            .check_admitted_effect_before_contact(
+                &durable, intent, fence, command_id, now_ms, started_at,
+            )
+            .await?;
+
         let request = AuthorizedEffectRequest {
             operation_intent: &operation_intent,
             intent,
@@ -934,11 +972,30 @@ impl AutomationStore {
             wire_payload,
             binding: expected_binding,
         };
-        let provider = match authority
-            .with_verified_effect(token, expected_binding, || driver.dispatch(&request))
-        {
+        let provider = match authority.with_verified_effect(token, expected_binding, || {
+            check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
+            driver
+                .dispatch(&request)
+                .map_err(EffectConsumerError::Driver)
+        }) {
             Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok(Err(EffectConsumerError::Admission(error))) => {
+                let proof = no_contact_digest(&durable, "lease_expired_in_authorized_consumer");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        effect_now_ms(now_ms, started_at)?,
+                        None,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(error.into());
+            }
+            Ok(Err(EffectConsumerError::Driver(error))) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -947,7 +1004,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
                         None,
                     )
                     .await?;
@@ -966,7 +1023,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
                         None,
                     )
                     .await?;
@@ -974,6 +1031,7 @@ impl AutomationStore {
                 return Err(AuthorizedEffectError::FinalUse(error));
             }
         };
+        let now_ms = effect_now_ms(now_ms, started_at)?;
         validate_receipt_digest(&provider.receipt_digest)?;
         let durable = self
             .record_effect_dispatch_observation(
@@ -1053,6 +1111,7 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let started_at = Instant::now();
         let provider_intent =
             provider_effect_intent(self.taskflow_owner_agent_id(), intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
@@ -1112,7 +1171,7 @@ impl AutomationStore {
         if let Some(digest) = &provider_contract_binding {
             validate_nonzero_digest(digest, "provider_contract_binding")?;
         }
-        self.check_effect_admission(intent, fence, command_id, now_ms)
+        self.check_effect_admission(intent, fence, command_id, now_ms, started_at)
             .await?;
         let token = authority
             .claim(signed_grant, expected_binding)
@@ -1131,7 +1190,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
-                now_ms,
+                || effect_now_ms(now_ms, started_at),
                 fence,
                 provider_contract_binding.as_ref(),
             )
@@ -1156,6 +1215,12 @@ impl AutomationStore {
             }
         };
 
+        let lease_expires_at_ms = self
+            .check_admitted_effect_before_contact(
+                &durable, intent, fence, command_id, now_ms, started_at,
+            )
+            .await?;
+
         let request = AuthorizedProviderEffectRequest {
             owner_agent_id: self.taskflow_owner_agent_id(),
             operation_intent: &operation_intent,
@@ -1166,11 +1231,33 @@ impl AutomationStore {
             wire_payload,
         };
         let provider = match authority
-            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))
+            .with_verified_use_async(token, expected_binding, || async {
+                check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
+                driver
+                    .dispatch(request)
+                    .await
+                    .map_err(EffectConsumerError::Driver)
+            })
             .await
         {
             Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok(Err(EffectConsumerError::Admission(error))) => {
+                let proof = no_contact_digest(&durable, "lease_expired_in_authorized_consumer");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        effect_now_ms(now_ms, started_at)?,
+                        None,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(error.into());
+            }
+            Ok(Err(EffectConsumerError::Driver(error))) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -1179,7 +1266,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
                         None,
                     )
                     .await?;
@@ -1195,7 +1282,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
                         None,
                     )
                     .await?;
@@ -1203,6 +1290,7 @@ impl AutomationStore {
                 return Err(AuthorizedEffectError::FinalUse(error));
             }
         };
+        let now_ms = effect_now_ms(now_ms, started_at)?;
         validate_receipt_digest(&provider.receipt_digest)?;
         let provider_status = driver.take_provider_dispatch_status();
         if provider_status.is_some_and(|status| status.outcome() != provider.outcome) {
@@ -1265,7 +1353,8 @@ impl AutomationStore {
         fence: &TaskFlowFence,
         command_id: &str,
         now_ms: u64,
-    ) -> Result<(), AuthorizedEffectError> {
+        started_at: Instant,
+    ) -> Result<u64, AuthorizedEffectError> {
         // The projection consumes this exact command after provider contact.
         // Reject bytes its outbox cannot record before burning authority or
         // entering the irreversible provider boundary.
@@ -1303,18 +1392,52 @@ impl AutomationStore {
             .taskflow_run(&intent.run_id)
             .await?
             .ok_or_else(|| TaskFlowError::Conflict("effect run is missing".to_string()))?;
+        let now_ms = effect_now_ms(now_ms, started_at)?;
+        let lease_expires_at_ms = run.lease_expires_at_ms.ok_or(TaskFlowError::StaleFence)?;
         if run.state != TaskFlowRunState::Running
             || run.owner_id.as_deref() != Some(fence.owner_id.as_str())
             || run.owner_epoch != Some(fence.owner_epoch)
             || run.generation != Some(fence.generation)
             || run.fencing_token.as_deref() != Some(fence.fencing_token.as_str())
-            || run
-                .lease_expires_at_ms
-                .is_none_or(|expires| expires <= now_ms)
+            || lease_expires_at_ms <= now_ms
         {
             return Err(TaskFlowError::StaleFence.into());
         }
-        Ok(())
+        Ok(lease_expires_at_ms)
+    }
+
+    async fn check_admitted_effect_before_contact(
+        &self,
+        durable: &EffectDispatchAttempt,
+        intent: &AuthorizedEffectIntent,
+        fence: &TaskFlowFence,
+        command_id: &str,
+        now_ms: u64,
+        started_at: Instant,
+    ) -> Result<u64, AuthorizedEffectError> {
+        match self
+            .check_effect_admission(intent, fence, command_id, now_ms, started_at)
+            .await
+        {
+            Ok(lease_expires_at_ms) => Ok(lease_expires_at_ms),
+            Err(error @ AuthorizedEffectError::TaskFlow(TaskFlowError::StaleFence)) => {
+                let proof = no_contact_digest(durable, "lease_expired_before_provider_contact");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        effect_now_ms(now_ms, started_at)?,
+                        None,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                Err(error)
+            }
+            Err(error) => Err(error),
+        }
     }
 
     /// Append provider-owned recovery evidence for an already-started durable
