@@ -780,3 +780,16 @@ before loading because the generated crates repository was not cached, so it
 supplies no Fleet analysis or build pass. Actual candidate CI must establish the
 sandbox compile result. Prior 51db package tests and host execution retain their
 original source identities and are not relabeled as the build-input candidate.
+
+## Public owner documentation closing review
+
+The final compatibility review found one stale type-level Rustdoc: Agentd's
+prompt pipeline owner described the legacy no-tokenizer compiler as its success
+path. Its method documentation, implementation and migration guide already
+require exact tokenizer admission. The type description now links the actual
+`compile_prompt_registry_with_tokenizer_v2` producer and states that the legacy
+entrypoint retains source compatibility but rejects compilation. This is a
+comment-only correction; executable Rust, APIs, tests, byte grammar and workflow
+commands are unchanged. Closing owner-seal, consumer and OnceCell reviews found
+no second confirmed source or compatibility defect in their inspected scope.
+Each execution observation still belongs to its own immutable source and tree.

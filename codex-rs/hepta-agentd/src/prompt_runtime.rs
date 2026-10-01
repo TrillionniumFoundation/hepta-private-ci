@@ -512,9 +512,11 @@ impl std::error::Error for AgentdPromptPipelineError {}
 ///
 /// This facade owns no alternate optimizer or model loop. It opens the
 /// authoritative durable registry, derives the optimizer candidate source from
-/// that exact owner, validates canonical optimizer receipts through
-/// \`compile_prompt_registry_v2\`, and stages the resulting exact realization
-/// bytes into the same PromptRuntimeHost consumed by the embedded App Server.
+/// that exact owner, validates canonical optimizer receipts and complete source
+/// token accounting through [`compile_prompt_registry_with_tokenizer_v2`], and
+/// stages the resulting exact realization bytes into the same PromptRuntimeHost
+/// consumed by the embedded App Server. The legacy no-tokenizer entrypoint
+/// remains available for source compatibility but rejects compilation.
 pub struct AgentdPromptPipelineOwner {
     registry: Mutex<DurablePromptRegistry>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
