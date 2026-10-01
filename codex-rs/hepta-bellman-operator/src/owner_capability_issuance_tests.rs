@@ -35,14 +35,13 @@ fn fence_and_witness(
 
 #[test]
 fn tabular_issuance_revalidates_root_and_evidence_after_owner_verification() {
-    let fixture =
-        Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000_000);
+    let fixture = Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000);
     let (receipt, freeze) = fixture.dataset();
-    let freeze = sign_until_at(freeze, 3, 95_000_000);
+    let freeze = sign_until_at(freeze, 3, 95_000);
     let (fence, witness) = fence_and_witness(&receipt);
     for final_now in [50_000_000, 56_000_000, 90_000_000] {
         let (request, row) = tabular_request(&fixture, &receipt);
-        let row = sign_until_at(row, 2, 55_000_000);
+        let row = sign_until_at(row, 2, 55_000);
         let mut capability = final_use::issue_tabular_final_use_capability_v1(
             &fixture.owner,
             &receipt,
@@ -70,7 +69,7 @@ fn tabular_issuance_revalidates_root_and_evidence_after_owner_verification() {
         }
     }
     let (request, row) = tabular_request(&fixture, &receipt);
-    let row = sign_until_at(row, 2, 95_000_000);
+    let row = sign_until_at(row, 2, 95_000);
     // The public default API uses this same post-work guard with real elapsed
     // time. A healthy seconds-long fixture must still reach that API.
     assert!(
@@ -90,13 +89,12 @@ fn tabular_issuance_revalidates_root_and_evidence_after_owner_verification() {
 
 #[test]
 fn world_issuance_revalidates_model_retention_after_owner_verification() {
-    let fixture =
-        Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000_000);
+    let fixture = Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000);
     let (receipt, freeze) = fixture.dataset();
-    let freeze = sign_until_at(freeze, 3, 95_000_000);
+    let freeze = sign_until_at(freeze, 3, 95_000);
     let (fence, witness) = fence_and_witness(&receipt);
     let (request, row) = world_request_until(&fixture, &receipt, 55_000_000, 97_000_000);
-    let row = sign_until_at(row, 2, 95_000_000);
+    let row = sign_until_at(row, 2, 95_000);
     let mut capability = final_use::issue_world_model_final_use_capability_v1(
         &fixture.owner,
         &receipt,
@@ -120,7 +118,7 @@ fn world_issuance_revalidates_model_retention_after_owner_verification() {
         ))
     ));
     let (request, row) = world_request_until(&fixture, &receipt, 96_000_000, 97_000_000);
-    let row = sign_until_at(row, 2, 95_000_000);
+    let row = sign_until_at(row, 2, 95_000);
     assert!(
         crate::issue_world_model_final_use_capability_v1(
             &fixture.owner,
@@ -138,13 +136,12 @@ fn world_issuance_revalidates_model_retention_after_owner_verification() {
 
 #[test]
 fn retained_issuance_evidence_reserves_shared_memory_until_capability_drop() {
-    let fixture =
-        Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000_000);
+    let fixture = Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000);
     let (receipt, freeze) = fixture.dataset();
-    let freeze = sign_until_at(freeze, 3, 95_000_000);
+    let freeze = sign_until_at(freeze, 3, 95_000);
     let (fence, witness) = fence_and_witness(&receipt);
     let (request, row) = tabular_request(&fixture, &receipt);
-    let row = sign_until_at(row, 2, 95_000_000);
+    let row = sign_until_at(row, 2, 95_000);
     let control = crate::WorkControlV1::new();
     let context = control.fit_context();
     crate::with_fit_context_v1(&context, || {

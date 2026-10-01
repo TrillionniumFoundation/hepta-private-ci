@@ -48,6 +48,7 @@ impl<'a> IssuedEvidenceV1<'a> {
 
     pub(super) fn revalidate(&mut self, now: u64) -> Result<(), FinalUseErrorV1> {
         self.meter.consume(2)?;
+        let now = super::learning_millis(now)?;
         self.owner
             .revalidate_trust_at(now)
             .map_err(|error| FinalUseErrorV1::OwnerState(error.to_string()))?;

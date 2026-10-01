@@ -66,13 +66,13 @@ fn signer(name: &str, seed: u8, role: LearningEvidenceRoleV1) -> TrustedLearning
     }
 }
 
-fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
+fn activated_trust_at(expires_at: u64, now: u64) -> ActivatedLearningTrustV1 {
     let key = SigningKey::from_bytes(&[99; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("root"),
         scope_digest: hash("scope"),
         verifying_key: key.verifying_key().to_bytes(),
-        valid_from: 1,
+        valid_from: now - 49,
         expires_at: expires_at.checked_mul(2).unwrap().max(200),
         revoked_at: None,
     };
@@ -80,7 +80,7 @@ fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
         distribution: LearningTrustDistributionV1 {
             distribution_id: id("distribution"),
             generation: 1,
-            effective_at: 20,
+            effective_at: now - 30,
             trust: LearningEvidenceTrustV1 {
                 scope_digest: hash("scope"),
                 objective_digest: hash("objective"),
@@ -92,6 +92,7 @@ fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
                 ]
                 .into_iter()
                 .map(|mut signer| {
+                    signer.principal.authenticated_at = now - 40;
                     signer.principal.expires_at = expires_at
                         .checked_add((expires_at / 10).max(10))
                         .unwrap()
@@ -102,12 +103,12 @@ fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
             },
         },
         root_id: root.root_id.clone(),
-        issued_at: 15,
+        issued_at: now - 35,
         expires_at,
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-    activate_learning_trust(&root, signed, None, 50).unwrap()
+    activate_learning_trust(&root, signed, None, now).unwrap()
 }
 
 fn sign(
@@ -117,6 +118,18 @@ fn sign(
     role: LearningEvidenceRoleV1,
     payload: &[u8],
 ) -> SignedLearningEvidenceV1 {
+    sign_at(owner, name, seed, role, payload, 20, 70)
+}
+
+fn sign_at(
+    owner: &LedgerWriter,
+    name: &str,
+    seed: u8,
+    role: LearningEvidenceRoleV1,
+    payload: &[u8],
+    issued_at: u64,
+    expires_at: u64,
+) -> SignedLearningEvidenceV1 {
     let mut result = SignedLearningEvidenceV1 {
         evidence_id: id(&format!("evidence-{name}")),
         principal_id: id(name),
@@ -125,8 +138,8 @@ fn sign(
         scope_digest: hash("scope"),
         objective_digest: hash("objective"),
         authority_epoch: 7,
-        issued_at: 20,
-        expires_at: 70,
+        issued_at,
+        expires_at,
         payload_digest: Digest32::of_bytes(payload),
         signature: [0; 64],
     };
@@ -150,6 +163,10 @@ impl Fixture {
     }
 
     fn with_candidates_and_expiry(candidates: Vec<StableId>, expires_at: u64) -> Self {
+        Self::with_candidates_and_expiry_at(candidates, expires_at, 50)
+    }
+
+    fn with_candidates_and_expiry_at(candidates: Vec<StableId>, expires_at: u64, now: u64) -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
             "hepta-owner-dataset-{}-{serial}",
@@ -170,12 +187,12 @@ impl Fixture {
         let mut owner = LedgerWriter::from_durable(
             ledger,
             witness,
-            activated_trust_until(expires_at),
+            activated_trust_at(expires_at, now),
             &directory,
             &directory,
         )
         .unwrap();
-        append_fixture_episode(&mut owner, candidates, "action", "", expires_at);
+        append_fixture_episode_at(&mut owner, candidates, "action", "", expires_at, now);
         Self { owner, root }
     }
     fn terminal() -> Self {
@@ -192,20 +209,30 @@ impl Fixture {
     }
 
     fn dataset(&self) -> (DatasetSnapshotReceiptV3, SignedLearningEvidenceV1) {
+        self.dataset_at(50, 70)
+    }
+
+    fn dataset_at(
+        &self,
+        now: u64,
+        expires_at: u64,
+    ) -> (DatasetSnapshotReceiptV3, SignedLearningEvidenceV1) {
         let plan = DatasetFreezePlanV2 {
             snapshot_id: id("dataset"),
             objective_digest: hash("objective"),
             inclusion_policy_digest: hash("inclusion"),
         };
-        let signed = sign(
+        let signed = sign_at(
             &self.owner,
             "evaluator",
             3,
             LearningEvidenceRoleV1::Evaluator,
             &dataset_freeze_signing_payload_v2(&self.owner.snapshot().unwrap(), &plan).unwrap(),
+            now - 30,
+            expires_at,
         );
         (
-            self.owner.freeze_dataset(plan, &signed, 50).unwrap(),
+            self.owner.freeze_dataset(plan, &signed, now).unwrap(),
             signed,
         )
     }
@@ -222,6 +249,17 @@ fn append_fixture_episode(
     selected_action: &str,
     suffix: &str,
     expires_at: u64,
+) {
+    append_fixture_episode_at(owner, candidates, selected_action, suffix, expires_at, 50)
+}
+
+fn append_fixture_episode_at(
+    owner: &mut LedgerWriter,
+    candidates: Vec<StableId>,
+    selected_action: &str,
+    suffix: &str,
+    expires_at: u64,
+    now: u64,
 ) {
     let decision = ProductionDecisionV2 {
         record_id: id(&format!("decision{suffix}")),
@@ -248,17 +286,25 @@ fn append_fixture_episode(
         },
         support_digest: hash("decision-support"),
     };
-    let signed = sign(
+    let signed = sign_at(
         owner,
         "generator",
         1,
         LearningEvidenceRoleV1::Generator,
         &decision_signing_payload_v2(&decision).unwrap(),
+        now - 30,
+        now + 20,
     );
     let append = owner
-        .append_decision(owner.snapshot().unwrap().head_digest, decision, &signed, 50)
+        .append_decision(
+            owner.snapshot().unwrap().head_digest,
+            decision,
+            &signed,
+            now,
+        )
         .unwrap();
     let mut observer = signer("observer", 2, LearningEvidenceRoleV1::Observer).principal;
+    observer.authenticated_at = now - 40;
     observer.expires_at = expires_at
         .checked_add((expires_at / 10).max(10))
         .unwrap()
@@ -268,28 +314,30 @@ fn append_fixture_episode(
         outcome_id: id(&format!("outcome{suffix}")),
         episode_id: id(&format!("episode{suffix}")),
         observer,
-        observed_at: Some(40),
+        observed_at: Some(now - 10),
         value: Some(FixedQ32::from_raw(20)),
         unit_profile_digest: hash("unit"),
         support_digest: hash("outcome-support"),
         watermark: OutcomeWatermarkV1 {
-            latest_observable_at: 45,
+            latest_observable_at: now - 5,
             expected_delay_profile_digest: hash("delay"),
             terminality: OutcomeTerminalityV1::Terminal,
             censoring_reason: None,
             correction_predecessor: None,
-            finalized_at: Some(46),
+            finalized_at: Some(now - 4),
         },
     };
-    let signed = sign(
+    let signed = sign_at(
         owner,
         "observer",
         2,
         LearningEvidenceRoleV1::Observer,
         &outcome_signing_payload_v2(&outcome),
+        now - 30,
+        now + 20,
     );
     owner
-        .append_outcome(append.chain_digest, outcome, &signed, 50)
+        .append_outcome(append.chain_digest, outcome, &signed, now)
         .unwrap();
 }
 
@@ -682,3 +730,6 @@ fn world_final_use_request_cannot_relabel_authoritative_training_trust() {
         ))
     ));
 }
+
+#[path = "owner_real_clock_tests.rs"]
+mod real_clock_tests;

@@ -18,7 +18,7 @@ fn fence_and_witness(
     )
     .unwrap();
     let witness = crate::FinalUseWitnessV1::new(
-        /*observed_at_unix_micros*/ 50,
+        /*observed_at_unix_micros*/ 50_000,
         receipt.snapshot.ledger_head_digest,
         receipt.snapshot.eligible_frontier,
         generation,
@@ -90,11 +90,12 @@ fn tabular_row_evidence_expiring_during_fit_rejects_publication_before_deadline(
         let calls = Cell::new(0);
         let result = final_use::fit_tabular_final_use_v1(capability, &witness, &witness, |_| {
             calls.set(calls.get() + 1);
-            Ok(match calls.get() {
-                1 => 50,
-                2 => publish_now,
-                _ => final_now,
-            })
+            Ok(1_000
+                * match calls.get() {
+                    1 => 50,
+                    2 => publish_now,
+                    _ => final_now,
+                })
         });
         assert_eq!(calls.get(), if publish_now == 50 { 3 } else { 2 });
         if final_now == 50 {
@@ -165,8 +166,8 @@ fn world_row_evidence_expiring_during_fit_rejects_publication_before_deadline() 
             ProbabilityQ32::ZERO,
             FixedQ32::ZERO,
             hash("change-point"),
-            /*retained_until*/ 70,
-            /*expires_at*/ 80,
+            /*retained_until*/ 70_000,
+            /*expires_at*/ 80_000,
             samples.clone(),
         )
         .unwrap();
@@ -185,11 +186,12 @@ fn world_row_evidence_expiring_during_fit_rejects_publication_before_deadline() 
         let result =
             final_use::fit_world_model_final_use_v1(capability, &witness, &witness, |_| {
                 calls.set(calls.get() + 1);
-                Ok(match calls.get() {
-                    1 => 50,
-                    2 => publish_now,
-                    _ => final_now,
-                })
+                Ok(1_000
+                    * match calls.get() {
+                        1 => 50,
+                        2 => publish_now,
+                        _ => final_now,
+                    })
             });
         assert_eq!(calls.get(), if publish_now == 50 { 3 } else { 2 });
         if final_now == 50 {

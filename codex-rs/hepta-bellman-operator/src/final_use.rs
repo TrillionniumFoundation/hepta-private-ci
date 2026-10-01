@@ -574,7 +574,7 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         owner,
         freeze_evidence,
         row_evidence,
-        witness.observed_at_unix_micros,
+        learning_millis(witness.observed_at_unix_micros)?,
     )?;
     let _ = verified.admission_stage();
     let issued_evidence = issued::IssuedEvidenceV1::new(
@@ -646,7 +646,7 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         owner,
         freeze_evidence,
         row_evidence,
-        witness.observed_at_unix_micros,
+        learning_millis(witness.observed_at_unix_micros)?,
     )?;
     let _ = verified.admission_stage();
     let issued_evidence = issued::IssuedEvidenceV1::new(
@@ -863,7 +863,7 @@ pub fn fit_tabular_final_use_v1(
         capability.owner,
         &capability.freeze_evidence,
         &capability.row_evidence,
-        use_now,
+        learning_millis(use_now)?,
     )?;
     let _ = verified_at_use.admission_stage();
     drop(verified_at_use);
@@ -893,7 +893,7 @@ pub fn fit_tabular_final_use_v1(
         capability.owner,
         &capability.freeze_evidence,
         &capability.row_evidence,
-        publish_now,
+        learning_millis(publish_now)?,
     )?;
     let _ = verified_at_publish.admission_stage();
     let mut publication_evidence = issued::IssuedEvidenceV1::new(
@@ -953,7 +953,7 @@ pub fn fit_world_model_final_use_v1(
         capability.owner,
         &capability.freeze_evidence,
         &capability.row_evidence,
-        use_now,
+        learning_millis(use_now)?,
     )?;
     let _ = verified_at_use.admission_stage();
     drop(verified_at_use);
@@ -980,7 +980,7 @@ pub fn fit_world_model_final_use_v1(
         capability.owner,
         &capability.freeze_evidence,
         &capability.row_evidence,
-        publish_now,
+        learning_millis(publish_now)?,
     )?;
     let _ = verified_at_publish.admission_stage();
     let mut publication_evidence = issued::IssuedEvidenceV1::new(
@@ -1109,7 +1109,7 @@ fn validate_current(
         ));
     }
     owner
-        .revalidate_dataset_snapshot(receipt, now)
+        .revalidate_dataset_snapshot(receipt, learning_millis(now)?)
         .map_err(|error| FinalUseErrorV1::OwnerState(error.to_string()))?;
     let snapshot = owner
         .snapshot()
@@ -1141,7 +1141,7 @@ fn validate_temporal_current(
         return Err(FinalUseErrorV1::DeadlineExceeded);
     }
     owner
-        .revalidate_trust_at(now)
+        .revalidate_trust_at(learning_millis(now)?)
         .map_err(|error| FinalUseErrorV1::OwnerState(error.to_string()))?;
     Ok(())
 }
@@ -1193,3 +1193,7 @@ mod tests;
 #[cfg(test)]
 #[path = "final_use_request_tests.rs"]
 mod request_tests;
+
+#[path = "final_use_clock.rs"]
+mod clock;
+use clock::learning_millis;

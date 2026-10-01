@@ -36,7 +36,7 @@ fn fence_and_witness(
         )
         .unwrap(),
         crate::FinalUseWitnessV1::new(
-            observed_at,
+            observed_at * 1_000,
             receipt.snapshot.ledger_head_digest,
             receipt.snapshot.eligible_frontier,
             generation,
@@ -92,7 +92,7 @@ fn world_request(
     receipt: &DatasetSnapshotReceiptV3,
     retained_until: u64,
 ) -> (crate::WorldModelTrainingRequestV1, SignedLearningEvidenceV1) {
-    world_request_until(fixture, receipt, retained_until, 97)
+    world_request_until(fixture, receipt, retained_until * 1_000, 97_000)
 }
 
 pub(super) fn world_request_until(
@@ -186,11 +186,12 @@ fn tabular_distribution_expiry_blocks_effective_publication_with_valid_signature
         let calls = Cell::new(0);
         let result = final_use::fit_tabular_final_use_v1(capability, &witness, &witness, |_| {
             calls.set(calls.get() + 1);
-            Ok(match calls.get() {
-                1 => 89,
-                2 => publish_now,
-                _ => final_now,
-            })
+            Ok(1_000
+                * match calls.get() {
+                    1 => 89,
+                    2 => publish_now,
+                    _ => final_now,
+                })
         });
         assert_eq!(calls.get(), if publish_now == 89 { 3 } else { 2 });
         if final_now == 89 {
@@ -231,11 +232,12 @@ fn world_distribution_expiry_blocks_effective_publication_with_valid_signatures(
         let result =
             final_use::fit_world_model_final_use_v1(capability, &witness, &witness, |_| {
                 calls.set(calls.get() + 1);
-                Ok(match calls.get() {
-                    1 => 89,
-                    2 => publish_now,
-                    _ => final_now,
-                })
+                Ok(1_000
+                    * match calls.get() {
+                        1 => 89,
+                        2 => publish_now,
+                        _ => final_now,
+                    })
             });
         assert_eq!(calls.get(), if publish_now == 89 { 3 } else { 2 });
         if final_now == 89 {
@@ -269,7 +271,7 @@ fn world_retention_expiring_during_fit_rejects_effective_publication() {
     let calls = Cell::new(0);
     let result = final_use::fit_world_model_final_use_v1(capability, &witness, &witness, |_| {
         calls.set(calls.get() + 1);
-        Ok(if calls.get() == 1 { 80 } else { 89 })
+        Ok(if calls.get() == 1 { 80_000 } else { 89_000 })
     });
     assert_eq!(calls.get(), 2);
     assert!(matches!(
