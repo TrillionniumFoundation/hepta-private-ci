@@ -1,5 +1,4 @@
 use super::*;
-use crate::intelligence_product::evaluation_tests::evidence_fixture;
 use codex_hepta_intelligence::build_legal_candidates;
 use codex_hepta_intuition::CanonicalRiskRuleV1;
 use codex_hepta_intuition::LearnedScorerContractV1;
@@ -22,6 +21,21 @@ fn signed_fixture() -> (
 fn signed_fixture_with_distribution_expiry(
     now: u64,
     expires_at: Option<u64>,
+) -> (
+    Fixture,
+    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) {
+    signed_fixture_with_trust_windows(now, expires_at, None)
+}
+
+#[allow(
+    clippy::expect_used,
+    reason = "Signed fixture bindings and trust windows must agree exactly."
+)]
+fn signed_fixture_with_trust_windows(
+    now: u64,
+    expires_at: Option<u64>,
+    evaluator_revoked_at: Option<u64>,
 ) -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
@@ -54,14 +68,13 @@ fn signed_fixture_with_distribution_expiry(
         candidate_set_digest: legal.candidate_set_digest,
         selected_candidate_id: id("action.read"),
     };
-    let (trust, signed) = match expires_at {
-        Some(expires_at) => {
-            crate::intelligence_product::evaluation_tests::evidence_fixture_with_distribution_expiry(
-                &binding, now, expires_at,
-            )
-        }
-        None => evidence_fixture(&binding, now),
-    };
+    let (trust, signed) =
+        crate::intelligence_product::evaluation_tests::evidence_fixture_with_trust_windows(
+            &binding,
+            now,
+            expires_at.unwrap_or(now + 60_000),
+            evaluator_revoked_at,
+        );
     value.inputs.signed_evaluation = Some(signed);
     (value, trust)
 }

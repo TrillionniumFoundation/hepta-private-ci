@@ -688,16 +688,18 @@ impl AgentdState {
                             ))
                         })?;
                     self.require_current_run_start(record)?;
-                    if matches!(
-                        &outcome,
-                        crate::AgentdIntelligenceProductOutcomeV1::Ready(_)
-                    ) {
+                    if let crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
                         let now = clock.now().map_err(|error| {
                             AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
                         })?;
                         runner.require_current_evaluation(now).map_err(|error| {
                             AgentdError::Protocol(format!(
                                 "canonical evaluation final-use fence failed: {error}"
+                            ))
+                        })?;
+                        prepared.revalidate_evaluation(now).map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "canonical evaluation evidence final-use fence failed: {error}"
                             ))
                         })?;
                     }
@@ -740,6 +742,11 @@ impl AgentdState {
                     runner.require_current_evaluation(now_ms).map_err(|error| {
                         AgentdError::Protocol(format!(
                             "canonical evaluation admission fence failed: {error}"
+                        ))
+                    })?;
+                    prepared.revalidate_evaluation(now_ms).map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical evaluation evidence admission fence failed: {error}"
                         ))
                     })?;
                     let admitted = runs

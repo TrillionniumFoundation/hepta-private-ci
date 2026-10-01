@@ -36,7 +36,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         now: u64,
     ) -> Result<(), AgentdIntelligenceProductError> {
         self.require_current_snapshot(&prepared.snapshot)?;
-        self.require_current_evaluation(now.max(wall_clock_ms()?))
+        let now = now.max(wall_clock_ms()?);
+        self.require_current_evaluation(now)?;
+        prepared
+            .revalidate_evaluation(now)
+            .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)
     }
 
     pub fn new(
@@ -229,16 +233,17 @@ impl AgentdIntelligenceProductRunnerV1 {
             let mut ports =
                 AgentdOwnerPortsV1::new(inputs, evaluation_session, intuition_computation);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            let outcome = prepare_intelligence_run(request, &mut ports, &mut oracle);
+            (outcome, ports.evaluation_use)
         })?;
-        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
+        let (outcome, evaluation_use) = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await
             .map_err(|_| {
                 worker.abort();
                 AgentdIntelligenceProductError::TimedOut
             })?
-            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-            .map_err(AgentdIntelligenceProductError::Canonical)?;
+            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?;
+        let outcome = outcome.map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
@@ -288,6 +293,8 @@ impl AgentdIntelligenceProductRunnerV1 {
                         candidate_ids,
                         run_snapshot,
                         context_attachment,
+                        evaluation_use: evaluation_use
+                            .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?,
                     },
                 ))
             }

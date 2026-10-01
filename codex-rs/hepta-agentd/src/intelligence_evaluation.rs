@@ -7,9 +7,11 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
 
+use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_intelligence::CanonicalPortInputV1;
 use codex_hepta_intelligence::CanonicalStageV1;
 use codex_hepta_intelligence::CurrentOwnerStateV1;
+use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
@@ -24,7 +26,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 /// Data supplied by the evaluator. Every field is checked again at its use site.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdSignedEvaluationV1 {
     pub bundle: IndependentEvaluationBundleV1,
     pub roles: Vec<MetricRoleContractV2>,
@@ -74,11 +76,62 @@ pub fn intelligence_evaluation_binding_payload_v1(
     Ok(bytes)
 }
 
+#[derive(Clone, Debug)]
 pub(super) struct AgentdEvaluationSessionV1 {
     pub run_id: StableId,
     pub current_owner: CurrentOwnerStateV1,
     pub trust: Arc<ActivatedLearningTrustV1>,
     pub signed: AgentdSignedEvaluationV1,
+}
+
+impl PartialEq for AgentdEvaluationSessionV1 {
+    fn eq(&self, other: &Self) -> bool {
+        self.run_id == other.run_id
+            && self.current_owner == other.current_owner
+            && self.trust.distribution_digest() == other.trust.distribution_digest()
+            && self.signed == other.signed
+    }
+}
+
+impl Eq for AgentdEvaluationSessionV1 {}
+
+/// Exact evidence consumed by the canonical evaluation stage, retained until
+/// final use. A root lease alone cannot extend a shorter signed attestation or
+/// make a signer whose scheduled revocation is now effective current again.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(super) struct PreparedEvaluationUseV1 {
+    pub session: AgentdEvaluationSessionV1,
+    pub input: CanonicalPortInputV1,
+    pub candidate: StableId,
+    pub receipt: Digest32,
+}
+
+impl PreparedEvaluationUseV1 {
+    pub(super) fn revalidate(
+        &self,
+        envelope: &IntelligenceHostEnvelopeV1,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceEvaluationError> {
+        if self.input.run_id != envelope.run_id
+            || self.input.snapshot_digest != envelope.snapshot_digest
+            || self.input.objective_digest != envelope.objective_digest
+            || self.input.candidate_set_digest != envelope.candidate_set_digest
+            || self.input.predecessor_digest != envelope.context_receipt_digest
+            || self.receipt != envelope.evaluation_receipt_digest
+            || !matches!(&envelope.decision.decision,
+                AdvisoryDecisionV1::Selected { candidate_id, .. } if candidate_id == &self.candidate)
+        {
+            return Err(AgentdIntelligenceEvaluationError::Binding);
+        }
+        let receipt = self
+            .session
+            .clone()
+            .evaluate(&self.input, &self.candidate, now)?;
+        if receipt != self.receipt {
+            return Err(AgentdIntelligenceEvaluationError::Binding);
+        }
+        Ok(())
+    }
 }
 
 impl AgentdEvaluationSessionV1 {

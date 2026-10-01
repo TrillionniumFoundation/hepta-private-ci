@@ -157,6 +157,19 @@ pub(super) fn evidence_fixture_with_distribution_expiry(
     now: u64,
     distribution_expires_at: u64,
 ) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+    evidence_fixture_with_trust_windows(binding, now, distribution_expires_at, None)
+}
+
+#[allow(
+    clippy::unwrap_used,
+    reason = "The fixture's root-signed trust must be generated from the requested validity windows."
+)]
+pub(super) fn evidence_fixture_with_trust_windows(
+    binding: &AgentdEvaluationBindingV1,
+    now: u64,
+    distribution_expires_at: u64,
+    evaluator_revoked_at: Option<u64>,
+) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
     let objective_digest = binding.objective_digest;
     let dataset_digest = digest("dataset");
     let estimand_digest = digest("qualification-estimand");
@@ -263,7 +276,7 @@ pub(super) fn evidence_fixture_with_distribution_expiry(
                 controller_id: evaluator.principal_id.clone(),
                 verifying_key: evaluator_key.verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
-                revoked_at: None,
+                revoked_at: evaluator_revoked_at,
             },
         ],
     };

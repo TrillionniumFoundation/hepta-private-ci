@@ -32,6 +32,7 @@ pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
 pub use evaluation::AgentdSignedEvaluationV1;
+use evaluation::PreparedEvaluationUseV1;
 pub use evaluation::intelligence_evaluation_binding_payload_v1;
 
 use std::collections::BTreeMap;
@@ -249,6 +250,7 @@ struct AgentdOwnerPortsV1 {
     context_request: Option<CompilationRequest>,
     evaluation_request: Option<EvaluationRequest>,
     evaluation_session: Option<AgentdEvaluationSessionV1>,
+    evaluation_use: Option<Box<PreparedEvaluationUseV1>>,
     selected_candidate: Option<StableId>,
 }
 
@@ -275,6 +277,7 @@ impl AgentdOwnerPortsV1 {
             context_request: Some(value.context_request),
             evaluation_request: Some(value.evaluation_request),
             evaluation_session,
+            evaluation_use: None,
             selected_candidate: None,
         }
     }
@@ -580,9 +583,16 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let now = wall_clock_ms().map_err(|_| Self::reject(input.stage, "evaluation clock"))?;
         let receipt = session
+            .clone()
             .evaluate(input, &request.candidate_id, now)
             .map_err(|_| Self::reject(input.stage, "signed evaluation binding or evidence"))?;
         Self::within_budget(input, started)?;
+        self.evaluation_use = Some(Box::new(PreparedEvaluationUseV1 {
+            session,
+            input: input.clone(),
+            candidate: request.candidate_id,
+            receipt,
+        }));
         Self::receipt(
             input,
             "learning.eval",
@@ -600,9 +610,17 @@ pub struct PreparedAgentdIntelligenceRunV1 {
     candidate_ids: Vec<StableId>,
     run_snapshot: crate::AgentRunSnapshot,
     context_attachment: crate::AgentContextAttachment,
+    evaluation_use: Box<PreparedEvaluationUseV1>,
 }
 
 impl PreparedAgentdIntelligenceRunV1 {
+    pub(crate) fn revalidate_evaluation(
+        &self,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceEvaluationError> {
+        self.evaluation_use.revalidate(&self.envelope, now)
+    }
+
     #[must_use]
     pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
         self.run_snapshot.clone()

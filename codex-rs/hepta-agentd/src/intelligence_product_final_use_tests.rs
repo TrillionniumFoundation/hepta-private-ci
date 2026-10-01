@@ -464,3 +464,126 @@ async fn evaluation_distribution_expiry_rejects_prepared_product_reuse() {
         Err(crate::intelligence_product::AgentdIntelligenceProductError::InvalidAuthorityVerifier)
     ));
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Every retained signature must reject expiry independently of the root lease."
+)]
+async fn prepared_evaluation_retains_each_signed_expiry_after_consumption() {
+    for part in 0..3 {
+        let (mut value, trust) = signed_fixture();
+        let now = super::super::wall_clock_ms().expect("clock");
+        let expires_at = now + 5_000;
+        let context = codex_hepta_context_compiler::compile(value.inputs.context_request.clone())
+            .expect("context");
+        let legal = codex_hepta_intelligence::build_legal_candidates(
+            value.request.legal_candidates.clone(),
+        )
+        .expect("legal set");
+        let binding = crate::AgentdEvaluationBindingV1 {
+            run_id: value.request.run_id.clone(),
+            objective_digest: value.request.snapshot.objective_digest(),
+            snapshot_digest: value.request.snapshot.digest(),
+            context_receipt_digest: context.context_digest,
+            candidate_set_digest: legal.candidate_set_digest,
+            selected_candidate_id: id("action.read"),
+        };
+        let signed = value
+            .inputs
+            .signed_evaluation
+            .as_mut()
+            .expect("signed evaluation");
+        let (evidence, key) = match part {
+            0 => (
+                &mut signed.evidence.generator_plan,
+                SigningKey::from_bytes(&[31; 32]),
+            ),
+            1 => (
+                &mut signed.evidence.evaluator_bundle,
+                SigningKey::from_bytes(&[47; 32]),
+            ),
+            _ => (
+                &mut signed.use_attestation,
+                SigningKey::from_bytes(&[47; 32]),
+            ),
+        };
+        evidence.expires_at = expires_at;
+        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+        let payload = crate::intelligence_evaluation_binding_payload_v1(&binding, &signed.evidence)
+            .expect("updated use binding");
+        signed.use_attestation.payload_digest = Digest32::of_bytes(&payload);
+        signed.use_attestation.signature = SigningKey::from_bytes(&[47; 32])
+            .sign(&signed.use_attestation.signing_bytes())
+            .to_bytes();
+        let directory = tempdir().expect("directory");
+        let authority = directory.path().join("authority.json");
+        write_authority_file(
+            &authority,
+            &value.owners,
+            value.request.snapshot.revocation_frontier_digest(),
+        );
+        let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+            .expect("runner")
+            .with_evaluation_trust(trust)
+            .expect("root trust");
+        let outcome = runner
+            .prepare(&product_test_coordinator(), value.request, value.inputs)
+            .await
+            .expect("unexpired signed preparation");
+        let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = outcome else {
+            panic!("selected signed preparation");
+        };
+        runner
+            .require_current_evaluation(expires_at + 1)
+            .expect("root distribution remains valid");
+        prepared
+            .revalidate_evaluation(expires_at)
+            .expect("inclusive signed expiry");
+        assert!(
+            prepared.revalidate_evaluation(expires_at + 1).is_err(),
+            "expired signature {part} must not survive in a digest-only prepared result"
+        );
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "A scheduled signer revocation is independently authenticated fixture input."
+)]
+async fn prepared_evaluation_rechecks_scheduled_signer_revocation() {
+    let now = super::super::wall_clock_ms().expect("clock");
+    let revoked_at = now + 5_000;
+    let (value, trust) = super::signed_fixture_with_trust_windows(now, None, Some(revoked_at));
+    let directory = tempdir().expect("directory");
+    let authority = directory.path().join("authority.json");
+    write_authority_file(
+        &authority,
+        &value.owners,
+        value.request.snapshot.revocation_frontier_digest(),
+    );
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("signed trust");
+    let outcome = runner
+        .prepare(&product_test_coordinator(), value.request, value.inputs)
+        .await
+        .expect("prepare before scheduled revocation");
+    let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = outcome else {
+        panic!("ready");
+    };
+    runner
+        .require_current_evaluation(revoked_at)
+        .expect("root lease still valid");
+    prepared
+        .revalidate_evaluation(revoked_at - 1)
+        .expect("signer valid before revocation");
+    assert!(matches!(
+        prepared.revalidate_evaluation(revoked_at),
+        Err(crate::AgentdIntelligenceEvaluationError::Evidence(
+            codex_hepta_learning_ledger::SignedEvidenceError::Revoked
+        ))
+    ));
+}
