@@ -1,6 +1,8 @@
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
+use codex_app_server_protocol::ItemCompletedNotification;
+use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
@@ -46,7 +48,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut NativeTextObservation::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -80,6 +87,162 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
             duration_ms: None,
         },
     })
+}
+
+fn message_item(id: &str, text: &str) -> ThreadItem {
+    ThreadItem::AgentMessage {
+        id: id.to_string(),
+        text: text.to_string(),
+        phase: None,
+        memory_citation: None,
+        delivery: None,
+    }
+}
+
+fn completed_message(thread: &str, turn: &str, id: &str, text: &str) -> ServerNotification {
+    ServerNotification::ItemCompleted(ItemCompletedNotification {
+        thread_id: thread.to_string(),
+        turn_id: turn.to_string(),
+        item: message_item(id, text),
+        completed_at_ms: 1,
+    })
+}
+
+fn summary(items: Vec<ThreadItem>) -> ServerNotification {
+    let ServerNotification::TurnCompleted(mut completed) =
+        terminal("thread-a", "turn-a", TurnStatus::Completed)
+    else {
+        unreachable!()
+    };
+    completed.turn.items = items;
+    completed.turn.items_view = TurnItemsView::Summary;
+    ServerNotification::TurnCompleted(completed)
+}
+
+#[test]
+fn completed_items_and_terminal_summary_deduplicate_by_exact_message_identity() {
+    let mut output = output();
+    let mut text = NativeTextObservation::default();
+    let binding = binding();
+    let events = [
+        completed_message("thread-b", "turn-a", "first", "foreign"),
+        completed_message("thread-a", "turn-b", "first", "foreign"),
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "first".to_string(),
+            delta: "hel".to_string(),
+        }),
+        completed_message("thread-a", "turn-a", "first", "hello"),
+        completed_message("thread-a", "turn-a", "second", "hello"),
+    ];
+    for event in events {
+        assert!(!observe_event(&mut output, &mut text, &observed(event), &binding).unwrap());
+    }
+    assert!(
+        observe_event(
+            &mut output,
+            &mut text,
+            &observed(summary(vec![message_item("second", "hello")])),
+            &binding,
+        )
+        .unwrap()
+    );
+    assert_eq!(output.output, "hellohello");
+    assert!(output.terminal_observed);
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Succeeded);
+}
+
+#[test]
+fn terminal_summary_alone_retains_text_and_overflow_keeps_physical_terminal() {
+    let mut normal = output();
+    assert!(
+        observe_event(
+            &mut normal,
+            &mut NativeTextObservation::default(),
+            &observed(summary(vec![message_item("first", "summary only")])),
+            &binding(),
+        )
+        .unwrap()
+    );
+    assert_eq!(normal.output, "summary only");
+    assert_eq!(normal.boundary_status, NativeBoundaryStatus::Succeeded);
+    for previous in [
+        NativeBoundaryStatus::Indeterminate,
+        NativeBoundaryStatus::Cancelled,
+        NativeBoundaryStatus::TimedOut,
+        NativeBoundaryStatus::Quarantined,
+    ] {
+        let mut output = output();
+        output.boundary_status = previous;
+        output.observed_output_tokens = Some(7);
+        let mut text = NativeTextObservation::default();
+        let oversized = "雪".repeat(MAX_OUTPUT_BYTES);
+        assert!(
+            observe_event(
+                &mut output,
+                &mut text,
+                &observed(summary(vec![
+                    message_item("first", "prefix"),
+                    message_item("second", &oversized),
+                ])),
+                &binding(),
+            )
+            .unwrap()
+        );
+        assert!(output.terminal_observed);
+        assert_eq!(output.status, NativeRunStatus::Completed);
+        assert!(output.codex_terminal_correlation_digest.is_some());
+        assert_eq!(output.observed_output_tokens, Some(7));
+        assert_eq!(
+            output.output,
+            format!("prefix{}", &oversized[..output.output.len() - 6])
+        );
+        assert!(output.output.len() <= MAX_OUTPUT_BYTES);
+        assert_eq!(
+            output.boundary_status,
+            if previous == NativeBoundaryStatus::Indeterminate {
+                NativeBoundaryStatus::Quarantined
+            } else {
+                previous
+            }
+        );
+        assert_eq!(
+            output.stop_reason.as_deref(),
+            Some("output byte limit exceeded")
+        );
+    }
+}
+
+#[test]
+fn contradictory_completed_text_stays_denied_through_terminal_grace() {
+    let mut output = output();
+    let mut text = NativeTextObservation::default();
+    let binding = binding();
+    text.delta(&mut output.output, "first", "seen").unwrap();
+    let reason = observe_event(
+        &mut output,
+        &mut text,
+        &observed(completed_message("thread-a", "turn-a", "first", "changed")),
+        &binding,
+    )
+    .unwrap_err();
+    output.boundary_status = NativeBoundaryStatus::Quarantined;
+    output.stop_reason = Some(reason.clone());
+    assert!(
+        observe_event(
+            &mut output,
+            &mut text,
+            &observed(summary(vec![message_item("first", "changed")])),
+            &binding,
+        )
+        .unwrap()
+    );
+    assert_eq!(output.output, "seen");
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert_eq!(output.stop_reason.as_ref(), Some(&reason));
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert!(output.terminal_observed);
 }
 
 #[test]
@@ -477,7 +640,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "unexpected observed native output: {accepted:?}"
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()

@@ -3,6 +3,7 @@
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::adapt_observed_event;
@@ -12,12 +13,18 @@ use tokio_util::sync::CancellationToken;
 use super::CodexTurnBinding;
 use super::LOCAL_CANCELLED;
 use super::LOCAL_DEADLINE_ELAPSED;
-use super::MAX_OUTPUT_BYTES;
 use super::NativeBoundaryStatus;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::downgrade_for_owner_loss;
 use super::intelligence_owner::IntelligenceObservation;
+use super::text::NativeTextObservation;
+
+/// Text identity state survives both normal observation and interruption grace.
+pub(super) struct NativeObservationState<'a> {
+    pub output: &'a mut NativeRunOutput,
+    pub text: &'a mut NativeTextObservation,
+}
 
 /// One exact Agent owns both health and optional intelligence run observation.
 /// The interruption grace has no owner and cannot restore lost authority.
@@ -43,6 +50,7 @@ pub(super) fn check_observation_boundary(
 
 pub(super) fn observe_event(
     output: &mut NativeRunOutput,
+    text: &mut NativeTextObservation,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -53,10 +61,17 @@ pub(super) fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            text.delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage {
+                id, text: message, ..
+            } = &completed.item
+            {
+                text.complete(&mut output.output, id, message)?;
             }
-            output.output.push_str(&delta.delta);
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -101,11 +116,36 @@ pub(super) fn observe_event(
                     .ok_or_else(|| "terminal receipt omitted correlation digest".to_string())?
                     .to_string(),
             );
-            if let Some(error) = &completed.turn.error {
+            if output.stop_reason.is_none()
+                && let Some(error) = &completed.turn.error
+            {
                 output.stop_reason = Some(error.message.chars().take(1024).collect());
             }
             output.terminal_observed = true;
             downgrade_for_owner_loss(output);
+            // Terminal snapshots can repeat completed items or supply the only
+            // text. Preserve the exact physical terminal before denying an
+            // oversized or contradictory snapshot's logical success.
+            for item in &completed.turn.items {
+                if let ThreadItem::AgentMessage {
+                    id, text: message, ..
+                } = item
+                    && let Err(reason) = text.complete(&mut output.output, id, message)
+                {
+                    if matches!(
+                        output.boundary_status,
+                        NativeBoundaryStatus::Succeeded
+                            | NativeBoundaryStatus::Failed
+                            | NativeBoundaryStatus::Interrupted
+                    ) {
+                        output.boundary_status = NativeBoundaryStatus::Quarantined;
+                    }
+                    if output.stop_reason.is_none() {
+                        output.stop_reason = Some(reason);
+                    }
+                    break;
+                }
+            }
             return Ok(true);
         }
         _ => {}

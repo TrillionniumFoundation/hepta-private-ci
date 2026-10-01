@@ -84,6 +84,8 @@ mod intelligence_owner;
 mod observation;
 #[path = "native_recovery.rs"]
 mod recovery;
+#[path = "native_text.rs"]
+mod text;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use denial::persist_denied_observation;
@@ -98,19 +100,21 @@ use intelligence_owner::reconcile_intelligence_terminal;
 use intelligence_owner::require_intelligence_handoff;
 use intelligence_owner::verify_intelligence_execution;
 use observation::NativeObservationOwner;
+use observation::NativeObservationState;
 use observation::check_observation_boundary;
 use observation::observe_event;
 use recovery::apply_recovery_cancellation;
 use recovery::downgrade_for_owner_loss;
 use recovery::preserve_recovery_evidence;
 use recovery::retain_recovered_output;
+use text::MAX_OUTPUT_BYTES;
+use text::NativeTextObservation;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
-const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 // Conform to Agentd lane_b_runtime::MAX_CANCEL_REASON_BYTES (512 bytes),
 // whose existing owner policy is private and is not a worker API export.
 const MAX_OWNER_CANCEL_REASON_BYTES: usize = 512;
@@ -968,10 +972,14 @@ impl AppServerModelDriver {
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
         let dispatched_intelligence_cursor = intelligence_cursor;
+        let mut text = NativeTextObservation::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                NativeObservationState {
+                    output: &mut output,
+                    text: &mut text,
+                },
                 deadline,
                 cancellation,
                 Some(NativeObservationOwner {
@@ -1012,7 +1020,10 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    NativeObservationState {
+                        output: &mut output,
+                        text: &mut text,
+                    },
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -1093,12 +1104,13 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        state: NativeObservationState<'_>,
         deadline: Instant,
         cancellation: &CancellationToken,
         mut owner: Option<NativeObservationOwner<'_>>,
         binding: &CodexTurnBinding,
     ) -> std::result::Result<(), String> {
+        let NativeObservationState { output, text } = state;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             check_observation_boundary(deadline, cancellation)?;
@@ -1127,7 +1139,7 @@ impl AppServerModelDriver {
             check_observation_boundary(deadline, cancellation)?;
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, text, &event, binding)? {
                         return Ok(());
                     }
                 }
