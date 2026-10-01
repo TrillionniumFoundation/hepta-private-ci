@@ -1,5 +1,8 @@
 # runtime.supervisor adversarial audit — 2026-09-30 to 2026-10-01 (UTC)
 
+This is the historical first/second-pass checkpoint. The current repair and
+execution record is [the third audit](ADVERSARIAL_AUDIT_20261001_R3.md).
+
 ## Candidate and scope
 
 The audit starts from `e8f8f2d0ca399b0a68abba4da90a3be5114d0735`

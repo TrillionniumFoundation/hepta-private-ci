@@ -79,7 +79,7 @@
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "observe_health",
@@ -131,14 +131,29 @@
           "path": "codex-rs/hepta-supervisor/src/robrix_protocol_tests.rs",
           "kind": "bounded_canonical_read_contract",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/automatic_restart_event_tests.rs",
+          "kind": "durable_once_only_restart_events_and_normal_exhaustion",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_control_fault_tests.rs",
+          "kind": "concurrent_signal_probe_and_cleanup_fault_visibility",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon_read_projection_tests.rs",
+          "kind": "fresh_per_agent_status_reuse_without_authority_changes",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "drain",
@@ -172,7 +187,7 @@
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "stop_instance",
@@ -211,7 +226,7 @@
       "nativeSymbol": "pub fn stop(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "kill_instance",
@@ -270,7 +285,7 @@
       "nativeSymbol": "pub fn kill(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "restart_instance",
@@ -319,7 +334,7 @@
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "load_next",
@@ -358,7 +373,7 @@
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "rollback_release",
@@ -387,7 +402,7 @@
       "nativeSymbol": "pub fn rollback(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "signed_upgrade",
@@ -426,7 +441,7 @@
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "signed_rollback",
@@ -465,7 +480,7 @@
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "designOperation": "reconcile_signed_intent",
@@ -509,7 +524,7 @@
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "sourceBlob": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     }
   ],
   "repositoryControlledGaps": [
@@ -562,13 +577,21 @@
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd",
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-control-plane",
     "codex-rs/hepta-fleet",
-    "codex-rs/hepta-supervisor"
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-matrix-protocol",
+    "codex-rs/hepta-memory",
+    "codex-rs/hepta-paths",
+    "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-types",
+    "codex-rs/uds"
   ],
   "observedAtHead": {
-    "commit": "69d2dba57f70fe5d1e095cee0bf69970b251ce56",
-    "tree": "74356ef5b8411cd70c94982376a684f712e5e1a4",
-    "interpretation": "Current source after two adversarial repair passes. Default native library: 323/323 selected passed (331 inventory); qualification,offline-authority-tools: 328/328 selected passed (336 inventory) on one unchanged 131-file execution manifest. Eight socket cases externally excluded after confirmed environment EPERM. Final production native blobs match execution; three test-only lint/format cleanup files were subsequently compiled by both all-target strict checks, without test reruns after fix/fmt. Both scoped fix and mandatory fmt passed; seven Python suites: 95 passed, actual hosted validator command: 65/65 accepted. See the audit report and unsigned LOCAL_EXECUTION_OBSERVATION_20261001.json. Unfiltered exact-head/merge CI, target-host qualification and independent acceptance remain unestablished; activation and release remain false."
+    "commit": "9cd7423a227cfb9b01fe5a3b25a297203720725f",
+    "tree": "9e7eb22c0c5cb84305c7d91168ba25860261e6dd",
+    "interpretation": "Third adversarial repair source observation. Frozen local execution: default selected library 340/340, qualification/offline-authority selected package 369/369, CLI 6/6, hosted/evidence/integrity Python 124/124. Twelve environment-dependent socket cases were externally excluded after confirmed EPERM; two existing helper cases remain ignored. Final production changes after execution are format-equivalent; one test-only redundant clone was removed. Both scoped fix, mandatory fmt and both all-target strict Clippy checks passed. See ADVERSARIAL_AUDIT_20261001_R3.md and unsigned LOCAL_EXECUTION_OBSERVATION_20261001_R3.json. Unfiltered exact-head/merge CI, target-host performance and independent acceptance remain unestablished; activation and release remain false."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -606,8 +629,32 @@
   "productCallerSemantics": "Named native source consumers compose the hepta-supervisord binary with the Supervisor library: the binary selects the ordinary or externally pinned verifier entry, fenced UDS handlers dispatch lifecycle and signed operations, and the owned ticker calls Supervisor::tick. These bindings establish source composition only. They do not establish product execution, target-host qualification, production writer admission, activation, release or independent acceptance.",
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "object": "0832c50e337461e75c494b097efa8849d581bf3c"
+    },
+    {
+      "path": ".github/workflows/hepta-supervisor-qualification.yml",
+      "object": "98523f9fb859b7bae33ff21c25a7874df4458b01"
+    },
+    {
+      "path": ".github/workflows/runtime-supervisor-deep-qualification.yml",
+      "object": "bee1426c2475c0f2a576ee6f1ef965e4580160c9"
+    },
+    {
+      "path": "codex-rs/.cargo/config.toml",
+      "object": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "object": "850026f8e93a5ad051ab6ba49c101f0aadb84d06"
+    },
+    {
       "path": "codex-rs/hepta-supervisor",
-      "object": "19aeba4ddd1b5bd755bccd338449aa60658e94ab"
+      "object": "a461d58181ef805de45cd0454be004d994d2ca42"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/automatic_restart_event_tests.rs",
+      "object": "37cf8fb86db114f858c2b807318937d4eb0a4a61"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_recovery_tests.rs",
@@ -632,6 +679,22 @@
     {
       "path": "codex-rs/hepta-supervisor/src/daemon_execution.rs",
       "object": "60d7c8bb02989096c58b0859f03383866a361e39"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon_read_projection.rs",
+      "object": "694f1ad65200c24e224f358bd1dc1f8b5fdd11ea"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon_read_projection_tests.rs",
+      "object": "da9c12672802a34622c5a6cee3945ae6b6f77e85"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon_read_view.rs",
+      "object": "ad7f6776374de8779ef58813cb31500f344be7fb"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon_read_view_tests.rs",
+      "object": "ab0c60de2652c768b270439aba700be19ba1b93c"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/durable_read_tests.rs",
@@ -703,7 +766,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "object": "f391769a9be2bdfbfd24966c839be87c15677c12"
+      "object": "b0c3e921d1282d24c67b7f81a1f229ca4971e937"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_snapshot_tests.rs",
@@ -711,7 +774,15 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-      "object": "b6a2a86e2d216d61c2ff9683f6c8e330441f3c30"
+      "object": "c9c880a93ecd189420df21a3a9b1e3dcc9e52173"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "object": "67367c30bf01a824e5a5c50192869e162f3354c2"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick_control_fault_tests.rs",
+      "object": "2bd711aad2e8870eb8809dcc41ae2c5f05b19e07"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_process_ref_tests.rs",
@@ -726,28 +797,108 @@
       "object": "549a344c0c1113d48c0faaec96b98b864fbe7f59"
     },
     {
+      "path": "codex-rs/rust-toolchain.toml",
+      "object": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/CAPABILITY_STATUS.json",
+      "object": "e503533e6959854d8b014a3e00ed5554e9808b69"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/CURRENT_STATUS.md",
+      "object": "efb9b80da39e887193db50623f04dd879a7cb3b5"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
+      "object": "c9a9fb488aa6a44ac82fcf580748848600a55d3a"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
+      "object": "555d01aaa18e14faeab99278d6137e27d516b0f6"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
+      "object": "b6b25ffb689b41701b9a11134ce556e91b18f058"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md",
+      "object": "e5b3a793da8ecbcd0608b5aced040a1d311ff00a"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/PRODUCTION_CONTROL_RUNBOOK.md",
+      "object": "af2ac72713add9c5c6051d92796c56cf49a0ac12"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/PRODUCTION_QUALIFICATION_PROFILE.json",
+      "object": "133b302e2074cc5b640c68f1480d1a4106a532f1"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md",
+      "object": "66ee7a921bb4a436d9c37600dd86adddd45e1454"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/TARGET_HOST_DRIVER_PROTOCOL.md",
+      "object": "81ec04146f1d6c26576eca2deb0ab2e81d73c5c9"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/TARGET_HOST_PROFILE.json",
+      "object": "395fc3f52ed44d0348314460bf4b0483dae62d0d"
+    },
+    {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "f241d7903646a0a5cba585a3d85ed6b6f07abd5b"
+      "object": "bf66e4b36981684725be6f80148e031aa0db3f1c"
+    },
+    {
+      "path": "justfile",
+      "object": "6ac734346c989cad04b754986032e364691233f3"
+    },
+    {
+      "path": "qualification/runtime-supervisor/history/README.md",
+      "object": "e4f9e8f0cd526bd1a745ae30b47be20c27cc4fd7"
+    },
+    {
+      "path": "qualification/runtime-supervisor/history/runtime-supervisor-six-phase-materializer.yml.txt",
+      "object": "7096a6275e824eb06c4f19f19a5e8b8b959ff73a"
+    },
+    {
+      "path": "scripts/hepta-repository-integrity.py",
+      "object": "f385ca920a4751103a347c97320b4b239f9d0a60"
     },
     {
       "path": "scripts/hepta_supervisor_ci.py",
-      "object": "ce88c575bfd49e1c207a02dda9363a2b6c80a236"
+      "object": "fa9e4e0554e0f8e293e5f71dbd1590ee98da0fcb"
     },
     {
       "path": "scripts/hepta_supervisor_ci_v3.py",
-      "object": "c50623e297f07f29134cbf7e7102164b0421da9e"
+      "object": "5de0b157085107c869207797d4e870fc7adb841b"
+    },
+    {
+      "path": "scripts/hepta_workflow_integrity.py",
+      "object": "0803695833fbf02448b2e6ea5636c305f1c02413"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "object": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
     },
     {
       "path": "scripts/runtime_supervisor_six_phase_materialize.py",
       "object": "4b7831c424c4f68e48cd9dc1dfc04ce073a24744"
     },
     {
+      "path": "scripts/test_hepta_repository_integrity.py",
+      "object": "6f4db1432f9a5f2deea445c53b4a546bbd49d315"
+    },
+    {
       "path": "scripts/test_hepta_supervisor_ci.py",
-      "object": "e67debed1bdfadb0073fe5be4e6edb10e0ddf00b"
+      "object": "f3c58beaae18d910e1851472c0987b9b40326cb8"
     },
     {
       "path": "scripts/test_hepta_supervisor_ci_v3.py",
-      "object": "0392820c2d3eb6081f58e4e09a889cc2f6b4494a"
+      "object": "57951e398b9fcd1f1453bb70aca5f9218b98ef03"
+    },
+    {
+      "path": "scripts/test_hepta_supervisor_workflow.py",
+      "object": "74753a7f9e18e74a40a2963582d23fbb268cfcbd"
     },
     {
       "path": "scripts/test_runtime_supervisor_materialize.py",
