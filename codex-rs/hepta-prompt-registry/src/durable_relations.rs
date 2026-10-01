@@ -301,3 +301,6 @@ impl StoredWithdrawal {
     }
 }
 
+#[cfg(test)]
+#[path = "durable_relations_tests.rs"]
+mod tests;
