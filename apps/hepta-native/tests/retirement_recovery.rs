@@ -252,11 +252,16 @@ fn retirement_failure_keeps_active_evidence_and_fences_the_owner() {
     hepta_native::private_state::PrivateStateRoot::open(directory.clone()).unwrap();
     // A complete empty head is followed by a conflicting immutable record path.
     let head = serde_json::json!({"schema":"hepta.native-retirement.v1", "checkpoint":{"head":null,"count":0}});
-    std::fs::write(
-        directory.join("head.json"),
-        serde_json::to_vec(&head).unwrap(),
-    )
-    .unwrap();
+    let head_path = directory.join("head.json");
+    snapshot::write_private_json(&head_path, &head);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt as _;
+        assert_eq!(
+            head_path.metadata().unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+    }
     let digest = sha256_hex(serde_json::to_vec(&closed).unwrap());
     std::fs::create_dir(directory.join(format!("record-{digest}.json"))).unwrap();
     assert!(journal.compact_closed_history(0).is_err());
