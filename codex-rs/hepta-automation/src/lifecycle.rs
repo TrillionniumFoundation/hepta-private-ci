@@ -852,6 +852,73 @@ impl AutomationStore {
         Ok(next)
     }
 
+    /// Reset a completed known-turn history scan to the head without settling
+    /// its unknown outcome. Exact snapshot CAS excludes a stale observer from
+    /// erasing newer cursor or lifecycle progress, including a reused cursor.
+    pub async fn reset_terminal_scan_after_exhaustion(
+        &self,
+        observed: &AutomationOccurrence,
+        observed_at_ms: u64,
+    ) -> Result<AutomationOccurrence, AutomationError> {
+        if observed.state != AutomationOccurrenceState::Indeterminate
+            || observed
+                .turn_id
+                .as_ref()
+                .is_none_or(|turn| turn.is_empty() || turn.len() > 256)
+            || observed
+                .terminal_scan_cursor
+                .as_ref()
+                .is_some_and(|cursor| {
+                    cursor.is_empty() || cursor.len() > MAX_TERMINAL_SCAN_CURSOR_BYTES
+                })
+        {
+            return Err(AutomationError::Invalid);
+        }
+        let (mut transaction, _) = self.begin_timer_write().await?;
+        let current = load_occurrence_row(
+            &mut transaction,
+            self,
+            observed.task_id,
+            observed.occurrence,
+        )
+        .await?
+        .ok_or(AutomationError::Conflict)?;
+        if current != *observed {
+            return Err(AutomationError::Conflict);
+        }
+        if current.terminal_scan_cursor.is_none() {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
+        let updated_at_ms = observed_at_ms.max(
+            current
+                .updated_at_ms
+                .checked_add(1)
+                .ok_or(AutomationError::Invalid)?,
+        );
+        let changed = sqlx::query(
+            "UPDATE automation_occurrence_lifecycle SET terminal_scan_cursor = NULL, updated_at_ms = ?
+             WHERE owner_agent_id = ? AND task_id = ? AND occurrence = ? AND state = 'indeterminate'
+               AND turn_id = ? AND terminal_scan_cursor = ? AND updated_at_ms = ?",
+        )
+        .bind(to_i64(updated_at_ms)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(current.task_id.to_string())
+        .bind(to_i64(current.occurrence)?)
+        .bind(current.turn_id.as_deref())
+        .bind(current.terminal_scan_cursor.as_deref())
+        .bind(to_i64(current.updated_at_ms)?)
+        .execute(&mut *transaction).await.map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        let next = load_occurrence_row(&mut transaction, self, current.task_id, current.occurrence)
+            .await?
+            .ok_or(AutomationError::Corrupt)?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(next)
+    }
+
     pub async fn mark_occurrence_indeterminate(
         &self,
         task_id: AutomationTaskId,

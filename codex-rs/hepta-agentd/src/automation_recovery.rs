@@ -22,6 +22,7 @@ use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationAdmission;
+use codex_hepta_automation::AutomationOccurrenceState;
 use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
 use codex_hepta_automation::AutomationQueueReceipt;
@@ -253,6 +254,12 @@ async fn reconcile_work(
                 return Ok(());
             }
             TurnLookup::Exhausted => {
+                if work.occurrence.state == AutomationOccurrenceState::Indeterminate {
+                    store
+                        .reset_terminal_scan_after_exhaustion(&work.occurrence, now_ms)
+                        .await?;
+                    return Ok(());
+                }
                 let mut bytes = b"hepta.automation.turn-history-exhausted.v1\0".to_vec();
                 bytes.extend_from_slice(work.occurrence.occurrence_id.as_bytes());
                 bytes.push(0);
