@@ -179,7 +179,7 @@ fn same_source_delivery_cannot_be_grafted_with_another_valid_serialization() {
     assert_eq!(original.source, other.source);
     assert_eq!(original.exercise, other.exercise);
     assert_eq!(original.materialization, other.materialization);
-    let mut grafted = original.clone();
+    let mut grafted = original;
     grafted.serialization = other.serialization;
     grafted.serialized_context = other.serialized_context;
     grafted.attachment = other.attachment;

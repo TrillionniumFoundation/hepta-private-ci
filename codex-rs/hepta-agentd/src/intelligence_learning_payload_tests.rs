@@ -187,7 +187,7 @@ fn v2_payload_round_trip_preserves_event_time_predecessor_and_authentication() {
     let restored: PersistedLearningEnvelopeV1 = serde_json::from_slice(&bytes).expect("decode");
     assert_eq!(
         bytes,
-        serde_json::to_vec(&restored).expect("canonical reencode")
+        serde_json::to_vec(&restored).expect("canonical re-encode")
     );
     assert_eq!(
         payload.payload.operation_id().expect("operation"),

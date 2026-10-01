@@ -676,7 +676,7 @@ fn fixture() -> Fixture {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -684,8 +684,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -843,7 +845,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -852,7 +854,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await

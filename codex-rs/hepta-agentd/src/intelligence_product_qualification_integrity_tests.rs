@@ -2,7 +2,7 @@ use super::*;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn qualification_appends_reject_mutated_prepared_decision_before_ledger_write() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -10,8 +10,10 @@ async fn qualification_appends_reject_mutated_prepared_decision_before_ledger_wr
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await

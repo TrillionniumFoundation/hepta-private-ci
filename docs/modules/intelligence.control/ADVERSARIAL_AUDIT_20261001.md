@@ -310,3 +310,52 @@ review declarations and derived-document checks also passed. These were
 pre-commit integration/navigation checks, not native execution receipts for a
 new merged source identity. New exact-head native, full Agentd, qualification
 and lint command records remain required for the integrated candidate.
+
+The integrated candidate `3de5e76dbb2bfeb5b19b951db7fa915a48422cd2`, tree
+`9a0d587e32dc1286d747a2bf884ff033fd0b83b5`, exposed two further source
+integration omissions in blocking run `36821206913`: Codespell rejected
+`reencode` in a test assertion message, and the closed caller proof omitted
+the real learning reconciler's final-use claim/dispatch calls. The spelling
+is corrected. `CALLERS.toml` now declares only that exact caller for both
+canonical boundaries. Browser-specific guards remain checked on the browser
+file; learning-specific guards check the existing destination-first,
+fresh-grant and exact-binding dispatch path. Raw/witness caller sets and all
+authority flags remain unchanged. The caller verifier and lexical self-test
+pass on this follow-up worktree; all twelve guard-removal/unregistered-caller
+attacks are rejected. The shared manifest is included in the pending review partition;
+old automation source observations are not relabeled as new execution.
+
+Recovered local `just fmt`, the main-relative formatting check and the bounded
+Bazel batch lock refresh returned exit zero, with no dependency-lock drift.
+An integrated owner-test attempt failed in `clap_builder` dependency compilation
+with ENOSPC before assertions, after the shared filesystem filled. It provides
+no owner-test pass. Earlier execution-session interruptions likewise do not
+provide successful command outcomes. Exact remote candidate records remain
+the execution authority; development navigation and source proofs do not
+replace qualification, independent acceptance or release.
+
+All three integrated independent lanes subsequently completed their ordinary
+stages: 104 intelligence, 52 operations, 119 ledger, 63 native and 220 default
+Agentd passes. Operations, ledger and default Agentd each retained one ignored
+test. The actual PR merge was `ad58a213662a30d04344f4092ddc9d03a7e5c9c5`, with
+the same `9a0d587e32dc1286d747a2bf884ff033fd0b83b5` tree. The repaired clock
+call compiled with the qualification feature, but that suite executed with
+220 passed, three failed and one ignored. All three old positive fixtures
+omitted signed evaluation input and host trust; their common failure digest
+binds the exact missing-session label, not a metric-policy failure.
+
+The three explicit legacy-qualification fixtures now reuse the existing
+real signed-evaluation fixture and install its activated host-root trust.
+That fixture rebuilds the evaluator-key-bound snapshot and binds the actual
+context, legal candidate set and current clock. The unsigned global fixture
+remains available for negative tests. Existing revocation and Prepared-mutation
+assertions remain unchanged. Only the test child's existing helper gains
+parent-local visibility; production signed-session checks and canonical-profile
+installation gates remain intact. These repaired assertions require execution
+on the next candidate; their former failures are not relabeled as passes.
+
+The recovered scoped `just fix` for intelligence, Agentd and the native worker
+host exited zero after compiling default test targets, with existing warnings.
+It removed one redundant clone in the owned delivery-graft regression.
+Formatting then passed. This is compilation/lint-fix evidence, not execution
+of the repaired feature assertions or a successful strict `-D warnings` gate.
