@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "720a1a9a3b7cdc9f9bdd3ec5d4a4895ddeb9de83",
+    "tree": "ba8dbaea8cd850502f24a62f7c9df52a21dddabc"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -191,8 +191,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "720a1a9a3b7cdc9f9bdd3ec5d4a4895ddeb9de83",
+    "tree": "ba8dbaea8cd850502f24a62f7c9df52a21dddabc"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -248,7 +248,31 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "3785444f8dc356837d4a153395653967c5a71cde"
+      "object": "de03f73af7111524ff68c8d046785abedfdcdd75"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_concurrency_tests.rs",
+      "object": "322d03f33e126b00a7340a7283399edd3f3d4178"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "51f58a722282f49b82a83a881d3d82ee34ecdfd7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "e7a77b992e1f5b32a356afa7e62933d6b572b124"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "848e25f2d2d02935bb52dfc71647a46991e92554"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_test_support.rs",
+      "object": "2d6f30db17efa5d7b7dcfde21a0fc6fb50db99d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "0122580c303dfcbfe87ffa15c3b1c09331f4a779"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",

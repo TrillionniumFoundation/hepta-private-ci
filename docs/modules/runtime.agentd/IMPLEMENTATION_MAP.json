@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ab8e07e174224f14a4994b8a0e57ed70b6014ee8",
-    "tree": "e84c8ba96f0b2ac068da3cf9a7769fc2747abf2b"
+    "commit": "720a1a9a3b7cdc9f9bdd3ec5d4a4895ddeb9de83",
+    "tree": "ba8dbaea8cd850502f24a62f7c9df52a21dddabc"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -344,7 +344,35 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "c4c0227e03cf63ba42a8d801ffbb9bc63ee4e190"
+      "object": "78d35c643e4e2d5f5b40467dd27fcc163b19d827"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "de03f73af7111524ff68c8d046785abedfdcdd75"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_concurrency_tests.rs",
+      "object": "322d03f33e126b00a7340a7283399edd3f3d4178"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "51f58a722282f49b82a83a881d3d82ee34ecdfd7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "e7a77b992e1f5b32a356afa7e62933d6b572b124"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "848e25f2d2d02935bb52dfc71647a46991e92554"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_test_support.rs",
+      "object": "2d6f30db17efa5d7b7dcfde21a0fc6fb50db99d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "0122580c303dfcbfe87ffa15c3b1c09331f4a779"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -367,6 +395,14 @@
       "object": "c7f7d080ac94724ad8625d0e5d9287df94af2abe"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "object": "d2abb8d747148ea2c65aa968303ac4e736dd9a57"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host_tests.rs",
+      "object": "790ef9a7d46dc1b93a98a522f9523065409a6658"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
       "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
     },
@@ -380,7 +416,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "ecf380cf63329f8fdee2610bede0b55752e1c7b4"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",

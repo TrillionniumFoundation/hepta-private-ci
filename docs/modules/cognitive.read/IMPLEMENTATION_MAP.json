@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "720a1a9a3b7cdc9f9bdd3ec5d4a4895ddeb9de83",
+    "tree": "ba8dbaea8cd850502f24a62f7c9df52a21dddabc"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -177,15 +177,23 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "3785444f8dc356837d4a153395653967c5a71cde"
+      "object": "de03f73af7111524ff68c8d046785abedfdcdd75"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
       "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_concurrency_tests.rs",
+      "object": "322d03f33e126b00a7340a7283399edd3f3d4178"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "51f58a722282f49b82a83a881d3d82ee34ecdfd7"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
-      "object": "38b2231ac0d4e4840a7a4f61cf5eca0391b18086"
+      "object": "e7a77b992e1f5b32a356afa7e62933d6b572b124"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
@@ -196,8 +204,20 @@
       "object": "eb4bb55f02209c7c52939e8004b9e1f560e632d3"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "848e25f2d2d02935bb52dfc71647a46991e92554"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_test_support.rs",
+      "object": "2d6f30db17efa5d7b7dcfde21a0fc6fb50db99d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "0122580c303dfcbfe87ffa15c3b1c09331f4a779"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "ecf380cf63329f8fdee2610bede0b55752e1c7b4"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -273,7 +293,7 @@
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
+      "object": "2c66f17842e3e600f2d97f3047e2fca08fa1d611"
     }
   ],
   "productCallers": [
@@ -320,8 +340,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "720a1a9a3b7cdc9f9bdd3ec5d4a4895ddeb9de83",
+    "tree": "ba8dbaea8cd850502f24a62f7c9df52a21dddabc"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
