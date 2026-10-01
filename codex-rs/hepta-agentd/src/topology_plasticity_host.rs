@@ -92,6 +92,7 @@ impl From<AdaptiveAnchorJournalErrorV1> for AgentdTopologyHostErrorV1 {
             AdaptiveAnchorJournalErrorV1::ScopeMismatch => Self::AnchorScopeMismatch,
             AdaptiveAnchorJournalErrorV1::FenceOverflow => Self::AnchorFenceOverflow,
             AdaptiveAnchorJournalErrorV1::Io(kind) => Self::AnchorIo(kind),
+            AdaptiveAnchorJournalErrorV1::Poisoned => Self::Poisoned,
             AdaptiveAnchorJournalErrorV1::InvalidScope
             | AdaptiveAnchorJournalErrorV1::Corrupt
             | AdaptiveAnchorJournalErrorV1::GenerationPending

@@ -442,6 +442,7 @@ impl From<AdaptiveAnchorJournalErrorV1> for AgentdPlasticityHostErrorV1 {
             AdaptiveAnchorJournalErrorV1::InvalidScope
             | AdaptiveAnchorJournalErrorV1::Corrupt
             | AdaptiveAnchorJournalErrorV1::GenerationPending
+            | AdaptiveAnchorJournalErrorV1::Poisoned
             | AdaptiveAnchorJournalErrorV1::Capacity => Self::AnchorCorrupt,
         }
     }
