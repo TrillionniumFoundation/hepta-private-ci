@@ -1244,7 +1244,9 @@ impl DurableOperationStore {
         }
         receipt.identity.validate()?;
         if receipt.semantic_digest != receipt.identity.semantic_digest() {
-            return Err(DurableOperationError::Invalid("destination semantic digest"));
+            return Err(DurableOperationError::Invalid(
+                "destination semantic digest",
+            ));
         }
         let mut tx = self
             .pool
@@ -1264,7 +1266,9 @@ impl DurableOperationStore {
             || operation.intent.destination != receipt.identity.destination
             || operation.intent.payload_digest != receipt.identity.payload_digest
         {
-            return Err(DurableOperationError::Conflict(receipt.identity.operation_id.clone()));
+            return Err(DurableOperationError::Conflict(
+                receipt.identity.operation_id.clone(),
+            ));
         }
         let operation = observe_terminal_tx(
             &mut tx,
@@ -1416,13 +1420,8 @@ async fn observe_terminal_tx(
     .execute(&mut **tx)
     .await
     .map_err(sqlx_error)?;
-    if let Some(status) = load_outbox_tx(
-        tx,
-        &operation.intent.destination,
-        scope_id,
-        operation_id,
-    )
-    .await?
+    if let Some(status) =
+        load_outbox_tx(tx, &operation.intent.destination, scope_id, operation_id).await?
         && status.state != DurableOutboxState::Acknowledged
     {
         let fence = status

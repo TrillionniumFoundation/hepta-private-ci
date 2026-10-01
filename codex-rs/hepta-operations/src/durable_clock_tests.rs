@@ -243,12 +243,17 @@ async fn delayed_effect_entry_rejects_expired_and_adopted_dispatches() {
             .await
             .expect("claim")
             .expect("row");
-        let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 44);
+        let (authority, signed, _authority_dir) =
+            authority_fixture(&claim.intent, /*nonce*/ 44);
         let authorized = store
             .authorize_dispatch(&authority, &signed, &claim)
             .await
             .expect("admission");
-        let mut writer = store.pool.begin_with("BEGIN IMMEDIATE").await.expect("writer");
+        let mut writer = store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("writer");
         let expires_at = now_millis().expect("expiry clock") + 1;
         sqlx::query("UPDATE cross_owner_outbox SET lease_until_ms = ?")
             .bind(expires_at)
@@ -296,7 +301,10 @@ async fn delayed_effect_entry_rejects_expired_and_adopted_dispatches() {
         assert!(matches!(result, Err(DurableOperationError::StaleLease)));
         assert_eq!(calls, 0);
         assert_eq!(
-            store.operation(&operation.scope_id, &operation.operation_id).await.expect("after denied entry"),
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("after denied entry"),
             before
         );
     }
@@ -336,7 +344,17 @@ async fn effect_entry_checks_lease_after_authority_wait() {
         .expect("open");
     let operation = intent(b"consumer lease wait");
     store.prepare_intent(&operation).await.expect("prepare");
-    let claim = store.claim_operation(&operation.scope_id, &operation.operation_id, &stable_id("worker:consumer-wait"), generation(/*value*/ 1), Duration::from_secs(30)).await.expect("claim").expect("row");
+    let claim = store
+        .claim_operation(
+            &operation.scope_id,
+            &operation.operation_id,
+            &stable_id("worker:consumer-wait"),
+            generation(/*value*/ 1),
+            Duration::from_secs(30),
+        )
+        .await
+        .expect("claim")
+        .expect("row");
     let (_, signed, authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 45);
     let clock = Arc::new(EntryWaitClock {
         calls: AtomicUsize::new(/*v*/ 0),
@@ -345,32 +363,49 @@ async fn effect_entry_checks_lease_after_authority_wait() {
     let authority = FinalUseAuthority::open_state_dir_with_clock(
         authority_dir.path(),
         "security-owner".to_owned(),
-        ed25519_dalek::SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+        ed25519_dalek::SigningKey::from_bytes(&[47; 32])
+            .verifying_key()
+            .to_bytes(),
         FinalUseRevocations {
             authority_epoch: 9,
             revision: 1,
             revoked_grant_ids: BTreeSet::new(),
         },
         clock.clone(),
-    ).expect("clock-injected authority");
-    let authorized = store.authorize_dispatch(&authority, &signed, &claim).await.expect("admission");
+    )
+    .expect("clock-injected authority");
+    let authorized = store
+        .authorize_dispatch(&authority, &signed, &claim)
+        .await
+        .expect("admission");
     sqlx::query("UPDATE cross_owner_outbox SET lease_until_ms = ?")
         .bind(now_millis().expect("consumer lease clock") + 500)
         .execute(&store.pool)
         .await
         .expect("expire during authority wait");
-    let before = store.operation(&operation.scope_id, &operation.operation_id).await.expect("before entry");
+    let before = store
+        .operation(&operation.scope_id, &operation.operation_id)
+        .await
+        .expect("before entry");
     let mut calls = 0;
-    let result = store.execute_authorized(authorized, |_| {
-        calls += 1;
-        DispatchEffect::Dispatched {
-            value: (),
-            dispatch_digest: Digest32::of_bytes(b"must not dispatch after authority wait"),
-            acknowledgement_digest: None,
-        }
-    }).await;
+    let result = store
+        .execute_authorized(authorized, |_| {
+            calls += 1;
+            DispatchEffect::Dispatched {
+                value: (),
+                dispatch_digest: Digest32::of_bytes(b"must not dispatch after authority wait"),
+                acknowledgement_digest: None,
+            }
+        })
+        .await;
     assert!(matches!(result, Err(DurableOperationError::StaleLease)));
     assert_eq!(clock.waits.load(Ordering::SeqCst), 1);
     assert_eq!(calls, 0);
-    assert_eq!(store.operation(&operation.scope_id, &operation.operation_id).await.expect("after denied entry"), before);
+    assert_eq!(
+        store
+            .operation(&operation.scope_id, &operation.operation_id)
+            .await
+            .expect("after denied entry"),
+        before
+    );
 }

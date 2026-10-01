@@ -354,7 +354,8 @@ async fn durable_claim_intent_rejects_payload_and_predecessor_substitution() {
     let mut changed_payload = claim.clone();
     changed_payload.intent.payload_digest = Digest32::of_bytes(b"substituted payload");
     let mut changed_predecessor = claim.clone();
-    changed_predecessor.intent.expected_predecessor = Some(stable_id("operation:substituted-parent"));
+    changed_predecessor.intent.expected_predecessor =
+        Some(stable_id("operation:substituted-parent"));
     let forged_claims = [(changed_payload, 41), (changed_predecessor, 42)];
     let proof = Digest32::of_bytes(b"substitution evidence");
     for (forged, nonce) in &forged_claims {
@@ -480,11 +481,10 @@ async fn destination_receipt_binding_is_checked_before_terminal_projection_and_r
     let store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
         .await
         .expect("source open");
-    let destination = DestinationDedupeStore::open_standalone(
-        &directory.path().join("destination.sqlite3"),
-    )
-    .await
-    .expect("destination open");
+    let destination =
+        DestinationDedupeStore::open_standalone(&directory.path().join("destination.sqlite3"))
+            .await
+            .expect("destination open");
     let operation = intent(b"exact destination receipt payload");
     store.prepare_intent(&operation).await.expect("prepare");
     let claim = store
@@ -499,22 +499,35 @@ async fn destination_receipt_binding_is_checked_before_terminal_projection_and_r
         .expect("claim")
         .expect("row");
     let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 46);
-    let authorized = store.authorize_dispatch(&authority, &signed, &claim).await.expect("authorize");
-    store.execute_authorized(authorized, |_| DispatchEffect::Dispatched {
-        value: (),
-        dispatch_digest: Digest32::of_bytes(b"receipt dispatch"),
-        acknowledgement_digest: Some(Digest32::of_bytes(b"receipt acknowledgement")),
-    }).await.expect("dispatch");
+    let authorized = store
+        .authorize_dispatch(&authority, &signed, &claim)
+        .await
+        .expect("authorize");
+    store
+        .execute_authorized(authorized, |_| DispatchEffect::Dispatched {
+            value: (),
+            dispatch_digest: Digest32::of_bytes(b"receipt dispatch"),
+            acknowledgement_digest: Some(Digest32::of_bytes(b"receipt acknowledgement")),
+        })
+        .await
+        .expect("dispatch");
     let identity = DestinationOperationIdentity {
         destination: operation.destination.clone(),
         scope_id: operation.scope_id.clone(),
         operation_id: operation.operation_id.clone(),
         payload_digest: operation.payload_digest,
     };
-    let DestinationApplyStart::Apply(apply) = destination.begin_apply(&identity).await.expect("destination entry") else {
+    let DestinationApplyStart::Apply(apply) = destination
+        .begin_apply(&identity)
+        .await
+        .expect("destination entry")
+    else {
         panic!("first destination application");
     };
-    let receipt = apply.commit_applied(Digest32::of_bytes(b"destination applied outcome")).await.expect("destination receipt");
+    let receipt = apply
+        .commit_applied(Digest32::of_bytes(b"destination applied outcome"))
+        .await
+        .expect("destination receipt");
     let observer = stable_id("observer:destination-receipt");
     let mut wrong_destination = receipt.clone();
     wrong_destination.identity.destination = stable_id("other.destination");
@@ -530,25 +543,60 @@ async fn destination_receipt_binding_is_checked_before_terminal_projection_and_r
     wrong_operation.semantic_digest = wrong_operation.identity.semantic_digest();
     let mut wrong_semantic_domain = receipt.clone();
     wrong_semantic_domain.semantic_digest = operation.semantic_digest();
-    let substitutions = [wrong_destination, wrong_payload, wrong_scope, wrong_operation, wrong_semantic_domain];
+    let substitutions = [
+        wrong_destination,
+        wrong_payload,
+        wrong_scope,
+        wrong_operation,
+        wrong_semantic_domain,
+    ];
     assert!(matches!(
-        store.reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 2)).await,
+        store
+            .reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 2))
+            .await,
         Err(DurableOperationError::StaleGeneration)
     ));
-    let mut before = store.adopt_unsettled_generation(&operation.scope_id, &operation.operation_id, generation(/*value*/ 2)).await.expect("new source owner");
+    let mut before = store
+        .adopt_unsettled_generation(
+            &operation.scope_id,
+            &operation.operation_id,
+            generation(/*value*/ 2),
+        )
+        .await
+        .expect("new source owner");
     for terminal_replay in [false, true] {
         for substituted in &substitutions {
             assert!(matches!(
-                store.reconcile_destination_receipt(substituted, observer.clone(), generation(/*value*/ 2)).await,
-                Err(DurableOperationError::Conflict(_) | DurableOperationError::Missing(_) | DurableOperationError::Invalid(_))
+                store
+                    .reconcile_destination_receipt(
+                        substituted,
+                        observer.clone(),
+                        generation(/*value*/ 2)
+                    )
+                    .await,
+                Err(DurableOperationError::Conflict(_)
+                    | DurableOperationError::Missing(_)
+                    | DurableOperationError::Invalid(_))
             ));
         }
         assert!(matches!(
-            store.reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 1)).await,
+            store
+                .reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 1))
+                .await,
             Err(DurableOperationError::StaleGeneration)
         ));
-        assert_eq!(store.operation(&operation.scope_id, &operation.operation_id).await.expect("after rejected receipt").expect("row"), before);
-        let settled = store.reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 2)).await.expect("exact typed receipt");
+        assert_eq!(
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("after rejected receipt")
+                .expect("row"),
+            before
+        );
+        let settled = store
+            .reconcile_destination_receipt(&receipt, observer.clone(), generation(/*value*/ 2))
+            .await
+            .expect("exact typed receipt");
         assert_eq!(settled.state, DurableOperationState::Applied);
         if terminal_replay {
             assert_eq!(settled, before);
@@ -605,22 +653,29 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
             .connect_with((*options).clone())
             .await
             .expect("single source connection");
-        let destination = DestinationDedupeStore::open_standalone(
-            &directory.path().join("destination.sqlite3"),
-        )
-        .await
-        .expect("destination open");
+        let destination =
+            DestinationDedupeStore::open_standalone(&directory.path().join("destination.sqlite3"))
+                .await
+                .expect("destination open");
         let operation = intent(b"queue owner settles before producer bookkeeping");
         store.prepare_intent(&operation).await.expect("prepare");
-        let claim = store.claim_operation(
-            &operation.scope_id,
-            &operation.operation_id,
-            &stable_id("worker:projection-race"),
-            generation(/*value*/ 1),
-            Duration::from_secs(/*secs*/ 30),
-        ).await.expect("claim").expect("row");
-        let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, /*nonce*/ 47);
-        let authorized = store.authorize_dispatch(&authority, &signed, &claim).await.expect("authorize");
+        let claim = store
+            .claim_operation(
+                &operation.scope_id,
+                &operation.operation_id,
+                &stable_id("worker:projection-race"),
+                generation(/*value*/ 1),
+                Duration::from_secs(/*secs*/ 30),
+            )
+            .await
+            .expect("claim")
+            .expect("row");
+        let (authority, signed, _authority_dir) =
+            authority_fixture(&claim.intent, /*nonce*/ 47);
+        let authorized = store
+            .authorize_dispatch(&authority, &signed, &claim)
+            .await
+            .expect("authorize");
         let observer_store = store.clone();
         let observer_destination = destination.clone();
         let observer_intent = operation.clone();
@@ -628,19 +683,36 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
         let observer = async move {
             let observer_id = stable_id("observer:projection-race");
             let observer_generation = if cut == Cut::NewOwner {
-                observer_store.adopt_unsettled_generation(
-                    &observer_intent.scope_id,
-                    &observer_intent.operation_id,
-                    generation(/*value*/ 2),
-                ).await.expect("new owner adopts");
+                observer_store
+                    .adopt_unsettled_generation(
+                        &observer_intent.scope_id,
+                        &observer_intent.operation_id,
+                        generation(/*value*/ 2),
+                    )
+                    .await
+                    .expect("new owner adopts");
                 generation(/*value*/ 2)
             } else {
                 generation(/*value*/ 1)
             };
             loop {
-                let mut connection = observer_store.pool.acquire().await.expect("owner connection");
-                let mut tx = connection.begin_with("BEGIN IMMEDIATE").await.expect("owner writer");
-                let current = load_operation_tx(&mut tx, &observer_intent.scope_id, &observer_intent.operation_id).await.expect("owner source").expect("row");
+                let mut connection = observer_store
+                    .pool
+                    .acquire()
+                    .await
+                    .expect("owner connection");
+                let mut tx = connection
+                    .begin_with("BEGIN IMMEDIATE")
+                    .await
+                    .expect("owner writer");
+                let current = load_operation_tx(
+                    &mut tx,
+                    &observer_intent.scope_id,
+                    &observer_intent.operation_id,
+                )
+                .await
+                .expect("owner source")
+                .expect("row");
                 if matches!(cut, Cut::BeforeAcknowledgement | Cut::BeforeIndeterminate)
                     && current.state == DurableOperationState::Dispatching
                 {
@@ -660,10 +732,17 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
                         operation_id: observer_intent.operation_id.clone(),
                         payload_digest: observer_intent.payload_digest,
                     };
-                    let DestinationApplyStart::Apply(apply) = observer_destination.begin_apply(&identity).await.expect("owner destination entry") else {
+                    let DestinationApplyStart::Apply(apply) = observer_destination
+                        .begin_apply(&identity)
+                        .await
+                        .expect("owner destination entry")
+                    else {
                         panic!("first owner application");
                     };
-                    let receipt = apply.commit_applied(owner_proof).await.expect("real destination receipt");
+                    let receipt = apply
+                        .commit_applied(owner_proof)
+                        .await
+                        .expect("real destination receipt");
                     assert_eq!(receipt.identity, identity);
                     assert_eq!(receipt.semantic_digest, identity.semantic_digest());
                 }
@@ -677,7 +756,9 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
                         observer_generation,
                     },
                     now_millis().expect("owner observation clock"),
-                ).await.expect("owner terminal projection");
+                )
+                .await
+                .expect("owner terminal projection");
                 tx.commit().await.expect("owner terminal commit");
                 return terminal;
             }
@@ -690,7 +771,12 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
                 let mut observer = Box::pin(observer);
                 // Register the owner as an actual pool waiter while the source
                 // entry owns its only connection. This poll cannot write/wait.
-                assert!(observer.as_mut().poll(&mut Context::from_waker(Waker::noop())).is_pending());
+                assert!(
+                    observer
+                        .as_mut()
+                        .poll(&mut Context::from_waker(Waker::noop()))
+                        .is_pending()
+                );
                 assert!(owner_sender.send(observer).is_ok());
                 if cut == Cut::BeforeRecordUnknown {
                     return DispatchEffect::Indeterminate {
@@ -717,16 +803,37 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
         } else {
             assert!(matches!(result, Err(DurableOperationError::StaleLease)));
         }
-        assert_eq!(store.operation(&operation.scope_id, &operation.operation_id).await.expect("final source").expect("row"), terminal);
+        assert_eq!(
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("final source")
+                .expect("row"),
+            terminal
+        );
         assert_eq!(terminal.terminal_outcome, Some(outcome));
-        let outbox = store.outbox_status(&operation.destination, &operation.scope_id, &operation.operation_id).await.expect("final outbox").expect("row");
+        let outbox = store
+            .outbox_status(
+                &operation.destination,
+                &operation.scope_id,
+                &operation.operation_id,
+            )
+            .await
+            .expect("final outbox")
+            .expect("row");
         assert_eq!(outbox.acknowledgement_digest, Some(owner_proof));
-        assert_eq!(terminal.dispatch_digest.is_some(), matches!(cut, Cut::BeforeAcknowledgement | Cut::BeforeIndeterminate));
-        assert_eq!(terminal.indeterminate_digest, if cut == Cut::NewOwner {
-            Some(Digest32::of_bytes(OWNER_HANDOFF_UNKNOWN_DIGEST_DOMAIN))
-        } else {
-            None
-        });
+        assert_eq!(
+            terminal.dispatch_digest.is_some(),
+            matches!(cut, Cut::BeforeAcknowledgement | Cut::BeforeIndeterminate)
+        );
+        assert_eq!(
+            terminal.indeterminate_digest,
+            if cut == Cut::NewOwner {
+                Some(Digest32::of_bytes(OWNER_HANDOFF_UNKNOWN_DIGEST_DOMAIN))
+            } else {
+                None
+            }
+        );
         destination.close().await;
         store.close().await;
     }
