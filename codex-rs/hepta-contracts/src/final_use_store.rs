@@ -267,6 +267,8 @@ impl Store {
             return Err(FinalUseError::InvalidTrust);
         }
 
+        #[cfg(target_os = "macos")]
+        verify_directory(&store.root)?;
         Ok((store, state))
     }
 
@@ -290,10 +292,21 @@ impl Store {
         let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
         file.seek(SeekFrom::End(0))
             .map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(target_os = "macos")]
+        {
+            verify_directory(&self.root)?;
+            verify_private_file(&file)?;
+        }
         file.write_all(&authority_epoch.to_be_bytes())
             .and_then(|()| file.write_all(&nonce))
             .and_then(|()| file.sync_all())
-            .map_err(|_| FinalUseError::Unavailable)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(target_os = "macos")]
+        {
+            verify_private_file(&file)?;
+            verify_directory(&self.root)?;
+        }
+        Ok(())
     }
 
     fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
@@ -304,13 +317,26 @@ impl Store {
             head: head.clone(),
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(target_os = "macos")]
+        validate_destination(&self.root, "authority.json")?;
         let mut file = open_private(&self.root, "authority.next", Access::Create)?;
+        #[cfg(target_os = "macos")]
+        {
+            verify_directory(&self.root)?;
+            verify_private_file(&file)?;
+        }
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
-        // Windows does not allow replacing a file held without delete sharing.
-        // Close the synced staging handle, not the exclusive authority lock.
+        #[cfg(target_os = "macos")]
+        {
+            verify_directory(&self.root)?;
+            verify_private_file(&file)?;
+        }
+        // Keep the verified staging handle on Darwin; Windows requires closing
+        // a file held without delete sharing. The owner lock stays held.
+        #[cfg(not(target_os = "macos"))]
         drop(file);
         replace_state(&self.root)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
@@ -358,7 +384,14 @@ impl Store {
         if authority_epoch == 0 || claims.len() > MAX_CLAIMS {
             return Err(FinalUseError::InvalidTrust);
         }
+        #[cfg(target_os = "macos")]
+        validate_destination(&self.root, "authority.claims")?;
         let mut file = open_private(&self.root, "authority.claims.next", Access::Create)?;
+        #[cfg(target_os = "macos")]
+        {
+            verify_directory(&self.root)?;
+            verify_private_file(&file)?;
+        }
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
         for nonce in claims {
             if *nonce == [0; 32] {
@@ -369,7 +402,13 @@ impl Store {
                 .map_err(|_| FinalUseError::Unavailable)?;
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
-        // Keep the owner lock; release only this synced staging handle.
+        #[cfg(target_os = "macos")]
+        {
+            verify_directory(&self.root)?;
+            verify_private_file(&file)?;
+        }
+        // Keep the owner lock and, on Darwin, the verified staging handle.
+        #[cfg(not(target_os = "macos"))]
         drop(file);
         replace_claims(&self.root)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
@@ -382,10 +421,16 @@ fn read_bounded(
     maximum: usize,
 ) -> Result<Vec<u8>, FinalUseError> {
     let mut bytes = Vec::new();
-    open_private(directory, name, Access::Read)?
+    let mut file = open_private(directory, name, Access::Read)?;
+    (&mut file)
         .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
         .read_to_end(&mut bytes)
         .map_err(|_| FinalUseError::Unavailable)?;
+    #[cfg(target_os = "macos")]
+    {
+        verify_private_file(&file)?;
+        verify_directory(directory)?;
+    }
     if bytes.len() > maximum {
         return Err(FinalUseError::InvalidTrust);
     }
@@ -401,7 +446,6 @@ enum Access {
 #[cfg(unix)]
 fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
     use std::os::unix::fs::DirBuilderExt;
-    use std::os::unix::fs::MetadataExt;
     if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
         && error.kind() != std::io::ErrorKind::AlreadyExists
     {
@@ -417,6 +461,13 @@ fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
     )
     .map_err(|_| FinalUseError::UnsafeStateDirectory)?
     .into();
+    verify_directory(&directory)?;
+    Ok(directory)
+}
+
+#[cfg(unix)]
+fn verify_directory(directory: &File) -> Result<(), FinalUseError> {
+    use std::os::unix::fs::MetadataExt;
     let metadata = directory
         .metadata()
         .map_err(|_| FinalUseError::Unavailable)?;
@@ -426,23 +477,15 @@ fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
     {
         return Err(FinalUseError::UnsafeStateDirectory);
     }
-    Ok(directory)
+    #[cfg(target_os = "macos")]
+    codex_utils_private_state::verify_private_permissions(directory)
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    Ok(())
 }
 
 #[cfg(unix)]
-fn open_private(directory: &StoreRoot, name: &str, access: Access) -> Result<File, FinalUseError> {
-    use rustix::fs::Mode;
-    use rustix::fs::OFlags;
+fn verify_private_file(file: &File) -> Result<(), FinalUseError> {
     use std::os::unix::fs::MetadataExt;
-    let flags = match access {
-        Access::Read => OFlags::RDONLY,
-        Access::Write => OFlags::RDWR,
-        Access::Create => OFlags::RDWR | OFlags::CREATE,
-    } | OFlags::NOFOLLOW
-        | OFlags::CLOEXEC;
-    let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
-        .map_err(|_| FinalUseError::Unavailable)?
-        .into();
     let metadata = file.metadata().map_err(|_| FinalUseError::Unavailable)?;
     if !metadata.is_file()
         || metadata.mode() & 0o077 != 0
@@ -451,7 +494,42 @@ fn open_private(directory: &StoreRoot, name: &str, access: Access) -> Result<Fil
     {
         return Err(FinalUseError::UnsafeStateDirectory);
     }
+    #[cfg(target_os = "macos")]
+    codex_utils_private_state::verify_private_permissions(file)
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn open_private(directory: &StoreRoot, name: &str, access: Access) -> Result<File, FinalUseError> {
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
+    let flags = match access {
+        Access::Read => OFlags::RDONLY,
+        Access::Write => OFlags::RDWR,
+        Access::Create => OFlags::RDWR | OFlags::CREATE,
+    } | OFlags::NOFOLLOW
+        | OFlags::NONBLOCK
+        | OFlags::CLOEXEC;
+    let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
+        .map_err(|_| FinalUseError::Unavailable)?
+        .into();
+    verify_private_file(&file)?;
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
     Ok(file)
+}
+
+#[cfg(target_os = "macos")]
+fn validate_destination(directory: &File, name: &str) -> Result<(), FinalUseError> {
+    if entry_exists(directory, name)? {
+        // Validate existing evidence instead of replacing an unsafe ACL with
+        // the new staging file's private permissions.
+        open_private(directory, name, Access::Read)?;
+    }
+    Ok(())
 }
 
 #[cfg(windows)]
@@ -486,28 +564,61 @@ fn open_private(
 
 #[cfg(unix)]
 fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
-    match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
+    let result = match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
         Ok(_) => Ok(true),
         Err(rustix::io::Errno::NOENT) => Ok(false),
         Err(_) => Err(FinalUseError::Unavailable),
-    }
+    };
+    #[cfg(target_os = "macos")]
+    verify_directory(directory)?;
+    result
 }
 
 #[cfg(unix)]
 fn replace_state(directory: &File) -> Result<(), FinalUseError> {
-    rustix::fs::renameat(directory, "authority.next", directory, "authority.json")
-        .map_err(|_| FinalUseError::Unavailable)
+    #[cfg(target_os = "macos")]
+    let source = open_private(directory, "authority.next", Access::Read)?;
+    #[cfg(target_os = "macos")]
+    {
+        validate_destination(directory, "authority.json")?;
+        verify_directory(directory)?;
+        verify_private_file(&source)?;
+    }
+    let result = rustix::fs::renameat(directory, "authority.next", directory, "authority.json")
+        .map_err(|_| FinalUseError::Unavailable);
+    #[cfg(target_os = "macos")]
+    {
+        verify_private_file(&source)?;
+        verify_directory(directory)?;
+    }
+    result
 }
 
 #[cfg(unix)]
 fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
-    rustix::fs::renameat(
+    #[cfg(target_os = "macos")]
+    let source = open_private(directory, "authority.claims.next", Access::Read)?;
+    #[cfg(target_os = "macos")]
+    {
+        validate_destination(directory, "authority.claims")?;
+        verify_directory(directory)?;
+        verify_private_file(&source)?;
+    }
+    let result = rustix::fs::renameat(
         directory,
         "authority.claims.next",
         directory,
         "authority.claims",
     )
-    .map_err(|_| FinalUseError::Unavailable)
+    .map_err(|_| FinalUseError::Unavailable);
+    #[cfg(target_os = "macos")]
+    {
+        verify_private_file(&source)?;
+        verify_directory(directory)?;
+    }
+    result
 }
 
 #[cfg(windows)]
@@ -556,3 +667,11 @@ fn replace_claims(_directory: &StoreRoot) -> Result<(), FinalUseError> {
 #[cfg(all(test, unix))]
 #[path = "final_use_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, target_os = "macos"))]
+#[path = "final_use_store_macos_tests.rs"]
+mod macos_tests;
+
+#[cfg(all(test, unix))]
+#[path = "final_use_store_unix_tests.rs"]
+mod unix_tests;
