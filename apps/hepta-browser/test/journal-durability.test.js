@@ -3,6 +3,7 @@ import { mkdtemp, open, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
+import { spawnSync } from "node:child_process";
 
 import { FileBrowserOperationJournal } from "../src/journal.js";
 
@@ -191,6 +192,17 @@ test("a short failed write is fenced and a fresh reader rejects its torn tail", 
       1,
       "operation.1",
     ),
+    /owner recovery/,
+  );
+  // This fixture owns the failed writer; only explicit owner recovery can
+  // remove its stale lock, after which the torn tail still fails integrity.
+  await rm(`${path}.writer-lock`, { recursive: true });
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).getOperation(
+      "profile.1",
+      1,
+      "operation.1",
+    ),
     /incomplete/,
   );
   assert.deepEqual(await readFile(path), bytes);
@@ -270,4 +282,86 @@ test("a close failure after a write also fences the live owner", async (t) => {
     journal.recordDispatch(record("operation.2")),
     /owner recovery/,
   );
+});
+
+test("a second process cannot cross admission while the first writer is synchronizing", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  const source = new URL("../src/journal.js", import.meta.url).href;
+  let attempted = false;
+  observeSync(t, prototype, async (event) => {
+    if (event.kind !== "file" || attempted) return;
+    attempted = true;
+    const code = `import { FileBrowserOperationJournal } from ${JSON.stringify(source)};
+      try {
+        await new FileBrowserOperationJournal(${JSON.stringify(path)}).recordDispatch(${JSON.stringify(record())});
+        process.exit(1);
+      } catch (error) {
+        process.stderr.write(error.message);
+        process.exit(73);
+      }`;
+    const child = spawnSync(
+      process.execPath,
+      ["--input-type=module", "-e", code],
+      {
+        encoding: "utf8",
+        timeout: 15000,
+      },
+    );
+    assert.equal(child.status, 73, child.stderr);
+    assert.match(child.stderr, /writer lock is held/);
+  });
+  await journal.recordDispatch(record());
+  assert.equal(attempted, true);
+  assert.deepEqual(
+    await journal.getOperation("profile.1", 1, "operation.1"),
+    record(),
+  );
+});
+
+test("abrupt writer exit leaves a lock that a fresh process does not steal", async (t) => {
+  const { root, path } = await fixture(t);
+  const source = new URL("../src/journal.js", import.meta.url).href;
+  const code = `import { open } from "node:fs/promises";
+    import { FileBrowserOperationJournal } from ${JSON.stringify(source)};
+    const probe = await open(${JSON.stringify(join(root, "child-probe"))}, "w", 0o600);
+    const prototype = Object.getPrototypeOf(probe);
+    await probe.close();
+    const sync = prototype.sync;
+    prototype.sync = async function () {
+      if ((await this.stat()).isFile()) process.exit(73);
+      return sync.call(this);
+    };
+    await new FileBrowserOperationJournal(${JSON.stringify(path)}).recordDispatch(${JSON.stringify(record())});`;
+  const child = spawnSync(
+    process.execPath,
+    ["--input-type=module", "-e", code],
+    {
+      encoding: "utf8",
+      timeout: 15000,
+    },
+  );
+  assert.equal(child.status, 73, child.stderr);
+  const reopened = new FileBrowserOperationJournal(path);
+  await assert.rejects(
+    reopened.getOperation("profile.1", 1, "operation.1"),
+    /writer lock is held/,
+  );
+  await assert.rejects(
+    reopened.recordDispatch(record("operation.2")),
+    /writer lock is held/,
+  );
+});
+
+test("complete-looking bytes after failed sync cannot be blessed by a different journal instance", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  observeSync(t, prototype, async (event) => {
+    if (event.kind === "file") throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record()), { code: "EIO" });
+  const reopened = new FileBrowserOperationJournal(path);
+  await assert.rejects(
+    reopened.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
+  await assert.rejects(reopened.recordDispatch(record()), /owner recovery/);
 });

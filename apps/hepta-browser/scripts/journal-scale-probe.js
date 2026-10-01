@@ -105,12 +105,7 @@ if (args[0] === "--single") {
   for (const count of counts) {
     const child = spawnSync(
       process.execPath,
-      [
-        "--experimental-default-type=module",
-        fileURLToPath(import.meta.url),
-        "--single",
-        String(count),
-      ],
+      [fileURLToPath(import.meta.url), "--single", String(count)],
       { encoding: "utf8", timeout: 300000, maxBuffer: 1024 * 1024 },
     );
     if (child.error || child.status !== 0) {

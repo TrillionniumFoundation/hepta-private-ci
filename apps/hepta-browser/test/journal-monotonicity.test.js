@@ -1,9 +1,20 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHash } from "node:crypto";
-import { appendFile, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  appendFile,
+  chmod,
+  link,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rename,
+  rm,
+  utimes,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import {
   FileBrowserOperationJournal,
@@ -242,7 +253,7 @@ test("file: abrupt process exit after synced observation preserves terminal dedu
     process.exit(73);`;
   const child = spawnSync(
     process.execPath,
-    ["--experimental-default-type=module", "--input-type=module", "-e", code],
+    ["--input-type=module", "-e", code],
     { encoding: "utf8", timeout: 15000 },
   );
   assert.equal(child.status, 73, child.stderr);
@@ -267,4 +278,145 @@ test("file: queued observations use their entry-time identity", async (t) => {
     (await journal.getOperation("profile.1", 1, "operation.1")).status,
     "succeeded",
   );
+});
+
+test("file: journal rejects a shared writable parent directory", async (t) => {
+  if (process.platform === "win32")
+    return t.skip("Unix parent permission invariant");
+  const { path, journal } = await fixture(t);
+  await chmod(dirname(path), 0o777);
+  await assert.rejects(journal.recordDispatch(record()), /parent permissions/);
+});
+
+test("file: hard-linked journals cannot supply replay decisions", async (t) => {
+  if (process.platform === "win32") return t.skip("Unix hard-link invariant");
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  await link(path, `${path}.alias`);
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /hard-link count/,
+  );
+});
+
+test("file: invalid UTF-8 cannot be laundered through a valid replacement-character checksum", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record({ observationReason: "�" }));
+  const bytes = await readFile(path);
+  const index = bytes.indexOf(Buffer.from("�", "utf8"));
+  // A truncated three-byte sequence was previously decoded as one replacement
+  // character and accepted under the original checksum.
+  const corrupted = Buffer.concat([
+    bytes.subarray(0, index + 2),
+    bytes.subarray(index + 3),
+  ]);
+  await writeFile(path, corrupted, { mode: 0o600 });
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /not valid UTF-8/,
+  );
+});
+
+test("file: same-size tampering is detected even when an external writer restores mtime", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const source = await readFile(path, "utf8");
+  const { stat } = await import("node:fs/promises");
+  const before = await stat(path);
+  await writeFile(path, source.replace("dispatching", "tampered___"), {
+    mode: 0o600,
+  });
+  await utimes(path, before.atime, before.mtime);
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /checksum mismatch/,
+  );
+});
+
+test("file: replacing the journal invalidates a live owner's verified record cache", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  await writeFile(
+    `${path}.replacement`,
+    line("dispatch", record({ operationId: "operation.2" })),
+    { mode: 0o600 },
+  );
+  await rename(`${path}.replacement`, path);
+  assert.equal(await journal.getOperation("profile.1", 1, "operation.1"), null);
+  assert.deepEqual(
+    await journal.getOperation("profile.1", 1, "operation.2"),
+    record({ operationId: "operation.2" }),
+  );
+});
+
+test("file: concurrent instances serialize admission and preserve both unrelated operations", async (t) => {
+  const { path, journal } = await fixture(t);
+  const other = new FileBrowserOperationJournal(path);
+  await Promise.all([
+    journal.recordDispatch(record()),
+    other.recordDispatch(record({ operationId: "operation.2" })),
+  ]);
+  assert.equal((await journal.listOperations("profile.1", 1)).length, 2);
+  const attempts = await Promise.allSettled([
+    journal.recordDispatch(record({ operationId: "operation.3" })),
+    other.recordDispatch(
+      record({ operationId: "operation.3", semanticDigest: D3 }),
+    ),
+  ]);
+  assert.deepEqual(
+    attempts.map((result) => result.status),
+    ["fulfilled", "rejected"],
+  );
+  assert.equal(
+    (await other.getOperation("profile.1", 1, "operation.3")).semanticDigest,
+    D2,
+  );
+});
+
+test("file: an existing external writer lock is never stolen or bypassed", async (t) => {
+  const { path, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const before = await readFile(path);
+  await mkdir(`${path}.writer-lock`, { mode: 0o700 });
+  await assert.rejects(
+    journal.recordDispatch(record({ operationId: "operation.2" })),
+    /writer lock is held/,
+  );
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /writer lock is held/,
+  );
+  assert.deepEqual(await readFile(path), before);
+  // Only the owner can establish that the external writer is gone and release it.
+  await rm(`${path}.writer-lock`, { recursive: true });
+  assert.deepEqual(
+    await journal.getOperation("profile.1", 1, "operation.1"),
+    record(),
+  );
+});
+
+test("file: verified cache avoids full replay until an external journal mutation", async (t) => {
+  const { path, journal } = await fixture(t);
+  const { open } = await import("node:fs/promises");
+  const probe = await open(`${path}.probe`, "w", 0o600);
+  const prototype = Object.getPrototypeOf(probe);
+  await probe.close();
+  const readFile = prototype.readFile;
+  let fullReads = 0;
+  t.mock.method(prototype, "readFile", async function (...args) {
+    fullReads += 1;
+    return readFile.apply(this, args);
+  });
+  await journal.recordDispatch(record());
+  await journal.recordObservation(terminal());
+  await journal.getOperation("profile.1", 1, "operation.1");
+  await journal.listOperations("profile.1", 1);
+  assert.equal(fullReads, 0);
+  await appendFile(
+    path,
+    line("dispatch", record({ operationId: "operation.2" })),
+  );
+  assert.equal((await journal.listOperations("profile.1", 1)).length, 2);
+  await journal.getOperation("profile.1", 1, "operation.1");
+  assert.equal(fullReads, 1);
 });
