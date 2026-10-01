@@ -179,6 +179,8 @@
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/app_runtime.rs",
     "codex-rs/hepta-agentd/src/error.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -186,7 +188,10 @@
     "codex-rs/hepta-contracts/CALLERS.toml",
     "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
     "codex-rs/hepta-intelligence/Cargo.toml",
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
     "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql",
     "codex-rs/hepta-memory/migrations/0014_kg_incremental_generation_storage.sql",
@@ -195,6 +200,7 @@
     "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_model.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
@@ -237,6 +243,8 @@
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/app_runtime.rs",
     "codex-rs/hepta-agentd/src/error.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -244,7 +252,10 @@
     "codex-rs/hepta-contracts/CALLERS.toml",
     "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
     "codex-rs/hepta-intelligence/Cargo.toml",
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
     "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
     "codex-rs/hepta-kg",
     "codex-rs/hepta-kg/src/validated_generation.rs",
     "codex-rs/hepta-kg/src/validated_generation_tests.rs",
@@ -256,6 +267,7 @@
     "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_model.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
@@ -333,6 +345,14 @@
       "object": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "f696b2adfc12924f7cea067e37907c46cd3ffecd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "object": "a4a755a5adc6005cd917b3e8ccc3995d6d34fd67"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
       "object": "55a43f94456aa6a7c00d10f83ba85fa3140b8ca2"
     },
@@ -361,8 +381,20 @@
       "object": "9a012a9df0c0b7a6d6d8a60d1ad6300eda2a6ab3"
     },
     {
+      "path": "codex-rs/hepta-intelligence/src/lib.rs",
+      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "object": "803989e30f19c8f6cce78cde09434925f4f0a522"
+    },
+    {
       "path": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
       "object": "16cc0e55cc961a8dc72f6193fb641dcbc074b360"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "1e247f40bb8156357cf6d6274891d09e8b88570e"
     },
     {
       "path": "codex-rs/hepta-kg",
@@ -423,6 +455,10 @@
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
       "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+      "object": "dbf660047683938d18d45f803d2f6004c790dc16"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
