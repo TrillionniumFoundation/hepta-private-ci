@@ -122,7 +122,7 @@ fn registered_owner_conflict_cannot_be_omitted_or_clock_masked_from_selection() 
                 graph.nodes[1].supports[0].tombstoned = true;
                 graph.nodes[1]
                     .supports
-                    .push(support("replacement endpoint"));
+                    .push(support("replacement-endpoint"));
             }
             _ => unreachable!(),
         }
@@ -239,7 +239,7 @@ fn registered_numeric_relations_require_exact_edges_and_authenticated_pair_evide
             },
             confidence: ProbabilityQ32::ONE,
             validity_digest: digest("supplemental prerequisite"),
-            supports: vec![support("supplemental prerequisite")],
+            supports: vec![support("supplemental-prerequisite")],
         });
         let supplement = rebuild_graph(supplement);
         let selected = select_portfolio_v1(
