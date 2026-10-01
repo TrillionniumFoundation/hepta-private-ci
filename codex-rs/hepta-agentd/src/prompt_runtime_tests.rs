@@ -1,6 +1,7 @@
 use super::*;
 use codex_hepta_prompt_optimizer::canonical::*;
 use codex_hepta_types::AuthorityPosture;
+use pretty_assertions::assert_eq;
 
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -501,9 +502,14 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
     );
 }
 
-#[test]
-fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
-    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+struct ProductPromptFixture {
+    pipeline: AgentdPromptPipelineOwner,
+    authority: FinalUseAuthority,
+    signing_key: SigningKey,
+    wall_now: u64,
+}
+
+fn staged_product_pipeline(temporary: &tempfile::TempDir) -> ProductPromptFixture {
     let registry_root = temporary.path().join("prompt-registry");
     let runtime_root = temporary.path().join("prompt-runtime");
     let authority_root = temporary.path().join("prompt-authority");
@@ -659,7 +665,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             .unwrap_or_else(|error| panic!("register realization: {error}"));
     }
 
-    let logical_now = 100_u64;
+    let logical_now = wall_now;
     let candidates = pipeline
         .enumerate_candidates(PromptEnumerationRequestV1 {
             set_id: id("enumeration:agentd-product"),
@@ -740,7 +746,19 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|error| panic!("compile and stage: {error}"));
     assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
 
-    let runtime = pipeline.runtime_owner();
+    ProductPromptFixture {
+        pipeline,
+        authority,
+        signing_key,
+        wall_now,
+    }
+}
+
+#[test]
+fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    let fixture = staged_product_pipeline(&temporary);
+    let runtime = fixture.pipeline.runtime_owner();
     let staged = runtime
         .prepare(PromptRuntimePrepareRequest {
             thread_id: "thread:product".to_owned(),
@@ -750,7 +768,10 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|error| panic!("prepare staged product prompt: {error}"))
         .unwrap_or_else(|| panic!("staged attachment missing"));
     assert_eq!(staged.developer_fragments.len(), 1);
-    assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    assert_eq!(
+        staged.developer_fragments[0].text.as_bytes(),
+        b"Inspect evidence before mutation."
+    );
 }
 
 #[test]
@@ -758,3 +779,6 @@ fn owner_remains_send_sync_with_fault_injection() {
     fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<super::AgentdPromptRuntimeOwner>();
 }
+
+#[path = "prompt_runtime_source_tests.rs"]
+mod source_fence;
