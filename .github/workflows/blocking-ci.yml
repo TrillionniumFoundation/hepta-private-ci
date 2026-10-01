@@ -79,6 +79,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Select Browser Node runtime
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
       - name: Run Browser state, journal, IPC and Agentd boundary regressions
         run: node --test apps/hepta-browser/test/*.test.js
 

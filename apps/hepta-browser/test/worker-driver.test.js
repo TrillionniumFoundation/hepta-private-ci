@@ -117,7 +117,10 @@ function fakeLauncher({
   };
 }
 
-async function preparedDriver({ launcher = fakeLauncher() } = {}) {
+async function preparedDriver({
+  launcher = fakeLauncher(),
+  startTimeoutMs = 5_000,
+} = {}) {
   const root = await realpath(
     await mkdtemp(join(tmpdir(), "hepta-worker-driver-")),
   );
@@ -130,15 +133,27 @@ async function preparedDriver({ launcher = fakeLauncher() } = {}) {
     profileRoot: join(root, "profiles"),
     launcher,
   });
-  const started = await driver.start({
-    profileId: "profile.1",
-    principalId: "principal.1",
-    manifestDigest: D1,
-    grantDigest: D1,
-    generation: 1,
-    allowedOrigins: ["https://example.com"],
-  });
-  return { driver, started };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), startTimeoutMs);
+  try {
+    const started = await driver.start(
+      {
+        profileId: "profile.1",
+        principalId: "principal.1",
+        manifestDigest: D1,
+        grantDigest: D1,
+        generation: 1,
+        allowedOrigins: ["https://example.com"],
+      },
+      { signal: controller.signal },
+    );
+    return { driver, started };
+  } catch (error) {
+    await driver.shutdown();
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 test("artifact-bound subprocess driver uses only the private framed channel", async () => {
@@ -614,12 +629,36 @@ test("shutdown during artifact verification prevents late worker startup", async
   assert.equal(spawned, false);
 });
 
-test("shutdown kills a real pipe-connected worker that remains alive after stdin EOF", async () => {
-  let child;
-  const posture = fakeLauncher().posture;
-  const protocolUrl = new URL("../src/worker-protocol.js", import.meta.url)
-    .href;
-  const workerSource = `
+test("fixture startup aborts and kills a worker that never acknowledges start", async () => {
+  const kills = [];
+  await assert.rejects(
+    preparedDriver({
+      startTimeoutMs: 20,
+      launcher: fakeLauncher({
+        holdKinds: ["start"],
+        onSpawn: (child) => {
+          child.kill = (signal) => {
+            kills.push(signal);
+            return true;
+          };
+        },
+      }),
+    }),
+    { name: "AbortError" },
+  );
+  assert.equal(kills.includes("SIGKILL"), true);
+});
+
+test(
+  "shutdown kills a real pipe-connected worker that remains alive after stdin EOF",
+  { timeout: 10_000 },
+  async (t) => {
+    let child;
+    t.after(() => child?.kill("SIGKILL"));
+    const posture = fakeLauncher().posture;
+    const protocolUrl = new URL("../src/worker-protocol.js", import.meta.url)
+      .href;
+    const workerSource = `
     const { WorkerFrameDecoder, buildWorkerFrame, encodeWorkerFrame } = await import(process.argv[1]);
     const decoder = new WorkerFrameDecoder();
     let sequence = 1;
@@ -634,36 +673,37 @@ test("shutdown kills a real pipe-connected worker that remains alive after stdin
     });
     setInterval(() => {}, 1000);
   `;
-  const { driver } = await preparedDriver({
-    launcher: {
-      posture,
-      spawn() {
-        child = spawn(
-          process.execPath,
-          ["--input-type=module", "-e", workerSource, protocolUrl],
-          { stdio: ["pipe", "pipe", "pipe"], env: {} },
-        );
-        return child;
+    const { driver } = await preparedDriver({
+      launcher: {
+        posture,
+        spawn() {
+          child = spawn(
+            process.execPath,
+            ["--input-type=module", "-e", workerSource, protocolUrl],
+            { stdio: ["pipe", "pipe", "pipe"], env: {} },
+          );
+          return child;
+        },
       },
-    },
-  });
-  let timer;
-  const exited = Promise.race([
-    once(child, "exit"),
-    new Promise((_, reject) => {
-      timer = setTimeout(
-        () => reject(new Error("worker remained alive after shutdown")),
-        2_000,
-      );
-    }),
-  ]);
-  try {
-    await driver.shutdown();
-    const [, signal] = await exited;
-    assert.equal(signal, "SIGKILL");
-    await driver.shutdown();
-  } finally {
-    clearTimeout(timer);
-    child.kill("SIGKILL");
-  }
-});
+    });
+    let timer;
+    const exited = Promise.race([
+      once(child, "exit"),
+      new Promise((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error("worker remained alive after shutdown")),
+          2_000,
+        );
+      }),
+    ]);
+    try {
+      await driver.shutdown();
+      const [, signal] = await exited;
+      assert.equal(signal, "SIGKILL");
+      await driver.shutdown();
+    } finally {
+      clearTimeout(timer);
+      child.kill("SIGKILL");
+    }
+  },
+);
