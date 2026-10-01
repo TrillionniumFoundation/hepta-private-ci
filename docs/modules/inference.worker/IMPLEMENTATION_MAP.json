@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "009d81719788e505534a09222c980c930af0f19f",
-    "tree": "fccd702e63373a4b366eabb6af04fce7ef14d804"
+    "commit": "62157390fe4950b19bc21795fe66c07665f664d0",
+    "tree": "4e39a0ed9f13e63e0270256e1fd1f1b41c098246"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -140,6 +140,20 @@
           "symbol": "pub async fn run_observe_terminal_observed(",
           "buildTarget": "codex-hepta-agentd::client",
           "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_observation.rs",
+          "symbol": "pub(super) fn observe_event(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server::observation",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_text.rs",
+          "symbol": "pub(super) fn complete(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server::text",
+          "ownerModule": "inference.worker"
         }
       ],
       "tests": [
@@ -150,7 +164,7 @@
         },
         {
           "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-          "kind": "matching_native_events_and_usage",
+          "kind": "matching_native_events_usage_complete_message_snapshots_and_physical_terminal_retention",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         },
         {
@@ -207,9 +221,14 @@
           "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
           "kind": "signed_preparation_admission_binds_spawn_and_current_generation",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_text_tests.rs",
+          "kind": "item_identity_streamed_and_completed_text_utf8_and_bookkeeping_bounds",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, freezes exact App Server request/correlation, requires independently signed final-use authority and commits dispatch before the effect. New requests enter turn/start once. Completed duplicates return stored historical observations; uncertain reopen attempts use exact thread/read history without a new turn/start. Recovered observations retain prior usage, owner loss and cancelled/timed-out/quarantined local boundary; missing history or usage remains unknown. Intelligence-bound recovered terminals reconcile the exact existing Agentd target through observed-current-revision CAS; existing exact terminal receipts remain historical truth and conflicts deny local success. Historical missing authority frontiers quarantine before owner publication. Every denied nonterminal observation and cancellation intent is journaled before external cancellation or interruption awaits. Existing terminal owner receipts must match the same worker-boundary phase used for publication, without reading a live clock for matching historical facts. Prepared no-effect abort proofs are one-shot and bound to the exact issuing control instance, request and revision; foreign or reopened owners cannot consume them. Exact recovered physical terminal facts retain a bounded UTF-8 output prefix when provider text exceeds 1 MiB, quarantine logical success and permit terminal capacity settlement. Nonterminal recovery persists local cancellation before and after awaited reconciliation, including error exits; cancellation cannot become recovered success. Definitively unsent stops cannot later accept settlement observations or regain a slot. Optional cognitive queries and intelligence bindings are separate profiles: their combination is rejected before admission because current owner ports cannot revalidate both cuts together. The executable parses required flags, the complete intelligence group and supported profile combination before protected configuration, journal or stdin I/O; parser tests are not full executable E2E. Agentd transport and native requests remain bound to process spawn generation; a private intelligence cursor pins the independently observed owner lifecycle epoch and exact handoff revision. Status checks require the pinned epoch, response epoch and receipt generation to agree. Terminal publication validates its returned epoch and revision, then qualifies local success with a bounded fresh post-CAS status matching the complete committed durable receipt, ignoring only RPC-local idempotence. Entry-sampled stale response metadata cannot qualify a drained owner; lost qualification preserves committed owner and physical terminal facts while denying local success. Canonical owner preparation validates the current durable RunStart, binds spawn/current separately in its fence and reuses shared snapshot/attachment identity guards at internal admission.",
+      "sourceSemantics": "Reserves through durable inference.control, freezes exact App Server request/correlation, requires independently signed final-use authority and commits dispatch before the effect. New requests enter turn/start once. Completed duplicates return stored historical observations; uncertain reopen attempts use exact thread/read history without a new turn/start. Recovered observations retain prior usage, owner loss and cancelled/timed-out/quarantined local boundary; missing history or usage remains unknown. Intelligence-bound recovered terminals reconcile the exact existing Agentd target through observed-current-revision CAS; existing exact terminal receipts remain historical truth and conflicts deny local success. Historical missing authority frontiers quarantine before owner publication. Every denied nonterminal observation and cancellation intent is journaled before external cancellation or interruption awaits. Existing terminal owner receipts must match the same worker-boundary phase used for publication, without reading a live clock for matching historical facts. Prepared no-effect abort proofs are one-shot and bound to the exact issuing control instance, request and revision; foreign or reopened owners cannot consume them. Exact recovered physical terminal facts retain a bounded UTF-8 output prefix when provider text exceeds 1 MiB, quarantine logical success and permit terminal capacity settlement. Nonterminal recovery persists local cancellation before and after awaited reconciliation, including error exits; cancellation cannot become recovered success. Definitively unsent stops cannot later accept settlement observations or regain a slot. Optional cognitive queries and intelligence bindings are separate profiles: their combination is rejected before admission because current owner ports cannot revalidate both cuts together. The executable parses required flags, the complete intelligence group and supported profile combination before protected configuration, journal or stdin I/O; parser tests are not full executable E2E. Agentd transport and native requests remain bound to process spawn generation; a private intelligence cursor pins the independently observed owner lifecycle epoch and exact handoff revision. Status checks require the pinned epoch, response epoch and receipt generation to agree. Terminal publication validates its returned epoch and revision, then qualifies local success with a bounded fresh post-CAS status matching the complete committed durable receipt, ignoring only RPC-local idempotence. Entry-sampled stale response metadata cannot qualify a drained owner; lost qualification preserves committed owner and physical terminal facts while denying local success. Canonical owner preparation validates the current durable RunStart, binds spawn/current separately in its fence and reuses shared snapshot/attachment identity guards at internal admission. Live text observes matching AgentMessageDelta, full ItemCompleted/AgentMessage and terminal message snapshots. Private item identity/range state persists through interruption grace, preserves distinct identical messages and appends only missing text from matching completed snapshots. Text and separate observation bookkeeping are bounded before growth; an oversized or contradictory terminal snapshot denies local success after preserving exact physical terminal status and correlation. Output retains observed append/arrival order; a conflicting item-order history prefix conservatively denies recovery instead of rewriting retained facts.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -315,7 +334,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-architecture-convergence.yml",
-      "object": "c59308b504ecfdc0bcad57f22764d6e3ee778965"
+      "object": "1d5f6ef20c6d50854c5142cba9d421c84226a7fa"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -379,7 +398,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host",
-      "object": "25a796223fc6bb67a11b7c1971b7dc262a11b920"
+      "object": "05a1fb9a3a46cc19afff7658697e275daffd64f4"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/FINAL_USE_AUTHORITY_PORT.md",
@@ -407,11 +426,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "126fbd4319ab04b7c3630eca916d077e7dbc71c0"
+      "object": "086bddb5e7ab5770c456bc9505fefbab2571e56c"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "faed30fd2dc0b02e56a0c15b31663784bfa6905a"
+      "object": "d7971729e51d04ba64212bd19f3f6ecd60725bb6"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_cli.rs",
@@ -454,6 +473,10 @@
       "object": "1dffd06e016024aad161fc949e1f825fcee179bd"
     },
     {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_observation.rs",
+      "object": "bae8d38bd57bea9a1c3ed0add7b0771a740ca2c1"
+    },
+    {
       "path": "codex-rs/hepta-infer-worker-host/src/native_observation_tests.rs",
       "object": "e30806cb18b2f36e25ceb7852734a5a8634efbc5"
     },
@@ -474,20 +497,28 @@
       "object": "02f1cb23667aee72b7ba914fb4c2276f71c5a4d3"
     },
     {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_text.rs",
+      "object": "91e3c7919a41c7524571decc1d29d3a018034aba"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_text_tests.rs",
+      "object": "741c18269f664f75b15eb7b1ef08ac4abd965b46"
+    },
+    {
       "path": "docs/modules/inference.control/TECHNICAL.md",
       "object": "64110f3d66882b3f1039b795cac3ee3f2c3e9adf"
     },
     {
       "path": "docs/modules/inference.worker/TECHNICAL.md",
-      "object": "51c908023991808dfe220492c4f15c1edc03d5da"
+      "object": "734a343dc52f6985813dccabb2d73618d2bf4590"
     },
     {
       "path": "docs/readiness/LANE_B_NATIVE_HOST.md",
-      "object": "716f5fda8df17c7719bf6dcc1969c9e6fbe95d73"
+      "object": "2b2dfc2026d2b1adcb2a9f98193baa22ff84cd10"
     },
     {
       "path": "qualification/module-execution-dossiers/detail/inference.worker.md",
-      "object": "0d0e26381801321c3199e3cffbb092b5e9a539c6"
+      "object": "9c48c56d07c92e6e7b8fcd1c579b6187decdcc9e"
     }
   ]
 }
