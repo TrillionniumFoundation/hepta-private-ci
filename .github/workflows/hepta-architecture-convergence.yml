@@ -176,7 +176,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-worker.json" --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host
       - name: Intelligence owner generation regressions
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
+        if: always() && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/intelligence-owner-generation.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --lib -E 'test(canonical_invocation_uses_current_lifecycle_generation) | test(signed_evaluation_completes_existing_owner_preparation_and_run_admission) | test(daemon_control_owns_the_run_lifecycle_and_advertises_it)'
