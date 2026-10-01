@@ -99,6 +99,13 @@ pub struct SparseJournal {
 }
 
 impl SparseJournal {
+    /// Return the scope validated against the journal header and replay checks.
+    /// Owner-evidence consumers use this context before attributing its state.
+    #[must_use]
+    pub fn scope(&self) -> JournalScope {
+        self.scope
+    }
+
     /// Bootstrap or recover the first segment without an external acknowledgement
     /// witness. This cannot detect loss of a valid suffix or empty replacement.
     pub fn open(
