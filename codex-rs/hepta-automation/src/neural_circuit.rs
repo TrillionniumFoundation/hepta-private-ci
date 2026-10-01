@@ -336,7 +336,7 @@ pub fn validate_circuit_successor_v1(
     if current.circuit_id != successor.circuit_id {
         return Err(invalid("circuit successor changes stable circuit identity"));
     }
-    if successor.version != current.version.saturating_add(1) {
+    if current.version.checked_add(1) != Some(successor.version) {
         return Err(invalid("circuit successor version is not monotone by one"));
     }
     if successor.predecessor_digest.as_ref() != Some(&current.circuit_digest) {
@@ -499,6 +499,41 @@ mod tests {
         .expect("successor");
         validate_circuit_successor_v1(&current, &successor).expect("admitted successor");
         assert_ne!(current.circuit_digest, successor.circuit_digest);
+    }
+
+    #[test]
+    fn saturated_version_cannot_admit_same_version_successor() {
+        let template = v1();
+        let current = NeuralCircuitCandidateV1::new(
+            &template.circuit_id,
+            u32::MAX,
+            Some(digest("previous")),
+            &template.entry_node,
+            template.nodes.clone(),
+            template.edges.clone(),
+            vec![],
+            digest("route"),
+            digest("parameters"),
+            digest("resources"),
+        )
+        .expect("current");
+        let successor = NeuralCircuitCandidateV1::new(
+            &current.circuit_id,
+            u32::MAX,
+            Some(current.circuit_digest.clone()),
+            &current.entry_node,
+            current.nodes.clone(),
+            current.edges.clone(),
+            vec![],
+            digest("route-next"),
+            digest("parameters-next"),
+            digest("resources"),
+        )
+        .expect("successor shape");
+        assert!(matches!(
+            validate_circuit_successor_v1(&current, &successor),
+            Err(TaskFlowError::Invalid(_))
+        ));
     }
 
     #[test]

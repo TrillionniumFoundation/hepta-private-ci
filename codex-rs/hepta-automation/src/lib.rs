@@ -24,6 +24,7 @@ mod schedule_v2;
 mod scheduler;
 mod store;
 mod taskflow;
+mod taskflow_guard;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;

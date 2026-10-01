@@ -75,6 +75,22 @@ impl AutomationStore {
                 "automation occurrence and scheduler lease differ".to_string(),
             ));
         }
+        let canonical_payload: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM automation_tasks
+             WHERE task_id = ? AND owner_agent_id = ? AND thread_id = ? AND prompt = ?)",
+        )
+        .bind(lease.task.task_id.to_string())
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(&lease.task.thread_id)
+        .bind(&lease.task.prompt)
+        .fetch_one(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if !canonical_payload {
+            return Err(TaskFlowError::Conflict(
+                "automation lease payload differs from its durable task".to_string(),
+            ));
+        }
         let step_attempt = self
             .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
             .await?;
@@ -134,7 +150,7 @@ impl AutomationStore {
                     .is_none_or(|expires| expires <= now_ms)
                     && run
                         .generation
-                        .is_some_and(|generation| lease.lease_generation > generation) =>
+                        .is_some_and(|generation| current_fence.generation > generation) =>
             {
                 run = self
                     .claim_taskflow_run(&run.run_id, &current_fence, now_ms, lease_duration_ms)
@@ -693,7 +709,16 @@ impl AutomationStore {
                 )
                 .await?;
             }
-            TaskFlowStepState::Reconciled => {}
+            TaskFlowStepState::Reconciled
+                if step.final_outcome == Some(terminal_outcome(terminal))
+                    && step.receipt_digest.as_ref() == Some(terminal_receipt_digest) => {}
+            TaskFlowStepState::Reconciled => {
+                // Do not let the recovery wrapper reinterpret a committed
+                // historical terminal step as a repairable run crash window.
+                return Err(TaskFlowError::InvalidTransition(
+                    "automation terminal observation conflicts with its settled step".to_string(),
+                ));
+            }
             _ => {
                 return Err(TaskFlowError::Conflict(
                     "automation TaskFlow step is not reconcilable".to_string(),

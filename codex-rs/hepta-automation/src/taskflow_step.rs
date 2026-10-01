@@ -32,6 +32,7 @@ use crate::TaskFlowReconcileOutcome;
 use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
+use crate::taskflow_guard::reject_unresolved_steps;
 
 /// Qualification APIs remain available, while the same durable ledger is
 /// now installed by the normal automation schema and used by the composed
@@ -267,6 +268,13 @@ impl AutomationStore {
                 "TaskFlow step intent is already bound to different bytes".to_string(),
             ));
         }
+        reject_unresolved_steps(
+            &mut tx,
+            self.taskflow_owner_agent_id(),
+            run_id,
+            Some(step_id),
+        )
+        .await?;
         let event = append_step_event(
             &mut tx,
             self,
@@ -1565,6 +1573,14 @@ fn check_active_run_fence(
         .is_none_or(|expires| expires <= now_ms)
     {
         return Err(TaskFlowError::StaleFence);
+    }
+    if !matches!(
+        run.state,
+        crate::TaskFlowRunState::Queued | crate::TaskFlowRunState::Running
+    ) {
+        return Err(TaskFlowError::Conflict(
+            "TaskFlow run is not admitting new step work".to_string(),
+        ));
     }
     Ok(())
 }

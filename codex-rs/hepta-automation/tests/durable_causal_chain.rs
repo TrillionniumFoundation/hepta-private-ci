@@ -862,3 +862,261 @@ async fn reopen_rejects_tampered_canonical_occurrence_identity() {
         Err(AutomationError::Corrupt)
     ));
 }
+
+#[tokio::test]
+async fn preparation_rejects_payload_mutated_after_materialization() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75120",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("task");
+    let lease = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim")
+        .unwrap();
+    let occurrence = store
+        .materialize_occurrence(&lease, 100)
+        .await
+        .expect("occurrence");
+    let mut forged = lease.clone();
+    forged.task.prompt = "altered after materialization".to_string();
+    assert!(matches!(
+        store
+            .prepare_occurrence_taskflow(&occurrence, &forged, 101, 30_000)
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+    ));
+    assert_eq!(
+        store
+            .taskflow_run(&occurrence.taskflow_run_id)
+            .await
+            .expect("run"),
+        None
+    );
+    store
+        .prepare_occurrence_taskflow(&occurrence, &lease, 101, 30_000)
+        .await
+        .expect("canonical preparation");
+    store
+        .record_dispatch_uncertain(&lease, 102)
+        .await
+        .expect("canonical boundary");
+    store.close().await;
+}
+
+#[tokio::test]
+async fn terminal_recovery_cannot_rewrite_a_settled_historical_step() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75121",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    scheduler.tick(100).await.expect("tick");
+    let work = store
+        .pending_occurrence_work(1)
+        .await
+        .expect("work")
+        .pop()
+        .unwrap();
+    let run = store
+        .taskflow_run(&work.occurrence.taskflow_run_id)
+        .await
+        .expect("run")
+        .unwrap();
+    let fence = TaskFlowFence::new(
+        run.owner_agent_id.clone(),
+        run.owner_id.unwrap(),
+        run.owner_epoch.unwrap(),
+        run.generation.unwrap(),
+        run.fencing_token.unwrap(),
+    )
+    .expect("fence");
+    let step = store
+        .read_taskflow_step(&run.run_id, "codex_turn", 1, &fence)
+        .await
+        .expect("step")
+        .unwrap();
+    let terminal = Sha256Digest::for_bytes(b"immutable terminal receipt");
+    store
+        .reconcile_taskflow_step(
+            &run.run_id,
+            "codex_turn",
+            1,
+            &fence,
+            &step.intent_digest,
+            &step.payload_digest,
+            "step-only-terminal",
+            &terminal,
+            TaskFlowReconcileOutcome::Succeeded,
+            101,
+        )
+        .await
+        .expect("step settles before crash");
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen after crash");
+    for (state, receipt) in [
+        (AutomationOccurrenceTerminalState::Failed, terminal.clone()),
+        (
+            AutomationOccurrenceTerminalState::Succeeded,
+            Sha256Digest::for_bytes(b"changed receipt"),
+        ),
+    ] {
+        assert!(matches!(
+            reopened
+                .reconcile_occurrence_taskflow_terminal_with_recovery(
+                    &work, state, &receipt, 102, 100_000, 30_000
+                )
+                .await,
+            Err(codex_hepta_automation::TaskFlowError::InvalidTransition(_))
+        ));
+    }
+    assert_eq!(
+        reopened
+            .taskflow_run(&run.run_id)
+            .await
+            .expect("run")
+            .unwrap()
+            .state,
+        TaskFlowRunState::Indeterminate
+    );
+    reopened
+        .reconcile_occurrence_taskflow_terminal_with_recovery(
+            &work,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            102,
+            100_000,
+            30_000,
+        )
+        .await
+        .expect("exact terminal history recovers");
+    assert_eq!(
+        reopened
+            .taskflow_run(&run.run_id)
+            .await
+            .expect("run")
+            .unwrap()
+            .state,
+        TaskFlowRunState::Succeeded
+    );
+    reopened.close().await;
+}
+
+#[tokio::test]
+async fn pre_step_crash_reclaims_using_taskflow_generation_units() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let template = draft(
+        "019153a4-3088-7000-a56a-9b1964f75122",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&template).await.expect("template task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    scheduler
+        .tick(100)
+        .await
+        .expect("register canonical automation definition");
+    let definition = store
+        .taskflow_definition("hepta.automation.codex-turn", 1)
+        .await
+        .expect("definition")
+        .unwrap();
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75123",
+        AutomationSchedule::Once,
+        200,
+    );
+    store.create_task(&task).await.expect("task");
+    let old = store.claim_due(200, 2, 10).await.expect("claim").unwrap();
+    let occurrence = store
+        .materialize_occurrence(&old, 200)
+        .await
+        .expect("occurrence");
+    let fence = TaskFlowFence::new(
+        old.task.owner_agent_id.clone(),
+        format!("automation.scheduler:{}", task.task_id),
+        old.lease_generation,
+        1_000_001,
+        old.lease_token.clone(),
+    )
+    .expect("historical taskflow fence");
+    store
+        .create_taskflow_run(
+            &occurrence.taskflow_run_id,
+            &definition.workflow_id,
+            definition.version,
+            definition.definition_digest(),
+            THREAD_ID,
+            200,
+        )
+        .await
+        .expect("run");
+    let claimed = store
+        .claim_taskflow_run(&occurrence.taskflow_run_id, &fence, 200, 10)
+        .await
+        .expect("run claim");
+    store
+        .apply_taskflow_command(
+            &codex_hepta_automation::TaskFlowCommand::new(
+                &occurrence.taskflow_run_id,
+                "pre-step-start",
+                fence,
+                claimed.revision,
+                codex_hepta_automation::TaskFlowTransition::Start,
+                200,
+            )
+            .expect("start"),
+        )
+        .await
+        .expect("durable prefix before step crash");
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen crash");
+    let successor = reopened
+        .claim_due(210, 3, 100)
+        .await
+        .expect("reclaim")
+        .unwrap();
+    let reclaimed = reopened
+        .materialize_occurrence(&successor, 210)
+        .await
+        .expect("same occurrence");
+    assert_eq!(reclaimed.occurrence_id, occurrence.occurrence_id);
+    let dispatch = reopened
+        .prepare_occurrence_taskflow(&reclaimed, &successor, 210, 100)
+        .await
+        .expect("reclaim uses TaskFlow units instead of raw scheduler epoch");
+    assert_eq!(dispatch.step_attempt, 1);
+    assert_eq!(dispatch.fence.generation, 2_000_001);
+    reopened
+        .record_dispatch_uncertain(&successor, 211)
+        .await
+        .expect("dispatch boundary");
+    reopened.close().await;
+}

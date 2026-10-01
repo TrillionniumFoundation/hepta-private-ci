@@ -4,6 +4,7 @@
 )]
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::TaskFlowCommand;
 use codex_hepta_automation::TaskFlowDefinition;
 use codex_hepta_automation::TaskFlowEdgeSpec;
 use codex_hepta_automation::TaskFlowFence;
@@ -13,6 +14,7 @@ use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowStepCommandStatus;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepState;
+use codex_hepta_automation::TaskFlowTransition;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
@@ -125,6 +127,25 @@ async fn prepared_store(
 async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
     let fixture = Fixture::new();
     let (store, owner, intent, payload) = prepared_store(&fixture).await;
+    let run = store
+        .taskflow_run("step-run")
+        .await
+        .expect("run")
+        .expect("exists");
+    let started = store
+        .apply_taskflow_command(
+            &TaskFlowCommand::new(
+                "step-run",
+                "start",
+                owner.clone(),
+                run.revision,
+                TaskFlowTransition::Start,
+                20,
+            )
+            .expect("start command"),
+        )
+        .await
+        .expect("start run");
     let prepared = store
         .prepare_taskflow_step(
             "step-run",
@@ -172,6 +193,60 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .await
         .expect("step claim");
     assert_eq!(claimed.receipt.state, TaskFlowStepState::Claimed);
+    for (index, transition) in [
+        TaskFlowTransition::Succeed {
+            output_digest: intent.clone(),
+        },
+        TaskFlowTransition::Fail {
+            reason: "failure".to_string(),
+        },
+        TaskFlowTransition::Cancel {
+            reason: "cancel".to_string(),
+        },
+        TaskFlowTransition::Wait {
+            token: "wait".to_string(),
+            resume_node: None,
+        },
+        TaskFlowTransition::Retry { retry_at_ms: 30 },
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let command = TaskFlowCommand::new(
+            "step-run",
+            format!("blocked-{index}"),
+            owner.clone(),
+            started.revision,
+            transition,
+            22,
+        )
+        .expect("command");
+        assert!(matches!(
+            store.apply_taskflow_command(&command).await,
+            Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+        ));
+    }
+    assert!(matches!(
+        store
+            .claim_taskflow_run("step-run", &fence(2), 1_021, 100)
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+    ));
+    assert!(matches!(
+        store
+            .prepare_taskflow_step(
+                "step-run",
+                "work",
+                2,
+                &owner,
+                &intent,
+                &payload,
+                "unsafe-retry",
+                22
+            )
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+    ));
     let observed = store
         .record_taskflow_step(
             "step-run",
@@ -192,6 +267,53 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         observed.receipt.observation,
         Some(TaskFlowStepObservation::Indeterminate)
     );
+    let quarantined = store
+        .apply_taskflow_command(
+            &TaskFlowCommand::new(
+                "step-run",
+                "quarantine",
+                owner.clone(),
+                started.revision,
+                TaskFlowTransition::Indeterminate {
+                    reason: "unknown".to_string(),
+                },
+                23,
+            )
+            .expect("quarantine command"),
+        )
+        .await
+        .expect("quarantine");
+    assert!(matches!(
+        store
+            .prepare_taskflow_step(
+                "step-run",
+                "work",
+                2,
+                &owner,
+                &intent,
+                &payload,
+                "quarantined-retry",
+                23
+            )
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+    ));
+    let terminal = TaskFlowCommand::new(
+        "step-run",
+        "terminal",
+        owner.clone(),
+        quarantined.revision,
+        TaskFlowTransition::Reconcile {
+            receipt_digest: Sha256Digest::for_bytes(b"final-receipt"),
+            outcome: TaskFlowReconcileOutcome::Succeeded,
+        },
+        24,
+    )
+    .expect("terminal command");
+    assert!(matches!(
+        store.apply_taskflow_command(&terminal).await,
+        Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+    ));
     let reconciled = store
         .reconcile_taskflow_step(
             "step-run",
@@ -212,6 +334,10 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         reconciled.receipt.final_outcome,
         Some(TaskFlowReconcileOutcome::Succeeded)
     );
+    store
+        .apply_taskflow_command(&terminal)
+        .await
+        .expect("settled step permits terminal run");
     let read = store
         .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
         .await

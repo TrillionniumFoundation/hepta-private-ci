@@ -32,6 +32,7 @@ use sqlx::Sqlite;
 use sqlx::Transaction;
 
 use crate::AutomationStore;
+use crate::taskflow_guard::reject_unresolved_steps;
 
 pub const TASKFLOW_SCHEMA_VERSION: u32 = 1;
 // Retained for on-disk compatibility with the original ledger namespace. The
@@ -226,12 +227,22 @@ impl TaskFlowDefinition {
             policy_digest,
             definition_digest: Sha256Digest::for_bytes(b"uncomputed-taskflow-definition"),
         };
-        definition.validate()?;
+        definition.validate_shape()?;
         definition.definition_digest = definition.compute_digest()?;
         Ok(definition)
     }
 
     pub fn validate(&self) -> Result<(), TaskFlowError> {
+        self.validate_shape()?;
+        if self.definition_digest != self.compute_digest()? {
+            return Err(TaskFlowError::Corrupt(
+                "workflow definition digest does not match its canonical bytes".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    fn validate_shape(&self) -> Result<(), TaskFlowError> {
         validate_text(&self.workflow_id, "workflow_id", MAX_ID_BYTES)?;
         validate_text(&self.entry_node, "entry_node", /*max_bytes*/ 128)?;
         if self.version == 0 {
@@ -392,13 +403,6 @@ impl TaskFlowDefinition {
         if can_terminal.len() != nodes.len() {
             return Err(invalid(
                 "workflow has a node without a terminal recovery path",
-            ));
-        }
-        if self.definition_digest != Sha256Digest::for_bytes(b"uncomputed-taskflow-definition")
-            && self.definition_digest != self.compute_digest()?
-        {
-            return Err(TaskFlowError::Corrupt(
-                "workflow definition digest does not match its canonical bytes".to_string(),
             ));
         }
         Ok(())
@@ -1019,6 +1023,7 @@ impl AutomationStore {
             }
             return Ok(run);
         }
+        reject_unresolved_steps(&mut tx, self.taskflow_owner_agent_id(), run_id, None).await?;
         let effect_attempts: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM taskflow_effect_dispatch_attempts
              WHERE owner_agent_id = ? AND run_id = ?",
@@ -1279,6 +1284,23 @@ impl AutomationStore {
                 "expected revision {}, current {}",
                 command.expected_revision, run.revision
             )));
+        }
+        if matches!(
+            &command.transition,
+            TaskFlowTransition::Wait { .. }
+                | TaskFlowTransition::Retry { .. }
+                | TaskFlowTransition::Cancel { .. }
+                | TaskFlowTransition::Succeed { .. }
+                | TaskFlowTransition::Fail { .. }
+                | TaskFlowTransition::Reconcile { .. }
+        ) {
+            reject_unresolved_steps(
+                &mut tx,
+                self.taskflow_owner_agent_id(),
+                &command.run_id,
+                None,
+            )
+            .await?;
         }
         let transition_name = transition_name(&command.transition);
         apply_transition(&mut run, &definition, &command.transition, command.now_ms)?;
