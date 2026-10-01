@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "Exact-claim fixtures fail the test immediately when fixed identities, temporary stores, or expected generation-fenced records cannot be constructed"
+)]
+
 use std::time::Duration;
 
 use codex_hepta_types::Digest32;

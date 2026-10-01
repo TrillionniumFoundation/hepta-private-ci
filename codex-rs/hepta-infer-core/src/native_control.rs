@@ -112,6 +112,17 @@ pub enum NativeReservationState {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct NativeCognitivePreparation {
+    /// RPC namespace material, authenticated together with principal/generation
+    /// by the learning owner; it does not identify the durable append alone.
+    pub read_request_id: u64,
+    pub sequence: u64,
+    pub event_digest: String,
+    pub chain_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeDispatch {
     pub thread_id: String,
     pub model_provider: String,
@@ -122,6 +133,10 @@ pub struct NativeDispatch {
     /// durable dispatch without claiming provider acceptance by itself.
     #[serde(default)]
     pub owner_context_digest: Option<String>,
+    /// Exact owner-issued learning preparation, outside model-visible context.
+    /// Omission preserves canonical historical journal bytes when unavailable.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cognitive_preparation: Option<NativeCognitivePreparation>,
     /// Exact serialized turn/start payload digest. Optional only for replaying
     /// pre-runtime.codex journal records.
     #[serde(default)]
@@ -230,7 +245,9 @@ enum Event {
     },
     Dispatch {
         request_id: String,
-        dispatch: NativeDispatch,
+        // Keep this private journal enum bounded as dispatch bindings grow.
+        // Box serializes transparently, preserving canonical historical bytes.
+        dispatch: Box<NativeDispatch>,
     },
     Started {
         request_id: String,
@@ -315,7 +332,7 @@ impl DurableInferenceControl {
             request_id,
             Event::Dispatch {
                 request_id: request_id.to_string(),
-                dispatch,
+                dispatch: Box::new(dispatch),
             },
         )
     }
@@ -578,6 +595,13 @@ impl NativeJournal {
                 if let Some(owner_context_digest) = &dispatch.owner_context_digest {
                     validate_digest(owner_context_digest, "native owner context")?;
                 }
+                if let Some(preparation) = &dispatch.cognitive_preparation {
+                    if preparation.sequence == 0 || dispatch.owner_context_digest.is_none() {
+                        return Err(Error::InvalidIdentity("native cognitive preparation"));
+                    }
+                    validate_digest(&preparation.event_digest, "native preparation event")?;
+                    validate_digest(&preparation.chain_digest, "native preparation chain")?;
+                }
                 let codex_fields = [
                     dispatch.codex_payload_digest.is_some(),
                     dispatch.codex_request_digest.is_some(),
@@ -661,7 +685,7 @@ impl NativeJournal {
                 if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
                     validate_digest(digest, "native codex authority witness")?;
                 }
-                record.dispatch = Some(dispatch);
+                record.dispatch = Some(*dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {

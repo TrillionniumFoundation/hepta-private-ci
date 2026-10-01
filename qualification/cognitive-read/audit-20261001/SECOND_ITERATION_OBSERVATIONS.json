@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.cognitive.read.local-observation.v1",
+  "recorded_at_utc": "2026-10-01T00:10:39.016281+00:00",
+  "claim_boundary": "Working-tree and historical observations only; not exact-final-candidate qualification. Test files and helper blobs are recorded before final formatting. Compilation is not execution. Production, acceptance and release flags are not elevated.",
+  "python": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_cognitive_read_*.py"
+    ],
+    "passed": 99,
+    "failed": 0,
+    "source_objects": {
+      "scripts/test_cognitive_read_consumers.py": "56a2d924817427f275f0aa2ca378b8a887946d43",
+      "scripts/test_cognitive_read_delivery_gates.py": "16b8295bf44d797894a2b8f7cde2f95b8f76b11d",
+      "scripts/test_cognitive_read_evidence.py": "05b911792a95623618f833d75e2f7414e5a550b2",
+      "scripts/test_cognitive_read_full_evidence.py": "63d2f93061434fad87138920e0e54ef59dac2dae",
+      "scripts/test_cognitive_read_full_gate_integrity.py": "3013969635f9dc6a5a477171b7d47cd81f6bea53",
+      "scripts/test_cognitive_read_native_gate.py": "2fb5e9d0c065be6cbe2801c4472233f5554535d1",
+      "scripts/test_cognitive_read_qualification_read_only.py": "c84d7bad01354833441bfeb94886895b596959f8",
+      "scripts/test_cognitive_read_sqlite_integrity.py": "ea58fd0840b11104e9924db4a833502aef618078",
+      "scripts/cognitive_read_consumers.py": "65b882ffd4ba31fb7e2318f57c2b86e3c2a9f9f5",
+      "scripts/cognitive_read_delivery_gates.py": "f5384dd74d8f9f6370aeec9a6af2eb2db62b1bc9",
+      "scripts/cognitive_read_evidence.py": "444ad803a5fdf49f6b6e78dd180f672fb956058c",
+      "scripts/cognitive_read_full_evidence.py": "5a7b04c7674c3348e22ec6cf4abcfad21cc8a12f",
+      "scripts/cognitive_read_release_evidence.py": "0e3ee1fcfcfe49c140b3c0f067b62fd96b74519d",
+      "scripts/cognitive_read_source_proposal.py": "7b12c63a2780670e395b0debb6b6240ea0a9f643",
+      "scripts/cognitive_read_sqlite_capacity.py": "1152b5e89d9a19a019eb6d6fb225275963abb456"
+    },
+    "log": "python-regressions-second.txt"
+  },
+  "prompt_harness": {
+    "passed": 19,
+    "failed": 0,
+    "ignored": 0,
+    "scope": "Direct source inclusion of prompt pipeline, registry bridge and Agentd prompt runtime plus their tests, using existing dependencies; not complete-crate nextest, candidate execution or physical-provider evidence.",
+    "log": "prompt-isolated-second.txt",
+    "direct_source_objects": {
+      "codex-rs/hepta-intelligence/src/prompt_pipeline.rs": "60fad4e54aa38a4688421627f2f783e0152e5ba9",
+      "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs": "7dcb78372ed798bc98faae802498700d8ef0bd58",
+      "codex-rs/hepta-intelligence/src/prompt_delivery.rs": "7f15de53f1b48059d421cdd8832159f54890f27e",
+      "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs": "4e5c97d02086f8be7a9f2410363704af9af1f575",
+      "codex-rs/hepta-agentd/src/prompt_runtime.rs": "9cea7c40f57e4856425665adfc57ecb357ba0ed3",
+      "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs": "6dac81410a1ef9c2855c2fdc60ed24fe143fd11f"
+    },
+    "source_boundary": "Direct source objects match the committed tokenizer repair. Transitive dependencies and harness plumbing are outside this inventory; no complete-candidate execution is asserted."
+  },
+  "compilation": {
+    "memory_just_fix": "completed before final scoped fixture annotations",
+    "pure_just_fix": "completed for infer-core, learning-ledger, intelligence, objective, NDU test targets",
+    "host_just_fix": "blocked by ENOSPC during rustls compilation before completion",
+    "pure_strict_clippy": "completed for infer-core, learning-ledger, intelligence, objective, NDU test targets with -D warnings after scoped repairs"
+  },
+  "rust_test_attempts": [
+    {
+      "scope": "infer-core, ledger, protocol, intelligence",
+      "result": "linker bus error and ENOSPC; tests not executed"
+    },
+    {
+      "scope": "infer-core, ledger, intelligence, objective, NDU",
+      "result": "ENOSPC during compilation; tests not executed"
+    }
+  ],
+  "bazel_lock": {
+    "update_exit_code": 0,
+    "check_exit_code": 0,
+    "lockfile_changed": false,
+    "scope": "Module dependency lock resolution; not Bazel test execution"
+  },
+  "document_verification": {
+    "module_registry": "passed",
+    "derived_documents": "passed",
+    "global": "blocked: historical cleanup base is not an ancestor"
+  },
+  "log_sha256": {
+    "python-regressions-second.txt": "78e7dbf62d53821af6efa8bfb99d4a1ca0790239c4976751789a1b757471395f",
+    "prompt-isolated-second.txt": "9f107ea3462fa7bc455032795371f6ea0d3eed070bcb098d0067ffe33bbad5d4"
+  },
+  "activation": false,
+  "productExecutionProved": false,
+  "independentAcceptance": false,
+  "release": false,
+  "formatting": {
+    "repository_just_fmt": "completed",
+    "unrelated_baseline_paths_restored": 59,
+    "related_memory_baseline_formatting_retained": true,
+    "test_reexecution_after_formatting": false
+  }
+}

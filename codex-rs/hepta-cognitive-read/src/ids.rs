@@ -442,7 +442,7 @@ fn encoded_record_len(
 }
 
 fn encoded_id_len(value: &StableId) -> Result<usize, ReadIdsError> {
-    let raw_len = value.as_str().as_bytes().len();
+    let raw_len = value.as_str().len();
     u32::try_from(raw_len).map_err(|_| ReadIdsError::InvalidCanonicalEncoding)?;
     U32_BYTES
         .checked_add(raw_len)

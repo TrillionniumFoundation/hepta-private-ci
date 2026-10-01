@@ -18,14 +18,14 @@ use sqlx::QueryBuilder;
 use sqlx::Row;
 use sqlx::Sqlite;
 
-use super::DurableCognitiveSelectionSnapshot;
-use super::generation;
 use super::super::CognitiveOwnerFrontiers;
 use super::super::DurableCognitiveSnapshot;
 use super::super::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 use super::super::MAX_LANE_C_PAGE_CITATIONS;
 use super::super::corrupt;
 use super::super::push_stable_id;
+use super::DurableCognitiveSelectionSnapshot;
+use super::generation;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
@@ -147,8 +147,7 @@ pub(super) async fn load_selection(
     .fetch_one(&mut *transaction)
     .await
     .map_err(unavailable)?;
-    let active_from_frontier: Option<i64> =
-        start_row.try_get("boundary").map_err(unavailable)?;
+    let active_from_frontier: Option<i64> = start_row.try_get("boundary").map_err(unavailable)?;
     let expiry_row = sqlx::query(
         "SELECT MAX(valid_to_unix_seconds) AS boundary
          FROM lane_c_head_validity
@@ -169,8 +168,8 @@ pub(super) async fn load_selection(
     let mut rows = Vec::new();
     let mut citation_rows = Vec::new();
     if !record_ids.is_empty() {
-        let ancestry_limit = i64::try_from(MAX_LANE_C_PAGE_ANCESTRY_REVISIONS + 1)
-            .map_err(|_| {
+        let ancestry_limit =
+            i64::try_from(MAX_LANE_C_PAGE_ANCESTRY_REVISIONS + 1).map_err(|_| {
                 CognitiveStoreError::Invalid("Lane C ancestry limit exceeds i64".to_string())
             })?;
         let mut revision_query = QueryBuilder::<Sqlite>::new(
@@ -281,8 +280,7 @@ pub(super) async fn load_selection(
         if revision <= 0 || head_revision <= 0 || head_revision < revision {
             return Err(corrupt("invalid cognitive head revision"));
         }
-        let predecessor: Option<i64> =
-            row.try_get("supersedes_revision").map_err(unavailable)?;
+        let predecessor: Option<i64> = row.try_get("supersedes_revision").map_err(unavailable)?;
         let record_id = StableId::new(raw_id.clone()).map_err(corrupt)?;
         let prior = previous
             .as_ref()
@@ -321,8 +319,7 @@ pub(super) async fn load_selection(
         record_citations.sort();
         let record = MemoryRecord {
             record_id,
-            revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
-                .map_err(corrupt)?,
+            revision: Revision::new(u64::try_from(revision).map_err(corrupt)?).map_err(corrupt)?,
             kind: DURABLE_SQLITE_MEMORY_KIND,
             content_digest: content_digest.parse().map_err(corrupt)?,
             predecessor_digest: prior.map(MemoryRecord::record_digest),
@@ -337,8 +334,7 @@ pub(super) async fn load_selection(
         let valid_from: i64 = row
             .try_get("valid_from_unix_seconds")
             .map_err(unavailable)?;
-        let valid_to: Option<i64> =
-            row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
+        let valid_to: Option<i64> = row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
         if revision == head_revision
             && (state == RecordState::Tombstone
                 || (verification == "verified"

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run the exact SQLite cognitive-read capacity case and emit one JSON measurement."""
+
 from __future__ import annotations
 
 import json
@@ -24,8 +25,14 @@ TIME_FIELDS = (
 
 
 def git(root: Path, *args: str) -> str:
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
-    env.update(GIT_NO_REPLACE_OBJECTS="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1")
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
+    env.update(
+        GIT_NO_REPLACE_OBJECTS="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_CONFIG_NOSYSTEM="1",
+    )
     return subprocess.check_output(
         ["git", "--literal-pathspecs", *args], cwd=root, env=env, text=True
     ).strip()
@@ -74,7 +81,11 @@ def parse_time_report(path: Path) -> dict[str, int]:
 def validate_report(value: object) -> dict[str, object]:
     if not isinstance(value, dict) or value.get("schema") != SCHEMA:
         raise ValueError("Rust capacity case did not emit the expected schema")
-    for field, expected in (("records", 512), ("requested_ids", 512), ("iterations", 32)):
+    for field, expected in (
+        ("records", 512),
+        ("requested_ids", 512),
+        ("iterations", 32),
+    ):
         if value.get(field) != expected:
             raise ValueError(f"unexpected {field}: {value.get(field)!r}")
     if value.get("authority") != "deny_all":
@@ -110,7 +121,9 @@ def main() -> int:
             raise SystemExit("GNU time is unavailable")
         time_binary = Path(fallback)
 
-    with tempfile.TemporaryDirectory(prefix="cognitive-read-sqlite-capacity-") as temporary:
+    with tempfile.TemporaryDirectory(
+        prefix="cognitive-read-sqlite-capacity-"
+    ) as temporary:
         temporary_path = Path(temporary)
         rust_report = temporary_path / "rust-report.json"
         time_report = temporary_path / "time.txt"
@@ -126,20 +139,20 @@ def main() -> int:
             "-v",
             "-o",
             str(time_report),
-            "cargo",
+            "just",
             "test",
-            "--manifest-path",
-            "codex-rs/Cargo.toml",
             "--locked",
             "-p",
             "codex-hepta-memory",
             "--test",
             "cognitive_read_capacity",
-            TEST_NAME,
-            "--",
-            "--exact",
-            "--nocapture",
-            "--test-threads=1",
+            "--no-tests=fail",
+            "--status-level",
+            "pass",
+            "-E",
+            f"test(={TEST_NAME})",
+            "--test-threads",
+            "1",
         ]
         print(f"capacity command: {json.dumps(command)}", file=sys.stderr, flush=True)
         completed = subprocess.run(
@@ -154,12 +167,18 @@ def main() -> int:
             return completed.returncode
         if not rust_report.is_file() or not time_report.is_file():
             raise SystemExit("capacity test did not produce its required reports")
-        measurement = validate_report(json.loads(rust_report.read_text(encoding="utf-8")))
+        measurement = validate_report(
+            json.loads(rust_report.read_text(encoding="utf-8"))
+        )
         measurement["candidate"] = {
             "commit": git(root, "rev-parse", "HEAD"),
             "tree": git(root, "rev-parse", "HEAD^{tree}"),
         }
         measurement["process"] = parse_time_report(time_report)
+        measurement["process_measurement_scope"] = (
+            "Whole just/nextest command, including any compilation, fixture setup, "
+            "owner execution and child processes; not isolated read-phase CPU or RSS."
+        )
         measurement["host"] = {
             "platform": platform.platform(),
             "machine": platform.machine(),

@@ -1,16 +1,24 @@
 import json
+import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from cognitive_read_evidence import (
     BENCHMARK_SCHEMAS,
-    NATIVE_FINAL_USE_TEST,
+    EXACT_TEST_CASES,
     NEXTEST_VERSION,
     TEST_GATES,
+    candidate_source_problems,
     commands,
-    validate_evidence,
+    emit,
+    git,
+    nextest_log_problems,
+    qualification_env,
     validate_candidate_claims,
+    validate_evidence,
 )
 
 
@@ -22,7 +30,9 @@ class EvidenceGateTests(unittest.TestCase):
         self.required = commands("a" * 40, self.evidence)
         for label, argv in self.required.items():
             (self.evidence / f"{label}.command.json").write_text(json.dumps(argv))
-            (self.evidence / f"{label}.log").write_text("Summary [0.1s] 1 test run: 1 passed, 0 skipped\n")
+            (self.evidence / f"{label}.log").write_text(
+                "Summary [0.1s] 1 test run: 1 passed, 0 skipped\n"
+            )
             if label == "test-runner":
                 commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
                 (self.evidence / f"{label}.log").write_text(
@@ -32,30 +42,61 @@ class EvidenceGateTests(unittest.TestCase):
                     "commit-date: 2025-08-25\n"
                     "host: x86_64-unknown-linux-gnu\n"
                 )
-            elif label == "native-final-use-e2e":
+            elif label in EXACT_TEST_CASES:
+                binary, case = EXACT_TEST_CASES[label]
                 (self.evidence / f"{label}.log").write_text(
-                    "PASS [0.1s] codex_hepta_infer_worker_host "
-                    f"{NATIVE_FINAL_USE_TEST}\n"
+                    f"PASS [0.1s] {binary} {case}\n"
                     "Summary [0.1s] 1 test run: 1 passed, 99 skipped\n"
                 )
             (self.evidence / f"{label}.exit-code").write_text("0\n")
             if label in BENCHMARK_SCHEMAS:
                 value = {"schema": BENCHMARK_SCHEMAS[label], "iterations": 32}
                 if label == "benchmark":
-                    value.update(records=16384, requested_ids=512, p50_us=1, p95_us=2, p99_us=3)
+                    value.update(
+                        records=16384, requested_ids=512, p50_us=1, p95_us=2, p99_us=3
+                    )
                 else:
                     value["cases"] = []
                     for records in (128, 4096, 16384):
                         for depth in (1, 8):
                             for requested in (1, 512):
-                                row = {"records": records, "revision_depth": depth, "requested_ids": min(requested, records // depth)}
-                                for mode in ("one_shot_pair", "prepared_pair_including_build", "prepare_only", "projection_only"):
+                                row = {
+                                    "records": records,
+                                    "revision_depth": depth,
+                                    "requested_ids": min(requested, records // depth),
+                                }
+                                for mode in (
+                                    "one_shot_pair",
+                                    "prepared_pair_including_build",
+                                    "prepare_only",
+                                    "projection_only",
+                                ):
                                     row[mode] = {"p50_ns": 1, "p95_ns": 2, "p99_ns": 3}
                                 value["cases"].append(row)
                 (self.evidence / f"{label}.json").write_text(json.dumps(value))
 
     def test_complete_evidence_is_accepted(self):
         self.assertEqual(validate_evidence(self.evidence, self.required), [])
+
+    def test_real_native_binary_is_built_before_any_product_gate(self):
+        labels = list(self.required)
+        build = labels.index("native-product-binary")
+        for label in TEST_GATES:
+            self.assertLess(build, labels.index(label))
+        self.assertEqual(
+            self.required["native-product-binary"],
+            [
+                "cargo",
+                "build",
+                "--manifest-path",
+                "codex-rs/Cargo.toml",
+                "--locked",
+                "-p",
+                "codex-cli",
+                "--bin",
+                "codex",
+            ],
+        )
 
     def test_pinned_nextest_structured_multiline_version_is_accepted(self):
         commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
@@ -128,12 +169,18 @@ class EvidenceGateTests(unittest.TestCase):
 
     def test_one_iteration_does_not_establish_percentiles(self):
         path = self.evidence / "benchmark.json"
-        path.write_text(json.dumps({"schema": BENCHMARK_SCHEMAS["benchmark"], "iterations": 1}))
+        path.write_text(
+            json.dumps({"schema": BENCHMARK_SCHEMAS["benchmark"], "iterations": 1})
+        )
         self.assertTrue(validate_evidence(self.evidence, self.required))
 
     def test_fabricated_measurement_header_is_insufficient(self):
         path = self.evidence / "prepared-benchmark.json"
-        path.write_text(json.dumps({"schema": BENCHMARK_SCHEMAS["prepared-benchmark"], "iterations": 32}))
+        path.write_text(
+            json.dumps(
+                {"schema": BENCHMARK_SCHEMAS["prepared-benchmark"], "iterations": 32}
+            )
+        )
         self.assertTrue(validate_evidence(self.evidence, self.required))
 
     def test_symlink_evidence_rejected(self):
@@ -142,22 +189,282 @@ class EvidenceGateTests(unittest.TestCase):
         path.symlink_to(self.evidence / "owner-tests.log")
         self.assertTrue(validate_evidence(self.evidence, self.required))
 
+    def test_duplicate_native_pass_cannot_claim_one_physical_worker_execution(self):
+        path = self.evidence / "native-final-use-e2e.log"
+        body = path.read_text()
+        path.write_text(body.splitlines()[0] + "\n" + body)
+        self.assertTrue(validate_evidence(self.evidence, self.required))
+
+    def test_product_gates_require_exact_binary_case_and_single_execution(self):
+        for label in ("product-read-replay", "product-write-smoke"):
+            argv = self.required[label]
+            self.assertEqual(argv[argv.index("--status-level") + 1], "pass")
+            path = self.evidence / f"{label}.log"
+            original = path.read_text()
+            binary, case = EXACT_TEST_CASES[label]
+            for body in (
+                original.replace(binary, "unrelated-binary"),
+                original.replace(case, "unrelated_case"),
+                original.splitlines()[0] + "\n" + original,
+                original.replace("1 test run: 1 passed", "2 tests run: 2 passed"),
+                original.splitlines()[1] + "\n",
+            ):
+                path.write_text(body)
+                with self.subTest(label=label, body=body):
+                    self.assertTrue(validate_evidence(self.evidence, {label: argv}))
+            path.write_text(original.replace(binary, binary.replace("-", "_")))
+            self.assertEqual(validate_evidence(self.evidence, {label: argv}), [])
+            path.write_text(original)
+
 
 class CandidateIdentityTests(unittest.TestCase):
     def test_source_cannot_be_relabelled_as_a_merge(self):
-        self.assertTrue(validate_candidate_claims("a" * 40, "merge-candidate", ["b" * 40],
-                                                  {"activation": False}, "c" * 40, "b" * 40))
+        self.assertTrue(
+            validate_candidate_claims(
+                "a" * 40,
+                "merge-candidate",
+                ["b" * 40],
+                {"activation": False},
+                "c" * 40,
+                "b" * 40,
+            )
+        )
 
     def test_ordered_merge_parents_must_match_frozen_inputs(self):
-        self.assertEqual(validate_candidate_claims("a" * 40, "merge-candidate", ["b" * 40, "c" * 40],
-                                                   {"activation": False}, "c" * 40, "b" * 40), [])
-        self.assertTrue(validate_candidate_claims("a" * 40, "merge-candidate", ["c" * 40, "b" * 40],
-                                                  {"activation": False}, "c" * 40, "b" * 40))
+        self.assertEqual(
+            validate_candidate_claims(
+                "a" * 40,
+                "merge-candidate",
+                ["b" * 40, "c" * 40],
+                {"activation": False},
+                "c" * 40,
+                "b" * 40,
+            ),
+            [],
+        )
+        self.assertTrue(
+            validate_candidate_claims(
+                "a" * 40,
+                "merge-candidate",
+                ["c" * 40, "b" * 40],
+                {"activation": False},
+                "c" * 40,
+                "b" * 40,
+            )
+        )
 
     def test_active_or_missing_activation_is_rejected(self):
-        for mapping in ({}, {"activation": True}, {"activation": False, "nested": {"activation": True}}):
+        for mapping in (
+            {},
+            {"activation": True},
+            {"activation": False, "nested": {"activation": True}},
+        ):
             with self.subTest(mapping=mapping):
-                self.assertTrue(validate_candidate_claims("a" * 40, "source-head", [], mapping, "a" * 40, None))
+                self.assertTrue(
+                    validate_candidate_claims(
+                        "a" * 40, "source-head", [], mapping, "a" * 40, None
+                    )
+                )
+
+
+class NextestSummaryIntegrityTests(unittest.TestCase):
+    SUCCESS = "Summary [   4.213s] 226 tests run: 226 passed, 1 skipped\n"
+
+    def test_real_summary_and_passed_subsets_are_accepted(self):
+        for summary in (
+            self.SUCCESS,
+            self.SUCCESS.replace("226 passed", "226 passed (4 slow, 2 flaky, 1 leaky)"),
+            "Summary [0.001s] 1 test run: 1 passed (1 slow, 1 flaky, 1 leaky), 0 skipped\n",
+        ):
+            with self.subTest(summary=summary):
+                self.assertEqual(nextest_log_problems("gate", summary), [])
+
+    def test_every_terminal_summary_is_counted(self):
+        for later in (
+            self.SUCCESS,
+            "Summary [4.214s] 226 tests run: 226 failed\n",
+            "Summary [4.214s] cancelled\n",
+            "Summary malformed\n",
+        ):
+            with self.subTest(later=later):
+                self.assertTrue(nextest_log_problems("gate", self.SUCCESS + later))
+
+    def test_failure_timeout_and_partial_run_cannot_follow_a_pass_count(self):
+        for summary in (
+            self.SUCCESS.replace("1 skipped", "1 failed, 1 skipped"),
+            self.SUCCESS.replace("1 skipped", "1 exec failed, 1 skipped"),
+            self.SUCCESS.replace("1 skipped", "1 timed out, 1 skipped"),
+            self.SUCCESS.replace("226 tests", "226/227 tests"),
+            self.SUCCESS.replace("226 passed", "225 passed"),
+            self.SUCCESS.replace(", 1 skipped", ""),
+            self.SUCCESS.replace("1 skipped", "1 skipped, cancelled"),
+        ):
+            with self.subTest(summary=summary):
+                self.assertTrue(nextest_log_problems("gate", summary))
+
+    def test_invalid_passed_subsets_are_rejected(self):
+        for annotation in (
+            "227 slow",
+            "0 slow",
+            "1 failed",
+            "1 flaky, 1 slow",
+            "1 slow, 1 slow",
+            "",
+        ):
+            summary = self.SUCCESS.replace("226 passed", f"226 passed ({annotation})")
+            with self.subTest(annotation=annotation):
+                self.assertTrue(nextest_log_problems("gate", summary))
+
+    def test_cancellation_notice_cannot_be_hidden_by_a_success_summary(self):
+        for status in ("Cancelling", "Killing"):
+            body = f"{status} due to signal\n" + self.SUCCESS
+            with self.subTest(status=status):
+                self.assertTrue(nextest_log_problems("gate", body))
+
+
+class CandidateSourceIntegrityTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        mapping = self.root / "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+        mapping.parent.mkdir(parents=True)
+        mapping.write_text('{"activation": false}')
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "."], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "-c",
+                "user.name=Audit",
+                "-c",
+                "user.email=audit@example.invalid",
+                "commit",
+                "-qm",
+                "fixture",
+            ],
+            check=True,
+        )
+
+    def test_untracked_migration_is_not_an_exact_candidate_input(self):
+        path = self.root / "codex-rs/hepta-memory/migrations/9999_untracked.sql"
+        path.parent.mkdir(parents=True)
+        path.write_text("CREATE TABLE untracked_build_input(x INT);")
+        self.assertEqual(
+            git(self.root, "status", "--porcelain", "--untracked-files=no"), ""
+        )
+        self.assertEqual(
+            candidate_source_problems(self.root),
+            [
+                "candidate has untracked source input: codex-rs/hepta-memory/migrations/9999_untracked.sql"
+            ],
+        )
+        evidence = self.root / ".hepta-evidence/fixture"
+        evidence.mkdir(parents=True)
+        output = evidence / "receipt.json"
+        with (
+            patch("cognitive_read_evidence.commands", return_value={}),
+            patch("cognitive_read_evidence.validate_candidate_claims", return_value=[]),
+        ):
+            self.assertFalse(
+                emit(
+                    self.root,
+                    evidence,
+                    git(self.root, "rev-parse", "HEAD"),
+                    "source-head",
+                    output,
+                )
+            )
+        self.assertFalse(json.loads(output.read_text())["passed"])
+
+    def test_regular_evidence_output_is_allowed(self):
+        path = self.root / ".hepta-evidence/fixture/command.json"
+        path.parent.mkdir(parents=True)
+        path.write_text("[]")
+        self.assertEqual(candidate_source_problems(self.root), [])
+
+    def test_evidence_aliases_and_prefix_lookalikes_are_rejected(self):
+        path = self.root / ".hepta-evidence-other/input.rs"
+        path.parent.mkdir()
+        path.write_text("fn untracked() {}")
+        self.assertTrue(candidate_source_problems(self.root))
+        path.unlink()
+        path.parent.rmdir()
+        evidence = self.root / ".hepta-evidence"
+        evidence.mkdir()
+        (evidence / "alias").symlink_to(self.root / "docs", target_is_directory=True)
+        self.assertTrue(candidate_source_problems(self.root))
+
+    def test_leading_whitespace_cannot_alias_evidence(self):
+        path = self.root / " .hepta-evidence/input.rs"
+        path.parent.mkdir()
+        path.write_text("fn untracked() {}")
+        self.assertEqual(
+            candidate_source_problems(self.root),
+            ["candidate has untracked source input:  .hepta-evidence/input.rs"],
+        )
+
+
+class QualificationToolchainTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.path = self.root / "codex-rs/rust-toolchain.toml"
+        self.path.parent.mkdir()
+
+    def test_committed_pin_overrides_the_callers_default_for_child_commands(self):
+        self.path.write_text('[toolchain]\nchannel = "1.95.0"\n')
+        with patch.dict("os.environ", {"RUSTUP_TOOLCHAIN": "1.98.1"}):
+            env = qualification_env(self.root)
+            child = subprocess.check_output(
+                ["python3", "-c", "import os; print(os.environ['RUSTUP_TOOLCHAIN'])"],
+                env=env,
+                text=True,
+            ).strip()
+        self.assertEqual(child, "1.95.0")
+        self.assertEqual(env["PYTHONPATH"], str(self.root / "scripts"))
+
+    def test_pin_is_read_from_this_candidate_without_a_fallback(self):
+        self.path.write_text('[toolchain]\nchannel = "1.96.0"\n')
+        self.assertEqual(qualification_env(self.root)["RUSTUP_TOOLCHAIN"], "1.96.0")
+        self.path.unlink()
+        with self.assertRaises(ValueError):
+            qualification_env(self.root)
+
+    def test_missing_malformed_or_floating_pins_are_rejected(self):
+        for text in (
+            '[toolchain]\ncomponents = ["clippy"]\n',
+            '[toolchain\nchannel = "1.95.0"\n',
+            '[toolchain]\nchannel = "stable"\n',
+            "[toolchain]\nchannel = 195\n",
+            '[toolchain]\nchannel = "1.95.0"\nchannel = "1.98.1"\n',
+            '[toolchain]\nchannel = "1.95.0"\n[toolchain]\nchannel = "1.98.1"\n',
+        ):
+            self.path.write_text(text)
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                qualification_env(self.root)
+
+    def test_binary_resolver_uses_the_exact_shared_target_directory(self):
+        self.path.write_text('[toolchain]\nchannel = "1.95.0"\n')
+        for target in ("relative-target", str(self.root / "absolute-target")):
+            with (
+                self.subTest(target=target),
+                patch.dict(
+                    "os.environ",
+                    {
+                        "CARGO_TARGET_DIR": target,
+                        "CARGO_BIN_EXE_codex": "/different/codex",
+                    },
+                ),
+            ):
+                env = qualification_env(self.root)
+            expected = (self.root / target).resolve()
+            self.assertEqual(env["CARGO_TARGET_DIR"], str(expected))
+            name = "codex.exe" if os.name == "nt" else "codex"
+            self.assertEqual(env["CARGO_BIN_EXE_codex"], str(expected / "debug" / name))
 
 
 if __name__ == "__main__":

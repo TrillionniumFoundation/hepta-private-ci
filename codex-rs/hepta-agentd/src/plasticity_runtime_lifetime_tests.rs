@@ -1,3 +1,6 @@
+#[path = "plasticity_learning_fixture.rs"]
+mod learning_fixture;
+
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -35,7 +38,6 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
@@ -182,8 +184,8 @@ fn sparse_tick(objective_digest: Digest32) -> SparseTick {
     }
 }
 
-fn ledger_decision(objective_digest: Digest32) -> LedgerEvent {
-    LedgerEvent::Decision(EpisodeDecision {
+fn ledger_decision(objective_digest: Digest32) -> EpisodeDecision {
+    EpisodeDecision {
         record_id: id("decision:plasticity-owner"),
         episode_id: id("episode:plasticity-owner"),
         objective_digest,
@@ -193,7 +195,7 @@ fn ledger_decision(objective_digest: Digest32) -> LedgerEvent {
         selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31).expect("propensity"),
         completeness: CandidateSetCompleteness::Complete,
         support_digest: digest("decision-support"),
-    })
+    }
 }
 
 struct AgentdFixture {
@@ -531,7 +533,11 @@ fn build_owner_sources(
             correction_cut_digest: digest("dataset:correction"),
             revocation_cut_digest: digest("dataset:revocation"),
             inclusion_policy_digest: digest("dataset:policy"),
-            source_record_digests: vec![ledger_snapshot.head_digest],
+            source_record_digests: ledger_snapshot
+                .records()
+                .iter()
+                .map(|record| record.event_digest)
+                .collect(),
             pending_outcomes: 0,
             censored_outcomes: 0,
         },
@@ -876,14 +882,12 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let files = runtime_files(runtime_root.path());
     let ledger_binding = digest("ledger:binding");
 
-    let mut ledger =
-        DurableLedger::create(new_file(&files.ledger), ledger_binding, 32).expect("ledger create");
-    ledger
-        .append_qualification(
-            Digest32::ZERO,
-            ledger_decision(digest("plasticity-objective")),
-        )
-        .expect("ledger append");
+    let ledger = learning_fixture::seed_authenticated_decision(
+        &files.ledger,
+        ledger_binding,
+        /*maximum_records*/ 32,
+        ledger_decision(digest("plasticity-objective")),
+    );
     let ledger_snapshot = ledger.snapshot().expect("ledger snapshot");
     let ledger_anchor = LedgerAnchor {
         sequence: u64::try_from(ledger_snapshot.records().len()).expect("ledger sequence"),

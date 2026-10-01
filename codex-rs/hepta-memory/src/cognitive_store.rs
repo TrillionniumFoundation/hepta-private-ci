@@ -47,6 +47,8 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_lane_c_integrity.rs"]
+mod lane_c_integrity;
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -61,6 +63,59 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_meta_existing_insert_guard", "trigger"),
+    ("source_ledger_existing_insert_guard", "trigger"),
+    ("memory_revisions_existing_insert_guard", "trigger"),
+    ("memory_citations_existing_insert_guard", "trigger"),
+    ("kg_revision_fact_sets_existing_insert_guard", "trigger"),
+    ("kg_revision_entities_existing_insert_guard", "trigger"),
+    ("kg_revision_relations_existing_insert_guard", "trigger"),
+    (
+        "kg_projection_generation_receipts_existing_insert_guard",
+        "trigger",
+    ),
+    (
+        "kg_projection_node_entities_existing_insert_guard",
+        "trigger",
+    ),
+    ("kg_nodes_existing_insert_guard", "trigger"),
+    ("kg_edges_existing_insert_guard", "trigger"),
+    (
+        "kg_projection_generation_semantics_existing_insert_guard",
+        "trigger",
+    ),
+    (
+        "kg_projection_generation_storage_existing_insert_guard",
+        "trigger",
+    ),
+    ("kg_projection_existing_insert_guard", "trigger"),
+    ("lane_c_scope_witness", "table"),
+    ("lane_c_head_validity", "table"),
+    ("source_ledger_lane_c_scope_lookup", "index"),
+    ("memory_revisions_lane_c_scope_lookup", "index"),
+    ("lane_c_head_validity_start_lookup", "index"),
+    ("lane_c_head_validity_end_lookup", "index"),
+    ("lane_c_scope_witness_expected", "view"),
+    ("lane_c_scope_witness_audit", "view"),
+    ("lane_c_head_validity_expected", "view"),
+    ("lane_c_head_validity_audit", "view"),
+    ("lane_c_source_witness_after_insert", "trigger"),
+    ("lane_c_memory_revision_witness_after_insert", "trigger"),
+    ("lane_c_citation_witness_after_insert", "trigger"),
+    ("lane_c_fact_witness_after_insert", "trigger"),
+    ("lane_c_head_witness_after_insert", "trigger"),
+    ("lane_c_head_witness_after_update", "trigger"),
+    ("lane_c_head_witness_after_delete", "trigger"),
+    ("lane_c_scope_witness_direct_insert_guard", "trigger"),
+    ("lane_c_scope_witness_direct_update_guard", "trigger"),
+    ("lane_c_scope_witness_direct_delete_guard", "trigger"),
+    ("lane_c_scope_witness_monotonic_guard", "trigger"),
+    ("lane_c_scope_witness_existing_insert_guard", "trigger"),
+    ("lane_c_head_validity_direct_insert_guard", "trigger"),
+    ("lane_c_head_validity_direct_update_guard", "trigger"),
+    ("lane_c_head_validity_direct_delete_guard", "trigger"),
+    ("memory_heads_identity_guard", "trigger"),
+    ("lane_c_head_validity_identity_guard", "trigger"),
     ("shared_experience_use_events", "table"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
@@ -200,7 +255,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "8f38b6cc1095fc6e776a8922b630fd6e34d9a34a8d94ab200bd9345b59d1cfd9";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -327,7 +382,9 @@ impl CognitiveStore {
         protect_database_file(&path)?;
         sqlx::query(
             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
-             VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
+             SELECT 1, ?, ?
+             WHERE NOT EXISTS (SELECT 1 FROM cognitive_meta WHERE singleton = 1)
+             ON CONFLICT(singleton) DO NOTHING",
         )
         .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
         .bind(layout.agent_id().as_str())
@@ -403,7 +460,10 @@ impl CognitiveStore {
                 source_id, source_revision, owner_agent_id, scope_kind, workspace_sha256,
                 source_kind, content, content_sha256, observed_at_unix_seconds,
                 recorded_at_unix_seconds
-             ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
+             ) SELECT ?, 1, ?, ?, ?, ?, ?, ?, ?, ?
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM source_ledger WHERE source_id = ? AND source_revision = 1
+             )
              ON CONFLICT(source_id, source_revision) DO NOTHING",
         )
         .bind(source_id.as_str())
@@ -415,6 +475,7 @@ impl CognitiveStore {
         .bind(content_sha256.as_str())
         .bind(draft.observed_at_unix_seconds)
         .bind(recorded_at)
+        .bind(source_id.as_str())
         .execute(&mut **transaction)
         .await
         .map_err(unavailable)?;
@@ -628,6 +689,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             schema_oracle.as_str()
         )));
     }
+    lane_c_integrity::verify(pool).await?;
     let row = sqlx::query(
         "SELECT schema_version, owner_agent_id FROM cognitive_meta WHERE singleton = 1",
     )

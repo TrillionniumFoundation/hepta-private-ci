@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "Authenticated-owner fixtures must fail the test immediately if fixed keys, grants, or temporary stores cannot be constructed"
+)]
+
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;

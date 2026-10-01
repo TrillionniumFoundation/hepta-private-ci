@@ -1,0 +1,270 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.0
+   Compiling syn v2.0.117
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling serde_core v1.0.228
+   Compiling serde_json v1.0.149
+   Compiling serde v1.0.228
+   Compiling serde_derive v1.0.228
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-types)
+   Compiling memchr v2.8.1
+   Compiling zeroize v1.8.2
+   Compiling der v0.7.10
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-cognitive-types)
+   Compiling curve25519-dalek v4.1.3
+   Compiling spki v0.7.3
+   Compiling pkcs8 v0.10.2
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling signature v2.2.0
+   Compiling subtle v2.6.1
+   Compiling ed25519 v2.2.3
+   Compiling rustix v1.1.4
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-cognitive-read)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-intuition v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-intuition)
+   Compiling linux-raw-sys v0.12.1
+   Compiling yansi v1.0.1
+   Compiling diff v0.1.13
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-wire)
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-contracts)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/ae9f1c224624/hepta-private-ci/codex-rs/hepta-context-compiler)
+    Finished `test` profile [unoptimized] target(s) in 21.19s
+────────────
+ Nextest run ID 1188f558-009f-464b-baaa-de5f9ff41aa7 with nextest profile: local
+    Starting 226 tests across 3 binaries (1 test skipped)
+        PASS [   0.004s] codex-hepta-cognitive-read contract_docs_tests::compatibility_matrix_locks_version_and_activation_rules
+        PASS [   0.004s] codex-hepta-cognitive-read authoritative::tests::authoritative_read_binds_provider_vector_and_query
+        PASS [   0.006s] codex-hepta-cognitive-read authoritative::tests::canonical_shadow_read_rejects_identity_provenance_and_lifecycle_drift
+        PASS [   0.006s] codex-hepta-cognitive-read contract_docs_tests::byte_and_authority_semantics_are_documented
+        PASS [   0.007s] codex-hepta-cognitive-read authoritative::tests::canonical_shadow_read_tamper_fails_closed
+        PASS [   0.007s] codex-hepta-cognitive-read authoritative::tests::provider_rejects_scope_frontier_and_epoch_drift
+        PASS [   0.008s] codex-hepta-cognitive-read authoritative::tests::canonical_shadow_read_binds_exact_authoritative_cut_and_record
+        PASS [   0.006s] codex-hepta-cognitive-read authoritative::tests::provider_rejects_expired_deadline_and_wrong_read_snapshot
+        PASS [   0.006s] codex-hepta-cognitive-read contract_docs_tests::documented_limits_match_compiled_contracts
+        PASS [   0.012s] codex-hepta-cognitive-read golden_vectors::exact_id_v1_golden_vector_is_stable
+        PASS [   0.016s] codex-hepta-cognitive-read ids_tests::duplicate_and_oversized_requests_fail_closed
+        PASS [   0.008s] codex-hepta-cognitive-read ids_tests::exact_total_canonical_boundary_is_all_or_error
+        PASS [   0.008s] codex-hepta-cognitive-read ids_tests::invalid_zero_and_over_module_budget_fail_before_projection
+        PASS [   0.012s] codex-hepta-cognitive-read ids_tests::payload_and_total_wire_accounting_are_explicit
+        PASS [   0.006s] codex-hepta-cognitive-read ids_tests::requested_fields_are_explicit_and_missing_ids_are_not_silent_omissions
+        PASS [   0.005s] codex-hepta-cognitive-read ids_tests::tombstone_state_is_mandatory_even_when_optional_fields_are_empty
+        PASS [   0.011s] codex-hepta-cognitive-read mutation_tests::every_payload_byte_is_covered_by_the_receipt_digest
+        PASS [   0.064s] codex-hepta-cognitive-read ids_tests::exact_id_read_reaches_beyond_the_legacy_1024_prefix
+        PASS [   0.006s] codex-hepta-cognitive-read mutation_tests::request_binding_mutations_change_the_binding_and_receipt
+        PASS [   0.012s] codex-hepta-cognitive-read mutation_tests::semantic_record_mutations_change_the_canonical_receipt
+        PASS [   0.081s] codex-hepta-cognitive-read ids::prepared::tests::preparation_rejects_corruption_outside_the_requested_ids
+        PASS [   0.008s] codex-hepta-cognitive-read property_tests::transient_projection_is_explicitly_authority_free
+        PASS [   0.016s] codex-hepta-cognitive-read revisioned_shadow_tests::revision_bound_shadow_accepts_exact_owner_revision_bridge
+        PASS [   0.096s] codex-hepta-cognitive-read ids::prepared::tests::prepared_reads_repeat_request_checks_and_reject_other_generations
+        PASS [   0.017s] codex-hepta-cognitive-read revisioned_shadow_tests::revision_bound_shadow_rejects_missing_wrong_or_duplicate_source_revision
+        PASS [   0.106s] codex-hepta-cognitive-read ids::prepared::tests::prepared_reads_preserve_exact_total_byte_boundary
+        PASS [   0.011s] codex-hepta-cognitive-read tests::altered_snapshot_fields_are_rejected_before_filtering
+        PASS [   0.008s] codex-hepta-cognitive-read tests::current_revision_is_resolved_before_kind_and_tombstone_filtering
+        PASS [   0.018s] codex-hepta-cognitive-read revisioned_shadow_tests::revision_bound_shadow_validation_detects_revision_or_receipt_tamper
+        PASS [   0.011s] codex-hepta-cognitive-read tests::bounded_result_count_is_explicit
+        PASS [   0.009s] codex-hepta-cognitive-read tests::forged_oversize_and_duplicate_snapshot_records_are_rejected
+        PASS [   0.005s] codex-hepta-cognitive-read tests::read_is_snapshot_bound_and_authority_free
+        PASS [   0.007s] codex-hepta-cognitive-read tests::stale_snapshot_is_rejected
+        PASS [   0.010s] codex-hepta-cognitive-read tests::reordered_valid_snapshot_keeps_canonical_read_receipt
+        PASS [   0.005s] codex-hepta-cognitive-read tombstone_resurrection_tests::a_cross_record_predecessor_is_not_treated_as_resurrection
+        PASS [   0.009s] codex-hepta-cognitive-read tests::v1_receipt_digest_domain_remains_stable
+        PASS [   0.005s] codex-hepta-cognitive-read tombstone_resurrection_tests::live_lineage_and_terminal_tombstone_remain_readable
+        PASS [   0.007s] codex-hepta-cognitive-read tombstone_resurrection_tests::complete_tombstone_resurrection_is_rejected_in_any_record_order
+        PASS [   0.012s] codex-hepta-cognitive-read tombstone_resurrection_tests::a_same_id_tombstone_on_an_unselected_fork_is_not_an_ancestor
+        PASS [   0.009s] codex-hepta-cognitive-read tombstone_resurrection_tests::missing_tombstone_ancestor_is_not_inferred_from_a_truncated_snapshot
+        PASS [   0.005s] codex-hepta-cognitive-read v2::tests::byte_budget_keeps_a_prefix_when_the_first_record_does_not_fit
+        PASS [   0.008s] codex-hepta-cognitive-read v2::tests::a_valid_result_cannot_be_replayed_as_a_different_query
+        PASS [   0.004s] codex-hepta-cognitive-read v2::tests::current_tombstone_or_kind_change_never_resurrects_history
+        PASS [   0.012s] codex-hepta-cognitive-read v2::tests::complete_envelope_round_trips_and_binds_every_output_byte
+        PASS [   0.013s] codex-hepta-cognitive-read v2::tests::byte_preflight_covers_predecessor_and_citations_and_counts_all_current_heads
+        PASS [   0.007s] codex-hepta-cognitive-read v2::tests::exact_cap_is_accepted_and_the_next_record_is_omitted
+        PASS [   0.016s] codex-hepta-cognitive-read v2::tests::recomputed_digests_cannot_bypass_request_semantics
+        PASS [   0.024s] codex-hepta-cognitive-read v2::tests::invalid_large_kind_lists_keep_v1_validation_precedence
+        PASS [   0.014s] codex-hepta-cognitive-read v2::tests::record_and_citation_permutations_have_identical_canonical_bytes
+        PASS [   0.123s] codex-hepta-cognitive-read property_tests::exact_id_result_is_invariant_under_snapshot_request_and_field_permutations
+        PASS [   0.028s] codex-hepta-cognitive-read v2::tests::unknown_tags_authority_and_trailing_fields_are_rejected
+        PASS [   0.022s] codex-hepta-context-compiler candidate_bound::tests::candidate_identity_and_omitted_tail_are_in_the_binding
+        PASS [   0.018s] codex-hepta-context-compiler candidate_bound::tests::input_permutation_has_one_candidate_binding
+        PASS [   0.005s] codex-hepta-context-compiler candidate_bound::tests::mandatory_requirements_remain_bound_and_authority_free
+        PASS [   0.005s] codex-hepta-context-compiler candidate_bound::tests::omitted_content_is_bound_without_changing_legacy_compilation
+        PASS [   0.009s] codex-hepta-context-compiler candidate_bound::tests::legacy_validation_errors_are_preserved
+        PASS [   0.005s] codex-hepta-context-compiler cognitive_read_ingress::tests::cognitive_rows_cannot_be_promoted_to_trusted_instructions
+        PASS [   0.005s] codex-hepta-context-compiler cognitive_read_ingress::tests::complete_revision_bound_shadow_compiles_through_existing_v2_admission
+        PASS [   0.005s] codex-hepta-context-compiler cognitive_read_ingress::tests::omission_and_source_substitution_fail_closed
+        PASS [   0.003s] codex-hepta-context-compiler requirements::tests::every_required_item_binding_rejects_drift
+        PASS [   0.004s] codex-hepta-context-compiler requirements::tests::insufficient_floor_never_returns_a_partial_provenance_group
+        PASS [   0.008s] codex-hepta-context-compiler requirements::tests::required_group_semantics_are_part_of_the_receipt_digest
+        PASS [   0.013s] codex-hepta-context-compiler requirements::tests::malformed_groups_and_reference_saturation_are_rejected
+        PASS [   0.011s] codex-hepta-context-compiler requirements::tests::shared_provenance_is_charged_once_and_order_is_canonical
+        PASS [   0.033s] codex-hepta-context-compiler cognitive_read_ingress::tests::ingress_envelope_preflight_precedes_shadow_validation
+        PASS [   0.016s] codex-hepta-context-compiler requirements::tests::reserves_whole_provenance_group_before_optional_evidence
+        PASS [   0.007s] codex-hepta-context-compiler tests::duplicate_item_is_rejected
+        PASS [   0.009s] codex-hepta-context-compiler requirements::tests::unknown_member_and_mismatched_snapshot_or_objective_are_rejected
+        PASS [   0.004s] codex-hepta-context-compiler tests::legacy_compile_cannot_omit_trusted_instructions
+        PASS [   0.003s] codex-hepta-context-compiler tests::oversized_required_cost_reports_the_exact_insufficient_floor
+        PASS [   0.007s] codex-hepta-context-compiler tests::optional_evidence_omission_is_explicit
+        PASS [   0.015s] codex-hepta-context-compiler tests::evidence_never_becomes_instruction
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::admission_role_binding_prevents_evidence_instruction_confusion
+        PASS [   0.006s] codex-hepta-context-compiler tests::secret_bearing_item_is_rejected
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::admission_expires_at_the_exact_expiry_instant
+        PASS [   0.005s] codex-hepta-context-compiler v2::tests::delivery_preparation_revalidates_and_rejects_revocation_after_attachment
+        PASS [   0.010s] codex-hepta-context-compiler v2::tests::delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch
+        PASS [   0.011s] codex-hepta-context-compiler v2::tests::attachment_revalidation_rejects_compile_then_revoke_toc_tou
+        PASS [   0.010s] codex-hepta-context-compiler v2::tests::deterministic_value_per_token_preserves_mandatory_floors
+        PASS [   0.009s] codex-hepta-context-compiler v2::tests::final_serialized_token_count_must_fit_budget_including_framing
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::mandatory_group_policy_is_bound_even_when_selected_set_is_identical
+        PASS [   0.011s] codex-hepta-context-compiler v2::tests::indeterminate_provider_terminal_remains_indeterminate
+        PASS [   0.027s] codex-hepta-context-compiler v2::tests::independent_provider_evidence_verifier_is_required
+        PASS [   0.015s] codex-hepta-context-compiler v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation
+        PASS [   0.021s] codex-hepta-context-compiler v2::tests::provider_and_model_identity_must_match_exact_model_profile
+        PASS [   0.009s] codex-hepta-context-compiler v2::tests::provider_payload_binding_must_match_exact_serialized_payload
+        PASS [   0.014s] codex-hepta-context-compiler v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::serialization_rejects_payload_realization_that_does_not_match_selected_digest
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::serialization_validates_real_bytes_and_tokenizes_final_payload
+        PASS [   0.013s] codex-hepta-context-compiler v2::tests::raw_candidate_and_realization_bytes_are_bounded_before_serialization
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::snapshot_scope_and_authority_domain_are_part_of_admission_truth
+        PASS [   0.017s] codex-hepta-context-compiler v2::tests::revocation_and_mandatory_reference_bounds_fail_closed
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::tiny_budget_refuses_instead_of_truncating_instruction_or_schema
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::tokenizer_generation_secret_and_profile_drift_fail_closed
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::verified_admission_cannot_be_reused_across_request_scope
+        PASS [   0.013s] codex-hepta-context-compiler v2::tests::successor_snapshot_rejects_revocation_resurrection
+        PASS [   0.004s] codex-hepta-context-compiler wire::tests::compiler_composes_into_admitted_v2_transport_without_serializing_authority
+        PASS [   0.008s] codex-hepta-context-compiler v2::tests::well_formed_admission_digest_is_not_enough_without_verifier_acceptance
+        PASS [   0.006s] codex-hepta-context-compiler wire::tests::context_wire_rejects_unknown_fields_and_duplicate_id_partitions
+        PASS [   0.007s] codex-hepta-learning-ledger causal_v2::tests::ledger_03_rejects_shared_credential_chain
+        PASS [   0.007s] codex-hepta-learning-ledger causal_v2::tests::ledger_candidate_receipt_binds_generator_relative_completeness
+        PASS [   0.004s] codex-hepta-learning-ledger causal_v2::tests::ledger_credit_batch_enforces_conservation
+        PASS [   0.010s] codex-hepta-learning-ledger causal_v2::tests::ledger_04_validates_terminal_watermark_and_correction_lineage
+        PASS [   0.004s] codex-hepta-learning-ledger causal_v2::tests::ledger_dataset_freeze_is_order_independent_and_rejects_duplicates
+        PASS [   0.004s] codex-hepta-learning-ledger checkpoint::tests::checkpoint_revocation_frontier_changes_without_rewriting_history
+        PASS [   0.008s] codex-hepta-learning-ledger dataset_receipt_v3::tests::fixed_q32_dependency_remains_linked_for_dataset_receipts
+        PASS [   0.008s] codex-hepta-learning-ledger dataset_receipt_v3::tests::ledger_05_dataset_receipt_is_self_verifying
+        PASS [   0.010s] codex-hepta-learning-ledger dataset_receipt_v3::tests::ledger_05_dataset_receipt_rejects_semantic_field_drift
+        PASS [   0.031s] codex-hepta-learning-ledger durable::inspection_tests::complete_suffix_needs_current_witness_and_never_returns_old_prefix
+        PASS [   0.013s] codex-hepta-learning-ledger durable::inspection_tests::corrupted_complete_frame_and_invalid_domains_are_rejected
+        PASS [   0.434s] codex-hepta-cognitive-read ids::prepared::tests::prepared_reads_match_one_shot_for_all_field_sets_and_permutations
+        PASS [   0.004s] codex-hepta-learning-ledger durable::inspection_tests::missing_and_mismatched_acknowledged_history_never_mutate_file
+        PASS [   0.004s] codex-hepta-learning-ledger durable::inspection_tests::os_readonly_inspection_matches_writer_and_preserves_bytes
+        PASS [   0.012s] codex-hepta-learning-ledger durable::inspection_tests::current_revocations_survive_readonly_projection
+        PASS [   0.009s] codex-hepta-learning-ledger durable::inspection_tests::partial_tail_is_never_repaired_by_reader
+        PASS [   0.010s] codex-hepta-learning-ledger durable::inspection_tests::reader_coexists_with_shared_lock_but_does_not_unlock_another_reader
+        PASS [   0.010s] codex-hepta-learning-ledger durable::inspection_tests::rejection_releases_own_lock_even_with_transient_duplicate
+        PASS [   0.009s] codex-hepta-learning-ledger durable::tests::canonical_candidate_permutation_retry_after_later_events_never_appends
+        PASS [   0.009s] codex-hepta-learning-ledger durable::tests::canonical_event_and_file_match_independent_integer_byte_oracle
+        PASS [   0.009s] codex-hepta-learning-ledger durable::tests::changed_identity_and_stale_predecessor_reject_without_mutating_either_store
+        PASS [   0.025s] codex-hepta-learning-ledger durable::tests::codec_rejects_every_truncation_unknown_variant_and_trailing_bytes
+        PASS [   0.007s] codex-hepta-learning-ledger durable::tests::complete_corruption_invalid_length_prefix_and_rehashed_bad_lineage_reject
+        PASS [   0.005s] codex-hepta-learning-ledger durable::tests::empty_recovery_is_not_creation_and_existing_history_is_never_overwritten
+        PASS [   0.004s] codex-hepta-learning-ledger durable::tests::exclusive_writer_fencing_releases_on_drop
+        PASS [   0.005s] codex-hepta-learning-ledger durable::tests::failed_constructor_releases_acquired_lock_with_transient_duplicate
+        PASS [   0.004s] codex-hepta-learning-ledger durable::tests::failed_recovery_releases_acquired_lock_before_store_exists
+        PASS [   0.005s] codex-hepta-learning-ledger durable::tests::failed_write_poisons_memory_and_requires_recovery
+        PASS [   0.003s] codex-hepta-learning-ledger durable::tests::full_unacknowledged_frame_is_synced_and_deduplicated_on_recover
+        PASS [   0.005s] codex-hepta-learning-ledger durable::tests::invalid_causal_facts_and_oversized_candidate_sets_fail_before_io
+        PASS [   0.004s] codex-hepta-learning-ledger durable::tests::malformed_domain_anchor_and_excess_file_reject_without_changes
+        PASS [   0.004s] codex-hepta-learning-ledger durable::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive
+        PASS [   0.006s] codex-hepta-learning-ledger durable::tests::persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants
+        PASS [   0.006s] codex-hepta-learning-ledger durable::tests::record_quota_allows_exact_retry_but_not_a_new_event
+        PASS [   0.004s] codex-hepta-learning-ledger durable::tests::retrieval_assignment_tag_four_replays_exactly_after_reopen
+        PASS [   0.158s] codex-hepta-learning-ledger durable::tests::acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail
+        PASS [   0.006s] codex-hepta-learning-ledger durable::tests::wrong_anchor_never_repairs_tail_and_matching_early_anchor_preserves_later_frames
+        PASS [   0.013s] codex-hepta-learning-ledger ledger::tests::append_is_deterministic_and_idempotent
+        PASS [   0.013s] codex-hepta-learning-ledger ledger::tests::atomic_credit_batch_enforces_terminal_value_and_conservation
+        PASS [   0.007s] codex-hepta-learning-ledger ledger::tests::atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse
+        PASS [   0.004s] codex-hepta-learning-ledger ledger::tests::authenticated_corrections_form_one_linear_head_without_forks
+        PASS [   0.004s] codex-hepta-learning-ledger ledger::tests::authenticated_outcome_rejects_legacy_decision_ancestry
+        PASS [   0.005s] codex-hepta-learning-ledger ledger::tests::canonical_runtime_delivery_is_ingested_with_runtime_owned_observer
+        PASS [   0.006s] codex-hepta-learning-ledger ledger::tests::credit_cannot_be_double_counted
+        PASS [   0.004s] codex-hepta-learning-ledger ledger::tests::evaluated_policy_cannot_label_its_own_outcome
+        PASS [   0.099s] codex-hepta-learning-ledger durable::tests::unacknowledged_partial_tail_recovers_exact_predecessor_at_every_cut
+        PASS [   0.012s] codex-hepta-learning-ledger ledger::tests::explicit_unlearning_lineage_revokes_source_and_derived_credit
+        PASS [   0.010s] codex-hepta-learning-ledger ledger::tests::incomplete_or_duplicate_candidate_sets_fail_closed
+        PASS [   0.722s] codex-hepta-cognitive-read ids_tests::maximum_exact_id_batch_resolves_from_the_full_snapshot
+        PASS [   0.004s] codex-hepta-learning-ledger ledger::tests::invalid_runtime_delivery_contract_cannot_enter_ledger
+        PASS [   0.007s] codex-hepta-learning-ledger ledger::tests::outcome_and_credit_cannot_attach_to_revoked_ancestors
+        PASS [   0.004s] codex-hepta-learning-ledger ledger::tests::prompt_delivery_requires_live_episode_and_independent_runtime_observer
+        PASS [   0.004s] codex-hepta-learning-ledger ledger::tests::rejected_runtime_delivery_preserves_rejection_lineage
+        PASS [   0.009s] codex-hepta-learning-ledger ledger::tests::revocation_removes_descendants_and_snapshot_restore_does_not_resurrect
+        PASS [   0.012s] codex-hepta-learning-ledger ledger::tests::revoked_decision_logically_removes_prompt_delivery_lineage
+        PASS [   0.021s] codex-hepta-learning-ledger ledger::tests::tampered_snapshot_chain_is_rejected
+        PASS [   0.015s] codex-hepta-learning-ledger ledger::tests::zero_propensity_and_missing_abstain_fail_closed
+        PASS [   0.032s] codex-hepta-learning-ledger production::retrieval_preparation::tests::preparation_identity_advances_with_the_durable_owner_after_reopen
+        PASS [   0.033s] codex-hepta-learning-ledger production::retrieval_preparation::tests::preparation_read_is_indexed_bound_and_non_mutating
+        PASS [   0.225s] codex-hepta-learning-ledger ledger::tests::indexed_active_reads_match_scan_after_growth_revocation_and_replay
+        PASS [   0.043s] codex-hepta-learning-ledger production::retrieval_preparation::tests::witness_lag_and_revocation_never_become_delivery_preparation
+        PASS [   0.004s] codex-hepta-learning-ledger production::tests::crash_after_ledger_sync_before_witness_child
+        PASS [   0.040s] codex-hepta-learning-ledger production::tests::corrupt_or_missing_witness_history_never_falls_back_to_reinitialization
+        PASS [   0.009s] codex-hepta-learning-ledger production::tests::directory_durability_requires_an_actual_directory_handle
+        PASS [   0.055s] codex-hepta-learning-ledger production::tests::lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness
+        PASS [   0.347s] codex-hepta-learning-ledger ledger::tests::indexed_historical_retry_survives_growth_and_snapshot_recovery
+        PASS [   0.103s] codex-hepta-learning-ledger production::tests::dataset_freeze_counts_decisions_without_any_outcome_as_pending
+        PASS [   0.074s] codex-hepta-learning-ledger production::tests::process_death_between_ledger_and_witness_reconciles_without_redispatch
+        PASS [   0.128s] codex-hepta-learning-ledger production::tests::production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
+        PASS [   0.093s] codex-hepta-learning-ledger production::tests::production_writer_recovers_against_independent_witness
+        PASS [   0.004s] codex-hepta-learning-ledger protocol::tests::credit_and_episode_views_bind_exact_snapshot_history
+        PASS [   0.003s] codex-hepta-learning-ledger protocol::tests::dataset_v3_has_deterministic_registered_v1_compatibility_view
+        PASS [   0.014s] codex-hepta-learning-ledger protocol::tests::registered_decision_and_outcome_adapters_round_trip_canonical_json
+        PASS [   0.003s] codex-hepta-learning-ledger protocol::tests::registered_protocols_reject_unknown_fields
+        PASS [   0.010s] codex-hepta-learning-ledger retrieval_assignment::tests::bridge_preserves_complete_and_incomplete_assignment_facts
+        PASS [   0.007s] codex-hepta-learning-ledger retrieval_assignment::tests::delivery_aware_bridge_binds_only_the_final_exposed_subset
+        PASS [   0.009s] codex-hepta-learning-ledger retrieval_assignment::tests::downstream_policy_and_delivery_propensity_are_bound_separately
+        PASS [   0.076s] codex-hepta-learning-ledger production::tests::production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollback
+        PASS [   0.008s] codex-hepta-learning-ledger retrieval_assignment::tests::normalization_preserves_selected_and_delivered_candidate_identity
+        PASS [   0.003s] codex-hepta-learning-ledger retrieval_assignment::tests::owner_bridge_uses_canonical_digest_indices_not_input_positions
+        PASS [   0.030s] codex-hepta-learning-ledger retrieval_assignment::tests::maximum_retrieval_assignment_fits_existing_bounded_event_frame
+        PASS [   0.013s] codex-hepta-learning-ledger retrieval_assignment::tests::selected_set_exceeding_decoder_capacity_is_rejected_atomically
+        PASS [   0.036s] codex-hepta-learning-ledger retrieval_assignment::tests::retrieval_encoding_has_a_distinct_tag_and_bounded_roundtrip
+        PASS [   0.004s] codex-hepta-learning-ledger run_start::tests::committed_record_reopens_and_ack_loss_retry_is_idempotent
+        PASS [   0.014s] codex-hepta-learning-ledger run_start::tests::durable_conflict_roundtrip_replays_exact_receipt_without_runtime_snapshot
+        PASS [   0.029s] codex-hepta-learning-ledger run_start::tests::acknowledged_missing_history_never_repairs_as_success
+        PASS [   0.004s] codex-hepta-learning-ledger run_start::tests::durable_run_start_roundtrip_replays_exact_objective_bytes
+        PASS [   1.161s] codex-hepta-cognitive-read v2::tests::one_mib_ceiling_bounds_the_actual_complete_envelope
+        PASS [   0.008s] codex-hepta-learning-ledger run_start::tests::exact_retry_is_idempotent_but_run_id_drift_conflicts
+        PASS [   0.006s] codex-hepta-learning-ledger run_start::tests::incomplete_unacknowledged_tail_recovers_to_last_synced_frame
+        PASS [   0.005s] codex-hepta-learning-ledger run_start::tests::objective_payload_digest_mismatch_rejects_before_io
+        PASS [   0.009s] codex-hepta-learning-ledger run_start::tests::objective_protocol_digest_mismatch_rejects_before_io
+        PASS [   0.007s] codex-hepta-learning-ledger run_start::tests::predecessor_and_binding_are_fenced
+        PASS [   0.008s] codex-hepta-learning-ledger run_start::tests::semantic_or_protocol_drift_after_reopen_conflicts
+        PASS [   0.008s] codex-hepta-learning-ledger segments::tests::checkpoint_prevents_missing_empty_successor_and_seal_resurrection
+        PASS [   0.008s] codex-hepta-learning-ledger segments::tests::capacity_rejection_and_wrong_successor_never_mutate_the_owner
+        PASS [   0.007s] codex-hepta-learning-ledger segments::tests::cross_segment_causality_revocation_and_historical_retry_keep_one_identity
+        PASS [   0.012s] codex-hepta-learning-ledger segments::tests::crash_child
+        PASS [   0.004s] codex-hepta-learning-ledger segments::tests::original_v1_and_segmented_v2_share_the_real_durable_port_not_a_fixture
+        PASS [   0.016s] codex-hepta-learning-ledger segments::tests::incomplete_final_frame_is_repaired_only_after_minimum_anchor_validation
+        PASS [   0.016s] codex-hepta-learning-ledger segments::tests::reordered_history_wrong_limits_and_corruption_fail_without_repair
+        PASS [   0.025s] codex-hepta-learning-ledger segments::tests::process_exit_after_seal_or_successor_preserves_unknown_outcome_without_redispatch
+        PASS [   0.008s] codex-hepta-learning-ledger segments::tests::witnessed_sealed_last_segment_can_rotate_but_never_append_after_restart
+        PASS [   0.013s] codex-hepta-learning-ledger segments::tests::sealed_prefix_is_readable_while_the_new_segment_writer_remains_active
+        PASS [   0.007s] codex-hepta-learning-ledger shadow_tests::caller_supplied_candidate_set_digest_drift_fails_closed
+        PASS [   0.011s] codex-hepta-learning-ledger shadow_tests::bridge_recomputes_intuition_and_appends_complete_candidate_set
+        PASS [   0.019s] codex-hepta-learning-ledger shadow_tests::exact_shadow_replay_is_idempotent
+        PASS [   0.004s] codex-hepta-learning-ledger shadow_tests::reserved_abstain_cannot_be_smuggled_into_policy_candidates
+        PASS [   0.023s] codex-hepta-learning-ledger shadow_tests::low_confidence_is_logged_as_explicit_abstain_with_nonzero_propensity
+        PASS [   0.020s] codex-hepta-learning-ledger shadow_tests::shadow_bridge_does_not_weaken_independent_terminal_outcome_rules
+        PASS [   0.108s] codex-hepta-learning-ledger signed_evidence::tests::distinct_keys_do_not_make_one_controller_independent
+        PASS [   0.104s] codex-hepta-learning-ledger signed_evidence::tests::observer_and_evaluator_require_pairwise_independence
+        PASS [   0.029s] codex-hepta-learning-ledger signed_evidence::tests::trust_epoch_revocation_scope_and_expiry_fail_closed
+        PASS [   0.086s] codex-hepta-learning-ledger signed_evidence::tests::signed_evidence_binds_actual_bytes_and_credential_not_digest_claims
+        PASS [   0.014s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rejects_retroactive_effective_time
+        PASS [   0.065s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback
+        PASS [   0.012s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rejects_root_substitution_and_revocation
+        PASS [   0.012s] codex-hepta-learning-ledger witness::tests::witness_advances_monotonically_and_recovers_exact_frontier
+        PASS [   0.009s] codex-hepta-learning-ledger witness::tests::witness_rejects_skips_and_binding_mismatch
+        PASS [   0.043s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rotation_is_monotonic_and_content_addressed
+        PASS [   1.508s] codex-hepta-learning-ledger checkpoint::tests::checkpoint_is_content_addressed_and_supports_binary_lookup
+        PASS [   2.112s] codex-hepta-learning-ledger checkpoint::tests::recovery_work_receipt_covers_full_single_segment_record_profile
+        PASS [   2.427s] codex-hepta-cognitive-read tombstone_resurrection_tests::maximum_lineage_keeps_linearithmic_terminal_edge_validation
+        PASS [   1.283s] codex-hepta-learning-ledger segments::tests::history_exceeds_v1_record_capacity_without_resetting_chain_or_limits
+        PASS [   3.377s] codex-hepta-cognitive-read fuzz_tests::deterministic_fuzz_corpus_never_escapes_declared_bounds
+        PASS [   3.169s] codex-hepta-learning-ledger production::tests::product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen
+────────────
+     Summary [   4.213s] 226 tests run: 226 passed, 1 skipped

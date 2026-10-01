@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
+use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_compact_engine::CognitiveReadCompactionRetentionV1;
 use codex_hepta_compact_engine::CompactionPolicyV2;
-use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;

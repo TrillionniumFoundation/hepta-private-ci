@@ -502,7 +502,7 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
 }
 
 #[test]
-fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+fn named_agentd_pipeline_without_tokenizer_rejects_exact_context_proofs() {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let registry_root = temporary.path().join("prompt-registry");
     let runtime_root = temporary.path().join("prompt-runtime");
@@ -707,48 +707,48 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         policy_digest: digest("exercise-policy"),
     };
 
-    let disposition = pipeline
-        .compile_and_stage(
-            "thread:product",
-            "turn:product",
-            "gpt-test",
-            wall_now + 60_000,
-            &portfolio,
-            &exercise_request,
-            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
-                compilation_id: id("compilation:agentd-product"),
-                serialization_id: id("serialization:agentd-product"),
-                attachment_id: id("attachment:agentd-product"),
-                registry_model_tuple: tuple.clone(),
-                context_model_profile: ContextModelProfileV2 {
-                    model_digest: tuple.model_digest,
-                    provider_id_digest: digest("provider:agentd-product"),
-                    provider_model_digest: tuple.model_digest,
-                    tokenizer_digest: tuple.tokenizer_digest,
-                    serializer_digest: digest("serializer:agentd-product"),
-                    template_digest: tuple.template_digest,
-                    tool_schema_digest: tuple.tool_schema_digest,
-                    maximum_context_tokens: 128,
-                },
-                now_unix_ms: logical_now,
-                token_budget: 128,
-                truncation_policy_digest: digest("truncation:agentd-product"),
+    let result = pipeline.compile_and_stage(
+        "thread:product",
+        "turn:product",
+        "gpt-test",
+        wall_now + 60_000,
+        &portfolio,
+        &exercise_request,
+        codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+            compilation_id: id("compilation:agentd-product"),
+            serialization_id: id("serialization:agentd-product"),
+            attachment_id: id("attachment:agentd-product"),
+            registry_model_tuple: tuple.clone(),
+            context_model_profile: ContextModelProfileV2 {
+                model_digest: tuple.model_digest,
+                provider_id_digest: digest("provider:agentd-product"),
+                provider_model_digest: tuple.model_digest,
+                tokenizer_digest: tuple.tokenizer_digest,
+                serializer_digest: digest("serializer:agentd-product"),
+                template_digest: tuple.template_digest,
+                tool_schema_digest: tuple.tool_schema_digest,
+                maximum_context_tokens: 128,
             },
-        )
-        .unwrap_or_else(|error| panic!("compile and stage: {error}"));
-    assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
-
+            now_unix_ms: logical_now,
+            token_budget: 128,
+            truncation_policy_digest: digest("truncation:agentd-product"),
+        },
+    );
+    assert!(matches!(
+        result,
+        Err(AgentdPromptPipelineError::ExactTokenizerUnavailable)
+    ));
     let runtime = pipeline.runtime_owner();
-    let staged = runtime
-        .prepare(PromptRuntimePrepareRequest {
-            thread_id: "thread:product".to_owned(),
-            turn_id: "turn:product".to_owned(),
-            model_context_window: Some(128),
-        })
-        .unwrap_or_else(|error| panic!("prepare staged product prompt: {error}"))
-        .unwrap_or_else(|| panic!("staged attachment missing"));
-    assert_eq!(staged.developer_fragments.len(), 1);
-    assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    assert!(
+        runtime
+            .prepare(PromptRuntimePrepareRequest {
+                thread_id: "thread:product".to_owned(),
+                turn_id: "turn:product".to_owned(),
+                model_context_window: Some(128),
+            })
+            .unwrap_or_else(|error| panic!("prepare unstaged product prompt: {error}"))
+            .is_none()
+    );
 }
 
 #[test]

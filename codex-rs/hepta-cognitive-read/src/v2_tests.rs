@@ -284,6 +284,106 @@ fn exact_cap_is_accepted_and_the_next_record_is_omitted() {
 }
 
 #[test]
+fn byte_budget_keeps_a_prefix_when_the_first_record_does_not_fit() {
+    let mut large = record("memory:a", MemoryKind::Fact, RecordState::Live);
+    large.citations = (0..64)
+        .map(|index| Citation {
+            source_id: id(&format!("source:{index:02}")),
+            source_digest: Digest32::of_bytes(format!("source:{index:02}").as_bytes()),
+        })
+        .collect();
+    let snapshot = snapshot(vec![
+        large,
+        record("memory:b", MemoryKind::Fact, RecordState::Live),
+    ]);
+    // The small second record would fit in this envelope. It must not be
+    // returned after the first canonical record exceeded the byte limit.
+    let expected_request = request(&snapshot, 256, /*include_tombstones*/ false);
+    let result = read_v2(&snapshot, expected_request.clone()).expect("bounded prefix");
+    assert_eq!(result.records(), &[]);
+    assert_eq!(result.omitted_count(), 2);
+    assert_eq!(result.canonical_bytes().len(), READ_RECEIPT_V2_FIXED_BYTES);
+    assert_eq!(
+        ReadResultV2::from_canonical_bytes_for_request(result.canonical_bytes(), &expected_request),
+        Ok(result)
+    );
+}
+
+#[test]
+fn byte_preflight_covers_predecessor_and_citations_and_counts_all_current_heads() {
+    let first = record("memory:a", MemoryKind::Fact, RecordState::Live);
+    let mut current = first.clone();
+    current.revision = revision(/*value*/ 2);
+    current.predecessor_digest = Some(first.record_digest());
+    current.citations = vec![Citation {
+        source_id: id("source:current"),
+        source_digest: Digest32::of_bytes(b"source:current"),
+    }];
+    let snapshot = snapshot(vec![
+        first,
+        current.clone(),
+        record("memory:b", MemoryKind::Fact, RecordState::Live),
+        record("memory:c", MemoryKind::Fact, RecordState::Live),
+    ]);
+    let mut full_request = request(
+        &snapshot,
+        MAX_ENCODED_READ_RESULT_BYTES_V2,
+        /*include_tombstones*/ false,
+    );
+    full_request.read_request.maximum_results = 1;
+    let full = read_v2(&snapshot, full_request.clone()).expect("current head prefix");
+    assert_eq!(full.records(), &[current]);
+    assert_eq!(full.omitted_count(), 2);
+
+    for (cap, expected_count, expected_omitted) in [
+        (READ_RECEIPT_V2_FIXED_BYTES, 0, 3),
+        (full.canonical_bytes().len() - 1, 0, 3),
+        (full.canonical_bytes().len(), 1, 2),
+    ] {
+        let expected_request = ReadRequestV2 {
+            maximum_encoded_bytes: cap,
+            ..full_request.clone()
+        };
+        let result = read_v2(&snapshot, expected_request.clone()).expect("bounded current heads");
+        assert_eq!(result.records().len(), expected_count);
+        assert_eq!(result.omitted_count(), expected_omitted);
+        assert!(result.canonical_bytes().len() <= cap);
+        assert_eq!(
+            ReadResultV2::from_canonical_bytes_for_request(
+                result.canonical_bytes(),
+                &expected_request,
+            ),
+            Ok(result)
+        );
+    }
+}
+
+#[test]
+fn invalid_large_kind_lists_keep_v1_validation_precedence() {
+    let snapshot = sample_snapshot();
+    let mut expected_request = request(
+        &snapshot,
+        MAX_ENCODED_READ_RESULT_BYTES_V2,
+        /*include_tombstones*/ false,
+    );
+    expected_request.read_request.allowed_kinds = vec![MemoryKind::Fact; 1_048_576];
+    assert_eq!(
+        read_v2(&snapshot, expected_request.clone()),
+        Err(ReadV2Error::Read(Error::DuplicateKind))
+    );
+    expected_request.read_request.maximum_results = 0;
+    assert_eq!(
+        read_v2(&snapshot, expected_request.clone()),
+        Err(ReadV2Error::Read(Error::InvalidMaximumResults))
+    );
+    expected_request.read_request.snapshot_digest = Digest32::of_bytes(b"other snapshot");
+    assert_eq!(
+        read_v2(&snapshot, expected_request),
+        Err(ReadV2Error::Read(Error::SnapshotMismatch))
+    );
+}
+
+#[test]
 fn one_mib_ceiling_bounds_the_actual_complete_envelope() {
     let mut records = Vec::new();
     for record_index in 0..1_024 {

@@ -70,8 +70,10 @@ separate and bind their own commit, tree, ordered parents, commands, logs and me
 package and normal-product gates. The receipt records each gate status separately. This does not
 normalize all consumers to one state:
 
-- `compact.engine` remains registered but not composed;
-- `context.compiler` retains legacy V1 composition while verified V2 ingress is pending;
+- `compact.engine` has an exact-owner candidate API and fixtures, but no normal
+  product caller or durable checkpoint publication;
+- `context.compiler` retains legacy V1 product composition; verified revision-bound
+  V2 ingress is implemented locally while provider-bound product use is pending;
 - `memory.federation` retains local owner/extension composition without claiming cross-host
   authentication;
 - `memory.retrieval` exercises the existing owner/Agentd/native-worker path;
@@ -87,7 +89,11 @@ registered port into a completed product migration.
 The capacity gate uses the real `CognitiveStore`, seeds 512 verified active revisions with owner
 citations, acquires the durable Lane C cut, constructs the request-local prepared index, resolves
 512 exact IDs, and revalidates the cut. It reports p50/p95/p99 microseconds for each phase,
-SQLite file/page/row measurements, process user/system CPU, elapsed wall time and maximum RSS.
+SQLite file/page/row measurements. Process user/system CPU, elapsed wall time and
+maximum RSS cover the entire `just test` command, including any compilation,
+fixture setup and test-runner overhead; they are not isolated read-phase resource
+measurements. The separately timed Rust phase distributions cover owner acquisition,
+index construction, read and revalidation.
 
 The result is tied to the exact candidate and current GitHub runner. It is a qualification
 measurement, not a universal performance guarantee. Production target-host acceptance still

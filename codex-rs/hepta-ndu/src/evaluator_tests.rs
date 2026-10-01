@@ -1,3 +1,12 @@
+#![allow(
+    deprecated,
+    reason = "These tests retain coverage of the deprecated evaluator compatibility contract"
+)]
+#![allow(
+    clippy::expect_used,
+    reason = "Fixed evaluator fixtures and expected receipt members fail the test when their setup contract changes"
+)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;

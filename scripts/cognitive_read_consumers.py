@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Audit registered read consumers against one immutable Git tree; never claim execution."""
+
 from __future__ import annotations
 
 import argparse
@@ -49,7 +50,7 @@ COMPOSITION = (
     (
         "product_read",
         "codex-rs/hepta-agentd/src/cognitive_context.rs",
-        "pub(crate) async fn read_with_retrieval_context_and_learning(",
+        "pub(crate) async fn read_prepared_with_retrieval_context_and_learning(",
     ),
     (
         "owner_cut_view",
@@ -91,33 +92,22 @@ def registered_consumers(value: object) -> set[str]:
 def verify_registered(value: object) -> None:
     actual = registered_consumers(value)
     if actual != set(CONSUMERS):
-        raise ValueError(
-            f"registered cognitive.read consumer drift: {sorted(actual)}"
-        )
+        raise ValueError(f"registered cognitive.read consumer drift: {sorted(actual)}")
 
 
 def safe_path(path: str) -> str:
     parsed = PurePosixPath(path)
-    if (
-        not path
-        or parsed.is_absolute()
-        or ".." in parsed.parts
-        or "\\" in path
-    ):
+    if not path or parsed.is_absolute() or ".." in parsed.parts or "\\" in path:
         raise ValueError(f"invalid repository path: {path}")
     return parsed.as_posix().rstrip("/")
 
 
 def policy_by_consumer(value: object) -> dict[str, dict]:
     if not isinstance(value, dict) or value.get("schema") != POLICY_SCHEMA:
-        raise ValueError(
-            "cognitive.read consumer policy has the wrong schema"
-        )
+        raise ValueError("cognitive.read consumer policy has the wrong schema")
     rows = value.get("consumers")
     if not isinstance(rows, list):
-        raise ValueError(
-            "cognitive.read consumer policy must contain a consumer list"
-        )
+        raise ValueError("cognitive.read consumer policy must contain a consumer list")
     policies: dict[str, dict] = {}
     required_text = (
         "expectedProductCallerState",
@@ -135,40 +125,25 @@ def policy_by_consumer(value: object) -> dict[str, dict]:
             or consumer not in CONSUMERS
             or consumer in policies
         ):
-            raise ValueError(
-                f"invalid or duplicate consumer policy row: {consumer}"
-            )
+            raise ValueError(f"invalid or duplicate consumer policy row: {consumer}")
         for field in required_text:
             if not isinstance(row.get(field), str) or not row[field].strip():
-                raise ValueError(
-                    f"{consumer}: missing policy field {field}"
-                )
+                raise ValueError(f"{consumer}: missing policy field {field}")
         if row["migrationClass"] not in MIGRATION_CLASSES:
-            raise ValueError(
-                f"{consumer}: unsupported migration class"
-            )
+            raise ValueError(f"{consumer}: unsupported migration class")
         minimum = row.get("minimumMappedProductCallers")
         if type(minimum) is not int or minimum < 0:
-            raise ValueError(
-                f"{consumer}: invalid minimumMappedProductCallers"
-            )
+            raise ValueError(f"{consumer}: invalid minimumMappedProductCallers")
         required = row.get("requiredExecutionEvidence")
         if (
             not isinstance(required, list)
             or not required
-            or any(
-                not isinstance(item, str) or not item.strip()
-                for item in required
-            )
+            or any(not isinstance(item, str) or not item.strip() for item in required)
         ):
-            raise ValueError(
-                f"{consumer}: invalid requiredExecutionEvidence"
-            )
+            raise ValueError(f"{consumer}: invalid requiredExecutionEvidence")
         policies[consumer] = row
     if set(policies) != set(CONSUMERS):
-        raise ValueError(
-            f"consumer policy set drift: {sorted(policies)}"
-        )
+        raise ValueError(f"consumer policy set drift: {sorted(policies)}")
     return policies
 
 
@@ -186,11 +161,7 @@ def mapped_tests(
                 if isinstance(reference, dict)
                 else None
             )
-            symbol = (
-                reference.get("symbol")
-                if isinstance(reference, dict)
-                else None
-            )
+            symbol = reference.get("symbol") if isinstance(reference, dict) else None
             if path is not None:
                 path = safe_path(path)
             row = {
@@ -213,25 +184,16 @@ def mapped_product_callers(
     if callers is None:
         callers = []
     if not isinstance(callers, list):
-        raise ValueError(
-            "productCallers must be a list when present"
-        )
+        raise ValueError("productCallers must be a list when present")
     result = []
     for caller in callers:
         if not isinstance(caller, dict):
-            raise ValueError(
-                "productCallers entries must be objects"
-            )
+            raise ValueError("productCallers entries must be objects")
         path = caller.get("sourcePath", caller.get("path"))
         symbol = caller.get("nativeSymbol", caller.get("symbol"))
-        if (
-            not isinstance(path, str)
-            or not isinstance(symbol, str)
-            or not symbol
-        ):
+        if not isinstance(path, str) or not isinstance(symbol, str) or not symbol:
             raise ValueError(
-                "product caller requires sourcePath/path "
-                "and nativeSymbol/symbol"
+                "product caller requires sourcePath/path and nativeSymbol/symbol"
             )
         path = safe_path(path)
         present = path in objects
@@ -271,11 +233,7 @@ def selected_claim_flags(mapping: dict) -> dict[str, object]:
 def audit(root: Path, candidate: str) -> dict:
     if re.fullmatch(r"[0-9a-f]{40}", candidate) is None:
         raise ValueError("candidate must be a complete SHA")
-    env = {
-        key: val
-        for key, val in os.environ.items()
-        if not key.startswith("GIT_")
-    }
+    env = {key: val for key, val in os.environ.items() if not key.startswith("GIT_")}
     env.update(
         GIT_NO_REPLACE_OBJECTS="1",
         GIT_CONFIG_NOSYSTEM="1",
@@ -291,9 +249,7 @@ def audit(root: Path, candidate: str) -> dict:
         ).strip()
 
     if git("rev-parse", "HEAD") != candidate:
-        raise ValueError(
-            "working tree is not the requested candidate"
-        )
+        raise ValueError("working tree is not the requested candidate")
     if git("status", "--porcelain", "--untracked-files=no"):
         raise ValueError("tracked working tree is dirty")
     objects = {}
@@ -306,45 +262,28 @@ def audit(root: Path, candidate: str) -> dict:
     def text(path: str) -> str:
         path = safe_path(path)
         if path not in objects:
-            raise ValueError(
-                f"missing ordinary source file: {path}"
-            )
+            raise ValueError(f"missing ordinary source file: {path}")
         return git("show", f"{candidate}:{path}")
 
     contracts_path = "docs/contracts/CONTRACTS.json"
     verify_registered(json.loads(text(contracts_path)))
-    policies = policy_by_consumer(
-        json.loads(text(POLICY_PATH))
-    )
+    policies = policy_by_consumer(json.loads(text(POLICY_PATH)))
 
     rows = []
     for consumer in CONSUMERS:
         policy = policies[consumer]
-        map_path = (
-            f"docs/modules/{consumer}/IMPLEMENTATION_MAP.json"
-        )
+        map_path = f"docs/modules/{consumer}/IMPLEMENTATION_MAP.json"
         mapping = json.loads(text(map_path))
         if mapping.get("module") != consumer:
-            raise ValueError(
-                f"{consumer}: implementation map identity mismatch"
-            )
+            raise ValueError(f"{consumer}: implementation map identity mismatch")
         actual_caller_state = mapping.get("productCallerState")
-        if (
-            actual_caller_state
-            != policy["expectedProductCallerState"]
-        ):
+        if actual_caller_state != policy["expectedProductCallerState"]:
             raise ValueError(
-                f"{consumer}: productCallerState drift: "
-                f"{actual_caller_state!r}"
+                f"{consumer}: productCallerState drift: {actual_caller_state!r}"
             )
         boundary = mapping.get("claimBoundary", {})
-        if (
-            not isinstance(boundary, dict)
-            or boundary.get("activation") is not False
-        ):
-            raise ValueError(
-                f"{consumer}: activation must remain explicitly false"
-            )
+        if not isinstance(boundary, dict) or boundary.get("activation") is not False:
+            raise ValueError(f"{consumer}: activation must remain explicitly false")
 
         roots = mapping.get(
             "declaredRoots",
@@ -353,39 +292,25 @@ def audit(root: Path, candidate: str) -> dict:
         if isinstance(roots, str):
             roots = [roots]
         if not isinstance(roots, list) or not roots:
-            raise ValueError(
-                f"no declared roots for {consumer}"
-            )
-        roots = [
-            safe_path(item.removesuffix("/**"))
-            for item in roots
-        ]
+            raise ValueError(f"no declared roots for {consumer}")
+        roots = [safe_path(item.removesuffix("/**")) for item in roots]
 
         sources = []
         for path, blob in sorted(objects.items()):
-            if (
-                not path.endswith(".rs")
-                or not any(
-                    path == item
-                    or path.startswith(item + "/")
-                    for item in roots
-                )
+            if not path.endswith(".rs") or not any(
+                path == item or path.startswith(item + "/") for item in roots
             ):
                 continue
             if "/tests/" in path or path.endswith("_tests.rs"):
                 continue
-            matches = sorted(
-                set(READ_API.findall(text(path)))
-            )
+            matches = sorted(set(READ_API.findall(text(path))))
             if matches:
                 sources.append(
                     {
                         "path": path,
                         "blob": blob,
                         "interfaces": matches,
-                        "inspection": (
-                            "lexical_reference_not_execution"
-                        ),
+                        "inspection": ("lexical_reference_not_execution"),
                     }
                 )
 
@@ -400,24 +325,16 @@ def audit(root: Path, candidate: str) -> dict:
                     "symbol": operation.get("nativeSymbol"),
                     "path": path,
                     "blob": objects.get(path),
-                    "present": (
-                        path in objects if path else False
-                    ),
+                    "present": (path in objects if path else False),
                     "declared_state": operation.get("state"),
                 }
             )
-        if any(
-            not row["present"] for row in mapped_operations
-        ):
-            raise ValueError(
-                f"{consumer}: mapped operation source is missing"
-            )
+        if any(not row["present"] for row in mapped_operations):
+            raise ValueError(f"{consumer}: mapped operation source is missing")
 
         tests = mapped_tests(mapping, objects)
         if any(not row["present"] for row in tests):
-            raise ValueError(
-                f"{consumer}: mapped test source is missing"
-            )
+            raise ValueError(f"{consumer}: mapped test source is missing")
 
         product_callers = mapped_product_callers(
             mapping,
@@ -427,17 +344,12 @@ def audit(root: Path, candidate: str) -> dict:
         minimum = policy["minimumMappedProductCallers"]
         if len(product_callers) < minimum:
             raise ValueError(
-                f"{consumer}: expected at least {minimum} "
-                "mapped product callers"
+                f"{consumer}: expected at least {minimum} mapped product callers"
             )
         if any(
-            not row["present"] or not row["symbol_present"]
-            for row in product_callers
+            not row["present"] or not row["symbol_present"] for row in product_callers
         ):
-            raise ValueError(
-                f"{consumer}: mapped product caller or symbol "
-                "is missing"
-            )
+            raise ValueError(f"{consumer}: mapped product caller or symbol is missing")
 
         flags = selected_claim_flags(mapping)
         rows.append(
@@ -456,23 +368,15 @@ def audit(root: Path, candidate: str) -> dict:
                     else "no_direct_reference_in_declared_roots"
                 ),
                 "mapped_operations": mapped_operations,
-                "declared_product_caller_state": (
-                    actual_caller_state
-                ),
+                "declared_product_caller_state": (actual_caller_state),
                 "product_callers": product_callers,
                 "mapped_tests": tests,
                 "migration": {
                     "class": policy["migrationClass"],
-                    "adopted_read_boundary": (
-                        policy["adoptedReadBoundary"]
-                    ),
+                    "adopted_read_boundary": (policy["adoptedReadBoundary"]),
                     "minimum_mapped_product_callers": minimum,
-                    "final_use_responsibility": (
-                        policy["finalUseResponsibility"]
-                    ),
-                    "error_mapping_requirement": (
-                        policy["errorMappingRequirement"]
-                    ),
+                    "final_use_responsibility": (policy["finalUseResponsibility"]),
+                    "error_mapping_requirement": (policy["errorMappingRequirement"]),
                     "required_execution_evidence": (
                         policy["requiredExecutionEvidence"]
                     ),
@@ -495,9 +399,7 @@ def audit(root: Path, candidate: str) -> dict:
     for role, path, symbol in COMPOSITION:
         body = text(path)
         if symbol not in body:
-            raise ValueError(
-                f"product composition symbol missing: {role}"
-            )
+            raise ValueError(f"product composition symbol missing: {role}")
         composition.append(
             {
                 "role": role,
@@ -505,9 +407,7 @@ def audit(root: Path, candidate: str) -> dict:
                 "blob": objects[path],
                 "symbol": symbol,
                 "symbol_present": True,
-                "state": (
-                    "source_composed_execution_unproven"
-                ),
+                "state": ("source_composed_execution_unproven"),
             }
         )
     return {
@@ -550,9 +450,7 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     output = args.output.resolve()
     if not output.is_relative_to(root / ".hepta-evidence"):
-        raise SystemExit(
-            "consumer audit output must be under .hepta-evidence"
-        )
+        raise SystemExit("consumer audit output must be under .hepta-evidence")
     result = audit(root, args.expected_sha)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(

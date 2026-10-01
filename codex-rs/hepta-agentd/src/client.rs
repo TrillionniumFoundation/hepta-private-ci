@@ -179,6 +179,39 @@ impl AgentdClient {
         }
     }
 
+    /// Read context with its separate witnessed learning preparation identity.
+    /// A receipt is historical evidence and grants neither retry nor training.
+    pub async fn prepare_cognitive_context(
+        &self,
+        query: String,
+        limit: u16,
+    ) -> Result<crate::CognitiveContextPreparation, AgentdError> {
+        let read_request_id = self.request_id();
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: read_request_id,
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::CognitiveContextPrepare { query, limit },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::CognitiveContextPrepared(prepared) => {
+                if let Some(receipt) = &prepared.preparation {
+                    receipt.validate().map_err(AgentdError::Protocol)?;
+                    if receipt.read_request_id != read_request_id {
+                        return Err(AgentdError::Protocol(
+                            "cognitive preparation RPC binding mismatch".to_string(),
+                        ));
+                    }
+                }
+                Ok(prepared)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
     /// Reacquire the owner cut immediately before physical model attachment.
     /// Success is only a freshness observation for this instant, not a lease.
     pub async fn revalidate_cognitive_context(

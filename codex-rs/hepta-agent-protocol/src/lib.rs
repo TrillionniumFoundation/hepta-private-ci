@@ -4,6 +4,7 @@
 
 mod authbus;
 mod capabilities;
+mod cognitive_preparation;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -21,6 +22,9 @@ pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
 pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
+pub use cognitive_preparation::COGNITIVE_CONTEXT_PREPARATION_CAPABILITY;
+pub use cognitive_preparation::CognitiveContextPreparation;
+pub use cognitive_preparation::CognitivePreparationReceipt;
 pub use evidence::KernelEvidenceAppendIngress;
 pub use evidence::KernelEvidenceCandidateV1;
 pub use evidence::KernelEvidenceQueryV1;
@@ -570,6 +574,10 @@ impl AgentdRequest {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "Keep the published Agentd command field types source-compatible."
+)]
 pub enum AgentdMethod {
     Capabilities,
     Health,
@@ -596,6 +604,10 @@ pub enum AgentdMethod {
         request: KernelEvidenceVerifyV1,
     },
     CognitiveContext {
+        query: String,
+        limit: u16,
+    },
+    CognitiveContextPrepare {
         query: String,
         limit: u16,
     },
@@ -746,6 +758,7 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextPrepared(CognitiveContextPreparation),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     KernelEvidenceResult(KernelEvidenceResult),
@@ -1072,7 +1085,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1331,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

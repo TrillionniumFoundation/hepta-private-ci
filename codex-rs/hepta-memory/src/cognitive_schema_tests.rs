@@ -5,6 +5,8 @@ use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
+    // Independent in-memory schema oracle; this fixture must not open an owner database.
+    #[allow(clippy::disallowed_methods)]
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect("sqlite::memory:")

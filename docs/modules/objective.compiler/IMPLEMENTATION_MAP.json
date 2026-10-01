@@ -144,11 +144,19 @@
       "tests": [
         {
           "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
-          "symbol": "registered scalar, enum and action implication fixtures"
+          "symbol": "interval_intersection_returns_a_witness_and_ignores_soft_constraints"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "finite_enum_inclusion_and_exclusion_are_intersected"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "horn_solver_and_each_minimal_core_match_exhaustive_boolean_assignments"
         },
         {
           "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
-          "symbol": "bounded exhaustive feasibility fixtures"
+          "symbol": "all_three_action_graphs_match_truth_table_and_have_minimal_conflicts"
         }
       ],
       "designOperation": "check_feasibility_v1",
@@ -349,8 +357,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "6578d5577095877a13daed05eab9297307b66775",
+    "tree": "01ec2038204018f1a5ccf405439944713a341432"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -444,7 +452,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "b189ee1fa70517ff43d860ee80c392f57f1c94b2"
+      "object": "5ee62f51eb01128c4586e6d7e1c0b8b422847a31"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -484,7 +492,7 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
-      "object": "5b79cec126388934f84ef0f244466f2d1f28b951"
+      "object": "7629438e67ad3a76cb7542b07631232e5412853b"
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
@@ -498,5 +506,31 @@
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
-  ]
+  ],
+  "observedAtHead": {
+    "commit": "6578d5577095877a13daed05eab9297307b66775",
+    "tree": "01ec2038204018f1a5ccf405439944713a341432"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+    "codex-rs/hepta-objective",
+    "codex-rs/hepta-objective/src/compiler.rs",
+    "codex-rs/hepta-objective/src/compiler_tests.rs",
+    "codex-rs/hepta-objective/src/feasibility.rs",
+    "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
+    "codex-rs/hepta-objective/src/feasibility_tests.rs",
+    "codex-rs/hepta-objective/src/objective_admission.rs",
+    "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+    "codex-rs/hepta-objective/src/objective_function_v1.rs",
+    "codex-rs/hepta-objective/src/source_envelope_json.rs",
+    "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+    "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+    "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+    "docs/modules/objective.compiler/TECHNICAL.md"
+  ],
+  "technicalGuideBlob": "6c627878c86207f41091eb56fedf701b1e49ddd4"
 }

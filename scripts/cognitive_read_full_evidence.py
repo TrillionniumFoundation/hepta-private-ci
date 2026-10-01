@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Complete read-only cognitive.read qualification over one exact candidate."""
+
 from __future__ import annotations
 
 import json
@@ -14,32 +15,34 @@ from cognitive_read_delivery_gates import delivery_log_problems
 
 SQLITE_CAPACITY_SCHEMA = "hepta.cognitive.read.sqlite-capacity.v1"
 REVISION_SHADOW_TESTS = (
-    "revision_bound_shadow_accepts_exact_owner_revision_bridge",
-    "revision_bound_shadow_rejects_missing_wrong_or_duplicate_source_revision",
-    "revision_bound_shadow_validation_detects_revision_or_receipt_tamper",
+    "revisioned_shadow_tests::revision_bound_shadow_accepts_exact_owner_revision_bridge",
+    "revisioned_shadow_tests::revision_bound_shadow_rejects_missing_wrong_or_duplicate_source_revision",
+    "revisioned_shadow_tests::revision_bound_shadow_validation_detects_revision_or_receipt_tamper",
 )
 OWNER_CURRENTNESS_TESTS = (
-    "scope_provisional_and_time_filters_do_not_leak_unadmitted_facts",
-    "retained_cut_detects_old_valid_backup_after_ordinary_reopen",
+    "cognitive_store::recovery::tests::cold_read_only::cold_recovery_audits_schema_authenticated_lane_c_witness",
+    "lane_c_snapshot_tests::scope_provisional_and_time_filters_do_not_leak_unadmitted_facts",
+    "lane_c_snapshot_tests::retained_cut_detects_old_valid_backup_after_ordinary_reopen",
 )
 COMPACT_PRODUCT_TESTS = (
-    "normal_owner_path_binds_full_lineage_exact_read_and_final_cut",
-    "concurrent_correction_is_rejected_before_candidate_publication",
+    "lane_c_snapshot::selected::compact_product::tests::normal_owner_path_binds_full_lineage_exact_read_and_final_cut",
+    "lane_c_snapshot::selected::compact_product::tests::concurrent_correction_is_rejected_before_candidate_publication",
 )
 CONTEXT_INGRESS_TESTS = (
-    "complete_revision_bound_shadow_compiles_through_existing_v2_admission",
-    "omission_and_source_substitution_fail_closed",
-    "cognitive_rows_cannot_be_promoted_to_trusted_instructions",
+    "cognitive_read_ingress::tests::complete_revision_bound_shadow_compiles_through_existing_v2_admission",
+    "cognitive_read_ingress::tests::omission_and_source_substitution_fail_closed",
+    "cognitive_read_ingress::tests::cognitive_rows_cannot_be_promoted_to_trusted_instructions",
+    "cognitive_read_ingress::tests::ingress_envelope_preflight_precedes_shadow_validation",
 )
 STALE_GENERATION_TESTS = (
-    "final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+    "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
 )
 INTELLIGENCE_PRODUCT_TESTS = (
-    "real_owner_product_path_records_decision_outcome_and_reopens",
-    "unsigned_currentness_substitution_fails_before_owner_use",
-    "final_use_revocation_race_fails_before_decision_publication",
-    "missing_current_owner_fails_before_product_use",
-    "total_budget_timeout_never_creates_a_dispatch_or_ledger_capability",
+    "intelligence_product::tests::real_owner_product_path_records_decision_outcome_and_reopens",
+    "intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use",
+    "intelligence_product::tests::final_use_revocation_race_fails_before_decision_publication",
+    "intelligence_product::tests::missing_current_owner_fails_before_product_use",
+    "intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability",
 )
 CONSUMER_PACKAGES = {
     "consumer-compact-tests": "codex-hepta-compact-engine",
@@ -51,13 +54,30 @@ CONSUMER_PACKAGES = {
     "consumer-ndu-tests": "codex-hepta-ndu",
     "consumer-federation-extension-tests": "codex-hepta-memory-extension",
 }
+EXACT_TOKENIZER_TESTS = (
+    "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+    "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+    "prompt_pipeline::tests::serialized_framing_is_counted_by_the_exact_backend",
+    "prompt_pipeline::tests::compatibility_entries_require_an_exact_tokenizer_capability",
+    "prompt_delivery::tests::registry_compatibility_bridge_without_backend_is_unavailable",
+)
 EXACT_CASES = {
+    "prompt-exact-tokenizer-tests": EXACT_TOKENIZER_TESTS,
     "revision-shadow-tests": REVISION_SHADOW_TESTS,
     "owner-currentness-e2e": OWNER_CURRENTNESS_TESTS,
     "compact-product-e2e": COMPACT_PRODUCT_TESTS,
     "context-v2-ingress-tests": CONTEXT_INGRESS_TESTS,
     "stale-generation-e2e": STALE_GENERATION_TESTS,
     "consumer-intelligence-product-e2e": INTELLIGENCE_PRODUCT_TESTS,
+}
+EXACT_BINARIES = {
+    "prompt-exact-tokenizer-tests": "codex-hepta-intelligence",
+    "revision-shadow-tests": "codex-hepta-cognitive-read",
+    "owner-currentness-e2e": "codex-hepta-memory",
+    "compact-product-e2e": "codex-hepta-memory",
+    "context-v2-ingress-tests": "codex-hepta-context-compiler",
+    "stale-generation-e2e": "codex-hepta-agentd",
+    "consumer-intelligence-product-e2e": "codex-hepta-agentd",
 }
 
 _original_commands = base.commands
@@ -67,7 +87,7 @@ _original_emit = base.emit
 
 
 def exact_filter(names: tuple[str, ...]) -> str:
-    return " | ".join(f"test({name})" for name in names)
+    return " | ".join(f"test(={name})" for name in names)
 
 
 def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
@@ -138,6 +158,19 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "-E",
         exact_filter(CONTEXT_INGRESS_TESTS),
     ]
+    result["prompt-exact-tokenizer-tests"] = [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "--no-tests=fail",
+        "--status-level",
+        "pass",
+        "-E",
+        exact_filter(EXACT_TOKENIZER_TESTS),
+    ]
     for label, package in CONSUMER_PACKAGES.items():
         result[label] = [
             "just",
@@ -166,37 +199,31 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
 
     # Include every touched production package in format and all-target lint,
     # including the existing learning owner rather than just its dependency lib.
-    format_packages = (
-        *base.PACKAGES,
+    additional_packages = (
+        "codex-hepta-agent-protocol",
         "codex-hepta-learning-ledger",
         "codex-hepta-compact-engine",
         "codex-hepta-context-compiler",
+        "codex-hepta-intelligence",
+        "codex-hepta-objective",
+        "codex-hepta-ndu",
+        "codex-hepta-operations",
     )
+    format_packages = (*base.PACKAGES, *additional_packages)
     result["rust-format"] = [
         "cargo",
         "fmt",
         "--manifest-path",
         "codex-rs/Cargo.toml",
-        *[
-            argument
-            for package in format_packages
-            for argument in ("-p", package)
-        ],
+        *[argument for package in format_packages for argument in ("-p", package)],
         "--",
         "--check",
     ]
-    additional_packages = (
-        "codex-hepta-learning-ledger",
-        "codex-hepta-compact-engine",
-        "codex-hepta-context-compiler",
-    )
     for label in ("all-target-check", "strict-clippy"):
         argv = result[label]
         position = argv.index("--") if "--" in argv else len(argv)
         package_args = [
-            argument
-            for package in additional_packages
-            for argument in ("-p", package)
+            argument for package in additional_packages for argument in ("-p", package)
         ]
         result[label] = [*argv[:position], *package_args, *argv[position:]]
 
@@ -283,22 +310,23 @@ def validate_evidence(
     expected: dict[str, list[str]],
 ) -> list[str]:
     problems = _original_validate_evidence(evidence, expected)
-    for label, cases in EXACT_CASES.items():
+    for label in set(expected).intersection(EXACT_CASES):
+        cases = EXACT_CASES[label]
         log = evidence / f"{label}.log"
-        if not log.is_file():
+        if log.is_symlink() or not log.is_file():
             continue
         body = re.sub(
             r"\x1b\[[0-9;]*m",
             "",
             log.read_text(errors="replace"),
         )
+        problems.extend(base.nextest_log_problems(label, body, len(cases)))
+        binary = re.escape(EXACT_BINARIES[label]).replace(r"\-", "[-_]")
         for case in cases:
-            if re.search(
-                rf"(?m)^\s*PASS\s+.*\b{re.escape(case)}\s*$",
-                body,
-            ) is None:
+            row = rf"(?m)^\s*PASS\s+\[[^]\r\n]+\]\s+{binary}\s+{re.escape(case)}\s*$"
+            if len(re.findall(row, body)) != 1:
                 problems.append(f"{label}: exact case not proved: {case}")
-    for label in DELIVERY_GATES:
+    for label in set(expected).intersection(DELIVERY_GATES):
         log = evidence / f"{label}.log"
         if log.is_symlink() or not log.is_file():
             problems.append(f"{label}: missing regular execution log")
@@ -309,12 +337,35 @@ def validate_evidence(
                     log.read_text(errors="replace"),
                 )
             )
+    for label in set(expected).intersection(CONSUMER_PACKAGES):
+        log = evidence / f"{label}.log"
+        if log.is_file() and not log.is_symlink():
+            problems.extend(
+                base.nextest_log_problems(label, log.read_text(errors="replace"))
+            )
     return problems
 
 
 def gate_status(evidence: Path, label: str) -> bool:
-    path = evidence / f"{label}.exit-code"
-    return path.is_file() and path.read_text().strip() == "0"
+    expected = commands("0" * 40, evidence)
+    if label not in expected:
+        return False
+    return not validate_evidence(evidence, {label: expected[label]})
+
+
+def measurement_candidate_problems(
+    evidence: Path, candidate: dict[str, str]
+) -> list[str]:
+    path = evidence / "sqlite-capacity.json"
+    if path.is_symlink() or not path.is_file():
+        return ["sqlite-capacity: missing regular candidate measurement"]
+    try:
+        measured_candidate = json.loads(path.read_text()).get("candidate")
+    except (OSError, ValueError, AttributeError):
+        measured_candidate = None
+    if measured_candidate != candidate:
+        return ["sqlite-capacity: exact candidate identity mismatch"]
+    return []
 
 
 def emit(
@@ -326,6 +377,11 @@ def emit(
 ) -> bool:
     passed = _original_emit(root, evidence, candidate, kind, output)
     receipt = json.loads(output.read_text())
+    receipt["problems"].extend(
+        measurement_candidate_problems(evidence, receipt["candidate"])
+    )
+    receipt["passed"] = not receipt["problems"]
+    passed = receipt["passed"]
     receipt["source_inputs"] = {
         "cargo_lock": {
             "path": "codex-rs/Cargo.lock",
@@ -342,9 +398,7 @@ def emit(
     for row in policy["consumers"]:
         row = dict(row)
         gates = row["required_gates"]
-        row["gate_status"] = {
-            label: gate_status(evidence, label) for label in gates
-        }
+        row["gate_status"] = {label: gate_status(evidence, label) for label in gates}
         row["all_required_gates_passed"] = bool(gates) and all(
             row["gate_status"].values()
         )
@@ -372,15 +426,15 @@ def emit(
     }
     receipt["cognitive_delivery_execution"] = {
         "gates": {
-            label: delivery_gate_passed(evidence, label)
-            for label in DELIVERY_GATES
+            label: delivery_gate_passed(evidence, label) for label in DELIVERY_GATES
         },
         "automatic_learning_ingestion": False,
         "authority": "deny_all",
     }
     receipt["sqlite_capacity"] = {
         "gate": "sqlite-capacity",
-        "passed": gate_status(evidence, "sqlite-capacity"),
+        "passed": gate_status(evidence, "sqlite-capacity")
+        and not measurement_candidate_problems(evidence, receipt["candidate"]),
         "artifact": "sqlite-capacity.json",
         "target_host_acceptance": False,
     }

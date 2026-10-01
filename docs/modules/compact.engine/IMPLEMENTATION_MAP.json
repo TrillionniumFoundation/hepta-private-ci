@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "6578d5577095877a13daed05eab9297307b66775",
+    "tree": "01ec2038204018f1a5ccf405439944713a341432"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -27,11 +27,14 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compact",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2c1fd98a0d9b042ca4c264c6925e919834957df2"
     },
     {
       "operation": "build_qualified_candidate",
@@ -39,11 +42,15 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e4cda5b81edd20453179369bdee6ba5e1bb41b2c"
     },
     {
       "operation": "prove_compaction",
@@ -51,16 +58,81 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e4cda5b81edd20453179369bdee6ba5e1bb41b2c"
+    },
+    {
+      "operation": "cognitive_read_compaction_candidate",
+      "nativeSymbol": "CognitiveReadCompactionCandidateV1::new",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/product.rs",
+      "state": "source_implemented_existing_owner_candidate_surface_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
+          "symbol": "QualifiedCompactionCandidateV2::validate"
+        }
+      ],
+      "sourceBlob": "678c44bf27feb031a2d617e6dfead412d171dce5"
+    },
+    {
+      "operation": "build_cognitive_read_compaction_candidate",
+      "nativeSymbol": "build_cognitive_read_compaction_candidate",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
+      "state": "source_implemented_existing_owner_candidate_surface_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "plan_compaction",
+      "mappingClass": "existing_owner_adapter",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+          "symbol": "lane_c_snapshot_ids"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+          "symbol": "revalidate_lane_c_selection"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+          "symbol": "DurableCognitiveSnapshot::read_ids"
+        },
+        {
+          "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+          "symbol": "read_ids_v1"
+        },
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
+          "symbol": "build_qualified_candidate"
+        },
+        {
+          "path": "codex-rs/hepta-compact-engine/src/product.rs",
+          "symbol": "CognitiveReadCompactionCandidateV1::new"
+        }
+      ],
+      "sourceBlob": "53587467bb01ce2586e0dc0bbb2a6a14bdfa4081"
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose a named authenticated normal product caller of the existing SQLite owner exact-read compaction candidate; the public candidate API is currently called only by qualification tests.",
+    "Qualify complete-lineage read binding and concurrent correction rejection at the exact source-head and fixed-merge candidate without treating candidate API fixtures as normal product composition.",
+    "Bind independent holdout and reconstruction observations, then compose checkpoint publication and reload through the existing compact owner; the read-bound candidate owns no checkpoint writer or release authority.",
+    "Target replay scheduling and skill induction remain separate source capabilities and are not implied by compaction candidate construction."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -79,5 +151,78 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "sourceBaseMode": "module_local_strict",
+  "productCallers": [],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "object": "f54aee2a3441b6f3ecee0d69ca6a0de1d2ab97d4"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine",
+      "object": "8fa6b986cfe46257274b321c4f08496b1c493db2"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/lib.rs",
+      "object": "2c1fd98a0d9b042ca4c264c6925e919834957df2"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/lib_tests.rs",
+      "object": "fc15d131682be78a4e28664ae5cc2f21f3d0aea1"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/product.rs",
+      "object": "678c44bf27feb031a2d617e6dfead412d171dce5"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "object": "e4cda5b81edd20453179369bdee6ba5e1bb41b2c"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+      "object": "ebd4becccf7c363cd7ebbb728443423bab0728cc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
+      "object": "53587467bb01ce2586e0dc0bbb2a6a14bdfa4081"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs",
+      "object": "d8636aefa02ab05b8e193e88aeb98a4b1e9a8b39"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+      "object": "3666778a33d289dceba808117a88e699d9b8fa8a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "object": "594cbeeabc0977b161be36b583aac4b074d0ddca"
+    },
+    {
+      "path": "docs/modules/compact.engine/TECHNICAL.md",
+      "object": "a32875e895a4688a0a55435ef2d9bf609ca2338f"
+    }
+  ],
+  "observedAtHead": {
+    "commit": "6578d5577095877a13daed05eab9297307b66775",
+    "tree": "01ec2038204018f1a5ccf405439944713a341432"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-cognitive-read/src/ids.rs",
+    "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-compact-engine/src/lib.rs",
+    "codex-rs/hepta-compact-engine/src/lib_tests.rs",
+    "codex-rs/hepta-compact-engine/src/product.rs",
+    "codex-rs/hepta-compact-engine/src/qualified.rs",
+    "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
+    "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "docs/modules/compact.engine/TECHNICAL.md"
+  ],
+  "technicalGuideBlob": "a32875e895a4688a0a55435ef2d9bf609ca2338f"
 }

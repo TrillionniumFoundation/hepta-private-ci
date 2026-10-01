@@ -460,6 +460,10 @@ pub struct CanonicalTerminalReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "The public V1 outcome preserves its existing by-value variants; boxing would change callers' construction and match contracts"
+)]
 pub enum CanonicalRunOutcomeV1 {
     Ready(IntelligenceHostEnvelopeV1),
     Abstained(CanonicalTerminalReceiptV1),

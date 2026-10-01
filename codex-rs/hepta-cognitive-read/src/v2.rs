@@ -23,7 +23,7 @@ use codex_hepta_types::StableId;
 use crate::Error;
 use crate::MAX_RESULTS;
 use crate::ReadRequest;
-use crate::read;
+use crate::select_current_records;
 
 const MAX_SNAPSHOT_RECORDS: usize = 16_384;
 const MAX_CITATIONS: usize = 64;
@@ -187,7 +187,7 @@ impl From<Error> for ReadV2Error {
     }
 }
 
-/// Reads the same current-head projection as [`read`] while bounding the
+/// Reads the same current-head projection as [`crate::read`] while bounding the
 /// complete module-native output envelope, not an estimate of record frames.
 ///
 /// Records form a canonical prefix. If the next record would exceed the
@@ -200,26 +200,27 @@ pub fn read_v2(
 ) -> Result<ReadResultV2, ReadV2Error> {
     validate_encoded_byte_limit(request.maximum_encoded_bytes)?;
 
+    // Validate before binding: invalid, arbitrarily long kind lists must not
+    // be cloned or sorted before duplicate-kind rejection. Reuse V1 selection
+    // verbatim while borrowing records until their complete frames fit.
+    let (selected, count_omitted) = select_current_records(snapshot, &request.read_request)?;
     let request_binding_digest = request.binding_digest();
-
-    // Reuse V1 selection verbatim so V2 cannot silently reinterpret snapshots
-    // as full history or change V1 validation and digest behavior.
-    let receipt = read(snapshot, request.read_request)?;
-    let selected_count = receipt.records.len();
+    let selected_count = selected.len();
     let mut records = Vec::new();
     let mut encoded_records = Vec::new();
     let mut encoded_length = READ_RECEIPT_V2_FIXED_BYTES;
-    for mut record in receipt.records {
-        record.citations.sort();
-        let encoded_record = encode_record_v2(&record);
+    for record in selected {
         let candidate_length = encoded_length
             .checked_add(4)
-            .and_then(|length| length.checked_add(encoded_record.len()))
+            .and_then(|length| length.checked_add(encoded_record_len_v2(record)))
             .ok_or(ReadV2Error::InvalidCanonicalEncoding)?;
         if candidate_length > request.maximum_encoded_bytes {
             break;
         }
         encoded_length = candidate_length;
+        let mut record = record.clone();
+        record.citations.sort();
+        let encoded_record = encode_record_v2(&record);
         records.push(record);
         encoded_records.push(encoded_record);
     }
@@ -227,12 +228,11 @@ pub fn read_v2(
     let byte_omitted = selected_count
         .checked_sub(records.len())
         .ok_or(ReadV2Error::InvalidCanonicalEncoding)?;
-    let omitted_count = receipt
-        .omitted_count
+    let omitted_count = count_omitted
         .checked_add(byte_omitted)
         .ok_or(ReadV2Error::InvalidCanonicalEncoding)?;
     let (canonical_bytes, receipt_digest) = encode_read_result_v2(
-        receipt.snapshot_digest,
+        snapshot.snapshot_digest,
         request_binding_digest,
         &encoded_records,
         omitted_count,
@@ -245,7 +245,7 @@ pub fn read_v2(
     }
 
     Ok(ReadResultV2 {
-        snapshot_digest: receipt.snapshot_digest,
+        snapshot_digest: snapshot.snapshot_digest,
         request_binding_digest,
         records,
         omitted_count,
@@ -317,8 +317,30 @@ fn encode_read_result_v2(
     Ok((bytes, receipt_digest))
 }
 
+// MemoryRecord and StableId bounds are checked by select_current_records, so
+// this complete frame length cannot overflow and needs no citation allocation.
+fn encoded_record_len_v2(record: &MemoryRecord) -> usize {
+    4 + record.record_id.as_str().len()
+        + 8
+        + 1
+        + 1
+        + 32
+        + 1
+        + if record.predecessor_digest.is_some() {
+            32
+        } else {
+            0
+        }
+        + 4
+        + record
+            .citations
+            .iter()
+            .map(|citation| 4 + citation.source_id.as_str().len() + 32)
+            .sum::<usize>()
+}
+
 fn encode_record_v2(record: &MemoryRecord) -> Vec<u8> {
-    let mut bytes = Vec::new();
+    let mut bytes = Vec::with_capacity(encoded_record_len_v2(record));
     push_id_v2(&mut bytes, &record.record_id);
     bytes.extend_from_slice(&record.revision.get().to_be_bytes());
     bytes.push(kind_code_v2(record.kind));

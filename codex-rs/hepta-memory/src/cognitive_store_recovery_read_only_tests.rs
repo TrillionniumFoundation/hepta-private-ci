@@ -222,3 +222,43 @@ async fn crash_reopen_refuses_pending_wal() {
     ));
     assert_eq!(capture_recovery_tree(root), before);
 }
+
+#[tokio::test]
+async fn cold_recovery_audits_schema_authenticated_lane_c_witness() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(98);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("clean retained cut");
+    let guard: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema WHERE name = 'lane_c_scope_witness_direct_update_guard'",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("canonical guard");
+    sqlx::query("DROP TRIGGER lane_c_scope_witness_direct_update_guard")
+        .execute(&store.pool)
+        .await
+        .expect("isolated corruption fixture");
+    sqlx::query("UPDATE lane_c_scope_witness SET source_count = source_count + 1, state_revision = state_revision + 1")
+        .execute(&store.pool).await.expect("fixture witness drift");
+    // This fixture restores the exact trigger definition it read from its own schema.
+    sqlx::raw_sql(sqlx::AssertSqlSafe(guard))
+        .execute(&store.pool)
+        .await
+        .expect("restore exact schema");
+    assert!(matches!(
+        store.recovery_anchor().await,
+        Err(CognitiveStoreError::Corrupt(message)) if message.contains("Lane C witness does not match")
+    ));
+    store.pool.close().await;
+    let root = store.path().parent().expect("root");
+    let before = capture_recovery_tree(root);
+    assert!(matches!(
+        CognitiveStore::open_read_only_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        ).await,
+        Err(CognitiveRecoveryError::Indeterminate(message)) if message.contains("Lane C witness does not match")
+    ));
+    assert_eq!(capture_recovery_tree(root), before);
+}

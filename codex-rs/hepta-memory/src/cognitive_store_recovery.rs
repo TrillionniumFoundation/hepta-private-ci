@@ -615,6 +615,10 @@ async fn capture(
             "cognitive recovery foreign-key check failed".to_string(),
         ));
     }
+    // A schema-authenticated and physically intact database can still contain
+    // a stale derived witness. Never issue or admit an anchor for that drift;
+    // all capture callers share this same serialized owner snapshot.
+    super::lane_c_integrity::verify(&mut *connection).await?;
     Ok(CognitiveRecoveryAnchor {
         profile: PROFILE.to_string(),
         owner_agent_id: owner.clone(),

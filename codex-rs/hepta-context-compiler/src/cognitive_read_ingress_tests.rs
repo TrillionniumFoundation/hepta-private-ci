@@ -153,12 +153,9 @@ impl ContextAdmissionVerifierV2 for Verifier {
 
 fn request(ingress: &VerifiedCognitiveReadIngressV2) -> ContextCompilationRequestV2 {
     let bytes = b"rendered canonical event";
-    let tokenization = TokenizationReceiptV2::from_exact_bytes(
-        id("event:one"),
-        bytes,
-        &ByteTokenizer,
-    )
-    .expect("tokenization");
+    let tokenization =
+        TokenizationReceiptV2::from_exact_bytes(id("event:one"), bytes, &ByteTokenizer)
+            .expect("tokenization");
     let snapshot = verify_admission_snapshot_v2(
         ContextAdmissionSnapshotV2::new(
             id("snapshot:one"),
@@ -271,5 +268,43 @@ fn cognitive_rows_cannot_be_promoted_to_trusted_instructions() {
     assert!(matches!(
         compile_cognitive_read_v2(&ingress, request),
         Err(CognitiveReadIngressError::CandidateRoleMismatch(_))
+    ));
+}
+
+#[test]
+fn ingress_envelope_preflight_precedes_shadow_validation() {
+    let mut oversized = shadow();
+    oversized
+        .rows
+        .resize(MAX_CONTEXT_CANDIDATES_V2 + 1, oversized.rows[0].clone());
+    oversized.binding_digest = Digest32::ZERO;
+    assert_eq!(
+        verify_cognitive_read_ingress_v2(&oversized).err(),
+        Some(CognitiveReadIngressError::InvalidRowCount)
+    );
+
+    let mut empty = shadow();
+    empty.rows.clear();
+    empty.binding_digest = Digest32::ZERO;
+    assert_eq!(
+        verify_cognitive_read_ingress_v2(&empty).err(),
+        Some(CognitiveReadIngressError::InvalidRowCount)
+    );
+
+    let mut incomplete = shadow();
+    incomplete.omitted_count = 1;
+    incomplete.binding_digest = Digest32::ZERO;
+    assert_eq!(
+        verify_cognitive_read_ingress_v2(&incomplete).err(),
+        Some(CognitiveReadIngressError::IncompleteSourceRead { omitted: 1 })
+    );
+
+    let mut bounded = shadow();
+    bounded.binding_digest = Digest32::ZERO;
+    assert!(matches!(
+        verify_cognitive_read_ingress_v2(&bounded),
+        Err(CognitiveReadIngressError::Shadow(
+            CanonicalReadShadowV2Error::EmptyDigest
+        ))
     ));
 }

@@ -493,6 +493,7 @@ pub enum AgentdPromptPipelineError {
     RuntimeOpen(AgentdPromptRuntimeError),
     StatePoisoned,
     CandidateSource(String),
+    ExactTokenizerUnavailable,
     Compilation(String),
     Stage(AgentdPromptRuntimeError),
 }
@@ -509,9 +510,10 @@ impl std::error::Error for AgentdPromptPipelineError {}
 ///
 /// This facade owns no alternate optimizer or model loop. It opens the
 /// authoritative durable registry, derives the optimizer candidate source from
-/// that exact owner, validates canonical optimizer receipts through
-/// \`compile_prompt_registry_v2\`, and stages the resulting exact realization
-/// bytes into the same PromptRuntimeHost consumed by the embedded App Server.
+/// that exact owner and stages explicitly verified realization bytes into the
+/// PromptRuntimeHost consumed by the embedded App Server. The compatibility
+/// compilation entry cannot fabricate exact tokenization from registry costs;
+/// without a supplied backend it returns `ExactTokenizerUnavailable`.
 pub struct AgentdPromptPipelineOwner {
     registry: Mutex<DurablePromptRegistry>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
@@ -581,7 +583,12 @@ impl AgentdPromptPipelineOwner {
                 .lock()
                 .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
             compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
-                .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+                .map_err(|error| match error {
+                    codex_hepta_intelligence::PromptRegistryCompilationErrorV2::Pipeline(
+                        codex_hepta_intelligence::PromptPipelineErrorV1::ExactTokenizerUnavailable,
+                    ) => AgentdPromptPipelineError::ExactTokenizerUnavailable,
+                    error => AgentdPromptPipelineError::Compilation(error.to_string()),
+                })?
         };
         self.runtime
             .stage_compiled_prompt_context(

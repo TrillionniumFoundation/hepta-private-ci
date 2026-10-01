@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "Fault tests must fail immediately if controlled database, signed authority, or child-process crash fixtures cannot be constructed or inspected"
+)]
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -30,6 +35,10 @@ fn intent(index: usize) -> OperationIntentV1 {
 }
 
 #[tokio::test]
+#[allow(
+    clippy::disallowed_methods,
+    reason = "This named SQLITE_FULL fixture needs max_page_count in every connection's options and eagerly opens all fault connections; the production shim exposes neither hook"
+)]
 async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
@@ -45,8 +54,8 @@ async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
         .expect("page count");
     assert!(pages > 0);
     // The cap belongs to a connection, not to the pool or database file.
-    // Install it in every new connection's options while retaining the real
-    // four-connection owner store. A one-off PRAGMA on an arbitrary pooled
+    // Install it in every new connection's options in a controlled
+    // four-connection fault pool. A one-off PRAGMA on an arbitrary pooled
     // connection lets another writer silently evade the fault.
     let options = store
         .pool

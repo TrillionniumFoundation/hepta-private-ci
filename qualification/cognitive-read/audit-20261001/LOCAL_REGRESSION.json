@@ -1,0 +1,365 @@
+{
+  "schema": "hepta.cognitive.read.local-regression-observation.v1",
+  "observedAtUtc": "2026-09-30T22:04:29.498035+00:00",
+  "baselineCommit": "8a2f9256102a7bf36fbab4f22152573ba8fb91ad",
+  "kind": "working_tree_focused_execution_before_final_formatting",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-cognitive-read",
+    "-p",
+    "codex-hepta-context-compiler",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "buildEnvironment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "rustcVersion": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "sourceBlobs": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "gitBlob": "9cf57acf921097270e194af89052198eefb8a475"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/Cargo.toml",
+      "gitBlob": "9804ca394a12c4bf31f01031853d7e52c73dbb75"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/examples/cognitive_read_bench.rs",
+      "gitBlob": "853eaf8b3324edbe375ea02f6b25748b101c749a"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/examples/cognitive_read_prepared_bench.rs",
+      "gitBlob": "45aa6d384c5a02a8a812b73d9e389726e3ba8619"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/fuzz/Cargo.toml",
+      "gitBlob": "1a8395d34d9c090245234b0298ad4ec8346a3ba1"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/fuzz/fuzz_targets/read_ids.rs",
+      "gitBlob": "f21c773aa52c355d070e59fe7355c521879dc81d"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "gitBlob": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+      "gitBlob": "c0d68c09a48e8862c73cf45555688989cec76dab"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs",
+      "gitBlob": "b96c472b5784f2b5f5ff16ce44131670a25c0ea7"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/fuzz_tests.rs",
+      "gitBlob": "f3527fa7c7560e8cd5fb586fdbf8dfe1f589e79b"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/golden_vectors.rs",
+      "gitBlob": "b46b3b27010a38c18d644e4270aa3f853c3af5e0"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "gitBlob": "31f30f9b097a6bc51206030fae7588617941056f"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
+      "gitBlob": "6d7aca75a1fe1a588e4c6a4d424c639fa90e92bc"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
+      "gitBlob": "12e4d6715b7e71be53c644de948ad6ec1fd2f8a9"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/lib_tests.rs",
+      "gitBlob": "29f0d431286206d1945bb093c8a39e591821d50b"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/mutation_tests.rs",
+      "gitBlob": "a07f3a86dd1d414cbaa4ea8f61f52b81800044fa"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/prepared.rs",
+      "gitBlob": "f82dbc31f812752d27d08d6c545fd263d07d5b50"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/prepared_tests.rs",
+      "gitBlob": "14b5acf5d828c3f05c29843631f1590deb814315"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/property_tests.rs",
+      "gitBlob": "d497fcebc56625261830861dfe88f876c96563bd"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+      "gitBlob": "b6a6b6c6008253e4098dd691c5547909b3104108"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs",
+      "gitBlob": "e5fe953708d94f5d9d38e6410ab5b7c1483faf9a"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs",
+      "gitBlob": "9253e37866f6fa3768f18b7ff1434fad3cf2ea55"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/transient.rs",
+      "gitBlob": "b2cbf4581ea19ddcd80df3075ba9f12fcd570b5d"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "gitBlob": "6580a8a92169d8802bd09a5cad908ce84ae93808"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+      "gitBlob": "5e1b088f9446bc9520e76dc4373821b723f6abe8"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/Cargo.toml",
+      "gitBlob": "ecbd7e716d36c310cb040e065a75a3d61836d55c"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
+      "gitBlob": "52efe73b0da51c5cbb054e8cdcfe3e59e4b08ba6"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs",
+      "gitBlob": "28c5a29b1dd4108c3570c3189a8a414ae5728795"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+      "gitBlob": "461a516a4c1f04975c184241a694a5ce8f4ed5bf"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs",
+      "gitBlob": "ecced5173f2a3e5003f0e24cf0cbe1fea544d3c9"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "gitBlob": "1f20f5e8974ee3c1e5012bc7dad54fee98ce416b"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
+      "gitBlob": "c9350dda2d75a4937fd77b1310cfaa2edafa8c59"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/requirements.rs",
+      "gitBlob": "33f723317f83feec2b6e8be8c45d058f58288a7e"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
+      "gitBlob": "c0b88410e0738246004ec7c9aac01da4ffc13fde"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "gitBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+      "gitBlob": "49232cf8eb81a64110a3ba23e6c0abaf54830438"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "gitBlob": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+      "gitBlob": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "gitBlob": "1d76cad44498e9538cefff1e20202482520257ff"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/examples/target_host_qualification.rs",
+      "gitBlob": "1716df597019fbced8b43f72c2689d5505717106"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+      "gitBlob": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+      "gitBlob": "40d8379f5ef720b74a961ced765c9be024a83605"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
+      "gitBlob": "14c908e13440b340095aaeaed10080ed15acf9e7"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs",
+      "gitBlob": "21cf3b242ed8f64cfab361aea7e7fddba2b4ff85"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+      "gitBlob": "f92a2ec61c20beb821f1fd47fae3c8252ad73c85"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "gitBlob": "4881a7f08aaf3f98c08012fee4dae95235f11232"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+      "gitBlob": "29773833806142d8c6967cd2ac94d48958d90b2e"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock.rs",
+      "gitBlob": "3ab054540d7c6bd9107a4235bec220e03ccf2e57"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+      "gitBlob": "8ebf64632db0897c7c192dea2236491cce867a96"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/error.rs",
+      "gitBlob": "42162b7b81c0d8c8bbb321863a59bfa4e2465919"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/inspection_tests.rs",
+      "gitBlob": "212f8087ddb450dd32013d651ffed4dafea41d53"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/journal.rs",
+      "gitBlob": "8883b0ab6990257fabd86550958d70cbed5e87e3"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "gitBlob": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
+      "gitBlob": "97847c20549507227cfc8400ca1b2a0d6b17aaf1"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "gitBlob": "6a2e41cc8ed3352f1552712024d58af5cd7f77df"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/model.rs",
+      "gitBlob": "ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "gitBlob": "2c2c1d1872622109f3294035d19a7fe70fd771f4"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production_growth_tests.rs",
+      "gitBlob": "d6e6eb4cc8242d6a1542c14b5c8ecc4a374affb8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+      "gitBlob": "dd4bc76067733c4688df47756e2b0e2c9d998b35"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/protocol.rs",
+      "gitBlob": "19c1c8804bf05a0b8eba70f0e930995d4b9cecd8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/protocol_tests.rs",
+      "gitBlob": "61f9b22a939f7c4b7880573fc12e2bc81bbde3f7"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/recovery_work.rs",
+      "gitBlob": "17605c9a41c57aaacc843b4069c2a1733ed673af"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+      "gitBlob": "0bd78900ad762610858a7d805db9538d893f2307"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+      "gitBlob": "5df22a598d0df05c2baaf436748f065283d9aea9"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_preparation.rs",
+      "gitBlob": "7590de00853a6618aca5030c498b6c9d4ae2e5b0"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_preparation_tests.rs",
+      "gitBlob": "6fd993cf1815817c9c8ff57791c14bf84112d9c8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "gitBlob": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+      "gitBlob": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/segment_codec.rs",
+      "gitBlob": "942273bdfb06759eb9a6903a292003793383e42a"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/segments.rs",
+      "gitBlob": "ca537d5afffe8a94c93d5c4b19319c8599b450ac"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/segments_tests.rs",
+      "gitBlob": "26720e5458a74d73ef705e81c7232686cd195d0d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/shadow.rs",
+      "gitBlob": "5f5df19651726f62d8a3a778285fcc3375383061"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/shadow_tests.rs",
+      "gitBlob": "721ca8b951a332d12df33ab502971299bed45022"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "gitBlob": "61d8f2b30d97b6134b17f604d67f5940391ba0e5"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs",
+      "gitBlob": "de3f456a9efd19a928924f94dcf0a9811e87d9c8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "gitBlob": "4a077f8f9601b0ca1dc5973c044da2201b8c6686"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs",
+      "gitBlob": "f41835aab0932243991c8df5e2e7cb25a28caadd"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "gitBlob": "ba44274288e20aa82a9fbb49967d6b520ae07d3c"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/witness_tests.rs",
+      "gitBlob": "94af8463ed0964f95c9c14a07ac8b1bb94671a46"
+    }
+  ],
+  "log": {
+    "path": "qualification/cognitive-read/audit-20261001/focused-nextest.txt",
+    "sha256": "0d822ede8852ecc224e3883696d6b8c96b3e1e87e3ff80bc36f87718d747066b"
+  },
+  "packages": {
+    "codex-hepta-cognitive-read": {
+      "passed": 56
+    },
+    "codex-hepta-context-compiler": {
+      "passed": 49
+    },
+    "codex-hepta-learning-ledger": {
+      "passed": 121
+    }
+  },
+  "totalPassed": 226,
+  "totalSkipped": 1,
+  "exactCandidateQualification": false,
+  "syntheticMergeQualification": false,
+  "independentAcceptance": false,
+  "activation": false,
+  "release": false,
+  "claimBoundary": "Focused working-tree regression observation only. Original source blobs are retained; final formatting or other changes do not rebind this observation to an exact committed candidate. Complete Agentd/memory/native source-and-merge gates remain required."
+}

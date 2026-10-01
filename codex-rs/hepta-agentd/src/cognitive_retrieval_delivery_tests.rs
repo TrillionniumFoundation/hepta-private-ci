@@ -185,6 +185,7 @@ fn real_learning_and_native_owners_join_exact_preparation_and_acceptance() {
         model_provider: "provider".to_string(),
         context_digest: digest("additional-context").to_string(),
         owner_context_digest: Some(context.to_string()),
+        cognitive_preparation: None,
         codex_payload_digest: Some(digest("turn-payload").to_string()),
         codex_request_digest: Some(digest("turn-request").to_string()),
         app_server_version: Some("1.2.3".to_string()),
@@ -264,3 +265,6 @@ fn real_learning_and_native_owners_join_exact_preparation_and_acceptance() {
         accepted
     );
 }
+
+#[path = "cognitive_owner_preparation_delivery_tests.rs"]
+mod owner_preparation_tests;

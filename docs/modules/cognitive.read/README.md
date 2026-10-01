@@ -1,83 +1,49 @@
 # cognitive.read development entry point
 
-## Current source candidate, 2026-09-29
+## Reviewed source, 2026-10-01
 
-The ordinary owner and Agentd selected-cut integration is materialized in the
-immutable source parent `de6bfea76ab71d17b29ad45f24693224ab14b388`
-(tree `71bafea3b6f02b28eaa0eb35309ec04e1f2aeaa0`). The implementation map is a
-documentation-only descendant and binds exact source objects back to that parent.
-This is a source candidate, not a successful Rust, exact-merge, production or
-release receipt.
+The current audit starts from the 2026-09-30 production-convergence source
+`8a2f9256102a7bf36fbab4f22152573ba8fb91ad`. The accompanying
+`IMPLEMENTATION_MAP.json` binds the revised source parent and exact source blobs;
+it is the authoritative identity manifest. Historical preparation runs and
+earlier source-parent hashes are not execution receipts for this revision.
 
-Read the documents together:
+Detailed technical development documentation exists. Read these documents
+together:
 
-- `TECHNICAL.md`: stable module identity, ownership, contracts and historical
-  compatibility APIs. The legacy full-scope owner API still exists.
-- `FINAL_USE_CLOSURE.md`: publication-plan integrity, fresh final-use evaluation,
-  cancellation/error metrics, opaque-binding compatibility and delivery gaps.
-- `SELECTED_OWNER_CUT.md`: bounded selected-ID owner materialization, ordinary
-  Agentd composition, supplementary global currentness witness and capacity
-  limits that remain.
-- `STRUCTURAL_REUSE.md` and `CONTRACT_LIMITS.md`: unchanged request-local reuse,
-  exact-ID all-or-error semantics and full construction budgets.
-- `CONSUMER_EXECUTION.json`: distinct states of the seven registered consumers;
-  these are not upgraded by this source change.
-- `QUALIFICATION_CLOSURE.md` and `OPERATIONS.md`: required execution evidence and
-  operating contract. The new phase/outcome metric details are in
-  `FINAL_USE_CLOSURE.md`.
+- `TECHNICAL.md`: module placement, ownership, APIs, authority, failure semantics
+  and qualification. The full-scope compatibility owner API remains available.
+- `CONTRACT_LIMITS.md`, `COMPATIBILITY.md` and `STRUCTURAL_REUSE.md`: compiled
+  limits, canonical bytes, request-local structural reuse and construction costs.
+- `SELECTED_OWNER_CUT.md`: exact-ID materialization, indexed owner witness,
+  validity boundaries, startup audit and selected ancestry limits.
+- `FINAL_USE_CLOSURE.md`: publication integrity and freshly reacquired final-use
+  observations immediately before the native worker's physical `TurnStart`.
+- `DELIVERY_EVIDENCE.md` and `PREPARATION_HANDOFF.md`: preparation, exact receipt handoff, dispatch, acceptance, unknown outcomes and the separate automatic training-admission boundary.
+- `CONSUMERS.md`, `CONSUMER_POLICY.json` and `CONSUMER_EXECUTION.json`: the seven
+  consumers' distinct source, product and migration states.
+- `QUALIFICATION_CLOSURE.md` and `OPERATIONS.md`: exact execution gates,
+  measurement boundaries, operational diagnostics and external acceptance.
+- `ADVERSARIAL_AUDIT_20261001.md`: reproducible findings, repairs, verification
+  and the remaining completion boundary.
 
-The previous whole-scope Agentd path description in the stable guide is
-superseded for this candidate by the explicit selected-owner supplement. The
-full-scope and page APIs themselves are not removed or reinterpreted. Runtime
-currentness and authorization are not cached; native unknown-send handling is
-unchanged and remains reconciliation-only.
+## Current completion boundary
 
-## What changed and what did not
-
-| Area | Current candidate |
+| Area | Reviewed implementation state |
 | --- | --- |
-| Planning | Publication fields and owner/generation are bound; physical use evaluates a fresh plan after current owner checks. |
-| Selected owner reads | Normal Agentd read and final-use paths call the existing owner's exact-ID materializer. |
-| Capacity | Whole unselected history is not materialized; selected ancestry and output remain bounded. Global counters/head metadata scanning remain. |
-| Observability | Rejected and abandoned attempts contribute to latency and bounded final-use failure counters. |
-| Delivery learning | The legacy assignment row is explicitly preparation evidence; a complete downstream delivery/model-use join is still open. |
-| Consumers | No blanket V2 migration, activation or independent acceptance claim. |
-| Verification | New Rust tests exist; current Rust/format/lint/source-map/source-and-merge execution remains pending. |
+| Read port | Stateless, deny-all exact-ID projection; V1/V2 compatibility bytes retained. |
+| Construction | Borrowed current-head selection; result count and complete V2 frame budgets precede result cloning. Whole-snapshot integrity validation retains its separate bounded cost. |
+| SQLite owner | Exact-ID materialization uses the existing owner's scope witness and indexed validity boundaries. Reopen verifies witness schema and recomputed content. Derived witness identities and revisions cannot be replaced or regressed. Migration 0020 also guards canonical row replacement; recovery capture independently audits derived content in the same transaction. |
+| Ordinary retrieval | Agentd read, publication fence and the native worker's fresh final-use check are source composed. A check is an observation, not a future mutation lease. |
+| Learning preparation | Ordinary reads receive independent identities from the existing durable ledger. Prepared RPC metadata stays outside the unchanged snapshot and is persisted in the existing native dispatch journal. Exact witnessed lookup binds agent/generation/RPC namespace; automatic training admission remains separate. |
+| Compaction | The public owner API constructs an authority-free candidate. No non-test product caller or durable checkpoint publication is claimed. |
+| Context compiler | Legacy composition exists; revision-bound V2 ingress has no normal provider-bound caller. Prompt adapters require an explicit exact tokenizer; absent backend returns a typed unavailable result. |
+| Qualification | Parser/source checks, focused package execution, complete source/merge qualification, target-host evidence and independent acceptance are distinct states. See the audit for the checks actually executed. |
 
-## Executed local checks
+`productionImplementation`, `productExecutionProved`, `independentAcceptance`,
+`activation` and `release` remain false. Package tests and candidate APIs cannot
+elevate these independently governed states.
 
-The four integrated files were reconstructed from exact remote blobs before
-applying the reviewed transformation. Their resulting remote blob identities
-were compared with the local expected identities:
-
-| Source | Original blob | Integrated blob |
-| --- | --- | --- |
-| `hepta-memory/src/lane_c_snapshot.rs` | `af66a5195f8a65635abe6c2abaf7b8e265bb6e9d` | `7e22de724d00b0fec2157a73eb659aaddc71ff8c` |
-| `hepta-memory/src/lib.rs` | `8d70d05e03095908d324be4bdac396ec681991b4` | `7ed2932d7204cadb27c54029a965ad00c49974e7` |
-| `hepta-agentd/src/cognitive_context.rs` | `e5f584c42a1c9cfff13d9b856aab9c4be8e5c125` | `21901ebde09d1e38fbddb2e2316c67749ead7bce` |
-| `hepta-agentd/src/cognitive_context_final_use.rs` | `099087299d8275db7344db46a55bff3b310e2180` | `92228bdc7e7b2eaacc649ecd71e93a07696a61fb` |
-
-All paths in that table are below `codex-rs/`. The application transformation
-was also checked for idempotence and the Python authoring scripts were syntax
-checked. These checks are not Rust compilation.
-
-The capacity fixture SQL was separately exercised using local Python/SQLite
-with the relevant ancestry/citation foreign-key structure: 17,001 revision rows,
-17,001 citation rows, no foreign-key violations, one row for the small selected
-record, and detection of the oversized selected history. This validates fixture
-SQL and row-bound behavior only, NOT execution of the Rust owner or product E2E.
-
-## Evidence boundary
-
-The original qualification run `36533405154` failed; inspected logs showed
-locked-dependency and formatting blockers. No historical run is reused as a pass
-for this candidate. The explicitly scoped source-preparation workflow may make
-ordinary lock/format/map commits; it is not the read-only qualification workflow
-and cannot certify product execution. Its queue entry is not a pass.
-
-The implementation map is bound to the exact prepared source parent and must be
-checked on every candidate. Full package/Clippy/golden/product suites, both
-source-head and deterministic-merge receipts, target-host qualification,
-independent review, acceptance and release remain required. All production,
-execution-proof, independent-acceptance, activation and release flags remain
-false until their own gates are satisfied.
+Context-using workers require `cognitive.context.prepare@1`; older peers fail
+closed. Historical journal entries without preparation receipts remain readable,
+but cannot establish an owner-issued preparation join.

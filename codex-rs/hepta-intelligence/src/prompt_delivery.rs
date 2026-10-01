@@ -14,6 +14,7 @@ use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
+use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
@@ -29,8 +30,8 @@ use codex_hepta_types::StableId;
 use crate::PromptContextCompileRequestV1;
 use crate::PromptDeliveryPrepareRequestV1;
 use crate::PromptPipelineErrorV1;
-use crate::compile_exercised_prompt_context_v1;
-use crate::prepare_prompt_delivery_v1;
+use crate::compile_exercised_prompt_context_with_tokenizer_v1;
+use crate::prepare_prompt_delivery_with_tokenizer_v1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 
@@ -143,13 +144,27 @@ impl PromptRegistryCompiledContextV2 {
     }
 }
 
-/// Compile and serialize the unified optimizer portfolio against the current
-/// durable owner, then return the exact source bundle consumed by Agentd.
+/// Compatibility entry without a tokenizer capability. The Agentd caller must
+/// use the explicit-backend entry before producing exact context proofs.
 pub fn compile_prompt_registry_v2(
+    _registry: &DurablePromptRegistry,
+    _portfolio: &SelectedPromptPortfolioV1,
+    _exercise_request: &PromptExerciseRequestV1,
+    _request: PromptRegistryCompilationRequestV2,
+) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
+    Err(PromptRegistryCompilationErrorV2::Pipeline(
+        PromptPipelineErrorV1::ExactTokenizerUnavailable,
+    ))
+}
+
+/// Compile and serialize with an explicitly supplied exact model tokenizer.
+/// Registry token-cost bounds never substitute for counting the actual bytes.
+pub fn compile_prompt_registry_with_tokenizer_v2(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     exercise_request: &PromptExerciseRequestV1,
     request: PromptRegistryCompilationRequestV2,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
     if request.registry_model_tuple != portfolio.model_tuple
         || request.now_unix_ms != exercise_request.now_unix_ms
@@ -157,7 +172,7 @@ pub fn compile_prompt_registry_v2(
         return Err(PromptRegistryCompilationErrorV2::ProfileMismatch);
     }
     let model_profile = request.context_model_profile.clone();
-    let prepared = compile_exercised_prompt_context_v1(
+    let prepared = compile_exercised_prompt_context_with_tokenizer_v1(
         registry,
         portfolio,
         PromptContextCompileRequestV1 {
@@ -178,6 +193,7 @@ pub fn compile_prompt_registry_v2(
                 reason_digest: portfolio.receipt.receipt_digest,
             }],
         },
+        tokenizer,
     )
     .map_err(PromptRegistryCompilationErrorV2::Pipeline)?;
     let by_id = prepared
@@ -199,7 +215,7 @@ pub fn compile_prompt_registry_v2(
         })
         .collect::<Result<Vec<_>, _>>()?;
     let serialized_payload = serialize_selected_deliveries(&selected_deliveries);
-    let delivery = prepare_prompt_delivery_v1(
+    let delivery = prepare_prompt_delivery_with_tokenizer_v1(
         registry,
         portfolio,
         &prepared,
@@ -209,6 +225,7 @@ pub fn compile_prompt_registry_v2(
             serialized_payload: serialized_payload.clone(),
             attachment_id: request.attachment_id,
         },
+        tokenizer,
     )
     .map_err(PromptRegistryCompilationErrorV2::Pipeline)?;
     let snapshot = registry

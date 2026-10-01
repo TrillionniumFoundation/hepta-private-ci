@@ -95,6 +95,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 ### Normative verified V2 execution path
 
+The [cognitive read and exact tokenizer supplement](COGNITIVE_READ_INGRESS.md)
+documents source ingress, missing-backend failures and remaining product work.
+
 The V2 source path is deliberately stronger than a digest-only receipt chain:
 
 1. `ContextAdmissionSnapshotV2` is authenticated by a `ContextAdmissionVerifierV2`, producing a non-forgeable-by-struct-literal `VerifiedAdmissionSnapshotV2`. The snapshot is bound to request scope and authority domain, declares a complete cumulative revocation set and is bounded to 4096 revoked admission ids. `verify_admission_snapshot_successor_v2` binds the predecessor snapshot and rejects scope/domain drift, frontier rollback and removal of any previously revoked admission; an oversized cumulative set fails closed rather than pruning history.

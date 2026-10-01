@@ -1,12 +1,20 @@
 """Exact nextest gates for cognitive delivery; no source mutation or activation."""
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
 import re
 
+from cognitive_read_evidence import nextest_log_problems
+
 GUIDE = "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md"
 SOURCE_PATHS = (
+    "docs/modules/cognitive.read/PREPARATION_HANDOFF.md",
+    "codex-rs/hepta-agentd/src/cognitive_owner_preparation_delivery_tests.rs",
+    "codex-rs/hepta-infer-core/src/cognitive_preparation_tests.rs",
+    "codex-rs/hepta-agent-protocol/src/cognitive_preparation_tests.rs",
+    "codex-rs/hepta-agent-protocol/src/cognitive_preparation.rs",
     "codex-rs/hepta-infer-core/src/cognitive_delivery.rs",
     "codex-rs/hepta-infer-core/src/cognitive_delivery_tests.rs",
     "codex-rs/hepta-infer-core/src/lib.rs",
@@ -35,31 +43,75 @@ SOURCE_PATHS = (
 # label -> (package, Cargo target selector, nextest binary identity, exact cases)
 DELIVERY_GATES = {
     "native-delivery-tests": (
-        "codex-hepta-infer-core", ("--lib",), "codex-hepta-infer-core",
-        tuple("cognitive_delivery::tests::" + name for name in (
-            "dispatch_and_reopen_do_not_prove_cognitive_delivery",
-            "exact_owner_generation_request_and_context_are_required",
-            "only_durable_pre_effect_proof_establishes_not_sent",
-            "cancellation_does_not_erase_observed_acceptance",
-            "terminal_delivery_and_authorized_success_are_not_conflated",
-            "substituted_source_admission_cannot_join_a_preparation",
-            "observed_server_rejection_does_not_claim_the_payload_was_not_sent",
-        )),
+        "codex-hepta-infer-core",
+        ("--lib",),
+        "codex-hepta-infer-core",
+        tuple(
+            "cognitive_delivery::tests::" + name
+            for name in (
+                "dispatch_and_reopen_do_not_prove_cognitive_delivery",
+                "exact_owner_generation_request_and_context_are_required",
+                "only_durable_pre_effect_proof_establishes_not_sent",
+                "cancellation_does_not_erase_observed_acceptance",
+                "terminal_delivery_and_authorized_success_are_not_conflated",
+                "substituted_source_admission_cannot_join_a_preparation",
+                "observed_server_rejection_does_not_claim_the_payload_was_not_sent",
+            )
+        ),
     ),
     "delivery-preparation-tests": (
-        "codex-hepta-learning-ledger", ("--lib",), "codex-hepta-learning-ledger",
-        tuple("production::retrieval_preparation::tests::" + name for name in (
-            "preparation_read_is_indexed_bound_and_non_mutating",
-            "witness_lag_and_revocation_never_become_delivery_preparation",
-        )),
+        "codex-hepta-learning-ledger",
+        ("--lib",),
+        "codex-hepta-learning-ledger",
+        tuple(
+            "production::retrieval_preparation::tests::" + name
+            for name in (
+                "preparation_read_is_indexed_bound_and_non_mutating",
+                "witness_lag_and_revocation_never_become_delivery_preparation",
+                "preparation_identity_advances_with_the_durable_owner_after_reopen",
+                "owner_preparation_receipt_requires_exact_namespace_witness_and_activity",
+            )
+        ),
     ),
     "publication-fence-tests": (
-        "codex-hepta-agentd", ("--lib",), "codex-hepta-agentd",
-        ("cognitive_context::tests::hnmf::publication_rechecks_owner_after_last_awaited_dependency",),
+        "codex-hepta-agentd",
+        ("--lib",),
+        "codex-hepta-agentd",
+        (
+            "cognitive_context::tests::hnmf::publication_rechecks_owner_after_last_awaited_dependency",
+            "cognitive_retrieval_learning::tests::ordinary_socket_reads_from_new_clients_do_not_reuse_assignment_identity",
+        ),
     ),
     "delivery-join-tests": (
-        "codex-hepta-agentd", ("--test", "cognitive_delivery_join"), "codex-hepta-agentd::cognitive_delivery_join",
-        ("tests::real_learning_and_native_owners_join_exact_preparation_and_acceptance",),
+        "codex-hepta-agentd",
+        ("--test", "cognitive_delivery_join"),
+        "codex-hepta-agentd::cognitive_delivery_join",
+        (
+            "tests::real_learning_and_native_owners_join_exact_preparation_and_acceptance",
+            "tests::owner_preparation_tests::ordinary_preparation_receipt_joins_exact_native_dispatch_after_reopen",
+        ),
+    ),
+    "preparation-protocol-tests": (
+        "codex-hepta-agent-protocol",
+        ("--lib",),
+        "codex-hepta-agent-protocol",
+        (
+            "cognitive_preparation::tests::preparation_response_preserves_snapshot_bytes_and_separates_receipt",
+        ),
+    ),
+    "native-preparation-handoff-tests": (
+        "codex-hepta-infer-core",
+        ("--lib",),
+        "codex-hepta-infer-core",
+        tuple(
+            "cognitive_delivery::tests::preparation_tests::" + name
+            for name in (
+                "persisted_preparation_reopens_without_upgrading_unknown_delivery",
+                "invalid_preparation_cannot_enter_the_native_journal",
+                "historical_omission_preserves_canonical_event_and_journal_bytes",
+                "receipt_substitution_changes_the_native_delivery_binding",
+            )
+        ),
     ),
 }
 
@@ -67,8 +119,16 @@ DELIVERY_GATES = {
 def delivery_commands() -> dict[str, list[str]]:
     return {
         label: [
-            "just", "test", "--locked", "-p", package, *target,
-            "--no-tests=fail", "--status-level", "pass", "-E",
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            package,
+            *target,
+            "--no-tests=fail",
+            "--status-level",
+            "pass",
+            "-E",
             " | ".join(f"test(={case})" for case in cases),
         ]
         for label, (package, target, _binary, cases) in DELIVERY_GATES.items()
@@ -80,13 +140,12 @@ def delivery_log_problems(label: str, text: str) -> list[str]:
     _package, _target, binary, cases = DELIVERY_GATES[label]
     body = re.sub(r"\x1b\[[0-9;]*m", "", text)
     binary_pattern = re.escape(binary).replace(r"\-", "[-_]")
-    problems = []
-    counts = re.findall(r"\b(\d+) tests? run\b", body)
-    if not counts or int(counts[-1]) != len(cases):
-        problems.append(f"{label}: expected exactly {len(cases)} executed cases")
+    problems = nextest_log_problems(label, body, len(cases))
     for case in cases:
-        row = rf"(?m)^\s*PASS\s+\[[^]\r\n]+\]\s+{binary_pattern}\s+{re.escape(case)}\s*$"
-        if re.search(row, body) is None:
+        row = (
+            rf"(?m)^\s*PASS\s+\[[^]\r\n]+\]\s+{binary_pattern}\s+{re.escape(case)}\s*$"
+        )
+        if len(re.findall(row, body)) != 1:
             problems.append(f"{label}: exact binary/case not proved: {case}")
     return problems
 
@@ -97,7 +156,9 @@ def delivery_gate_passed(evidence: Path, label: str) -> bool:
     log = evidence / f"{label}.log"
     code = evidence / f"{label}.exit-code"
     try:
-        if any(path.is_symlink() or not path.is_file() for path in (command, log, code)):
+        if any(
+            path.is_symlink() or not path.is_file() for path in (command, log, code)
+        ):
             return False
         return (
             json.loads(command.read_text()) == delivery_commands()[label]

@@ -5,6 +5,11 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
+    integration_compile_data_extra = [
+        "src/cognitive_owner_preparation_delivery_tests.rs",
+        "src/cognitive_retrieval_delivery_tests.rs",
+        "src/plasticity_learning_fixture.rs",
+    ],
     integration_test_timeout = "long",
 )
 

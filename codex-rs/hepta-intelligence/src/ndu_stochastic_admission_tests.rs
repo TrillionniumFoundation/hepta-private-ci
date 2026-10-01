@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "Signed stochastic-admission fixtures fail the test immediately if fixed artifact, registry, or evaluator setup fails"
+)]
+
 use std::fs::File;
 use std::path::PathBuf;
 
