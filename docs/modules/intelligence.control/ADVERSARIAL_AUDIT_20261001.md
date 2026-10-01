@@ -405,3 +405,31 @@ Objective empty-action fixture failures and ten strict lint failures also match
 main; these project-wide qualification blockers are not suppressed or changed
 by this module audit. Codespell rejected a historical spelling quoted in this
 report; that quotation is corrected in the follow-up candidate.
+
+The learning repair `fe42a27b09551649f3a73afc543d29c5bdf30f69`, tree
+`db768271a78bccb2e70e466fd06eea61426060f3`, passed all six package commands
+in push, source-head and base-merge lanes: 104 intelligence, 52 operations,
+119 ledger, 63 native, 223 default Agentd and 226 qualification-feature tests.
+Operations, ledger, default Agentd and the feature each retained one ignored
+test. The three new candidate/writer regressions and both previously failing
+qualification assertions actually passed. All-target Agentd compilation also
+passed. The tested merge `bddfabc4f6b2a5f0e39de6966c0ce1bc8531ebf8` has the
+same source tree and ordered main/source parents. Strict lint still failed on
+the same four memory-extension and six core baseline errors; later execution
+projections were skipped. Codespell and both caller checks passed.
+
+The macOS diagnostic lane separately exposed a portability omission in the
+new writer regression: its authority path retained the OS temporary-directory
+alias, so the production no-follow reader correctly returned
+`FreshnessUnavailable`. That run recorded 59 passed, one failed, one ignored
+and 163 filtered default tests; all-target compilation passed. The fixture now
+canonicalizes its directory before creating authority, ledger and witness
+files, matching the existing signed fixture's provisioning contract. Production
+no-follow checks remain unchanged. The corrected fixture requires its own
+macOS execution; the former failed result is not relabeled as a pass.
+
+The fresh local scoped lint-fix attempt first lacked automatic OpenSSL discovery.
+Using the dependency's supported explicit system include/library directories
+recovered that setup, but compilation then exhausted the shared filesystem
+while building `rmcp`, before the changed module. Both attempts exited 101 and
+provide no lint or test pass. Only this task's compiler cache was cleared.

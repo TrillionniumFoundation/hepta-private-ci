@@ -84,7 +84,13 @@ async fn default_learning_writer_requires_signed_intrinsic_complete_candidates()
         .clone();
     assert_eq!(generator_evidence.role, LearningEvidenceRoleV1::Generator);
     let directory = tempfile::tempdir().expect("directory");
-    let authority = directory.path().join("authority.json");
+    // Resolve the OS temporary-directory alias while provisioning this fixture.
+    // Production authority reads still reject every symlink at final use.
+    let root = directory
+        .path()
+        .canonicalize()
+        .expect("canonical test root");
+    let authority = root.join("authority.json");
     write_authority_file(
         &authority,
         &value.owners,
@@ -112,19 +118,19 @@ async fn default_learning_writer_requires_signed_intrinsic_complete_candidates()
         .create_new(true)
         .read(true)
         .write(true)
-        .open(directory.path().join("learning.ledger"))
+        .open(root.join("learning.ledger"))
         .expect("ledger file");
     let witness_file = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
-        .open(directory.path().join("learning.witness"))
+        .open(root.join("learning.witness"))
         .expect("witness file");
     let ledger = codex_hepta_learning_ledger::DurableLedger::create(ledger_file, binding, 16)
         .expect("durable ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(directory.path()).expect("ledger directory");
-    let witness_directory = File::open(directory.path()).expect("witness directory");
+    let ledger_directory = File::open(&root).expect("ledger directory");
+    let witness_directory = File::open(&root).expect("witness directory");
     let mut writer = LedgerWriter::from_durable(
         ledger,
         witness,
