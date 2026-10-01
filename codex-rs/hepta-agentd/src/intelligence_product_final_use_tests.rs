@@ -152,6 +152,7 @@ fn prepared_host(
 enum Drift {
     SignedOwner,
     RunStartExpiry,
+    RunStartExpiryDuringFence,
     QualificationDuringFence,
     SourceRunDeadline,
     CanonicalRunDeadline,
@@ -175,6 +176,9 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
         (Drift::SignedOwner, PolicyOutcome::Abstained),
         (Drift::SignedOwner, PolicyOutcome::SlowPath),
         (Drift::RunStartExpiry, PolicyOutcome::Selected),
+        (Drift::RunStartExpiryDuringFence, PolicyOutcome::Selected),
+        (Drift::RunStartExpiryDuringFence, PolicyOutcome::Abstained),
+        (Drift::RunStartExpiryDuringFence, PolicyOutcome::SlowPath),
         (Drift::QualificationDuringFence, PolicyOutcome::Selected),
         (Drift::SourceRunDeadline, PolicyOutcome::Selected),
         (Drift::CanonicalRunDeadline, PolicyOutcome::Selected),
@@ -260,7 +264,9 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
             scope_digest: digest("run-start-scope"),
             payload_digest: digest("run-start-body"),
             sequence: 1,
-            expires_at_ms: if matches!(
+            expires_at_ms: if matches!(drift, Drift::QualificationDuringFence) {
+                300
+            } else if matches!(
                 drift,
                 Drift::SourceRunDeadline | Drift::CanonicalRunDeadline
             ) {
@@ -342,6 +348,8 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
             .expect("first call owns writer");
         let (started, attempting) = mpsc::channel();
         let (fence_entered, observed_fence) = mpsc::channel();
+        let (authentication_checked, verified_authentication) = mpsc::channel();
+        let (resume_final_fence, continue_final_fence) = mpsc::channel();
         let clock_at_fence = clock.clone();
         let worker = std::thread::spawn(move || {
             started.send(()).expect("attempt acknowledged");
@@ -387,6 +395,19 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
                     if matches!(drift, Drift::QualificationDuringFence) {
                         clock_at_fence.now.store(201, Ordering::Release);
                     }
+                    if matches!(drift, Drift::RunStartExpiryDuringFence) {
+                        authentication_checked
+                            .send(())
+                            .expect("signed authentication checked before blocking work");
+                        continue_final_fence
+                            .recv_timeout(Duration::from_secs(5))
+                            .expect("final fence resumed after blocking work");
+                    }
+                    crate::intuition_policy_service::require_live_run_start_authentication(
+                        owner_clock.now()?,
+                        message.claims.expires_at_ms,
+                    )
+                    .map_err(AgentdIntuitionServiceErrorV1::from)?;
                     Ok(())
                 },
             )
@@ -414,7 +435,7 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
             Drift::RunStartExpiry | Drift::SourceRunDeadline | Drift::CanonicalRunDeadline => {
                 clock.now.store(170, Ordering::Release);
             }
-            Drift::QualificationDuringFence => {}
+            Drift::QualificationDuringFence | Drift::RunStartExpiryDuringFence => {}
         }
         let (released, changed) = &clock.released;
         *released.lock().expect("release writer") = true;
@@ -426,6 +447,15 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
         observed_fence
             .recv_timeout(Duration::from_secs(5))
             .expect("fence runs after writer acquisition");
+        if matches!(drift, Drift::RunStartExpiryDuringFence) {
+            verified_authentication
+                .recv_timeout(Duration::from_secs(5))
+                .expect("real signature valid before blocking work");
+            clock.now.store(170, Ordering::Release);
+            resume_final_fence
+                .send(())
+                .expect("advance final-use clock after blocking work");
+        }
         let error = worker
             .join()
             .expect("commit thread")
@@ -439,6 +469,10 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
                 Drift::RunStartExpiry,
                 AgentdIntuitionServiceErrorV1::Agentd(AgentdError::Invalid(cause)),
             ) => assert!(cause.contains("Expired")),
+            (
+                Drift::RunStartExpiryDuringFence,
+                AgentdIntuitionServiceErrorV1::Agentd(AgentdError::Invalid(cause)),
+            ) => assert!(cause.contains("authentication expired")),
             (
                 Drift::QualificationDuringFence,
                 AgentdIntuitionServiceErrorV1::Policy(

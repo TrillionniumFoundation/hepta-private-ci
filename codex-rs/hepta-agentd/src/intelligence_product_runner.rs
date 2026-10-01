@@ -321,6 +321,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
                 let now = wall_clock_ms()?;
                 self.require_current_prepared(&prepared, now)?;
+                let now = wall_clock_ms()?;
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
                     .start_run(

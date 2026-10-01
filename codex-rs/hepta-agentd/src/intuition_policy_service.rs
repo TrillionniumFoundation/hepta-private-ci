@@ -133,6 +133,18 @@ pub(crate) fn require_live_intuition_deadline(
     Ok(())
 }
 
+pub(crate) fn require_live_run_start_authentication(
+    now_ms: u64,
+    expires_at_ms: u64,
+) -> Result<(), AgentdError> {
+    if now_ms >= expires_at_ms {
+        return Err(AgentdError::Invalid(
+            "durable run-start authentication expired before admission".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 pub(crate) fn run_start_deadline_ms(
     record: &codex_hepta_learning_ledger::RunStartRecordV1,
 ) -> Result<u64, AgentdError> {

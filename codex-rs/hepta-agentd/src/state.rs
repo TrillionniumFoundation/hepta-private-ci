@@ -688,18 +688,10 @@ impl AgentdState {
                             ))
                         })?;
                     self.require_current_run_start(record)?;
-                    let now = clock.now().map_err(|error| {
-                        AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
-                    })?;
-                    crate::intuition_policy_service::require_live_intuition_deadline(
-                        now,
-                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
-                    )?;
                     if let crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
-                        crate::intuition_policy_service::require_live_intuition_deadline(
-                            now,
-                            prepared.run_snapshot().deadline_ms,
-                        )?;
+                        let now = clock.now().map_err(|error| {
+                            AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
+                        })?;
                         runner.require_current_evaluation(now).map_err(|error| {
                             AgentdError::Protocol(format!(
                                 "canonical evaluation final-use fence failed: {error}"
@@ -711,6 +703,23 @@ impl AgentdState {
                             ))
                         })?;
                     }
+                    let now = clock.now().map_err(|error| {
+                        AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
+                    })?;
+                    crate::intuition_policy_service::require_live_run_start_authentication(
+                        now,
+                        record.authentication.expires_at_ms,
+                    )?;
+                    crate::intuition_policy_service::require_live_intuition_deadline(
+                        now,
+                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
+                    )?;
+                    if let crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
+                        crate::intuition_policy_service::require_live_intuition_deadline(
+                            now,
+                            prepared.run_snapshot().deadline_ms,
+                        )?;
+                    }
                     Ok(())
                 },
             )?;
@@ -719,7 +728,6 @@ impl AgentdState {
         // The final conversion retains the receipt on every failure, including
         // either freshness check, run-lock acquisition and context attachment.
         let admission = (|| {
-            self.require_current_run_start(record)?;
             runner
                 .require_current_snapshot(&canonical_snapshot)
                 .map_err(|error| {
@@ -727,6 +735,7 @@ impl AgentdState {
                         "canonical intelligence admission fence failed: {error}"
                     ))
                 })?;
+            self.require_current_run_start(record)?;
             match outcome {
                 crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
                     let snapshot = prepared.run_snapshot();
@@ -742,15 +751,6 @@ impl AgentdState {
                         ),
                     })?;
                     let now_ms = unix_now_ms()?;
-                    crate::intuition_policy_service::require_live_intuition_deadline(
-                        now_ms,
-                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
-                    )?;
-                    if now_ms >= record.authentication.expires_at_ms {
-                        return Err(AgentdError::Invalid(
-                            "durable run-start authentication expired before admission".to_string(),
-                        ));
-                    }
                     runner.require_current_evaluation(now_ms).map_err(|error| {
                         AgentdError::Protocol(format!(
                             "canonical evaluation admission fence failed: {error}"
@@ -761,6 +761,15 @@ impl AgentdState {
                             "canonical evaluation evidence admission fence failed: {error}"
                         ))
                     })?;
+                    let now_ms = unix_now_ms()?;
+                    crate::intuition_policy_service::require_live_intuition_deadline(
+                        now_ms,
+                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
+                    )?;
+                    crate::intuition_policy_service::require_live_run_start_authentication(
+                        now_ms,
+                        record.authentication.expires_at_ms,
+                    )?;
                     let admitted = runs
                         .start_run(
                             now_ms,
@@ -854,11 +863,6 @@ impl AgentdState {
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
         crate::authbus_ingress::require_ready(self)?;
-        let now_ms = crate::authbus_ingress::now_ms()?;
-        crate::intuition_policy_service::require_live_intuition_deadline(
-            now_ms,
-            crate::intuition_policy_service::run_start_deadline_ms(record)?,
-        )?;
         let current_generation = self
             .runtime
             .lock()
@@ -893,9 +897,15 @@ impl AgentdState {
             },
             signature: authentication.signature,
         };
+        let issuer = trust.issuer()?;
+        let now_ms = crate::authbus_ingress::now_ms()?;
+        crate::intuition_policy_service::require_live_intuition_deadline(
+            now_ms,
+            crate::intuition_policy_service::run_start_deadline_ms(record)?,
+        )?;
         message
             .authenticate(
-                &trust.issuer()?,
+                &issuer,
                 objective_run_scope(&self.identity),
                 authentication.signed_body_digest,
                 now_ms,
