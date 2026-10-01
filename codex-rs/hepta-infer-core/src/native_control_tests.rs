@@ -294,6 +294,52 @@ fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
 }
 
 #[test]
+fn pre_effect_aborted_dispatch_cannot_be_resurrected_by_observation() {
+    let path = path("pre-effect-no-resurrection");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let stopped = control
+        .abort_native_before_effect(token, "final-use denied before send".to_string())
+        .unwrap();
+    let active = control.reserve_native(request("r2"), 1).unwrap();
+    let journal_bytes = std::fs::metadata(&path).unwrap().len();
+
+    for status in [NativeRunStatus::Indeterminate, NativeRunStatus::Completed] {
+        let mut observed = output(status, None);
+        observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+        assert_eq!(
+            control.settle_native("r1", observed),
+            Err(Error::InvalidTransition)
+        );
+        assert_eq!(control.native_record("r1"), Some(&stopped));
+        assert_eq!(control.native_record("r2"), Some(&active));
+        assert_eq!(std::fs::metadata(&path).unwrap().len(), journal_bytes);
+        assert_eq!(
+            control.reserve_native(request("r3"), 1),
+            Err(Error::CapacityExceeded)
+        );
+    }
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&stopped));
+    assert_eq!(reopened.native_record("r2"), Some(&active));
+    assert_eq!(
+        reopened.settle_native("r1", output(NativeRunStatus::Completed, None)),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        reopened.reserve_native(request("r3"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn pre_effect_abort_cannot_release_another_control_owners_unknown_dispatch() {
     let first_path = path("pre-effect-first-owner");
     let second_path = path("pre-effect-second-owner");

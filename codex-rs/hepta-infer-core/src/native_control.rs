@@ -743,7 +743,7 @@ impl NativeJournal {
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
-                if record.dispatch_rejection.is_some() {
+                if record.dispatch_rejection.is_some() || record.pre_dispatch_stop.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
