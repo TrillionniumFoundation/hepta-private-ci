@@ -19,4 +19,10 @@ The order is evidentiary, not a promise that every subsystem must become a produ
 
 The candidate workflow resolves the exact pull-request source commit and deterministic synthetic merge at run time. It validates the state schema before formatting, tests, all-target compilation and strict lint, then fails closed unless every independent check succeeds and the tracked tree remains unchanged. Exact commit and tree identities live in workflow artifacts; they are not written back into source by a qualification job.
 
+Independent steps use `continue-on-error` so later checks still run. A GitHub
+step's displayed conclusion may therefore be successful after its command failed.
+Use the recorder's command exit/status, the step outcome consumed by the final
+aggregation, and the final job result to assess qualification. A passing unit
+suite does not establish that later integration binaries passed.
+
 Externally governed gates stay false in source. Target-host recovery requires actual multi-process failure testing on the named host. Independent acceptance, operator acceptance, canary, activation, promotion and release require their respective external evidence and cannot be self-certified by this repository candidate.

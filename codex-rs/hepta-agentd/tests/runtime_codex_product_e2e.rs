@@ -78,7 +78,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let (_, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     ensure!(health.ready && !health.fenced);
 
-    let authority_root = tempfile::tempdir()?;
+    let authority_root = support::test_paths::socket_test_dir()?;
     std::fs::set_permissions(
         authority_root.path(),
         std::fs::Permissions::from_mode(0o700),
@@ -114,7 +114,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     .map_err(|error| anyhow::anyhow!(error.to_string()))?
     .with_turn_start_authorizer(Arc::new(authorizer));
 
-    let journal_root = tempfile::tempdir()?;
+    let journal_root = support::test_paths::socket_test_dir()?;
     let journal = journal_root.path().join("runtime-codex.journal");
     let mut control = DurableInferenceControl::open(&journal, /*capacity*/ 32)?;
     let cancellation = CancellationToken::new();

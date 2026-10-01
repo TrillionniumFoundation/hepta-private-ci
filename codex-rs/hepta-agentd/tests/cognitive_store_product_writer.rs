@@ -1,5 +1,8 @@
 #![cfg(unix)]
 
+#[path = "support/test_paths.rs"]
+mod test_paths;
+
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
@@ -49,13 +52,12 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
-use tempfile::TempDir;
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
 async fn agentd_product_host_commits_through_canonical_cognitive_store()
 -> Result<(), Box<dyn Error>> {
-    let temp = TempDir::new()?;
+    let temp = test_paths::socket_test_dir()?;
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root)?;
     let fleet = HeptaFleetRoot::parse(fleet_root)?;
@@ -118,7 +120,7 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 #[tokio::test]
 async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 -> Result<(), Box<dyn Error>> {
-    let temp = TempDir::new()?;
+    let temp = test_paths::socket_test_dir()?;
     let root = temp.path().canonicalize()?;
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;

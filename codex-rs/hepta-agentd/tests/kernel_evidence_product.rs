@@ -555,7 +555,7 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
     let snapshot = store.recovery_snapshot().await?;
     store.close().await;
 
-    let external = tempfile::tempdir()?;
+    let external = support::test_paths::socket_test_dir()?;
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
         external.path(),
         "store:kernel-evidence-recovery-ok",
@@ -615,7 +615,7 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     let database_path = old_store.path().to_path_buf();
     old_store.close().await;
 
-    let external = tempfile::tempdir()?;
+    let external = support::test_paths::socket_test_dir()?;
     let old_image = external.path().join("hepta-evidence-old.sqlite");
     std::fs::copy(&database_path, &old_image)?;
 

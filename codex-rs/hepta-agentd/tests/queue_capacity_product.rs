@@ -152,7 +152,7 @@ async fn real_agentd_manifest_capacity_bounds_its_private_app_server_queue() -> 
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_rejects_redirected_sqlite_and_in_memory_thread_stores() -> Result<()> {
-    let shared_sqlite = tempfile::tempdir()?;
+    let shared_sqlite = support::test_paths::socket_test_dir()?;
     let shared_sqlite_path = shared_sqlite.path().canonicalize()?;
     let quoted_shared_sqlite = serde_json::to_string(&shared_sqlite_path.to_string_lossy())?;
     assert_agentd_startup_rejected(

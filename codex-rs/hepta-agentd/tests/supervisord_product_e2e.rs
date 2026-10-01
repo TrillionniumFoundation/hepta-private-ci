@@ -1,5 +1,8 @@
 #![cfg(unix)]
 
+#[path = "support/test_paths.rs"]
+mod test_paths;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::OpenOptions;
@@ -71,7 +74,7 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
-    let temp = tempfile::tempdir()?;
+    let temp = test_paths::socket_test_dir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
     let registry = FleetRegistry::initialize(fleet_root.clone())?;
