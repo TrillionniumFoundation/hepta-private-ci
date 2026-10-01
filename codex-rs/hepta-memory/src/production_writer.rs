@@ -1324,10 +1324,13 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
+        // The target returns a lazy future: keep the final-use effect fence
+        // through polling and completion, including its durable transaction.
+        let outcome = match final_use
+            .with_verified_use_async(token, expected, || target.dispatch(request.clone()))
+            .await
         {
-            Ok(future) => future,
+            Ok(outcome) => outcome,
             Err(error) => {
                 if self
                     .settle_pre_dispatch_rejection(
@@ -1348,7 +1351,6 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let outcome = future.await;
         let settled = if inherited_from_generation.is_some() {
             self.settle_inherited_dispatch_outcome(
                 request,
@@ -2095,6 +2097,10 @@ pub trait ProductionOutboxTarget: Send + Sync {
 /// Production target with a stable destination identity and an independent
 /// terminal observer. The default observer is deliberately unavailable so a
 /// target cannot accidentally turn transport acknowledgement into terminality.
+/// Dispatch futures must be bounded and cancellation-aware: their active-effect
+/// fence blocks revocation commits for the attached authority until they finish
+/// or are dropped. Cancellation leaves an indeterminate operation to reconcile;
+/// it does not establish rollback of detached work or a queued database commit.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
 
@@ -3477,6 +3483,10 @@ mod takeover_regression_tests {
 }
 
 #[cfg(all(test, unix))]
+#[path = "production_writer_async_dispatch_tests.rs"]
+mod final_use_async_dispatch_tests;
+
+#[cfg(all(test, unix))]
 mod final_use_dispatch_tests {
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;
@@ -3497,7 +3507,7 @@ mod final_use_dispatch_tests {
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
     }
 
-    async fn store(temp: &TempDir) -> CognitiveStore {
+    pub(super) async fn store(temp: &TempDir) -> CognitiveStore {
         let root = temp.path().join("fleet-final-use");
         std::fs::create_dir_all(&root).expect("fleet root");
         let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
@@ -3507,7 +3517,7 @@ mod final_use_dispatch_tests {
             .expect("store")
     }
 
-    struct FinalUseVerifier;
+    pub(super) struct FinalUseVerifier;
 
     impl ProductionAuthorityVerifier for FinalUseVerifier {
         fn verify(
@@ -3558,7 +3568,7 @@ mod final_use_dispatch_tests {
         }
     }
 
-    fn bound_operation(
+    pub(super) fn bound_operation(
         owner: &AgentId,
         operation_id: &str,
         destination: &str,
@@ -3576,7 +3586,7 @@ mod final_use_dispatch_tests {
         .expect("operation intent")
     }
 
-    fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
+    pub(super) fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
         ProductionAuthorityLease::from_verified_parts(
             owner,
             Sha256Digest::for_bytes(b"production-grant"),
@@ -3589,7 +3599,7 @@ mod final_use_dispatch_tests {
         .expect("authority")
     }
 
-    fn test_nonce(label: &str) -> [u8; 32] {
+    pub(super) fn test_nonce(label: &str) -> [u8; 32] {
         let now_nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("clock")
@@ -3599,7 +3609,7 @@ mod final_use_dispatch_tests {
         digest.into()
     }
 
-    fn signed_final_use(
+    pub(super) fn signed_final_use(
         issuer: &SigningKey,
         binding: FinalUseBinding,
         grant_id: &str,
