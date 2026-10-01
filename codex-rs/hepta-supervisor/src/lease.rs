@@ -23,7 +23,7 @@ pub(crate) use removal::ProcessLeaseRemoval;
 pub(crate) const PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
 pub(crate) const MATRIX_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
 const PROCESS_LEASE_FILE: &str = "supervisor-process.json";
-const MAX_LEASE_BYTES: u64 = 4_096;
+const MAX_LEASE_BYTES: usize = 4_096;
 static LEASE_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -77,23 +77,10 @@ pub(crate) fn validate_lease(
 
 pub(crate) fn read_lease(run_root: &Path) -> Result<Option<ProcessLease>, SupervisorError> {
     let path = lease_path(run_root);
-    let metadata = match std::fs::symlink_metadata(&path) {
-        Ok(metadata) => metadata,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = read_lease_bytes(&path)? else {
+        return Ok(None);
     };
-    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
-        return Err(SupervisorError::CorruptLease(format!(
-            "lease path is not a regular file: {}",
-            path.display()
-        )));
-    }
-    if metadata.len() > MAX_LEASE_BYTES {
-        return Err(SupervisorError::CorruptLease(
-            "process lease exceeds the bounded control-state limit".to_string(),
-        ));
-    }
-    serde_json::from_slice(&std::fs::read(path)?)
+    serde_json::from_slice(&bytes)
         .map(Some)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))
 }
@@ -111,23 +98,26 @@ pub(crate) fn write_lease(run_root: &Path, lease: &ProcessLease) -> Result<(), S
     let mut bytes = serde_json::to_vec(lease)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp_path)?;
+    if bytes.len() > MAX_LEASE_BYTES {
+        return Err(SupervisorError::CorruptLease(
+            "process lease exceeds its file bound".to_string(),
+        ));
+    }
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options
+            .mode(0o600)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+    }
+    let mut file = options.open(&temp_path)?;
     let result = (|| {
         crate::durability::write_all(&mut file, &bytes, "process_lease")?;
         crate::durability::sync_all(&file, "process_lease")?;
         drop(file);
-        crate::durability::check("process_lease", "hard_link")?;
-        match std::fs::hard_link(&temp_path, &final_path) {
-            Ok(()) => {}
-            Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-                return Err(SupervisorError::UnresolvedLease(lease.agent_id.clone()));
-            }
-            Err(error) => return Err(error.into()),
-        }
-        sync_directory(run_root, "process_lease")
+        publish_lease(&temp_path, &final_path, &lease.agent_id, "process_lease")
     })();
     let _ = std::fs::remove_file(temp_path);
     result
@@ -156,23 +146,10 @@ fn lease_path(run_root: &Path) -> std::path::PathBuf {
 pub(crate) fn read_matrix_lease(
     path: &Path,
 ) -> Result<Option<MatrixProcessLease>, SupervisorError> {
-    let metadata = match std::fs::symlink_metadata(path) {
-        Ok(metadata) => metadata,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = read_lease_bytes(path)? else {
+        return Ok(None);
     };
-    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
-        return Err(SupervisorError::CorruptLease(format!(
-            "Matrix lease path is not a regular file: {}",
-            path.display()
-        )));
-    }
-    if metadata.len() > MAX_LEASE_BYTES {
-        return Err(SupervisorError::CorruptLease(
-            "Matrix process lease exceeds the bounded control-state limit".to_string(),
-        ));
-    }
-    let lease: MatrixProcessLease = serde_json::from_slice(&std::fs::read(path)?)
+    let lease: MatrixProcessLease = serde_json::from_slice(&bytes)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     if lease.schema_version != MATRIX_PROCESS_LEASE_SCHEMA_VERSION
         || lease.attached_agent_generation == 0
@@ -206,26 +183,81 @@ pub(crate) fn write_matrix_lease(
     let mut bytes = serde_json::to_vec(lease)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp_path)?;
+    if bytes.len() > MAX_LEASE_BYTES {
+        return Err(SupervisorError::CorruptLease(
+            "Matrix process lease exceeds its file bound".to_string(),
+        ));
+    }
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options
+            .mode(0o600)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+    }
+    let mut file = options.open(&temp_path)?;
     let result = (|| {
         crate::durability::write_all(&mut file, &bytes, "matrix_process_lease")?;
         crate::durability::sync_all(&file, "matrix_process_lease")?;
         drop(file);
-        crate::durability::check("matrix_process_lease", "hard_link")?;
-        match std::fs::hard_link(&temp_path, path) {
-            Ok(()) => {}
-            Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-                return Err(SupervisorError::UnresolvedLease(lease.agent_id.clone()));
-            }
-            Err(error) => return Err(error.into()),
-        }
-        sync_directory(parent, "matrix_process_lease")
+        publish_lease(&temp_path, path, &lease.agent_id, "matrix_process_lease")
     })();
     let _ = std::fs::remove_file(temp_path);
     result
+}
+
+fn read_lease_bytes(path: &Path) -> Result<Option<Vec<u8>>, SupervisorError> {
+    crate::durable_publish::read_regular_bounded(path, MAX_LEASE_BYTES).map_err(|error| {
+        if matches!(
+            error.kind(),
+            ErrorKind::InvalidData | ErrorKind::InvalidInput
+        ) {
+            SupervisorError::CorruptLease(error.to_string())
+        } else {
+            error.into()
+        }
+    })
+}
+
+fn publish_lease(
+    staging: &Path,
+    destination: &Path,
+    agent_id: &AgentId,
+    component: &str,
+) -> Result<(), SupervisorError> {
+    publish_lease_with(staging, destination, agent_id, component, sync_directory)
+}
+
+fn publish_lease_with(
+    staging: &Path,
+    destination: &Path,
+    agent_id: &AgentId,
+    component: &str,
+    sync: impl FnOnce(&Path, &str) -> Result<(), SupervisorError>,
+) -> Result<(), SupervisorError> {
+    let parent = destination.parent().ok_or_else(|| {
+        SupervisorError::CorruptLease("process lease path has no parent".to_string())
+    })?;
+    if staging.parent() != Some(parent) {
+        return Err(SupervisorError::CorruptLease(
+            "process lease publication changed parent".to_string(),
+        ));
+    }
+    crate::durability::check(component, "hard_link")?;
+    match std::fs::hard_link(staging, destination) {
+        Ok(()) => {}
+        Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+            return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
+        }
+        Err(error) => return Err(error.into()),
+    }
+    // A successful publication must durably leave a single-link lease.
+    // Syncing before this unlink could resurrect the staging hard link
+    // after a crash, making our own acknowledged lease unsafe to reopen.
+    std::fs::remove_file(staging)?;
+    sync(parent, component)
 }
 
 pub(crate) fn remove_matrix_lease(
@@ -258,3 +290,7 @@ fn sync_directory(path: &Path, component: &str) -> Result<(), SupervisorError> {
 fn sync_directory(_path: &Path, _component: &str) -> Result<(), SupervisorError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "lease_read_tests.rs"]
+mod read_tests;
