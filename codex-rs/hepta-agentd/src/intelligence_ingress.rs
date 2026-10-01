@@ -243,9 +243,13 @@ const DEFAULT_INVOCATION_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// Bounded execution policy for the host-owned seven-owner invocation factory.
 ///
-/// The factory runs on a dedicated OS thread. A timed-out call keeps its slot
-/// until the real thread exits; dropping the ObjectiveStart future cannot free
-/// capacity or disarm an explicitly configured hard-timeout observer.
+/// Standalone `build` runs the factory on a dedicated OS thread with this
+/// policy's optional process-exit observer. Canonical invocation executes the
+/// factory directly in the runner's supervised worker, using the shorter
+/// configured timeout and process-exit grace from the provider and runner.
+/// A timed-out call keeps its slot until actual work finishes; dropping the
+/// ObjectiveStart future cannot free capacity or disarm its observer. A missing
+/// provider grace never disables the canonical runner's required process fence.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct AgentdIntelligenceInvocationPolicyV1 {
     pub timeout: Duration,
@@ -381,11 +385,96 @@ struct FactoryCompletion {
     observer: Option<std::thread::JoinHandle<()>>,
 }
 
+enum InvocationFactoryExecutionV1 {
+    Dedicated,
+    CanonicalWorker,
+}
+
 impl Drop for FactoryCompletion {
     fn drop(&mut self) {
         let _ = self.complete.send(());
         if let Some(observer) = self.observer.take() {
             let _ = observer.join();
+        }
+    }
+}
+
+impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F>
+where
+    F: Fn(
+            &AgentdIdentity,
+            &RunStartRecordV1,
+        ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>
+        + Send
+        + Sync
+        + 'static,
+{
+    fn build_with_execution(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+        execution: InvocationFactoryExecutionV1,
+    ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+        let permit = self.acquire_factory_slot()?;
+        let durable_identity = AgentdIntelligenceRunIdentityV1::from_run_start(identity, record)?;
+        let factory = Arc::clone(&self.factory);
+        let identity = identity.clone();
+        let record = record.clone();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?
+            .as_millis();
+        let now =
+            u64::try_from(now).map_err(|_| AgentdError::Invalid("factory clock".to_string()))?;
+        let remaining = durable_identity
+            .deadline_ms
+            .checked_sub(now)
+            .filter(|value| *value != 0)
+            .ok_or_else(|| AgentdError::Protocol("factory run deadline elapsed".to_string()))?;
+        let budget = self.policy.timeout.min(Duration::from_millis(remaining));
+        let work = move || {
+            std::panic::catch_unwind(AssertUnwindSafe(|| {
+                let mut invocation = (factory)(&identity, &record)?;
+                invocation.inputs.run_identity = Some(durable_identity);
+                invocation.validate(&identity, &record)?;
+                Ok(invocation)
+            }))
+            .unwrap_or_else(|_| {
+                Err(AgentdError::Protocol(
+                    "canonical intelligence invocation factory panicked".to_string(),
+                ))
+            })
+        };
+        if matches!(execution, InvocationFactoryExecutionV1::CanonicalWorker) {
+            // The actual factory shares the caller's supervised worker. Its
+            // completion guard and this slot survive a dropped or timed-out
+            // request until the factory itself returns or the process exits.
+            let _permit = permit;
+            return work();
+        }
+        let completion = self.supervise_factory(budget)?;
+        let (sender, receiver) = mpsc::sync_channel(1);
+        std::thread::Builder::new()
+            .name("agentd-intelligence-invocation-factory".to_string())
+            .spawn(move || {
+                let _permit = permit;
+                let _completion = completion;
+                let result = work();
+                let _ = sender.send(result);
+            })
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "canonical intelligence invocation worker failed to start: {error}"
+                ))
+            })?;
+        match receiver.recv_timeout(budget) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => Err(AgentdError::Protocol(
+                "canonical intelligence invocation factory timed out".to_string(),
+            )),
+            Err(mpsc::RecvTimeoutError::Disconnected) => Err(AgentdError::Protocol(
+                "canonical intelligence invocation factory disconnected".to_string(),
+            )),
         }
     }
 }
@@ -406,58 +495,27 @@ where
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
-        let permit = self.acquire_factory_slot()?;
-        let durable_identity = AgentdIntelligenceRunIdentityV1::from_run_start(identity, record)?;
-        let factory = Arc::clone(&self.factory);
-        let identity = identity.clone();
-        let record = record.clone();
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_err(|error| AgentdError::Protocol(error.to_string()))?
-            .as_millis();
-        let now =
-            u64::try_from(now).map_err(|_| AgentdError::Invalid("factory clock".to_string()))?;
-        let remaining = durable_identity
-            .deadline_ms
-            .checked_sub(now)
-            .filter(|value| *value != 0)
-            .ok_or_else(|| AgentdError::Protocol("factory run deadline elapsed".to_string()))?;
-        let budget = self.policy.timeout.min(Duration::from_millis(remaining));
-        let completion = self.supervise_factory(budget)?;
-        let (sender, receiver) = mpsc::sync_channel(1);
+        self.build_with_execution(identity, record, InvocationFactoryExecutionV1::Dedicated)
+    }
 
-        std::thread::Builder::new()
-            .name("agentd-intelligence-invocation-factory".to_string())
-            .spawn(move || {
-                let _permit = permit;
-                let _completion = completion;
-                let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
-                    let mut invocation = (factory)(&identity, &record)?;
-                    invocation.inputs.run_identity = Some(durable_identity);
-                    invocation.validate(&identity, &record)?;
-                    Ok(invocation)
-                }))
-                .unwrap_or_else(|_| {
-                    Err(AgentdError::Protocol(
-                        "canonical intelligence invocation factory panicked".to_string(),
-                    ))
-                });
-                let _ = sender.send(result);
-            })
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence invocation worker failed to start: {error}"
-                ))
-            })?;
-        match receiver.recv_timeout(budget) {
-            Ok(result) => result,
-            Err(mpsc::RecvTimeoutError::Timeout) => Err(AgentdError::Protocol(
-                "canonical intelligence invocation factory timed out".to_string(),
-            )),
-            Err(mpsc::RecvTimeoutError::Disconnected) => Err(AgentdError::Protocol(
-                "canonical intelligence invocation factory disconnected".to_string(),
-            )),
-        }
+    fn build_in_canonical_worker(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+    ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+        self.build_with_execution(
+            identity,
+            record,
+            InvocationFactoryExecutionV1::CanonicalWorker,
+        )
+    }
+
+    fn canonical_worker_timeout(&self) -> Duration {
+        self.policy.timeout
+    }
+
+    fn canonical_worker_exit_grace(&self) -> Option<Duration> {
+        self.policy.hard_timeout_process_exit_grace
     }
 }
 
@@ -473,6 +531,34 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>;
+
+    /// Build inside an actual supervised canonical worker, whose completion
+    /// guard must survive request timeout or cancellation. Implementations must
+    /// retain all factory work in that lifetime, rather than detach threads that
+    /// can outlive the guard. The default preserves existing trusted providers;
+    /// the built-in host-owned provider executes its factory directly here.
+    /// Calling this method alone installs no watchdog or runtime authority.
+    fn build_in_canonical_worker(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+    ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+        self.build(identity, record)
+    }
+
+    /// Pure, nonblocking timeout policy for the supervised worker. The runner
+    /// also caps this value by its existing 30-second and durable RunStart
+    /// budgets. Built-in providers retain a shorter configured factory timeout.
+    fn canonical_worker_timeout(&self) -> Duration {
+        DEFAULT_INVOCATION_TIMEOUT
+    }
+
+    /// Pure, nonblocking optional process-exit grace for the supervised worker.
+    /// The runner uses the shorter configured grace; `None` preserves its own
+    /// mandatory canonical fence rather than disabling process containment.
+    fn canonical_worker_exit_grace(&self) -> Option<Duration> {
+        None
+    }
 }
 
 #[cfg(test)]

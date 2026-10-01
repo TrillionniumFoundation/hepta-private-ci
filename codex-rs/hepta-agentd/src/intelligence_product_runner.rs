@@ -170,13 +170,18 @@ impl AgentdIntelligenceProductRunnerV1 {
         F: FnOnce() -> T + Send + 'static,
         T: Send + 'static,
     {
-        self.spawn_owner_work_with_budget(work, Duration::from_secs(300))
+        self.spawn_owner_work_with_budget(
+            work,
+            Duration::from_secs(300),
+            self.hard_timeout_process_exit_grace,
+        )
     }
 
     fn spawn_owner_work_with_budget<F, T>(
         &self,
         work: F,
         budget: Duration,
+        hard_timeout_process_exit_grace: Option<Duration>,
     ) -> Result<AgentdIntelligenceWorkerV1<T>, AgentdIntelligenceProductError>
     where
         F: FnOnce() -> T + Send + 'static,
@@ -200,7 +205,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let state = guard.state();
         let completion = watchdog::WorkerCompletionV1::supervise(
             budget,
-            self.hard_timeout_process_exit_grace,
+            hard_timeout_process_exit_grace,
             Arc::clone(&state),
             Arc::clone(&self.telemetry),
         )
@@ -248,10 +253,22 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or_else(|| {
                 crate::AgentdError::Protocol("invocation deadline elapsed".to_string())
             })?;
-        let budget = Duration::from_millis(remaining.min(30_000));
+        let budget =
+            Duration::from_millis(remaining.min(30_000)).min(provider.canonical_worker_timeout());
+        let exit_grace = match (
+            self.hard_timeout_process_exit_grace,
+            provider.canonical_worker_exit_grace(),
+        ) {
+            (Some(runner), Some(factory)) => Some(runner.min(factory)),
+            (runner, factory) => runner.or(factory),
+        };
         let started = Instant::now();
         let mut worker = self
-            .spawn_owner_work_with_budget(move || provider.build(&identity, &record), budget)
+            .spawn_owner_work_with_budget(
+                move || provider.build_in_canonical_worker(&identity, &record),
+                budget,
+                exit_grace,
+            )
             .map_err(|error| crate::AgentdError::Protocol(error.to_string()))?;
         let joined = match timeout(budget, &mut worker).await {
             Ok(joined) => joined,
@@ -376,6 +393,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 prepare_intelligence_run(request, &mut ports, &mut oracle)
             },
             worker_budget,
+            self.hard_timeout_process_exit_grace,
         )?;
         let joined = match timeout(worker_budget, &mut worker.handle).await {
             Ok(value) => value,
@@ -428,6 +446,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                         validate_current_snapshot(&final_snapshot, &mut oracle)
                     },
                     remaining,
+                    self.hard_timeout_process_exit_grace,
                 )?;
                 let joined = match timeout(remaining, &mut final_check.handle).await {
                     Ok(joined) => joined,

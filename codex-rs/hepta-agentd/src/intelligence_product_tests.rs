@@ -1032,6 +1032,9 @@ mod signed;
 #[path = "intelligence_product_learning_tests.rs"]
 mod learning;
 
+#[path = "config_factory_containment_tests.rs"]
+mod factory_containment;
+
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[path = "intelligence_product_qualification_integrity_tests.rs"]
 mod qualification_integrity;
