@@ -28,7 +28,9 @@
       "state": "source_implemented_owner_not_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/runtime_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_recovery_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_calibration_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "neuron_runtime_tick",
@@ -47,6 +49,21 @@
         {
           "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
           "symbol": "AnchorWitnessStore",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/runtime_recovery.rs",
+          "symbol": "NeuronRuntime::recover_unacknowledged",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/runtime_admission.rs",
+          "symbol": "NeuronRuntime::require_witness_config",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+          "symbol": "calibrate",
           "role": "source_declaration"
         }
       ]
@@ -154,7 +171,13 @@
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-neuron/src/protocol_timestamp.rs",
+          "symbol": "valid_utc_timestamp",
+          "role": "source_declaration"
+        }
+      ]
     },
     {
       "operation": "population_sparse_v2",
