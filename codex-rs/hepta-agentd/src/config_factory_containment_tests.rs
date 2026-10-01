@@ -252,7 +252,7 @@ fn execute_child(case: &str) {
         match case {
             "abort" => {
                 caller.abort();
-                assert!(caller.await.expect_err("caller aborted").is_cancelled());
+                assert!(matches!(caller.await, Err(error) if error.is_cancelled()));
             }
             "timeout" => {
                 assert!(

@@ -169,6 +169,7 @@ pub use intelligence_commit_state::AgentdIntelligenceCommitStateV1;
 pub use intelligence_commit_state::intelligence_commit_state_v1;
 pub use intelligence_execution::AgentdIntelligenceExecutionHostV1;
 pub use intelligence_execution::AgentdIntelligenceExecutionSummaryV1;
+pub use intelligence_ingress::AgentdIntelligenceInvocationPolicyV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_ingress::AgentdIntelligenceRunIdentityV1;

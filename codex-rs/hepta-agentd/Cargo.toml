@@ -101,6 +101,7 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-kg = { path = "../hepta-kg" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
