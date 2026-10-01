@@ -234,7 +234,11 @@ pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
 #[cfg(feature = "server")]
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 #[cfg(feature = "server")]
+pub use cognitive_ranker::CurrentRankerAdmissionV3;
+#[cfg(feature = "server")]
 pub use cognitive_ranker::PinnedCognitiveRanker;
+#[cfg(feature = "server")]
+pub use cognitive_ranker::RankerAdmissionSnapshotV3;
 #[cfg(feature = "server")]
 pub use cognitive_ranker::cognitive_action_id;
 #[cfg(feature = "server")]

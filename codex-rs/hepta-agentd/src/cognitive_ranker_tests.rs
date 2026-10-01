@@ -61,6 +61,22 @@ struct Fixture {
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
+    fixture_with_profile(
+        items,
+        scores,
+        Generation::new(1).unwrap(),
+        hash("read-ranking-task"),
+        hash("fixture-dataset"),
+    )
+}
+
+fn fixture_with_profile(
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    generation: Generation,
+    objective: Digest32,
+    dataset: Digest32,
+) -> Fixture {
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
     let actions: Vec<_> = items
@@ -72,9 +88,9 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
     let model = fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
         artifact_id: id("read-ranker"),
         producer_id: id("fixture-trainer"),
-        generation: Generation::new(1).unwrap(),
-        objective_digest: hash("read-ranking-task"),
-        dataset_digest: hash("fixture-dataset"),
+        generation,
+        objective_digest: objective,
+        dataset_digest: dataset,
         sensor_core_digest: hash("exact-query-revision-v1"),
         training_profile_digest: hash("strict-table-v1"),
         minimum_samples_per_cell: 2,
@@ -149,7 +165,7 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(
             owner(),
-            1,
+            generation.get(),
             File::open(snapshot).unwrap(),
             File::open(payload).unwrap(),
             PinnedCandidateSpec {
@@ -172,6 +188,9 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
 
 #[path = "cognitive_ranker_owner_tests.rs"]
 mod owner_service;
+
+#[path = "cognitive_ranker_v2_tests.rs"]
+mod paired_v2;
 
 #[test]
 fn current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records() {
