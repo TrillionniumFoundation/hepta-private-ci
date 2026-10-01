@@ -21,6 +21,19 @@ use crate::SignedEvaluationEvidenceV1;
 use crate::recorded_publication::RecordedPublicationSinkV1;
 use crate::recorded_publication::archive;
 
+pub(crate) struct PreparedOutcomeQualificationV1<'a> {
+    attempt_id: &'a StableId,
+    temporal: &'a ProductOutcomeEvaluationReceiptV1,
+    context: &'a ProductQualificationContextV1,
+    archive: archive::PreparedArchive,
+}
+
+impl PreparedOutcomeQualificationV1<'_> {
+    pub(crate) fn identity(&self) -> archive::PublicationArchiveIdentityV1 {
+        self.archive.identity()
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     #[allow(clippy::too_many_arguments)]
     pub fn qualify_outcomes_and_persist_with_artifacts<
@@ -39,13 +52,43 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         artifact_host_binding: Digest32,
         sink: &mut dyn ProductQualificationEvidenceSinkV1,
     ) -> Result<ProductOutcomeQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
+        let prepared = self.prepare_outcome_qualification(
+            archive::ArchiveAttemptV1 {
+                attempt_id,
+                host_binding: artifact_host_binding,
+            },
+            temporal,
+            context,
+            evidence,
+            timing,
+        )?;
+        self.qualify_prepared_outcome(
+            prepared,
+            archive::QualificationPublicationIoV1 {
+                journal,
+                root: artifact_root.as_ref(),
+                verifier,
+                now,
+                sink,
+            },
+        )
+    }
+
+    pub(crate) fn prepare_outcome_qualification<'a>(
+        &self,
+        attempt: archive::ArchiveAttemptV1<'a>,
+        temporal: &'a ProductOutcomeEvaluationReceiptV1,
+        context: &'a ProductQualificationContextV1,
+        evidence: &SignedEvaluationEvidenceV1,
+        timing: ProductTimingEvidenceV1<'_>,
+    ) -> Result<PreparedOutcomeQualificationV1<'a>, RecordedProductEvaluationErrorV1> {
         let bundle = self
             .outcome_qualification_bundle(temporal, context)
             .map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
-        let artifact = archive::Archive::new(
+        let archive = archive::Archive::new(
             archive::OUTCOME,
-            attempt_id,
-            artifact_host_binding,
+            attempt.attempt_id,
+            attempt.host_binding,
             self.namespace,
             temporal.execution_digest(),
             temporal.carrier.holdout.record_digest,
@@ -53,14 +96,31 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             temporal.carrier.product_plan.metric_roles.clone(),
             evidence,
             timing,
-        );
-        let decision = artifact.persist(journal, artifact_root.as_ref(), verifier, now)?;
+        )
+        .prepare()?;
+        Ok(PreparedOutcomeQualificationV1 {
+            attempt_id: attempt.attempt_id,
+            temporal,
+            context,
+            archive,
+        })
+    }
+
+    pub(crate) fn qualify_prepared_outcome<J: DurableProductEvaluationAttemptJournalV1>(
+        &self,
+        prepared: PreparedOutcomeQualificationV1<'_>,
+        io: archive::QualificationPublicationIoV1<'_, J>,
+    ) -> Result<ProductOutcomeQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
+        let decision = prepared
+            .archive
+            .persist(io.journal, io.root, io.verifier, io.now)?;
+        let temporal = prepared.temporal;
         let mut recorded = RecordedPublicationSinkV1 {
-            attempt_id: attempt_id.clone(),
+            attempt_id: prepared.attempt_id.clone(),
             plan_digest: temporal.carrier.product_plan.frozen_plan.plan_digest,
             holdout_record_digest: temporal.carrier.holdout.record_digest,
-            journal,
-            inner: sink,
+            journal: io.journal,
+            inner: io.sink,
             journal_error: None,
         };
         let result = recorded.persist(temporal.execution_digest(), &decision);
@@ -81,7 +141,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             publication_digest,
             objective_digest: temporal.carrier.product_plan.frozen_plan.objective_digest,
             dataset_digest: temporal.carrier.product_plan.frozen_plan.dataset_digest,
-            evaluator: context.evaluator.clone(),
+            evaluator: prepared.context.evaluator.clone(),
             snapshot_ids: temporal.carrier.snapshot_ids.clone(),
         })
     }

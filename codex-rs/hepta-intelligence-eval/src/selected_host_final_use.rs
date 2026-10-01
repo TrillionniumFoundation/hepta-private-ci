@@ -27,6 +27,7 @@ pub(super) struct SelectedHostFinalUseSinkV1<'a> {
     pub(super) host_binding: Digest32,
     pub(super) namespace: Digest32,
     pub(super) family: u8,
+    pub(super) identity: archive::PublicationArchiveIdentityV1,
     pub(super) error: Option<RecordedProductEvaluationErrorV1>,
 }
 
@@ -46,6 +47,7 @@ impl ProductQualificationEvidenceSinkV1 for SelectedHostFinalUseSinkV1<'_> {
                 self.namespace,
                 self.family,
                 execution_digest,
+                self.identity,
             )?;
             if self.clock.binding() != self.clock_binding {
                 return Err(RecordedProductEvaluationErrorV1::Invariant(

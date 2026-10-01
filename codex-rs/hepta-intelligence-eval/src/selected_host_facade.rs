@@ -92,6 +92,16 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         let clock_binding = clock.binding();
         let (verifier, mut now) = sample_current_verifier(trust, clock)?;
         let artifact_root = artifact_root.as_ref();
+        let prepared = self.prepare_temporal_qualification(
+            archive::ArchiveAttemptV1 {
+                attempt_id,
+                host_binding: selected_host_binding,
+            },
+            temporal,
+            context,
+            evidence,
+            timing,
+        )?;
         let store = LockedQualificationPublicationStoreV1::new(
             publication_root.as_ref(),
             selected_host_binding,
@@ -109,21 +119,19 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             host_binding: selected_host_binding,
             namespace: self.namespace,
             family: archive::TEMPORAL,
+            identity: prepared.identity(),
             error: None,
         };
         let initial_now = *guarded.last_now;
-        let result = self.qualify_and_persist_with_artifacts(
-            attempt_id,
-            temporal,
-            context,
-            evidence,
-            timing,
-            verifier,
-            initial_now,
-            journal,
-            artifact_root,
-            selected_host_binding,
-            &mut guarded,
+        let result = self.qualify_prepared_temporal(
+            prepared,
+            archive::QualificationPublicationIoV1 {
+                journal,
+                root: artifact_root,
+                verifier,
+                now: initial_now,
+                sink: &mut guarded,
+            },
         );
         if let Some(error) = guarded.error {
             return Err(error);
@@ -175,6 +183,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
         let verifier = current_verifier_at(trust, *now)?;
         let artifact_root = artifact_root.as_ref();
+        let identity = archive::recovery_publication_identity(journal, attempt_id)?;
         let store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(),
             selected_host_binding,
@@ -192,6 +201,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             host_binding: selected_host_binding,
             namespace: self.namespace,
             family: archive::TEMPORAL,
+            identity,
             error: None,
         };
         let initial_now = *guarded.last_now;
@@ -245,6 +255,16 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         let clock_binding = clock.binding();
         let (verifier, mut now) = sample_current_verifier(trust, clock)?;
         let artifact_root = artifact_root.as_ref();
+        let prepared = self.prepare_outcome_qualification(
+            archive::ArchiveAttemptV1 {
+                attempt_id,
+                host_binding: selected_host_binding,
+            },
+            temporal,
+            context,
+            evidence,
+            timing,
+        )?;
         let store = LockedQualificationPublicationStoreV1::new(
             publication_root.as_ref(),
             selected_host_binding,
@@ -262,21 +282,19 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             host_binding: selected_host_binding,
             namespace: self.namespace,
             family: archive::OUTCOME,
+            identity: prepared.identity(),
             error: None,
         };
         let initial_now = *guarded.last_now;
-        let result = self.qualify_outcomes_and_persist_with_artifacts(
-            attempt_id,
-            temporal,
-            context,
-            evidence,
-            timing,
-            verifier,
-            initial_now,
-            journal,
-            artifact_root,
-            selected_host_binding,
-            &mut guarded,
+        let result = self.qualify_prepared_outcome(
+            prepared,
+            archive::QualificationPublicationIoV1 {
+                journal,
+                root: artifact_root,
+                verifier,
+                now: initial_now,
+                sink: &mut guarded,
+            },
         );
         if let Some(error) = guarded.error {
             return Err(error);
@@ -329,6 +347,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
         let verifier = current_verifier_at(trust, *now)?;
         let artifact_root = artifact_root.as_ref();
+        let identity = archive::recovery_publication_identity(journal, attempt_id)?;
         let store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(),
             selected_host_binding,
@@ -346,6 +365,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             host_binding: selected_host_binding,
             namespace: self.namespace,
             family: archive::OUTCOME,
+            identity,
             error: None,
         };
         let initial_now = *guarded.last_now;

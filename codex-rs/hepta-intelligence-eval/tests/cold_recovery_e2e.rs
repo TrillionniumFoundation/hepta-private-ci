@@ -14,6 +14,8 @@ use codex_hepta_types::Digest32;
 
 #[path = "selected_host_recovery_support/controller_tests.rs"]
 mod controller_tests;
+#[path = "selected_host_recovery_support/final_use_archive_tests.rs"]
+mod final_use_archive_tests;
 #[allow(dead_code)]
 #[path = "selected_host_recovery_support/cold_trust.rs"]
 mod host;
@@ -60,6 +62,22 @@ fn qualify(
     clock: &mut host::FixtureClock,
     trust: &codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) -> Result<(), RecordedProductEvaluationErrorV1> {
+    qualify_with_anchor(
+        root,
+        family,
+        clock,
+        trust,
+        storage::DiskAnchor::new(&root.join("anchor"), cut),
+    )
+}
+
+fn qualify_with_anchor<A: ProductEvaluationAttemptAnchorStoreV1>(
+    root: &Path,
+    family: &str,
+    clock: &mut host::FixtureClock,
+    trust: &codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+    authority: A,
+) -> Result<(), RecordedProductEvaluationErrorV1> {
     let store = LockedFileFinalHoldoutCasStoreV1::create(
         storage::create(&root.join("holdout.cas")),
         namespace(),
@@ -71,7 +89,7 @@ fn qualify(
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
         storage::create(&root.join("attempt.journal")),
         attempt_binding(),
-        storage::DiskAnchor::new(&root.join("anchor"), cut),
+        authority,
     )
     .unwrap_or_else(|error| panic!("create anchored journal: {error:?}"));
     let attempt = host::id("cold-process-attempt");

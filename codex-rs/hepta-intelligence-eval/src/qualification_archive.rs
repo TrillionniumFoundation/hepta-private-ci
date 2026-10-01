@@ -35,6 +35,14 @@ mod store;
 use codec::Wire;
 use codec::structure;
 
+#[path = "prepared_qualification_archive.rs"]
+mod prepared;
+pub(crate) use prepared::ArchiveAttemptV1;
+pub(crate) use prepared::PreparedArchive;
+pub(crate) use prepared::PublicationArchiveIdentityV1;
+pub(crate) use prepared::QualificationPublicationIoV1;
+pub(crate) use prepared::recovery_publication_identity;
+
 pub(crate) const TEMPORAL: u8 = 0;
 pub(crate) const OUTCOME: u8 = 1;
 const MAGIC: &[u8; 8] = b"HQARCV02";
@@ -201,55 +209,6 @@ impl Archive {
         };
         result.map_err(ProductEvaluationError::Signed)
     }
-
-    /// Encode from typed native inputs and anchor the exact artifact before a
-    /// qualification decision can become durable. A failed append never grants
-    /// permission to adopt unanchored disk bytes after restart.
-    pub(crate) fn persist<J: DurableProductEvaluationAttemptJournalV1>(
-        &self,
-        journal: &mut J,
-        root: &Path,
-        verifier: &LearningEvidenceVerifierV1,
-        now: u64,
-    ) -> Result<SignedEvaluationDecisionV1, RecordedProductEvaluationErrorV1> {
-        let reject = || RecordedProductEvaluationErrorV1::AttemptRequiresRecovery {
-            attempt_id: self.attempt_id.clone(),
-        };
-        let history = validated_history(journal, &self.attempt_id).map_err(|_| reject())?;
-        let latest = history.last().ok_or_else(reject)?;
-        if latest.transition.phase != ProductEvaluationAttemptPhaseV1::ComparisonSealed
-            || latest.transition.plan_digest != self.bundle.frozen_plan.plan_digest
-            || latest.transition.holdout_record_digest != self.holdout_record_digest
-            || latest.transition.terminal_digest != self.execution_digest
-            || !history.iter().any(|event| {
-                event.transition.phase == ProductEvaluationAttemptPhaseV1::IntentPersisted
-                    && event.transition.holdout_record_digest == self.namespace
-            })
-        {
-            return Err(reject());
-        }
-        let decision = self
-            .verify(verifier, now)
-            .map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
-        let bytes = self
-            .encode()
-            .map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
-        if Self::decode(&bytes).map_err(RecordedProductEvaluationErrorV1::Evaluation)? != *self {
-            return Err(RecordedProductEvaluationErrorV1::Invariant(
-                "qualification archive round trip",
-            ));
-        }
-        store::persist(root, &self.attempt_id, &bytes)
-            .map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
-        journal.append(ProductEvaluationAttemptTransitionV1 {
-            attempt_id: self.attempt_id.clone(),
-            plan_digest: self.bundle.frozen_plan.plan_digest,
-            phase: ProductEvaluationAttemptPhaseV1::QualificationArtifactsPersisted,
-            holdout_record_digest: self.holdout_record_digest,
-            terminal_digest: Digest32::of_bytes(&bytes),
-        })?;
-        Ok(decision)
-    }
 }
 
 /// The journal has already bound and admitted this archive. Reload its exact
@@ -263,11 +222,18 @@ pub(crate) fn load_publication_archive(
     namespace: Digest32,
     family: u8,
     execution_digest: Digest32,
+    identity: PublicationArchiveIdentityV1,
 ) -> Result<Archive, RecordedProductEvaluationErrorV1> {
     let bytes =
         store::load(root, attempt_id).map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
+    if Digest32::of_bytes(&bytes) != identity.bytes_digest {
+        return Err(RecordedProductEvaluationErrorV1::Evaluation(
+            ProductEvaluationError::Integrity("selected-host final-use archive digest"),
+        ));
+    }
     let archive = Archive::decode(&bytes).map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
-    if &archive.attempt_id != attempt_id
+    if archive.holdout_record_digest != identity.holdout_record_digest
+        || &archive.attempt_id != attempt_id
         || archive.host_binding != host_binding
         || archive.namespace != namespace
         || archive.family != family
