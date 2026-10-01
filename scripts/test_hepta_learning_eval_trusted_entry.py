@@ -381,20 +381,20 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("trusted\n", encoding="utf-8")
                 content[relative] = "trusted\n"
-            changed = MODULE.TRUSTED_CONTROL_PLANE_PATHS[-1]
-            content[changed] = "changed\n"
-
-            with mock.patch.object(
-                MODULE,
-                "_REPORTER",
-                SimpleNamespace(
-                    fetch_candidate_workflow=lambda repository, path, source, token: content[path]
-                ),
-            ):
-                with self.assertRaisesRegex(ValueError, "differs from trusted"):
-                    MODULE.validate_trusted_control_plane_identity(
-                        REPOSITORY, SOURCE, "token", root=root
-                    )
+            for changed in (MODULE.TRUSTED_CONTROL_PLANE_PATHS[-1], "scripts/just-shell.py"):
+                content[changed] = "changed\n"
+                with self.subTest(changed=changed), mock.patch.object(
+                    MODULE,
+                    "_REPORTER",
+                    SimpleNamespace(
+                        fetch_candidate_workflow=lambda repository, path, source, token: content[path]
+                    ),
+                ):
+                    with self.assertRaisesRegex(ValueError, "differs from trusted"):
+                        MODULE.validate_trusted_control_plane_identity(
+                            REPOSITORY, SOURCE, "token", root=root
+                        )
+                content[changed] = "trusted\n"
 
 
 class CompleteJobInventoryTests(unittest.TestCase):

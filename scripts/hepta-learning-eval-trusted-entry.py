@@ -46,6 +46,7 @@ ARTIFACT_FILE_SETS = {
 }
 TRUSTED_CONTROL_PLANE_PATHS = (
     "justfile",
+    "scripts/just-shell.py",
     "codex-rs/.cargo/config.toml",
     "codex-rs/.config/nextest.toml",
     "codex-rs/hepta-intelligence-eval/fixtures/trusted-inprocess/Cargo.toml.in",

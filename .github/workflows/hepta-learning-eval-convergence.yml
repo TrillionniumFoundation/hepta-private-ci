@@ -223,6 +223,8 @@ jobs:
           assert value['attempts']['attemptCount'] == 1024
           assert value['attempts']['eventCount'] == 7168
           assert value['holdout']['fenceTransitions'] == 512
+          assert value['holdout']['planRecords'] == 512
+          assert value['holdout']['retryPreserved'] is True
           assert value['holdout']['anchorPreserved'] is True
           assert value['holdout']['afterBytes'] < value['holdout']['beforeBytes']
           PY

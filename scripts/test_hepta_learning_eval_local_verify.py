@@ -151,6 +151,8 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
                 "test_hepta_learning_eval_local_verify.py",
                 "test_hepta_learning_eval_trusted_report.py",
                 "test_hepta_learning_eval_trusted_report_base.py",
+                "hepta-learning-eval-control-plane-identity.py",
+                "test_hepta_learning_eval_control_plane_identity.py",
                 "test_hepta_learning_eval_status.py",
             )
             for name in required:
@@ -163,9 +165,22 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
             commands = MODULE.command_inventory(root, root / "output")
             names = [name for name, _ in commands]
             self.assertLess(names.index("source-status-tests"), names.index("source-status"))
+            self.assertLess(
+                names.index("control-plane-identity-tests"),
+                names.index("trusted-reporter-tests"),
+            )
+            identity_test = dict(commands)["control-plane-identity-tests"]
+            self.assertEqual(
+                identity_test[1:],
+                ["scripts/test_hepta_learning_eval_control_plane_identity.py", "-v"],
+            )
             status_test = dict(commands)["source-status-tests"]
             self.assertEqual(status_test[1:], ["scripts/test_hepta_learning_eval_status.py", "-v"])
-            for name in (required[0], "test_hepta_learning_eval_status.py"):
+            for name in (
+                required[0], "test_hepta_learning_eval_status.py",
+                "hepta-learning-eval-control-plane-identity.py",
+                "test_hepta_learning_eval_control_plane_identity.py",
+            ):
                 with self.subTest(name=name):
                     (scripts / name).unlink()
                     with self.assertRaisesRegex(ValueError, "incomplete"):

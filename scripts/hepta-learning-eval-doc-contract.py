@@ -172,9 +172,10 @@ def validate_trusted_reporter_call_chain(workflow: str, entry: str) -> None:
     if not isinstance(paths, tuple) or not {
         "scripts/hepta-learning-eval-trusted-entry.py",
         "scripts/hepta-learning-eval-trusted-report.py",
+        "scripts/just-shell.py",
     }.issubset(paths):
         raise ValueError(
-            "trusted entry and reporter must both be bound by byte identity"
+            "trusted entry, reporter and shell hook must be bound by byte identity"
         )
     reporters = [
         node

@@ -2,9 +2,13 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
+import sys
 import tempfile
+import textwrap
 import unittest
+from unittest import mock
 
 
 def load(name: str, filename: str):
@@ -104,17 +108,52 @@ class DocumentationContractTests(unittest.TestCase):
             ):
                 CONTRACT.validate_trusted_reporter_call_chain(workflow, altered)
 
-    def test_entry_and_reporter_must_both_have_byte_identity_checks(self):
+    def test_entry_reporter_and_shell_hook_must_have_byte_identity_checks(self):
         workflow, entry = self.trusted_reporter_sources()
-        for script in ("trusted-entry", "trusted-report"):
-            altered = entry.replace(
-                f'    "scripts/hepta-learning-eval-{script}.py",\n', ""
-            )
+        for path in (
+            "scripts/hepta-learning-eval-trusted-entry.py",
+            "scripts/hepta-learning-eval-trusted-report.py",
+            "scripts/just-shell.py",
+        ):
+            altered = entry.replace(f'    "{path}",\n', "")
             with (
-                self.subTest(script=script),
-                self.assertRaisesRegex(ValueError, "both be bound by byte identity"),
+                self.subTest(path=path),
+                self.assertRaisesRegex(ValueError, "bound by byte identity"),
             ):
                 CONTRACT.validate_trusted_reporter_call_chain(workflow, altered)
+
+    def test_convergence_storage_checker_rejects_empty_plans_and_lost_retry(self):
+        workflow = (
+            CONTRACT.ROOT / ".github/workflows/hepta-learning-eval-convergence.yml"
+        ).read_text(encoding="utf-8")
+        block = workflow.split('python3 - "$out/storage-profile.json" <<\'PY\'\n', 1)[1]
+        code = compile(textwrap.dedent(block.split("\n          PY", 1)[0]), "storage-check", "exec")
+        profile = {
+            "schema": "hepta.learning-eval.storage-profile.v1",
+            "attempts": {"attemptCount": 1024, "eventCount": 7168},
+            "holdout": {"fenceTransitions": 512, "planRecords": 512,
+                        "retryPreserved": True, "anchorPreserved": True,
+                        "beforeBytes": 4096, "afterBytes": 2048},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "profile.json"
+            with mock.patch.object(sys, "argv", ["storage-check", str(path)]):
+                path.write_text(json.dumps(profile), encoding="utf-8")
+                exec(code, {})
+                for field, value in (
+                    ("planRecords", None), ("planRecords", 0),
+                    ("retryPreserved", None), ("retryPreserved", False),
+                ):
+                    changed = json.loads(json.dumps(profile))
+                    if value is None:
+                        changed["holdout"].pop(field)
+                    else:
+                        changed["holdout"][field] = value
+                    path.write_text(json.dumps(changed), encoding="utf-8")
+                    with self.subTest(field=field, value=value), self.assertRaises(
+                        (AssertionError, KeyError)
+                    ):
+                        exec(code, {})
 
     def test_bare_verified_is_rejected_at_any_depth(self):
         with self.assertRaises(ValueError):
