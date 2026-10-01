@@ -175,7 +175,7 @@ class JsonTests(unittest.TestCase):
                 strict_json('{"duration":' + value + "}")
 
 
-class FileTests(unittest.TestCase):
+class EvidenceFileTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
