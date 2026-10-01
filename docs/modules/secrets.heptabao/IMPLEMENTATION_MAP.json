@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "2e9e3e5af902b3bcdfac4cbb302e7383ee54c40e",
-    "tree": "9ee3aa098870e4168761b16b101b18d941a55b48"
+    "commit": "a91e9fbfe711c7649ce35390771734cc716a634f",
+    "tree": "2bb0c9450aa817a1e99fb84cbb7e5cc9aa24e41b"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -22,7 +22,7 @@
   "productionImplementation": false,
   "productCallerState": "not_composed",
   "roleServiceState": "concrete_role_services_and_issuance_cli_wired_runtime_saga_ipc_pending",
-  "productionWriterState": "native_full_sql_role_owners_qualified_under_enrolled_uids_runtime_saga_ipc_pending",
+  "productionWriterState": "native_full_sql_original_receipt_ack_and_settlement_owners_qualified_under_enrolled_uids_runtime_saga_ipc_pending",
   "operations": [
     {
       "operation": "consume_kv_v2",
@@ -185,10 +185,94 @@
       "designOperation": "serve_credential_consumer",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "original_details",
+      "nativeSymbol": "AuthorityRoleOwner::original_details",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_grants.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "verified_original_full_grant_approval_and_begin_read_only",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "original_details",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_receipt",
+      "nativeSymbol": "ReceiptConsumerRole::prepare",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "independent_original_pair_exact_root_scope_receipt_and_remaining_original_budget",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticate_prepared_receipt",
+      "nativeSymbol": "ReceiptConsumerRole::authenticate",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "original_nonce_actual_credential_hmac_and_full_independent_ack",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticate_prepared_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ack_backed_settlement",
+      "nativeSymbol": "ReceiptConsumerRole::settlement",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_settlement.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "actual_retained_original_receipt_and_signed_full_ack_immutable_first_tuple",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ack_backed_settlement",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepared_receipt_callback",
+      "nativeSymbol": "ConsumerPortClient::prepare_receipt",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_receipt_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "preflight_before_final_use_then_first_fd_effect_with_original_absolute_deadline",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/prepared_consumer_saga_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepared_receipt_callback",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "consumer_evidence_sdk",
+      "nativeSymbol": "ConsumerEvidenceClient::completed_original",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_peer_and_independent_exact_original_operation_reservation_signed_evidence",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/prepared_consumer_saga_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consumer_evidence_sdk",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Finish authenticated runtime IPC composition across Root-frozen KV version, AuthBus, prepared external consumer and ACK-backed independent settlement; issuance/approval services alone do not prove product execution.",
+    "Finish actual runtime daemon and Agentd capability composition across the Root-frozen KV version, AuthBus owner and the qualified prepared external consumer/ACK-backed settlement SDK. Real role IPC and signatures do not yet prove installed provider execution.",
     "Qualify provider-native dynamic lease issue/renew/revoke and the remaining capability matrix individually; these endpoints remain closed.",
     "Complete actual installed Fleet caller wiring and lifecycle validation using the original identities and durable history."
   ],
@@ -215,7 +299,16 @@
     "authorityUid": 982,
     "operatorUid": 981,
     "runtimeUid": 992,
-    "actualChecks": 10,
-    "scope": "original signed issuance, independent approval, FULL begin/status, revocation governance, external CAS, real expiry and physical restart; no provider delivery or quota settlement claim"
-  }
+    "actualChecks": 14,
+    "scope": "original signed issuance/approval/FULL begin; receipt-bound actual credential HMAC, FULL independent ACK and original-tuple signed settlement; four concurrent evidence calls, direct Agent kernel UID rejection, explicit expiry and physical restart/drain. Synthetic credential only; no non-dev provider, complete runtime, installed Fleet or dynamic capability qualification.",
+    "consumerUid": 983,
+    "agentUidsRejectedAtPrivateRoleEndpoints": [
+      986,
+      969
+    ],
+    "rpcTimeoutMs": 4000,
+    "rootPreparationMs": 4000,
+    "explicitExpiryTicketMs": 2000
+  },
+  "roleServiceState": "concrete_issuer_operator_consumer_services_and_original_receipt_ack_settlement_sdk_qualified_runtime_saga_ipc_pending"
 }
