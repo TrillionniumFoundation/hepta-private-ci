@@ -2381,3 +2381,6 @@ mod tick_control_fault_tests;
 
 #[path = "constructor_absence_recovery_tests.rs"]
 mod constructor_absence_recovery_tests;
+
+#[path = "constructor_hydration_recovery_tests.rs"]
+mod constructor_hydration_recovery_tests;
