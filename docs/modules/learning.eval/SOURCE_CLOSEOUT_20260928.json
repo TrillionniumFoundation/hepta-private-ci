@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.learning-eval.source-closeout.v1",
+  "module": "learning.eval",
+  "observedSource": {
+    "commit": "d810e19aebf912013439e05f558943a8d311ec66",
+    "tree": "8038b5ac420ef156d2e3f5aa1436e2c3f0da011e"
+  },
+  "delivery": {
+    "activePullRequest": 1011,
+    "branch": "fix/learning-eval-full-convergence-20260926",
+    "historicalComparisonPullRequest": 1051
+  },
+  "sourceFacts": {
+    "defaultLowLevelDecisionPrimitivesCratePrivate": true,
+    "rawRunnerCompatibilityFeatureOnly": true,
+    "exactIdentifierCallerScanner": true,
+    "durablePreConsumptionIntent": true,
+    "independentlyAnchoredAttemptJournal": true,
+    "completeQualificationArtifactsPersistedBeforeDecision": true,
+    "artifactRecoveryRequiresCurrentTrustVerification": true,
+    "writeAheadPublicationLifecycle": true,
+    "persistentSelectedHostPublicationStore": true,
+    "pendingPublicationBlindRetryForbidden": true,
+    "typedMeasuredOutcomeChannels": true,
+    "agentdOutcomeQualificationConsumer": true,
+    "sustainedRestartProfileSource": true
+  },
+  "execution": {
+    "status": "queued_not_executed_at_authoring",
+    "convergenceRunId": 36352177884,
+    "exactTreesRunId": 36352177859,
+    "sustainedProfileRunId": 36352177807,
+    "claims": {
+      "exactHeadPassed": false,
+      "orderedParentMergePassed": false,
+      "coveragePassed": false,
+      "strictLintPassed": false,
+      "sustainedProfilePassed": false
+    }
+  },
+  "claims": {
+    "productionImplementation": false,
+    "targetHostQualified": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "remainingRepositoryWork": [
+    "Resolve failures reported by final exact-head, merge, regression, coverage, lint, formatting and sustained-profile runs.",
+    "Add signed multi-outcome and artifact-based public-resume end-to-end coverage.",
+    "Regenerate canonical status, implementation map, TECHNICAL and NATIVE_MAPPING only after final executable source is fixed.",
+    "Qualify attempt-journal checkpoint or rotation if required by the selected topology near source capacity."
+  ],
+  "externalEvidenceGates": [
+    "authenticated independent anchor authority and selected-host operator approval",
+    "cross-host filesystem linearizability and fsync semantics where applicable",
+    "real future-calendar observations and independent outcome provenance",
+    "retention, change-point, statistical power, subgroup, privacy and unlearning evidence",
+    "backup non-resurrection evidence",
+    "independent semantic/operator acceptance and canary, selection, promotion, activation and release authority"
+  ]
+}

@@ -1,124 +1,183 @@
 # `learning.eval` native implementation mapping
 
-This file maps point, sequential, temporal and independent evaluation design to
-concrete Rust symbols. Estimation, evidence eligibility and artifact selection
-remain separate authorities.
+This file maps the current estimator, admission, product, persistence, recovery
+and consumer design to concrete Rust symbols. The immutable executable-source
+observation for the final candidate is recorded in
+[`IMPLEMENTATION_MAP.json`](../../docs/modules/learning.eval/IMPLEMENTATION_MAP.json);
+this document does not self-reference a mutable head. Source presence is not
+execution, target-host qualification, independent acceptance, activation or
+release. The normative contracts are
+[`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md) and
+[`RECOVERY_CONTRACT.md`](RECOVERY_CONTRACT.md); generated lexical truth is
+[`CURRENT_STATUS.json`](../../docs/modules/learning.eval/CURRENT_STATUS.json).
 
-## Existing estimator primitives
+## Estimator and statistical operations
 
-| Evaluation operation | Native symbol | Source | Bound |
-|---|---|---|---:|
-| point IPS/SNIPS/DR and exact ESS | `estimate_ope` | `src/ope.rs` | `1,000,000` rows |
-| conservative cluster intervals | `estimate_cluster_intervals` | `src/ope_confidence.rs` | point-estimator bound |
-| finite-horizon history-conditioned PDIS/DR | `estimate_sequential` | `src/sequential.rs` | `4,096` trajectories / `65,536` steps / horizon `128` |
-| one label-isolated temporal fold | `fit_temporal_fold` | `src/temporal_fold.rs` | `100,000` training or target rows |
-| composed temporal holdout | `evaluate_temporal_holdout` | `src/temporal_evaluation.rs` | `16,384` held-out rows |
-
-The stage bounds are intentionally different. The broad point-estimator ceiling
-must not be presented as the composed temporal pipeline capacity.
-
-Existing primitives validate deterministic arithmetic, probability support,
-outcome watermarks, weight limits, per-depth ESS, lineage separation and exact
-plan digests. They deliberately do not authenticate caller-supplied identities,
-prove causal exchangeability, select a candidate or establish future-calendar
-efficacy.
-
-## Added implementation closure
-
-The normative API classification is in
-[`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md).
-
-| Design operation | Native symbol | Source | Status |
+| Operation | Native symbol | Source | Bound and claim boundary |
 |---|---|---|---|
-| freeze complete V2 cross-fold + metric-role plan | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production plan-freeze surface |
-| single-host durable holdout owner | `DurableFinalHoldoutJournalV1` | `src/durable_holdout.rs` | implemented; cooperative/single-host only |
-| multi-writer fenced holdout owner | `FencedFinalHoldoutOwnerV1` / `FinalHoldoutCasStoreV1` | `src/fenced_holdout.rs` | implemented canonical owner |
-| concrete locked-file CAS + anti-rollback recovery | `LockedFileFinalHoldoutCasStoreV1` / `FinalHoldoutCasAnchorV1` / `HoldoutFenceIssuerV1` | `src/fenced_holdout_file.rs`, `src/fenced_holdout.rs` | implemented cross-process backend |
-| product preregistration/evaluation/qualification | `freeze_product_evaluation_plan_v1` / `ProductEvaluationRunnerV1` | `src/product_runner.rs` | implemented source product composition |
-| signed independent verification primitive | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | crate-internal; invoked by product runner |
-| signed observed-time longitudinal verification primitive | crate-internal `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | crate-internal V3; invoked by product runner for `SystemLongitudinal` |
-| trusted direct compatibility | `trusted_inprocess::decide_independently{,_v2}` | `src/lib.rs` | feature-gated; not production ingress |
-| legacy threshold comparator | `trusted_inprocess::evaluate_legacy_inprocess_v1` | `src/lib.rs` | deprecated trusted-only compatibility |
+| point IPS/SNIPS/DR | `estimate_ope` | `src/ope.rs` | at most 1,000,000 rows; point evidence only |
+| conservative single-decision cluster intervals | `estimate_cluster_intervals` | `src/ope_confidence.rs` | fixed-analysis cluster evidence |
+| finite-horizon PDIS/DR | `estimate_sequential` | `src/sequential.rs` | 4,096 trajectories, 65,536 steps, horizon 128 |
+| clustered finite-horizon intervals | `SequentialPlan::estimate_cluster_intervals_v1` | `src/sequential_confidence.rs` | fixed analysis, preregistered absolute trajectory-return envelope and minimum clusters; not anytime-valid |
+| one isolated temporal fold | `fit_temporal_fold` | `src/temporal_fold.rs` | 100,000 training or target rows |
+| actual preregistered temporal cross-fit | `CrossFoldPlanV1::execute_temporal_cross_fit_v1` | `src/temporal_cross_fit.rs` | executes every declared fold, exact lineage coverage, no held-out decision reuse, recomputed digest equality |
+| composed temporal holdout | `evaluate_temporal_holdout` | `src/temporal_evaluation.rs` | 16,384 held-out rows |
+| complete measured-outcome batch | `RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison` | `src/outcome_runner.rs` | 32 channels / 100,000 aggregate batch rows |
 
-`freeze_cross_fold_plan_v2` retains the complete V1 lineage and holdout
-invariants while also binding preregistered metric roles and margins into the
-frozen digest. Two to thirty-two folds are canonicalized and checked for
-training/holdout leakage; the final holdout never enters training and is covered
-exactly once. Local seals detect mutation but are not credentials.
+The cross-fit executor does not authenticate caller-supplied provenance and does
+not turn source fixtures into future-calendar efficacy. The sequential confidence
+layer treats cluster labels as supplied evidence; it does not prove cluster
+independence, exchangeability, adaptive-stopping validity or causal
+identification.
 
-`DurableFinalHoldoutJournalV1` persists the semantic journal under an
-authorized regular file, file lock, synchronous writes and an independently
-retained anchor. It is suitable only when the host guarantees one authoritative
-namespace and cooperating local writers.
+## Default API and compatibility boundary
 
-`FencedFinalHoldoutOwnerV1` is the canonical production boundary for contended
-ownership. `LockedFileFinalHoldoutCasStoreV1` supplies a concrete locked-file
-CAS/replay backend with a separately retained minimum anchor; alternate target
-hosts may implement `FinalHoldoutCasStoreV1` with an equivalent linearizable
-store. `HoldoutWriterFenceV1` binds owner, monotonic generation and
-lease digest. A newer generation takes over only by CAS without rewriting
-journal history; a stale owner then conflicts on its next write. An
-accepted-or-unknown store commit returns `Indeterminate`, poisons the handle
-and requires reload/reconciliation.
+| Operation | Native symbol | Source | Scope |
+|---|---|---|---|
+| product plan freeze | `freeze_product_evaluation_plan_v1` | `src/product_runner.rs` | public production plan freeze |
+| recorded temporal comparison | `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | `src/recorded_runner.rs` | default product evaluation ingress |
+| archived single-outcome qualification | `RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts` | `src/qualification_artifacts.rs` | public product qualification ingress; canonical typed archive precedes decision |
+| selected-host qualification | `RecordedProductEvaluationRunnerV1::{qualify_and_persist_on_selected_host,qualify_outcomes_and_persist_on_selected_host}` | `src/selected_host_facade.rs` | public concrete archive/publication composition |
+| unarchived signed qualification helper | `RecordedProductEvaluationRunnerV1::qualify_and_persist` | `src/recorded_runner.rs` | crate-internal only; never cross-crate product ingress |
+| consumer-bound admission | `admit_signed_eligibility_v2` | `src/signed_admission.rs` | public, sealed, `DENY_ALL`, one exact consumer use |
+| signed V2 primitive | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | crate-internal |
+| signed V3 primitive | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | crate-internal |
+| raw product runner | `ProductEvaluationRunnerV1` | `src/product_runner.rs` | crate-private by default; public only with `trusted-inprocess-eval` |
+| trusted direct comparators | `trusted_inprocess::*` | `src/lib.rs` | compatibility/testing only |
 
-`ProductEvaluationRunnerV1::qualify_and_persist` invokes crate-internal `decide_with_signed_evidence_v2`, which authenticates the generator's frozen-plan
-attestation and the evaluator's exact V2 request bytes against host-owned trust,
-then verifies principal/key/credential/controller separation before invoking the
-bound V2 statistical decision. `decide_with_signed_longitudinal_evidence_v3`
-adds an independently signed observer and real observed-time window contract.
-Synthetic future IDs cannot satisfy that stronger claim.
+Default recorded operations require
+`DurableProductEvaluationAttemptJournalV1`. Production manifests must exclude
+`trusted-inprocess-eval`, including transitive feature unification. Compiler
+negative fixtures, not lexical comments, enforce that low-level decisions, the
+raw runner, unverified publication resume and the unarchived recorded
+qualification helper are unavailable to another crate.
 
-The output remains one of:
+## Attempt owner, capacity and checkpoint mapping
+
+The canonical successful lifecycle is:
 
 ```text
-EligibleForIndependentSelection
-Ineligible
-InsufficientEvidence
+IntentPersisted
+  -> HoldoutConsumed
+  -> ComparisonSealed
+  -> QualificationArtifactsPersisted
+  -> QualificationDecided
+  -> PublicationPending
+  -> Published
 ```
 
-Even the first state has `DENY_ALL` authority. A separate selector must consume it together with all other gates. The repository's current consumer `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1` consumes the sealed `ProductQualificationReceiptV1` and does not re-run the low-level evaluator; that composition is still not activation, promotion or release.
+| Operation | Native symbol | Source | Semantics |
+|---|---|---|---|
+| append/replay owner | `LockedFileProductEvaluationAttemptJournalV1` | `src/attempt_journal_file.rs` | locked, checksummed, synced append; bounded full replay |
+| lifecycle capacity reservation | `AttemptCapacity::project` | `src/attempt_capacity.rs` | reserves all remaining success phases before new intent admission |
+| unresolved index | `AttemptCapacity::pending_page` | `src/attempt_capacity.rs` | bounded lexicographic lookup over unresolved identities, rebuilt from source history |
+| independent journal anchor | `AnchoredProductEvaluationAttemptJournalV1` | `src/attempt_journal_anchor.rs` | append acknowledgement follows file sync and anchor CAS |
+| checkpoint creation | `LockedFileProductEvaluationAttemptJournalV1::checkpoint_into` | `src/attempt_checkpoint.rs` | canonical reducer snapshot, new file, derived independent anchor namespace; no truncation |
+| checkpoint tail recovery | `LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint` | `src/attempt_checkpoint.rs` | validates checkpoint identity/frontier and replays only later frames to the normal journal anchor |
+| anchored wrapper recovery | `AnchoredProductEvaluationAttemptJournalV1::recover_with_checkpoint` | `src/attempt_journal_anchor.rs` | uses the normal authority plus a separately supplied checkpoint authority |
+| bounded recovery page | `RecordedProductEvaluationRunnerV1::reconcile_pending_page` | `src/attempt_recovery.rs` | validates complete history and advances past unresolved work |
 
-## Identity, causal and statistical obligations
+Checkpoint data is not trusted because it is checksummed. Its exact canonical
+record digest must be retained by an independently administered authority under a
+domain-separated binding. The original append-only journal and normal journal
+anchor remain authoritative. Checkpoint substitution, a checkpoint newer than
+the normal anchor, stale journal restore and conflicting tail fail closed.
 
-The default production closure does not trust caller-constructed identity fields. `LearningEvidenceVerifierV1` verifies signed evidence against host-owned current trust before the signed evaluation path accepts generator/evaluator identities. Direct identity-based evaluators are available only behind the explicit `trusted-inprocess-eval` compatibility feature.
+The sustained source profile configures 4,096 attempts and 28,672 lifecycle
+events. It creates a checkpoint 64 attempts before each 128-attempt restart so
+each recovery exercises a nonempty tail. This is source test configuration, not a
+target-host SLO or observed passing result.
 
-Causal identification remains conditional on the frozen plan's assumptions:
-consistency, support, correct propensity, appropriate cluster independence and
-absence or bounded treatment of confounding. Unsupported assumptions produce
-insufficient evidence; an outcome model cannot repair zero support.
+## Typed qualification archive and selected-host recovery
 
-Cluster and temporal estimator receipts now carry private integrity seals. `ProductEvaluationRunnerV1` derives each final `MetricGateV1` from the sealed candidate/baseline interval selected by the preregistered product metric-source contract; caller-supplied intervals are not part of this product path. Privacy review, change-point admission and real future-window collection remain external evidence obligations.
+| Operation | Native symbol | Source | Semantics |
+|---|---|---|---|
+| canonical archive encode/verify/persist | `Archive::persist` | `src/qualification_archive.rs` and codec/model/store children | archive is generated from actual typed receipt/context/evidence/timing inputs; create-only; journal-bound |
+| archive recovery | `qualification_archive::recover` | `src/qualification_archive.rs` | reloads exact bytes, decodes canonical typed objects and performs current V2/V3 verification inside the module |
+| single-outcome selected-host qualification | `RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host` | `src/selected_host_facade.rs` | shared typed archive and publication store |
+| multi-outcome selected-host qualification | `RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist_on_selected_host` | `src/selected_host_facade.rs` | same archive/store semantics, full multi-channel execution digest |
+| single-outcome cold recovery | `RecordedProductEvaluationRunnerV1::recover_selected_host_qualification` | `src/selected_host_facade.rs` | no decoder callback or caller-provided decision |
+| multi-outcome cold recovery | `RecordedProductEvaluationRunnerV1::recover_selected_host_outcome_qualification` | `src/selected_host_facade.rs` | no decoder callback or weaker fallback |
+| publication read reconciliation | `RecordedProductEvaluationRunnerV1::reconcile_selected_host_publication` | `src/selected_host_facade.rs` | validates existing exact durable record; never submits a new write |
+| persistent bounded controller | `RecordedProductEvaluationRunnerV1::recover_selected_host_pending_page` | `src/selected_host_recovery_controller.rs` | persistent cursor, current host clock, bounded page/budget, archive re-verification, no provider/estimator rerun |
 
-## Product integration obligations
+The archive replaces parallel caller-supplied Debug/opaque byte vectors. Recovery
+accepts typed archived inputs and constructs the decision only after current
+trust, signature, expiry, revocation, role, objective, scope and V3 timing checks.
+`PublicationPending` remains a read-only reconciliation state: absence is not
+permission to issue another write. No default cross-crate qualification method
+can skip archive persistence and directly append `QualificationDecided`.
 
-A product receipt must name:
+## Holdout and publication ownership
 
-1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
-3. the authenticated dataset, outcome-observer and candidate manifests;
-4. the exact fold assignments and nuisance-model runtime;
-5. the target host, resource measurements and incomplete/censored counts;
-6. future calendar windows and independently identified snapshots;
-7. retention, subgroup/privacy and unlearning evidence;
-8. the distinct selector, operator and release principals.
+| Operation | Native symbol | Source | Semantics |
+|---|---|---|---|
+| contended final-holdout owner | `FencedFinalHoldoutOwnerV1` | `src/fenced_holdout.rs` | monotonic fence and authoritative CAS |
+| concrete file CAS | `LockedFileFinalHoldoutCasStoreV1` | `src/fenced_holdout_file.rs` | one qualified filesystem, independent anti-rollback anchor required |
+| copy compaction | `LockedFileFinalHoldoutCasStoreV1::compact_into` | `src/fenced_holdout_file.rs` | writes a new target and proves final state/anchor equality; never truncates source |
+| canonical publication adapter | `ReconciledProductQualificationSinkV1::persist` | `src/reconciled_sink.rs` | load-before-write, semantic conflict rejection, read-after-indeterminate |
+| write-ahead publication phases | `RecordedPublicationSinkV1` | `src/recorded_publication.rs` | exact request digest in decided/pending before writer call |
 
-A fixture using synthetic future timestamps cannot satisfy the future-calendar
-or longitudinal claim.
+Cross-host deployment additionally requires evidence that the actual shared
+filesystem or store has linearizable lock/CAS/fsync semantics. A trait
+implementation and same-host fixture do not establish that fact.
 
-## Qualification mapping
+## Consumers
 
-Focused tests live in:
+| Consumer | Path | Required binding |
+|---|---|---|
+| Agentd ordinary evaluation session | `codex-rs/hepta-agentd/src/intelligence_evaluation.rs` | signed evidence plus exact run/objective/snapshot/predecessor/candidate-set/candidate use |
+| governed plasticity | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | proposal, candidate, artifact/evidence frontiers, dataset and generator context |
+| evaluated shadow | `codex-rs/hepta-intelligence/src/evaluated_shadow.rs` | sealed product qualification receipt plus current trust/dataset/candidate/evaluator |
+| Agentd measured-outcome consumer | `codex-rs/hepta-agentd/src/intelligence_outcome_evaluation.rs` | current owner plus signed exact-use attestation over request, qualification, execution and publication identity |
 
-- `src/lib_tests.rs`;
-- `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
-- `src/sequential_tests.rs`;
-- `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`;
-- `src/durable_holdout_tests.rs`, `src/fenced_holdout_tests.rs` and `src/fenced_holdout_file_tests.rs`;
-- `src/product_runner_tests.rs` and `src/longitudinal_time_tests.rs`.
+Every consumer receives authority-free evidence. Eligibility is not selection,
+promotion, activation, effect authority or release.
 
-Cross-crate composition is exercised by
-`../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
-test functions and CI jobs are registered in
-`../../qualification/lane-e/TEST_TRACEABILITY.json`.
+## Qualification mapping and current claim state
+
+Primary source tests include estimator/unit tests, process-kill fault cuts,
+`cold_recovery_e2e.rs`, selected-host single- and multi-outcome restart tests,
+attempt capacity/checkpoint tests, holdout compaction and the sustained checkpoint
+profile. Exact-tree workflows additionally run default and compatibility API
+checks, all-target compilation, owner/consumer tests, strict Clippy, rustfmt,
+coverage and ordered-parent synthetic-merge qualification.
+
+As of this mapping update, those final-candidate workflows must still provide
+passing commit-addressed artifacts. Queued, pending, cancelled, skipped or
+infrastructure-invalid runs are not success. `productionImplementation`,
+`targetHostQualified`, `independentAcceptance`, activation and release remain
+false. Real host identity, anchor administration, provider/publication topology,
+future-calendar outcomes, independent measurement provenance,
+retention/privacy/unlearning/power evidence and release authority remain separate
+external gates.
+
+<!-- BEGIN GENERATED LEARNING.EVAL SOURCE STATUS -->
+### Current candidate source inventory
+
+Canonical inventory: `docs/modules/learning.eval/CURRENT_STATUS.json`.
+This block records lexical source facts only; compilation, product invocation and
+current-tree execution remain separate evidence.
+
+- Default ingress uses `RecordedProductEvaluationRunnerV1` with the independently
+  anchored durable journal capability. Public qualification persists the typed
+  archive before decision; the unarchived helper, raw runner and direct decision
+  surfaces remain crate-internal or compatibility-only.
+- The successful attempt lifecycle contains seven durable events, including
+  `QualificationArtifactsPersisted`; the 4,096-attempt sustained source profile
+  therefore contains 28,672 events.
+- New intents reserve their complete remaining lifecycle; unresolved discovery
+  uses a rebuildable ordered index.
+- Independently retained checkpoints bind a canonical reducer snapshot and exact
+  journal frontier; recovery restores the snapshot and replays only the later
+  append-only tail without truncating or replacing the journal anchor.
+- Single- and multi-outcome recovery use one canonical typed archive and perform
+  current V2/V3 verification inside `learning.eval`; the persistent controller
+  advances a durable cursor past unresolved attempts.
+- Temporal cross-fit execution and fixed-analysis clustered sequential intervals
+  are present as authority-free source operations.
+
+Exact-head, ordered-parent merge, coverage, strict lint, selected-host topology,
+real future observations and independent acceptance require separate evidence.
+Production, activation and release claims remain false.
+<!-- END GENERATED LEARNING.EVAL SOURCE STATUS -->

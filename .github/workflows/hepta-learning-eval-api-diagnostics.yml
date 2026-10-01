@@ -1,0 +1,105 @@
+name: Hepta learning.eval API diagnostics
+
+on:
+  push:
+    branches:
+      - fix/learning-eval-full-convergence-20260926
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-learning-eval-api-diagnostics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Retain immutable diagnostic source and identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p .hepta-evidence/learning-eval/api-diagnostics
+          git archive --format=tar HEAD \
+            AGENTS.md codex-rs/hepta-intelligence-eval codex-rs/hepta-agentd \
+            codex-rs/hepta-intelligence codex-rs/hepta-types \
+            codex-rs/hepta-learning-ledger codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            codex-rs/rust-toolchain.toml scripts docs/modules/learning.eval \
+            qualification/module-execution-dossiers/detail/learning.eval.md \
+            .github/workflows/hepta-learning-eval-api-diagnostics.yml \
+            | gzip -n > .hepta-evidence/learning-eval/api-diagnostics/source.tar.gz
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('.hepta-evidence/learning-eval/api-diagnostics')
+          source = root / 'source.tar.gz'
+          manifest = {
+              'schema': 'hepta.learning-eval.api-diagnostics.v1',
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'workflowRun': os.environ['GITHUB_RUN_ID'],
+              'workflowAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'sourceArchiveSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+              'scope': 'Diagnostic snapshot only; no source, target-host or acceptance claim.',
+          }
+          (root / 'identity.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          PY
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Diagnose compiler-enforced API surface
+        shell: bash
+        run: |
+          set -o pipefail
+          bash scripts/hepta-learning-eval-api-surface.sh 2>&1 \
+            | tee .hepta-evidence/learning-eval/api-diagnostics/api-surface.log
+
+      - name: Diagnose owner and consumer compilation
+        if: ${{ !cancelled() }}
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo check --locked -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd -p codex-hepta-intelligence --all-targets 2>&1 \
+            | tee ../.hepta-evidence/learning-eval/api-diagnostics/owner-consumer-compile.log
+
+      - name: Diagnose formatting without changing source
+        if: ${{ !cancelled() }}
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo fmt --package codex-hepta-intelligence-eval \
+            --package codex-hepta-agentd --package codex-hepta-intelligence -- --check 2>&1 \
+            | tee ../.hepta-evidence/learning-eval/api-diagnostics/format.log
+
+      - name: Verify diagnostic source stayed unchanged
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload diagnostic source and logs, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-api-diagnostics-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/api-diagnostics/
+          if-no-files-found: error
+          retention-days: 7

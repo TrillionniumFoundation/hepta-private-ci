@@ -57,6 +57,46 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
     }
 }
 
+#[derive(Clone, Default)]
+struct MemoryAttemptAnchor(Arc<Mutex<Option<ProductEvaluationAttemptAnchorV1>>>);
+
+impl ProductEvaluationAttemptAnchorStoreV1 for MemoryAttemptAnchor {
+    fn load(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
+        let state = self
+            .0
+            .lock()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
+        if state
+            .as_ref()
+            .is_some_and(|anchor| anchor.binding != binding)
+        {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
+        }
+        Ok(*state)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        binding: Digest32,
+        expected: Option<ProductEvaluationAttemptAnchorV1>,
+        next: ProductEvaluationAttemptAnchorV1,
+    ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
+        let mut state = self
+            .0
+            .lock()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
+        if next.binding != binding || *state != expected {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
+        }
+        *state = Some(next);
+        Ok(())
+    }
+}
+
 struct Provider {
     manifest: Digest32,
     inputs: Option<TemporalComparisonInputsV1>,
@@ -236,10 +276,25 @@ impl Fixture {
             },
         )
         .unwrap();
-        let mut runner = ProductEvaluationRunnerV1::new(owner);
+        let mut runner = RecordedProductEvaluationRunnerV1::new(owner);
+        let attempt_id = id("attempt:evaluated-shadow-fixture");
+        let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
+            tempfile::tempfile().unwrap(),
+            digest("test-evaluated-shadow-attempt-journal"),
+            MemoryAttemptAnchor::default(),
+        )
+        .unwrap();
+        let artifact_root = tempfile::tempdir().unwrap();
         let mut provider = provider_inputs(dataset.snapshot.snapshot_id.clone());
         let temporal = runner
-            .evaluate_temporal_comparison(&frozen, &candidate_plan, &baseline_plan, &mut provider)
+            .evaluate_temporal_comparison(
+                attempt_id.clone(),
+                &frozen,
+                &candidate_plan,
+                &baseline_plan,
+                &mut provider,
+                &mut journal,
+            )
             .unwrap();
         let context = ProductQualificationContextV1 {
             generator: principals[0].clone(),
@@ -266,13 +321,17 @@ impl Fixture {
         };
         let mut sink = Sink;
         let qualification = runner
-            .qualify_and_persist(
+            .qualify_and_persist_with_artifacts(
+                &attempt_id,
                 &temporal,
                 &context,
                 &evidence,
                 ProductTimingEvidenceV1::Qualification,
                 &verifier,
                 50,
+                &mut journal,
+                artifact_root.path(),
+                digest("test-evaluated-shadow-artifact-host"),
                 &mut sink,
             )
             .unwrap();

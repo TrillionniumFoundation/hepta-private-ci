@@ -130,6 +130,8 @@ pub enum SequentialEvidenceGap {
     NumericResolution,
     DepthSupport,
     InsufficientTrajectories,
+    InsufficientClusters,
+    ConfidenceEnvelope,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
