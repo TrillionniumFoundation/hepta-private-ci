@@ -12,6 +12,7 @@ use sqlx::sqlite::SqliteRow;
 
 use crate::DurableFleetError;
 use crate::FleetExecutionContextV1;
+use crate::FleetExecutionResourceObservationV1;
 use crate::durable_execution::native_boot_identity;
 use crate::durable_execution::native_containment;
 use crate::durable_execution::native_process;
@@ -45,19 +46,6 @@ impl FleetProcessBinding {
 /// resource grant or create an alternate process identity ledger.
 pub struct FleetExecutionVerifier {
     pool: SqlitePool,
-}
-
-/// One read-only observation of the original resource owner's live execution.
-/// This is metadata, never a grant issuer or an authorization token. A missing
-/// allocation remains missing after expiry or revocation; the reader cannot
-/// recover authority from the still-held execution context.
-#[derive(Clone, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct FleetExecutionResourceObservationV1 {
-    pub context: FleetExecutionContextV1,
-    pub process_id: u32,
-    pub process_start_ticks: u64,
-    pub allocation: Option<crate::AllocationGrant>,
 }
 
 impl FleetExecutionVerifier {

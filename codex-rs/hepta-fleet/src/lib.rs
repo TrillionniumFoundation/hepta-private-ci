@@ -47,6 +47,7 @@ mod durable_store;
 #[cfg(feature = "durable-store")]
 mod durable_workspace;
 mod error;
+mod execution_observation;
 mod lease_model;
 mod model;
 mod module_catalog;
@@ -54,14 +55,10 @@ mod registry;
 mod registry_metadata;
 mod release;
 mod resource;
-#[cfg(feature = "durable-store")]
 mod resource_observation_port;
 
-#[cfg(feature = "durable-store")]
 pub use resource_observation_port::FLEET_RESOURCE_OBSERVATION_OPERATION;
-#[cfg(feature = "durable-store")]
 pub use resource_observation_port::FleetResourceObservationRequestV1;
-#[cfg(feature = "durable-store")]
 pub use resource_observation_port::FleetResourceObservationResponseV1;
 
 pub use allocation::calculate_local_allocation_v1;
@@ -96,8 +93,6 @@ pub use capacity_observer::LocalCapacityObserverConfig;
 #[cfg(feature = "durable-store")]
 pub use capacity_observer::LocalCapacityObserverError;
 #[cfg(feature = "durable-store")]
-pub use durable_execution::FleetExecutionContextV1;
-#[cfg(feature = "durable-store")]
 pub use durable_execution::FleetExecutionHoldV1;
 #[cfg(feature = "durable-store")]
 pub use durable_execution::FleetFailureDispositionV1;
@@ -121,14 +116,14 @@ pub use durable_model::MAX_DURABLE_EXPIRY_BATCH;
 pub use durable_model::MAX_DURABLE_HISTORY_ROWS;
 pub use durable_model::WorkspaceReservationV1;
 #[cfg(feature = "durable-store")]
-pub use durable_process_proof::FleetExecutionResourceObservationV1;
-#[cfg(feature = "durable-store")]
 pub use durable_process_proof::FleetExecutionVerifier;
 #[cfg(feature = "durable-store")]
 pub use durable_process_proof::FleetProcessBinding;
 #[cfg(feature = "durable-store")]
 pub use durable_store::DurableFleetStore;
 pub use error::FleetRegistryError;
+pub use execution_observation::FleetExecutionContextV1;
+pub use execution_observation::FleetExecutionResourceObservationV1;
 pub use lease_model::AllocationGrant;
 pub use lease_model::HostObservation;
 pub use model::AGENT_MANIFEST_SCHEMA_VERSION;

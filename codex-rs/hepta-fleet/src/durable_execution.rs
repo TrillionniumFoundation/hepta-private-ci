@@ -15,6 +15,8 @@ use sqlx::Row;
 
 use crate::DurableFleetError;
 use crate::DurableFleetStore;
+use crate::FleetExecutionContextV1;
+#[cfg(test)]
 use crate::ResourceVectorV1;
 use crate::durable_grant_tx::load_total_tx;
 use crate::durable_grant_tx::retire_grant_tx;
@@ -28,24 +30,6 @@ use crate::durable_rows::to_u64;
 use crate::durable_rows::validate_digest;
 use crate::durable_rows::validate_identity;
 use crate::durable_schema::sqlx_error;
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct FleetExecutionContextV1 {
-    pub execution_id: String,
-    pub allocation_id: String,
-    pub principal_id: String,
-    /// Selected execution-host identity, independently supplied by its owner.
-    pub host_id: String,
-    pub host_generation: u64,
-    pub lease_generation: u64,
-    /// Digest of the actual immutable execution configuration.
-    pub manifest_digest: String,
-    /// Exact budget consumed by that configuration, including logical axes.
-    pub resources: ResourceVectorV1,
-    /// Root-owned cgroup v2 relative path, not writable by the workload.
-    pub containment: String,
-}
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
