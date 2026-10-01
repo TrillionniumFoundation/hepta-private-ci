@@ -266,7 +266,15 @@ impl fmt::Display for CompactionPublicationError {
     }
 }
 
-impl StdError for CompactionPublicationError {}
+impl StdError for CompactionPublicationError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Compaction(error) => Some(error),
+            Self::Authentication(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 
 impl From<QualifiedCompactionError> for CompactionPublicationError {
     fn from(error: QualifiedCompactionError) -> Self {

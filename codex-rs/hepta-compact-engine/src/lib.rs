@@ -4,6 +4,7 @@
 
 mod authenticated;
 mod publication;
+mod publication_body;
 mod qualified;
 mod resources;
 
@@ -30,6 +31,8 @@ pub use publication::CompactionPublicationError;
 pub use publication::CompactionPublicationProposalV1;
 pub use publication::CompactionPublicationRequestV1;
 pub use publication::CompactionSelectedStateV1;
+pub use publication_body::CompactionPublicationBodyError;
+pub use publication_body::MAX_COMPACTION_PUBLICATION_BODY_BYTES_V1;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;
