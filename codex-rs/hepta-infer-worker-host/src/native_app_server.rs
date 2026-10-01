@@ -82,6 +82,8 @@ mod input;
 mod intelligence_owner;
 #[path = "native_observation.rs"]
 mod observation;
+#[path = "native_recovery.rs"]
+mod recovery;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use denial::persist_denied_observation;
@@ -98,7 +100,8 @@ use intelligence_owner::verify_intelligence_execution;
 use observation::NativeObservationOwner;
 use observation::check_observation_boundary;
 use observation::observe_event;
-use observation::preserve_recovery_evidence;
+use recovery::downgrade_for_owner_loss;
+use recovery::preserve_recovery_evidence;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -1416,12 +1419,6 @@ async fn verify_owner_health(
     };
     downgrade_for_owner_loss(output);
     Err(reason)
-}
-
-fn downgrade_for_owner_loss(output: &mut NativeRunOutput) {
-    if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-        output.boundary_status = NativeBoundaryStatus::Quarantined;
-    }
 }
 
 async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput) {
