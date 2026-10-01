@@ -29,6 +29,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+#[path = "canonical_binding.rs"]
+mod binding;
+
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
 pub const MAX_CANONICAL_INTERACTION_EDGES: u32 = 512;
@@ -63,6 +66,10 @@ pub struct EnumeratedPromptCandidatesV1 {
     pub omitted_count: u32,
     pub candidates: Vec<PromptCandidateBindingV1>,
     pub receipt: PromptCandidateSetReceiptV1,
+    // Emitted by the registry owner, retained across pricing, and unavailable
+    // to callers for rebinding a cloned enumeration to another source cut.
+    factor_graph_source_digest: Digest32,
+    issued_registry_snapshot: PromptRegistrySnapshotV2,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -178,7 +185,7 @@ pub fn enumerate_factors_v1(
         authority: AuthorityPosture::DENY_ALL,
     };
     Ok(EnumeratedPromptCandidatesV1 {
-        registry_snapshot: snapshot,
+        registry_snapshot: snapshot.clone(),
         model_tuple: request.model_tuple,
         generation_vector_digest: request.generation_vector_digest,
         candidates_digest,
@@ -186,6 +193,8 @@ pub fn enumerate_factors_v1(
         omitted_count: u32::try_from(omitted).unwrap_or(u32::MAX),
         candidates,
         receipt,
+        factor_graph_source_digest: registry.factor_graph_source_v1().source_digest(),
+        issued_registry_snapshot: snapshot,
     })
 }
 
@@ -539,6 +548,8 @@ pub struct SelectedPromptPortfolioV1 {
     pub graph_generation_digest: Digest32,
     pub selection_method: PromptSelectionMethodV1,
     pub optimality: PromptOptimalityDisclosureV1,
+    registry_snapshot: PromptRegistrySnapshotV2,
+    sealed_output_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -550,6 +561,10 @@ pub struct PromptPortfolioRequestV1 {
     pub requested_valid_until_unix_ms: u64,
 }
 
+/// Selects against the exact registry source cut captured during enumeration.
+/// The generic graph must come from a registered trusted owner adapter: source
+/// digest equality rejects stale cuts, but does not authenticate arbitrary
+/// caller-relabeled bare KnowledgeGenerationV2 values or their relation facts.
 pub fn select_portfolio_v1(
     priced: &PricedPromptCandidatesV1,
     graph: &KnowledgeGenerationV2,
@@ -569,18 +584,38 @@ pub fn select_portfolio_v1(
     if now_unix_ms == 0 || request.requested_valid_until_unix_ms <= now_unix_ms {
         return Err(CanonicalPromptError::InvalidTime);
     }
+    if priced.candidates.registry_snapshot != priced.candidates.issued_registry_snapshot {
+        return Err(CanonicalPromptError::CandidateOwnerBindingMismatch);
+    }
     graph
         .validate()
         .map_err(|e| CanonicalPromptError::KnowledgeGraph(format!("{e:?}")))?;
     if graph.generation_vector_digest != priced.candidates.generation_vector_digest {
         return Err(CanonicalPromptError::GenerationVectorMismatch);
     }
+    if graph.source_snapshot_digest != priced.candidates.factor_graph_source_digest {
+        return Err(CanonicalPromptError::GraphSourceMismatch);
+    }
 
+    if priced.rows.len() > MAX_CANONICAL_PROMPT_FACTORS {
+        return Err(CanonicalPromptError::CandidateLimit);
+    }
     let factor_ids = priced
         .rows
         .iter()
         .map(|row| row.binding.factor_id.clone())
         .collect::<Vec<_>>();
+    let graph_nodes = graph
+        .nodes
+        .iter()
+        .map(|node| &node.node_id)
+        .collect::<BTreeSet<_>>();
+    if let Some(missing) = factor_ids
+        .iter()
+        .find(|factor_id| !graph_nodes.contains(factor_id))
+    {
+        return Err(CanonicalPromptError::UnknownFactor(missing.to_string()));
+    }
     let relation_result = query_relations(
         graph,
         KnowledgeRelationQueryV2 {
@@ -802,7 +837,7 @@ pub fn select_portfolio_v1(
         priced.pricing_set_digest,
         graph.generation_digest,
     );
-    Ok(SelectedPromptPortfolioV1 {
+    let mut selected_portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
             candidate_set_digest: priced.candidates.candidates_digest,
@@ -824,7 +859,12 @@ pub fn select_portfolio_v1(
         graph_generation_digest: graph.generation_digest,
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    })
+        registry_snapshot: priced.candidates.issued_registry_snapshot.clone(),
+        sealed_output_digest: Digest32::ZERO,
+    };
+    selected_portfolio.sealed_output_digest = selected_portfolio.compute_output_digest();
+    selected_portfolio.validate()?;
+    Ok(selected_portfolio)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -878,6 +918,7 @@ pub fn exercise_v1(
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptExerciseRequestV1,
 ) -> Result<PromptExerciseDecisionV1, CanonicalPromptError> {
+    portfolio.validate()?;
     for (name, digest) in [
         ("current_state", request.current_state_digest),
         ("generation_vector", request.generation_vector_digest),
@@ -916,6 +957,9 @@ pub fn exercise_v1(
             MAX_CANONICAL_PROMPT_FACTORS as u32,
         );
         match current {
+            _ if current_snapshot != portfolio.registry_snapshot => {
+                PromptExerciseActionV1::RejectStale
+            }
             Err(_) => PromptExerciseActionV1::RejectStale,
             Ok(set) => {
                 let current_by_realization = set
@@ -1363,6 +1407,9 @@ pub enum CanonicalPromptError {
     UnknownFactor(String),
     KnowledgeGraph(String),
     GenerationVectorMismatch,
+    GraphSourceMismatch,
+    CandidateOwnerBindingMismatch,
+    PortfolioBindingMismatch,
     InteractionProjectionIncomplete(u32),
     RequiredFactorUnavailable(String),
     DuplicateInteraction,

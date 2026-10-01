@@ -86,16 +86,18 @@ fn dummy_snapshot(
     tuple: &PromptModelTupleV2,
     generation_vector: Digest32,
 ) -> PromptRegistrySnapshotV2 {
-    PromptRegistrySnapshotV2 {
+    let mut snapshot = PromptRegistrySnapshotV2 {
         revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         registry_digest: digest("registry"),
         lifecycle_frontier: 1,
         revocation_frontier: 0,
         generation_vector_digest: generation_vector,
         model_tuple_digest: tuple.digest(),
-        snapshot_digest: digest("snapshot"),
+        snapshot_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
-    }
+    };
+    snapshot.snapshot_digest = snapshot.compute_snapshot_digest();
+    snapshot
 }
 
 fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
@@ -110,8 +112,9 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         .iter()
         .map(|candidate| candidate.factor_id.clone())
         .collect::<Vec<_>>();
+    let snapshot = dummy_snapshot(&tuple, generation_vector);
     let enumerated = EnumeratedPromptCandidatesV1 {
-        registry_snapshot: dummy_snapshot(&tuple, generation_vector),
+        registry_snapshot: snapshot.clone(),
         model_tuple: tuple,
         generation_vector_digest: generation_vector,
         candidates_digest: digest("candidate-set"),
@@ -128,6 +131,8 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             authority: AuthorityPosture::DENY_ALL,
         },
         candidates: candidates.clone(),
+        factor_graph_source_digest: digest("kg-source"),
+        issued_registry_snapshot: snapshot,
     };
     let priced_rows = rows
         .into_iter()
@@ -388,7 +393,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         .expect("bindings")
         .bindings[0]
         .clone();
-    let selected = SelectedPromptPortfolioV1 {
+    let mut selected = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
             candidate_set_digest: digest("candidate-set"),
@@ -414,7 +419,10 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         graph_generation_digest: digest("graph"),
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
+        registry_snapshot: snapshot,
+        sealed_output_digest: Digest32::ZERO,
     };
+    selected.sealed_output_digest = selected.compute_output_digest();
     let live = exercise_v1(
         registry.registry().expect("registry"),
         &selected,
@@ -646,4 +654,576 @@ fn revoke_registry(
             cutoff,
         )
         .expect("final-use revocation");
+}
+
+#[test]
+fn canonical_selector_rejects_candidate_absent_from_complete_graph() {
+    let priced = priced(vec![("factor:a", "realization:a", 1, 10)]);
+    let missing_graph = graph(&[], Vec::new());
+    let error = select_portfolio_v1(
+        &priced,
+        &missing_graph,
+        Vec::new(),
+        &verifier(),
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:missing-factor"),
+            graph_query_id: id("query:missing-factor"),
+            token_budget: 2,
+            maximum_selected_factors: 2,
+            requested_valid_until_unix_ms: 5_000,
+        },
+        100,
+    )
+    .expect_err("missing graph factor");
+    assert_eq!(
+        error,
+        CanonicalPromptError::UnknownFactor("factor:a".to_owned())
+    );
+}
+
+fn relation_grant(
+    binding: codex_hepta_contracts::FinalUseBinding,
+    key: &SigningKey,
+    now: u64,
+    grant_id: &str,
+) -> SignedFinalUseGrant {
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: grant_id.to_owned(),
+        nonce: digest(grant_id).into_array(),
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    SignedFinalUseGrant {
+        signature: key
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    }
+}
+
+#[test]
+fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
+    use codex_hepta_prompt_registry::PromptFactorRelation;
+    use codex_hepta_prompt_registry::PromptFactorRelationKind;
+    use codex_hepta_prompt_registry::final_use_factor_relation_binding;
+    use codex_hepta_prompt_registry::final_use_factor_relation_revocation_binding;
+
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, tuple, authority, key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    let mut second = registry
+        .registry()
+        .expect("registry")
+        .factor(&id("factor:a"))
+        .expect("factor")
+        .clone();
+    second.factor_id = id("factor:b");
+    second.content_digest = digest("factor:b");
+    second.lifecycle = Lifecycle::Draft;
+    registry
+        .register_factor(second.clone())
+        .expect("second factor");
+    let actor = id("reviewer:relation");
+    let scope = digest("relation-scope");
+    let evidence = digest("second-admission");
+    let admission = relation_grant(
+        final_use_admission_binding(&second, &actor, scope, evidence).expect("admission binding"),
+        &key,
+        now,
+        "admission:factor:b",
+    );
+    registry
+        .admit_factor_final_use(&authority, &admission, &second.factor_id, scope, evidence)
+        .expect("admit second factor");
+    let relation = PromptFactorRelation {
+        relation_id: id("relation:a:b"),
+        left_factor_id: id("factor:a"),
+        right_factor_id: id("factor:b"),
+        kind: PromptFactorRelationKind::Conflicts,
+        evidence_digest: digest("relation-evidence"),
+    };
+    let insertion = relation_grant(
+        final_use_factor_relation_binding(
+            registry.registry().expect("registry"),
+            &actor,
+            scope,
+            &relation,
+        )
+        .expect("relation binding"),
+        &key,
+        now,
+        "insert:relation:a:b",
+    );
+    registry
+        .register_factor_relation_final_use(&authority, &insertion, &actor, scope, relation.clone())
+        .expect("insert relation");
+    let vector = digest("generation-vector");
+    let enumerated = enumerate_factors_v1(
+        registry.registry().expect("registry"),
+        PromptEnumerationRequestV1 {
+            set_id: id("set:relation-revocation"),
+            objective_digest: digest("objective"),
+            state_digest: digest("state"),
+            generation_vector_digest: vector,
+            model_tuple: tuple.clone(),
+            now_unix_ms: 100,
+            required_factor_ids: vec![id("factor:a")],
+            maximum_candidates: 8,
+            selection_grammar_digest: digest("grammar"),
+        },
+    )
+    .expect("enumerate current owner cut");
+    let mut priced = priced(vec![("factor:a", "realization:0", 1, 10)]);
+    priced.rows[0].binding = enumerated.candidates[0].clone();
+    priced.candidates = enumerated;
+    let source = registry
+        .registry()
+        .expect("registry")
+        .factor_graph_source_v1();
+    let projection = codex_hepta_kg::build_prompt_factor_projection_v1(
+        Generation::new(1).expect("generation"),
+        vector,
+        &source,
+    )
+    .expect("projection");
+    let selected = select_portfolio_v1(
+        &priced,
+        projection.generation(),
+        Vec::new(),
+        &verifier(),
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:relation-revocation"),
+            graph_query_id: id("query:relation-revocation"),
+            token_budget: 2,
+            maximum_selected_factors: 2,
+            requested_valid_until_unix_ms: 5_000,
+        },
+        100,
+    )
+    .expect("select live portfolio");
+    let request = PromptExerciseRequestV1 {
+        decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
+        current_state_digest: digest("state"),
+        generation_vector_digest: vector,
+        model_tuple: tuple,
+        now_unix_ms: 200,
+        wait_value_q32: FixedQ32::ZERO,
+        policy_digest: digest("exercise-policy"),
+    };
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &selected,
+            request.clone()
+        )
+        .expect("live exercise")
+        .decision,
+        PromptExerciseActionV1::Exercise
+    );
+    let reason = digest("withdrawn-relation-evidence");
+    let withdrawal = relation_grant(
+        final_use_factor_relation_revocation_binding(
+            registry.registry().expect("registry"),
+            &actor,
+            scope,
+            &relation.relation_id,
+            reason,
+        )
+        .expect("withdrawal binding"),
+        &key,
+        now,
+        "withdraw:relation:a:b",
+    );
+    registry
+        .revoke_factor_relation_final_use(
+            &authority,
+            &withdrawal,
+            &actor,
+            scope,
+            &relation.relation_id,
+            reason,
+        )
+        .expect("withdraw relation");
+    // Factor lifecycle and selected realization remain live; only relation evidence changed.
+    assert_eq!(
+        registry
+            .registry()
+            .expect("registry")
+            .factor(&id("factor:a"))
+            .expect("factor")
+            .lifecycle,
+        Lifecycle::Admitted
+    );
+    assert!(
+        registry
+            .registry()
+            .expect("registry")
+            .realization(&selected.selected[0].realization.realization_id)
+            .expect("realization")
+            .active
+    );
+    assert_eq!(
+        exercise_v1(registry.registry().expect("registry"), &selected, request)
+            .expect("stale exercise")
+            .decision,
+        PromptExerciseActionV1::RejectStale
+    );
+}
+
+fn current_pair_pricing(registry: &PromptRegistry) -> PricedPromptCandidatesV1 {
+    let enumerated = enumerate_factors_v1(
+        registry,
+        PromptEnumerationRequestV1 {
+            set_id: id("set:source-cut"),
+            objective_digest: digest("objective"),
+            state_digest: digest("state"),
+            generation_vector_digest: digest("generation-vector"),
+            model_tuple: model_tuple(),
+            now_unix_ms: 100,
+            required_factor_ids: vec![id("factor:a"), id("factor:b")],
+            maximum_candidates: 8,
+            selection_grammar_digest: digest("grammar"),
+        },
+    )
+    .expect("enumerate current owner cut");
+    let mut priced = priced(vec![
+        ("factor:a", "realization:0", 1, 20),
+        ("factor:b", "realization:b", 1, 10),
+    ]);
+    for row in &mut priced.rows {
+        row.binding = enumerated
+            .candidates
+            .iter()
+            .find(|candidate| candidate.factor_id == row.binding.factor_id)
+            .expect("factor binding")
+            .clone();
+    }
+    priced.candidates = enumerated;
+    priced
+}
+
+#[test]
+fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal() {
+    use codex_hepta_prompt_registry::PromptFactorRelation;
+    use codex_hepta_prompt_registry::PromptFactorRelationKind;
+    use codex_hepta_prompt_registry::final_use_factor_relation_binding;
+    use codex_hepta_prompt_registry::final_use_factor_relation_revocation_binding;
+
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    let mut second = registry
+        .registry()
+        .expect("registry")
+        .factor(&id("factor:a"))
+        .expect("factor")
+        .clone();
+    second.factor_id = id("factor:b");
+    second.content_digest = digest("factor:b");
+    second.lifecycle = Lifecycle::Draft;
+    registry
+        .register_factor(second.clone())
+        .expect("second factor");
+    let actor = id("reviewer:relation");
+    let scope = digest("relation-scope");
+    let evidence = digest("second-admission");
+    let admission = relation_grant(
+        final_use_admission_binding(&second, &actor, scope, evidence).expect("admission binding"),
+        &key,
+        now,
+        "admission:source-cut:b",
+    );
+    registry
+        .admit_factor_final_use(&authority, &admission, &second.factor_id, scope, evidence)
+        .expect("admit second factor");
+    let admitted = registry
+        .registry()
+        .expect("registry")
+        .factor(&second.factor_id)
+        .expect("factor")
+        .clone();
+    let payload = b"payload";
+    let mut realization = binding("factor:b", "realization:b", 1);
+    realization.payload_digest = Digest32::of_bytes(payload);
+    realization.expires_unix_ms = None;
+    let realization_grant = relation_grant(
+        final_use_realization_binding(&admitted, &actor, scope, &realization, None)
+            .expect("realization binding"),
+        &key,
+        now,
+        "realization:source-cut:b",
+    );
+    registry
+        .register_realization_payload_final_use_v2(
+            &authority,
+            &realization_grant,
+            &actor,
+            scope,
+            realization,
+            payload.to_vec(),
+            None,
+        )
+        .expect("second realization");
+    let vector = digest("generation-vector");
+    let before_source = registry
+        .registry()
+        .expect("registry")
+        .factor_graph_source_v1();
+    let before_graph = codex_hepta_kg::build_prompt_factor_projection_v1(
+        Generation::new(1).expect("generation"),
+        vector,
+        &before_source,
+    )
+    .expect("initial projection");
+    let before_priced = current_pair_pricing(registry.registry().expect("registry"));
+    let relation = PromptFactorRelation {
+        relation_id: id("relation:source-cut:a:b"),
+        left_factor_id: id("factor:a"),
+        right_factor_id: id("factor:b"),
+        kind: PromptFactorRelationKind::Conflicts,
+        evidence_digest: digest("conflict-evidence"),
+    };
+    let insertion = relation_grant(
+        final_use_factor_relation_binding(
+            registry.registry().expect("registry"),
+            &actor,
+            scope,
+            &relation,
+        )
+        .expect("relation binding"),
+        &key,
+        now,
+        "insert:source-cut:relation",
+    );
+    registry
+        .register_factor_relation_final_use(&authority, &insertion, &actor, scope, relation.clone())
+        .expect("insert relation");
+    let request = PromptPortfolioRequestV1 {
+        portfolio_id: id("portfolio:source-cut"),
+        graph_query_id: id("query:source-cut"),
+        token_budget: 2,
+        maximum_selected_factors: 2,
+        requested_valid_until_unix_ms: 5_000,
+    };
+    let current = current_pair_pricing(registry.registry().expect("registry"));
+    let old_portfolio = select_portfolio_v1(
+        &before_priced,
+        before_graph.generation(),
+        Vec::new(),
+        &verifier(),
+        request.clone(),
+        100,
+    )
+    .expect("authentic old cut remains internally bound");
+    assert_eq!(
+        old_portfolio.receipt.factor_ids,
+        vec![id("factor:a"), id("factor:b")]
+    );
+    let mut rebound = before_priced;
+    rebound.candidates.registry_snapshot = registry
+        .snapshot_v2(vector, &model_tuple())
+        .expect("current snapshot");
+    assert_eq!(
+        select_portfolio_v1(
+            &rebound,
+            before_graph.generation(),
+            Vec::new(),
+            &verifier(),
+            request.clone(),
+            100
+        )
+        .expect_err("public snapshot cannot rebind old source"),
+        CanonicalPromptError::CandidateOwnerBindingMismatch
+    );
+    assert_eq!(
+        select_portfolio_v1(
+            &current,
+            before_graph.generation(),
+            Vec::new(),
+            &verifier(),
+            request.clone(),
+            100
+        )
+        .expect_err("graph before insertion"),
+        CanonicalPromptError::GraphSourceMismatch
+    );
+    let conflict_source = registry
+        .registry()
+        .expect("registry")
+        .factor_graph_source_v1();
+    let conflict_graph = codex_hepta_kg::build_prompt_factor_projection_v1(
+        Generation::new(2).expect("generation"),
+        vector,
+        &conflict_source,
+    )
+    .expect("conflict projection");
+    let constrained = select_portfolio_v1(
+        &current,
+        conflict_graph.generation(),
+        Vec::new(),
+        &verifier(),
+        request.clone(),
+        100,
+    )
+    .expect("current conflict graph");
+    assert_eq!(constrained.receipt.factor_ids, vec![id("factor:a")]);
+    let exercise_request = PromptExerciseRequestV1 {
+        decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
+        current_state_digest: digest("state"),
+        generation_vector_digest: vector,
+        model_tuple: model_tuple(),
+        now_unix_ms: 200,
+        wait_value_q32: FixedQ32::ZERO,
+        policy_digest: digest("exercise-policy"),
+    };
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &constrained,
+            exercise_request.clone()
+        )
+        .expect("authentic constrained exercise")
+        .decision,
+        PromptExerciseActionV1::Exercise
+    );
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &old_portfolio,
+            exercise_request.clone()
+        )
+        .expect("old result checks original owner cut")
+        .decision,
+        PromptExerciseActionV1::RejectStale
+    );
+    let mut changed = constrained.clone();
+    changed.selected.push(
+        current
+            .candidates
+            .candidates
+            .iter()
+            .find(|candidate| candidate.factor_id == id("factor:b"))
+            .expect("second live binding")
+            .clone(),
+    );
+    changed.receipt.factor_ids.push(id("factor:b"));
+    changed.receipt.expected_utility_q32 = FixedQ32::from_raw(30);
+    changed.receipt.total_token_upper_bound = 2;
+    changed.receipt.receipt_digest = digest_portfolio_receipt(
+        &changed.receipt.portfolio_id,
+        changed.receipt.candidate_set_digest,
+        &changed.receipt.factor_ids,
+        changed.receipt.interaction_digest,
+        changed.receipt.expected_utility_q32,
+        changed.receipt.total_token_upper_bound,
+        changed.receipt.valid_until_unix_ms,
+        changed.pricing_set_digest,
+        changed.graph_generation_digest,
+    );
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &changed,
+            exercise_request.clone()
+        )
+        .expect_err("live conflicted binding splice"),
+        CanonicalPromptError::PortfolioBindingMismatch
+    );
+    let mut changed = constrained.clone();
+    changed.selected[0].realization.payload_digest = digest("changed payload");
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &changed,
+            exercise_request.clone()
+        )
+        .expect_err("actual realization content is sealed"),
+        CanonicalPromptError::PortfolioBindingMismatch
+    );
+    let mut changed = constrained;
+    changed.receipt.expected_utility_q32 = FixedQ32::from_raw(1_000);
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &changed,
+            exercise_request.clone()
+        )
+        .expect_err("utility mutation"),
+        CanonicalPromptError::PortfolioBindingMismatch
+    );
+    let reason = digest("withdrawn-evidence");
+    let withdrawal = relation_grant(
+        final_use_factor_relation_revocation_binding(
+            registry.registry().expect("registry"),
+            &actor,
+            scope,
+            &relation.relation_id,
+            reason,
+        )
+        .expect("withdrawal binding"),
+        &key,
+        now,
+        "withdraw:source-cut:relation",
+    );
+    registry
+        .revoke_factor_relation_final_use(
+            &authority,
+            &withdrawal,
+            &actor,
+            scope,
+            &relation.relation_id,
+            reason,
+        )
+        .expect("withdraw relation");
+    let current = current_pair_pricing(registry.registry().expect("registry"));
+    assert_eq!(
+        select_portfolio_v1(
+            &current,
+            conflict_graph.generation(),
+            Vec::new(),
+            &verifier(),
+            request.clone(),
+            100
+        )
+        .expect_err("graph before withdrawal"),
+        CanonicalPromptError::GraphSourceMismatch
+    );
+    let corrected_source = registry
+        .registry()
+        .expect("registry")
+        .factor_graph_source_v1();
+    let corrected_graph = codex_hepta_kg::build_prompt_factor_projection_v1(
+        Generation::new(3).expect("generation"),
+        vector,
+        &corrected_source,
+    )
+    .expect("corrected projection");
+    let mut corrected = select_portfolio_v1(
+        &current,
+        corrected_graph.generation(),
+        Vec::new(),
+        &verifier(),
+        request,
+        100,
+    )
+    .expect("current withdrawn graph");
+    assert_eq!(
+        corrected.receipt.factor_ids,
+        vec![id("factor:a"), id("factor:b")]
+    );
+    corrected.selected.swap(0, 1);
+    assert_eq!(
+        exercise_v1(
+            registry.registry().expect("registry"),
+            &corrected,
+            exercise_request
+        )
+        .expect_err("binding order mutation"),
+        CanonicalPromptError::PortfolioBindingMismatch
+    );
 }
