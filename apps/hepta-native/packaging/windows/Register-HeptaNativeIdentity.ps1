@@ -41,10 +41,19 @@ namespace Hepta.Native.WindowsIdentity {
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CountedArray {
+        public uint ElementCount;
+        public IntPtr Elements;
+    }
+
     [StructLayout(LayoutKind.Explicit)]
     public struct PropVariant : IDisposable {
         [FieldOffset(0)] private ushort valueType;
         [FieldOffset(8)] private IntPtr pointerValue;
+        // The SDK union includes counted arrays: its size is 16 on x64 and
+        // 8 on x86. Keep that native extent even for the string-only writer.
+        [FieldOffset(8)] public CountedArray CountedValue;
 
         public static PropVariant FromString(string value) {
             var variant = new PropVariant();

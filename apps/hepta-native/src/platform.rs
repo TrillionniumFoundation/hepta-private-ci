@@ -88,6 +88,7 @@ pub trait PlatformAdapter: Send {
 
 #[derive(Debug, Clone)]
 pub struct PlatformPolicy {
+    #[cfg(target_os = "linux")]
     allowed_path_roots: Vec<PathBuf>,
     allow_clipboard: bool,
     allow_notifications: bool,
@@ -99,6 +100,7 @@ impl PlatformPolicy {
         allow_clipboard: bool,
         allow_notifications: bool,
     ) -> Result<Self, ShellError> {
+        #[cfg(target_os = "linux")]
         let mut canonical_roots = Vec::with_capacity(allowed_path_roots.len());
         for root in allowed_path_roots {
             if !root.is_absolute() {
@@ -112,15 +114,20 @@ impl PlatformPolicy {
                     root.display()
                 ))
             })?;
+            #[cfg(target_os = "linux")]
             canonical_roots.push(canonical);
+            #[cfg(not(target_os = "linux"))]
+            let _ = canonical;
         }
         Ok(Self {
+            #[cfg(target_os = "linux")]
             allowed_path_roots: canonical_roots,
             allow_clipboard,
             allow_notifications,
         })
     }
 
+    #[cfg(target_os = "linux")]
     fn path_allowed(&self, path: &Path) -> bool {
         let Ok(canonical) = std::fs::canonicalize(path) else {
             return false;

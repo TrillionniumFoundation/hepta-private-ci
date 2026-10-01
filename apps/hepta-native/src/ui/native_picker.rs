@@ -4,7 +4,7 @@
 #[cfg(target_os = "linux")]
 use std::ffi::OsStr;
 use std::io::Read;
-#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[cfg(target_os = "linux")]
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;

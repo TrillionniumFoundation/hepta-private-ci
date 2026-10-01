@@ -240,6 +240,11 @@ class StorageReleaseProfileTests(unittest.TestCase):
                 script = (
                     textwrap.dedent(run[2:]) if run.startswith("|\n") else run.strip()
                 )
+                script = (
+                    'export PATH="$PWD/bin:$PATH"\n'
+                    'test "$(command -v cargo)" = "$PWD/bin/cargo"\n'
+                    'test "$(command -v strace)" = "$PWD/bin/strace"\n' + script
+                )
                 result = subprocess.run(
                     [bash_executable(), "-c", script],
                     cwd=root,

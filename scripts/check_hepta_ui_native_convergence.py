@@ -46,6 +46,8 @@ STATE_FILES = (
 )
 
 IMPLEMENTATION_PATHS = (
+    ".gitattributes",
+    "apps/hepta-native/.gitattributes",
     "apps/hepta-native/src",
     "apps/hepta-native/tests",
     "apps/hepta-native/Cargo.toml",
@@ -295,9 +297,13 @@ def check_dependency_workflow_filters(workflow: str) -> None:
         "tools/ui-native-projections",
         ".cargo",
         "codex-rs/.cargo",
+        ".gitattributes",
+        "apps/hepta-native/.gitattributes",
     )
     for path in dependencies:
-        expected = path if path.endswith("Cargo.toml") else f"{path}/**"
+        expected = (
+            path if path.endswith(("Cargo.toml", ".gitattributes")) else f"{path}/**"
+        )
         parent_patterns = {
             f"{parent.as_posix()}/**"
             for parent in Path(path).parents

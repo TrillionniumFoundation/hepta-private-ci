@@ -143,6 +143,32 @@ class FrozenImplementationTests(unittest.TestCase):
         self.git("commit", "--quiet", "-m", "review metadata")
         self.check()
 
+    def test_checkout_attributes_are_frozen_in_worktree_and_commits(self) -> None:
+        attributes = (".gitattributes", "apps/hepta-native/.gitattributes")
+        for relative in attributes:
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("* text=auto eol=lf\n", encoding="utf-8", newline="\n")
+        self.git("add", *attributes)
+        self.git("commit", "--quiet", "-m", "freeze exact checkout bytes")
+        self.implementation = self.git("rev-parse", "HEAD").strip()
+        self.check()
+        for relative in attributes:
+            with self.subTest(attributes=relative):
+                path = self.root / relative
+                path.write_text(
+                    "* text=auto eol=crlf\n", encoding="utf-8", newline="\n"
+                )
+                with self.assertRaisesRegex(RuntimeError, "working-tree drift"):
+                    self.check()
+                self.git("add", relative)
+                self.git(
+                    "commit", "--quiet", "-m", "change checkout bytes after freeze"
+                )
+                with self.assertRaisesRegex(RuntimeError, "after the frozen source"):
+                    self.check()
+                self.git("reset", "--hard", "--quiet", self.implementation)
+
     def test_committed_portal_drift_rejects(self) -> None:
         self.path.write_text("changed\n", encoding="utf-8")
         self.git("add", ".")
@@ -467,18 +493,32 @@ unbuilt-dev = { path = "../unbuilt-dev" }
                 "tools/ui-native-projections",
                 ".cargo",
                 "codex-rs/.cargo",
+                ".gitattributes",
+                "apps/hepta-native/.gitattributes",
             )
             workflow = (
                 "    paths:\n"
                 + "".join(
                     "      - "
-                    + (path if path.endswith("Cargo.toml") else path + "/**")
+                    + (
+                        path
+                        if path.endswith(("Cargo.toml", ".gitattributes"))
+                        else path + "/**"
+                    )
                     + "\n"
                     for path in paths
                 )
                 + "  workflow_dispatch:\n"
             )
             MODULE.check_dependency_workflow_filters(workflow)
+            for replacement in ("", "      - .gitattributes/**\n"):
+                with (
+                    self.subTest(root_attributes_trigger=replacement),
+                    self.assertRaisesRegex(RuntimeError, r"dependency \.gitattributes"),
+                ):
+                    MODULE.check_dependency_workflow_filters(
+                        workflow.replace("      - .gitattributes\n", replacement)
+                    )
 
 
 if __name__ == "__main__":

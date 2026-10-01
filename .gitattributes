@@ -5,3 +5,5 @@ codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json t
 # SQLx checksums and generated projection comparisons use the exact stored bytes.
 codex-rs/hepta-evidence/migrations/*.sql text eol=lf
 codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
+# Native qualification binds this lock to its exact immutable Git bytes.
+codex-rs/Cargo.lock text eol=lf

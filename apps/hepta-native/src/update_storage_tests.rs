@@ -57,6 +57,8 @@ fn verified_copy_preserves_installed_executable_mode() {
 #[cfg(unix)]
 #[test]
 fn owner_locks_reject_links_and_special_files_without_mutating_targets() {
+    use std::os::unix::fs::FileTypeExt as _;
+
     let directory = crate::private_state_test_support::private_tempdir();
     let root = PrivateStateRoot::open_existing(directory.path()).unwrap();
     let target = root.path().join("operator-data");
@@ -71,12 +73,23 @@ fn owner_locks_reject_links_and_special_files_without_mutating_targets() {
     assert!(lock_update_root(&root).is_err());
     assert!(!absent.exists());
     std::fs::remove_file(&owner).unwrap();
-    rustix::fs::mkfifoat(
-        rustix::fs::CWD,
-        &owner,
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-    )
-    .unwrap();
+    let created = std::process::Command::new("/usr/bin/mkfifo")
+        .args(["-m", "600"])
+        .arg(&owner)
+        .output()
+        .unwrap();
+    assert!(
+        created.status.success(),
+        "mkfifo failed: status={:?}, stderr={}",
+        created.status,
+        String::from_utf8_lossy(&created.stderr)
+    );
+    assert!(
+        std::fs::symlink_metadata(&owner)
+            .unwrap()
+            .file_type()
+            .is_fifo()
+    );
     assert!(lock_update_root(&root).is_err());
 }
 
