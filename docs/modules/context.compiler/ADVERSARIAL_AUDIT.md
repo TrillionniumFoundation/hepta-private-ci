@@ -1,81 +1,64 @@
-# context.compiler adversarial audit — 2026-09-30
+# Context compiler adversarial audit and integration boundaries
 
-## Scope and source interpretation
+Detailed technical development documentation exists. Read
+[V3_DEVELOPMENT.md](V3_DEVELOPMENT.md) for the active contracts and development
+procedure, the generated current source/consumer maps for navigation,
+`design-baseline/` for the detailed proof model, and `SECURITY_BOUNDARY.md` /
+`RECOVERY_AND_RELEASE_RUNBOOK.md` for authority and recovery limits.
 
-Reviewed main at `a126987b84737dbc2ee2592442a314117bddb4a2` and the existing V3
-candidate PR #1157 at `c2d044272bcf106f6fd9e5aa40656cdc7069a702` before this
-follow-up. Main and the unmerged candidate have different completion states.
-The candidate's previous PR description named an older source object; source
-assessment here follows its actual branch contents. This report is design/audit
-evidence, not an immutable CI execution receipt or independent acceptance.
+Source existence, ordinary product reachability, native execution and independent
+acceptance are separate claims. Current candidates, run results and approvals
+belong to exact PR/workflow receipts. This document records invariant findings
+and design boundaries; it is not a copied qualification receipt.
 
-Detailed technical development documentation exists: the retained
-`design-baseline/` describes the compiler model and contracts; `TECHNICAL.md`,
-`CURRENT_PRODUCT_PATH.md`, `IMPLEMENTATION_MAP.json` and `MODULE_MANIFEST.json`
-project the canonical `CURRENT_STATE.json`. `SECURITY_BOUNDARY.md` and
-`RECOVERY_AND_RELEASE_RUNBOOK.md` describe authority and recovery limits.
-Retained design must be read together with current source and qualification
-receipts: source existence, product reachability, execution and acceptance are
-separate claims.
+## Adversarial findings and defenses
 
-## Findings and changes
-
-| Finding | Concrete trigger / consequence | Follow-up |
+| Finding | Trigger / consequence | Implemented defense |
 |---|---|---|
-| Empty-selection domain bypass | Revalidation iterated only selected admissions; an empty compilation could attach against a foreign scope/domain. | Check the compilation receipt domain before iterating, including empty contexts. |
-| Independently verified revocation rollback | A caller could supply a newer root-verified snapshot omitting an earlier unrelated revocation; selected admissions remained individually valid. | Retain the immutable cumulative frontier on verified admissions and attachments; reject time/epoch rollback, same-epoch changes and higher-epoch resurrection at actual attachment/preparation consumers. |
-| Intervening attachment frontier loss | Preparation could preserve the admission baseline while dropping a revocation introduced at attachment time, including for empty context. | Validate preparation against the attachment frontier as well as the admission frontier. |
-| Path-directed durable storage | Ordinary path opens could follow state/next/lock links; root or lock replacement could detach the single writer from its visible identity. | On Unix pin the private directory, open relative descriptors with no-follow/nonblocking flags, check ownership/mode/type/link count before truncation, verify publication inode and permanently fence identity drift. |
-| Dormant tests counted as available source | Storage regression source existed without module registration; settlement tests reference an absent implementation. | Register six storage tests and require their exact names in qualification. Mark settlement source dormant; do not count it as coverage. |
-| Stale qualification source inventory | Current capacity regression bytes differed from the registered blob; both source and synthetic-merge CI stopped before native tests. | Refresh registered source objects and generated projections, including the changed compiler and storage sources. |
-| Dependency lock drift | The candidate declared agentd's libc dependency without its Cargo.lock dependency edge. | Synchronize the lock entry and attempt the prescribed Bazel lock update. |
+| Empty-selection domain bypass | A loop over selected admissions skipped scope/domain verification when there were none. | Validate the compilation receipt domain before iterating, including empty V2 contexts. |
+| Independent-root revocation rollback | A newer independently verified snapshot could omit an earlier unrelated revocation while selected items stayed valid. | Retain the immutable cumulative frontier and reject time/epoch rollback, same-epoch changes and higher-epoch resurrection at attachment/preparation consumers. |
+| Intervening attachment frontier loss | Preparation could retain the admission baseline but drop a revocation introduced at attachment time. | Check the attachment frontier as well as admission baselines, including empty context. |
+| Path-directed durable storage | State/next/lock links or root/lock replacement could redirect IO or detach the visible writer identity. | Unix descriptor-relative no-follow/nonblocking IO; owner/mode/type/link checks before truncation; publication inode validation; permanent fencing on identity drift. |
+| Dormant tests mistaken for coverage | Source files without module registration cannot execute; future settlement tests reference an absent implementation. | Register storage and diagnostic tests and require exact native names. Mark settlement source dormant. |
+| Dynamic error disclosure | Pipeline/runtime Debug and Display exposed registry, adapter or compiler error strings; the public pipeline enum referenced a private internal error type. | Stable raw-free reason codes and an opaque public exact-delivery diagnostic; preserve recovery classification without exposing internal details. |
+| Stale source navigation | Registered source blobs and shared workspace-input observations could lag actual source, stopping qualification before native execution. | Bind current registered bytes, regenerate projections and refresh only affected navigation observations. Navigation never grants execution/acceptance. |
+| Resource failure mistaken for semantic failure | A full 257-turn fsync/tokenizer fixture needs a different harness budget from a single turn; combined Cargo debug/incremental output and Bazel extraction can exhaust a runner. | Preserve the complete workload under a bounded dedicated watchdog and disk-workload group; reduce temporary CI debug/incremental artifacts and record those inputs. Keep failures and all security gates visible. |
 
-The frontier is shared with `Arc` rather than copied per admission. Attachment
-revalidation scans each distinct admission snapshot once; the snapshot digest
-already binds the retained frontier, so these checks do not change wire/digest
-schemas. Storage's deterministic pre-publication rejection leaves an otherwise
-valid owner usable; uncertainty after publication or owner identity loss requires
-reopening. Existing owned directory initialization tightens mode through its pinned
-descriptor; permissive state files fail closed without changing their permissions.
+Frontiers are shared with `Arc` instead of copied per admission. Revalidation
+scans each distinct admission snapshot once. The existing snapshot digest binds
+its frontier, so the consumer checks do not change wire/digest schemas.
+Deterministic pre-publication storage rejection can leave a valid owner usable;
+uncertain publication or root/lock identity loss requires reopen. Owned directory
+initialization tightens permissions through its descriptor, while unsafe state
+file permissions are rejected without chmod through a replaceable path.
 
-## Position in the project and completion assessment
+## Project position and completion assessment
 
-The intended path is registry authority → intelligence V3 compilation and
-canonical serialization → Agentd exact-delivery owner → provider body/terminal
-evidence. Compiler-local invariants are necessary, but the physical effect and
-durable authorization belong to the delivery owner. This is why this follow-up
-repairs actual consumer seams and delivery storage rather than introducing a
-second provider owner or a parallel V3 implementation.
+The registry issues context authority, intelligence composes the V3 compiler,
+and the existing exact-delivery/provider spine owns final request use. Compiler
+proofs are necessary but do not independently establish provider truth or grant
+a model call. Fix actual consumer seams rather than introducing a second owner.
 
 | Layer | Source assessment | Remaining completion requirement |
 |---|---|---|
-| Compiler core | Implemented, with added domain/frontier adversarial regressions. | Final immutable source/merge execution and qualified real tokenizer semantics. |
-| Registry/intelligence composition | Typed construction-closed authority and canonical V3 profile are source-composed. | Independent authority/provider qualification. |
-| Agentd exact delivery | Named owner entrypoint and bounded recovery protocol are source-composed; Unix storage defenses strengthened. | Authenticated ordinary App Server ingress, target-host durability and cancellation authority. |
-| Security capabilities | External lease/journal/generation/custody/attestation interfaces are defined. | Consume those capabilities in the actual owner; a local consistency verifier cannot attest provider truth. |
-| Long-lived operation | Raw-content retirement and bounded capacity defenses exist. | History rollover/checkpoint/archive migration preserving tombstones and anchored frontiers; current limits remain 1024 runtime dispatch / 4096 exact pre-send records. |
-| Release | No source-generated acceptance or activation. | Independent security acceptance and operator-controlled release. |
+| Compiler core | Implemented with domain/frontier regressions. | Exact candidate execution and qualified real tokenizer semantics. |
+| Registry/intelligence | Typed authority and canonical V3 profile are source-composed. | Independent authority/provider qualification. |
+| Agentd exact delivery | Named owner entrypoint and bounded recovery protocol are source-composed; Unix storage and error boundaries strengthened. | Authenticated ordinary App Server ingress, selected-host durability and cancellation authority. |
+| Security capabilities | External lease/journal/generation/custody/attestation interfaces exist. | Consume them in the actual owner; a local verifier cannot attest provider truth. |
+| Long-lived operation | Raw-content retirement and bounded capacity defenses exist. | Journal/checkpoint/archive migration preserving tombstones and anchored frontiers; limits remain 1024 runtime dispatch / 4096 exact pre-send records. |
+| Release | Source generation grants no acceptance or activation. | Independent security acceptance and operator-controlled release. |
 
-## Verification and further work
+## Required verification
 
-Local core tests passed (55), including the three added frontier/domain tests.
-Strict compiler all-targets Clippy passed with `-D warnings` after repairing five
-findings. The regenerated source/docs Python suite passed (61). A standalone Unix storage
-harness compiled the unchanged production store methods and storage module and
-ran all six storage tests successfully; schema migration/validation and metrics
-were substituted in that harness, so this is storage-only evidence, not an
-agentd crate or product pass. Full consumer builds twice stopped with disk
-exhaustion before executing tests. Bazel batch mode bypassed the container
-process-discovery failure, but dependency fetching then failed certificate
-validation. Neither failed check is a pass. Consumer native execution,
-strict lint, pinned dependency policy, source-head and synthetic-merge results
-must be reported from their actual run outcomes; local source navigation or this
-report does not transfer qualification to a later commit.
+Inspect exact source-head and synthetic-merge receipts for actual command exits,
+required fully qualified native test names, fixture profiles, strict lint,
+dependency policy and immutable source checks. A successful `cargo check` profile
+is compilation evidence. An isolated harness is only evidence for its declared
+scope. Neither is an ordinary authenticated product run or target-host acceptance.
 
-Further adversarial review must cover real tokenizer custody and accuracy,
-privileged rollback/replace-and-restore attacks, Windows storage parity,
-power-loss recovery, post-authorization cancellation, non-developer provider
-slots, cross-holder redaction and named-host latency/memory/backlog measurements.
-These are concrete unresolved integration/qualification tasks, not a claim that
-all optimization opportunities have been exhausted. Do not raise bounded limits
-or delete replay history to make capacity tests pass.
+Further adversarial work must cover tokenizer custody/accuracy, privileged
+rollback and replace-and-restore, Windows parity, power-loss recovery,
+post-authorization cancellation, remaining provider slots, cross-holder redaction
+and named-host latency/memory/backlog. These are unresolved integration tasks;
+do not claim universal completeness, raise limits, delete replay history or
+ignore dependency security errors to report closure.

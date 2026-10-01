@@ -102,3 +102,12 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# This protocol fixture performs 257 full exact-owner cycles with tokenizer
+# subprocesses, growing durable history and real fsync. Keep the whole workload
+# and a bounded watchdog; it is not a single-turn production latency SLO.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(sequential_completed_turns_release_more_than_256_stages)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0

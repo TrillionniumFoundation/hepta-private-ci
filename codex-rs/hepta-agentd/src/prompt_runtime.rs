@@ -61,6 +61,11 @@ use crate::exact_context_delivery::AgentdExactContextDeliveryOwner;
 use crate::exact_context_delivery::ExactContextDeliveryError;
 use crate::exact_context_delivery::metrics::Phase;
 
+#[path = "prompt_runtime_errors.rs"]
+mod errors;
+pub use errors::AgentdExactContextDeliveryError;
+pub use errors::AgentdPromptPipelineError;
+
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
 const MAX_DISPATCH_RECORDS: usize = 1024;
@@ -79,7 +84,7 @@ pub enum PromptRuntimeStageDisposition {
     Unchanged,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum AgentdPromptRuntimeError {
     InvalidTurnId,
     InvalidModel,
@@ -103,14 +108,6 @@ pub enum AgentdPromptRuntimeError {
     ReopenRequired,
     Adapter(String),
 }
-
-impl fmt::Display for AgentdPromptRuntimeError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl std::error::Error for AgentdPromptRuntimeError {}
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -601,32 +598,6 @@ impl AgentdPromptRuntimeOwner {
     }
 }
 
-#[derive(Debug)]
-pub enum AgentdPromptPipelineError {
-    RegistryOpen(String),
-    RuntimeOpen(AgentdPromptRuntimeError),
-    ExactOpen(ExactContextDeliveryError),
-    StatePoisoned,
-    CandidateSource(String),
-    Compilation(String),
-    Stage(AgentdPromptRuntimeError),
-    ExactStage(ExactContextDeliveryError),
-}
-
-impl fmt::Display for AgentdPromptPipelineError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl std::error::Error for AgentdPromptPipelineError {}
-
-impl From<ExactContextDeliveryError> for AgentdPromptPipelineError {
-    fn from(error: ExactContextDeliveryError) -> Self {
-        Self::ExactStage(error)
-    }
-}
-
 /// Named Agentd composition owner for the canonical prompt-intervention path.
 ///
 /// This facade owns no alternate optimizer or model loop. It opens the
@@ -663,7 +634,7 @@ impl AgentdPromptPipelineOwner {
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
         let exact_directory = runtime_directory.join("context-delivery-v2");
         let exact = AgentdExactContextDeliveryOwner::open(&exact_directory, Arc::clone(&registry))
-            .map_err(AgentdPromptPipelineError::ExactOpen)?;
+            .map_err(|error| AgentdPromptPipelineError::ExactOpen(error.into()))?;
         Ok(Self {
             registry,
             runtime: Arc::new(runtime),

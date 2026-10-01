@@ -188,6 +188,7 @@ counted as active merely because they exist.
             + "Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. "
             + "Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.\n\n"
             + "## 7. Retained detailed design\n\n"
+            + "Active V3 contracts and development workflow: [V3 development guide](../../../docs/modules/context.compiler/V3_DEVELOPMENT.md).\n\n"
             + "The complete previous technical guide, implementation map, dossier and product-path design are preserved byte-for-byte below. "
             + "Their earlier completion statements are historical, not current acceptance evidence. Algorithms, proof objects, byte identities, capacity requirements, threat controls, migration targets and test design remain available in full.\n\n"
             + bullets(references)

@@ -33,6 +33,11 @@ TRUTH_FILES = (
     ROOT / "qualification/module-execution-dossiers/detail/context.compiler.md",
 )
 SOURCE_EVIDENCE_FILES = (
+    ROOT / "codex-rs/.config/nextest.toml",
+    ROOT / "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
+    ROOT / "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
     ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
