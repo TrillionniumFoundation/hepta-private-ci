@@ -293,8 +293,17 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
+            // Darwin refuses to rename a write-disabled directory, even within
+            // one parent. Publish its complete contents before freezing the
+            // directory there; catalog resolution rejects the writable phase.
+            #[cfg(not(target_os = "macos"))]
             set_mode(&staging, /*mode*/ 0o555)?;
             std::fs::rename(&staging, &final_root)?;
+            #[cfg(target_os = "macos")]
+            {
+                set_mode(&final_root, /*mode*/ 0o555)?;
+                sync_directory(&final_root)?;
+            }
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();

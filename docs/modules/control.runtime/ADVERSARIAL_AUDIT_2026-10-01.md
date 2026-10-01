@@ -67,6 +67,8 @@ present while the global durable effect product is still uncomposed.
 | NDU candidate union admitted beyond the shared bound | P2 resource admission | Individually bounded evaluated/rejected lists could exceed the shared 128-candidate budget | Reject the union and oversized Pareto input before sorting/index allocation; cover 128 accepted and 129 rejected |
 | macOS temporary roots invalidate product tests | P2 qualification reliability | Long Unix-socket roots and noncanonical checkpoint parents hid later integration results | Use short, canonical, isolated fixture roots; preserve production socket-length and symlink validation |
 | Named-host program and test-helper lint failures | P2 qualification reliability | Overflow probe panicked; manual ceiling division and helper `expect` calls violated strict lint | Return an explicit qualification error, use `div_ceil`, and make fixture setup failures explicit without suppressing production lint |
+| macOS release installation rejects a frozen staging rename | P1 integration availability | Rolling-upgrade cases fail during initial immutable release installation | Rename the complete directory on macOS before freezing and syncing its final path; catalog resolution continues to reject writable publication; extend the readonly-source regression and run all 41 Fleet cases |
+| Test waits treat durable writes as latency guarantees | P2 fixture reliability | Browser revocation and cancellation admission/drain use one- or two-second waits; failures persist with two test threads on the busy host | Keep the early fence and in-flight cancellation assertions; bound the final durable fixture observations by 30 seconds without changing production limits |
 | Stale source anchors omit new recovery tests | P2 documentation traceability | The implementation map referenced a new controller regression absent at its historical source anchor; NDU observations also predated the fixes | Rebind the control and NDU maps to actual committed source/tree and refresh exact source objects while preserving every maturity and external-evidence field |
 | Successful displayed CI step can conceal failure | P1 evidence integrity | `continue-on-error` conclusions could be mistaken for pass receipts | Assess command exit/status, actual outcome and final fail-closed aggregation; document that a passing unit binary does not certify later integration binaries |
 
@@ -87,14 +89,21 @@ retry by themselves.
 
 Completed local checks include 170 control-plane cases (154 unit, 16 integration;
 qualification failpoints enabled), all 74 NDU cases, 15 targeted Agentd cases,
-NDU all-target strict lint, 40 canonical regression bindings, Lane-D semantic
+Control/NDU all-target strict lint, all 41 Fleet cases, 40 canonical regression bindings, Lane-D semantic
 verification and its 18 self-tests, and eight workflow-command regressions.
 The first full Agentd run completed with 196 passed (nine flaky retries), four
-failed and ten timed out, with six skipped. A second full run limits test threads
-to two while preserving assertions, case inventory and watchdogs, to separate
-resource contention from reproducible product failures. Its result and the latest
-cross-platform candidate jobs are tracked separately in the PR record. Targeted Agentd execution
-skips 155 other cases and must not be described as a full-package pass.
+failed and ten timed out, with six skipped. The second full run with two test
+threads completed with 208 passed (one flaky retry), one browser-fixture failure
+and one historical-learning timeout, with six skipped. After the durable fixture
+wait corrections, both focused cases passed (168 skipped). The timed-out history
+case passed a separate retry in 4.35 seconds (169 skipped). Those narrower results
+are not a full exact-head package pass. Local Agentd case fanout is now limited to
+two without changing per-case concurrency or watchdogs.
+
+The latest cross-platform candidate jobs are tracked separately in the PR record.
+Targeted Agentd execution of the earlier affected path fixtures passed 15 cases
+and skipped 155 others. Candidate qualification also includes the Fleet package
+and its all-target formatting/check/lint after the release-installation correction.
 
 The three-package all-target strict Clippy run failed on NDU fixture helpers
 (corrected by this follow-up) and 14 Agentd library diagnostics outside the control
@@ -133,3 +142,9 @@ and repeats affected checks when a new failure warrants them. It cannot establis
 that no future optimization exists. Source review convergence, candidate
 qualification and production completion are separate outcomes; the unresolved
 composition and evidence items above remain explicit deliverables.
+
+The `940d651...` macOS source job passed the AuthBus and cognitive integration
+binaries after the short-root corrections. It then failed both rolling-upgrade
+cases during initial release installation and failed NDU owner-test helper lint.
+All-target compilation passed. These are failed candidate records; the newer
+publication and helper corrections still require their own macOS receipt.

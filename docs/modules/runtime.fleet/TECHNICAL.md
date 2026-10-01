@@ -279,3 +279,15 @@ This receipt records repository source bindings for the current documentation ca
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+### macOS immutable release publication
+
+The catalog installer retains write access to a staging directory until its rename
+on macOS, then freezes and syncs the final directory before reporting success.
+Darwin disallows renaming a write-disabled directory even within the same parent
+([Apple rename(2)](https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/rename.2.html)).
+Catalog resolution rejects a writable release directory, including the interval
+between rename and freeze or an interrupted installation that leaves it writable.
+Other platforms retain freezing before rename. Exact immutable file checks,
+manifest digests and per-agent release allowances remain required; publication
+alone grants no release selection or execution authority.
