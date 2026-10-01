@@ -326,78 +326,90 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
 }
 
 #[test]
-fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
-    let mut coordinator =
-        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
-    coordinator.start_run(100, snapshot()).expect("admit run");
-    coordinator
-        .attach_context(200, 1, attachment())
-        .expect("attach context");
-    coordinator
-        .mark_dispatched(300, "run.1", 2)
-        .expect("dispatch");
-    let completed = coordinator
-        .observe_terminal("run.1", 3, RunPhase::Succeeded, true)
-        .expect("complete");
-    let repeated = coordinator
-        .observe_terminal("run.1", 3, RunPhase::Succeeded, true)
-        .expect("repeat terminal observation");
+fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition())?;
+    coordinator.start_run(100, snapshot())?;
+    coordinator.attach_context(200, 1, attachment())?;
+    coordinator.mark_dispatched(300, "run.1", 2)?;
+    let completed = coordinator.observe_terminal("run.1", 3, RunPhase::Succeeded, true)?;
+    let repeated = coordinator.observe_terminal("run.1", 3, RunPhase::Succeeded, true)?;
     assert!(repeated.idempotent);
     assert_eq!(repeated.revision, completed.revision);
-    let removed = coordinator
-        .remove_closed_run("run.1", completed.revision)
-        .expect("remove closed run");
+    let removed = coordinator.remove_closed_run("run.1", completed.revision)?;
     assert_eq!(removed.phase, RunPhase::Succeeded);
-    assert_eq!(coordinator.run("run.1"), None);
+    assert_eq!(coordinator.run("run.1"), Some(removed));
+    assert_eq!(coordinator.active_run_count(), 0);
+    assert_eq!(coordinator.unresolved_run_count(), 0);
+    assert_eq!(
+        coordinator.start_run(100, snapshot()),
+        Err(AgentRunError::Conflict)
+    );
+    Ok(())
 }
 
 #[test]
-fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
-    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
-    for _ in 0..MAX_RETAINED_RUNS + 1 {
-        coordinator
-            .start_run(/*now_ms*/ 100, snapshot())
-            .expect("admit");
-        coordinator
-            .attach_context(
-                /*now_ms*/ 200,
-                /*expected_revision*/ 1,
-                attachment(),
-            )
-            .expect("attach");
-        coordinator
-            .mark_dispatched(/*now_ms*/ 300, "run.1", /*expected_revision*/ 2)
-            .expect("dispatch");
-        let unknown = coordinator
-            .observe_terminal(
-                "run.1",
-                /*expected_revision*/ 3,
-                RunPhase::Indeterminate,
-                /*terminal_observed*/ false,
-            )
-            .expect("unknown outcome");
+fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition())?;
+    for ordinal in 1..=MAX_RETAINED_RUNS {
+        let run_id = format!("run.{ordinal}");
+        let mut original = snapshot();
+        original.run_id = run_id.clone();
+        let mut exact_attachment = attachment();
+        exact_attachment.run_id = run_id.clone();
+        coordinator.start_run(/*now_ms*/ 100, original)?;
+        coordinator.attach_context(
+            /*now_ms*/ 200,
+            /*expected_revision*/ 1,
+            exact_attachment,
+        )?;
+        coordinator.mark_dispatched(/*now_ms*/ 300, &run_id, /*expected_revision*/ 2)?;
+        let unknown = coordinator.observe_terminal(
+            &run_id,
+            /*expected_revision*/ 3,
+            RunPhase::Indeterminate,
+            /*terminal_observed*/ false,
+        )?;
+        assert_eq!(coordinator.unresolved_run_count(), 1);
         assert_eq!(
-            coordinator.cancel_run(400, "run.1", unknown.revision, "operator_request"),
+            coordinator.cancel_run(400, &run_id, unknown.revision, "operator_request"),
             Err(AgentRunError::TerminalObservationRequired)
         );
         assert_eq!(
-            coordinator.remove_closed_run("run.1", unknown.revision),
+            coordinator.remove_closed_run(&run_id, unknown.revision),
             Err(AgentRunError::InvalidTransition)
         );
-        let observed = coordinator
-            .observe_terminal(
-                "run.1",
-                unknown.revision,
-                RunPhase::Succeeded,
-                /*terminal_observed*/ true,
-            )
-            .expect("owner-observed reconciliation");
-        assert!(observed.terminal_observed);
-        coordinator
-            .remove_closed_run("run.1", observed.revision)
-            .expect("release capacity");
+        let observed = coordinator.observe_terminal(
+            &run_id,
+            unknown.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        )?;
+        let released = coordinator.remove_closed_run(&run_id, observed.revision)?;
+        assert_eq!(released, observed);
+        assert_eq!(coordinator.run(&run_id), Some(released));
+        assert_eq!(coordinator.active_run_count(), 0);
+        assert_eq!(coordinator.unresolved_run_count(), 0);
     }
-    assert_eq!(coordinator.run("run.1"), None);
+    let original = coordinator
+        .run("run.1")
+        .ok_or("original tombstone missing")?;
+    assert!(original.terminal_observed);
+    assert_eq!(original.phase, RunPhase::Succeeded);
+    assert_eq!(
+        coordinator.start_run(100, snapshot()),
+        Err(AgentRunError::Conflict)
+    );
+    // Terminal identity retention consumes durable history, never an active
+    // execution permit. Its explicit history bound remains fail closed.
+    let mut next = snapshot();
+    next.run_id = format!("run.{}", MAX_RETAINED_RUNS + 1);
+    assert_eq!(
+        coordinator.start_run(100, next),
+        Err(AgentRunError::CapacityExceeded)
+    );
+    Ok(())
 }
 
 #[test]
@@ -599,19 +611,17 @@ fn bound_pre_effect_abort_is_nonce_verified_and_nonterminal() {
 }
 
 #[test]
-fn durable_run_store_recovers_bound_abort_and_fences_stale_writer() {
-    let directory = tempfile::tempdir().expect("tempdir");
+fn durable_run_store_recovers_bound_abort_and_fences_stale_writer()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
     let path = directory.path().join("agent-runs.json");
-    let mut owner =
-        AgentRunCoordinator::open_durable(composition(), path.clone()).expect("open durable owner");
-    owner.start_run(100, snapshot()).expect("admit");
-    owner.persist().expect("persist admission");
-    owner
-        .attach_context(200, 1, attachment())
-        .expect("attach context");
-    owner.persist().expect("persist context");
+    let mut owner = AgentRunCoordinator::open_durable(composition(), path.clone())?;
+    owner.start_run(100, snapshot())?;
+    owner.persist()?;
+    owner.attach_context(200, 1, attachment())?;
+    owner.persist()?;
 
-    let binding = digest('q');
+    let binding = Digest32::of_bytes(b"exact original durable dispatch binding").to_string();
     let nonce: [u8; 32] = rand::random();
     let nonce_hex = nonce
         .iter()
@@ -620,32 +630,25 @@ fn durable_run_store_recovers_bound_abort_and_fences_stale_writer() {
     let commitment = pre_effect_abort_commitment("run.1", &binding, &nonce);
     let reason = "final-use fence changed";
     let proof = pre_effect_abort_proof("run.1", &binding, &nonce, reason);
-    let dispatched = owner
-        .mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())
-        .expect("bound dispatch");
-    owner.persist().expect("persist dispatch");
+    let dispatched =
+        owner.mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())?;
+    owner.persist()?;
     drop(owner);
 
-    let mut current = AgentRunCoordinator::open_durable(composition(), path.clone())
-        .expect("recover current owner");
-    let mut stale = AgentRunCoordinator::open_durable(composition(), path.clone())
-        .expect("open stale observer");
-    let aborted = current
-        .abort_before_effect(
-            "run.1",
-            dispatched.revision,
-            &binding,
-            &nonce_hex,
-            &proof,
-            reason,
-        )
-        .expect("abort before effect");
+    let mut current = AgentRunCoordinator::open_durable(composition(), path.clone())?;
+    let mut stale = AgentRunCoordinator::open_durable(composition(), path.clone())?;
+    let aborted = current.abort_before_effect(
+        "run.1",
+        dispatched.revision,
+        &binding,
+        &nonce_hex,
+        &proof,
+        reason,
+    )?;
     assert_eq!(aborted.phase, RunPhase::AbortedBeforeEffect);
-    current.persist().expect("persist abort proof");
+    current.persist()?;
 
-    stale
-        .mark_unresolved_indeterminate("stale writer")
-        .expect("mutate stale in-memory owner");
+    stale.mark_unresolved_indeterminate("stale writer")?;
     assert!(matches!(
         stale.persist(),
         Err(AgentRunError::Persistence(_))
@@ -653,9 +656,10 @@ fn durable_run_store_recovers_bound_abort_and_fences_stale_writer() {
     drop(current);
     drop(stale);
 
-    let recovered = AgentRunCoordinator::open_durable(composition(), path)
-        .expect("recover exact aborted owner");
-    let receipt = recovered.run("run.1").expect("retained run");
+    let recovered = AgentRunCoordinator::open_durable(composition(), path)?;
+    let receipt = recovered
+        .run("run.1")
+        .ok_or("retained original run missing")?;
     assert_eq!(receipt.phase, RunPhase::AbortedBeforeEffect);
     assert_eq!(
         receipt.dispatch_binding_digest.as_deref(),
@@ -669,6 +673,7 @@ fn durable_run_store_recovers_bound_abort_and_fences_stale_writer() {
         receipt.pre_effect_abort_proof_digest.as_deref(),
         Some(proof.as_str())
     );
+    Ok(())
 }
 
 #[test]

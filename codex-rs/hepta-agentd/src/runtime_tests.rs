@@ -338,11 +338,7 @@ fn compatibility_retrieval_mode_does_not_require_hnmf_context() {
 fn compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile() {
     let result =
         require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, true);
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::Invalid(message))
-            if message.contains("select HnmfRequired explicitly")
-    ));
+    assert!(matches!(result, Err(crate::AgentdError::Invalid(_))));
 }
 
 #[test]

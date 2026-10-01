@@ -25,6 +25,9 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_cli::CliConfigOverrides;
 
 pub use codex_app_server::AppServerDrainHandle;
+pub use codex_app_server::QueueHistoricalObservation;
+pub use codex_app_server::QueueHistoricalOutcome;
+pub use codex_app_server::QueueHistoricalTerminal;
 pub struct HeptaAppServerHostOptions {
     pub socket_path: PathBuf,
     pub home_root: PathBuf,

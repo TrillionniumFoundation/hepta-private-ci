@@ -19,6 +19,7 @@ use std::io::Result as IoResult;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::OnceLock;
 use std::sync::RwLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
@@ -113,6 +114,10 @@ mod dynamic_tools;
 mod effective_plugin_change;
 mod error_code;
 mod extensions;
+mod historical_observation;
+pub use historical_observation::QueueHistoricalObservation;
+pub use historical_observation::QueueHistoricalOutcome;
+pub use historical_observation::QueueHistoricalTerminal;
 mod external_agent_migration;
 mod external_auth;
 mod filters;
@@ -215,12 +220,14 @@ enum ShutdownSignal {
 ///
 /// The handle closes new RPC admission, exposes the exact running assistant-turn
 /// count already maintained by App Server, and becomes drained only after the
-/// graceful shutdown state machine has observed zero running turns.
+/// graceful shutdown state machine has observed zero running turns and joined
+/// the original request/thread-start tasks and thread writers.
 #[derive(Clone)]
 pub struct AppServerDrainHandle {
     request: CancellationToken,
     running_turns: Arc<AtomicUsize>,
     drained: Arc<AtomicBool>,
+    historical_owner: Arc<OnceLock<historical_observation::HistoricalObservationOwner>>,
 }
 
 impl AppServerDrainHandle {
@@ -229,6 +236,7 @@ impl AppServerDrainHandle {
             request: CancellationToken::new(),
             running_turns: Arc::new(AtomicUsize::new(0)),
             drained: Arc::new(AtomicBool::new(false)),
+            historical_owner: Arc::new(OnceLock::new()),
         }
     }
 
@@ -1184,6 +1192,7 @@ pub async fn run_main_with_transport_options(
             remote_control_handle: Some(remote_control_handle.clone()),
             plugin_startup_tasks: runtime_options.plugin_startup_tasks,
             turn_queue_capacity: runtime_options.turn_queue_capacity,
+            graceful_drain: graceful_drain.clone(),
             hepta: HeptaExtensionBindings {
                 cognitive_runtime: runtime_options.hepta_cognitive_runtime.clone(),
                 cognitive_production_mutation: runtime_options
@@ -1223,9 +1232,6 @@ pub async fn run_main_with_transport_options(
                     let _ = outbound_control_tx
                         .send(OutboundControlEvent::DisconnectAll)
                         .await;
-                    if let Some(handle) = graceful_drain.as_ref() {
-                        handle.mark_drained();
-                    }
                     break "shutdown_requested";
                 }
 
@@ -1481,8 +1487,14 @@ pub async fn run_main_with_transport_options(
                 ))
                 .await;
                 connection_cleanup_tasks.drain().await;
-                processor.drain_background_tasks().await;
-                processor.shutdown_threads().await;
+                let background_joined = processor.drain_background_tasks().await;
+                let threads_joined = processor.shutdown_threads().await;
+                if background_joined
+                    && threads_joined
+                    && let Some(handle) = graceful_drain.as_ref()
+                {
+                    handle.mark_drained();
+                }
             } else {
                 connection_cleanup_tasks.abort();
             }

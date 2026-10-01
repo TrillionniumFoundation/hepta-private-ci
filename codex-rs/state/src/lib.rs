@@ -33,6 +33,7 @@ pub use model::QueuedClientBindingFinalizeMode;
 pub use model::QueuedClientBindingFinalizeOutcome;
 pub use model::QueuedClientBindingFinalizeRequest;
 pub use model::QueuedClientBindingLease;
+pub use model::QueuedClientBindingObservation;
 pub use model::QueuedClientBindingReserveOutcome;
 pub use model::QueuedClientBindingState;
 pub use model::QueuedClientDispatchClaimOutcome;

@@ -34,6 +34,9 @@ mod control;
 #[path = "state_admission.rs"]
 mod admission;
 
+#[path = "state_historical_observation.rs"]
+mod historical_observation;
+
 pub(crate) struct AgentdState {
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
     pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,

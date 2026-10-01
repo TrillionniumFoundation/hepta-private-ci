@@ -92,6 +92,11 @@ pub enum AutomationOccurrenceState {
     Indeterminate,
 }
 
+enum OccurrenceRecoveryOrder {
+    OldestFirst,
+    DrainBlockersFirst,
+}
+
 impl AutomationOccurrenceState {
     fn as_str(self) -> &'static str {
         match self {
@@ -987,6 +992,25 @@ impl AutomationStore {
         &self,
         limit: usize,
     ) -> Result<Vec<AutomationOccurrenceWork>, AutomationError> {
+        self.pending_occurrence_work_ordered(limit, OccurrenceRecoveryOrder::OldestFirst)
+            .await
+    }
+
+    /// Known drain blockers take precedence over classified uncertainty.
+    /// An old Indeterminate row must not starve a later admitted terminal turn.
+    pub async fn pending_drain_occurrence_work(
+        &self,
+        limit: usize,
+    ) -> Result<Vec<AutomationOccurrenceWork>, AutomationError> {
+        self.pending_occurrence_work_ordered(limit, OccurrenceRecoveryOrder::DrainBlockersFirst)
+            .await
+    }
+
+    async fn pending_occurrence_work_ordered(
+        &self,
+        limit: usize,
+        order: OccurrenceRecoveryOrder,
+    ) -> Result<Vec<AutomationOccurrenceWork>, AutomationError> {
         if limit == 0 || limit > MAX_RECOVERY_SCAN {
             return Err(AutomationError::Invalid);
         }
@@ -996,10 +1020,12 @@ impl AutomationStore {
              JOIN automation_tasks t ON t.task_id = o.task_id
              WHERE o.owner_agent_id = ?
                AND o.state IN ('admitted', 'running', 'indeterminate')
-             ORDER BY o.updated_at_ms, o.task_id, o.occurrence
+             ORDER BY CASE WHEN ? AND o.state = 'indeterminate' THEN 1 ELSE 0 END,
+                      o.updated_at_ms, o.task_id, o.occurrence
              LIMIT ?",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(matches!(order, OccurrenceRecoveryOrder::DrainBlockersFirst))
         .bind(i64::try_from(limit).map_err(|_| AutomationError::Invalid)?)
         .fetch_all(self.taskflow_pool())
         .await
