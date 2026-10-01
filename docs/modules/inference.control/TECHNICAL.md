@@ -189,6 +189,8 @@ The implemented surfaces have different roles:
 
 The actor acquires a stable lifecycle sidecar lock before opening/replaying the active journal, and retains the active generation's inode lock for compatibility. The sidecar remains owned across checkpoint replacement; never delete it to force startup. Mutations validate, append and sync before publishing state. Uncertain storage or replacement failure poisons the owner.
 
+For native record events, `commit_native` stages only the target record through the same replay reducer instead of cloning the complete `NativeJournal`. Reservation first validates identity, the pinned budget and held-slot capacity against the complete retained map. Event serialization, the complete candidate, its return receipt and insertion key are prepared before append; only after append, flush and `sync_all` succeed does the owner install that target and its maximum-in-flight value. Rejected staging leaves authoritative state and journal bytes unchanged; uncertain append failure poisons the owner without installing the candidate. `CheckpointReference` is rejected on this path: compaction still stages the complete checkpoint separately. Reserve retains an O(retained identities) capacity scan, and the 16384 distinct-record ceiling remains; this change does not make every mutation constant-time or establish a measured throughput improvement.
+
 Provider execution runs outside the writer. Cloning an actor handle does not open another durable owner. Separate ordinary and completion quotas feed one FIFO, with one reserved shutdown barrier. Accepted response timeout/loss does not cancel an admitted command or authorize retry/release. Immutable published metrics expose observation age and remain non-authoritative. See [writer boundaries](WRITER_BOUNDARIES.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
@@ -240,6 +242,8 @@ Current operating and state-format references:
 ## 12. Verification and qualification
 
 Current focused test sources (source references, not pass receipts):
+
+The four regressions in [native_record_staging_tests.rs](../../../codex-rs/hepta-infer-core/src/native_record_staging_tests.rs) cover full-map held-slot admission across compaction/reopen, a late reducer failure without publication, actual append failure for existing and first-admission candidates, and identity/checkpoint rejection before append. They are source cases, not performance measurements or candidate pass receipts.
 
 - [codex-rs/hepta-infer-core/src/durable_control_tests.rs](../../../codex-rs/hepta-infer-core/src/durable_control_tests.rs); named case: `reopens_exact_committed_state`.
 - [codex-rs/hepta-infer-core/src/lib_tests.rs](../../../codex-rs/hepta-infer-core/src/lib_tests.rs); named case: `request_lifecycle_is_fenced_and_authority_free`.
