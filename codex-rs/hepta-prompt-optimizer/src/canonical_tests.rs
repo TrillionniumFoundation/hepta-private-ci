@@ -1041,3 +1041,6 @@ fn revoke_registry(
         )
         .expect("final-use revocation");
 }
+
+#[path = "canonical_temporal_tests.rs"]
+mod temporal;

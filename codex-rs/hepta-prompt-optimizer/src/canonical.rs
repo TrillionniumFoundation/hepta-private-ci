@@ -29,6 +29,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+#[path = "canonical_temporal.rs"]
+mod canonical_temporal;
 #[path = "canonical_portfolio.rs"]
 mod portfolio_integrity;
 
@@ -797,6 +799,8 @@ pub fn select_portfolio_v1(
             valid_until = valid_until.min(expires);
         }
     }
+    valid_until =
+        canonical_temporal::cap_temporal_valid_until(graph, &known, now_unix_ms, valid_until);
     if valid_until <= now_unix_ms {
         return Err(CanonicalPromptError::PortfolioExpired);
     }
