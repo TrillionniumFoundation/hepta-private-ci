@@ -17,6 +17,7 @@ use super::BrowserServoError;
 use super::BrowserServoProcessConfig;
 use super::BrowserServoTransport;
 use super::MAX_FRAME_BYTES;
+use super::artifact::ServiceSnapshot;
 use super::hex_lower;
 
 const MAX_CHANNEL_WAIT: Duration = Duration::from_secs(10);
@@ -33,6 +34,7 @@ pub struct ChildBrowserTransport {
     reader: Option<thread::JoinHandle<()>>,
     writer: Option<thread::JoinHandle<()>>,
     channel_wait: Duration,
+    service_snapshot: Option<ServiceSnapshot>,
 }
 
 impl fmt::Debug for ChildBrowserTransport {
@@ -45,9 +47,9 @@ impl fmt::Debug for ChildBrowserTransport {
 
 impl ChildBrowserTransport {
     pub fn spawn(config: &BrowserServoProcessConfig) -> Result<Self, BrowserServoError> {
-        config.validate()?;
+        let service_snapshot = config.prepare_service_snapshot()?;
         let child = Command::new(&config.node_path)
-            .arg(&config.service_path)
+            .arg(service_snapshot.path())
             .env_clear()
             .env("HEPTA_BROWSER_WORKER_PATH", &config.worker_path)
             .env(
@@ -68,7 +70,9 @@ impl ChildBrowserTransport {
             .map_err(|error| {
                 BrowserServoError::Unavailable(format!("failed to spawn Browser service: {error}"))
             })?;
-        Self::from_child(child, MAX_CHANNEL_WAIT)
+        let mut transport = Self::from_child(child, MAX_CHANNEL_WAIT)?;
+        transport.service_snapshot = Some(service_snapshot);
+        Ok(transport)
     }
 
     fn from_child(mut child: Child, channel_wait: Duration) -> Result<Self, BrowserServoError> {
@@ -139,6 +143,7 @@ impl ChildBrowserTransport {
             reader: Some(reader),
             writer: Some(writer),
             channel_wait,
+            service_snapshot: None,
         })
     }
 }

@@ -9,9 +9,6 @@
 //! reconciliation without holding the authority mutex.
 
 use std::fmt;
-use std::fs;
-use std::path::Path;
-use std::path::PathBuf;
 use std::sync::Mutex;
 
 use codex_hepta_contracts::FinalUseAuthority;
@@ -39,6 +36,9 @@ mod transport;
 pub use transport::ChildBrowserTransport;
 #[path = "browser_servo_artifact.rs"]
 mod artifact;
+#[path = "browser_servo_config.rs"]
+mod config;
+pub use config::BrowserServoProcessConfig;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BrowserServoMethod {
@@ -637,87 +637,6 @@ fn browser_witness_digest(
     hasher.update(nonce);
     hasher.update(authority_epoch.to_be_bytes());
     hasher.finalize().into()
-}
-
-#[derive(Clone, Debug)]
-pub struct BrowserServoProcessConfig {
-    pub node_path: PathBuf,
-    pub service_path: PathBuf,
-    pub service_sha256: [u8; 32],
-    pub worker_path: PathBuf,
-    pub worker_sha256: [u8; 32],
-    pub profile_root: PathBuf,
-    pub journal_path: PathBuf,
-    pub bwrap_path: PathBuf,
-    pub driver_timeout_ms: u64,
-}
-
-impl BrowserServoProcessConfig {
-    pub fn validate(&self) -> Result<(), BrowserServoError> {
-        for (name, path) in [
-            ("Node executable", &self.node_path),
-            ("Browser service", &self.service_path),
-            ("Servo worker", &self.worker_path),
-            ("Browser profile root", &self.profile_root),
-            ("Browser journal", &self.journal_path),
-            ("Bubblewrap executable", &self.bwrap_path),
-        ] {
-            if !path.is_absolute() {
-                return Err(BrowserServoError::Invalid(format!(
-                    "{name} path must be absolute"
-                )));
-            }
-        }
-        if self.driver_timeout_ms == 0 || self.driver_timeout_ms > JS_SAFE_INTEGER {
-            return Err(BrowserServoError::Invalid(
-                "Browser driver timeout must be a positive safe integer".into(),
-            ));
-        }
-        verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
-        verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
-        Ok(())
-    }
-}
-
-fn verify_file_digest(
-    path: &Path,
-    expected: [u8; 32],
-    maximum: usize,
-) -> Result<(), BrowserServoError> {
-    let metadata = fs::symlink_metadata(path).map_err(|error| {
-        BrowserServoError::Invalid(format!("cannot inspect {}: {error}", path.display()))
-    })?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(BrowserServoError::Invalid(format!(
-            "{} must be a regular non-symlink file",
-            path.display()
-        )));
-    }
-    let size = usize::try_from(metadata.len())
-        .map_err(|_| BrowserServoError::Invalid("Browser file size overflow".into()))?;
-    if size == 0 || size > maximum {
-        return Err(BrowserServoError::Invalid(format!(
-            "{} exceeds its bounded file size",
-            path.display()
-        )));
-    }
-    let mut input = fs::File::open(path).map_err(|error| {
-        BrowserServoError::Invalid(format!("cannot open {}: {error}", path.display()))
-    })?;
-    let mut digest = Sha256::new();
-    artifact::stream_bounded(&mut input, maximum, |bytes| digest.update(bytes)).map_err(
-        |error| {
-            BrowserServoError::Invalid(format!("cannot read bounded {}: {error}", path.display()))
-        },
-    )?;
-    let actual: [u8; 32] = digest.finalize().into();
-    if actual != expected {
-        return Err(BrowserServoError::BindingMismatch(format!(
-            "{} digest does not match selected Browser artifact",
-            path.display()
-        )));
-    }
-    Ok(())
 }
 
 #[derive(Debug, Error)]

@@ -6,9 +6,11 @@ use std::time::Duration;
 use std::time::Instant;
 
 use super::BrowserServoError;
+use super::BrowserServoProcessConfig;
 use super::BrowserServoTransport;
 use super::ChildBrowserTransport;
 use super::MAX_FRAME_BYTES;
+use crate::browser_servo::sha256_bytes;
 
 fn child(script: &str, channel_wait: Duration) -> ChildBrowserTransport {
     let process = Command::new("/bin/sh")
@@ -87,4 +89,55 @@ fn browser_servo_drop_does_not_wait_for_a_descendant_inheriting_stdout() {
     let started = Instant::now();
     drop(transport);
     assert!(started.elapsed() < Duration::from_secs(1));
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn browser_servo_spawn_executes_and_retains_only_the_private_service_snapshot() {
+    let selected = tempfile::tempdir().expect("artifact directory");
+    let service = selected.path().join("browser-service.mjs");
+    let worker = selected.path().join("worker");
+    let frame = b"\0\0\0\x01x";
+    std::fs::write(&service, frame).expect("selected service bytes");
+    std::fs::write(&worker, b"worker").expect("selected worker bytes");
+    let config = BrowserServoProcessConfig {
+        // This trusted fixture runtime reflects its script argument's bytes.
+        node_path: "/bin/cat".into(),
+        service_path: service.clone(),
+        service_sha256: sha256_bytes(frame),
+        worker_path: worker,
+        worker_sha256: sha256_bytes(b"worker"),
+        profile_root: selected.path().join("profiles"),
+        journal_path: selected.path().join("journal"),
+        bwrap_path: "/bin/true".into(),
+        driver_timeout_ms: 1,
+    };
+    let mut raw_source = config.clone();
+    raw_source.service_path = service.with_extension("js");
+    std::fs::write(&raw_source.service_path, frame).expect("raw source with matching digest");
+    assert!(matches!(
+        ChildBrowserTransport::spawn(&raw_source),
+        Err(BrowserServoError::Invalid(_))
+    ));
+    let mut transport = ChildBrowserTransport::spawn(&config).expect("private snapshot transport");
+    let snapshot = transport
+        .service_snapshot
+        .as_ref()
+        .expect("owned snapshot")
+        .path()
+        .to_owned();
+    assert_ne!(snapshot, service);
+    std::fs::write(&service, b"replaced source").expect("replace original service bytes");
+    assert_eq!(
+        std::fs::read(&snapshot).expect("retained approved bytes"),
+        frame
+    );
+    assert_eq!(
+        transport
+            .read_frame()
+            .expect("selected snapshot reflected by child"),
+        frame
+    );
+    drop(transport);
+    assert!(!snapshot.exists());
 }
