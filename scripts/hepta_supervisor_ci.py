@@ -121,6 +121,8 @@ PLANS = {
             "paired_process_product",
             "--test",
             "writer_handoff_production",
+            "--profile",
+            "hepta-supervisor-qualification",
             *SERIAL,
         ],
     ),

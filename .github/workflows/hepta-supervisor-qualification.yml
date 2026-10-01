@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
       - "codex-rs/.config/nextest.toml"
       - "docs/modules/runtime.supervisor/**"
       - "scripts/hepta_supervisor_*.py"
@@ -200,6 +201,9 @@ jobs:
       - name: Exercise production-authority library
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci_v3.py execute production --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise shared Fleet release publication and rejection
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute fleet-library --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise qualification-only durability matrix
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci_v3.py execute qualification-lib --records "$RUNNER_TEMP/hepta-supervisor/records"

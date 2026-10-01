@@ -90,16 +90,16 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
           git diff --check
       - name: Default library regression
-        run: just test --locked -p codex-hepta-supervisor --lib
+        run: just test --locked -p codex-hepta-supervisor --lib --retries 0
       - name: Qualification library durability matrix
         run: >-
           just test --locked
-          -p codex-hepta-supervisor --features qualification --lib
+          -p codex-hepta-supervisor --features qualification --lib --retries 0
       - name: Offline authority build and distribution tests
         run: >-
           just test --locked
           -p codex-hepta-supervisor --features offline-authority-tools
-          --test authority_distribution --no-capture
+          --test authority_distribution --retries 0 --no-capture
       - name: Restart budget and Robrix projection regressions
         run: >-
           just test --locked
@@ -112,14 +112,14 @@ jobs:
           just test --locked \
             -p codex-hepta-supervisor --features qualification \
             --test supervisor_hol_qualification \
-            --profile hepta-supervisor-qualification --no-capture 2>&1 \
+            --profile hepta-supervisor-qualification --retries 0 --no-capture 2>&1 \
             | tee "$RUNNER_TEMP/runtime-supervisor/hol-256.log"
       - name: Actual SIGKILL crash qualification
         run: |
           set -o pipefail
           just test --locked \
             -p codex-hepta-supervisor --features qualification \
-            --test sigkill_crash_matrix --no-capture 2>&1 \
+            --test sigkill_crash_matrix --retries 0 --no-capture 2>&1 \
             | tee "$RUNNER_TEMP/runtime-supervisor/sigkill.log"
       - name: Strict supervisor lint
         run: |

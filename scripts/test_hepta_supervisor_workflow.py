@@ -98,6 +98,50 @@ class WorkflowTests(unittest.TestCase):
             self.assertIsNotNone(block, event)
             self.assertIn(f'      - "{path}"', block[1])
 
+    def test_fleet_only_change_dispatches_its_receipt_on_both_native_platforms(self):
+        from scripts.hepta_ci_scope import select
+
+        scope = select(["codex-rs/hepta-fleet/src/release_publish_tests.rs"])
+        self.assertTrue(scope["native"])
+        triggers = self.text.split("\npermissions:\n", 1)[0]
+        self.assertIn('      - "codex-rs/hepta-fleet/**"', triggers)
+        recovery = (
+            ROOT / ".github/workflows/hepta-supervisor-recovery-check.yml"
+        ).read_text()
+        recovery_triggers = recovery.split("\npermissions:\n", 1)[0]
+        for event in ("pull_request", "push"):
+            block = re.search(
+                rf"(?ms)^  {event}:\n(.*?)(?=^  [a-z_]+:|\Z)", recovery_triggers
+            )
+            self.assertIsNotNone(block, event)
+            for path in (
+                "codex-rs/hepta-supervisor/**",
+                "codex-rs/hepta-fleet/**",
+                "codex-rs/.config/nextest.toml",
+                "docs/modules/runtime.supervisor/**",
+                "scripts/hepta_supervisor_*.py",
+                "scripts/test_hepta_supervisor_*.py",
+                "scripts/runtime_supervisor_six_phase_*.py",
+                "scripts/test_runtime_supervisor_materialize.py",
+                "qualification/runtime-supervisor/**",
+                ".github/workflows/hepta-supervisor-qualification.yml",
+                ".github/workflows/hepta-supervisor-recovery-check.yml",
+            ):
+                self.assertIn(f"      - {path}", block[1])
+        self.assertIn("A supplemental entry point", recovery)
+        self.assertIn("not a replacement", recovery)
+        self.assertIn(
+            "uses: ./.github/workflows/hepta-supervisor-qualification.yml", recovery
+        )
+        job = self.text.split("  qualification:\n", 1)[1].split(
+            "  qualification-result:\n", 1
+        )[0]
+        self.assertIn("os: [ubuntu-24.04, macos-15]", job)
+        self.assertIn('["source-head","base-merge"]', job)
+        dispatch = "hepta_supervisor_ci_v3.py execute fleet-library --records"
+        self.assertEqual(job.count(dispatch), 1)
+        self.assertIn("fleet-library", PLANS)
+
     def test_default_authority_denial_uses_only_the_pinned_bundle(self):
         command = PLANS["default-products"][1]
         self.assertIn("--no-default-features", command)

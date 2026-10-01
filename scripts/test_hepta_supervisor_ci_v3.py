@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import hashlib
 import shlex
 import unittest
@@ -56,6 +54,53 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
         self.assertTrue(names, relative)
         return names
 
+    def test_fleet_library_receipts_require_each_source_publication_repair(self):
+        required = tuple(
+            f"release::{module}::{name}"
+            for file, module in (
+                ("release_copy_tests.rs", "copy_tests"),
+                ("release_publish_tests.rs", "publish_tests"),
+            )
+            for name in self.source_test_names("codex-rs/hepta-fleet/src/" + file)
+        )
+        fleet_binary = "codex-hepta-fleet"
+        binaries = {fleet_binary: required}
+        evidence = self.validate_lane("fleet-library", binaries)
+        self.assertEqual(evidence["required_tests"], len(required))
+        for name in required:
+            for replacement in ("missing", "prefix", "binary"):
+                altered = {
+                    fleet_binary: tuple(
+                        test if test != name else "unreviewed_publication_case"
+                        for test in required
+                    )
+                }
+                if replacement == "prefix":
+                    altered[fleet_binary] = tuple(
+                        test if test != name else name + "_unreviewed_prefix"
+                        for test in required
+                    )
+                elif replacement == "binary":
+                    altered[fleet_binary] = tuple(
+                        test for test in required if test != name
+                    )
+                    altered[base.PACKAGE] = (name,)
+                with (
+                    self.subTest(missing=name, replacement=replacement),
+                    self.assertRaises(ValueError),
+                ):
+                    self.validate_lane("fleet-library", altered)
+
+    def test_supervisor_library_receipts_cannot_credit_fleet_passes(self):
+        fleet_binaries = self.plan.required_binary_tests["fleet-library"]
+        fleet_name = next(iter(fleet_binaries.values()))[0]
+        for lane in ("default", "production", "qualification-lib"):
+            binaries = self.plan.required_binary_tests[lane]
+            altered = {binary: tests[1:] for binary, tests in binaries.items()}
+            altered["codex-hepta-fleet"] = (fleet_name,)
+            with self.subTest(lane=lane), self.assertRaises(ValueError):
+                self.validate_lane(lane, altered)
+
     def test_receipts_reject_each_missing_or_prefixed_current_repair_success(self):
         # Derive protected cases from the actual repair test modules. The
         # transcript and aggregate count stay valid after replacing a PASS;
@@ -71,6 +116,18 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "tick_control_fault_tests.rs",
                 "supervisor::tests::tick_control_fault_tests",
             ),
+            ("matrix_control_order_tests.rs", "matrix::tick::tests::control_order"),
+            ("daemon_startup_tests.rs", "daemon::startup_tests"),
+            (
+                "constructor_recovery_probe_tests.rs",
+                "supervisor::recovery_probe::tests",
+            ),
+            (
+                "constructor_absence_recovery_tests.rs",
+                "supervisor::tests::constructor_absence_recovery_tests",
+            ),
+            ("unix_peer_identity_tests.rs", "unix::peer_identity_tests"),
+            ("control_intent_write_tests.rs", "control_intent::write_tests"),
         ):
             critical.extend(
                 f"{namespace}::{name}"

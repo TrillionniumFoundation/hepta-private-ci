@@ -429,10 +429,31 @@ class ReceiptTests(unittest.TestCase):
 
     def test_real_just_recipe_composes_every_native_plan_without_duplicate_flags(self):
         from scripts.hepta_supervisor_ci_v3 import current_plan
+        from scripts.hepta_workflow_commands import workflow_commands
 
         just = shutil.which(os.environ.get("HEPTA_JUST_BIN", "just"))
         self.assertIsNotNone(just, "install just or set HEPTA_JUST_BIN before CI tests")
         root = Path(__file__).resolve().parents[1]
+        deep_workflow = (
+            root / ".github/workflows/runtime-supervisor-deep-qualification.yml"
+        ).read_text()
+        deep_commands = []
+        for command in workflow_commands(deep_workflow):
+            if command[:2] != ["just", "test"]:
+                continue
+            if "|" in command:
+                pipe = command.index("|")
+                self.assertEqual(command[pipe - 1], "2>&1")
+                self.assertEqual(command[pipe + 1], "tee")
+                self.assertEqual(len(command), pipe + 3)
+                command = command[: pipe - 1]
+            self.assertEqual(command.count("--retries"), 1)
+            self.assertEqual(command[command.index("--retries") + 1], "0")
+            deep_commands.append(command)
+        self.assertEqual(len(deep_commands), 6)
+        deep_plans = {
+            str(index): (0, command) for index, command in enumerate(deep_commands)
+        }
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
             shim = directory / "capture_cargo.py"
@@ -463,6 +484,7 @@ class ReceiptTests(unittest.TestCase):
             for version, plans in (
                 ("stable", PLANS),
                 ("current", current_plan().plans),
+                ("deep", deep_plans),
             ):
                 for name, (_, command) in plans.items():
                     if command[:2] != ["just", "test"]:
@@ -480,6 +502,18 @@ class ReceiptTests(unittest.TestCase):
                         self.assertEqual(result.returncode, 0, result.stderr)
                         observed = json.loads(result.stdout)
                         self.assertEqual(observed["argv"].count("--no-fail-fast"), 1)
+                        self.assertEqual(observed["argv"].count("--retries"), 1)
+                        self.assertEqual(
+                            observed["argv"][observed["argv"].index("--retries") + 1],
+                            "0",
+                        )
+                        if version == "current" and name == "fleet-library":
+                            self.assertEqual(observed["argv"].count("-p"), 1)
+                            self.assertEqual(
+                                observed["argv"][observed["argv"].index("-p") + 1],
+                                "codex-hepta-fleet",
+                            )
+                            self.assertEqual(observed["argv"].count("--lib"), 1)
                         self.assertEqual(
                             observed,
                             {

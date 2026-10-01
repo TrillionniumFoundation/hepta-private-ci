@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Current runtime.supervisor CI plan layered on the stable receipt engine."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 if __package__:
@@ -29,11 +27,37 @@ CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
     "supervisor::tests::tick_control_fault_tests::first_companion_signal_error_survives_main_control_failure",
     "supervisor::tests::tick_control_fault_tests::companion_signal_error_survives_exact_main_exit_cleanup_failure",
     "supervisor::tests::tick_control_fault_tests::already_fenced_termination_error_survives_poll_failure",
+    "matrix::tick::tests::control_order::emergency_kill_signals_main_before_matrix_and_retains_unresolved_control",
+    "matrix::tick::tests::control_order::emergency_kill_keeps_main_first_when_main_signal_fails",
+    "matrix::tick::tests::control_order::emergency_kill_keeps_main_first_when_matrix_signal_fails",
+    "matrix::tick::tests::control_order::emergency_kill_keeps_main_first_when_registry_and_intent_preparation_fail",
+    "daemon::startup_tests::losing_daemon_does_not_migrate_legacy_fleet_directories",
+    "daemon::startup_tests::losing_daemon_does_not_chmod_existing_matrix_directories",
+    "daemon::startup_tests::registry_open_failure_releases_startup_owner_without_serving",
+    "daemon::startup_tests::startup_rejects_symlink_fleet_geometry_before_creating_an_external_lock",
+    "supervisor::recovery_probe::tests::only_absent_evidence_below_a_physical_parent_skips_recovery",
+    "supervisor::recovery_probe::tests::each_restart_witness_and_any_release_file_preserves_validation",
+    "supervisor::recovery_probe::tests::dangling_symlink_fifo_and_symlink_parent_are_never_absence",
+    "supervisor::tests::constructor_absence_recovery_tests::constructor_cancels_orphan_lineage_without_a_restart_budget",
+    "supervisor::tests::constructor_absence_recovery_tests::constructor_restores_pending_budget_without_control_or_lineage",
+    "supervisor::tests::constructor_absence_recovery_tests::constructor_keeps_terminal_release_transaction_in_owner_metadata",
+    "unix::peer_identity_tests::kernel_peer_identity_accepts_the_actual_socket_pair_process",
+    "unix::peer_identity_tests::kernel_peer_identity_rejects_a_different_live_process_and_invalid_pid",
+    "unix::peer_identity_tests::forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child",
+    "unix::peer_identity_tests::forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child",
+    "unix::peer_identity_tests::drain_never_sends_a_frame_to_a_socket_owned_by_another_process",
+    "control_intent::write_tests::repeated_real_control_rename_failures_leave_no_new_staging_files",
+    "control_intent::write_tests::control_publication_fault_cuts_clean_staging_and_preserve_acknowledgement_errors",
 )
 CURRENT_LIBRARY_REQUIREMENTS = (
     *base.LIBRARY_REQUIREMENTS,
     "daemon::execution::tests::tick_projection_refresh_is_coalesced_at_the_fixed_interval",
     *CURRENT_REPAIR_LIBRARY_REQUIREMENTS,
+)
+FLEET_PACKAGE = "codex-hepta-fleet"
+CURRENT_FLEET_LIBRARY_REQUIREMENTS = (
+    "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
+    "release::publish_tests::interrupted_directory_seal_cannot_admit_or_overwrite_the_release",
 )
 CURRENT_INTEGRATION_REQUIREMENTS = {
     "restart_budget": (
@@ -142,6 +166,18 @@ def current_plan() -> CurrentPlan:
                     *serial,
                 ],
             ),
+            "fleet-library": (
+                len(CURRENT_FLEET_LIBRARY_REQUIREMENTS),
+                [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    FLEET_PACKAGE,
+                    "--lib",
+                    *serial,
+                ],
+            ),
             "authority-distribution": (
                 4,
                 [
@@ -169,6 +205,8 @@ def current_plan() -> CurrentPlan:
                     "paired_process_product",
                     "--test",
                     "writer_handoff_production",
+                    "--profile",
+                    "hepta-supervisor-qualification",
                     *serial,
                 ],
             ),
@@ -199,6 +237,9 @@ def current_plan() -> CurrentPlan:
     }
     required_binary_tests["default"] = {base.PACKAGE: CURRENT_LIBRARY_REQUIREMENTS}
     required_binary_tests["production"] = {base.PACKAGE: CURRENT_LIBRARY_REQUIREMENTS}
+    required_binary_tests["fleet-library"] = {
+        FLEET_PACKAGE: CURRENT_FLEET_LIBRARY_REQUIREMENTS
+    }
     required_binary_tests["default-products"] = {
         f"{base.PACKAGE}::bin/hepta-supervisord": CURRENT_KEY_REQUIREMENTS,
         f"{base.PACKAGE}::daemon_product": CURRENT_DAEMON_REQUIREMENTS,
@@ -209,6 +250,11 @@ def current_plan() -> CurrentPlan:
     }
     required_binary_tests["products"][f"{base.PACKAGE}::bin/hepta-supervisord"] = (
         CURRENT_KEY_REQUIREMENTS
+    )
+    paired_binary = f"{base.PACKAGE}::paired_process_product"
+    required_binary_tests["products"][paired_binary] = (
+        *required_binary_tests["products"][paired_binary],
+        "protocol_tests::paired_child_methods_and_exact_drain_use_real_protocol_validation",
     )
     required_binary_tests["qualification-lib"][base.PACKAGE] = (
         *CURRENT_LIBRARY_REQUIREMENTS,
