@@ -205,7 +205,9 @@ test(
   "Linux bubblewrap launcher exposes only the explicit runtime closure",
   { skip: process.platform !== "linux" },
   () => {
-    const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
+    const launcher = new LinuxBubblewrapLauncher({
+      bwrapPath: "/usr/bin/bwrap",
+    });
     const argv = launcher.argv({
       workerPath: "/opt/hepta/servo-worker",
       profileDir: "/var/lib/hepta/browser/profile-1",
@@ -216,7 +218,9 @@ test(
     assert.deepEqual(argv.slice(4, 6), ["--tmpfs", "/"]);
     for (let index = 0; index < argv.length - 2; index += 1) {
       assert.equal(
-        argv[index] === "--ro-bind" && argv[index + 1] === "/" && argv[index + 2] === "/",
+        argv[index] === "--ro-bind" &&
+          argv[index + 1] === "/" &&
+          argv[index + 2] === "/",
         false,
       );
     }
@@ -227,12 +231,34 @@ test(
       }
     }
     assert.equal(mountedSources.includes("/usr"), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/usr/bin")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/usr/local")), false);
-    assert.equal(mountedSources.some((path) => path === "/home" || path.startsWith("/home/")), false);
-    assert.equal(mountedSources.some((path) => path === "/root" || path.startsWith("/root/")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/var/lib")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/var/run")), false);
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/usr/bin")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/usr/local")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some(
+        (path) => path === "/home" || path.startsWith("/home/"),
+      ),
+      false,
+    );
+    assert.equal(
+      mountedSources.some(
+        (path) => path === "/root" || path.startsWith("/root/"),
+      ),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/var/lib")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/var/run")),
+      false,
+    );
     assert.equal(mountedSources.includes("/usr/lib"), true);
     assert.equal(mountedSources.includes("/var/cache/fontconfig"), true);
     assert.equal(argv.at(-1), "/hepta-worker");

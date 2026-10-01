@@ -21,23 +21,23 @@ There is still no Browser UDS/TCP discovery endpoint. Parent death closes the Br
 
 ## 2. Implemented source surfaces
 
-| Surface | Source | State |
-| --- | --- | --- |
-| bounded typed actions | `src/action.js` | implemented |
-| proposal -> effect bridge | `src/bridge.js` | implemented |
-| serialized profile/effect host | `src/runtime-host.js` | implemented |
-| stable owner facade | `src/runtime.js` | implemented |
-| durable operation journal | `src/journal.js` | implemented |
-| Browser -> Servo private protocol | `src/worker-protocol.js` | implemented |
-| artifact-bound subprocess driver | `src/worker-driver.js` | implemented |
-| Agentd -> Browser private protocol | `src/agentd-protocol.js` | implemented |
-| Agentd parent service boundary | `src/agentd-service.js` | implemented |
-| Linux Bubblewrap isolation | `src/worker-driver.js` | implemented in source; exact-host evidence required |
-| current-pin Hepta Servo worker | `servo-worker/` | implemented in source; reproducible artifact receipt required |
-| build/repro/SBOM evidence gate | `.github/workflows/hepta-browser-servo-worker-dev.yml` | implemented gate |
-| trusted Linux deployment evidence gate | `.github/workflows/hepta-browser-servo-deployment-qualification.yml` | implemented main-only gate |
-| macOS / Windows equivalent launchers | none | not implemented |
-| functional credential secret broker | none | not connected; action fails closed |
+| Surface                                | Source                                                               | State                                                         |
+| -------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------- |
+| bounded typed actions                  | `src/action.js`                                                      | implemented                                                   |
+| proposal -> effect bridge              | `src/bridge.js`                                                      | implemented                                                   |
+| serialized profile/effect host         | `src/runtime-host.js`                                                | implemented                                                   |
+| stable owner facade                    | `src/runtime.js`                                                     | implemented                                                   |
+| durable operation journal              | `src/journal.js`                                                     | implemented                                                   |
+| Browser -> Servo private protocol      | `src/worker-protocol.js`                                             | implemented                                                   |
+| artifact-bound subprocess driver       | `src/worker-driver.js`                                               | implemented                                                   |
+| Agentd -> Browser private protocol     | `src/agentd-protocol.js`                                             | implemented                                                   |
+| Agentd parent service boundary         | `src/agentd-service.js`                                              | implemented                                                   |
+| Linux Bubblewrap isolation             | `src/worker-driver.js`                                               | implemented in source; exact-host evidence required           |
+| current-pin Hepta Servo worker         | `servo-worker/`                                                      | implemented in source; reproducible artifact receipt required |
+| build/repro/SBOM evidence gate         | `.github/workflows/hepta-browser-servo-worker-dev.yml`               | implemented gate                                              |
+| trusted Linux deployment evidence gate | `.github/workflows/hepta-browser-servo-deployment-qualification.yml` | implemented main-only gate                                    |
+| macOS / Windows equivalent launchers   | none                                                                 | not implemented                                               |
+| functional credential secret broker    | none                                                                 | not connected; action fails closed                            |
 
 ## 3. Effect correctness and local-dispatch linearization
 

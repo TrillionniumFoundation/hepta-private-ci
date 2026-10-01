@@ -30,13 +30,21 @@ function fakeHost(authority, events) {
     async navigateOrAct(input) {
       events.push("host_admitted");
       return authority.withVerifiedUse(
-        { requestDigest: D1, authorityEpoch: 7, operationId: input.operationId },
+        {
+          requestDigest: D1,
+          authorityEpoch: 7,
+          operationId: input.operationId,
+        },
         async (witness) => {
           events.push("inside_fence");
           assert.equal(witness.witnessDigest, W1);
           // This resolves at the durable/local-dispatch boundary. Remote page
           // terminality is deliberately not part of the authority callback.
-          return { kind: "BrowserEffectObservationV1", status: "indeterminate", terminalObserved: false };
+          return {
+            kind: "BrowserEffectObservationV1",
+            status: "indeterminate",
+            terminalObserved: false,
+          };
         },
       );
     },
@@ -56,8 +64,14 @@ function pairedChannels() {
   const parentToChild = new PassThrough();
   const childToParent = new PassThrough();
   return {
-    parent: new AgentdBrowserChannel({ input: childToParent, output: parentToChild }),
-    child: new AgentdBrowserChannel({ input: parentToChild, output: childToParent }),
+    parent: new AgentdBrowserChannel({
+      input: childToParent,
+      output: parentToChild,
+    }),
+    child: new AgentdBrowserChannel({
+      input: parentToChild,
+      output: childToParent,
+    }),
     close() {
       parentToChild.end();
       childToParent.end();

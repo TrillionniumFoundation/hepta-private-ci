@@ -5,7 +5,15 @@ export const MAX_BROWSER_WORKER_FRAME_BYTES = 1_048_576;
 
 const SCHEMA = "hepta.browser.worker-frame.v1";
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
-const KINDS = new Set(["start", "observe", "dispatch", "reconcile", "stop", "response", "event"]);
+const KINDS = new Set([
+  "start",
+  "observe",
+  "dispatch",
+  "reconcile",
+  "stop",
+  "response",
+  "event",
+]);
 
 function requireRecord(value, name) {
   if (
@@ -35,12 +43,15 @@ function positiveInteger(value, name) {
 
 function canonicalValue(value, depth = 0) {
   if (depth > 32) throw new TypeError("worker frame nesting exceeds limit");
-  if (value === null || typeof value === "boolean" || typeof value === "string") return value;
+  if (value === null || typeof value === "boolean" || typeof value === "string")
+    return value;
   if (typeof value === "number") {
-    if (!Number.isSafeInteger(value)) throw new TypeError("worker frame numbers must be safe integers");
+    if (!Number.isSafeInteger(value))
+      throw new TypeError("worker frame numbers must be safe integers");
     return value;
   }
-  if (Array.isArray(value)) return value.map((item) => canonicalValue(item, depth + 1));
+  if (Array.isArray(value))
+    return value.map((item) => canonicalValue(item, depth + 1));
   const record = requireRecord(value, "worker frame value");
   return Object.fromEntries(
     Object.keys(record)
@@ -54,7 +65,9 @@ export function canonicalWorkerJson(value) {
 }
 
 export function workerPayloadDigest(payload) {
-  return createHash("sha256").update(canonicalWorkerJson(payload)).digest("hex");
+  return createHash("sha256")
+    .update(canonicalWorkerJson(payload))
+    .digest("hex");
 }
 
 export function buildWorkerFrame({
@@ -68,7 +81,8 @@ export function buildWorkerFrame({
   stableId(sessionId, "sessionId");
   positiveInteger(generation, "generation");
   positiveInteger(sequence, "sequence");
-  if (!KINDS.has(kind)) throw new TypeError("worker frame kind is not registered");
+  if (!KINDS.has(kind))
+    throw new TypeError("worker frame kind is not registered");
   stableId(requestId, "requestId");
   const canonicalPayload = canonicalValue(requireRecord(payload, "payload"));
   return Object.freeze({
@@ -98,10 +112,16 @@ export function normalizeWorkerFrame(value) {
     "sequence",
     "sessionId",
   ].sort();
-  if (keys.length !== expected.length || keys.some((key, index) => key !== expected[index])) {
+  if (
+    keys.length !== expected.length ||
+    keys.some((key, index) => key !== expected[index])
+  ) {
     throw new TypeError("worker frame contains missing or unknown fields");
   }
-  if (frame.schema !== SCHEMA || frame.protocolVersion !== BROWSER_WORKER_PROTOCOL_VERSION) {
+  if (
+    frame.schema !== SCHEMA ||
+    frame.protocolVersion !== BROWSER_WORKER_PROTOCOL_VERSION
+  ) {
     throw new TypeError("worker frame protocol is unsupported");
   }
   const normalized = buildWorkerFrame(frame);
@@ -131,7 +151,8 @@ export class WorkerFrameDecoder {
     }
     this.#buffer = Buffer.concat([this.#buffer, Buffer.from(chunk)]);
     if (this.#buffer.length > MAX_BROWSER_WORKER_FRAME_BYTES + 4) {
-      const announced = this.#buffer.length >= 4 ? this.#buffer.readUInt32BE(0) : 0;
+      const announced =
+        this.#buffer.length >= 4 ? this.#buffer.readUInt32BE(0) : 0;
       if (announced === 0 || announced > MAX_BROWSER_WORKER_FRAME_BYTES) {
         throw new TypeError("worker frame announced length is invalid");
       }
