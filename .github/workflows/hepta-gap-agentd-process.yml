@@ -129,6 +129,10 @@ jobs:
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-agentd --test helper_dispatch --test-threads=1
+      - name: Exercise bounded Browser host configuration reads
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-agentd --bin hepta-agentd-browser --test-threads=1
       - name: Exercise owner and lifecycle libraries
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
