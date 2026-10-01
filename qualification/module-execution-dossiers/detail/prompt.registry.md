@@ -107,6 +107,17 @@ the input collection. Identifier validation uses the 128-byte ASCII stable-ID
 profile on borrowed protocol and admission inputs before creating owned IDs.
 These checks preserve public APIs, wire versions and existing shape errors.
 
+Public final-use request binding helpers apply those borrowed factor bounds
+before request allocation/hash and preserve the existing error priority and
+valid request digests. Invalid factor shape returns `AdmissionError::InvalidGrant`.
+Native registration additionally reserves the unresolved migration purpose
+`legacy imported factor; semantic purpose unavailable` and combined model tuple
+`model:legacy-imported` / `legacy-imported`; their native factor/realization errors
+are `InvalidFactorMetadata` / `InvalidTransition`. The realization binding helper
+rejects the tuple with `InvalidGrant` before authority claim. Legacy restore,
+terminal lifecycle operations and its explicit missing-lineage export rejection
+remain unchanged; either model component paired with a different value is allowed.
+
 V1 migration checks the combined factor/realization count and rejects excess
 bindings before record decoding, index construction or synthetic imported events.
 The storage-file byte ceiling still applies before the typed image exists.
@@ -277,12 +288,23 @@ cover future conflict and required-factor edges, expiring complements and
 endpoints, future endpoint visibility, unrelated facts, exact exclusive
 millisecond boundaries, negative/unrepresentable second bounds and a future
 support in an already visible relation. Source presence is not an execution
-receipt for this new candidate.
+receipt for later edits. All ten cases executed successfully on source candidate
+`666b20e73926325b7b4bcf763f03a15c7c76ccf5`; the audit records its exact CI job.
 
 `empty_portfolio_obeys_the_same_time_and_scope_currentness_checks` constructs
 a genuinely signed zero-token-budget selection: current empty exercise succeeds
 as `NoIntervention`, while time before selection, exclusive expiry and changed
-nonzero state/vector/model fields produce `RejectStale`. Execution remains pending.
+nonzero state/vector/model fields produce `RejectStale`. That named candidate
+executed this case; subsequent source changes require their own evidence.
+
+[admission_binding_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/admission_binding_bounds_tests.rs)
+checks all four public final-use helper bounds, exact-boundary request/payload
+digest compatibility and existing rejection priority.
+[protocol_reserved_values_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_reserved_values_tests.rs)
+checks native migration-marker rejection, complete state/file and grant
+preservation, valid protocol export/reopen, partial-marker model tuples and
+V1/V2 legacy restore. These fourth-pass tests have separate validation records
+in the audit; their source presence grants no execution or deployment claim.
 
 [prompt_pipeline_fragment_bounds_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs)
 adds `public_prompt_compiler_enforces_declared_fragment_bound_before_compilation`

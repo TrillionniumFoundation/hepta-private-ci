@@ -189,6 +189,22 @@ the full dimension vector. Complete canonical protocol input is capped at
 before creating owned IDs; signed-grant shapes and public wire versions remain
 unchanged. Shape failures retain `InvalidField` / `InvalidGrant` semantics.
 
+All four public `final_use_*_binding` helpers apply the same borrowed factor
+semantic bounds before allocating or hashing their signing request. Existing
+source, self-review, scope, realization-binding and revoke-cutoff errors retain
+their priority; invalid factor fields return `AdmissionError::InvalidGrant`.
+Valid boundary inputs retain exactly the same request and payload digests.
+
+The migration purpose `legacy imported factor; semantic purpose unavailable`
+and the combined model tuple `model:legacy-imported` / `legacy-imported` are
+reserved unresolved-lineage markers. Native factor registration rejects that
+purpose with `InvalidFactorMetadata`; native realization registration rejects
+that tuple with `InvalidTransition`, and its public final-use binding helper
+rejects it with `InvalidGrant` before grant claim. The individual model ID or
+version remains valid when paired with another value. Legacy restore continues
+to accept the markers as historical data; protocol export still reports
+`MissingAuthoritativeLineage`, and retirement/revocation remain available.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -323,9 +339,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-prompt-registry/src/admission_binding_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/admission_binding_bounds_tests.rs) covers public signing-helper bounds, exact-boundary digest compatibility and existing error priority.
+- [codex-rs/hepta-prompt-registry/src/protocol_reserved_values_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_reserved_values_tests.rs) covers native rejection of migration markers, preserved state/grant claimability and legacy recovery compatibility.
 - [codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs) covers first-match prefix fallback, nonoverlapping cursor advancement and missing semantics; these new cases await candidate execution.
 - [codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs) covers the public lower-level compiler/delivery 10,000-token guard and serialized-payload byte rejection using admitted and signed-selection fixtures; these new cases await candidate execution.
-- [codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs) covers future and expired prompt-edge/endpoint supports, overlapping-support cut transitions and exact millisecond boundaries; these new fixtures await candidate execution.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs) covers future and expired prompt-edge/endpoint supports, overlapping-support cut transitions and exact millisecond boundaries; the audit records their execution on source candidate `666b20e73926325b7b4bcf763f03a15c7c76ccf5` separately from later edits.
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named case: `external_material_cannot_admit_itself`.
 - [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named case: `every_state_change_allocates_one_revision_and_identical_retry_does_not`.
 - [codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs) covers adversarial storage restore and bootstrap recovery.

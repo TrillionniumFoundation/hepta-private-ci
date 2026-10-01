@@ -583,8 +583,135 @@ maps did not produce qualification failures. The final caller scan, including
 the new linear-search production file, passed across 2,902 Rust files; all four
 protected prompt mutation product-caller sets remain empty.
 
-Source changes are prepared as reviewable commits for the existing draft PR.
-The eleven scoped implementation-map observations may be bound to a real
-current-source checkpoint. That metadata work preserves the nine invalid
+Those source changes and eleven scoped map observations were published in draft
+PR #1301 at `666b20e73926325b7b4bcf763f03a15c7c76ccf5`, tree
+`3119c438748c4b1d4753d6f8f2b572a8e0eea01a`. Publication preserves the nine invalid
 historical anchors and all production, execution, qualification and acceptance
 flags; it cannot supply missing runtime test evidence.
+
+## Fourth-pass exact-source CI observation
+
+Latest `main` remains `997e7beef8151160065df36b024bc8da5c989e93`.
+[Architecture run 36822690308, source job 110241568213](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36822690308/job/110241568213)
+executed source `666b20e73926325b7b4bcf763f03a15c7c76ccf5`, tree
+`3119c438748c4b1d4753d6f8f2b572a8e0eea01a`. Command receipts record that same
+clean identity before and after execution; no altered test tree was used.
+
+| Scope | Actual execution for that candidate |
+| --- | --- |
+| prompt.optimizer | 52 passed, including all ten new temporal/currentness regressions |
+| learning.ledger | 121 passed, one previously ignored case |
+| prompt.registry | Compiled as a dependency; four new registry tests were not executed |
+| intelligence prompt bounds/search | Compiled through Agentd; eight new intelligence tests were not executed |
+| Agentd prompt tests | Not executed; the job ran three browser and one selected-ranker test instead |
+
+Thus ten of the twenty-two renewed fixtures now have successful execution
+evidence for this named candidate; twelve do not. This observation does not
+execute the subsequent fourth-pass repairs. Optimizer and ledger command-log
+SHA256 values are respectively
+`87b9b0284ee55768cc8d777730c27cc76b0f8536dfe74b64729c6ef9ee447d82`
+and `8b900b0ebf8f33b78fc75482cc31cf5eff768d8b0147eed9a0c1212d8c9333e0`.
+
+The architecture job later failed at the `runtime_executable` Agentd selector:
+Cargo exited zero but selected zero tests, so the execution wrapper correctly
+rejected its required minimum of one. The observer source/test files are not
+declared by Agentd's crate root. Existing Agentd runtime documentation claiming
+executable-byte binding is not product evidence for that unlinked implementation.
+The command-log SHA256 is
+`19a8af432d06df38c6ed8dd00b1cbe63000238cf76daedd7497f871fdd72ea43`.
+No unrelated selector or threshold was weakened to make this gate green.
+
+The base-merge job used `8ceec1d9e9a5718d22d0480f20112d4c2e8f0350` with the
+same source tree. It skipped native steps through exact-tree reuse; its success
+does not represent a second full execution of the prompt suites.
+
+[Blocking run 36822690818](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36822690818)
+also failed. Its scoped native job was intentionally skipped: the branch diff
+includes Cargo.lock and workflow changes, each selecting existing full-repository
+fallback. The Bazel workspace wrappers include prompt unit targets, but Linux
+reported their execution as `NO STATUS` after other failures. Successful native
+path checks on three hosts exercise repository wrappers, not these registry tests.
+The ordinary caller scanner passed 2,902 production Rust files. Independent
+kernel-authority QA then failed on a missing inventory boundary and malformed
+regular expression; both relevant files are byte-identical to `main`. Other
+observed failures include an unrelated learning-artifacts cached-consumer
+regression and missing Fleet Bazel compile data. These failures do not establish
+prompt test results. Automatic dependency selection and reusable/manual deep
+qualification remain as established by main PR #1279.
+
+## Fourth-pass public signing-request bounds
+
+The four public final-use binding helpers could accept caller-owned factor
+semantics larger than the native factor ceilings and allocate another complete
+request before hashing. Durable mutation paths normally use already validated
+stored factors, so this was a public-helper resource defect, not an authority
+bypass. All three allocation sites now reuse borrowed factor semantic validation
+before copying or hashing. They return existing `AdmissionError::InvalidGrant`;
+source, self-review, scope, binding and revoke-cutoff error priority is preserved.
+Valid inputs retain their exact request and payload digests.
+
+`admission_binding_bounds_tests.rs` covers all four helpers, oversized purpose,
+authority class and encoded dimension array, exact 4,096/8,192-byte boundaries,
+complete binding golden values and prior rejection priority. The generic shape
+check continues to permit bounded legacy factor markers, keeping terminal
+retirement/revocation available.
+
+## Fourth-pass migration marker reservation
+
+Native registration previously accepted the exact unresolved migration purpose
+or complete migration model tuple, then protocol export rejected the same record
+as missing authoritative lineage. This valid-input/export mismatch did not
+require corrupted storage or forged signatures. The migration purpose
+`legacy imported factor; semantic purpose unavailable` is now reserved at native
+factor registration. The combined tuple `model:legacy-imported` / `legacy-imported`
+is reserved at native realization construction and its public final-use request
+binding, before an authority claim. Either model component with another partner
+is still accepted. Existing typed errors are reused, with no schema or wire change.
+Legacy recovery retains its historical placeholders and missing-lineage export
+rejection; terminal lifecycle operations remain available.
+
+The implementation profile now indexes the four renewed regression modules and
+the fourth-pass tests, rather than leaving detailed prose as the only navigation
+to their source. Only the prompt.registry source-description/test-reference
+fields change; execution, production, acceptance, activation and release flags
+remain unchanged. Fresh validation and final source binding are recorded below.
+
+## Fourth-pass local execution and final verification
+
+The first scoped native build stopped in the unchanged contracts dependency
+with `No space left on device` (exit 101), before any tests executed. A retry
+stopped before compilation on a truncated temporary Cargo metadata JSON file
+(exit 1). Neither is a test failure or passing receipt. Moving only this task's
+build cache and temporary files to an available temporary filesystem allowed
+the same source to execute through the repository test runner:
+
+`just test --locked --offline -p codex-hepta-prompt-registry --cargo-profile dev-small --test-threads 1`
+
+It completed with exit zero: **89 tests ran, 89 passed, zero skipped**. This
+includes all six fourth-pass helper/reservation regressions and all four renewed
+registry input/recovery regressions. Passing command-log SHA256 is
+`25abaa8594b84f00c1ebdd4b25842b8b348b13ed58b806074a0a4969a4ccff65`.
+This is local working-tree execution before automatic fix/format; it is not a
+final committed source/merge or production receipt. The eight intelligence
+bounds/search fixtures still lack successful runtime execution evidence.
+
+Required scoped `just fix` completed with exit zero and made one test-expression
+lint fix. Strict registry/optimizer/ledger `just clippy --locked --offline
+--profile dev-small ... -- -D warnings` then passed with the recipe's `--tests`;
+this compiles tests without executing them. Final `just fmt --base origin/main`
+also passed. Local Rust tests were not rerun after fix or format, following the
+repository instructions. No dependencies, wire versions or automatic deep
+qualification events were added.
+
+Development-profile ownership/document/navigation checks and detailed-design
+conformance passed. The caller scan passed 2,902 production Rust files; the four
+protected prompt mutation product-caller sets remain empty. Bundle-level dossier
+validation still rejects `kernel.operations: false source or deployment closure`.
+That profile row is unchanged from both main and the previous audit head; its
+failure was retained rather than changing an unrelated completion claim.
+The nine inherited invalid historical map anchors remain a separate full
+qualification blocker. Independent fourth-pass source and document re-review
+found no further reproducible scoped defect after the two repairs. Host ingress,
+trusted recovery witness, live send-time revocation, actual tokenizer/P0 review,
+retention/compaction, benchmarks and deployment/independent acceptance remain
+explicitly unproved.
