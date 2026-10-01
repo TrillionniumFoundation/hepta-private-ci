@@ -656,6 +656,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
+        // Bound every caller-owned field before copying the receipt input.
+        self.validate_current_grant(now_ms)?;
+        validate_identity(model_id, "model")?;
+        validate_request(now_ms, &request.authorization)?;
+        validate_neuron_feature_request(&request)?;
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
         let generation =
