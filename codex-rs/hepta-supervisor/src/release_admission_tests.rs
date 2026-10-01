@@ -2,6 +2,9 @@
 
 use super::*;
 
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+
 use pretty_assertions::assert_eq;
 
 #[test]
@@ -29,20 +32,21 @@ fn cached_catalog_start_is_readmitted_before_any_lifecycle_or_process_effect()
             "removed" => {
                 // A previously resolved descriptor cannot turn into a direct
                 // plant merely because its catalog and allowance disappear.
-                std::fs::rename(
-                    fleet
-                        .registry
-                        .layout()
-                        .releases_root()
-                        .join(cached.identity()),
-                    // Keep the same parent so the immutable directory's
-                    // parent link does not need to change.
-                    fleet
-                        .registry
-                        .layout()
-                        .releases_root()
-                        .join(".removed-catalog-entry"),
-                )?;
+                let catalog = fleet.registry.layout().releases_root();
+                let source = catalog.join(cached.identity());
+                let removed = catalog.join(".removed-catalog-entry");
+                let sealed = std::fs::metadata(&source)?.permissions();
+                let mut writable = sealed.clone();
+                // Fixture administrator action: Darwin requires a writable
+                // directory even for a rename within the same parent. Restore
+                // the exact sealed mode before exercising cached admission.
+                #[cfg(unix)]
+                writable.set_mode(0o700);
+                #[cfg(not(unix))]
+                writable.set_readonly(false);
+                std::fs::set_permissions(&source, writable)?;
+                std::fs::rename(&source, &removed)?;
+                std::fs::set_permissions(&removed, sealed)?;
                 std::fs::remove_file(
                     record
                         .layout

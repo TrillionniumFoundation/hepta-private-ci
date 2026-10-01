@@ -133,7 +133,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                         if let Err(cancellation) = self.finish_failed_restart_spawn(agent_id, slot)
                         {
                             slot.event(
-                                0,
+                                /*generation*/ 0,
                                 SupervisorEventKind::DriverFault(bounded_message(
                                     cancellation.to_string(),
                                 )),

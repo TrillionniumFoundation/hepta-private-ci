@@ -160,7 +160,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             && let Err(fault) = self.kill_matrix_now(agent_id, slot)
         {
             slot.event(
-                0,
+                /*generation*/ 0,
                 SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
             );
         }

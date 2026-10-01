@@ -263,7 +263,7 @@ pub(crate) fn prepare_kill(
             target_process_identity.clone(),
             expected_lifecycle_generation,
             unix_ms_now()?,
-            None,
+            /*stop_deadline_unix_ms*/ None,
         )?,
     )
 }
@@ -404,7 +404,10 @@ fn advance(
             "control intent kind or phase changed before acknowledgement".to_string(),
         ));
     }
-    write_control_intent(run_root, &current.with_phase(phase, None)?)
+    write_control_intent(
+        run_root,
+        &current.with_phase(phase, /*completed_unix_ms*/ None)?,
+    )
 }
 
 fn restore_deadline(

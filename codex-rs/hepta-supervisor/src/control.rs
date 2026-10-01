@@ -356,7 +356,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         .flatten()
         {
             slot.event(
-                0,
+                /*generation*/ 0,
                 SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
             );
         }

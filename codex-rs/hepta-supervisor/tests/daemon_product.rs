@@ -10,6 +10,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use anyhow::Result;
+use anyhow::bail;
 use anyhow::ensure;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
@@ -44,7 +45,12 @@ async fn product_binary_serves_the_complete_256_agent_roster() -> Result<()> {
         expected.push(agent_id);
     }
     let mut daemon = DaemonChild::spawn(fleet_root.as_path())?;
-    let client = wait_for_daemon(&registry).await?;
+    let client = wait_for_daemon(
+        &registry,
+        &mut daemon,
+        /*expected_registered_agents*/ 256,
+    )
+    .await?;
     let roster = client.roster(256).await?;
     assert_eq!(
         roster
@@ -80,7 +86,12 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     )?)?;
 
     let mut daemon = DaemonChild::spawn(fleet_root.as_path())?;
-    let client = wait_for_daemon(&registry).await?;
+    let client = wait_for_daemon(
+        &registry,
+        &mut daemon,
+        /*expected_registered_agents*/ 1,
+    )
+    .await?;
     let health = client.health().await?;
     ensure!(health.ready && health.registered_agents == 1);
     let initial_epoch = health.supervisor_epoch;
@@ -144,7 +155,12 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
 
     daemon.kill()?;
     let mut restarted = DaemonChild::spawn(fleet_root.as_path())?;
-    let restarted_client = wait_for_daemon(&registry).await?;
+    let restarted_client = wait_for_daemon(
+        &registry,
+        &mut restarted,
+        /*expected_registered_agents*/ 1,
+    )
+    .await?;
     let restarted_health = restarted_client.health().await?;
     ensure!(restarted_health.ready);
     ensure!(
@@ -190,18 +206,39 @@ fn send_oversized_frame(path: &std::path::Path) -> Result<()> {
     Ok(())
 }
 
-async fn wait_for_daemon(registry: &FleetRegistry) -> Result<SupervisordClient> {
+async fn wait_for_daemon(
+    registry: &FleetRegistry,
+    daemon: &mut DaemonChild,
+    expected_registered_agents: u16,
+) -> Result<SupervisordClient> {
     let deadline = Instant::now() + Duration::from_secs(10);
     let client = SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())?;
     loop {
-        let last_error = match client.health().await {
-            Ok(_) => return Ok(client),
-            Err(error) => error,
+        if let Some(status) = daemon.0.try_wait()? {
+            bail!("supervisord exited before readiness polling: {status}");
+        }
+        let (ready, observation) = match client.health().await {
+            Ok(health) => (
+                health.ready && health.registered_agents == expected_registered_agents,
+                format!(
+                    "ready={} registered_agents={} expected_registered_agents={expected_registered_agents} observed_faults={}",
+                    health.ready, health.registered_agents, health.observed_faults,
+                ),
+            ),
+            Err(error) => (false, format!("{error:#}")),
         };
+        if let Some(status) = daemon.0.try_wait()? {
+            bail!(
+                "supervisord exited during readiness polling: {status}; last observation: {observation}"
+            );
+        }
         ensure!(
             Instant::now() < deadline,
-            "supervisord did not become ready: {last_error:#}"
+            "supervisord did not become ready before the 10-second deadline; child had not exited at the final poll; last observation: {observation}"
         );
+        if ready {
+            return Ok(client);
+        }
         tokio::time::sleep(Duration::from_millis(25)).await;
     }
 }

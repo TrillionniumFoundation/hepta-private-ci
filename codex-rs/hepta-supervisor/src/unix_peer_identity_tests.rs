@@ -23,6 +23,12 @@ use super::*;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+fn short_socket_tempdir() -> io::Result<tempfile::TempDir> {
+    tempfile::Builder::new()
+        .prefix("hsup-peer-")
+        .tempdir_in("/tmp")
+}
+
 struct OwnedChild(Child);
 
 impl OwnedChild {
@@ -45,7 +51,12 @@ struct ForgedServer {
 
 impl ForgedServer {
     fn new(path: &Path, response: serde_json::Value) -> io::Result<Self> {
-        let listener = UnixListener::bind(path)?;
+        let listener = UnixListener::bind(path).map_err(|error| {
+            io::Error::new(
+                error.kind(),
+                format!("bind forged peer listener {}: {error}", path.display()),
+            )
+        })?;
         listener.set_nonblocking(true)?;
         let stop = Arc::new(AtomicBool::new(false));
         let worker_stop = Arc::clone(&stop);
@@ -147,7 +158,7 @@ fn kernel_peer_identity_rejects_a_different_live_process_and_invalid_pid() -> Te
 
 #[test]
 fn forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child() -> TestResult {
-    let temp = tempfile::tempdir()?;
+    let temp = short_socket_tempdir()?;
     let mut child = OwnedChild::new()?;
     let identity = agent_identity(&temp, child.0.id())?;
     let response = AgentdResponse {
@@ -190,7 +201,7 @@ fn forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child() -> TestResul
 
 #[test]
 fn forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child() -> TestResult {
-    let temp = tempfile::tempdir()?;
+    let temp = short_socket_tempdir()?;
     let mut child = OwnedChild::new()?;
     let spec = MatrixAdoptSpec {
         agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
@@ -234,7 +245,7 @@ fn forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child() -> TestResul
 
 #[test]
 fn drain_never_sends_a_frame_to_a_socket_owned_by_another_process() -> TestResult {
-    let temp = tempfile::tempdir()?;
+    let temp = short_socket_tempdir()?;
     let mut child = OwnedChild::new()?;
     let identity = agent_identity(&temp, child.0.id())?;
     let response = AgentdResponse {

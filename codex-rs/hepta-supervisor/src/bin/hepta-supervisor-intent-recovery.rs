@@ -175,7 +175,7 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
         ),
         "production submission accepts only signed_upgrade, signed_rollback, or resolve_production_recovery"
     );
-    SupervisordRequest::new(1, method.clone())
+    SupervisordRequest::new(/*request_id*/ 1, method.clone())
         .validate()
         .map_err(|_| anyhow::anyhow!("invalid supervisor CAS fence"))?;
     Ok(method)

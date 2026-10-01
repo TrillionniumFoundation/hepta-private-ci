@@ -296,8 +296,11 @@ pub(crate) fn reconcile_pending(
                 Ok(RestartRecoveryRole::PredecessorOwned)
             }
             None if !process_lease_present => {
-                lineage =
-                    lineage.with_state(true, None, RestartLineagePhase::ReplacementPending)?;
+                lineage = lineage.with_state(
+                    /*predecessor_exit_observed*/ true,
+                    /*replacement*/ None,
+                    RestartLineagePhase::ReplacementPending,
+                )?;
                 write(run_root, &lineage)?;
                 Ok(RestartRecoveryRole::ReplacementPending)
             }
@@ -317,7 +320,7 @@ pub(crate) fn reconcile_pending(
                     ));
                 }
                 lineage = lineage.with_state(
-                    true,
+                    /*predecessor_exit_observed*/ true,
                     Some(current.clone()),
                     RestartLineagePhase::ReplacementStarted,
                 )?;
@@ -368,7 +371,7 @@ pub(crate) fn bind_replacement(
         ));
     }
     let next = lineage.with_state(
-        true,
+        /*predecessor_exit_observed*/ true,
         Some(replacement),
         RestartLineagePhase::ReplacementStarted,
     )?;
@@ -403,7 +406,11 @@ pub(crate) fn mark_predecessor_exited(
     }
     write(
         run_root,
-        &lineage.with_state(true, None, RestartLineagePhase::ReplacementPending)?,
+        &lineage.with_state(
+            /*predecessor_exit_observed*/ true,
+            /*replacement*/ None,
+            RestartLineagePhase::ReplacementPending,
+        )?,
     )
 }
 
@@ -430,7 +437,7 @@ pub(crate) fn complete(
     write(
         run_root,
         &lineage.with_state(
-            true,
+            /*predecessor_exit_observed*/ true,
             Some(replacement.clone()),
             RestartLineagePhase::Completed,
         )?,
