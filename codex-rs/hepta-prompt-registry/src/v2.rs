@@ -329,6 +329,11 @@ impl PromptRegistry {
             PromptRegistryV2Error::EmptyDigest(name) => Error::EmptyDigest(name),
             _ => Error::InvalidTransition,
         })?;
+        if binding.model_id.as_str() == crate::protocol::LEGACY_UNRESOLVED_MODEL_ID
+            && binding.model_version == crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION
+        {
+            return Err(Error::InvalidTransition);
+        }
         let Some(factor) = self.factors.get(&binding.factor_id) else {
             return Err(Error::FactorNotFound(binding.factor_id.to_string()));
         };

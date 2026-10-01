@@ -391,6 +391,11 @@ impl PromptRegistry {
         &mut self,
         factor: PromptFactor,
     ) -> Result<RegistryReceipt, Error> {
+        // This value denotes missing legacy metadata during recovery; native
+        // records must remain exportable through the authoritative protocol.
+        if factor.semantic_purpose == protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE {
+            return Err(Error::InvalidFactorMetadata);
+        }
         protocol::validate_factor_semantics(&factor).map_err(|_| Error::InvalidFactorMetadata)?;
         if factor.content_digest.is_zero() {
             return Err(Error::EmptyDigest("factor content"));
@@ -1070,3 +1075,7 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "protocol_reserved_values_tests.rs"]
+mod protocol_reserved_values_tests;
