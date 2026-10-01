@@ -454,6 +454,12 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
 fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence() {
     let id = |value: &str| StableId::new(value).expect("stable id");
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
+    let runtime = composition();
+    let fence_digest = crate::objective_run_fence_digest_v1(
+        &runtime.agent_id,
+        runtime.supervisor_generation,
+        runtime.agentd_generation,
+    );
     let record = RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.1"),
@@ -487,14 +493,14 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
             artifact_set_digest: d("artifacts"),
             authority_epoch: 7,
             generation: 3,
-            fence_digest: d("fence"),
+            fence_digest,
         },
         runtime_body_digest: d("body"),
         objective_semantic_bytes: vec![1],
         objective_function_v1_digest: d("objective-v1"),
         objective_function_v1_bytes: vec![2],
     };
-    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    let mut coordinator = AgentRunCoordinator::compose_runtime(runtime).expect("compose");
     let receipt = coordinator
         .start_revalidated_run_start(100, &record)
         .expect("admit durable run start");

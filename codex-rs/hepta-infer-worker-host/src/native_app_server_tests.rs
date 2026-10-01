@@ -6,6 +6,8 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
+#[path = "native_intelligence_observation_tests.rs"]
+mod intelligence_observation;
 #[path = "native_output_observation_tests.rs"]
 mod output_observation;
 #[path = "native_output_recovery_tests.rs"]
@@ -34,6 +36,7 @@ fn binding() -> CodexTurnBinding {
             }),
         },
         turn_id: StableId::new("turn-a").unwrap(),
+        intelligence: None,
     }
 }
 
