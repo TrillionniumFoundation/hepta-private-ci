@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f223b421b200d80b572b8a095980749c1a376c08",
-    "tree": "988aaa96f5b8a586b73c96220f2c97038228c50b"
+    "commit": "0989cab5eac795681258a509d7cddc9c8e76230e",
+    "tree": "589c7fae43ddf33ca2055787c21e7363ef3e73f7"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -34,7 +34,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Validates supplied manifest and resource-grant bindings, rejects cleanup-fenced execution, and checks aggregate driver-reported resident allocation. Invalid post-load handles trigger cleanup; failed cleanup retains resource ownership. Physical artifact/device loading and enforcement remain the injected driver owner responsibility.",
+      "sourceSemantics": "Validates supplied manifest and resource-grant bindings, rejects cleanup-fenced execution, and checks aggregate driver-reported resident allocation. Invalid post-load handles trigger cleanup; failed cleanup retains resource ownership. An opaque ID aliasing an existing handle admits no second record and is never automatically unloaded; it fences the generation until physical driver-wide cleanup and a fresh generation. Physical artifact/device loading and enforcement remain the injected driver owner responsibility.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -84,6 +84,20 @@
           "symbol": "pub fn settle_native(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
           "ownerModule": "inference.control"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_denial.rs",
+          "symbol": "pub(super) fn persist_denied_observation(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipt.rs",
+          "symbol": "pub(super) fn verify_intelligence_recovery_receipt<",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
         }
       ],
       "tests": [
@@ -111,9 +125,29 @@
           "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_tests.rs",
           "kind": "exact_owner_cancellation_and_terminal_revision_recovery",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_denial_tests.rs",
+          "kind": "denied_boundary_prefix_usage_and_capacity_survive_reopen",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipt_tests.rs",
+          "kind": "exact_owner_terminal_phase_and_historical_clock_independence",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_input_tests.rs",
+          "kind": "borrowed_bounds_digest_compatibility_and_utf8_byte_budget",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "pre_effect_abort_proof_is_bound_to_exact_live_control_instance",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, freezes exact App Server request/correlation, requires independently signed final-use authority and commits dispatch before the effect. New requests enter turn/start once. Completed duplicates return stored historical observations; uncertain reopen attempts use exact thread/read history without a new turn/start. Recovered observations retain prior usage, owner loss and cancelled/timed-out/quarantined local boundary; missing history or usage remains unknown. Intelligence-bound recovered terminals reconcile the exact existing Agentd target through observed-current-revision CAS; existing exact terminal receipts remain historical truth and conflicts deny local success. Historical missing authority frontiers quarantine before owner publication.",
+      "sourceSemantics": "Reserves through durable inference.control, freezes exact App Server request/correlation, requires independently signed final-use authority and commits dispatch before the effect. New requests enter turn/start once. Completed duplicates return stored historical observations; uncertain reopen attempts use exact thread/read history without a new turn/start. Recovered observations retain prior usage, owner loss and cancelled/timed-out/quarantined local boundary; missing history or usage remains unknown. Intelligence-bound recovered terminals reconcile the exact existing Agentd target through observed-current-revision CAS; existing exact terminal receipts remain historical truth and conflicts deny local success. Historical missing authority frontiers quarantine before owner publication. Every denied nonterminal observation and cancellation intent is journaled before external cancellation or interruption awaits. Existing terminal owner receipts must match the same worker-boundary phase used for publication, without reading a live clock for matching historical facts. Prepared no-effect abort proofs are one-shot and bound to the exact issuing control instance, request and revision; foreign or reopened owners cannot consume them.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -136,7 +170,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Unloads only an owned admitted generation after the injected driver confirms drain and resource release. Expired/revoked grants do not prohibit cleanup. A failed unload retains the handle and cleanup fence, preventing new execution until confirmed release.",
+      "sourceSemantics": "Unloads only an owned admitted generation after the injected driver confirms drain and resource release. Expired/revoked grants do not prohibit cleanup. A failed unload retains the handle and cleanup fence, preventing new execution until confirmed release. Known-handle release cannot clear unknown-load or opaque-handle ambiguity fences.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -215,12 +249,32 @@
   },
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "object": "bd41d2a22e4b78bd9b465d9928f7623366ed215a"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "object": "129fd1a5d2ef5f03c61d90f672ba0c8d9e02b50a"
+    },
+    {
       "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+      "object": "294f5deef9f65f92bbacb5167be6a9fd2311952a"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "object": "70ab0550c26f8623575368793412a980e911a845"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+      "object": "b649a422cd8417320d74db43dc053931c125b9c3"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+      "object": "ff233d426953e7ce250ec2a8d47123f06ff9134b"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host",
-      "object": "a49a4b62ac90a3f852882c1626bb908ef5835999"
+      "object": "66a5c4da3f0da56674449c5ed75e022da36e0e85"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
@@ -236,27 +290,47 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "object": "fc17c9f1fd182cf3558a3129025c0ec3424caaf2"
+      "object": "4ade772ca6590b4a58fe684e0dd4f9adcdaaff9f"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-      "object": "6ff685f86e83445447c9cc419ec517b91c1bf9f2"
+      "object": "e8065a3158dab3a7abf6f9d8aeb63cdd72d42b70"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "c0f8c05f2498237e26e6bf2b8d1b241348f10d6a"
+      "object": "e498262cb8e903129c3ce064ea312a57473ec726"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
       "object": "a33f520811bab268575bc4e5a4339e2c634e2b49"
     },
     {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_denial.rs",
+      "object": "91fd811e7241f8959a2628bb9164dcaeff3ed0ef"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_denial_tests.rs",
+      "object": "1d44a0959439939eca18791884769e7ba0ed6464"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_input_tests.rs",
+      "object": "8022182a1be5fa69c3ff4c5ce2551c648d29942e"
+    },
+    {
       "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence.rs",
-      "object": "d6757ada0a7012ab2f9fb800236f12f36b490547"
+      "object": "b08be9cf4c1acecb3456d31ef58437d46de00eca"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipt.rs",
+      "object": "627d0860337ad76baf24188f166e770038503fe2"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipt_tests.rs",
+      "object": "70a4ff0898e5614ba77bd941ae141eb6c8061552"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_tests.rs",
-      "object": "089b7c168bebb84e159bc9f9704d6f45563be0cf"
+      "object": "e2af3a1d9b3e776b03f542d10f160a9651718a9e"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_observation_tests.rs",
@@ -264,15 +338,19 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "object": "b25be88f6611a71ca6ba7d0d729e490ecd56d45c"
+      "object": "5ec47909f4755cc66f196626910803cfe49859af"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
       "object": "2bb2fd3ee9abe6859921d14cc1b31a1cc485ce2d"
     },
     {
+      "path": "docs/modules/inference.control/TECHNICAL.md",
+      "object": "d5e8e04731e060ea4a1d74cb454786c7f5a22d91"
+    },
+    {
       "path": "docs/modules/inference.worker/TECHNICAL.md",
-      "object": "e21f1d09ed5922bbab154fd055db242f255ed572"
+      "object": "1f653d39f55cb4b802552c67d1e81fcfb79f734c"
     }
   ]
 }
