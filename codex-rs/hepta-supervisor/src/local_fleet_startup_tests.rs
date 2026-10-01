@@ -7,9 +7,13 @@ use std::path::Path;
 use std::process::Child;
 use std::process::Command;
 use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -40,7 +44,12 @@ impl Fixture {
         if unsafe { libc::geteuid() } != 0 {
             return Err("requires actual root and writable native cgroup v2".into());
         }
-        let temp = tempfile::tempdir_in("/var/lib/hepta-private-ci")?;
+        let temp = tempfile::Builder::new()
+            .prefix("hepta-startup-native-")
+            .tempdir_in("/var/lib")?;
+        // The real UID-1000 child must traverse its own isolated namespace;
+        // policy/frontier files remain root-owned and private beneath it.
+        std::fs::set_permissions(temp.path(), std::fs::Permissions::from_mode(0o711))?;
         let cgroup = format!("hepta-startup-native-{}", uuid::Uuid::new_v4().simple());
         let agent = AgentId::parse(uuid::Uuid::new_v4().to_string())?;
         let workspace = temp.path().join("workspace");
@@ -266,4 +275,137 @@ async fn early_upkeep_never_resurrects_an_already_expired_native_grant() -> Resu
     cancellation.cancel();
     fixture.finish().await?;
     result
+}
+
+#[derive(Clone, Copy)]
+enum RenewalBoundary {
+    Expiry,
+    ClockUnavailable,
+}
+
+// The first four samples cover capacity observation/publication, expiry
+// collection and native-exit verification. The fifth is the renewal's own
+// clock sample, after the original grant and pending receipt were read.
+struct RenewalBoundaryClock {
+    native: Arc<super::super::trust::HostClock>,
+    samples: AtomicUsize,
+    original_expiry: u64,
+    boundary: RenewalBoundary,
+}
+
+impl AuthorityClock for RenewalBoundaryClock {
+    fn now_unix_ms(&self) -> std::result::Result<u64, AuthorityTrustError> {
+        let sample = self.samples.fetch_add(1, Ordering::SeqCst) + 1;
+        match self.boundary {
+            RenewalBoundary::Expiry if sample >= 5 => Ok(self.original_expiry),
+            RenewalBoundary::ClockUnavailable if sample == 5 => {
+                Err(AuthorityTrustError::Unavailable)
+            }
+            _ => {
+                let now = self.native.now_unix_ms()?;
+                if now >= self.original_expiry {
+                    return Err(AuthorityTrustError::Unavailable);
+                }
+                Ok(now)
+            }
+        }
+    }
+}
+
+async fn check_renewal_boundary(boundary: RenewalBoundary) -> Result<()> {
+    use std::os::unix::process::ExitStatusExt;
+
+    let mut fixture = Fixture::open().await?;
+    fixture.host.maintain().await?;
+    let original = fixture
+        .host
+        .store
+        .execution_hold(&fixture.execution_id)
+        .await?
+        .ok_or("original hold absent")?;
+    let grant = fixture
+        .host
+        .store
+        .allocation_grant(&original.context.allocation_id)
+        .await?
+        .ok_or("original grant absent")?;
+    let pending = fixture
+        .host
+        .store
+        .pending_local_renewal(&fixture.execution_id)
+        .await?;
+    let clock = Arc::new(RenewalBoundaryClock {
+        native: Arc::clone(&fixture.host.clock),
+        samples: AtomicUsize::new(0),
+        original_expiry: grant.expires_at_ms,
+        boundary,
+    });
+    // Reopen the same original store under the sole owner's original
+    // instance lock. Only the test clock changes; no grant, PID, cgroup,
+    // authority binding, receipt or resource budget is manufactured.
+    let path = fixture.host.store.path().to_path_buf();
+    fixture.host.store.close().await;
+    let store = codex_hepta_fleet::DurableFleetStore::open_with_clock(&path, clock.clone()).await?;
+    Arc::get_mut(&mut fixture.host)
+        .ok_or("unexpected concurrent native owner")?
+        .store = store;
+    clock.samples.store(0, Ordering::SeqCst);
+    let result = async {
+        let outcome = fixture.host.maintain().await;
+        let held = fixture
+            .host
+            .store
+            .execution_hold(&fixture.execution_id)
+            .await?;
+        let current = fixture
+            .host
+            .store
+            .allocation_grant(&original.context.allocation_id)
+            .await?;
+        let retained = fixture
+            .host
+            .store
+            .pending_local_renewal(&fixture.execution_id)
+            .await?;
+        let exit = match boundary {
+            RenewalBoundary::Expiry if outcome.is_ok() => Some(fixture.child.wait()?),
+            _ => fixture.child.try_wait()?,
+        };
+        Ok::<_, Box<dyn std::error::Error + Send + Sync>>((outcome, held, current, retained, exit))
+    }
+    .await;
+    fixture.finish().await?;
+    let (outcome, held, current, retained, exit) = result?;
+    pretty_assertions::assert_eq!(retained, pending);
+    match boundary {
+        RenewalBoundary::Expiry => {
+            outcome?;
+            let mut stopping = original;
+            stopping.state = "stop_requested".into();
+            pretty_assertions::assert_eq!(held, Some(stopping));
+            pretty_assertions::assert_eq!(current, None);
+            pretty_assertions::assert_eq!(exit.and_then(|exit| exit.signal()), Some(libc::SIGKILL));
+        }
+        RenewalBoundary::ClockUnavailable => {
+            if outcome.is_ok() {
+                return Err("upkeep suppressed an unavailable authority clock".into());
+            }
+            pretty_assertions::assert_eq!(held, Some(original));
+            pretty_assertions::assert_eq!(current, Some(grant));
+            pretty_assertions::assert_eq!(exit, None);
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires root and writable native cgroup v2"]
+async fn upkeep_retires_original_expiry_at_the_renewal_transaction() -> Result<()> {
+    check_renewal_boundary(RenewalBoundary::Expiry).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires root and writable native cgroup v2"]
+async fn upkeep_rejects_unavailable_clock_at_the_renewal_transaction() -> Result<()> {
+    check_renewal_boundary(RenewalBoundary::ClockUnavailable).await
 }

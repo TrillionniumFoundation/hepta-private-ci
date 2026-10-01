@@ -63,7 +63,8 @@ impl LocalFleetHost {
                         .map_err(host_error)?,
                         observation.host.valid_until_ms,
                     )?;
-                    self.store
+                    let renewed = self
+                        .store
                         .stage_local_renewal_authorized(
                             &FleetAuthorityPort::new(self.authority.verifier()),
                             lease_id,
@@ -75,8 +76,41 @@ impl LocalFleetHost {
                                 observed_pending: observed.as_ref(),
                             },
                         )
-                        .await
-                        .map_err(host_error)?;
+                        .await;
+                    match renewed {
+                        Ok(_) => {}
+                        Err(codex_hepta_fleet::DurableFleetError::Stale) => {
+                            // A grant can expire after the upkeep read and
+                            // before its transaction. Commit the original
+                            // expiry and retain occupancy until native exit;
+                            // never renew or recreate that expired allocation.
+                            self.store.collect_expired().await.map_err(host_error)?;
+                            let current = self
+                                .store
+                                .execution_hold(&hold.context.execution_id)
+                                .await
+                                .map_err(host_error)?;
+                            let grant = self
+                                .store
+                                .allocation_grant(&hold.context.allocation_id)
+                                .await
+                                .map_err(host_error)?;
+                            if current.is_some_and(|current| {
+                                current.context == hold.context && current.state == "stop_requested"
+                            }) && grant.is_none()
+                            {
+                                self.store
+                                    .kill_local_containment(&hold.context.execution_id)
+                                    .await
+                                    .map_err(host_error)?;
+                            } else {
+                                return Err(host_error(
+                                    codex_hepta_fleet::DurableFleetError::Stale,
+                                ));
+                            }
+                        }
+                        Err(error) => return Err(host_error(error)),
+                    }
                 }
             }
         }
