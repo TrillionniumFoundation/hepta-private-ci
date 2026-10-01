@@ -53,6 +53,11 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[path = "durable_relations.rs"]
+mod relations;
+
+pub use relations::final_use_factor_relation_binding;
+pub use relations::final_use_factor_relation_revocation_binding;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -438,6 +443,10 @@ struct StoredV2 {
     payloads: Vec<StoredPayload>,
     supersessions: Vec<StoredSupersession>,
     lifecycle_events: Vec<StoredLifecycleEvent>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    relations: Vec<relations::StoredRelation>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    relation_withdrawals: Vec<relations::StoredWithdrawal>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -630,6 +639,16 @@ fn stored_metadata(registry: &PromptRegistry) -> StoredV2 {
             })
             .collect(),
         lifecycle_events: registry.lifecycle_events.iter().map(stored_event).collect(),
+        relations: registry
+            .relations
+            .values()
+            .map(relations::StoredRelation::encode)
+            .collect(),
+        relation_withdrawals: registry
+            .relation_withdrawals
+            .values()
+            .map(relations::StoredWithdrawal::encode)
+            .collect(),
     }
 }
 
@@ -661,6 +680,15 @@ fn restore_v2(
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
     if stored.maximum_records != configured_maximum {
         return Err(DurableRegistryError::ConfigurationMismatch);
+    }
+    if stored
+        .factors
+        .len()
+        .saturating_add(stored.realizations.len())
+        .saturating_add(stored.relations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
     }
     let mut factors = BTreeMap::new();
     for stored_factor in stored.factors {
@@ -732,13 +760,46 @@ fn restore_v2(
         lifecycle_events.push(event);
     }
 
+    let mut relations = BTreeMap::new();
+    for stored_relation in stored.relations {
+        let relation = stored_relation.decode()?;
+        if relations
+            .insert(relation.relation_id.clone(), relation)
+            .is_some()
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
+    if factors
+        .len()
+        .saturating_add(realizations.len())
+        .saturating_add(relations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
+    }
+
+    let mut relation_withdrawals = BTreeMap::new();
+    if stored.relation_withdrawals.len() > relations.len() {
+        return Err(DurableRegistryError::Corrupt);
+    }
+    for stored_withdrawal in stored.relation_withdrawals {
+        let withdrawal = stored_withdrawal.decode()?;
+        if relation_withdrawals
+            .insert(withdrawal.relation_id.clone(), withdrawal)
+            .is_some()
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
     let registry = PromptRegistry {
         factors,
         realizations,
         realization_bindings,
         realization_payloads,
         realization_supersessions,
-        relations: BTreeMap::new(),
+        relations,
+        relation_withdrawals,
         lifecycle_events,
         revision,
         lifecycle_frontier: stored.lifecycle_frontier,
@@ -865,6 +926,7 @@ fn migrate_v1(
         realization_payloads: BTreeMap::new(),
         realization_supersessions: BTreeMap::new(),
         relations: BTreeMap::new(),
+        relation_withdrawals: BTreeMap::new(),
         lifecycle_events,
         revision,
         lifecycle_frontier: stored.lifecycle_frontier,
@@ -882,6 +944,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             .factors
             .len()
             .saturating_add(registry.realizations.len())
+            .saturating_add(registry.relations.len())
             > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
@@ -890,13 +953,20 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         return Err(DurableRegistryError::Corrupt);
     }
 
+    relations::validate_restored_relations(registry)?;
+
     // Replay factor lifecycle lineage instead of trusting the materialized
     // lifecycle byte. Imported migration events may share one revision; native
     // lifecycle mutations are strictly revision ordered.
     let mut replayed = BTreeMap::<StableId, Lifecycle>::new();
     let mut last_event_revision = 0_u64;
     let mut last_native_revision = 0_u64;
-    let mut latest_revocation_revision = 0_u64;
+    let mut latest_revocation_revision = registry
+        .relation_withdrawals
+        .values()
+        .map(|withdrawal| withdrawal.revision.get())
+        .max()
+        .unwrap_or(0);
     for event in &registry.lifecycle_events {
         let event_revision = event.revision.get();
         if event_revision > registry.revision.get()
