@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import tempfile
 from textwrap import dedent
@@ -171,22 +172,138 @@ class MaterializerTests(unittest.TestCase):
             root = Path(directory)
             one, two = root / "one", root / "two"
             one.write_text("before")
-            original_write = Path.write_text
+            original_replace = os.replace
 
-            def fail_second(path, text, **kwargs):
-                if path == two:
+            def fail_second(source, destination):
+                if destination == two:
                     raise OSError("injected publication failure")
-                return original_write(path, text, **kwargs)
+                return original_replace(source, destination)
 
             def stage():
                 materializer.write(one, "after")
                 materializer.write(two, "created")
 
-            with patch.object(Path, "write_text", fail_second):
+            with patch.object(materializer.os, "replace", fail_second):
                 with self.assertRaisesRegex(OSError, "publication failure"):
                     materializer.transact(stage)
             self.assertEqual(one.read_text(), "before")
             self.assertFalse(two.exists())
+
+    def test_per_file_publication_check_preserves_a_late_concurrent_edit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            one, two = root / "one", root / "two"
+            one.write_text("before-one")
+            two.write_text("before-two")
+            original_replace = os.replace
+
+            def concurrent_second(source, destination):
+                result = original_replace(source, destination)
+                if destination == one and one.read_text() == "staged-one":
+                    two.write_text("concurrent author")
+                return result
+
+            def stage():
+                materializer.write(one, "staged-one")
+                materializer.write(two, "staged-two")
+
+            with patch.object(materializer.os, "replace", concurrent_second):
+                with self.assertRaisesRegex(
+                    SystemExit, "source changed while materializing"
+                ):
+                    materializer.transact(stage)
+            self.assertEqual(one.read_text(), "before-one")
+            self.assertEqual(two.read_text(), "concurrent author")
+            self.assertEqual(
+                sorted(path.name for path in root.iterdir()), ["one", "two"]
+            )
+
+    @unittest.skipUnless(os.name == "posix", "POSIX symlink substitution fixture")
+    def test_equal_byte_symlink_substitution_never_writes_external_target(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, external = root / "source", root / "external"
+            source.write_text("before")
+            external.write_text("before")
+
+            def stage():
+                materializer.write(source, "after")
+                source.unlink()
+                source.symlink_to(external)
+
+            with self.assertRaisesRegex(SystemExit, "single-link regular file"):
+                materializer.transact(stage)
+            self.assertTrue(source.is_symlink())
+            self.assertEqual(external.read_text(), "before")
+
+    def test_rollback_failure_preserves_original_error_and_restores_other_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            one, two, three = (root / name for name in ("one", "two", "three"))
+            for path in (one, two, three):
+                path.write_text("before")
+            original_replace = os.replace
+            publication_error = OSError("injected publication failure")
+
+            def fail_publication_and_one_restore(source, destination):
+                if destination == three:
+                    raise publication_error
+                if destination == two and Path(source).read_text() == "before":
+                    raise OSError("injected rollback failure")
+                return original_replace(source, destination)
+
+            def stage():
+                for path in (one, two, three):
+                    materializer.write(path, "after")
+
+            with patch.object(
+                materializer.os, "replace", fail_publication_and_one_restore
+            ):
+                with self.assertRaises(materializer.SourceRollbackError) as raised:
+                    materializer.transact(stage)
+            error = raised.exception
+            self.assertIs(error.publication_error, publication_error)
+            self.assertIs(error.__cause__, publication_error)
+            self.assertEqual(set(error.rollback_failures), {two})
+            self.assertIn(str(two), str(error))
+            self.assertIn("injected publication failure", str(error))
+            self.assertEqual(
+                [path.read_text() for path in (one, two, three)],
+                ["before", "after", "before"],
+            )
+
+    @unittest.skipUnless(os.name == "posix", "POSIX rollback substitution fixture")
+    def test_rollback_preserves_externally_substituted_paths_and_reports_them(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            one, two, three, external = (
+                root / name for name in ("one", "two", "three", "external")
+            )
+            for path in (one, two, three):
+                path.write_text("before")
+            external.write_text("after")
+            original_replace = os.replace
+
+            def substitute_one_on_failure(source, destination):
+                if destination == three:
+                    one.unlink()
+                    one.symlink_to(external)
+                    raise OSError("injected publication failure")
+                return original_replace(source, destination)
+
+            def stage():
+                for path in (one, two, three):
+                    materializer.write(path, "after")
+
+            with patch.object(materializer.os, "replace", substitute_one_on_failure):
+                with self.assertRaises(materializer.SourceRollbackError) as raised:
+                    materializer.transact(stage)
+            self.assertEqual(set(raised.exception.rollback_failures), {one})
+            self.assertTrue(one.is_symlink())
+            self.assertEqual(external.read_text(), "after")
+            self.assertEqual(
+                [path.read_text() for path in (two, three)], ["before", "before"]
+            )
 
 
 if __name__ == "__main__":

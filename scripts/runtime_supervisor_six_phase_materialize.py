@@ -8,7 +8,11 @@ reviewed source shape changes instead of silently applying a partial patch.
 from __future__ import annotations
 
 import json
+import os
 import re
+import stat
+import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 from collections.abc import Callable
 from textwrap import dedent
@@ -19,7 +23,109 @@ DOCS = ROOT / "docs" / "modules" / "runtime.supervisor"
 WORKFLOWS = ROOT / ".github" / "workflows"
 BRANCH = "codex/runtime-supervisor-six-phase-closure-20260930-r4"
 _PENDING: dict[Path, str] | None = None
-_ORIGINAL: dict[Path, str | None] = {}
+
+
+@dataclass(frozen=True)
+class SourceSnapshot:
+    text: str | None
+    identity: tuple[int, ...] | None
+
+
+_ORIGINAL: dict[Path, SourceSnapshot] = {}
+
+
+class SourceRollbackError(RuntimeError):
+    def __init__(
+        self, publication_error: BaseException, failures: dict[Path, BaseException]
+    ):
+        self.publication_error = publication_error
+        self.rollback_failures = failures
+        details = "; ".join(f"{path}: {error}" for path, error in failures.items())
+        super().__init__(
+            f"source publication failed: {publication_error}; rollback incomplete: {details}"
+        )
+
+
+def source_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return tuple(
+        getattr(metadata, name)
+        for name in (
+            "st_dev",
+            "st_ino",
+            "st_mode",
+            "st_nlink",
+            "st_uid",
+            "st_gid",
+            "st_size",
+            "st_mtime_ns",
+            "st_ctime_ns",
+        )
+    )
+
+
+def capture(path: Path) -> SourceSnapshot:
+    try:
+        before = path.lstat()
+    except FileNotFoundError:
+        return SourceSnapshot(None, None)
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+        raise SystemExit(f"source is not a single-link regular file: {path}")
+    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0)
+    if os.name == "posix":
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(path, flags)
+    with os.fdopen(descriptor, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        if source_identity(opened) != source_identity(before):
+            raise SystemExit(f"source changed while materializing: {path}")
+        raw = stream.read(16 * 1024 * 1024 + 1)
+        after = os.fstat(stream.fileno())
+        if (
+            source_identity(opened) != source_identity(after)
+            or len(raw) != opened.st_size
+            or len(raw) > 16 * 1024 * 1024
+        ):
+            raise SystemExit(f"source changed or exceeds authoring limit: {path}")
+        return SourceSnapshot(raw.decode("utf-8"), source_identity(after))
+
+
+def publish(path: Path, text: str, expected: SourceSnapshot) -> SourceSnapshot:
+    """Replace a leaf atomically after a last identity check; never follow it."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=path.parent,
+            prefix=f".{path.name}.materialize-",
+            delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
+            mode = (
+                stat.S_IMODE(expected.identity[2])
+                if expected.identity is not None
+                else 0o644
+            )
+            if os.name == "posix":
+                os.fchmod(stream.fileno(), mode)
+            else:
+                os.chmod(temporary, mode)
+            stream.write(text.encode("utf-8"))
+            stream.flush()
+            if capture(path) != expected:
+                raise SystemExit(f"source changed while materializing: {path}")
+            os.replace(temporary, path)
+            temporary = None
+            return SourceSnapshot(text, source_identity(os.fstat(stream.fileno())))
+    except BaseException as error:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                error.add_note(
+                    f"temporary cleanup failed for {temporary}: {cleanup_error}"
+                )
+        raise
 
 
 def read(path: Path) -> str:
@@ -27,53 +133,64 @@ def read(path: Path) -> str:
         if path in _PENDING:
             return _PENDING[path]
         if path not in _ORIGINAL:
-            _ORIGINAL[path] = path.read_text(encoding="utf-8")
-        original = _ORIGINAL[path]
+            _ORIGINAL[path] = capture(path)
+        original = _ORIGINAL[path].text
         if original is None:
             raise FileNotFoundError(path)
         return original
-    return path.read_text(encoding="utf-8")
+    original = capture(path).text
+    if original is None:
+        raise FileNotFoundError(path)
+    return original
 
 
 def write(path: Path, text: str) -> None:
     if _PENDING is None:
         raise RuntimeError("source edits require a transaction")
     if path not in _ORIGINAL:
-        _ORIGINAL[path] = path.read_text(encoding="utf-8") if path.exists() else None
+        _ORIGINAL[path] = capture(path)
     _PENDING[path] = text
 
 
 def transact(operation: Callable[[], None]) -> None:
     """Validate every staged marker before publishing any source edit.
 
-    Marker/verification failures leave the tree untouched. Publication rejects
-    concurrent edits and restores earlier writes if a later file write fails.
-    This is an authoring transaction, not a crash-durable filesystem protocol.
+    Marker/verification failures publish nothing. Identity checks before each
+    atomic leaf replacement detect observed concurrent edits and substitutions.
+    On publication failure every published file is considered for restoration;
+    concurrent changes are preserved and failed restorations are reported.
+    Parent directories and exclusive authoring remain the operator's duty: this
+    is neither a filesystem-wide concurrency lock nor a crash-durable protocol.
     """
     global _PENDING, _ORIGINAL
     if _PENDING is not None:
         raise RuntimeError("nested source edit transaction")
     _PENDING, _ORIGINAL = {}, {}
-    published: list[Path] = []
+    published: dict[Path, SourceSnapshot] = {}
     try:
         operation()
         for path, original in _ORIGINAL.items():
-            current = path.read_text(encoding="utf-8") if path.exists() else None
-            if current != original:
+            if capture(path) != original:
                 raise SystemExit(f"source changed while materializing: {path}")
         for path, text in _PENDING.items():
-            if text == _ORIGINAL[path]:
+            if text == _ORIGINAL[path].text:
                 continue
-            path.parent.mkdir(parents=True, exist_ok=True)
-            published.append(path)
-            path.write_text(text, encoding="utf-8")
-    except BaseException:
-        for path in reversed(published):
-            original = _ORIGINAL[path]
-            if original is None:
-                path.unlink(missing_ok=True)
-            else:
-                path.write_text(original, encoding="utf-8")
+            published[path] = publish(path, text, _ORIGINAL[path])
+    except BaseException as error:
+        failures: dict[Path, BaseException] = {}
+        for path, snapshot in reversed(published.items()):
+            try:
+                original = _ORIGINAL[path]
+                if original.text is None:
+                    if capture(path) != snapshot:
+                        raise SystemExit(f"source changed before rollback: {path}")
+                    path.unlink()
+                else:
+                    publish(path, original.text, snapshot)
+            except BaseException as rollback_error:
+                failures[path] = rollback_error
+        if failures:
+            raise SourceRollbackError(error, failures) from error
         raise
     finally:
         _PENDING, _ORIGINAL = None, {}
