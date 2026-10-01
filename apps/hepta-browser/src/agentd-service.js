@@ -5,6 +5,7 @@ import {
   canonicalAgentdBrowserJson,
   MAX_BROWSER_AGENTD_FRAME_BYTES,
 } from "./agentd-protocol.js";
+import { browserReplayEvidence } from "./replay-evidence.js";
 
 const MAX_QUEUED_FRAMES = 64;
 const MAX_QUEUED_BYTES = 4 * MAX_BROWSER_AGENTD_FRAME_BYTES;
@@ -61,8 +62,10 @@ export class AgentdBrowserChannel {
   #queue = [];
   #queuedBytes = 0;
   #waiters = [];
+  #pendingSends = new Set();
   #failed = null;
   #ended = false;
+  #closeController = new AbortController();
 
   constructor({ input, output }) {
     if (!input?.on || typeof output?.write !== "function") {
@@ -80,6 +83,11 @@ export class AgentdBrowserChannel {
         this.#fail(new Error("Agentd browser input closed unexpectedly"));
     });
     output.on?.("error", (error) => this.#fail(error));
+    for (const event of ["close", "finish"]) {
+      output.on?.(event, () => {
+        if (!this.#ended) this.#fail(new Error("Agentd browser output closed"));
+      });
+    }
   }
 
   async nextFrame({ signal } = {}) {
@@ -113,10 +121,24 @@ export class AgentdBrowserChannel {
     });
   }
 
+  assertOpen() {
+    if (this.#output.destroyed || this.#output.writableEnded) {
+      this.#fail(new Error("Agentd browser output closed"));
+    }
+    if (this.#failed) throw this.#failed;
+    if (this.#ended) throw new Error("Agentd browser channel is closed");
+  }
+
+  get signal() {
+    return this.#closeController.signal;
+  }
+
   send(kind, requestId, payload) {
-    if (this.#failed) return Promise.reject(this.#failed);
-    if (this.#ended)
-      return Promise.reject(new Error("Agentd browser channel is closed"));
+    try {
+      this.assertOpen();
+    } catch (error) {
+      return Promise.reject(error);
+    }
     const encoded = encodeAgentdBrowserFrame(
       buildAgentdBrowserFrame({
         sequence: this.#nextOutgoingSequence,
@@ -127,14 +149,18 @@ export class AgentdBrowserChannel {
     );
     this.#nextOutgoingSequence += 1;
     return new Promise((resolve, reject) => {
+      const pending = { resolve, reject };
+      this.#pendingSends.add(pending);
       try {
         this.#output.write(encoded, (error) => {
+          if (!this.#pendingSends.delete(pending)) return;
           if (error) {
             this.#fail(error);
             reject(error);
           } else resolve();
         });
       } catch (error) {
+        this.#pendingSends.delete(pending);
         this.#fail(error);
         reject(error);
       }
@@ -186,15 +212,26 @@ export class AgentdBrowserChannel {
       return;
     }
     this.#ended = true;
+    this.#closeController.abort(new Error("Agentd browser channel is closed"));
+    this.#queue.length = 0;
+    this.#queuedBytes = 0;
+    this.#rejectSends(new Error("Agentd browser channel is closed"));
     for (const waiter of this.#waiters.splice(0)) waiter.resolve(null);
   }
 
   #fail(error) {
     if (this.#failed) return;
     this.#failed = error instanceof Error ? error : new Error(String(error));
+    this.#closeController.abort(this.#failed);
     this.#queue.length = 0;
     this.#queuedBytes = 0;
+    this.#rejectSends(this.#failed);
     for (const waiter of this.#waiters.splice(0)) waiter.reject(this.#failed);
+  }
+
+  #rejectSends(error) {
+    for (const pending of this.#pendingSends) pending.reject(error);
+    this.#pendingSends.clear();
   }
 }
 
@@ -213,6 +250,7 @@ export class ParentFinalUseAuthority {
   }
 
   async withRequest(requestId, call) {
+    this.#channel.assertOpen();
     if (this.#activeRequestId !== null) {
       throw new TypeError(
         "browser service authority request is already active",
@@ -220,10 +258,15 @@ export class ParentFinalUseAuthority {
     }
     this.#activeRequestId = requestId;
     const controller = new AbortController();
+    const onChannelClose = () => controller.abort(this.#channel.signal.reason);
+    this.#channel.signal.addEventListener("abort", onChannelClose, {
+      once: true,
+    });
     this.#activeRequestController = controller;
     try {
       return await call();
     } finally {
+      this.#channel.signal.removeEventListener("abort", onChannelClose);
       controller.abort(
         new Error(
           "browser authority request ended before authorization completed",
@@ -254,6 +297,8 @@ export class ParentFinalUseAuthority {
       authorityEpoch,
     });
     const enter = await this.#channel.nextFrame({ signal });
+    if (signal.aborted) throw signal.reason;
+    this.#channel.assertOpen();
     if (
       !enter ||
       enter.kind !== "authority_enter" ||
@@ -279,7 +324,9 @@ export class ParentFinalUseAuthority {
         "Agentd final-use witness does not bind the Browser request",
       );
     }
-    const result = await consumer(witness);
+    const result = await consumer(witness, Object.freeze({ signal }));
+    if (signal.aborted) throw signal.reason;
+    this.#channel.assertOpen();
     await this.#channel.send("dispatch_boundary", requestId, {
       requestDigest,
       witnessDigest: witness.witnessDigest,
@@ -374,10 +421,15 @@ export class BrowserAgentdService {
         default:
           throw new TypeError("unreachable Browser service method");
       }
-      await this.#channel.send("response", frame.requestId, {
+      const response = {
         ok: true,
         result,
-      });
+      };
+      if (payload.method === "navigate_or_act") {
+        const replay = browserReplayEvidence(result);
+        if (replay) response.replay = replay;
+      }
+      await this.#channel.send("response", frame.requestId, response);
     } catch (error) {
       await this.#channel.send("response", frame.requestId, {
         ok: false,

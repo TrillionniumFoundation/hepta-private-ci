@@ -18,6 +18,7 @@ import {
   stableId,
 } from "./runtime-contract.js";
 import { callWithDeadline, exclusive } from "./runtime-boundary.js";
+import { createBrowserReplayReceipt } from "./replay-evidence.js";
 
 export class BrowserProfileHost {
   #driver;
@@ -291,7 +292,14 @@ export class BrowserProfileHost {
         ) {
           state.operations.set(operationId, prior);
         }
-        return prior.receipt;
+        return createBrowserReplayReceipt(prior.receipt, {
+          profileId: state.profileId,
+          principalId: state.principalId,
+          generation: state.generation,
+          operationId,
+          requestDigest: prior.requestDigest,
+          semanticDigest: prior.semanticDigest,
+        });
       }
       this.#profile(input, true);
       const { requestSemantics, requestDigest } = admitNewOperation(
@@ -314,7 +322,7 @@ export class BrowserProfileHost {
           await this.#withVerifiedUse(
             Object.freeze({ ...requestSemantics, requestDigest }),
             dispatchDeadlineMs,
-            async (verified) => {
+            async (verified, context) => {
               requireRecord(verified, "verified-use witness");
               if (verified.authorized !== true) {
                 throw new TypeError("final-use authority was denied");
@@ -376,6 +384,7 @@ export class BrowserProfileHost {
                 "dispatch",
                 semantics,
                 dispatchDeadlineMs,
+                context?.signal,
               );
             },
           ),
@@ -790,7 +799,7 @@ export class BrowserProfileHost {
     let cancelled = false;
 
     const authorityCall = Promise.resolve().then(() =>
-      this.#authority.withVerifiedUse(request, async (verified) => {
+      this.#authority.withVerifiedUse(request, async (verified, context) => {
         if (cancelled) {
           throw new TypeError(
             "final-use authority consumer arrived after cancellation",
@@ -804,7 +813,7 @@ export class BrowserProfileHost {
         enteredOnce = true;
         enter();
         try {
-          return await consumer(verified);
+          return await consumer(verified, context);
         } finally {
           finishConsumer();
         }
@@ -853,7 +862,8 @@ export class BrowserProfileHost {
     });
   }
 
-  #callDriver(method, payload, deadlineMs) {
+  #callDriver(method, payload, deadlineMs, authoritySignal) {
+    if (authoritySignal?.aborted) return Promise.reject(authoritySignal.reason);
     if (deadlineMs <= this.#clock()) {
       const error = new Error("browser driver dispatch deadline has expired");
       error.name = "BrowserDriverTimeoutError";
@@ -861,6 +871,7 @@ export class BrowserProfileHost {
     }
     return callWithDeadline({
       call: (value, context) => {
+        authoritySignal?.throwIfAborted();
         if (deadlineMs <= this.#clock()) {
           const error = new Error(
             "browser driver dispatch deadline has expired",
@@ -868,7 +879,14 @@ export class BrowserProfileHost {
           error.name = "BrowserDriverTimeoutError";
           throw error;
         }
-        return this.#driver[method](value, context);
+        return this.#driver[method](
+          value,
+          authoritySignal
+            ? {
+                signal: AbortSignal.any([context.signal, authoritySignal]),
+              }
+            : context,
+        );
       },
       payload,
       now: this.#clock,
