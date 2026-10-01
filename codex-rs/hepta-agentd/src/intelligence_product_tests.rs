@@ -990,3 +990,77 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[test]
+fn canonical_invocation_uses_current_lifecycle_generation() {
+    use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+    use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+    use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
+    use codex_hepta_learning_ledger::RunStartRecordV1;
+    use codex_hepta_learning_ledger::RunStartSnapshotV1;
+
+    let mut value = fixture();
+    let snapshot = &value.request.snapshot;
+    value.request.snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
+        body_generation: generation(2),
+        objective_digest: snapshot.objective_digest(),
+        authority_epoch: snapshot.authority_epoch(),
+        configuration_digest: snapshot.configuration_digest(),
+        revocation_frontier_digest: snapshot.revocation_frontier_digest(),
+        owner_bindings: value.owners,
+    })
+    .expect("current lifecycle body binding");
+    let record = RunStartRecordV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: id("issuer:objective"),
+            key_epoch: 1,
+            message_id: id("message:objective"),
+            sequence: 1,
+            expires_at_ms: 60_000,
+            scope_digest: digest("objective-scope"),
+            signed_body_digest: digest("objective-signed-body"),
+            signature: [0; 64],
+        },
+        admission: RunStartAdmissionBindingV1 {
+            profile_id: id("profile:objective"),
+            profile_revision: 1,
+            profile_digest: digest("objective-profile"),
+            supplied_source_digest: digest("objective-source"),
+            intent_digest: digest("objective-intent"),
+            admitted_source_digest: digest("objective-admitted-source"),
+            observed_at_unix_micros: 1_000_000,
+            deadline_unix_micros: 60_000_000,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        disposition: RunStartObjectiveDispositionV1::Compiled,
+        snapshot: RunStartSnapshotV1 {
+            run_id: value.request.run_id.clone(),
+            objective_digest: value.request.snapshot.objective_digest(),
+            authority_epoch: value.request.snapshot.authority_epoch(),
+            generation: 2,
+            hard_constraint_digest: digest("hard-constraints"),
+            preference_state_digest: digest("preferences"),
+            model_tuple_digest: digest("model-tuple"),
+            prompt_registry_digest: digest("prompt-registry"),
+            artifact_set_digest: digest("artifacts"),
+            fence_digest: digest("prevalidated-owner-fence"),
+        },
+        runtime_body_digest: digest("runtime-body"),
+        objective_semantic_bytes: b"objective-semantic".to_vec(),
+        objective_function_v1_digest: digest("objective-function"),
+        objective_function_v1_bytes: b"objective-function".to_vec(),
+    };
+    let invocation = crate::AgentdIntelligenceInvocationV1 {
+        request: value.request,
+        inputs: value.inputs,
+    };
+    // The caller authenticates the durable record and exact fence separately.
+    // This validator binds invocation identity to that observed lifecycle cut.
+    invocation
+        .validate(/*current_generation*/ 2, &record)
+        .expect("current owner invocation");
+    assert!(matches!(
+        invocation.validate(/*current_generation*/ 1, &record),
+        Err(crate::AgentdError::Invalid(_))
+    ));
+}

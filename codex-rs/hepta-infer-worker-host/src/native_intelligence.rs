@@ -23,6 +23,7 @@ use super::unix_time_ms;
 #[path = "native_intelligence_receipt.rs"]
 pub(super) mod receipt;
 pub(super) use receipt::intelligence_terminal_phase;
+use receipt::validate_intelligence_owner_generation;
 use receipt::validate_intelligence_receipt_binding;
 
 fn verify_intelligence_receipt(
@@ -54,28 +55,34 @@ fn verify_intelligence_recovery_receipt(
 
 pub(super) struct IntelligenceObservation<'a> {
     pub binding: &'a NativeIntelligenceRunBinding,
-    pub revision: &'a mut u64,
+    pub cursor: &'a mut IntelligenceOwnerCursor,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) struct IntelligenceOwnerCursor {
+    pub generation: u64,
+    pub revision: u64,
 }
 
 pub(super) async fn verify_intelligence_execution(
     owner: &AgentdClient,
-    generation: u64,
     binding: &NativeIntelligenceRunBinding,
-    revision: &mut u64,
+    cursor: &mut IntelligenceOwnerCursor,
     deadline: Instant,
 ) -> std::result::Result<(), String> {
-    let run = read_intelligence_run(owner, binding, deadline).await?;
-    verify_intelligence_receipt(generation, binding, revision, &run)
+    let (observed_generation, run) = read_intelligence_run(owner, binding, deadline).await?;
+    validate_intelligence_owner_generation(cursor.generation, observed_generation, &run)?;
+    verify_intelligence_receipt(cursor.generation, binding, &mut cursor.revision, &run)
 }
 
 async fn read_intelligence_run(
     owner: &AgentdClient,
     binding: &NativeIntelligenceRunBinding,
     deadline: Instant,
-) -> std::result::Result<AgentRunReceipt, String> {
-    timeout_at(
+) -> std::result::Result<(u64, AgentRunReceipt), String> {
+    let observed = timeout_at(
         deadline.min(Instant::now() + RPC_TIMEOUT),
-        owner.run_status(binding.run_id.clone()),
+        owner.run_status_observed(binding.run_id.clone()),
     )
     .await
     .map_err(|_| "owning intelligence status check timed out".to_string())?
@@ -83,21 +90,24 @@ async fn read_intelligence_run(
         bounded_diagnostic(format_args!(
             "owning intelligence status check failed: {error}"
         ))
-    })?
-    .ok_or_else(|| "owning intelligence run disappeared".to_string())
+    })?;
+    let run = observed
+        .run
+        .ok_or_else(|| "owning intelligence run disappeared".to_string())?;
+    Ok((observed.current_generation, run))
 }
 
 /// Reconcile a verified physical terminal through the existing exact owner
 /// CAS. Recovery never issues another turn/start or reconstructs a handoff.
 pub(super) async fn reconcile_intelligence_terminal(
     owner: &AgentdClient,
-    generation: u64,
     binding: &NativeIntelligenceRunBinding,
     output: &mut NativeRunOutput,
     deadline: Instant,
     cancellation: &CancellationToken,
 ) -> std::result::Result<(), String> {
-    let run = read_intelligence_run(owner, binding, deadline).await?;
+    let (generation, run) = read_intelligence_run(owner, binding, deadline).await?;
+    validate_intelligence_owner_generation(generation, generation, &run)?;
     apply_recovery_cancellation(output, cancellation);
     let minimum_revision = binding
         .expected_revision
@@ -143,13 +153,21 @@ pub(super) async fn reconcile_intelligence_terminal(
             );
         }
     }
-    commit_intelligence_terminal(owner, generation, binding, run.revision, output)
-        .await
-        .map_err(|error| {
-            bounded_diagnostic(format_args!(
-                "Agentd recovered terminal reconciliation required: {error}"
-            ))
-        })
+    commit_intelligence_terminal(
+        owner,
+        binding,
+        IntelligenceOwnerCursor {
+            generation,
+            revision: run.revision,
+        },
+        output,
+    )
+    .await
+    .map_err(|error| {
+        bounded_diagnostic(format_args!(
+            "Agentd recovered terminal reconciliation required: {error}"
+        ))
+    })
 }
 
 /// A later owner observation cannot upgrade an already denied worker boundary.
@@ -168,14 +186,14 @@ pub(super) fn apply_intelligence_failure(output: &mut NativeRunOutput, reason: S
 pub(super) async fn reconcile_intelligence_start_unknown(
     owner: &AgentdClient,
     binding: Option<&NativeIntelligenceRunBinding>,
-    revision: Option<u64>,
+    cursor: Option<IntelligenceOwnerCursor>,
     mut output: NativeRunOutput,
 ) -> NativeRunOutput {
-    if let (Some(binding), Some(revision)) = (binding, revision)
+    if let (Some(binding), Some(cursor)) = (binding, cursor)
         && let Err(error) = owner
             .run_observe_terminal(
                 binding.run_id.clone(),
-                revision,
+                cursor.revision,
                 AgentRunPhase::Indeterminate,
                 false,
             )
@@ -191,16 +209,19 @@ pub(super) async fn reconcile_intelligence_start_unknown(
 
 pub(super) async fn require_intelligence_handoff(
     owner: &AgentdClient,
-    generation: u64,
     binding: &NativeIntelligenceRunBinding,
-) -> Result<u64> {
+) -> Result<IntelligenceOwnerCursor> {
     validate_intelligence_binding(binding)?;
-    let run = owner
-        .run_status(binding.run_id.clone())
-        .await?
+    let observed = owner.run_status_observed(binding.run_id.clone()).await?;
+    let run = observed
+        .run
         .ok_or("intelligence run is not admitted in Agentd")?;
+    validate_intelligence_owner_generation(
+        observed.current_generation,
+        observed.current_generation,
+        &run,
+    )?;
     if run.run_id != binding.run_id
-        || run.generation != generation
         || run.phase != AgentRunPhase::ContextAttached
         || run.revision != binding.expected_revision
         || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
@@ -209,14 +230,16 @@ pub(super) async fn require_intelligence_handoff(
     {
         return Err("Agentd intelligence handoff is stale or mixed".into());
     }
-    Ok(run.revision)
+    Ok(IntelligenceOwnerCursor {
+        generation: observed.current_generation,
+        revision: run.revision,
+    })
 }
 
 pub(super) async fn commit_intelligence_terminal(
     owner: &AgentdClient,
-    generation: u64,
     binding: &NativeIntelligenceRunBinding,
-    expected_revision: u64,
+    cursor: IntelligenceOwnerCursor,
     output: &NativeRunOutput,
 ) -> Result<()> {
     if !output.terminal_observed
@@ -229,13 +252,13 @@ pub(super) async fn commit_intelligence_terminal(
     let receipt = owner
         .run_observe_terminal(
             binding.run_id.clone(),
-            expected_revision,
+            cursor.revision,
             phase,
             /*terminal_observed*/ true,
         )
         .await?;
     if receipt.run_id != binding.run_id
-        || receipt.generation != generation
+        || receipt.generation != cursor.generation
         || receipt.phase != phase
         || !receipt.terminal_observed
         || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())

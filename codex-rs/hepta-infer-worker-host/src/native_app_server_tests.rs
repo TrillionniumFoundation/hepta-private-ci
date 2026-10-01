@@ -671,7 +671,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
 
     // An authoritative owner cancellation is independent of the local token.
-    // Issue it while final cognitive revalidation is suspended after the
+    // Issue it while final owner revalidation is suspended after the
     // intelligence run has reached Dispatched; physical turn/start must stop.
     host.seed_verified_memory(
         "worker-owner-cancel",
@@ -683,11 +683,20 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         host.agent_id().clone(),
         1,
     )?;
+    let owner_status = owner
+        .run_status_observed("worker-owner-cancel".to_string())
+        .await?;
+    assert!(owner_status.run.is_none());
+    let owner_generation = owner_status.current_generation;
+    assert_ne!(
+        owner_generation, 1,
+        "Running has a distinct lifecycle epoch"
+    );
     let owner_deadline = unix_time_ms()? + 60_000;
     let mut owner_fence_material = b"hepta:agentd:objective-fence:v1\0".to_vec();
     owner_fence_material.extend_from_slice(host.agent_id().as_str().as_bytes());
     owner_fence_material.extend_from_slice(&1_u64.to_be_bytes());
-    owner_fence_material.extend_from_slice(&1_u64.to_be_bytes());
+    owner_fence_material.extend_from_slice(&owner_generation.to_be_bytes());
     let owner_fence_digest = Digest32::of_bytes(&owner_fence_material).to_string();
     let owner_snapshot = codex_hepta_agentd::AgentRunSnapshot {
         run_id: "worker-owner-cancel".to_string(),
@@ -696,7 +705,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         body_digest: "3".repeat(64),
         artifact_set_digest: "4".repeat(64),
         authority_epoch: 1,
-        generation: 1,
+        generation: owner_generation,
         fence_digest: owner_fence_digest.clone(),
         deadline_ms: owner_deadline,
     };
@@ -711,7 +720,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
                 body_digest: "3".repeat(64),
                 artifact_set_digest: "4".repeat(64),
                 authority_epoch: 1,
-                generation: 1,
+                generation: owner_generation,
                 fence_digest: owner_fence_digest,
                 deadline_ms: owner_deadline,
                 context_digest: "6".repeat(64),

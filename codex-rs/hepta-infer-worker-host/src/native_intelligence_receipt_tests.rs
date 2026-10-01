@@ -48,6 +48,25 @@ fn dispatched() -> AgentRunReceipt {
 }
 
 #[test]
+fn owner_lifecycle_epoch_is_independent_and_cannot_advance_the_pinned_cursor() {
+    let current = AgentRunReceipt {
+        generation: 8,
+        ..dispatched()
+    };
+    // The control connection can be spawn 7 while the observed owner run is 8.
+    validate_intelligence_owner_generation(8, 8, &current).unwrap();
+    for (pinned, observed, receipt_generation) in
+        [(7, 8, 8), (8, 8, 7), (8, 9, 8), (8, 9, 9), (0, 0, 0)]
+    {
+        let mixed = AgentRunReceipt {
+            generation: receipt_generation,
+            ..current.clone()
+        };
+        assert!(validate_intelligence_owner_generation(pinned, observed, &mixed).is_err());
+    }
+}
+
+#[test]
 fn intelligence_completed_after_local_stop_never_publishes_success() {
     for (boundary_status, expected_phase) in [
         (NativeBoundaryStatus::Succeeded, AgentRunPhase::Succeeded),

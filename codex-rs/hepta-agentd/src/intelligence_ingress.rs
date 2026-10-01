@@ -20,7 +20,7 @@ pub struct AgentdIntelligenceInvocationV1 {
 impl AgentdIntelligenceInvocationV1 {
     pub(crate) fn validate(
         &self,
-        identity: &AgentdIdentity,
+        current_generation: u64,
         record: &RunStartRecordV1,
     ) -> Result<(), AgentdError> {
         let snapshot = &record.snapshot;
@@ -29,7 +29,7 @@ impl AgentdIntelligenceInvocationV1 {
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
             || self.request.snapshot.body_generation().get() != snapshot.generation
             || self.request.legal_candidates.state_digest != snapshot.objective_digest
-            || snapshot.generation != identity.spawn_generation
+            || snapshot.generation != current_generation
         {
             return Err(AgentdError::Invalid(
                 "canonical intelligence invocation does not match the durable RunStart identity"

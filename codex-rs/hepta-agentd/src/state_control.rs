@@ -1251,7 +1251,7 @@ fn require_run_reconciliation_ready(
     }
 }
 
-fn require_current_run_identity(
+pub(super) fn require_current_run_identity(
     identity: &crate::AgentdIdentity,
     current_generation: u64,
     run_generation: u64,

@@ -61,6 +61,7 @@ pub use browser_servo::BrowserServoPort;
 pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
+pub use client::AgentRunStatusObservation;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;

@@ -439,7 +439,6 @@ impl AppServerModelDriver {
         if let Some(binding) = intelligence
             && let Err(reason) = reconcile_intelligence_terminal(
                 &owner,
-                self.config.generation,
                 binding,
                 &mut output,
                 Instant::now() + RPC_TIMEOUT,
@@ -490,10 +489,8 @@ impl AppServerModelDriver {
                 );
             }
         }
-        let mut intelligence_revision = match intelligence {
-            Some(binding) => {
-                Some(require_intelligence_handoff(&owner, self.config.generation, binding).await?)
-            }
+        let mut intelligence_cursor = match intelligence {
+            Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
             None => None,
         };
         let ingress = owner.session_ingress().await?;
@@ -592,9 +589,8 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
         if let Some(binding) = intelligence {
-            let current_revision =
-                require_intelligence_handoff(&owner, self.config.generation, binding).await?;
-            if Some(current_revision) != intelligence_revision {
+            let current_cursor = require_intelligence_handoff(&owner, binding).await?;
+            if Some(current_cursor) != intelligence_cursor {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err("intelligence handoff revision changed before dispatch".into());
             }
@@ -708,7 +704,7 @@ impl AppServerModelDriver {
             &app_server_version,
         )?;
 
-        if let Some(binding) = intelligence {
+        if let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor.as_mut()) {
             let dispatched = match owner
                 .run_mark_dispatched(binding.run_id.clone(), binding.expected_revision)
                 .await
@@ -728,7 +724,7 @@ impl AppServerModelDriver {
             if dispatched.run_id != binding.run_id
                 || dispatched.phase != AgentRunPhase::Dispatched
                 || dispatched.idempotent
-                || dispatched.generation != self.config.generation
+                || dispatched.generation != cursor.generation
                 || dispatched.terminal_observed
                 || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
                 || dispatched.compilation_receipt_digest.as_deref()
@@ -740,7 +736,7 @@ impl AppServerModelDriver {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
-            intelligence_revision = Some(dispatched.revision);
+            cursor.revision = dispatched.revision;
         }
 
         let post_health = match owner.health().await {
@@ -810,15 +806,10 @@ impl AppServerModelDriver {
                 );
             }
         }
-        if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision.as_mut())
-            && let Err(reason) = verify_intelligence_execution(
-                &owner,
-                self.config.generation,
-                binding,
-                revision,
-                Instant::now() + RPC_TIMEOUT,
-            )
-            .await
+        if let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor.as_mut())
+            && let Err(reason) =
+                verify_intelligence_execution(&owner, binding, cursor, Instant::now() + RPC_TIMEOUT)
+                    .await
         {
             control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -905,7 +896,7 @@ impl AppServerModelDriver {
                             turn
                         } else {
                             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                            return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
+                            return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_cursor, indeterminate_start_output(
                                 started,
                                 bounded_diagnostic(format_args!(
                                     "turn/start returned an accepted-or-unknown JSON-RPC error ({reason}); reconciliation found no exact turn; do not replay"
@@ -921,7 +912,7 @@ impl AppServerModelDriver {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
+                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_cursor, indeterminate_start_output(
                         started,
                         bounded_diagnostic(format_args!(
                             "turn/start transport outcome unknown ({error}); reconciliation found no exact turn; do not replay"
@@ -934,7 +925,7 @@ impl AppServerModelDriver {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
+                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_cursor, indeterminate_start_output(
                         started,
                         "turn/start timed out; reconciliation found no exact turn; do not replay"
                             .to_string(),
@@ -961,11 +952,11 @@ impl AppServerModelDriver {
             codex_terminal_correlation_digest: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+            if let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor) {
                 let _ = owner
                     .run_cancel(
                         binding.run_id.clone(),
-                        revision,
+                        cursor.revision,
                         "native start journal update failed".to_string(),
                     )
                     .await;
@@ -976,7 +967,7 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
-        let dispatched_intelligence_revision = intelligence_revision;
+        let dispatched_intelligence_cursor = intelligence_cursor;
         let result = self
             .observe(
                 &mut client,
@@ -986,8 +977,8 @@ impl AppServerModelDriver {
                 Some(NativeObservationOwner {
                     agent: &owner,
                     intelligence: intelligence
-                        .zip(intelligence_revision.as_mut())
-                        .map(|(binding, revision)| IntelligenceObservation { binding, revision }),
+                        .zip(intelligence_cursor.as_mut())
+                        .map(|(binding, cursor)| IntelligenceObservation { binding, cursor }),
                 }),
                 &binding,
             )
@@ -998,18 +989,21 @@ impl AppServerModelDriver {
             // Commit the denied boundary and observed prefix before any awaited
             // owner cancellation or interrupt. A crash cannot erase this cause.
             let denial_recorded = persist_denied_observation(control, request_id, &output);
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+            if let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor)
                 && !(reason == LOCAL_CANCELLED
-                    && intelligence_revision != dispatched_intelligence_revision)
+                    && intelligence_cursor != dispatched_intelligence_cursor)
                 && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
-                        revision,
+                        cursor.revision,
                         bounded_utf8_prefix(&reason, MAX_OWNER_CANCEL_REASON_BYTES).to_string(),
                     )
                     .await
             {
-                intelligence_revision = Some(cancelled.receipt.revision);
+                intelligence_cursor = Some(intelligence_owner::IntelligenceOwnerCursor {
+                    revision: cancelled.receipt.revision,
+                    ..cursor
+                });
             }
             // Journal failures are retained, but physical interruption is still
             // attempted before returning them. Unknown reservations remain held.
@@ -1027,11 +1021,11 @@ impl AppServerModelDriver {
                 .await;
             denial_recorded?;
             if !output.terminal_observed
-                && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor)
                 && let Err(error) = owner
                     .run_observe_terminal(
                         binding.run_id.clone(),
-                        revision,
+                        cursor.revision,
                         AgentRunPhase::Indeterminate,
                         /*terminal_observed*/ false,
                     )
@@ -1067,27 +1061,20 @@ impl AppServerModelDriver {
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
             downgrade_for_owner_loss(&mut output);
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision.as_mut())
+            if let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor.as_mut())
                 && let Err(reason) = verify_intelligence_execution(
                     &owner,
-                    self.config.generation,
                     binding,
-                    revision,
+                    cursor,
                     Instant::now() + RPC_TIMEOUT,
                 )
                 .await
             {
                 apply_intelligence_failure(&mut output, reason);
             }
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
-                && let Err(error) = commit_intelligence_terminal(
-                    &owner,
-                    self.config.generation,
-                    binding,
-                    revision,
-                    &output,
-                )
-                .await
+            if let (Some(binding), Some(cursor)) = (intelligence, intelligence_cursor)
+                && let Err(error) =
+                    commit_intelligence_terminal(&owner, binding, cursor, &output).await
             {
                 output.stop_reason = Some(match output.stop_reason.take() {
                     Some(existing) => bounded_diagnostic(format_args!(
@@ -1123,9 +1110,8 @@ impl AppServerModelDriver {
                         if let Some(intelligence) = owner.intelligence.as_mut() {
                             verify_intelligence_execution(
                                 owner.agent,
-                                self.config.generation,
                                 intelligence.binding,
-                                intelligence.revision,
+                                intelligence.cursor,
                                 deadline,
                             )
                             .await?;

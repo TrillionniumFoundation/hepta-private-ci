@@ -35,7 +35,7 @@ fn dispatched() -> AgentRunReceipt {
         context_digest: Some("b".repeat(64)),
         compilation_receipt_digest: Some("c".repeat(64)),
         authority_epoch: 1,
-        generation: 7,
+        generation: 8,
         fence_digest: "d".repeat(64),
         deadline_ms: unix_time_ms().unwrap() + 60_000,
         cancel_reason: None,
@@ -54,7 +54,7 @@ fn recovered_completion_and_final_owner_check_keep_cancellation_or_loss_denied()
         ..dispatched()
     };
     let mut revision = 3;
-    let reason = verify_intelligence_receipt(7, &handoff(), &mut revision, &cancelling)
+    let reason = verify_intelligence_receipt(8, &handoff(), &mut revision, &cancelling)
         .expect_err("an exact owner cancellation denies recovered success");
     let mut recovered = completed();
     apply_intelligence_failure(&mut recovered, reason);
@@ -78,6 +78,92 @@ fn recovered_completion_and_final_owner_check_keep_cancellation_or_loss_denied()
     let mut final_output = lost.clone();
     apply_intelligence_failure(&mut final_output, LOCAL_CANCELLED.to_string());
     assert_eq!(final_output, lost);
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn live_owner_checks_pin_lifecycle_separately_from_transport_spawn() -> Result<()> {
+    use codex_hepta_agentd::AGENTD_CONTROL_SCHEMA_VERSION;
+    use codex_hepta_agentd::AgentdMethod;
+    use codex_hepta_agentd::AgentdPayload;
+    use codex_hepta_agentd::AgentdRequest;
+    use codex_hepta_agentd::AgentdResponse;
+    use codex_hepta_contracts::AgentId;
+    use tokio::io::AsyncBufReadExt;
+    use tokio::io::AsyncWriteExt;
+    use tokio::io::BufReader;
+    use tokio::net::UnixListener;
+
+    for (current_generation, run_generation, accepted) in [
+        (8, 8, true),
+        (8, 7, false),
+        (9, 8, false),
+        (9, 9, false),
+        (6, 8, false),
+        (0, 8, false),
+    ] {
+        let directory = tempfile::tempdir()?;
+        let socket = directory.path().join("owner.sock");
+        let listener = UnixListener::bind(&socket)?;
+        let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000001")?;
+        let client = AgentdClient::new(socket, agent_id.clone(), 7)?;
+        let server = tokio::spawn(async move {
+            let (stream, _) = listener.accept().await?;
+            let (reader, mut writer) = tokio::io::split(stream);
+            let mut reader = BufReader::new(reader);
+            let mut bytes = Vec::new();
+            reader.read_until(b'\n', &mut bytes).await?;
+            let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+            assert_eq!(request.spawn_generation, 7);
+            assert_eq!(
+                request.method,
+                AgentdMethod::RunStatus {
+                    run_id: "run-a".to_string()
+                }
+            );
+            let response = AgentdResponse {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id,
+                spawn_generation: 7,
+                current_generation,
+                payload: AgentdPayload::RunStatus {
+                    run: Some(AgentRunReceipt {
+                        generation: run_generation,
+                        ..dispatched()
+                    }),
+                },
+            };
+            let mut bytes = serde_json::to_vec(&response)?;
+            bytes.push(b'\n');
+            writer.write_all(&bytes).await?;
+            Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
+        });
+        let pinned = IntelligenceOwnerCursor {
+            generation: 8,
+            revision: 3,
+        };
+        let mut cursor = pinned;
+        let result = verify_intelligence_execution(
+            &client,
+            &handoff(),
+            &mut cursor,
+            Instant::now() + RPC_TIMEOUT,
+        )
+        .await;
+        assert_eq!(result.is_ok(), accepted);
+        if current_generation < 7 {
+            assert!(
+                result
+                    .as_ref()
+                    .is_err_and(|reason| reason.contains("precedes its process spawn"))
+            );
+        }
+        assert_eq!(cursor, pinned);
+        let server_result = tokio::time::timeout(RPC_TIMEOUT, server).await?;
+        server_result??;
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -147,7 +233,7 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
                     request_id: request.request_id,
                     agent_id: agent_id.clone(),
                     spawn_generation: 7,
-                    current_generation: 7,
+                    current_generation: 8,
                     payload,
                 };
                 let mut bytes = serde_json::to_vec(&response)?;
@@ -159,7 +245,6 @@ async fn recovered_terminal_uses_current_owner_cas_and_denies_concurrent_revisio
         let mut output = completed();
         let result = reconcile_intelligence_terminal(
             &client,
-            7,
             &handoff(),
             &mut output,
             Instant::now() + RPC_TIMEOUT,

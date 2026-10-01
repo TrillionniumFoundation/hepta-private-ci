@@ -13,6 +13,22 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 pub(crate) const LOCAL_CANCELLED: &str = "cancelled";
 pub(crate) const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
 
+/// Bind the run lifecycle epoch to the same owner's observed current epoch,
+/// independently from the control connection's process spawn generation.
+pub(super) fn validate_intelligence_owner_generation(
+    expected_generation: u64,
+    observed_generation: u64,
+    run: &AgentRunReceipt,
+) -> std::result::Result<(), String> {
+    if expected_generation == 0
+        || observed_generation != expected_generation
+        || run.generation != expected_generation
+    {
+        return Err("owning intelligence lifecycle generation is stale or mixed".to_string());
+    }
+    Ok(())
+}
+
 pub(super) fn verify_intelligence_recovery_receipt<Now>(
     generation: u64,
     binding: &NativeIntelligenceRunBinding,
