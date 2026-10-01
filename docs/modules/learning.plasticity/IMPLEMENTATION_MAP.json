@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
-    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
+    "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
+    "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -720,11 +720,19 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
-      "object": "cd30bcc5f9884f88dabbbc4d0b646ca674c055ed"
+      "object": "16e79468c8f09f92c10ba36f28bc1ee6d31af5ae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity.rs",
+      "object": "dfaa7d544ddf8f1a104cdf1fbd78a2ac24c62d66"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal_integrity_tests.rs",
+      "object": "65dd9f6cb6ad96b6ad6af1da5a717aa3e00573bf"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "object": "2fd070240e9471af07ed5e9fcf4eca46fe095dfb"
+      "object": "05496e7693d05c8b947e14c81877c1bc60185713"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
@@ -740,19 +748,35 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
-      "object": "795654ad1c234307f24669e7f32e5ca62fd3ceff"
+      "object": "66a28c60998df55fa31633f7876fe513261a31c6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime_admission_tests.rs",
+      "object": "2d4b7dc2b44f544f143ce08edf60ae217c99424c"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs",
-      "object": "f0a61038416b013ed2bb3249ff2690ae89bbdc8f"
+      "object": "7e6eab1378307f7705ae9a6f80d738230691f41e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
       "object": "5dd8b49de3806ca3cb12be381f8bbf9a6812d080"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state_plasticity.rs",
+      "object": "26899a035eac149ee03f3f0659f3384dc743f689"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_plasticity_tests.rs",
+      "object": "7c2bc41d6eaa05bee06b361e6d5b4ffd1944d239"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
-      "object": "471612f72636830a7a3e085d64601c9a2059f31a"
+      "object": "b1cf712395fd69f7f75b16b166d52bec5ce9d8d1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/topology_plasticity_host_integrity_tests.rs",
+      "object": "25b2a7fbd364073faa66364e00138c3a56ea3168"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
@@ -776,11 +800,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "object": "1e938afa500cd5dd9c6ba1d512a31df1dadfd900"
+      "object": "4dea5f285a5563f54fd3cd236f781e13de2570ab"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
-      "object": "3054c943e60078d9fdf682d5f75e8137de220f28"
+      "object": "7405a910f70c90ad88bf340a2fe8a754eea67f3d"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
@@ -788,7 +812,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/topology_product.rs",
-      "object": "0c50357e0f3015cb70b5472189d18500a624ceaf"
+      "object": "05b7cd77b88005ac4a904e48e3b41a15024c0fc4"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
@@ -812,15 +836,19 @@
     },
     {
       "path": "codex-rs/hepta-plasticity",
-      "object": "751d468f0bc7a7056077407a0dff35b29c20e088"
+      "object": "df72cf72d3e72df8fa8f7a68bf8eba3efd704dc9"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
-      "object": "0a91bb605bc6213abdaf0574a85ed4982d705bf9"
+      "object": "58adf278ed5b9d63f498932d02daef9b192657db"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/durable_registry_append.rs",
+      "object": "a8541db6c2376956f292c9089a1f306879751c66"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
-      "object": "0c46b15ae9a45d364eca314482bf2817319a7a91"
+      "object": "d52427b8f73501a5694e85915350874729a184b2"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
@@ -828,7 +856,11 @@
     },
     {
       "path": "codex-rs/hepta-plasticity/src/lib_tests.rs",
-      "object": "8e75b610cb4a9650e27eb3cef7fa61595958f880"
+      "object": "fd3e664abd269777cb8a0df4af4a47eded51c7ca"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/live_registry_integrity_tests.rs",
+      "object": "30134377914b5f5050f4fe8d461203b754c09dfc"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs",
@@ -837,6 +869,10 @@
     {
       "path": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
       "object": "f567f4ab60f687848876c75805fd1a90dd6b6412"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/registry_final_admission_tests.rs",
+      "object": "0c1aad46c27b8857b6a22acabb296ae1e265545b"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_alternative_tests.rs",
@@ -852,7 +888,11 @@
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_registry.rs",
-      "object": "eb94dfcb99d0554d29c74573435acafe1c43ab74"
+      "object": "d7856c6b7a7aebd53e311c82ee18987f3df89351"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/topology_registry_append.rs",
+      "object": "566dd017b02ab2df69bb7379af0a61a5344cdcbb"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_v2.rs",
@@ -868,7 +908,7 @@
     },
     {
       "path": "docs/modules/learning.plasticity/TECHNICAL.md",
-      "object": "000b6746d93917c616a78007c6c5dd59e60bc0d4"
+      "object": "7c5cee579176bc5724585afbc1ada0a52fe9e0d0"
     },
     {
       "path": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
