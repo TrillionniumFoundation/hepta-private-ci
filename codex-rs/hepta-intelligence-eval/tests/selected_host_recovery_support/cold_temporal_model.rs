@@ -5,7 +5,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 
 #[path = "model.rs"]
-mod existing;
+pub(super) mod existing;
 use existing::digest;
 use existing::id;
 

@@ -436,13 +436,13 @@ fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
         }
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
-        let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
-        let result = run_evaluated_shadow_v1(
-            fixture.request(),
-            &mut ledger,
-            &mut ports,
-            if case == 2 { 95 } else { 50 },
-        );
+        let now = if case == 2 { 95 } else { 50 };
+        // Keep owner authority current so this case still isolates the expired
+        // candidate signature, independently of distribution expiry admission.
+        let trust = fixture.trust_activation_until(/*expires_at*/ 100);
+        assert!(trust.is_current_at(now));
+        let mut ledger = ledger_at_with_trust(&temp.path().join("ledger"), trust);
+        let result = run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, now);
         if case != 2 {
             assert!(matches!(
                 result,

@@ -1,8 +1,7 @@
 //! Default cross-crate receipt integrity through native recorded qualification.
 use super::*;
 
-#[path = "model.rs"]
-mod model;
+use super::temporal_model::existing as model;
 
 #[test]
 fn recorded_archived_ineligible_receipt_seals_every_signed_decision_field() {
