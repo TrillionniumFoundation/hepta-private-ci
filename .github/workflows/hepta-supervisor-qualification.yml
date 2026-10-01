@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/.config/nextest.toml"
       - "docs/modules/runtime.supervisor/**"
       - "scripts/hepta_supervisor_*.py"
       - "scripts/test_hepta_supervisor_*.py"
@@ -35,6 +36,9 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
       - name: Test stable receipt rejection policy
         run: >-
           python3 -m unittest -v scripts.test_hepta_supervisor_ci

@@ -80,6 +80,24 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('test "$(git rev-parse HEAD)" = "$CANDIDATE"', self.text)
         self.assertIn("nextest@0.9.103", self.text)
 
+    def test_nextest_profile_change_triggers_native_and_deep_qualification(self):
+        from scripts.hepta_ci_scope import select
+
+        path = "codex-rs/.config/nextest.toml"
+        scope = select([path])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["full_repo"])
+        triggers = self.text.split("\npermissions:\n", 1)[0]
+        self.assertIn(f'      - "{path}"', triggers.split("\n  push:\n", 1)[1])
+        deep = (
+            ROOT / ".github/workflows/runtime-supervisor-deep-qualification.yml"
+        ).read_text()
+        triggers = deep.split("\npermissions:\n", 1)[0]
+        for event in ("pull_request", "push"):
+            block = re.search(rf"(?ms)^  {event}:\n(.*?)(?=^  [a-z_]+:|\Z)", triggers)
+            self.assertIsNotNone(block, event)
+            self.assertIn(f'      - "{path}"', block[1])
+
     def test_default_authority_denial_uses_only_the_pinned_bundle(self):
         command = PLANS["default-products"][1]
         self.assertIn("--no-default-features", command)

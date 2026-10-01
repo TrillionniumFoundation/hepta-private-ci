@@ -38,7 +38,6 @@ SERIAL = [
     "none",
     "--success-output",
     "never",
-    "--no-fail-fast",
 ]
 PLANS = {
     "format": (
@@ -79,6 +78,8 @@ PLANS = {
             "qualification",
             "--test",
             "supervisor_hol_qualification",
+            "--profile",
+            "hepta-supervisor-qualification",
             *SERIAL,
         ],
     ),

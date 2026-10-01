@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import os
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -419,10 +423,77 @@ class ReceiptTests(unittest.TestCase):
             self.assertEqual(command[command.index("--status-level") + 1], "all")
             self.assertEqual(command[command.index("--final-status-level") + 1], "none")
             self.assertEqual(command[command.index("--success-output") + 1], "never")
-            self.assertIn("--no-fail-fast", command)
             self.assertGreaterEqual(PLANS[name][0], len(REQUIRED_TESTS[name]))
         self.assertIn("production-authority", PLANS["production"][1])
         self.assertIn("authority_recovery", PLANS["products"][1])
+
+    def test_real_just_recipe_composes_every_native_plan_without_duplicate_flags(self):
+        from scripts.hepta_supervisor_ci_v3 import current_plan
+
+        just = shutil.which(os.environ.get("HEPTA_JUST_BIN", "just"))
+        self.assertIsNotNone(just, "install just or set HEPTA_JUST_BIN before CI tests")
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            shim = directory / "capture_cargo.py"
+            shim.write_text(
+                "import json, os, sys\n"
+                "print(json.dumps({\n"
+                "    'argv': sys.argv[1:],\n"
+                "    'cwd': os.getcwd(),\n"
+                "    'rust_min_stack': os.environ.get('RUST_MIN_STACK'),\n"
+                "    'nextest_profile': os.environ.get('NEXTEST_PROFILE'),\n"
+                "}))\n"
+            )
+            if os.name == "nt":
+                launcher = directory / "cargo.cmd"
+                launcher.write_text(
+                    "@echo off\n"
+                    + subprocess.list2cmdline([sys.executable, str(shim)])
+                    + " %*\n"
+                )
+            else:
+                launcher = directory / "cargo"
+                launcher.write_text(f"#!{sys.executable}\n" + shim.read_text())
+                launcher.chmod(0o700)
+            environment = {
+                **os.environ,
+                "PATH": str(directory) + os.pathsep + os.environ.get("PATH", ""),
+            }
+            for version, plans in (
+                ("stable", PLANS),
+                ("current", current_plan().plans),
+            ):
+                for name, (_, command) in plans.items():
+                    if command[:2] != ["just", "test"]:
+                        continue
+                    with self.subTest(version=version, plan=name):
+                        result = subprocess.run(
+                            [just, *command[1:]],
+                            cwd=root,
+                            env=environment,
+                            capture_output=True,
+                            text=True,
+                            timeout=10,
+                            check=False,
+                        )
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        observed = json.loads(result.stdout)
+                        self.assertEqual(observed["argv"].count("--no-fail-fast"), 1)
+                        self.assertEqual(
+                            observed,
+                            {
+                                "argv": [
+                                    "nextest",
+                                    "run",
+                                    "--no-fail-fast",
+                                    *command[2:],
+                                ],
+                                "cwd": str(root / "codex-rs"),
+                                "rust_min_stack": "8388608",
+                                "nextest_profile": "local",
+                            },
+                        )
 
     def test_non_test_plans_require_exact_success_not_invented_tests(self):
         for name in ("format", "lint-default", "lint"):

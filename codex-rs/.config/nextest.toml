@@ -11,6 +11,15 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+[profile.hepta-supervisor-qualification]
+
+# This durable 256-Agent fixture is a bounded qualification workload. Its
+# harness budget is not a product latency SLO; other tests keep default limits.
+[[profile.hepta-supervisor-qualification.overrides]]
+filter = 'package(codex-hepta-supervisor) & binary(supervisor_hol_qualification)'
+slow-timeout = { period = "120s", terminate-after = 5 }
+retries = 0
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 

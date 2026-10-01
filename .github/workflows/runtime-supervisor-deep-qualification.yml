@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/.config/nextest.toml"
       - "docs/modules/runtime.supervisor/**"
       - "qualification/runtime-supervisor/**"
       - ".github/workflows/runtime-supervisor-deep-qualification.yml"
@@ -12,6 +13,7 @@ on:
       - codex/runtime-supervisor-full-qualification-20260930
     paths:
       - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/.config/nextest.toml"
       - "docs/modules/runtime.supervisor/**"
       - "qualification/runtime-supervisor/**"
       - ".github/workflows/runtime-supervisor-deep-qualification.yml"
@@ -80,39 +82,49 @@ jobs:
           channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
           rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
           echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Check formatting and clean diff
         run: |
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
           git diff --check
       - name: Default library regression
-        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --lib
+        run: just test --locked -p codex-hepta-supervisor --lib
       - name: Qualification library durability matrix
         run: >-
-          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          just test --locked
           -p codex-hepta-supervisor --features qualification --lib
       - name: Offline authority build and distribution tests
         run: >-
-          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          just test --locked
           -p codex-hepta-supervisor --features offline-authority-tools
-          --test authority_distribution -- --nocapture
+          --test authority_distribution --no-capture
+      - name: Restart budget and Robrix projection regressions
+        run: >-
+          just test --locked
+          -p codex-hepta-supervisor --features qualification,offline-authority-tools
+          --test restart_budget --test restart_budget_recovery
+          --test robrix_control_projection --retries 0
       - name: 256-Agent HOL and fault qualification
         run: |
           set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+          just test --locked \
             -p codex-hepta-supervisor --features qualification \
-            --test supervisor_hol_qualification -- --nocapture 2>&1 \
+            --test supervisor_hol_qualification \
+            --profile hepta-supervisor-qualification --no-capture 2>&1 \
             | tee "$RUNNER_TEMP/runtime-supervisor/hol-256.log"
       - name: Actual SIGKILL crash qualification
         run: |
           set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+          just test --locked \
             -p codex-hepta-supervisor --features qualification \
-            --test sigkill_crash_matrix -- --nocapture 2>&1 \
+            --test sigkill_crash_matrix --no-capture 2>&1 \
             | tee "$RUNNER_TEMP/runtime-supervisor/sigkill.log"
       - name: Strict supervisor lint
         run: |
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-supervisor --all-targets --features qualification,offline-authority-tools \
+            -p codex-hepta-supervisor --all-targets --no-deps --features qualification,offline-authority-tools \
             -- -D warnings
       - name: Assert exact candidate stayed clean
         run: |
