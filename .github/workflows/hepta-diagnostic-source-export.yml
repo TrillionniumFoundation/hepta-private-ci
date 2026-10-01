@@ -123,10 +123,16 @@ jobs:
           cache-scope: diagnostic-lock
 
       - name: Generate exact Bazel lock candidate
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           mkdir -p .hepta-diagnostics
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git rev-parse HEAD 'HEAD^{tree}' > .hepta-diagnostics/source-identity.txt
+          git show -s --format=%P HEAD > .hepta-diagnostics/source-parents.txt
+          sha256sum .bazelversion MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/hepta-fleet/Cargo.toml > .hepta-diagnostics/source-input-sha256.txt
           set +e
           ./scripts/check-module-bazel-lock.sh > .hepta-diagnostics/bazel-lock-before.log 2>&1
           printf '%s\n' "$?" > .hepta-diagnostics/bazel-lock-before.exit
@@ -137,6 +143,11 @@ jobs:
           git diff --stat -- MODULE.bazel.lock > .hepta-diagnostics/MODULE.bazel.lock.stat
           git diff --numstat -- MODULE.bazel.lock > .hepta-diagnostics/MODULE.bazel.lock.numstat
           cp MODULE.bazel.lock .hepta-diagnostics/MODULE.bazel.lock
+          printf '%s\n' "$?" > .hepta-diagnostics/candidate-copy.exit
+          sha256sum MODULE.bazel.lock .hepta-diagnostics/MODULE.bazel.lock > .hepta-diagnostics/candidate-sha256.txt
+          printf '%s\n' "$?" > .hepta-diagnostics/candidate-sha256.exit
+          git rev-parse HEAD 'HEAD^{tree}' > .hepta-diagnostics/source-after-identity.txt
+          sha256sum .bazelversion MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/hepta-fleet/Cargo.toml > .hepta-diagnostics/source-after-input-sha256.txt
           set -e
 
       - name: Retain Bazel lock diagnostics

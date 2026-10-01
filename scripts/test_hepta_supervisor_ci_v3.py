@@ -135,6 +135,16 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
         critical.append(
             "supervisor::tests::release_retry_tests::signed_recovery::" + resolution
         )
+        cached = (
+            "cached_catalog_start_is_readmitted_before_any_lifecycle_or_process_effect"
+        )
+        self.assertIn(
+            cached,
+            self.source_test_names(
+                "codex-rs/hepta-supervisor/src/release_admission_tests.rs"
+            ),
+        )
+        critical.append("supervisor::tests::release_retry_tests::admission::" + cached)
         for file, namespace in (
             (
                 "signed_effect_boundary_tests.rs",

@@ -453,3 +453,18 @@ Cargo 的包集合、版本及 checksum 全部保持，仅增加 Fleet→libc �
 workflow_dispatch。使用真实 Bazel 生成及后验 lock-check artifact；job green
 不足以证明生成成功，必须核对 update／after exit、head 和文件身份。
 这不减少既有检查、修改 required gate、增加 retry 或延长门槛。
+
+发布前严格 all-target Clippy 已在最新源码通过：Supervisor／Fleet default，
+以及 Supervisor qualification／offline-authority-tools，两组均使用
+`--no-deps -- -D warnings`。required scoped fix 与全量 fmt 已完成；没有在
+fix／fmt 后重新执行本地测试。静态逐名核验覆盖真实模块路径：76 个 repair
+mandatory、Fleet 五个，Fleet 正向样本与五乘三类拒绝保护完整。额外补齐一个
+既有 cached catalog admission mandatory 的防删除回归检查，repair 保护集
+从 75 补齐至 76，实际测试结果仍须由新 head 的 CI 建立。
+
+源码变更先拆为十个 reviewable stages，实际改动分别为
+256／225／248／389／457／373／431／404／399／122 行，每阶段低于 500；
+逐个 API blob 与本地 object 相同，逐阶段 tree 相同。随后一个小阶段补齐
+上述防退化检查与只读诊断 receipt。诊断产物明确记录 exact source／tree／
+parents、更新前后五个输入 SHA、candidate copy／hash 退出码；真实 lock
+生成需要 update、after、copy 和 hash 全部成功，绿色 job 本身仍不是证明。
