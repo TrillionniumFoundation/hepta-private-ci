@@ -44,3 +44,10 @@ ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
 path = "codex-rs/hepta-types"
 compileLayer = 0
 ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+# Windows desktop compatibility exports of the shared OS private-state utility.
+# It is a foundation leaf, with no domain state or separate authority owner.
+[[cargoPackages]]
+path = "codex-rs/hepta-private-state"
+compileLayer = 0
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

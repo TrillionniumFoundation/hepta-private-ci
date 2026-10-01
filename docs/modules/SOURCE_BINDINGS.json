@@ -805,6 +805,25 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "ECP-1-ENGINEERING-CONTROL-PLANE",
       "technicalDocument": "docs/modules/control.engineering/TECHNICAL.md"
+    },
+    {
+      "module": "runtime.gateway",
+      "lifecycle": "existing",
+      "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
+      "declaredRoots": [
+        "codex-rs/hepta-native-gateway"
+      ],
+      "existingDeclaredRoots": [
+        "codex-rs/hepta-native-gateway"
+      ],
+      "sourceEvidenceRoots": [
+        "codex-rs/hepta-native-gateway"
+      ],
+      "missingDeclaredRoots": [],
+      "bootstrapWorkPackage": "P0.7A-RUNTIME-BOOTSTRAP",
+      "technicalDocument": "docs/modules/runtime.gateway/TECHNICAL.md"
     }
   ],
   "authorityFlags": {

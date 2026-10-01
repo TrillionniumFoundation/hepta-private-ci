@@ -2007,6 +2007,55 @@
       "bootstrapWorkPackage": "ECP-1-ENGINEERING-CONTROL-PLANE",
       "technicalDocument": "docs/modules/control.engineering/TECHNICAL.md",
       "documentationReady": true
+    },
+    {
+      "id": "runtime.gateway",
+      "plane": "control",
+      "kind": "gateway",
+      "lifecycle": "existing",
+      "state": "ephemeral",
+      "architectureRole": "execution_plant",
+      "writes": [],
+      "uses": [
+        "platform.types",
+        "platform.wire",
+        "runtime.supervisor",
+        "control.runtime"
+      ],
+      "owner": "native-integration",
+      "deputy": "runtime-control",
+      "denies": [
+        "direct_domain_write",
+        "authority_issuance",
+        "raw_secret_export"
+      ],
+      "localHotPathCentralRpc": "not_applicable_or_bounded",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-native-gateway",
+          "mode": "exclusive"
+        }
+      ],
+      "hotPathPolicy": {
+        "centralSynchronousRpcAllowed": false,
+        "boundedCachedControlInputAllowed": true,
+        "fallbackRequired": true
+      },
+      "publicSurfacePolicy": {
+        "typedContractsOnly": true,
+        "denyUnknownCriticalFields": true,
+        "rawModelOrSecretPayloadExportAllowed": false
+      },
+      "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
+      "sourceEvidenceRoots": [
+        "codex-rs/hepta-native-gateway"
+      ],
+      "missingDeclaredRoots": [],
+      "bootstrapWorkPackage": "P0.7A-RUNTIME-BOOTSTRAP",
+      "technicalDocument": "docs/modules/runtime.gateway/TECHNICAL.md",
+      "documentationReady": true
     }
   ],
   "authorityFlags": {

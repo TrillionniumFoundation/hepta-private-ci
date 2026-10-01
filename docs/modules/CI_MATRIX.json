@@ -483,15 +483,12 @@
     {
       "packagePath": "codex-rs/hepta-native-gateway",
       "packageName": "codex-hepta-native-gateway",
-      "module": "runtime.codex",
+      "module": "runtime.gateway",
       "ciGroups": [
         "effects",
-        "inference",
-        "learning",
-        "lifecycle",
-        "objective"
+        "lifecycle"
       ],
-      "compileLayer": 4
+      "compileLayer": 6
     },
     {
       "packagePath": "codex-rs/hepta-ndu",
@@ -567,6 +564,19 @@
         "lifecycle"
       ],
       "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-private-state",
+      "packageName": "codex-hepta-private-state",
+      "module": "platform.types",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 0
     },
     {
       "packagePath": "codex-rs/hepta-prompt-optimizer",

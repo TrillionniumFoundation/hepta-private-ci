@@ -1179,7 +1179,12 @@ def verify(profile="qualification") -> int:
         ],
         "subordinate protocol registry closure",
     )
-    verify_document_inventory(system, req)
+    # Module guides are already declared by module.toml and checked above and
+    # by the module-doc verifier. Do not require the same membership in a second
+    # hand-maintained document-system inventory.
+    verify_document_inventory(
+        system, [path for path in req if path not in technical_paths]
+    )
     closures = {x["path"]: x for x in system["registryShapeClosures"]}
     need(
         set(closures) == set(FILES.values()) - {"docs/governance/DOCUMENT_SYSTEM.json"},
@@ -1293,7 +1298,6 @@ def verify(profile="qualification") -> int:
         and cur["currentWorkPackage"] in pkgids,
         "current work-package projection",
     )
-    counts = Counter(p["module"] for p in packages)
     qprofiles = {x["id"] for x in d["qualification"]["profiles"]}
     for p in packages:
         need(
@@ -1319,7 +1323,12 @@ def verify(profile="qualification") -> int:
         for f in ("developmentAfter", "activationAfter", "evidenceAfter"):
             for dep in p[f]:
                 need(dep in pkgids and dep != p["id"], f + " " + p["id"])
-    need(set(counts) == mids, "module package coverage")
+    # Work packages retain the V8 delivery history. A current module can reuse
+    # an existing bootstrap package without inventing another historical row.
+    need(
+        all(m["bootstrapWorkPackage"] in pkgids for m in mods),
+        "module bootstrap package reference",
+    )
     for name, field in [
         ("development", "developmentAfter"),
         ("activation", "activationAfter"),

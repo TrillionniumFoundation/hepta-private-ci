@@ -614,8 +614,14 @@ def verify() -> int:
     ]:
         need(claims.get(key) is False, "claim boundary " + key)
 
-    module_ids = [row["id"] for row in modules]
+    # This overlay records the original V8 implementation plan. Native module
+    # membership and source ownership are checked by the current module manifest
+    # verifier; adding a service must not rewrite this historical plan.
+    module_ids = [row["module"] for row in readiness.get("moduleBindings", [])]
     module_id_set = set(module_ids)
+    need(
+        module_id_set <= {row["id"] for row in modules}, "historical module references"
+    )
     need(has_unique_module_ids(module_ids), "module closed world")
     package_ids = {row["id"] for row in packages}
 

@@ -35,13 +35,26 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
         manifest = tomllib.loads(
             (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text()
         )
-        dependencies = manifest["dependencies"]
+        # Cargo feature references also resolve dependencies declared for a
+        # target. Keep every declaration of a shared alias; a non-optional
+        # declaration must not disappear behind another target's optional one.
+        dependencies = {}
+        tables = [manifest["dependencies"]] + [
+            target.get("dependencies", {})
+            for target in manifest.get("target", {}).values()
+        ]
+        for table in tables:
+            for name, row in table.items():
+                dependencies.setdefault(name, []).append(row)
 
         def enabled(requested):
             active = {
                 name
-                for name, row in dependencies.items()
-                if not isinstance(row, dict) or not row.get("optional", False)
+                for name, rows in dependencies.items()
+                if any(
+                    not isinstance(row, dict) or not row.get("optional", False)
+                    for row in rows
+                )
             }
             seen = set()
             pending = list(requested)
@@ -60,7 +73,9 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
                 elif name in manifest["features"]:
                     pending.extend(manifest["features"][name])
                 else:
-                    self.assertTrue(dependencies[name].get("optional"))
+                    self.assertTrue(
+                        all(row.get("optional") for row in dependencies[name])
+                    )
                     active.add(name)
             return active
 
@@ -69,6 +84,7 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
             "codex-hepta-agent-components",
             "codex-hepta-app-host",
             "codex-hepta-app-bridge",
+            "codex-hepta-bao-adapter",
         ):
             self.assertNotIn(dependency, client)
             self.assertIn(dependency, product)

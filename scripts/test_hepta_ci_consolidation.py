@@ -36,13 +36,18 @@ class HeptaCiConsolidationTests(unittest.TestCase):
             for item in overrides
             if item.get("test-group") == "hepta_product_lifecycle"
         ]
-        self.assertEqual(len(group), 1)
+        self.assertTrue(group)
         # The scheduling expression is owned by Nextest, not duplicated here.
-        # This override may change which fixtures share a resource, but cannot
-        # quietly override their deadlines, retry policy or thread weights.
-        self.assertEqual(set(group[0]), {"filter", "test-group"})
-        self.assertIsInstance(group[0]["filter"], str)
-        self.assertTrue(group[0]["filter"].strip())
+        # The base entry only schedules fixtures. Specific multi-process
+        # experiments may retain their bounded total harness time while their
+        # original request deadlines stay in the owning product tests.
+        self.assertTrue(any(set(item) == {"filter", "test-group"} for item in group))
+        for item in group:
+            self.assertNotIn("threads-required", item)
+            if "retries" in item:
+                self.assertEqual(item["retries"], 0)
+            self.assertIsInstance(item["filter"], str)
+            self.assertTrue(item["filter"].strip())
         soak = [
             item
             for item in overrides

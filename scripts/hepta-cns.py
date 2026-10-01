@@ -417,7 +417,12 @@ def verify() -> int:
                 row["id"] + " fallback depends on failed organ",
             )
     modules = load("docs/modules/MODULES.json")["modules"]
-    module_ids = [x["id"] for x in modules]
+    # The CNS organ overlay describes the V8 design, not the membership of
+    # later native composition services. Their ownership is checked separately.
+    module_ids = [
+        row["module"] for row in load("docs/readiness/READINESS.json")["moduleBindings"]
+    ]
+    need(set(module_ids) <= {x["id"] for x in modules}, "historical module references")
     mids = set(module_ids)
     validate_module_bindings(
         organs,

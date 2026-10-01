@@ -45,6 +45,10 @@
       "toModule": "prompt.optimizer"
     },
     {
+      "fromModule": "knowledge.graph",
+      "toModule": "kernel.authority"
+    },
+    {
       "fromModule": "learning.eval",
       "toModule": "learning.artifacts"
     },
@@ -86,10 +90,6 @@
     },
     {
       "fromModule": "runtime.agentd",
-      "toModule": "context.compiler"
-    },
-    {
-      "fromModule": "runtime.agentd",
       "toModule": "inference.control"
     },
     {
@@ -109,8 +109,12 @@
       "toModule": "platform.types"
     },
     {
-      "fromModule": "runtime.codex",
+      "fromModule": "runtime.gateway",
       "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "runtime.fleet"
     }
   ],
   "developmentPackageEdges": [
@@ -197,6 +201,15 @@
     },
     {
       "dependencyKind": "dev",
+      "fromLayer": 2,
+      "fromModule": "knowledge.graph",
+      "fromPackage": "codex-hepta-kg",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "dev",
       "fromLayer": 3,
       "fromModule": "control.runtime",
       "fromPackage": "codex-hepta-runtime",
@@ -251,15 +264,6 @@
     },
     {
       "dependencyKind": "dev",
-      "fromLayer": 4,
-      "fromModule": "runtime.codex",
-      "fromPackage": "codex-hepta-native-gateway",
-      "toLayer": 1,
-      "toModule": "platform.wire",
-      "toPackage": "codex-hepta-wire"
-    },
-    {
-      "dependencyKind": "dev",
       "fromLayer": 5,
       "fromModule": "intelligence.control",
       "fromPackage": "codex-hepta-intelligence",
@@ -296,6 +300,24 @@
     },
     {
       "dependencyKind": "dev",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 6,
+      "fromModule": "runtime.gateway",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 1,
+      "toModule": "platform.wire",
+      "toPackage": "codex-hepta-wire"
+    },
+    {
+      "dependencyKind": "dev",
       "fromLayer": 7,
       "fromModule": "runtime.agentd",
       "fromPackage": "codex-hepta-agentd",
@@ -320,15 +342,6 @@
       "toLayer": 1,
       "toModule": "kernel.operations",
       "toPackage": "codex-hepta-operations"
-    },
-    {
-      "dependencyKind": "dev",
-      "fromLayer": 7,
-      "fromModule": "runtime.agentd",
-      "fromPackage": "codex-hepta-agentd",
-      "toLayer": 2,
-      "toModule": "context.compiler",
-      "toPackage": "codex-hepta-context-compiler"
     },
     {
       "dependencyKind": "dev",
@@ -395,7 +408,7 @@
     {
       "consumerPackage": "codex-cli",
       "dependencyKind": "normal",
-      "heptaModule": "runtime.codex",
+      "heptaModule": "runtime.gateway",
       "heptaPackage": "codex-hepta-native-gateway"
     },
     {
@@ -765,6 +778,22 @@
       "toModule": "runtime.supervisor"
     },
     {
+      "fromModule": "runtime.gateway",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "runtime.supervisor"
+    },
+    {
       "fromModule": "runtime.supervisor",
       "toModule": "kernel.authority"
     },
@@ -981,6 +1010,10 @@
     {
       "fromModule": "runtime.fleet",
       "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "platform.wire"
     },
     {
       "fromModule": "runtime.supervisor",
@@ -1243,8 +1276,8 @@
       "packagePath": "codex-rs/hepta-memory-retrieval"
     },
     {
-      "compileLayer": 4,
-      "module": "runtime.codex",
+      "compileLayer": 6,
+      "module": "runtime.gateway",
       "packageName": "codex-hepta-native-gateway",
       "packagePath": "codex-rs/hepta-native-gateway"
     },
@@ -1289,6 +1322,12 @@
       "module": "learning.plasticity",
       "packageName": "codex-hepta-plasticity",
       "packagePath": "codex-rs/hepta-plasticity"
+    },
+    {
+      "compileLayer": 0,
+      "module": "platform.types",
+      "packageName": "codex-hepta-private-state",
+      "packagePath": "codex-rs/hepta-private-state"
     },
     {
       "compileLayer": 1,
@@ -1423,6 +1462,10 @@
     {
       "fromModule": "inference.control",
       "toModule": "platform.types"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "neuron.runtime"
     },
     {
       "fromModule": "inference.worker",
@@ -1622,6 +1665,10 @@
     },
     {
       "fromModule": "runtime.agentd",
+      "toModule": "secrets.heptabao"
+    },
+    {
+      "fromModule": "runtime.agentd",
       "toModule": "utility.ndu"
     },
     {
@@ -1634,10 +1681,6 @@
     },
     {
       "fromModule": "runtime.codex",
-      "toModule": "control.runtime"
-    },
-    {
-      "fromModule": "runtime.codex",
       "toModule": "kernel.evidence"
     },
     {
@@ -1647,6 +1690,10 @@
     {
       "fromModule": "runtime.fleet",
       "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "kernel.authority"
     },
     {
       "fromModule": "runtime.supervisor",
@@ -1821,6 +1868,10 @@
     {
       "fromModule": "inference.worker",
       "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "neuron.runtime"
     },
     {
       "fromModule": "inference.worker",
@@ -2116,6 +2167,10 @@
     },
     {
       "fromModule": "runtime.agentd",
+      "toModule": "secrets.heptabao"
+    },
+    {
+      "fromModule": "runtime.agentd",
       "toModule": "utility.ndu"
     },
     {
@@ -2125,10 +2180,6 @@
     {
       "fromModule": "runtime.codex",
       "toModule": "control.engineering"
-    },
-    {
-      "fromModule": "runtime.codex",
-      "toModule": "control.runtime"
     },
     {
       "fromModule": "runtime.codex",
@@ -2153,6 +2204,22 @@
     {
       "fromModule": "runtime.fleet",
       "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.gateway",
+      "toModule": "runtime.supervisor"
     },
     {
       "fromModule": "runtime.supervisor",
@@ -3083,24 +3150,6 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 4,
-      "fromModule": "runtime.codex",
-      "fromPackage": "codex-hepta-native-gateway",
-      "toLayer": 1,
-      "toModule": "platform.types",
-      "toPackage": "codex-hepta-paths"
-    },
-    {
-      "dependencyKind": "normal",
-      "fromLayer": 4,
-      "fromModule": "runtime.codex",
-      "fromPackage": "codex-hepta-native-gateway",
-      "toLayer": 3,
-      "toModule": "control.runtime",
-      "toPackage": "codex-hepta-runtime"
-    },
-    {
-      "dependencyKind": "normal",
       "fromLayer": 5,
       "fromModule": "intelligence.control",
       "fromPackage": "codex-hepta-intelligence",
@@ -3623,6 +3672,42 @@
     },
     {
       "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.gateway",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.gateway",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.gateway",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 3,
+      "toModule": "control.runtime",
+      "toPackage": "codex-hepta-runtime"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.gateway",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 5,
+      "toModule": "runtime.supervisor",
+      "toPackage": "codex-hepta-supervisor"
+    },
+    {
+      "dependencyKind": "normal",
       "fromLayer": 7,
       "fromModule": "runtime.agentd",
       "fromPackage": "codex-hepta-agentd",
@@ -3656,6 +3741,15 @@
       "toLayer": 2,
       "toModule": "runtime.agentd",
       "toPackage": "codex-hepta-agentd-core"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "secrets.heptabao",
+      "toPackage": "codex-hepta-bao-adapter"
     },
     {
       "dependencyKind": "normal",
@@ -3789,8 +3883,26 @@
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 2,
+      "toModule": "neuron.runtime",
+      "toPackage": "codex-hepta-neuron"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 2,
       "toModule": "runtime.codex",
       "toPackage": "codex-hepta-codex-adapter"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 6,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agent-components"
     },
     {
       "dependencyKind": "normal",

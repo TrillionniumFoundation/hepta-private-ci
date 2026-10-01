@@ -99,6 +99,7 @@ report state retention required by the product separately from accidental growth
 - [`ui.native`](ui.native/TECHNICAL.md) — `existing_bound`, bootstrap `UI-NATIVE-1-SHELL`.
 - [`control.runtime`](control.runtime/TECHNICAL.md) — `existing_bound`, bootstrap `RCP-1-RUNTIME-CONTROL-PLANE`.
 - [`control.engineering`](control.engineering/TECHNICAL.md) — `existing_bound`, bootstrap `ECP-1-ENGINEERING-CONTROL-PLANE`.
+- [`runtime.gateway`](runtime.gateway/TECHNICAL.md) — independent native composition process, bootstrap `P0.7A-RUNTIME-BOOTSTRAP`.
 
 ## Adaptive algorithm overlay
 
@@ -106,7 +107,11 @@ The module guides above define ownership, boundaries and delivery envelopes. Imp
 
 ## Pre-coding readiness overlay
 
-Every guide now includes Section 16, which binds the module to one primary implementation lane and the exact specifications and typed protocols in [`../readiness/README.md`](../readiness/README.md). The overlay closes implementation ambiguity but does not change source or capability status.
+The original V8 guides bind their historical implementation lanes and typed
+protocols in [`../readiness/README.md`](../readiness/README.md). New owners use
+their module manifest and current behavioral tests; they do not acquire a new
+historical lane, organ or work-package row merely to register a module. The
+overlay remains design provenance and does not change capability status.
 
 ## HeptaBao executable connection
 
