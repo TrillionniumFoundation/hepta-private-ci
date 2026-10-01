@@ -13,14 +13,27 @@ struct Driver {
     indeterminate: bool,
     partial_neuron_output: bool,
     corrupt_neuron_head: bool,
+    invalid_model_handle: bool,
+    fail_load: bool,
+    fail_run: bool,
+    fail_unload: bool,
     loaded: usize,
+    run_calls: usize,
+    unload_calls: usize,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load {
+            return Err(Error::DriverFailure("load outcome unknown".to_string()));
+        }
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
+            opaque_id: if self.invalid_model_handle {
+                "invalid/handle".to_string()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
             observed_memory_bytes: 1_024,
         })
     }
@@ -30,6 +43,12 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        self.run_calls += 1;
+        if self.fail_run {
+            return Err(Error::DriverFailure(
+                "execution outcome unknown".to_string(),
+            ));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
@@ -49,6 +68,10 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        self.unload_calls += 1;
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload outcome unknown".to_string()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -60,6 +83,12 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.run_calls += 1;
+        if self.fail_run {
+            return Err(Error::DriverFailure(
+                "execution outcome unknown".to_string(),
+            ));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -158,7 +187,309 @@ fn loads_runs_and_unloads_exact_model_tuple() {
     let observed = checked(worker.run(100, "model.1", request()));
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert!(observed.terminal_observed);
+    worker.driver.fail_terminal = true;
+    let failed = checked(worker.run(100, "model.1", request()));
+    assert_eq!(failed.status, ExecutionStatus::Failed);
+    assert!(worker.active_requests.is_empty());
     assert!(checked(worker.unload_model(100, "model.1")).terminal_observed);
+}
+
+#[test]
+fn rejected_model_handle_is_unloaded_before_returning_identity_error() {
+    let driver = Driver {
+        invalid_model_handle: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.invalid-handle".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::InvalidIdentity("model handle")),
+    );
+    assert_eq!(worker.driver.loaded, 0);
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert!(worker.models.is_empty());
+}
+
+#[test]
+fn failed_rejected_handle_cleanup_prevents_further_model_loads() {
+    let driver = Driver {
+        invalid_model_handle: true,
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.failed-cleanup".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure("unload outcome unknown".to_string())),
+    );
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 1);
+}
+
+#[test]
+fn failed_model_unload_retains_record_and_prevents_further_model_loads() {
+    let driver = Driver {
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.failed-unload".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    checked(worker.load_model(100, manifest()));
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverFailure("unload outcome unknown".to_string())),
+    );
+    assert!(worker.models.contains_key("model.1"));
+    let mut additional_model = manifest();
+    additional_model.model_id = "model.2".to_string();
+    assert_eq!(
+        worker.load_model(100, additional_model),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 1);
+}
+
+#[test]
+fn over_capacity_model_handle_is_unloaded_without_quarantining_worker() {
+    let mut limited_grant = grant();
+    limited_grant.maximum_memory_bytes = 512;
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.capacity-cleanup".to_string(),
+        3,
+        limited_grant,
+        Driver::default(),
+    ));
+    for expected_unloads in 1..=2 {
+        assert_eq!(
+            worker.load_model(100, manifest()),
+            Err(Error::ModelCapacity)
+        );
+        assert_eq!(worker.driver.loaded, 0);
+        assert_eq!(worker.driver.unload_calls, expected_unloads);
+        assert!(worker.models.is_empty());
+    }
+}
+
+#[test]
+fn failed_capacity_cleanup_prevents_further_model_operations() {
+    let mut limited_grant = grant();
+    limited_grant.maximum_memory_bytes = 512;
+    let driver = Driver {
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.capacity-uncertain".to_string(),
+        3,
+        limited_grant,
+        driver,
+    ));
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure("unload outcome unknown".to_string())),
+    );
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverStateUncertain),
+    );
+    assert!(worker.models.is_empty());
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 1);
+}
+
+#[test]
+fn failed_model_load_prevents_further_model_operations() {
+    let driver = Driver {
+        fail_load: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.load-uncertain".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure("load outcome unknown".to_string())),
+    );
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert!(worker.models.is_empty());
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 0);
+}
+
+#[derive(Clone, Copy)]
+enum ExecutionPath {
+    Token,
+    NeuronFeature,
+}
+
+#[derive(Clone, Copy)]
+enum DriverOutcome {
+    Indeterminate,
+    Failure,
+}
+
+fn assert_uncertain_execution_retains_model(path: ExecutionPath, outcome: DriverOutcome) {
+    let driver = Driver {
+        indeterminate: matches!(outcome, DriverOutcome::Indeterminate),
+        fail_run: matches!(outcome, DriverOutcome::Failure),
+        ..Driver::default()
+    };
+    let mut limited_grant = grant();
+    limited_grant.maximum_active_requests = 1;
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.execution-uncertain".to_string(),
+        3,
+        limited_grant,
+        driver,
+    ));
+    checked(worker.load_model(100, manifest()));
+    let first = match path {
+        ExecutionPath::NeuronFeature => worker
+            .run_neuron_features(100, "model.1", neuron_feature_request())
+            .map(|observed| observed.status),
+        ExecutionPath::Token => worker
+            .run(100, "model.1", request())
+            .map(|observed| observed.status),
+    };
+    match outcome {
+        DriverOutcome::Failure => assert_eq!(
+            first,
+            Err(Error::DriverFailure(
+                "execution outcome unknown".to_string()
+            )),
+        ),
+        DriverOutcome::Indeterminate => assert_eq!(first, Ok(ExecutionStatus::Indeterminate)),
+    }
+
+    let second = match path {
+        ExecutionPath::NeuronFeature => worker
+            .run_neuron_features(100, "model.1", neuron_feature_request())
+            .map(|observed| observed.status),
+        ExecutionPath::Token => worker
+            .run(100, "model.1", request())
+            .map(|observed| observed.status),
+    };
+    assert_eq!(second, Err(Error::DriverStateUncertain));
+    let another_request = match path {
+        ExecutionPath::NeuronFeature => {
+            let mut another = neuron_feature_request();
+            another.authorization.request_id = "request.2".to_string();
+            worker
+                .run_neuron_features(100, "model.1", another)
+                .map(|observed| observed.status)
+        }
+        ExecutionPath::Token => {
+            let mut another = request();
+            another.request_id = "request.2".to_string();
+            worker
+                .run(100, "model.1", another)
+                .map(|observed| observed.status)
+        }
+    };
+    assert_eq!(another_request, Err(Error::DriverStateUncertain));
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    let mut additional_model = manifest();
+    additional_model.model_id = "model.2".to_string();
+    assert_eq!(
+        worker.load_model(100, additional_model),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(
+        worker.active_requests.get("request.1").map(String::as_str),
+        Some("model.1")
+    );
+    assert_eq!(
+        worker
+            .models
+            .get("model.1")
+            .map(|loaded| loaded.active_requests),
+        Some(1)
+    );
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 0);
+}
+
+#[test]
+fn nonterminal_execution_retains_request_and_prevents_model_operations() {
+    assert_uncertain_execution_retains_model(ExecutionPath::Token, DriverOutcome::Indeterminate);
+}
+
+#[test]
+fn failed_execution_retains_request_and_prevents_model_operations() {
+    assert_uncertain_execution_retains_model(ExecutionPath::Token, DriverOutcome::Failure);
+}
+
+#[test]
+fn nonterminal_feature_execution_retains_request_and_prevents_model_operations() {
+    assert_uncertain_execution_retains_model(
+        ExecutionPath::NeuronFeature,
+        DriverOutcome::Indeterminate,
+    );
+}
+
+#[test]
+fn failed_feature_execution_retains_request_and_prevents_model_operations() {
+    assert_uncertain_execution_retains_model(ExecutionPath::NeuronFeature, DriverOutcome::Failure);
 }
 
 #[test]
@@ -341,6 +672,9 @@ fn failed_neuron_feature_receipt_preserves_status_without_outputs() {
             Vec::new()
         ),
     );
+    assert!(worker.active_requests.is_empty());
+    checked(worker.unload_model(100, "model.1"));
+    assert_eq!(worker.driver.loaded, 0);
 }
 
 #[test]
@@ -377,6 +711,15 @@ fn indeterminate_neuron_feature_receipt_discards_partial_outputs() {
             Vec::new()
         ),
     );
+    assert_eq!(
+        worker.active_requests.get("request.1").map(String::as_str),
+        Some("model.1")
+    );
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()),
+        Err(Error::DriverStateUncertain),
+    );
+    assert_eq!(worker.driver.run_calls, 1);
 }
 
 #[test]
