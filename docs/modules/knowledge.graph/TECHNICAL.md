@@ -247,6 +247,16 @@ The local full-capacity attempt on 2026-10-01 completed the 256 writes in 1,676,
 
 The [second-round read-capacity receipt](../../../qualification/module-execution-dossiers/reports/knowledge.graph-read-capacity-2026-10-01-round2.json) measures committed KG/memory source `8b459faeaa2c772d56404425de4deeb07c46bc3c` on the same 256-write source cut: all recorded source, generation, publication and physical digests match the historical receipt. Its 20 queries record p50 3.508694118 s and p95/p99 4.107741552 s; its 5 ordinary reopens record p50 11.088318591 s and p95/p99 11.780440358 s. These are raw observations on the shared contended host with `debug = 0` and `opt-level = 0`, alongside the earlier query/reopen p50 observations of about 5.48/14.17 s. They do not establish a controlled speedup factor, target-host budget acceptance, passing full write capacity, or complete final-HEAD/synthetic-merge qualification; other prompt/doc changes were outside that measured source.
 
+The first full-capacity attempt in the second round failed after 841.882 s during writes with database/disk full. The later complete retry passed 256 real writes, 20 product queries and 5 ordinary reopens in 1269.858 s excluding build time, as recorded by the [full-capacity wrapper](../../../qualification/module-execution-dossiers/reports/knowledge.graph-full-capacity-2026-10-01-round2.json). Total write time was 1,147,652,705,313 ns. The failed disk-full attempt and the earlier query-phase watchdog remain historical failures.
+
+| Complete retry phase | p50 (ns) | p95 (ns) |
+| --- | ---: | ---: |
+| Mutation | 4,642,611,383 | 8,196,905,699 |
+| Product query | 3,377,370,820 | 3,717,962,550 |
+| Ordinary reopen | 10,804,119,826 | 11,428,328,621 |
+
+The wrapper records component-code observation `be4004a11e374f49a5b0db2fa4e1dd87d318b11d`, tree `039ed37a41cf2981e4b9b1e42b635f1ba699d323`. The existing test binary ran while final formatting proceeded in parallel; the memory algorithm was unchanged. This is scoped component execution, not complete final-HEAD/synthetic-merge qualification. The raw full receipt exports no source-cut digests, so equality with the read-only fixture's semantic cut is not established. It retains the support-dense 16-canonical-node/128-canonical-edge fixture and the shared contended host's unoptimized profile (`debug = 0`, `opt-level = 0`); passing this complete local probe does not establish a controlled speedup, target-host budgets or module-wide production/acceptance flags.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
@@ -285,6 +295,8 @@ Current focused test sources (source references, not pass receipts):
 
 In `codex-rs`, run `just test -p codex-hepta-kg`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) separately labels target acceptance designs.
 
+The latest scoped local checks passed all-target strict Clippy with `-D warnings` for knowledge.graph, prompt.registry and prompt.optimizer. `just fix` completed for five scoped crates and formatting completed. The broader memory/Agentd scope still reports existing warnings; these local results do not establish complete final-HEAD/merge or workspace-wide warning-clean qualification.
+
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages
@@ -308,6 +320,8 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `knowledge.graph`, the cognitive knowledge read path is product-composed. This candidate also makes scoped cognitive mutation the default **Agentd** product profile and fails Agentd startup closed when the cognitive owner store is unavailable; ordinary Codex/App Server binaries remain default-off. The separate `qualification-cognitive-write` feature adds only the qualification turn-witness seam. This candidate writer is not treated as established until current exact-head and deterministic synthetic-merge evidence are green.
+
+The three selected real product E2E cases produced one pass for unavailable-store startup rejection and two failures while binding the Unix control socket with `EPERM`, before readiness. The positive remember/restart/correction/forget chain and server-isolation cases therefore have no passing execution result on this host. The full-capacity component probe's success does not close this product-environment blocker.
 
 The prompt-factor graph source/projection/consumer path is now source-composed separately from the cognitive SQLite path: prompt.registry owns relation facts, knowledge.graph rebuilds them, and prompt.optimizer consumes the exact generation-bound relation view. This does not make prompt.registry durable or activated by implication, and it does not turn the optimizer into an authority source. Module-wide `productionImplementation` and `productExecutionProved` remain false until the current exact-head and deterministic synthetic-merge qualification gates are green; independent acceptance, activation and release remain separate external gates.
 

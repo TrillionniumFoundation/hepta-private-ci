@@ -171,6 +171,7 @@
   ],
   "compositionRoots": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
+    "CALLERS.toml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
@@ -226,7 +227,11 @@
     "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs",
     "codex-rs/hepta-prompt-registry/src/factor_relation.rs",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
-    "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py",
+    "qa/vertical-slice/test_vertical_slice.py",
+    "scripts/verify_hepta_callers.py"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
@@ -235,6 +240,7 @@
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
+    "CALLERS.toml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
@@ -293,7 +299,11 @@
     "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs",
     "codex-rs/hepta-prompt-registry/src/factor_relation.rs",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
-    "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py",
+    "qa/vertical-slice/test_vertical_slice.py",
+    "scripts/verify_hepta_callers.py"
   ],
   "productCallers": [
     {
@@ -311,6 +321,10 @@
     {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
       "object": "6447ac075871b81ca9043bfc77c915a8ab754cae"
+    },
+    {
+      "path": "CALLERS.toml",
+      "object": "abacbf034299a4447f98bda7744c717f5f0e14b4"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -567,6 +581,22 @@
     {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
       "object": "6d0147d1446f64418e49f9af1b45be41b2219d28"
+    },
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "object": "bf41c08057ed54bfeae34ab7ff2f8fc87d0b28c8"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "object": "77f675ce37ba15a72321b917b5c37f934ce482a2"
+    },
+    {
+      "path": "qa/vertical-slice/test_vertical_slice.py",
+      "object": "344e431a7023d545d82ec8ece2bad292787febfe"
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "object": "d2460ad20da700de96adc98a34d90bd078219cb6"
     }
   ]
 }
