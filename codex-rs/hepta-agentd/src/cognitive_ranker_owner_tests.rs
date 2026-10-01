@@ -1,22 +1,21 @@
 use super::*;
 
-use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
-use codex_hepta_learning_artifacts::DatasetWithdrawalNoticeV1;
-use codex_hepta_learning_artifacts::DatasetWithdrawalRegistry;
-use codex_hepta_learning_artifacts::DatasetWithdrawalScopeV1;
-use codex_hepta_learning_artifacts::LearningArtifactManifestV2;
-use codex_hepta_learning_artifacts::LearningArtifactOwnerHost;
-use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
-use codex_hepta_learning_artifacts::LearningArtifactOwnerServiceConfigV1;
-use codex_hepta_learning_artifacts::ProvenanceModeV1;
-use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
-use codex_hepta_learning_artifacts::SignedArtifactWriterLeaseV1;
-use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
-use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
-use codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3;
+use codex_hepta_agent_components::learning_artifacts::ArtifactOwnerTrustV1;
+use codex_hepta_agent_components::learning_artifacts::DatasetWithdrawalNoticeV1;
+use codex_hepta_agent_components::learning_artifacts::DatasetWithdrawalRegistry;
+use codex_hepta_agent_components::learning_artifacts::DatasetWithdrawalScopeV1;
+use codex_hepta_agent_components::learning_artifacts::LearningArtifactManifestV2;
+use codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerHost;
+use codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerService;
+use codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerServiceConfigV1;
+use codex_hepta_agent_components::learning_artifacts::ProvenanceModeV1;
+use codex_hepta_agent_components::learning_artifacts::RegistryHeadWitnessV1;
+use codex_hepta_agent_components::learning_artifacts::SignedArtifactWriterLeaseV1;
+use codex_hepta_agent_components::learning_artifacts::SignedCurrentArtifactHeadV1;
+use codex_hepta_agent_components::learning_artifacts::TrustedArtifactSignerV1;
+use codex_hepta_agent_components::learning_artifacts::admit_manifest_at_withdrawal_head_v3;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use pretty_assertions::assert_eq;
 
 struct OwnerView(Mutex<(LearningArtifactOwnerService, u64)>);
 
