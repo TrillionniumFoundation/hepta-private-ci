@@ -64,7 +64,7 @@ bound fails.
 ## Bellman reference, learned baseline and regularity
 
 `evaluate_bellman_reference` requires the complete Cartesian product of the
-registered sensor and action identities. Missing or duplicate cells fail. It
+caller-declared canonical sensor and action identities. Missing or duplicate cells fail. It
 computes Q32 targets, deterministic greedy actions and action gaps; ties break by
 canonical action ID. This reference is the oracle for any later learned model.
 The reward and continuation values are supplied by the caller; this function
@@ -242,3 +242,15 @@ async integration test is a source mapping, not an execution receipt here.
 Neither explicit consumer composes the default freeze/train/independent-evaluate/
 select/new-process-load learning loop. The generic simulator, continuous-domain
 coverage and optional neural/tensor backend remain separate implementation work.
+
+## Cognitive consumer final-use boundary
+
+The explicit Agentd consumer validates independently pinned artifact identity and
+producer, exact owner revisions and current selection. It also binds the complete
+ordered context response to private process/body issuance. Altering ordering and
+recomputing a public digest is insufficient. Full JSON stays within four items
+and 8 KiB, including the plan and escaped text. Owner currentness is rechecked
+after provider awaits. These host checks provide bounded integrity, not selection
+authority or evidence of model efficacy. Deferred learning delivery appends after issuance. Its existing exposure fact
+can still be false after a later rejection or transport failure; a staged
+confirmation protocol is required to close that separate integration gap.

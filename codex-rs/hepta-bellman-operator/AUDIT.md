@@ -45,6 +45,14 @@ work, finite-design geometry and already existing explicit consumers.
 | Avoidable quadratic work | Coordinate deduplication compared every candidate pair; separation repeated pair distances | Ordered coordinate set and existing farthest-point nearest distances remove those passes |
 | Excess digest buffering | Long sample identifiers could accumulate hundreds of MiB of extra digest input | Canonical per-row hashes retain every semantic field with approximately 32 MiB maximum sequence buffering |
 | Non-ancestral documentation anchors | Historical map commits were outside the current main ancestry and could not be migrated by the strict verifier | Reviewed operator/direct-dependency navigation is explicitly rebound; original provenance remains recorded and no historical execution claim is renewed |
+| Missing artifact protocol definition | Contracts and algorithm prose named `BellmanOperatorArtifactV1`, but the canonical schema registry omitted it | All 14 design fields, bounded encoding and critical-field policy are registered; the algorithm requires this protocol |
+| Public-digest final-use forgery | A real SQLite/ranker consumer accepted swapped result order after the caller recomputed the public evaluated-context digest and retained the genuine plan receipt | Private process/body issuance binds the complete ordered response and original monotonic deadline |
+| Unbounded final-use envelope | Current owner rows could be supplied with a self-consistent digest despite exceeding the delivery byte budget | Bounded borrowed serialization checks the complete four-item/8 KiB envelope before hashing, including escaping and plan fields |
+| Withdrawal during awaited providers | A source withdrawn after acquiring the owner cut could remain accepted while a CURRENT provider was awaited | The actual owner cut is revalidated after provider awaits, adjacent to read/final-use return |
+| Learning append before issuance failure | A response rejected by the new capacity or deadline checks could already have appended learning delivery evidence | Delivery is deferred until the final host fence and successful issuance; failed publication retracts the private issuance |
+| Duplicate issuance interference | Two attempts could share a live receipt; failure of one retracted the other successful attempt | A live receipt cannot be issued a second time, and rejection leaves the original record intact |
+| CURRENT drift during deferred publication | Moving delivery append beyond the earlier CURRENT check left a new unchecked publication window | Real owner/issuer/ranker/retrieval revalidation surrounds deferred ledger I/O |
+| Claimed index absent from consumer | The guide described indexed owner admission, but two candidate passes still scanned every admitted record | Both passes share one borrowed record-ID index and retain the original live/revision/hash/scope checks |
 
 The tests cover equal-output/different-input digest changes, canonical permutation,
 integer extrema and half ties, malformed mutable artifacts, forged but correctly
@@ -60,9 +68,10 @@ uses current main and does not import the old branch wholesale.
 
 | Layer | Evidence and remaining boundary |
 |---|---|
-| Development documentation | Detailed guides, current algorithms/limits/trust tiers and operation/caller mappings; design targets remain explicit |
+| Development documentation | Detailed guides, current algorithms/limits/trust tiers and operation/caller mappings; all four Bellman design protocols are registered; design targets remain explicit |
 | Native offline baseline | Target arithmetic, sensor design, complete tabular fitting, action-conditioned world model, signed qualification, pinned persistence and owner-derived terminal profile are implemented |
 | Explicit integration | Cognitive read consumer and shared replay terminal consumer with signed-owner training exist; neither is a default autonomous learning loop |
+| Delivery evidence | Early issuance/CURRENT refusal appends no exposure fact; late rejection after append can still misrecord exposure and requires a versioned confirmation protocol |
 | Canonical wire integration | Native reference records do not implement the full canonical certificate/manifest JSON schema; adapter and conformance coverage remain repository work |
 | Default composition | Freeze → train → independent evaluation → selection → new-process load remains repository integration work through existing owners |
 | Extended operator profile | Model-backed simulation/interpolation, continuous-domain coverage and optional neural/tensor training require separate implementations and qualification |
@@ -87,6 +96,56 @@ owner/trust configuration and any legitimate rotation; an opaque view is not
 proof that an arbitrary verifier configuration is host-authorized. Mutable
 admission is O(c log c + c log(s+a)); immutable loaded lookup remains O(log c).
 
+The cognitive consumer's private issuance registry stores no context text and
+has at most 256 live receipts. It retains the original plan's monotonic deadline
+instead of starting a new TTL after owner/provider I/O. Capacity exhaustion is a
+local read rejection and never evicts a still-usable receipt. A new process has
+no previous issuance records and requires a fresh read. Duplicate live issuance
+rejects without changing the first record. This integrity check is
+host-owned ephemeral metadata, not a durable model registry or new authority.
+Learning delivery is committed only after successful issuance. A subsequent
+owner, deadline, lifecycle or transport failure can still prevent use after the
+append. The existing ledger contract says `context_exposed` proves a published
+response; recording it before possible late rejection can therefore assert a
+false fact. Calling it an intent does not change that contract. This remains an
+integration defect requiring a separately designed staged event/consumer
+confirmation protocol. Neither an append nor this audit proves actual exposure.
+
+Canonical artifact registration defines the full 14-field design contract, not
+merely the narrower tabular native payload. Registration verifies field shape,
+bounds and required protocol coverage; it does not implement the JSON adapter,
+execute every numeric invariant or establish production/scientific acceptance.
+
+Independent CURRENT providers authenticate their own call-time observations.
+They do not offer a common lease or an atomic multi-owner cut. Rechecking before
+and after deferred I/O strengthens the existing interface; it cannot promise
+that every owner remains unchanged until subsequent use. A stronger guarantee
+requires an explicit common epoch/lease protocol, not an unbounded retry loop.
+
+### Delivery protocol gate before production learning
+
+Do not treat existing exposure rows as confirmed publication evidence. With the
+current single-stage durable-before-response ordering, a concurrent transition
+to Draining after the append can fail the host's final fence and return only an
+error while the ledger retains an active `context_exposed=true` row. Expiry,
+owner withdrawal or transport failure can produce the same mismatch. Private
+issuance retraction does not retract a durable fact, and changing the same
+record ID from false to true later is rejected as an identity conflict.
+
+Closing this gate needs a versioned intent plus confirmed-delivery event through
+the existing LedgerWriter, linked by owner/body/request and exact response
+digest, with destination deduplication, crash recovery and reconciliation.
+Codec compatibility and old single-stage rows require explicit migration;
+only confirmed records may support delivered-subset efficacy claims. An
+owner-side successful socket write proves IPC publication, while actual model
+attachment still requires the existing inference/native-started evidence.
+Moving the existing append after the socket write would remove the false
+publication assertion but introduce an unrecorded-exposure failure/crash window
+and change the current fail-closed durability policy. This audit preserves that
+policy and reports the unresolved protocol defect instead of silently changing
+the ledger contract. No current direct learner of `context_exposed` was found;
+that does not make the retained false fact acceptable for future learning.
+
 ## Compatibility and rollback
 
 No persisted payload layout changes. Independently admitted predecessor tabular
@@ -101,6 +160,57 @@ diagnostic rounding and the staged six-cell golden can change one-LSB values and
 candidate identities. The exact OOD comparison restores a valid boundary value.
 
 ## Executed validation
+
+### Third review: canonical contract and real cognitive consumer
+
+- Protocol mutation regressions: **3 passed**. Existing validators reject a
+  missing artifact schema, disabled unknown-critical-field policy and an
+  unbounded `errorBudget`. The validator was not weakened.
+- Module-registry, algorithm-workflow, algorithm-semantics and Lane E registry
+  suites: **23 passed**. Development documentation checks passed for **40
+  modules, 21 algorithm protocols and 59 critical protocols**.
+- Independent finite mathematical check:
+  [`qualification/check_arithmetic.py`](qualification/check_arithmetic.py),
+  SHA-256 `d048076eaa53c2a530587205e1487d16fe34b464b8a82a522ec204ee3da5cdb6`.
+  It checked 180 attained-statistics cases derived from 7,380 small sample
+  tuples, 4,680 Hamilton vectors/18,056 branch probabilities, and 1,997 seeded
+  sensor-separation comparisons. Of these sensor cases, 1,925 had positive
+  quantized separation and also checked mesh rounding; 72 zero-separation
+  cases made no mesh assertion and three attempts had fewer than two unique
+  points. No discrepancy was found. These are independent finite arithmetic
+  checks, not Rust execution or an infinite-domain proof.
+- A source-exact archived SQLite/ranker case **passed**, proving that the old
+  implementation accepted the reordered/self-rehashed response with its
+  genuine receipt. Two separately archived signed-CURRENT barrier cases also
+  **passed**, proving old read and final-use paths accepted a source forgotten
+  while awaiting a provider. The first build failed from shared disk exhaustion;
+  the cached serial retries completed. An initial repaired native-source run
+  completed **28 passed, 0 skipped** before the subsequent CURRENT-window
+  tightening. The final real-source minimal manifest completed **29 passed,
+  0 skipped**, including all original scoped cognitive, SQLite/ranker, HNMF
+  and ledger cases plus the new issuance/budget/barrier/publication regressions.
+  The new CURRENT case uses an actual fitted/encoded/pinned model, a newly signed
+  revoked registry and the real ledger sink; refusal leaves zero rows and no
+  usable issuance. Clock regression, full capacity and expiry also leave zero
+  exposure rows. Ranker production source SHA-256:
+  `8ce723c887bdac98869b4a1e169e2363c2c7ef4ecffe979a340dd052e552f45e`;
+  five-case native test-prefix SHA-256:
+  `92251b2ca5c68a5409141365f4b9b222f989db3ca9b29cd93c564d6d2c8fe4a6`.
+  Protocol structs are an exact native source copy; other covered host modules
+  are directly referenced. This does not compile the full AgentdState/control
+  IPC lifecycle or replace complete Agentd/Core/App Server integration.
+- Consumer minimal-manifest `just fix`: **passed**, with six warnings from
+  existing API arity and host interfaces omitted by the scoped manifest.
+  Actual private issuer source/tests strict Clippy (`-D warnings`): **passed**.
+  `just fix -p codex-hepta-bellman-operator`, final `just fmt` and
+  `git diff --check`: **passed**. No tests were rerun after fix/format.
+  Source hashes above identify bytes actually executed before final formatting.
+- Full `just fix -p codex-hepta-agentd` was attempted with both the repository
+  default debug profile and a serialized zero-debug retry. Both failed from
+  shared disk exhaustion in dependencies, before completing the package.
+  This is a resource-blocked package check, not a successful Agentd result.
+
+### Previously executed operator and owner qualification
 
 - `just test --locked --offline -p codex-hepta-bellman-operator`: **47 passed, 0 skipped**.
 - The pre-fix scheduled-revocation/expiry reproduction passed by proving that
@@ -152,13 +262,14 @@ candidate identities. The exact OOD comparison restores a valid boundary value.
   unrelated modules with that pre-existing global qualification limitation.
   Original source provenance is retained separately; no historical execution,
   deployment or acceptance claim is renewed by navigation rebinding.
-- Full Agentd package and cognitive SQLite/socket integration:
+- Full Agentd package and control-socket/lifecycle integration:
   **not completed**. Compilation exceeded the shared disk and memory limits;
   the serialized retry was also interrupted by premature cleanup of its build
   directory. No full Agentd package result is claimed. The minimal real-owner
   and scoped real-ranker/shared-Replay/shadow runs do not substitute for those
-  remaining integration checks. The new shared-Replay path did complete its
-  real-source integration run after resources became available.
+  remaining integration checks. Real SQLite/ranker integration now passed in
+  the third review's native-source minimal manifest above, and shared Replay
+  completed its real-source integration run after resources became available.
 - Global Lane E closure: **failed with 8 pre-existing findings** in legacy V1
   Decision/Outcome product-writer paths in objective ingress and intelligence
   product/runner. A clean baseline worktree produced the identical finding list.
@@ -167,8 +278,11 @@ candidate identities. The exact OOD comparison restores a valid boundary value.
 - PR CI has not been claimed green. The observed earlier candidate's general
   repository checks fail on an unchanged privileged-boundary classification
   and malformed regex test; a Windows Bazel launch also failed before any
-  reported Rust action. Workflow status is read live and remains separate from
-  scoped local validation.
+  reported Rust action. The source-head architecture job for `35a7e23d` also
+  failed its required-observed-tests gate: the `runtime_executable` filtered
+  native command exited zero but observed zero passing tests. The minimum-test
+  gate remains intact; this is not a successful lifecycle qualification.
+  Workflow status is read live and remains separate from scoped validation.
 
 Test references name executable cases; they are not deployment or acceptance
 receipts. The final PR records actual check results and the remaining global gate.
