@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e5dd19789973e1e142f8f6147a9909fc79b4cef0",
-    "tree": "d38be4883b9e251279bccae1449b4a7735c3316d"
+    "commit": "c40ed3d9fe909d9979b93251c006ad32704e5be3",
+    "tree": "04214f0313436ee9eb4f0790958b32b82cae4a7a"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -545,15 +545,27 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "56f00251c16cc690a1c962cd4e38ca555a9182cd"
+      "object": "802fb7d590c3e178d556ab43298abd22c084eb41"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs",
+      "object": "2451ba699391a6999db223ab4264e86fe5b215fe"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "5dc0e7f8523054b9d859dcd4ef42745011d0abed"
+      "object": "8706afa3fea7a0766c834db271cc3aa14eb4826f"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "object": "69ab1954b820da922b385179b8fc875fad0e4b65"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
+      "object": "75e17ba04e2589d98f2712814b7052403f0e3858"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
-      "object": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
+      "object": "812a8c9aee0da1306c7f2101cabb17ff9a957a4e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
@@ -565,71 +577,27 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
-      "object": "a0b1fd3db118cba0498209e38ad650850270c807"
+      "object": "ac10fb3b628c1c6227b2767ca61897e733f5b0e2"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
-      "object": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "935e9f55356be2af89083e5932aaa4f7493250df"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "cc32a1812d32db6f6371b16abe9245701faf3559"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
-      "object": "ecc4c6fa3c3f3838bda4d193d07d8b9dda12a6b1"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-      "object": "4a4543b635f19c35233ccb7bc7d30e3eb8bce683"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/registry.rs",
-      "object": "76dd2fc89fd5960a0f289d2d23f2b28fc22b5bd8"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-      "object": "07ed0f8d20afa8ab86f7b49be48f3aa21b7fe23a"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
-      "object": "cd81e6ee0a861c3e68e97124622ca73882755715"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/storage.rs",
-      "object": "1aad3b4c440cf20bbf21b7f7274756798b487963"
-    },
-    {
-      "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
-      "object": "35d784e64383f3cc30f19b3e3c79b8258d09688d"
-    },
-    {
-      "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "d91ad2e1c229c3ec12bdc6b3f51bf24ca41acfd0"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs",
-      "object": "6572d46b8fdc4f7640fe35ed521e8f5096238b77"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
-      "object": "69ab1954b820da922b385179b8fc875fad0e4b65"
-    },
-    {
-      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
-      "object": "75e17ba04e2589d98f2712814b7052403f0e3858"
+      "object": "073fcc597aadc6a28cf0b51c839aa5f461f6dc1c"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_generation_tests.rs",
       "object": "48ef2cddf7243701d15ac81b524b10c803035157"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "object": "dd511ae10e297bfe00b1ef7b7d8743a81d24be9e"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs",
       "object": "1a4071324d1387a99be2cdde60cf54786523dcba"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "object": "c112e18d04f097e8d0332cca6dabe3812b9f0f0b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs",
@@ -640,12 +608,44 @@
       "object": "3c8cbdc9426301d23efb2fbc2f98fc059423bc2d"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "object": "c2486be0a5c47ffa302cf043e3fdb3687cc28189"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
       "object": "7d33aaf6099caba3aa084a296a30e2dcb67ccb4b"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "object": "b2679011c4eee2a254d4e3820f4b3e4d07a22e0c"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/registry.rs",
+      "object": "2fe9ac7d484607b71a0205c2b60a7fe4ae467052"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/registry_cache_tests.rs",
       "object": "083dd88ab51e9315f71c1f7e7772cf7811fd6787"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "object": "e504139c21fe80a8f212b69b5337370e7a586572"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
+      "object": "cd81e6ee0a861c3e68e97124622ca73882755715"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "object": "b4116ddbd333e558a240fd6be5b2d472f99ea55d"
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
+      "object": "35d784e64383f3cc30f19b3e3c79b8258d09688d"
+    },
+    {
+      "path": "docs/modules/learning.artifacts/TECHNICAL.md",
+      "object": "a6b17c4bc6a649631cd1597623f76bec37ee8e6a"
     }
   ]
 }
