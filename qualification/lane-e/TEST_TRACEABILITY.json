@@ -254,6 +254,14 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs",
           "function": "art_03_registry_head_witness_rejects_rollback"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/registry_cache_tests.rs",
+          "function": "deep_lineage_invalidation_preserves_branch_and_replay_semantics"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/registry_cache_tests.rs",
+          "function": "overlapping_quarantine_and_revocation_never_revive_descendants"
         }
       ],
       "status": "native_test_mapped"
@@ -642,6 +650,26 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
           "function": "uncertain_current_retry_requires_the_exact_already_published_signed_head"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs",
+          "function": "different_producer_or_scope_cannot_resume_an_existing_owner_operation"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_generation_tests.rs",
+          "function": "terminal_maximum_generation_head_remains_readable_but_cannot_extend"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs",
+          "function": "coherent_operation_rename_cannot_rebind_a_signed_registry_during_recovery_or_startup"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs",
+          "function": "coherent_operation_rename_cannot_create_a_phantom_terminal_retry_receipt"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs",
+          "function": "stale_predecessor_for_a_new_operation_never_creates_an_irrecoverable_publication"
         }
       ],
       "status": "native_test_mapped"
@@ -778,6 +806,22 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_atomic_storage_tests.rs",
           "function": "rejected_registry_frontier_leaves_no_snapshot_or_phase_change"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs",
+          "function": "detached_public_transactions_cannot_cross_owner_durability_boundaries"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs",
+          "function": "pure_phase_advancement_cannot_skip_owned_payload_and_registry_checkpoints"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs",
+          "function": "owner_registry_phase_rejects_a_registration_for_another_intent_before_effects"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs",
+          "function": "checkpoint_write_failure_preserves_the_proven_phase_and_allows_exact_retry"
         }
       ],
       "status": "native_test_mapped"

@@ -436,10 +436,22 @@
         "dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenance",
         "changing_current_trust_closes_host_pinned_and_selected_consumers",
         "complete_current_provenance_cannot_be_replaced_with_same_trust_raw_v1_view",
-        "selected_load_keeps_owner_trust_and_full_provenance_for_first_use"
+        "selected_load_keeps_owner_trust_and_full_provenance_for_first_use",
+        "deep_lineage_invalidation_preserves_branch_and_replay_semantics",
+        "overlapping_quarantine_and_revocation_never_revive_descendants",
+        "detached_public_transactions_cannot_cross_owner_durability_boundaries",
+        "pure_phase_advancement_cannot_skip_owned_payload_and_registry_checkpoints",
+        "different_producer_or_scope_cannot_resume_an_existing_owner_operation",
+        "terminal_maximum_generation_head_remains_readable_but_cannot_extend",
+        "owner_registry_phase_rejects_a_registration_for_another_intent_before_effects",
+        "coherent_operation_rename_cannot_rebind_a_signed_registry_during_recovery_or_startup",
+        "coherent_operation_rename_cannot_create_a_phantom_terminal_retry_receipt",
+        "checkpoint_write_failure_preserves_the_proven_phase_and_allows_exact_retry",
+        "stale_predecessor_for_a_new_operation_never_creates_an_irrecoverable_publication"
       ],
       "remainingRepositoryGaps": [
         "Compose the owner service, authenticated current withdrawal frontier, independently governed selector and Agentd ranker in a named executable bootstrap with product integration tests.",
+        "Migrate Agentd's descriptor-bootstrapped plasticity baseline and policy consumers from retained raw V1 snapshot eligibility to an explicit supported provenance profile and full current owner-view checks; snapshot head recomputation and descriptor TTL do not detect intervening V2 expiry/source withdrawal.",
         "Introduce a versioned registry/reader capable of full multi-parent final-use ancestry before enabling multi-parent publication.",
         "Provide trusted legacy full-admission backfill and an authorized durable withdrawal-to-artifact revocation/retention integration; V1 projections cannot reconstruct missing V2 provenance."
       ],
@@ -451,7 +463,7 @@
       ],
       "statusDimensions": {
         "source": "compatibility_storage_scoped_admission_fenced_publication_and_current_use_guards_implemented",
-        "composition": "owner_service_and_optional_agentd_read_library_seams_executable_bootstrap_pending",
+        "composition": "owner_service_optional_ranker_and_legacy_plasticity_snapshot_seams_complete_provenance_bootstrap_pending",
         "qualification": "current_candidate_exact_head_and_actual_base_synthetic_merge_required",
         "liveProduct": "independent_trust_and_target_host_execution_not_established"
       }

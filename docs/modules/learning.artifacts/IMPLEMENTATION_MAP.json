@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "owner_service_and_optional_agentd_source_seams_no_executable_bootstrap",
+  "productCallerState": "owner_service_and_optional_ranker_seams_legacy_plasticity_snapshot_bootstrap_complete_provenance_pending",
   "productionWriterState": "fenced_owner_service_library_seam_source_qualification_pending",
   "operations": [
     {
@@ -27,12 +27,15 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/registry.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/registry_cache_tests.rs::deep_lineage_invalidation_preserves_branch_and_replay_semantics",
+        "codex-rs/hepta-learning-artifacts/src/registry_cache_tests.rs::overlapping_quarantine_and_revocation_never_revive_descendants"
+      ],
       "sourcePathExists": true,
       "designOperation": "artifact_registry_append",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "e723e3cf7c8e53ef59405bf71aa8cd4f5dc95f42"
+      "sourceBlob": "623652af6cb44a949200a0520e6cc0fba54bd813"
     },
     {
       "operation": "sensor_core_registry_read",
@@ -58,7 +61,7 @@
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "d25f9e2a3070b3cf13aebfd5259611c4d66e1956"
+      "sourceBlob": "0700e12545a9b98778f4c25df712a13788972ec8"
     },
     {
       "operation": "load_pinned_candidate",
@@ -71,7 +74,7 @@
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
+      "sourceBlob": "c2486be0a5c47ffa302cf043e3fdb3687cc28189"
     },
     {
       "operation": "revalidate_pinned_candidate",
@@ -84,7 +87,7 @@
       "designOperation": "revalidate_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
+      "sourceBlob": "c2486be0a5c47ffa302cf043e3fdb3687cc28189"
     },
     {
       "operation": "validate_manifest_v2",
@@ -123,7 +126,7 @@
       "designOperation": "admit_manifest_at_withdrawal_head_v3",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
+      "sourceBlob": "812a8c9aee0da1306c7f2101cabb17ff9a957a4e"
     },
     {
       "operation": "publication_begin",
@@ -136,7 +139,7 @@
       "designOperation": "publication_begin",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "sourceBlob": "73d9016b6a6dc8a231ca187e8e1dd54095d85169"
     },
     {
       "operation": "publication_checkpoint",
@@ -144,12 +147,18 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::detached_public_transactions_cannot_cross_owner_durability_boundaries",
+        "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::pure_phase_advancement_cannot_skip_owned_payload_and_registry_checkpoints",
+        "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::different_producer_or_scope_cannot_resume_an_existing_owner_operation",
+        "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs::owner_registry_phase_rejects_a_registration_for_another_intent_before_effects",
+        "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::checkpoint_write_failure_preserves_the_proven_phase_and_allows_exact_retry"
+      ],
       "sourcePathExists": true,
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
     },
     {
       "operation": "authenticated_current_head",
@@ -157,12 +166,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_generation_tests.rs::terminal_maximum_generation_head_remains_readable_but_cannot_extend"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
     },
     {
       "operation": "authenticated_current_registry_view",
@@ -175,7 +186,7 @@
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "5dfa64bb276051aa54dbdde1744c950401dd5028"
     },
     {
       "operation": "owner_writer_fence",
@@ -188,7 +199,7 @@
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
     },
     {
       "operation": "lifecycle_journal_append",
@@ -201,7 +212,7 @@
       "designOperation": "lifecycle_journal_append",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
+      "sourceBlob": "073fcc597aadc6a28cf0b51c839aa5f461f6dc1c"
     },
     {
       "operation": "durable_withdrawal_snapshot",
@@ -240,7 +251,7 @@
       "designOperation": "iteration_transition",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "a0b1fd3db118cba0498209e38ad650850270c807"
+      "sourceBlob": "ac10fb3b628c1c6227b2767ca61897e733f5b0e2"
     },
     {
       "operation": "owner_service_open",
@@ -253,7 +264,7 @@
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "5dfa64bb276051aa54dbdde1744c950401dd5028"
     },
     {
       "operation": "owner_service_publish",
@@ -261,12 +272,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs::stale_predecessor_for_a_new_operation_never_creates_an_irrecoverable_publication"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "5dfa64bb276051aa54dbdde1744c950401dd5028"
     },
     {
       "operation": "recover_current_registry",
@@ -274,12 +287,15 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs::coherent_operation_rename_cannot_rebind_a_signed_registry_during_recovery_or_startup",
+        "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs::coherent_operation_rename_cannot_create_a_phantom_terminal_retry_receipt"
+      ],
       "sourcePathExists": true,
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
     },
     {
       "operation": "recover_registry_by_head",
@@ -292,7 +308,7 @@
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
     },
     {
       "operation": "current_head_restart_anchor",
@@ -305,7 +321,7 @@
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "41bb03228e0fb74e63a370196a44fa7b7f24b8fb"
     },
     {
       "operation": "independent_selection_verify",
@@ -321,7 +337,7 @@
       "designOperation": "independent_selection_verify",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "sourceBlob": "5fa45d7b9fdff57750b7f49c936734b560493407"
     },
     {
       "operation": "record_verified_selection",
@@ -336,7 +352,7 @@
       "designOperation": "record_verified_selection",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "sourceBlob": "5fa45d7b9fdff57750b7f49c936734b560493407"
     },
     {
       "operation": "load_selected_candidate",
@@ -351,7 +367,7 @@
       "designOperation": "load_selected_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "sourceBlob": "5fa45d7b9fdff57750b7f49c936734b560493407"
     },
     {
       "operation": "write_artifact_admission_beneath",
@@ -434,9 +450,10 @@
       "delegatedCallees": []
     }
   ],
-  "currentNativeState": "Immutable V1 compatibility registry; full canonical V2/V3 admission sidecars before Prepared; fenced serial owner publication with atomic checkpoints, current trust floors, independent restart anchors and lease-rotation recovery; exact projection and single-parent inherited dataset provenance; service current-view full source membership and expiry/withdrawal exclusions honored by selectors and cached consumers, with owner-trust and full-provenance downgrade guards; bounded lifecycle and iteration evidence. Raw owner/verifier views prove V1 current history only. Normal executable writer/current-provider/selected-ranker bootstrap, multi-parent final-use ancestry, independent acceptance and target-host execution remain incomplete.",
+  "currentNativeState": "Immutable V1 compatibility registry with replay-derived lineage eligibility; full canonical V2/V3 admission sidecars before Prepared; fenced serial owner publication with atomic checkpoints, live lease producer/scope and exact latest durable transaction guards, current trust floors, independent restart anchors and lease-rotation recovery; exact projection and single-parent inherited dataset provenance; service current-view full source membership and expiry/withdrawal exclusions honored by selectors and cached consumers, with owner-trust and full-provenance downgrade guards; bounded lifecycle and iteration evidence. Raw owner/verifier views prove V1 current history only. Descriptor-bootstrapped Agentd plasticity currently retains raw V1 snapshot eligibility without ongoing full provenance/currentness. Complete writer/current-provider/selected-ranker bootstrap, plasticity current-view migration, multi-parent final-use ancestry, independent acceptance and target-host execution remain incomplete.",
   "repositoryControlledGaps": [
     "Compose the owner service, authenticated current withdrawal frontier, independently governed selector and Agentd ranker in a named executable bootstrap with product integration tests.",
+    "Migrate Agentd's descriptor-bootstrapped plasticity baseline and policy consumers from retained raw V1 snapshot eligibility to an explicit supported provenance profile and full current owner-view checks; snapshot head recomputation and descriptor TTL do not detect intervening V2 expiry/source withdrawal.",
     "Introduce a versioned registry/reader capable of full multi-parent final-use ancestry before enabling multi-parent publication.",
     "Provide trusted legacy full-admission backfill and an authorized durable withdrawal-to-artifact revocation/retention integration; V1 projections cannot reconstruct missing V2 provenance."
   ],

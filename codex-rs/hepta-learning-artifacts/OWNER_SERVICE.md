@@ -10,8 +10,8 @@ authoritative for ownership and completion claims.
 `LearningArtifactOwnerHost`. `CALLERS.toml` closes the service-to-host caller
 set. It does not prove that an executable constructs or operates that service.
 The repository currently provides an explicit Agentd ranker attachment API and
-qualification consumers; normal Agentd startup does not provision artifact
-trust, construct the writer service, install a current-registry provider, or
+qualification consumers; normal Agentd startup does not provision Owner
+signed-head trust, construct the writer service, install a current-registry provider, or
 attach a selected learned ranker. Production execution, independent acceptance,
 canary, promotion and release therefore remain open.
 
@@ -102,6 +102,11 @@ historical heads may remain replayable after signer rotation/revocation, while
 the newest head requires a currently admissible signer and unexpired witness.
 CURRENT is a verified chain over immutable `.head` records, not a mutable file
 whose basename establishes freshness.
+
+A valid terminal CURRENT at generation `u64::MAX` remains discoverable and readable
+and can be acknowledged/reopened normally. A new operation requires a checked
+next CURRENT generation; overflow rejects before admission-sidecar or Prepared
+publication and does not make the existing signed head unreadable.
 
 `open` then recovers the exact registry supporting CURRENT and inspects durable
 publication checkpoints. One non-terminal operation becomes a recovery fence;
@@ -204,6 +209,26 @@ retry only after exact expected-content verification. Preserve the operation's
 original lease commitment during recovery; a new valid lease authorizes present
 work but does not rewrite historical phase identity.
 
+These bindings are enforced by the public Owner host as well as its service.
+Before payload, registry, witness or acknowledgement effects, and before
+`resume_publication`, the host verifies a live writer lease for the transaction's
+producer/scope and reconstructs its latest durable operation checkpoint. The
+supplied transaction snapshot must equal that complete checkpoint using its
+original lease commitment. Missing Prepared state, an older phase, semantic or
+receipt drift, or a producer change rejects before filesystem effects. Pure
+transaction constructors and snapshots cannot substitute for this host-owned
+durable admission; a legitimate same-producer lease rotation preserves the
+original phase identity.
+
+For a new operation, `begin_publication` requires its predecessor to be the
+discovered signed CURRENT head, or the trusted genesis when no CURRENT exists,
+before persisting admissions/Prepared. An existing exact operation retains its
+original predecessor during recovery after an uncertain CURRENT publication;
+changing its intent rejects. Each phase publishes its checkpoint before
+advancing the supplied in-memory transaction. If checkpoint I/O is
+indeterminate, recover the proven durable phase rather than treating local
+phase advancement as evidence.
+
 Recovery verifies every checkpoint's canonical bytes, phase shape, complete
 transaction intent/state digests, nonzero receipt commitments and common storage
 binding. A later phase must retain the exact registry/witness receipts introduced
@@ -212,6 +237,43 @@ so subsequent source withdrawal blocks current use without destroying a valid
 historical acknowledgement. CURRENT reads and registry-by-head recovery validate
 the same complete checkpoint inventory; an acknowledged label cannot bypass
 semantic replay. Corrupt terminal retries close the service's recovery gate.
+
+Checkpoint hashes alone do not authenticate an operation name. Owner
+registration uses the canonical event ID
+`artifact-publication:<intent_digest>`, committing the operation, full admission
+and predecessor into the signed registry chain. Registry publication and
+recovery require that exact event/projection; coherent checkpoint renaming and
+recomputed local hashes cannot rebind an acknowledged operation. Current-view
+inventory verifies historical operation associations against the actual signed
+CURRENT prefix, while allowing at most one unfinished RegistryDurable operation
+outside that prefix. Public single-operation recovery verifies its exact
+snapshot. Current-view acquisition does not replay every historical snapshot.
+
+The pending RegistryDurable operation must extend the actual CURRENT (or trusted
+genesis). A stale/forked pending snapshot cannot become another recovery root.
+
+Historical receipt fields are checked for canonical shape, nonzero commitments,
+bounded record counts and unchanged phase progression; operation associations bind their
+head/sequence to the CURRENT records' exact intent, V1 projection and predecessor.
+Each current read verifies the actual current snapshot's complete file receipt,
+and requested single-operation recovery verifies that operation's snapshot.
+Every historical snapshot's file digest/byte count is not reauthenticated on
+every current read; the signed prefix association avoids quadratic historical
+snapshot I/O without claiming that additional verification.
+
+If a failed publication recovers an already durable Acknowledged checkpoint,
+the service reloads the authenticated live CURRENT registry before clearing its
+recovery fence. An indeterminate acknowledgement can precede the in-memory
+cache update; terminal checkpoint recovery alone cannot make that stale cache
+the baseline for unrelated work. Exact successful historical terminal retries
+retain their original receipt semantics.
+
+Before returning an exact terminal retry receipt, the host rereads the exact
+Acknowledged checkpoint, synchronizes its existing file, and synchronizes its
+parent directory on Unix. A visible no-replace link after a failed directory
+sync therefore cannot bypass the original acknowledgement durability boundary.
+This reconciliation changes no historical metadata or lease commitment and
+preserves valid exact retries after the original admission/head expires.
 
 | Observation | Required behavior |
 |---|---|
@@ -324,6 +386,28 @@ cannot downgrade that consumer. Trust substitution or provenance downgrade
 permanently closes it; trusted configuration rotation requires a new explicit
 admission. These checks preserve provider obligations to acquire the latest
 authenticated view and installed withdrawal frontier for every use.
+
+### Existing plasticity snapshot consumer
+
+Agentd's explicit `--plasticity-bootstrap-descriptor` composes a plasticity
+runtime using a receipt-pinned V1 `ArtifactRegistry`. Its parameter/topology
+baseline checks, UpdateRule/MutationPolicy resolver and modulator-broadcast
+resolver inspect that retained registry's eligibility. They do not obtain the
+Owner service's full current view, complete admissions or installed withdrawal
+frontier. Recomputing the same in-memory snapshot head before a request proves
+consistency with that snapshot, not continuing external currentness. Descriptor
+and evidence expiry bounds do not detect a source withdrawal within their
+validity interval.
+
+This is an existing compatibility consumer, distinct from the absent normal
+Owner/current-provider/selected-ranker bootstrap. It must not be described as
+enforcing full V2 expiry/source-withdrawal guarantees. An opaque V1 support
+digest cannot discriminate a legacy dataset pin from a complete V2 manifest
+commitment. A supported product profile must be explicit and authenticate the
+relevant source semantics; adopting owner-published V2 artifacts requires full
+current provenance and eligibility checks before baseline or policy use. Wiring
+that provider, preserving trust across refresh, and adding withdrawal/expiry
+integration tests remain repository work.
 
 ## 8. Bounded qualification and operating evidence
 

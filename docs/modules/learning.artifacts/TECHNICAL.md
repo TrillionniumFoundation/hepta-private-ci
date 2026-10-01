@@ -54,6 +54,16 @@ therefore distinct from proved product startup or production execution. The
 configuration, trust, restart and recovery contract is in
 [`OWNER_SERVICE.md`](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md).
 
+Agentd separately has an explicit `--plasticity-bootstrap-descriptor` path.
+It loads a receipt-pinned V1 artifact snapshot and retains that compatibility
+registry for parameter/topology baselines and policy evidence. Recomputing the
+retained snapshot's head does not acquire a newer Owner CURRENT or withdrawal
+frontier. This existing process composition does not enforce full V2 manifest
+expiry/source withdrawal or prove continuing external freshness. Migrating these
+consumers to the complete current-view boundary remains repository work; the
+absence of the Owner/ranker bootstrap does not imply that all artifact consumers
+are absent.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -219,6 +229,14 @@ accepted trust. A complete-provenance consumer cannot later accept a same-trust
 raw V1 view. Either trust substitution or provenance downgrade closes cached use
 and requires explicit new admission.
 
+The plasticity descriptor/bootstrap still uses raw V1 snapshot eligibility for
+Model/Parameters/Topology baselines, UpdateRule/MutationPolicy evidence and the
+modulator-broadcast Policy artifact. A V1 support digest cannot reveal whether
+it represents a legacy dataset digest or a complete V2 manifest commitment.
+Product composition therefore needs an explicit supported provenance profile
+and a current owner-view provider; snapshot receipt validity or descriptor TTL
+cannot establish that a source was not withdrawn during that interval.
+
 Withdrawal and lifecycle state both have canonical create-only durable snapshot adapters with independently retained receipts binding namespace/scope, chain head, file digest, record count and encoded byte count. Recovery rebuilds the semantic state and rejects non-canonical bytes, digest mismatch, scope mismatch, record-count mismatch or chain mismatch.
 
 Historical lifecycle replay validates actor evidence at `event.occurred_at`. Recovery time is not reused as mutation authorization time: an actor credential that expired after a valid historical append does not make the journal unrecoverable, while a new mutation after expiry still fails.
@@ -266,11 +284,42 @@ reconciliation. Complete canonical checkpoint replay validates intent/state
 digests, phase shape and unchanged earlier receipt commitments even for terminal
 records. CURRENT and registry-by-head reads use the same validated inventory.
 
+The public Owner host also verifies transaction authority at every payload,
+registry, witness and acknowledgement mutation, and when resuming a snapshot.
+A caller-constructed publication transaction is authority-free: it must equal
+this host's latest complete durable checkpoint for that operation, and its
+producer/scope must match the currently valid signed writer lease. Missing,
+stale or changed checkpoints fail before effects. Lease rotation may authorize
+present work for the same producer/scope while preserving the original durable
+lease commitment; an unrelated producer cannot adopt the old transaction.
+
+New operations must extend the discovered signed CURRENT or trusted genesis
+before Prepared durability. Existing exact recovery keeps its original
+predecessor when CURRENT has already advanced at an uncertain boundary. The
+canonical registry registration event ID is
+`artifact-publication:<intent_digest>`; that signed-chain commitment binds the
+operation, complete admission and predecessor. Owner recovery rejects coherently
+renamed/rehashed checkpoints that cannot match this registration. Current-view
+inventory validates historical checkpoint intents against the actual CURRENT
+prefix and separately checks at most one unfinished RegistryDurable snapshot.
+Current reads verify the actual current snapshot receipt; requested operation
+recovery verifies its exact snapshot. Historical receipts retain checked shape
+and phase continuity, but every historical file is not reread to reauthenticate
+its file digest/byte count on each current view.
+In-memory phase advancement occurs only after the corresponding immutable
+record and checkpoint publication return successfully; indeterminate I/O still
+requires recovery from independently verified durable state.
+
 Global generation/authority-epoch floors govern the newest CURRENT. Historical
 links and retained restart anchors keep their enrolled per-key signature, epoch
 and time constraints; generations strictly increase and authority epochs and
 issue times never regress. Raising a live floor therefore follows publication
 of a replacement CURRENT and does not invalidate otherwise valid old history.
+
+Generation exhaustion does not invalidate the final signed CURRENT. Discovery
+does not compute a nonexistent successor for a terminal generation `u64::MAX` head.
+A new operation still rejects checked-generation overflow before admission-sidecar
+or Prepared publication.
 
 Reader handles must be independently opened and initially unlocked, without
 concurrent descriptor aliases. A cloned Linux descriptor can share lock state
@@ -321,6 +370,15 @@ Source-enforced ceilings relevant to this module include:
 - iteration ledger events: 384.
 
 These bounds are safety/resource limits, not benchmark claims. Measure payload write + fsync, snapshot encode/write/reopen, withdrawal and lifecycle replay, current-head witness publication, pinned cold read/hash, current-view revalidation, crash recovery, parent-directory synchronization and orphan reconciliation on the selected target host.
+
+Registry eligibility uses a private derived index rebuilt from immutable
+records during replay. A balanced-tree lookup replaces repeated predecessor
+walks; quarantine/revocation iteratively invalidates the affected descendants.
+Exclusion is monotonic and rejected child registration cannot mutate the index.
+The cache is neither serialized nor independently authoritative, and changes no
+V1 event/chain digest or snapshot format. Full provenance/current-view checks
+still inspect bounded history and admissions; this is a source complexity
+improvement, not a measured target-host latency claim.
 
 The V1 compatibility registry remains intentionally bounded. A product that needs a larger history must introduce a new durable format or compaction/checkpoint design; it must not silently raise the in-memory limit beyond what the supported durable representation can carry.
 

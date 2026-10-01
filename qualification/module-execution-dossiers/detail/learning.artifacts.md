@@ -95,6 +95,20 @@ host must persist the transaction snapshot under its writer fence before treatin
 a phase as durable; this is a hard host transaction contract, not a false claim
 of atomic multi-file fsync.
 
+The public Owner host requires every phase mutation/resume to match its latest
+complete durable checkpoint and the current signed writer lease's
+producer/scope. Public transaction values cannot bypass Prepared admission,
+restore stale phases or transfer another producer's transaction. Same-producer
+lease rotation retains the original durable lease commitment.
+
+New operation Prepared state binds the current signed predecessor/trusted
+genesis. Owner registration commits the complete publication intent in
+`artifact-publication:<intent_digest>`, preventing local checkpoint rename/hash
+replay from inventing another signed operation. Current inventory verifies
+historical operation associations against its signed prefix, with at most one
+unfinished RegistryDurable snapshot checked separately. Each checkpoint must
+publish successfully before in-memory phase advancement.
+
 ## 4. Deterministic algorithm and scheduling
 
 1. Authenticate the host-side actor/notice/witness before constructing typed
@@ -133,6 +147,12 @@ V2 manifests bound datasets, lineage and predecessor vectors. Iteration
 envelopes separately cap candidates, files, semantic diff bytes and named
 parallel sandboxes. Iteration snapshot replay checks candidate and event counts
 before cloning candidate states or rebuilding the event ledger.
+
+V1 lineage eligibility is a private replay-derived index. Registry changes
+iteratively invalidate affected descendants and never revive excluded entries;
+replay/clone reproduce the same eligibility without changing durable event or
+chain digests. This reduces repeated predecessor walks and does not replace
+full current source-provenance validation.
 
 For new path-based host integration, use the `*_beneath` writers. They validate
 before final-path creation and reject absolute paths, `..`, non-normal
@@ -233,6 +253,10 @@ Live global generation/epoch floors apply to the newest CURRENT. Historical
 heads and anchors retain original enrolled per-key signature/epoch/time checks,
 with strictly increasing generations and non-regressing epochs/issue times.
 
+A terminal maximum-generation CURRENT stays readable and restartable. A checked
+next generation is required for a new operation; exhausted-generation extension
+rejects before admission/Prepared publication without replacing the existing head.
+
 `ArtifactOwnerVerifierV1::verify_current_registry_view` and
 `LearningArtifactOwnerHost::current_registry_view` issue the same opaque
 `VerifiedCurrentRegistryViewV1`. `RevalidatingCandidate::with_current` accepts
@@ -263,6 +287,16 @@ and current per-artifact expiry/withdrawal exclusions are in
 overlay; selectors and cached consumers honor `view.is_eligible`, preserving
 valid unrelated candidates. Raw owner/verifier CURRENT views prove V1 history
 only. Missing or corrupt full provenance closes service view acquisition.
+
+The explicit Agentd plasticity descriptor/bootstrap already consumes a
+receipt-pinned V1 artifact snapshot for parameter/topology baselines and policy
+evidence. Its retained registry eligibility checks do not acquire the Owner's
+complete current provenance or a newer withdrawal frontier. Recomputing that
+snapshot head or keeping its descriptor within TTL does not detect intervening
+expiry/source withdrawal. An explicit supported provenance profile and current
+provider integration are still required; V1 support digests cannot identify
+legacy versus full-manifest semantics. This existing compatibility path is
+distinct from the absent complete Owner/ranker bootstrap.
 
 Normal executable bootstrap still does not compose the writer service,
 authenticated withdrawal/current provider and independently selected Agentd

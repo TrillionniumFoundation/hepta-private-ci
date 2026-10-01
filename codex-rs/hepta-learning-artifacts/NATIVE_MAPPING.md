@@ -28,6 +28,15 @@ explicit embedding/qualification surfaces. See [`OWNER_SERVICE.md`](OWNER_SERVIC
 for configuration, trust roles, anchored restart, checkpoint recovery and the
 remaining deployment evidence.
 
+Agentd also provides an explicit descriptor-based plasticity bootstrap. It loads
+a receipt-pinned V1 compatibility snapshot for Model/Parameters/Topology
+baselines and policy evidence; its retained `ArtifactRegistry::is_eligible`
+checks do not acquire a newer CURRENT or enforce full V2 manifest expiry/source
+withdrawals. That consumer needs an explicit provenance profile and complete
+current-view migration. A V1 support digest alone cannot identify which source
+semantics it commits. The Owner/ranker bootstrap gap does not erase this already
+implemented, narrower snapshot-consumer seam.
+
 The `operator_sensor_core_registry` has no second writer. Sensor cores are first-class `ArtifactKind::SensorCore` records in the same append-only `ArtifactRegistry`; `project_operator_sensor_core_registry_v1` is a deterministic typed read view bound to the source registry head. Revocation/quarantine is therefore inherited from the physical artifact history rather than copied into another journal.
 
 The V1 registry is a compatibility index. It cannot encode every V2 lineage
@@ -155,6 +164,28 @@ The host must durably persist each transaction snapshot under its writer fence
 before treating that phase as durable. This is an ordered crash-recovery
 protocol, not a claim of a cross-file atomic filesystem transaction.
 
+Every public Owner phase mutation and `resume_publication` additionally binds
+the transaction to the latest complete durable checkpoint and the current
+writer lease's producer/scope before effects. Public authority-free transaction
+values cannot skip Prepared durability or restore an older phase. Authorized
+lease rotation retains the original checkpoint lease commitment.
+
+New operations bind Prepared to the discovered CURRENT/trusted genesis; exact
+recovery preserves the original predecessor after uncertain head publication.
+Canonical owner registration uses `artifact-publication:<intent_digest>` so
+signed history binds checkpoint operation identity, full admission and
+predecessor. Owner replay/current reads reject self-consistent local checkpoint
+renaming that disagrees with that event. Current inventory checks the signed
+prefix and at most one unfinished RegistryDurable snapshot; it does not reopen
+all historical snapshots. Phase checkpoints precede in-memory advancement.
+Exact terminal retries reverify and synchronize their existing Acknowledged
+checkpoint and Unix parent directory before returning the original receipt.
+
+V1 lineage eligibility has a private, replay-derived cache and child index.
+Quarantine/revocation iteratively excludes descendants without changing immutable
+records, event/chain digests or snapshot bytes. The index cannot grant selection
+or override the complete V2 service eligibility overlay.
+
 ## Lifecycle recovery
 
 The lifecycle evidence state machine remains:
@@ -231,11 +262,20 @@ Focused coverage includes:
   inherited source closure and per-artifact expiry/withdrawal exclusions;
 - `src/owner_checkpoint_tests.rs`, including canonical semantic replay, exact
   receipt progression, terminal corruption and historical withdrawal recovery;
+- `src/owner_transaction_binding_tests.rs`, including detached/stale pure
+  transactions, cross-producer/scope resume rejection before effects and a real
+  checkpoint-write size fault that preserves the proven in-memory phase;
+- `src/owner_generation_tests.rs`, including maximum-generation CURRENT
+  publication/acknowledgement, read/reopen and extension rejection;
+- `src/owner_registry_replay_tests.rs`, including canonical registration intent
+  binding and coherent checkpoint rename rejection at recovery/startup/retry;
 - `src/owner_rotation_tests.rs`, including live-only global floors, retained
   signed history and original per-key epoch/signature checks;
 - `src/owner_atomic_storage_tests.rs`, including pre-publication rejection and
   interruption before final-name creation;
 - `src/sensor_core_registry.rs` tests, including single-physical-owner and revocation projection;
+- `src/registry_cache_tests.rs`, including deep iterative descendant exclusion,
+  unchanged snapshots, clone/replay and overlapping invalidation;
 - `src/iteration.rs` and `src/iteration_ledger.rs` tests.
 - `src/iteration_ledger_capacity_tests.rs`, including snapshot capacity rejection
   before candidate-state allocation or event replay.
