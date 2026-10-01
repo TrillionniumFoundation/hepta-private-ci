@@ -19,6 +19,17 @@ fn checked<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     }
 }
 
+// Windows enforces the owning handle's exclusive byte-range lock against
+// independently opened readers. Preserve the append cursor when inspecting it.
+fn journal_bytes(journal: &mut SparseJournal) -> Vec<u8> {
+    let position = checked(journal.file.stream_position());
+    checked(journal.file.seek(SeekFrom::Start(0)));
+    let mut bytes = Vec::new();
+    checked(journal.file.read_to_end(&mut bytes));
+    checked(journal.file.seek(SeekFrom::Start(position)));
+    bytes
+}
+
 struct Fixture {
     root: PathBuf,
 }
@@ -118,12 +129,12 @@ fn successor_segment_preserves_state_and_allows_exact_retry() {
     let mut successor = checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
     let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
     let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
-    let before = fixture.bytes("successor");
+    let before = journal_bytes(&mut successor);
     assert_eq!(
         checked(successor.commit(second.checkpoint_after, &tick(3))),
         third
     );
-    assert_eq!(fixture.bytes("successor"), before);
+    assert_eq!(journal_bytes(&mut successor), before);
     assert_eq!(
         successor.commit(fourth.checkpoint_after, &tick(5)),
         Err(JournalError::Capacity)

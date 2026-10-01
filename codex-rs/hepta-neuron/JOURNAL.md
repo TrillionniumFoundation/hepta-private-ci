@@ -41,8 +41,14 @@ poisons the handle and requires reopen/reconciliation rather than a blind retry.
 
 At most 1024 ticks per segment: below 4.6 MB at d=256, plus one incomplete tail.
 Replay and receipt-cache memory are quota-bounded. At capacity the caller stops;
-segment rollover, compaction and cross-segment temporal continuity are not yet
-implemented. This synced disk path has no real-time latency claim. Configuration,
+bounded successor rollover preserves the exact current checkpoint as its seed.
+The HPTNSJ02 successor header is 176 bytes: the root context, global seed sequence
+and checkpoint digest, then its checksum. `start_successor` opens a successor;
+`recover_successor` also requires the separately retained acknowledgement anchor.
+Global sequences continue across segments. Exact retries and anchor queries cover
+the current segment and its seed; retain predecessor segments for earlier receipts.
+Compaction and durable V2 migration remain separate work. This synced disk path
+has no real-time latency claim. Configuration,
 selected model weights and topology remain immutable throughout a segment.
 
 The host must revoke/rebuild deleted-data-derived state before reopening it. The V1 journal remains deliberately tied to the single-population/same-width `SparseConfig` replay format. `PopulationSparseConfigV2` is a different mechanism generation and may not be written into this V1 format; durable V2 use requires an explicitly versioned store/migration.

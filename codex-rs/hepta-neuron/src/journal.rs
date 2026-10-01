@@ -497,6 +497,16 @@ impl SparseJournal {
         }
     }
 
+    /// Reject a known unavailable journal before computing a fresh owner tick.
+    /// Historical exact retries still use `commit` and remain valid at capacity.
+    pub(crate) fn check_capacity(&self) -> Result<(), JournalError> {
+        if self.remaining_capacity()? == 0 {
+            Err(JournalError::Capacity)
+        } else {
+            Ok(())
+        }
+    }
+
     fn anchor_at(&self, sequence: u64) -> Option<JournalAnchor> {
         if sequence == self.base_sequence {
             return self.base_anchor;

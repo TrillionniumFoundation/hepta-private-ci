@@ -301,6 +301,7 @@ fn invalid_tick_and_record_cap_do_not_append() {
         scope(),
         /*max_records*/ 1,
     ));
+    assert_eq!(journal.check_capacity(), Ok(()));
     let mut bad = tick(1);
     bad.drive_q24.push(0);
     assert_eq!(
@@ -308,6 +309,7 @@ fn invalid_tick_and_record_cap_do_not_append() {
         Err(JournalError::Mechanism(SparseError::InvalidInput))
     );
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
+    assert_eq!(journal.check_capacity(), Err(JournalError::Capacity));
     assert_eq!(
         journal.commit(first.checkpoint_after, &tick(2)),
         Err(JournalError::Capacity)
@@ -353,6 +355,7 @@ fn write_error_requires_reopen_and_reconciliation() {
         Err(JournalError::Poisoned)
     );
     assert_eq!(journal.current().err(), Some(JournalError::Poisoned));
+    assert_eq!(journal.check_capacity(), Err(JournalError::Poisoned));
     drop(journal);
     assert_eq!(checked(fixture.open().current()), None);
 }
