@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "67b760dc0d4d3ef49b43557c8ef5da3978d84b57",
-    "tree": "a660f5ebb9b078edb0cacbc5a73807102fd4161a"
+    "commit": "5c21bf39c67286545f473bf6e06cec9750c2652c",
+    "tree": "83d32789e77f3a31ef4b791e75adaea19d46cf08"
   },
   "laneId": null,
   "module": "runtime.gateway",
@@ -35,7 +35,9 @@
           "kind": "native_unit",
           "command": "just test -p codex-hepta-native-gateway --lib"
         }
-      ]
+      ],
+      "designOperation": "serve_native_gateway",
+      "delegatedCallees": []
     },
     {
       "operation": "forward_lifecycle_request",
@@ -51,7 +53,9 @@
           "kind": "native_unit",
           "command": "just test -p codex-hepta-native-gateway --lib"
         }
-      ]
+      ],
+      "designOperation": "forward_lifecycle_request",
+      "delegatedCallees": []
     },
     {
       "operation": "read_runtime_projection",
@@ -67,7 +71,9 @@
           "kind": "native_unit",
           "command": "just test -p codex-hepta-native-gateway --lib"
         }
-      ]
+      ],
+      "designOperation": "read_runtime_projection",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -81,7 +87,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceMaturity": "native_composition_service",
   "stateOwnerDisposition": "Owns bounded HTTP connections and nonce replay protection; runtime and Supervisor retain all durable owner facts.",
@@ -91,6 +98,35 @@
       "sourcePath": "apps/hepta-native/src/backend.rs",
       "nativeSymbol": "fn runtime_status(",
       "compositionState": "source_present_integrated_binary_qualification_pending"
+    }
+  ],
+  "sourceRoot": [
+    "codex-rs/hepta-native-gateway"
+  ],
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-native/src/backend.rs",
+      "object": "0814e098a760baa958987af3337c470ab019161a"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway",
+      "object": "0c4b0613d025a2326ee2ba89111339aa60359992"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/lib.rs",
+      "object": "56c61ce16ff5e2af22317c08c51730501966290d"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/lifecycle_source.rs",
+      "object": "fd1b6f79bc0c1a872129cd81f13502a5ae9b872b"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/source.rs",
+      "object": "9a7514015cef9ba99cc2a671e7049b1e59c6f7ee"
+    },
+    {
+      "path": "docs/modules/runtime.gateway/TECHNICAL.md",
+      "object": "80bb119aa1922863eb9dde59e03954e14b10883e"
     }
   ]
 }
