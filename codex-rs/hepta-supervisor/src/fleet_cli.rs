@@ -151,8 +151,8 @@ pub(super) async fn run(args: impl Iterator<Item = OsString>) -> anyhow::Result<
             json!({"agentId": agent, "releaseId": release, "operation": command})
         }
         "register-live" | "allow-release-live" | "retire" | "retirement-status" | "health"
-        | "roster" | "snapshot" | "mutation-status" | "reconcile-mutation" | "start"
-        | "upgrade" | "drain" | "stop" | "kill" | "restart" | "rollback" => {
+        | "roster" | "snapshot" | "diagnostics" | "mutation-status" | "reconcile-mutation"
+        | "start" | "upgrade" | "drain" | "stop" | "kill" | "restart" | "rollback" => {
             control(&root, &command, &mut args).await?
         }
         _ => anyhow::bail!("unknown command {command}\n{USAGE}"),

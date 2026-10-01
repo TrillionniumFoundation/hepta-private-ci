@@ -46,7 +46,14 @@ fn success(root: &Path, args: &[&str]) -> Value {
         // and any uncertain response is an error requiring a status query.
         let read = matches!(
             args.first(),
-            Some(&"health" | &"roster" | &"snapshot" | &"mutation-status" | &"retirement-status")
+            Some(
+                &"health"
+                    | &"roster"
+                    | &"snapshot"
+                    | &"diagnostics"
+                    | &"mutation-status"
+                    | &"retirement-status"
+            )
         );
         if output.status.success() || !read || Instant::now() >= deadline {
             break output;
@@ -406,4 +413,51 @@ async fn await_terminal(client: &SupervisordClient, agent: &AgentId) {
         );
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
+}
+
+#[tokio::test]
+async fn diagnostics_command_reaches_the_running_owner() -> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::Builder::new()
+        .prefix("h7-diag-")
+        .tempdir_in("/tmp")?;
+    let root = directory.path().join("fleet");
+    let workspace = directory.path().join("workspace");
+    std::fs::create_dir(&workspace)?;
+    success(&root, &["init"]);
+    success(
+        &root,
+        &[
+            "register",
+            AGENT,
+            workspace.to_str().ok_or("workspace path")?,
+        ],
+    );
+    let root_type = HeptaFleetRoot::parse(root.clone())?;
+    let mut daemon = Daemon(
+        Command::new(cargo_bin("hepta-supervisord")?)
+            .arg("--fleet-root")
+            .arg(&root)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::inherit())
+            .spawn()?,
+    );
+    let client = SupervisordClient::new(root_type.layout().supervisor_socket().to_path_buf())?;
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        if client.health().await.is_ok() {
+            break;
+        }
+        assert!(
+            Instant::now() < deadline && daemon.0.try_wait()?.is_none(),
+            "daemon unavailable"
+        );
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    let entries = client.diagnostics(AgentId::parse(AGENT)?).await?;
+    assert_eq!(
+        success(&root, &["diagnostics", AGENT]),
+        json!({"agentId": AGENT, "entries": entries})
+    );
+    Ok(())
 }
