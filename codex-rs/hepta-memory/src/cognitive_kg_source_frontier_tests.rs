@@ -99,7 +99,7 @@ async fn source_cover_index_preserves_cited_cuts_across_scopes_owners_and_reopen
                             stable_key: stable_key.to_string(),
                             revision: active_revision(
                                 scope.clone(),
-                                "Shared evidence",
+                                "Ada documented the engine.",
                                 /*valid_from*/ 100,
                             ),
                         },
