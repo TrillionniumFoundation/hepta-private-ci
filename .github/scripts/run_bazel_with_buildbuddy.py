@@ -4,9 +4,11 @@ import json
 import os
 import subprocess
 import sys
+from contextlib import contextmanager
 from collections.abc import Mapping
 from collections.abc import Sequence
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 
 OPENAI_REPOSITORY = "openai/codex"
@@ -28,9 +30,7 @@ REMOTE_EXECUTION_CONFIGS = {
 # otherwise insists that a test's execution and target platforms are equal.
 LOCAL_WINDOWS_MSVC_EXEC_PLATFORM = "//:windows_x86_64_msvc"
 LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN = "//:local_windows_msvc_cc_toolchain"
-LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN = (
-    "//:windows_gnullvm_tests_on_msvc_host_toolchain"
-)
+LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN = "//:windows_gnullvm_tests_on_msvc_host_toolchain"
 # Honor either explicit setting so the wrapper never overrides the caller's
 # choice when it supplies the CI default below.
 REMOTE_REPO_CONTENTS_CACHE_STARTUP_OPTIONS = {
@@ -283,8 +283,52 @@ def bazel_command(*args: str, env: Mapping[str, str] | None = None) -> list[str]
     return [bazel, *startup_args(args, env), *bazel_args_with_remote_config(args, env)]
 
 
+def invocation_args(args: Sequence[str]) -> list[str]:
+    """Decode the shell's lossless transport before resolving Bazel options."""
+    if not args or args[0] != "--wrapper-args-file":
+        return list(args)
+    if len(args) != 2:
+        raise ValueError("expected exactly one wrapper argument file")
+    encoded = Path(args[1]).read_bytes()
+    if not encoded.endswith(b"\0"):
+        raise ValueError("wrapper argument file is missing its final delimiter")
+    return [arg.decode("utf-8") for arg in encoded[:-1].split(b"\0")]
+
+
+@contextmanager
+def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
+    """Keep a complete target roster out of the native Bazel command line."""
+    command = next((arg for arg in args[1:] if not arg.startswith("-")), None)
+    if (
+        (os.name != "nt" and env.get("RUNNER_OS") != "Windows")
+        or command not in {"build", "test", "coverage"}
+        or "--" not in args
+    ):
+        yield list(args), None
+        return
+    separator = args.index("--")
+    targets = args[separator + 1 :]
+    if not targets:
+        yield list(args), None
+        return
+    if any("\n" in target or "\r" in target for target in targets):
+        raise ValueError("Bazel target patterns cannot contain line breaks")
+    # Bazel reads one UTF-8 pattern per line, including exclusion patterns.
+    # Keep the file until the real child retires, even when it reports failure.
+    with NamedTemporaryFile(
+        mode="w", encoding="utf-8", newline="\n", delete=False
+    ) as output:
+        path = Path(output.name)
+        output.writelines(f"{target}\n" for target in targets)
+    try:
+        yield [*args[:separator], f"--target_pattern_file={path}"], path
+    finally:
+        path.unlink()
+
+
 def main() -> None:
-    config = remote_config(sys.argv[1:], os.environ)
+    args = invocation_args(sys.argv[1:])
+    config = remote_config(args, os.environ)
     if config is None:
         print(
             "BuildBuddy key unavailable; using local Bazel configuration.",
@@ -299,14 +343,17 @@ def main() -> None:
             file=sys.stderr,
         )
 
-    command = bazel_command(*sys.argv[1:])
-    if os.name == "nt":
-        # Windows CRT exec can split arguments containing spaces and lose the
-        # eventual child exit status. Wait for Bazel and propagate its status.
-        result = subprocess.run(command, check=False)
-        raise SystemExit(result.returncode)
+    with windows_target_patterns(bazel_command(*args), os.environ) as (
+        command,
+        target_file,
+    ):
+        if os.name == "nt" or target_file is not None:
+            # Wait for the real child so its pattern file stays available and
+            # its failure status reaches CI without CRT exec argument splitting.
+            result = subprocess.run(command, check=False)
+            raise SystemExit(result.returncode)
 
-    os.execvp(command[0], command)
+        os.execvp(command[0], command)
 
 
 if __name__ == "__main__":

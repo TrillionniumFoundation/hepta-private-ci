@@ -51,14 +51,26 @@ if [[ -n "${BAZEL_OUTPUT_USER_ROOT:-}" ]]; then
   bazel_startup_args+=("--output_user_root=${BAZEL_OUTPUT_USER_ROOT}")
 fi
 
-run_bazel() {
+run_bazel() (
   if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
-    MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
+    # Bash writes its full array without spawning a native process with that
+    # array. A large target roster can exceed Windows' native argv limit before
+    # Python or Bazel starts; only the transport path crosses this boundary.
+    local argument_file
+    argument_file="$(mktemp)"
+    trap 'rm -f "$argument_file"' EXIT
+    printf '%s\0' "$@" > "$argument_file"
+    local native_argument_file="$argument_file"
+    if command -v cygpath >/dev/null 2>&1; then
+      native_argument_file="$(cygpath -w "$argument_file")"
+    fi
+    MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" \
+      --wrapper-args-file "$native_argument_file"
     return
   fi
 
   "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
-}
+)
 
 run_bazel_with_startup_args() {
   if (( ${#bazel_startup_args[@]} > 0 )); then
