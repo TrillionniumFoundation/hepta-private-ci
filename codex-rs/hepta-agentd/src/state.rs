@@ -688,10 +688,18 @@ impl AgentdState {
                             ))
                         })?;
                     self.require_current_run_start(record)?;
+                    let now = clock.now().map_err(|error| {
+                        AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
+                    })?;
+                    crate::intuition_policy_service::require_live_intuition_deadline(
+                        now,
+                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
+                    )?;
                     if let crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
-                        let now = clock.now().map_err(|error| {
-                            AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
-                        })?;
+                        crate::intuition_policy_service::require_live_intuition_deadline(
+                            now,
+                            prepared.run_snapshot().deadline_ms,
+                        )?;
                         runner.require_current_evaluation(now).map_err(|error| {
                             AgentdError::Protocol(format!(
                                 "canonical evaluation final-use fence failed: {error}"
@@ -734,6 +742,10 @@ impl AgentdState {
                         ),
                     })?;
                     let now_ms = unix_now_ms()?;
+                    crate::intuition_policy_service::require_live_intuition_deadline(
+                        now_ms,
+                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
+                    )?;
                     if now_ms >= record.authentication.expires_at_ms {
                         return Err(AgentdError::Invalid(
                             "durable run-start authentication expired before admission".to_string(),
@@ -843,6 +855,10 @@ impl AgentdState {
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
         crate::authbus_ingress::require_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
+        crate::intuition_policy_service::require_live_intuition_deadline(
+            now_ms,
+            crate::intuition_policy_service::run_start_deadline_ms(record)?,
+        )?;
         let current_generation = self
             .runtime
             .lock()

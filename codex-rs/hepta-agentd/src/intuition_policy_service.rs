@@ -118,6 +118,32 @@ fn retain_committed_receipt<T, E>(
     }
 }
 
+/// Apply the same elapsed-deadline semantics as the sole run coordinator.
+/// This read-only fence is usable before policy append and while holding the
+/// run lock because it acquires no runtime or registry lock.
+pub(crate) fn require_live_intuition_deadline(
+    now_ms: u64,
+    deadline_ms: u64,
+) -> Result<(), AgentdError> {
+    if deadline_ms <= now_ms {
+        return Err(crate::state::run_error(
+            crate::AgentRunError::InvalidDeadline,
+        ));
+    }
+    Ok(())
+}
+
+pub(crate) fn run_start_deadline_ms(
+    record: &codex_hepta_learning_ledger::RunStartRecordV1,
+) -> Result<u64, AgentdError> {
+    record
+        .admission
+        .deadline_unix_micros
+        .checked_add(999)
+        .map(|value| value / 1_000)
+        .ok_or_else(|| crate::state::run_error(crate::AgentRunError::ArithmeticOverflow))
+}
+
 impl AgentdState {
     #[allow(clippy::too_many_arguments)]
     #[allow(

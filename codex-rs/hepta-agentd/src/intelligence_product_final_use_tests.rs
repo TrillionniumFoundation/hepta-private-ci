@@ -153,6 +153,8 @@ enum Drift {
     SignedOwner,
     RunStartExpiry,
     QualificationDuringFence,
+    SourceRunDeadline,
+    CanonicalRunDeadline,
 }
 
 #[derive(Clone, Copy)]
@@ -174,6 +176,8 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
         (Drift::SignedOwner, PolicyOutcome::SlowPath),
         (Drift::RunStartExpiry, PolicyOutcome::Selected),
         (Drift::QualificationDuringFence, PolicyOutcome::Selected),
+        (Drift::SourceRunDeadline, PolicyOutcome::Selected),
+        (Drift::CanonicalRunDeadline, PolicyOutcome::Selected),
     ] {
         let (mut canonical, evaluation_trust) = signed_fixture();
         let directory = tempdir().expect("directory");
@@ -208,7 +212,7 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
                 .expect("runner")
                 .with_evaluation_trust(evaluation_trust)
                 .expect("evaluation trust");
-        let outcome = runner
+        let mut outcome = runner
             .prepare(
                 &product_test_coordinator(),
                 canonical.request,
@@ -216,6 +220,14 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
             )
             .await
             .expect("canonical preparation");
+        if let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &mut outcome
+            && matches!(drift, Drift::CanonicalRunDeadline)
+        {
+            // The trusted clock is fixture-relative, so use that same domain
+            // for the actual private run/context deadline metadata.
+            prepared.run_snapshot.deadline_ms = 160;
+            prepared.context_attachment.deadline_ms = 160;
+        }
         assert!(matches!(
             (policy_outcome, &outcome),
             (
@@ -248,7 +260,14 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
             scope_digest: digest("run-start-scope"),
             payload_digest: digest("run-start-body"),
             sequence: 1,
-            expires_at_ms: 160,
+            expires_at_ms: if matches!(
+                drift,
+                Drift::SourceRunDeadline | Drift::CanonicalRunDeadline
+            ) {
+                190
+            } else {
+                160
+            },
         };
         let message = SignedMessage {
             signature: issuer_key.sign(&claims.signing_bytes()).to_bytes(),
@@ -354,6 +373,17 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
                                 "run-start: {error}"
                             )))
                         })?;
+                    if matches!(drift, Drift::SourceRunDeadline) {
+                        crate::intuition_policy_service::require_live_intuition_deadline(now, 160)
+                            .map_err(AgentdIntuitionServiceErrorV1::from)?;
+                    }
+                    if let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
+                        crate::intuition_policy_service::require_live_intuition_deadline(
+                            now,
+                            prepared.run_snapshot().deadline_ms,
+                        )
+                        .map_err(AgentdIntuitionServiceErrorV1::from)?;
+                    }
                     if matches!(drift, Drift::QualificationDuringFence) {
                         clock_at_fence.now.store(201, Ordering::Release);
                     }
@@ -381,7 +411,7 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
                     Generation::new(owner.generation.get() + 1).expect("successor generation");
                 write_authority_file(&authority, &owners, frontier);
             }
-            Drift::RunStartExpiry => {
+            Drift::RunStartExpiry | Drift::SourceRunDeadline | Drift::CanonicalRunDeadline => {
                 clock.now.store(170, Ordering::Release);
             }
             Drift::QualificationDuringFence => {}
@@ -415,6 +445,10 @@ async fn writer_wait_rechecks_signed_owner_and_run_start_before_append() {
                     AgentdIntuitionPolicyError::PreparedEvidenceExpired,
                 ),
             ) => {}
+            (
+                Drift::SourceRunDeadline | Drift::CanonicalRunDeadline,
+                AgentdIntuitionServiceErrorV1::Agentd(AgentdError::Protocol(cause)),
+            ) => assert!(cause.contains("InvalidDeadline")),
             (_, error) => panic!("typed cause was lost: {error:?}"),
         }
         assert_eq!(
