@@ -356,7 +356,7 @@ async fn owner_drift_during_hnmf_publication_validation_fails_closed() {
         matches!(
             &result,
             Err(CognitiveContextError::Store(
-                codex_hepta_memory::CognitiveStoreError::Conflict(_)
+                codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
             ))
         ),
         "owner drift must fail publication: {result:?}"
@@ -401,7 +401,7 @@ async fn owner_drift_during_hnmf_final_use_validation_fails_closed() {
         matches!(
             &result,
             Err(CognitiveContextError::Store(
-                codex_hepta_memory::CognitiveStoreError::Conflict(_)
+                codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
             ))
         ),
         "owner drift must fail final use: {result:?}"
