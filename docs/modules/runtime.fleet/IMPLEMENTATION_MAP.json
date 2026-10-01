@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
@@ -120,5 +120,23 @@
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-fleet"
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/runtime.fleet.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "da7869258e2af13035181c007744c3ca135424df",
+      "snapshotSha256": "dddaf7faa9df20ad9165352666efe74a04c88fa60c6060c01707ab4d593455fd",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/runtime.fleet.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "ed9928788ba53aaa4a806a8f0810245e4c454409",
+      "snapshotSha256": "163885beb24ea73e10b545edeceaa65fb646acc10c14b63aa0da7629cc4e46a0",
+      "role": "historical_source_navigation_only"
+    }
   ]
 }

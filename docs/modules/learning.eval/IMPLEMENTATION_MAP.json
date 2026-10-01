@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
@@ -298,7 +298,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "52ab5dd3324d037475b41d258c3e75c2bcb08165"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
@@ -350,11 +350,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-      "object": "d407375ed7a8f645523e58f0f9435b0359b6f25d"
+      "object": "fbe2a65e1ccae24f78d99d44b0c326d4efd317a6"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
-      "object": "b308fb74ab586be2c9033eb1fa0ce3d0b80131c1"
+      "object": "17688b0c06788d1f3c489c6d74a17e175e64649b"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
@@ -366,7 +366,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
-      "object": "35237acc5fa429dcd0eb5e8641a2dad33fa77667"
+      "object": "511df088b89c3b43cb81977e1701d5c5655595cb"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
@@ -382,7 +382,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "object": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
+      "object": "4c0ac5034a7ce4e34857318cbd8c8b7b7f565aba"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
@@ -390,11 +390,29 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
-      "object": "80996b19831da4b6a88b1282157ca82ec526e8d8"
+      "object": "d04cfd9ae0aee0ef3d3207d32f04984865872b3a"
     },
     {
       "path": "docs/modules/learning.eval/TECHNICAL.md",
-      "object": "9cc96e05394f08aca263048ecdd40bfc112f7601"
+      "object": "09ebfe1ff1661269b479efcb03164a202d8ff646"
+    }
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/learning.eval.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "3f7e86fc34cedf4155081886b94b9c424e0ca1e5",
+      "snapshotSha256": "d346f59171e34228665f33e36fccd897a0aef5a299627472e2727a05e08ff7d4",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/learning.eval.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "e461f3394ab4fa88d4c2ca4910319429cf6c55b4",
+      "snapshotSha256": "7246588984a5d2cf7bcd21bd38234632bbb55dc9544ea5608338dd7fe70b7e17",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

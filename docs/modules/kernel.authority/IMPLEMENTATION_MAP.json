@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -226,7 +226,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
-      "object": "89bf62c8da8808a59047718313b43ed74bcf5ac5"
+      "object": "f6771bd1bb270627a17192a794f9fea70a5a3d5b"
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
@@ -279,6 +279,24 @@
     {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
       "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+    }
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/kernel.authority.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "a1596883896b812b81becf8a7850aaa4f6e0d657",
+      "snapshotSha256": "9fd06b587697690ccaad2435ab3868e6cd0b4053881a69334148dfffe17cfb63",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/kernel.authority.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "d409f1b5aaeb8033b2b48735fd142c33f0ced161",
+      "snapshotSha256": "6221dc06b561c0fd8d89cf5b04d2a30223cfa4c38aa1cd076311fc915f47c736",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

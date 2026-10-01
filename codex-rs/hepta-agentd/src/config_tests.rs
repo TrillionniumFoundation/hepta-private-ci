@@ -86,6 +86,40 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
     ));
     drop(config);
 
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        let load = || {
+            AgentdConfig::load(
+                fleet_path.clone(),
+                AgentId::parse(AGENT_ID).expect("valid agent id"),
+                1,
+                record.layout.home_root().to_path_buf(),
+                record.layout.run_root().to_path_buf(),
+                record.layout.home_root().to_path_buf(),
+                root.join("workspace"),
+            )
+        };
+        std::fs::set_permissions(&fleet_path, std::fs::Permissions::from_mode(0o777))
+            .expect("unsafe Fleet parent");
+        assert!(
+            load().is_err(),
+            "unsafe Fleet directory must reject before reading registry"
+        );
+        std::fs::set_permissions(&fleet_path, std::fs::Permissions::from_mode(0o755))
+            .expect("restore Fleet protection");
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o777))
+            .expect("unsafe Fleet ancestor");
+        assert!(
+            load().is_err(),
+            "unsafe ancestor must reject before acquiring writer lock"
+        );
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o1777))
+            .expect("trusted sticky ancestor");
+        drop(load().expect("trusted sticky namespace must retain valid deployment compatibility"));
+    }
+
     assert!(
         AgentdConfig::load(
             fleet_path.clone(),

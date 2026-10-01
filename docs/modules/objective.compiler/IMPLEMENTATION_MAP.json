@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -361,7 +361,7 @@
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
-  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "sourceBaseRole": "actual_integrated_main_provenance_anchor_not_execution_receipt",
   "exactHeadQualificationPolicy": {
     "state": "external_exact_candidate_receipt_required",
     "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
@@ -497,6 +497,24 @@
     {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
+    }
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/objective.compiler.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "9690eb4d3e4bed54237ecb06a9c5df89e82ad18d",
+      "snapshotSha256": "206eab69c46479cac15b273bab7a10bfe9a296669732bf836be66d5735552f82",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/objective.compiler.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "b1063020e1afc9aeff3571d210f4869cb605e6b3",
+      "snapshotSha256": "dc1e671b0ef7bfaf4e4d6dac07bfd2defbb8aab35fdc7be05fd8a02dda1e0063",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

@@ -46,6 +46,7 @@ use crate::decide_with_signed_evidence_v2;
 use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::evaluate_temporal_holdout;
 use crate::freeze_cross_fold_plan_v2;
+use crate::qualification_authentication::ProductQualificationAuthenticationV1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProductMetricSourceV1 {
@@ -313,10 +314,25 @@ pub struct ProductQualificationReceiptV1 {
     pub publication_digest: Digest32,
     pub evidence_digest: Digest32,
     pub authority: AuthorityPosture,
+    authentication: ProductQualificationAuthenticationV1,
     receipt_seal: Digest32,
 }
 
 impl ProductQualificationReceiptV1 {
+    /// Validate the sealed owner result against current host trust and time.
+    /// Original generator/evaluator/observer evidence lifetimes and scheduled
+    /// revocations remain binding; a fresh consumer signature cannot extend them.
+    /// This validates a prior qualification and never evaluates supplied metrics.
+    pub fn validate_current(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), ProductEvaluationError> {
+        self.validate_integrity()?;
+        self.authentication.validate_current(verifier, now)?;
+        Ok(())
+    }
+
     pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         if self.temporal_execution_digest.is_zero()
             || self.objective_digest.is_zero()
@@ -496,6 +512,9 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let snapshot_ids = bundle.snapshot_ids.clone();
         let claim_scope = bundle.claim_scope;
         let roles = temporal.product_plan.metric_roles.clone();
+        let authentication = ProductQualificationAuthenticationV1::capture(
+            &bundle, &roles, evidence, &timing, verifier, now,
+        )?;
         let decision = match timing {
             ProductTimingEvidenceV1::Qualification => {
                 if bundle.claim_scope != EvaluationClaimScopeV1::Qualification {
@@ -538,6 +557,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             publication_digest,
             evidence_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
+            authentication,
             receipt_seal: Digest32::ZERO,
         };
         receipt.evidence_digest = product_qualification_evidence_digest(&receipt);
@@ -548,7 +568,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -561,6 +581,16 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
         bytes.extend_from_slice(digest.as_array());
     }
     push_id(&mut bytes, &receipt.candidate_id);
+    let decision = &receipt.decision.decision;
+    push_id(&mut bytes, &decision.evaluation_id);
+    push_id(&mut bytes, &decision.candidate_id);
+    push_id(&mut bytes, &decision.baseline_id);
+    bytes.push(match decision.disposition {
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
+        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(&mut bytes, &decision.failed_metrics);
     push_principal(&mut bytes, &receipt.evaluator);
     push_principal(&mut bytes, &receipt.generator);
     bytes.push(match receipt.claim_scope {

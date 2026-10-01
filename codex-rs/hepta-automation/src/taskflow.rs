@@ -968,6 +968,41 @@ impl AutomationStore {
         now_ms: u64,
         lease_duration_ms: u64,
     ) -> Result<TaskFlowRun, TaskFlowError> {
+        self.claim_taskflow_run_inner(
+            run_id,
+            fence,
+            now_ms,
+            lease_duration_ms,
+            /*expected_run*/ None,
+        )
+        .await
+    }
+
+    pub(crate) async fn claim_taskflow_run_if_unchanged(
+        &self,
+        expected_run: &TaskFlowRun,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+        lease_duration_ms: u64,
+    ) -> Result<TaskFlowRun, TaskFlowError> {
+        self.claim_taskflow_run_inner(
+            &expected_run.run_id,
+            fence,
+            now_ms,
+            lease_duration_ms,
+            Some(expected_run),
+        )
+        .await
+    }
+
+    async fn claim_taskflow_run_inner(
+        &self,
+        run_id: &str,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+        lease_duration_ms: u64,
+        expected_run: Option<&TaskFlowRun>,
+    ) -> Result<TaskFlowRun, TaskFlowError> {
         validate_text(run_id, "run_id", MAX_ID_BYTES)?;
         self.validate_taskflow_fence(fence)?;
         if lease_duration_ms == 0 {
@@ -992,6 +1027,9 @@ impl AutomationStore {
                     TaskFlowError::Conflict("TaskFlow run does not exist".to_string())
                 })?;
         let mut run = taskflow_run_from_row(&row, self.taskflow_owner_agent_id())?;
+        if expected_run.is_some_and(|expected| expected != &run) {
+            return Err(TaskFlowError::StaleFence);
+        }
         // Lease replay/takeover must not extend a damaged append-only history.
         // Keep this audit in the same transaction as the projection update so
         // no concurrent writer can alter the chain between verification and

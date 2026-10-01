@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -150,8 +150,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -202,6 +202,24 @@
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
+    }
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/memory.federation.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "15ac734cf551d8c976cb7e8a00db378554c5d1d0",
+      "snapshotSha256": "b9bec0874232010f58038c88fbf725280fb3b6b356aa280be43332766b392fdb",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/memory.federation.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "0cccd29ad9e8c03a54ae96c0af3a1a1a2e59cfc9",
+      "snapshotSha256": "c8c2301f8166fd05081a9e9a00dbbb52099a02662643621b701d0a56f087f3e3",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

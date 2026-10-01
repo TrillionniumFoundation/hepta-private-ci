@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "auth.authbus",
@@ -82,5 +82,23 @@
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/auth.authbus.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "21c2b8d5c0311e9f32ecee08f8fb3c967483d907",
+      "snapshotSha256": "ce4a237fb7b2b557ce0af64d9509d7073c04c0aaec4dc90e18ef85d40d6118fa",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/auth.authbus.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "9646bdffe0f2b4296e0d31a2c7b937db9621f913",
+      "snapshotSha256": "b479283d34c079e9527645e7a97e2bdfa09b779444499cc70bc2ea624ddf38ce",
+      "role": "historical_source_navigation_only"
+    }
   ]
 }

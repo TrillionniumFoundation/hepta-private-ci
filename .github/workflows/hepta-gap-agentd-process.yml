@@ -6,6 +6,7 @@ on:
   workflow_call:
   workflow_dispatch:
 
+
 permissions:
   contents: read
 
@@ -124,6 +125,10 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Exercise re-exec helpers before shared host library tests
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-agentd --test helper_dispatch --test-threads=1
       - name: Exercise owner and lifecycle libraries
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
@@ -132,13 +137,27 @@ jobs:
           just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
-      - name: Exercise actual optional retirement and durable destination recovery
+      - name: Exercise historical observation and qualified evaluation owners
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-fleet \
+            -p codex-hepta-intelligence-eval -p codex-hepta-intelligence \
+            -p codex-hepta-automation --test-threads=1
+          just test --locked --lib -p codex-state \
+            -E 'test(sqlite::connection_tests) | test(runtime::queued_items::client_binding_observation)' --test-threads=1
+          just test --locked --lib -p codex-rollout -E 'test(bounded_reader)' --test-threads=1
+          just test --locked --lib -p codex-queue-extension -E 'test(historical_observation)' --test-threads=1
+          just test --locked --lib -p codex-app-server -E 'test(historical_observation)' --test-threads=1
+      - name: Exercise Agent isolation, retirement, and durable recovery
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-agentd --test optional_module_restart \
-            --test runtime_shutdown_outcomes --test-threads=1
+            --test runtime_shutdown_outcomes \
+            --test supervised_two_agents --test-threads=1
           just test --locked -p codex-hepta-automation --test retirement_recovery \
             --test operation_timer_fence --test-threads=1
           just test --locked -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1

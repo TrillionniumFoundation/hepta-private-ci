@@ -165,6 +165,154 @@ fn cancellation_preserves_the_dispatch_boundary_and_reason() {
 }
 
 #[test]
+fn cancellation_after_ack_timeout_requires_terminal_observation() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+    coordinator
+        .mark_dispatched(300, "run.1", 2)
+        .expect("dispatch");
+    let (_, cancelling) = coordinator
+        .cancel_run(400, "run.1", 3, "operator_request")
+        .expect("request cancellation");
+
+    assert_eq!(
+        coordinator.cancel_run(3_400, "run.1", 4, "operator_request"),
+        Err(AgentRunError::TerminalObservationRequired)
+    );
+    assert_eq!(
+        coordinator.run("run.1"),
+        Some(RunReceipt {
+            revision: 5,
+            phase: RunPhase::Indeterminate,
+            cancel_ack_deadline_ms: None,
+            ..cancelling
+        })
+    );
+    assert_eq!(coordinator.unresolved_run_count(), 1);
+}
+
+#[test]
+fn exhausted_recovered_revision_cannot_publish_a_terminal_outcome() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    let recovered = coordinator
+        .recover_indeterminate(RunRecovery {
+            snapshot: snapshot(),
+            revision: u64::MAX,
+            context_digest: digest('7'),
+            compilation_receipt_digest: digest('8'),
+            cancel_reason: Some("process_restart".to_string()),
+        })
+        .expect("retain unresolved recovery");
+
+    assert_eq!(
+        coordinator.observe_terminal("run.1", u64::MAX, RunPhase::Succeeded, true),
+        Err(AgentRunError::ArithmeticOverflow)
+    );
+    assert_eq!(coordinator.run("run.1"), Some(recovered));
+    assert_eq!(coordinator.unresolved_run_count(), 1);
+    assert_eq!(
+        coordinator.remove_closed_run("run.1", u64::MAX),
+        Err(AgentRunError::InvalidTransition)
+    );
+}
+
+#[test]
+fn revision_overflow_preserves_each_in_flight_transition() {
+    for phase in [
+        RunPhase::Admitted,
+        RunPhase::ContextAttached,
+        RunPhase::Dispatched,
+        RunPhase::Cancelling,
+    ] {
+        let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+        coordinator.start_run(100, snapshot()).expect("admit");
+        if phase != RunPhase::Admitted {
+            coordinator
+                .attach_context(200, 1, attachment())
+                .expect("attach");
+        }
+        if matches!(phase, RunPhase::Dispatched | RunPhase::Cancelling) {
+            coordinator
+                .mark_dispatched(300, "run.1", 2)
+                .expect("dispatch");
+        }
+        if phase == RunPhase::Cancelling {
+            coordinator
+                .cancel_run(400, "run.1", 3, "operator_request")
+                .expect("cancel");
+        }
+        coordinator.runs.get_mut("run.1").expect("record").revision = u64::MAX;
+        let before = coordinator.run("run.1");
+
+        let result = match phase {
+            RunPhase::Admitted => coordinator.attach_context(500, u64::MAX, attachment()),
+            RunPhase::ContextAttached => coordinator.mark_dispatched(500, "run.1", u64::MAX),
+            RunPhase::Dispatched => coordinator
+                .cancel_run(500, "run.1", u64::MAX, "operator_request")
+                .map(|(_, receipt)| receipt),
+            RunPhase::Cancelling => coordinator
+                .expire_deadlines(3_400)
+                .map(|_| coordinator.run("run.1").expect("run")),
+            RunPhase::Cancelled
+            | RunPhase::Succeeded
+            | RunPhase::Failed
+            | RunPhase::Indeterminate => {
+                unreachable!("only in-flight phases are exercised")
+            }
+        };
+        assert_eq!(result, Err(AgentRunError::ArithmeticOverflow));
+        assert_eq!(coordinator.run("run.1"), before);
+    }
+}
+
+#[test]
+fn cancellation_deadline_overflow_preserves_the_dispatched_run() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator
+        .start_run(
+            100,
+            RunSnapshot {
+                deadline_ms: u64::MAX,
+                ..snapshot()
+            },
+        )
+        .expect("admit");
+    coordinator
+        .attach_context(
+            200,
+            1,
+            ContextAttachment {
+                deadline_ms: u64::MAX,
+                ..attachment()
+            },
+        )
+        .expect("attach");
+    let dispatched = coordinator
+        .mark_dispatched(300, "run.1", 2)
+        .expect("dispatch");
+
+    assert_eq!(
+        coordinator.cancel_run(u64::MAX - 1, "run.1", 3, "operator_request"),
+        Err(AgentRunError::ArithmeticOverflow)
+    );
+    assert_eq!(coordinator.run("run.1"), Some(dispatched.clone()));
+    assert_eq!(
+        coordinator.expire_deadlines(u64::MAX),
+        Err(AgentRunError::ArithmeticOverflow)
+    );
+    assert_eq!(coordinator.run("run.1"), Some(dispatched.clone()));
+    assert_eq!(
+        coordinator.begin_drain(u64::MAX, "shutdown"),
+        Err(AgentRunError::ArithmeticOverflow)
+    );
+    assert_eq!(coordinator.run("run.1"), Some(dispatched));
+    assert!(!coordinator.admissions_open());
+}
+
+#[test]
 fn operation_identity_is_idempotent_only_for_equal_semantics() {
     let mut coordinator =
         AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");

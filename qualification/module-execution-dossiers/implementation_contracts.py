@@ -228,6 +228,28 @@ def inside(root: Path, relative: str) -> Path:
         raise Invalid('path escape')
     return path
 
+def implementation_state_values(root: Path) -> set[str]:
+    """Read the finite versioned vocabulary from the profile schema owner."""
+    schema=read_json(root/REL/'IMPLEMENTATION_PROFILES.schema.json')
+    try:
+        properties=schema['properties']
+        state=properties['modules']['items']['properties']['implementationState']
+        values=state['enum']
+        valid=(schema['$schema']=='https://json-schema.org/draft/2020-12/schema'
+               and schema['$id']=='urn:hepta:module-implementation-profiles:v1'
+               and properties['schema']['const']=='hepta.module-implementation-profiles.v1'
+               and type(properties['schemaVersion']['const']) is int
+               and properties['schemaVersion']['const']==1
+               and state['type']=='string'
+               and isinstance(values,list) and bool(values)
+               and all(isinstance(value,str) and bool(value) for value in values)
+               and len(values)==len(set(values)))
+    except (KeyError,TypeError):
+        valid=False
+    if not valid:
+        raise Invalid('implementation state owner schema identity/vocabulary')
+    return set(values)
+
 def verify_bundle(root: Path) -> dict[str, Any]:
     base=root/REL
     profiles=read_json(base/'IMPLEMENTATION_PROFILES.json')
@@ -239,6 +261,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     claim_keys={'productTestsExecuted','deploymentQualified','longitudinalEfficacy','functionalBiomimicry','selfIteration','autonomousPropagation','independentAcceptance','allGapsClosed'}
     if set(profiles['claimBoundary']) != claim_keys or any(v is not False for v in profiles['claimBoundary'].values()):
         raise Invalid('positive document capability claim')
+    allowed_implementation_states=implementation_state_values(root)
     for row in rows:
         mid=row['module']
         if not re.fullmatch('[a-z]+[.][a-z]+',mid) or row['lane'] not in LANES:
@@ -248,11 +271,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         for key in ('apiContract','stateAndEncoding','linearizationAndRecovery','algorithmAndBounds','acceptanceOracle'):
             if not isinstance(row[key],str) or len(row[key]) < 80:
                 raise Invalid(mid+': missing concrete '+key)
-        allowed_implementation_states = {
-            'specified_not_product_evidence',
-            'source_implemented_product_composed_requires_candidate_evidence',
-        }
-        if row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
+        if not isinstance(row['implementationState'],str) or row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
             raise Invalid(mid+': false source or deployment closure')
         if not row['declaredRoots'] or not row['workPackages']:
             raise Invalid(mid+': absent canonical references')

@@ -19,6 +19,7 @@ pub use codex_state::MAX_QUEUE_ITEMS;
 pub use codex_state::QueuedClientBindingFinalizeMode;
 pub use codex_state::QueuedClientBindingFinalizeOutcome;
 pub use codex_state::QueuedClientBindingLease;
+pub use codex_state::QueuedClientBindingObservation;
 pub use codex_state::QueuedClientBindingReserveOutcome;
 pub use codex_state::QueuedClientDispatchClaimOutcome;
 pub use codex_state::QueuedClientDispatchLease;

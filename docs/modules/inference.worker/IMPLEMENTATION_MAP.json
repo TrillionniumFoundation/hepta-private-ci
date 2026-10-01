@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -141,5 +141,23 @@
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-infer-worker-host"
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/inference.worker.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "222790209b2b29f131efe8de1c1a006777d9a450",
+      "snapshotSha256": "4f0c10ca5bdd303179142425942b1ce9ec1144b5d344ba458675429a436c0818",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/inference.worker.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "190452c53f443eb7d93970f43f109ed010bbaae6",
+      "snapshotSha256": "830909df13b2ecc7e436c8f393ed885dbbd07a29dad2fa5881e253a9f3afcb28",
+      "role": "historical_source_navigation_only"
+    }
   ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -333,7 +333,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "34e78b64346958831e54049c7c652ad0adcfbd92"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -362,6 +362,24 @@
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
       "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+    }
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/cognitive.store.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "9c3c8c641f9ff62db3850be510aaf7fc6409aa6f",
+      "snapshotSha256": "8203699351beedc0dadc84cdbf2895a83057e583581a1bfe0fd7dc0b065ec2d7",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/cognitive.store.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "12db5b25bf2154e31d7ea432a9ad57dd10c4b228",
+      "snapshotSha256": "efe822576e13f247e6fa0d6d11e407aae731da8dc9508dbb86234fa9a866c534",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

@@ -9,11 +9,9 @@
 //! reconciliation without holding the authority mutex.
 
 use std::fmt;
-use std::fs;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 use std::process::Child;
 use std::process::ChildStdin;
@@ -37,6 +35,11 @@ use serde_json::json;
 use sha2::Digest;
 use sha2::Sha256;
 use thiserror::Error;
+
+#[path = "browser_artifact.rs"]
+mod artifact;
+
+use artifact::verify_file_digest;
 
 const PROTOCOL_SCHEMA: &str = "hepta.browser.agentd-stdio-frame.v1";
 const PROTOCOL_VERSION: u64 = 1;
@@ -314,7 +317,6 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
     kind: String,
     request_id: String,
     payload: Value,
@@ -450,7 +452,6 @@ fn receive_frame<T: BrowserServoTransport>(
         ));
     }
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
@@ -627,6 +628,10 @@ pub struct BrowserServoProcessConfig {
 
 impl BrowserServoProcessConfig {
     pub fn validate(&self) -> Result<(), BrowserServoError> {
+        self.validated_artifacts().map(|_| ())
+    }
+
+    fn validated_artifacts(&self) -> Result<(PathBuf, PathBuf), BrowserServoError> {
         for (name, path) in [
             ("Node executable", &self.node_path),
             ("Browser service", &self.service_path),
@@ -646,9 +651,10 @@ impl BrowserServoProcessConfig {
                 "Browser driver timeout must be a positive safe integer".into(),
             ));
         }
-        verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
-        verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
-        Ok(())
+        let service =
+            verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
+        let worker = verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
+        Ok((service, worker))
     }
 }
 
@@ -669,12 +675,12 @@ impl fmt::Debug for ChildBrowserTransport {
 
 impl ChildBrowserTransport {
     pub fn spawn(config: &BrowserServoProcessConfig) -> Result<Self, BrowserServoError> {
-        config.validate()?;
+        let (service_path, worker_path) = config.validated_artifacts()?;
         let mut command = Command::new(&config.node_path);
         command
-            .arg(&config.service_path)
+            .arg(service_path)
             .env_clear()
-            .env("HEPTA_BROWSER_WORKER_PATH", &config.worker_path)
+            .env("HEPTA_BROWSER_WORKER_PATH", worker_path)
             .env(
                 "HEPTA_BROWSER_WORKER_SHA256",
                 hex_lower(&config.worker_sha256),
@@ -790,40 +796,6 @@ fn read_child_frame(stdout: &mut BufReader<ChildStdout>) -> Result<Vec<u8>, Brow
     frame.extend_from_slice(&prefix);
     frame.extend_from_slice(&body);
     Ok(frame)
-}
-
-fn verify_file_digest(
-    path: &Path,
-    expected: [u8; 32],
-    maximum: usize,
-) -> Result<(), BrowserServoError> {
-    let metadata = fs::symlink_metadata(path).map_err(|error| {
-        BrowserServoError::Invalid(format!("cannot inspect {}: {error}", path.display()))
-    })?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(BrowserServoError::Invalid(format!(
-            "{} must be a regular non-symlink file",
-            path.display()
-        )));
-    }
-    let size = usize::try_from(metadata.len())
-        .map_err(|_| BrowserServoError::Invalid("Browser file size overflow".into()))?;
-    if size == 0 || size > maximum {
-        return Err(BrowserServoError::Invalid(format!(
-            "{} exceeds its bounded file size",
-            path.display()
-        )));
-    }
-    let bytes = fs::read(path).map_err(|error| {
-        BrowserServoError::Invalid(format!("cannot read {}: {error}", path.display()))
-    })?;
-    if sha256_bytes(&bytes) != expected {
-        return Err(BrowserServoError::BindingMismatch(format!(
-            "{} digest does not match selected Browser artifact",
-            path.display()
-        )));
-    }
-    Ok(())
 }
 
 #[derive(Debug, Error)]

@@ -102,6 +102,10 @@ pub(crate) async fn read_with_retrieval_context(
     .await
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the existing retrieval contract passes distinct optional owner capabilities and their request identity"
+)]
 pub(crate) async fn read_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -479,6 +483,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 }
 
 #[cfg(test)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the test convenience wrapper forwards the complete existing context revalidation contract"
+)]
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -504,6 +512,10 @@ pub(crate) async fn revalidate(
     .await
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "final-use revalidation requires every bound context field and current owner capability"
+)]
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,

@@ -19,6 +19,8 @@ use crate::PlasticityRuntimeHandleV1;
 ///
 /// It contains only the bounded runtime handle and cannot access proposal
 /// writers, anchor stores, trust roots or authoritative owner stores.
+/// The upstream self-iteration production trigger is not yet composed; lifetime
+/// qualification exercises this retained producer through AgentdState.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
     handle: PlasticityRuntimeHandleV1,

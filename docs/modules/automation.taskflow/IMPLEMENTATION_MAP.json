@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -77,9 +77,16 @@
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-automation/src/scheduler.rs",
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "symbol": "queue_submission_is_not_occurrence_or_taskflow_success",
           "kind": "scheduler_and_recovery",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "symbol": "proven_absent_unknown_dispatch_reuses_same_occurrence_identity",
+          "kind": "scheduler_unknown_dispatch_recovery",
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
@@ -231,8 +238,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -248,7 +255,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+        "blobSha": "32cc032f9d45ff66ed90e2c248946384659265a1"
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -304,7 +311,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "92ec3fc0b477c427e59211fd64383f90408183c5"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
@@ -316,7 +323,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "dd7d26214bf2bb1b97f6dc578475bd13daf89b46"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -328,7 +335,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "object": "32cc032f9d45ff66ed90e2c248946384659265a1"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
@@ -361,6 +368,33 @@
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+    }
+  ],
+  "historicalSourceOrigin": {
+    "path": "qualification/module-source-origins/20261001/automation.taskflow.json",
+    "archiveBlobSha": "3c8c99508cb391835bcd33e9f7a968c747da7a1c",
+    "snapshotCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "snapshotTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
+    "originalMapPath": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+    "originalMapBlobSha": "61ef1337b8d195196b6f4f59893826e707959e45",
+    "role": "historical_only_no_execution_authority"
+  },
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/automation.taskflow.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "44753d0f6dfe14cee0b8fc4bbcb117b8b05cb3c3",
+      "snapshotSha256": "4ac9732810249eace0ccb743ffc0acac8ac59fe30531236328f26d82b6abb852",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/automation.taskflow.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "e671ade74010b10ab0f0e65d81dd82f788c53762",
+      "snapshotSha256": "b387f2ae73d85036ff919f64fd27d54973a12a325dceb69d89f3fe69b31f8cd2",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

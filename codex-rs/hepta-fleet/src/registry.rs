@@ -20,11 +20,14 @@ use crate::AgentLifecycleState;
 use crate::AgentManifest;
 use crate::AgentReleaseState;
 use crate::FleetRegistryError;
+use crate::control_file::ControlRoot;
 use crate::release::initialize_release_state;
 use crate::release::load_release_state;
 
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
+// Covers a platform's maximum workspace path plus the bounded manifest fields.
+const MAX_CONTROL_TEXT_BYTES: u64 = 1024 * 1024;
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -50,11 +53,12 @@ impl FleetSnapshot {
 #[derive(Clone, Debug)]
 pub struct FleetRegistry {
     layout: HeptaFleetLayout,
+    pub(crate) control: ControlRoot,
 }
 
 impl FleetRegistry {
     pub fn initialize(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
-        let layout = fleet_root.layout();
+        let layout = resolve_control_layout(&fleet_root)?;
         for directory in [
             layout.fleet_root().as_path(),
             layout.state_root(),
@@ -65,14 +69,23 @@ impl FleetRegistry {
             std::fs::create_dir_all(directory)?;
             validate_physical_directory(directory)?;
         }
+        let control = ControlRoot::capture(layout.fleet_root().as_path())?;
+        for directory in [
+            layout.state_root(),
+            layout.run_root(),
+            layout.releases_root(),
+            layout.agents_root(),
+        ] {
+            control.directory(directory)?.verify()?;
+        }
         sync_directory(layout.fleet_root().as_path())?;
-        Ok(Self { layout })
+        Ok(Self { layout, control })
     }
 
     pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
-        let registry = Self {
-            layout: fleet_root.layout(),
-        };
+        let layout = resolve_control_layout(&fleet_root)?;
+        let control = ControlRoot::capture(layout.fleet_root().as_path())?;
+        let registry = Self { layout, control };
         for directory in [
             registry.layout.fleet_root().as_path(),
             registry.layout.state_root(),
@@ -81,6 +94,7 @@ impl FleetRegistry {
             registry.layout.agents_root(),
         ] {
             validate_physical_directory(directory)?;
+            registry.control.directory(directory)?.verify()?;
         }
         registry.migrate_legacy_matrix_roots()?;
         registry.load()?;
@@ -92,6 +106,7 @@ impl FleetRegistry {
     }
 
     pub fn load(&self) -> Result<FleetSnapshot, FleetRegistryError> {
+        let namespace = self.control.directory(self.layout.agents_root())?;
         let mut agents = BTreeMap::new();
         for entry in std::fs::read_dir(self.layout.agents_root())? {
             let entry = entry?;
@@ -113,6 +128,7 @@ impl FleetRegistry {
             }
         }
         validate_workspace_isolation(&agents)?;
+        namespace.verify()?;
         Ok(FleetSnapshot { agents })
     }
 
@@ -158,6 +174,7 @@ impl FleetRegistry {
     /// fsynced, and renamed; existing paths must be physical directories and
     /// are only tightened to owner-only permissions.
     fn migrate_legacy_matrix_roots(&self) -> Result<(), FleetRegistryError> {
+        let namespace = self.control.directory(self.layout.agents_root())?;
         for entry in std::fs::read_dir(self.layout.agents_root())? {
             let entry = entry?;
             let Some(name) = entry.file_name().to_str().map(str::to_owned) else {
@@ -172,11 +189,14 @@ impl FleetRegistry {
                 .map_err(|error| FleetRegistryError::Corrupt(error.to_string()))?;
             let layout = self.layout.agent(&agent_id);
             validate_physical_directory(layout.agent_root())?;
-            migrate_private_directory(layout.agent_root(), "matrix")?;
-            migrate_private_directory(layout.matrix_root(), "secrets")?;
+            let agent_namespace = self.control.directory(layout.agent_root())?;
+            migrate_private_directory(&self.control, layout.agent_root(), "matrix")?;
+            migrate_private_directory(&self.control, layout.matrix_root(), "secrets")?;
             validate_private_directory(layout.matrix_root())?;
             validate_private_directory(layout.matrix_secrets_root())?;
+            agent_namespace.verify()?;
         }
+        namespace.verify()?;
         Ok(())
     }
 
@@ -255,6 +275,7 @@ impl FleetRegistry {
     /// fleet size. History compaction is a separate owner-controlled operation.
     pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
         let layout = self.layout.agent(agent_id);
+        let mut namespaces = Vec::new();
         for directory in [
             layout.agent_root(),
             layout.home_root(),
@@ -267,13 +288,14 @@ impl FleetRegistry {
             layout.automation_root(),
         ] {
             validate_physical_directory(directory)?;
+            namespaces.push(self.control.directory(directory)?);
         }
         validate_private_directory(layout.matrix_root())?;
         validate_private_directory(layout.matrix_secrets_root())?;
-        let manifest: AgentManifest = toml::from_str(&read_regular_file(layout.agent_config())?)
-            .map_err(|error| {
-                FleetRegistryError::Corrupt(format!("invalid agent manifest: {error}"))
-            })?;
+        let manifest: AgentManifest =
+            toml::from_str(&read_regular_file(&self.control, layout.agent_config())?).map_err(
+                |error| FleetRegistryError::Corrupt(format!("invalid agent manifest: {error}")),
+            )?;
         manifest.validate(self.layout.fleet_root())?;
         if &manifest.agent_id != agent_id {
             return Err(FleetRegistryError::Corrupt(format!(
@@ -281,8 +303,11 @@ impl FleetRegistry {
                 manifest.agent_id
             )));
         }
-        let lifecycle = load_lifecycle(layout.run_root(), agent_id)?;
-        let release_state = load_release_state(layout.releases_root(), agent_id)?;
+        let lifecycle = load_lifecycle(&self.control, layout.run_root(), agent_id)?;
+        let release_state = load_release_state(&self.control, layout.releases_root(), agent_id)?;
+        for namespace in namespaces {
+            namespace.verify()?;
+        }
         Ok(AgentRecord {
             manifest,
             lifecycle,
@@ -290,6 +315,71 @@ impl FleetRegistry {
             layout,
         })
     }
+}
+
+/// Bind every owner path to one resolved destination. Parent aliases (including
+/// macOS /tmp) remain valid inputs, but later alias changes cannot redirect IO.
+/// Missing suffixes are appended only after resolving their existing ancestor.
+fn resolve_control_layout(root: &HeptaFleetRoot) -> Result<HeptaFleetLayout, FleetRegistryError> {
+    let mut ancestor = root
+        .as_path()
+        .parent()
+        .ok_or_else(|| FleetRegistryError::Invalid("control root has no parent".to_string()))?
+        .to_path_buf();
+    let mut missing = vec![
+        root.as_path()
+            .file_name()
+            .ok_or_else(|| {
+                FleetRegistryError::Invalid("control root has no final component".to_string())
+            })?
+            .to_os_string(),
+    ];
+    loop {
+        match std::fs::symlink_metadata(&ancestor) {
+            Ok(_) => break,
+            Err(error) if error.kind() == ErrorKind::NotFound => {
+                missing.push(
+                    ancestor
+                        .file_name()
+                        .ok_or_else(|| {
+                            FleetRegistryError::Invalid(
+                                "control root has no existing ancestor".to_string(),
+                            )
+                        })?
+                        .to_os_string(),
+                );
+                if !ancestor.pop() {
+                    return Err(error.into());
+                }
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
+    let mut resolved = ancestor.canonicalize()?;
+    if !resolved.is_dir() {
+        return Err(FleetRegistryError::Corrupt(
+            "control root ancestor is not a directory".to_string(),
+        ));
+    }
+    for component in missing.into_iter().rev() {
+        resolved.push(component);
+    }
+    // Resolve parent aliases, never the final component. Recheck its type at
+    // the captured parent so an alias change cannot bypass final-link refusal.
+    match std::fs::symlink_metadata(&resolved) {
+        Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_dir() => {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "control root is not a physical directory: {}",
+                resolved.display()
+            )));
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    HeptaFleetRoot::parse(resolved)
+        .map(|root| root.layout())
+        .map_err(|error| FleetRegistryError::Invalid(error.to_string()))
 }
 
 enum PublishOutcome {
@@ -323,9 +413,11 @@ fn publish_lifecycle(
 }
 
 fn load_lifecycle(
+    control: &ControlRoot,
     run_root: &Path,
     agent_id: &AgentId,
 ) -> Result<AgentLifecycleState, FleetRegistryError> {
+    let namespace = control.directory(run_root)?;
     let mut states = BTreeMap::new();
     for entry in std::fs::read_dir(run_root)? {
         let entry = entry?;
@@ -339,10 +431,10 @@ fn load_lifecycle(
             continue;
         }
         let generation = parse_lifecycle_generation(name)?;
-        let state: AgentLifecycleState = serde_json::from_str(&read_regular_file(&entry.path())?)
-            .map_err(|error| {
-            FleetRegistryError::Corrupt(format!("invalid lifecycle state: {error}"))
-        })?;
+        let state: AgentLifecycleState =
+            serde_json::from_str(&read_regular_file(control, &entry.path())?).map_err(|error| {
+                FleetRegistryError::Corrupt(format!("invalid lifecycle state: {error}"))
+            })?;
         if state.schema_version != AGENT_STATE_SCHEMA_VERSION
             || &state.agent_id != agent_id
             || state.generation != generation
@@ -353,6 +445,7 @@ fn load_lifecycle(
         }
         states.insert(generation, state);
     }
+    namespace.verify()?;
     let mut previous: Option<AgentLifecycleState> = None;
     for (expected, (generation, state)) in states.iter().enumerate() {
         if *generation != expected as u64 {
@@ -470,15 +563,9 @@ fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError
     Ok(())
 }
 
-fn read_regular_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "control path is not a regular file: {}",
-            path.display()
-        )));
-    }
-    std::fs::read_to_string(path).map_err(Into::into)
+fn read_regular_file(control: &ControlRoot, path: &Path) -> Result<String, FleetRegistryError> {
+    String::from_utf8(control.read(path, MAX_CONTROL_TEXT_BYTES)?)
+        .map_err(|error| std::io::Error::new(ErrorKind::InvalidData, error).into())
 }
 
 fn validate_physical_directory(path: &Path) -> Result<(), FleetRegistryError> {
@@ -492,7 +579,12 @@ fn validate_physical_directory(path: &Path) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
-fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegistryError> {
+fn migrate_private_directory(
+    control: &ControlRoot,
+    parent: &Path,
+    name: &str,
+) -> Result<(), FleetRegistryError> {
+    let namespace = control.directory(parent)?;
     let final_path = parent.join(name);
     match std::fs::symlink_metadata(&final_path) {
         Ok(metadata) => {
@@ -502,8 +594,11 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
                     final_path.display()
                 )));
             }
+            control.directory(&final_path)?.verify()?;
             set_private_directory_permissions(&final_path)?;
             sync_directory(parent)?;
+            control.directory(&final_path)?.verify()?;
+            namespace.verify()?;
             return Ok(());
         }
         Err(error) if error.kind() == ErrorKind::NotFound => {}
@@ -514,11 +609,14 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
         Ok(()) => {}
         Err(error) if error.kind() == ErrorKind::AlreadyExists => {
             validate_physical_directory(&final_path)?;
+            control.directory(&final_path)?.verify()?;
             set_private_directory_permissions(&final_path)?;
         }
         Err(error) => return Err(error.into()),
     }
-    sync_directory(parent)
+    sync_directory(parent)?;
+    control.directory(&final_path)?.verify()?;
+    namespace.verify()
 }
 
 #[cfg(unix)]
@@ -584,3 +682,7 @@ mod tests;
 #[cfg(test)]
 #[path = "registry_isolation_tests.rs"]
 mod isolation_tests;
+
+#[cfg(all(test, unix))]
+#[path = "registry_namespace_tests.rs"]
+mod namespace_tests;

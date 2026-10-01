@@ -244,10 +244,20 @@ impl AgentdFixture {
         }
     }
 
-    fn state(&self) -> Arc<AgentdState> {
+    async fn state(&self) -> Arc<AgentdState> {
         let state =
             AgentdState::new(self.identity.clone(), self.registry.clone(), 16).expect("state");
         state.refresh_generation().expect("refresh running");
+        let cognitive =
+            codex_hepta_cognitive_store::DurableCognitiveStore::open(&self.identity.layout)
+                .await
+                .expect("critical cognitive store");
+        state
+            .attach_cognitive_store(Arc::new(cognitive))
+            .expect("attach critical store");
+        state
+            .mark_runtime_prerequisites_ready()
+            .expect("owner prerequisites ready");
         state.mark_app_server_ready().expect("app ready");
         Arc::new(state)
     }
@@ -932,7 +942,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_anchor_store,
     )
     .expect("runtime bootstrap");
-    let state = daemon.state();
+    let state = daemon.state().await;
     let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
         .expect("compose daemon plasticity owner");
     let cancellation = CancellationToken::new();
@@ -992,7 +1002,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     )
     .expect("reopen acknowledged topology writer");
 
-    let restarted_state = daemon.state();
+    let restarted_state = daemon.state().await;
     let restarted_bootstrap = PlasticityRuntimeBootstrapV1::new(
         8,
         sources.artifacts.clone(),

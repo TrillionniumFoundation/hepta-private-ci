@@ -252,6 +252,45 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
 }
 
 #[test]
+fn corrupt_current_snapshot_permanently_closes_ranker_after_valid_snapshot_is_restored() {
+    let original = vec![item("one"), item("two")];
+    let fixture = fixture(&original, &[0, 10]);
+    let mut items = original.clone();
+    fixture
+        .ranker
+        .rank(&owner(), 1, "lemon", &mut items)
+        .expect("the current model initially ranks supported candidates");
+    assert_eq!(items, vec![original[1].clone(), original[0].clone()]);
+    items = original.clone();
+
+    let (snapshot, _, _) = fixture
+        .view
+        .0
+        .lock()
+        .unwrap()
+        .clone()
+        .expect("current signed view fixture");
+    let valid_bytes = std::fs::read(&snapshot).unwrap();
+    std::fs::write(&snapshot, b"truncated").unwrap();
+    assert_eq!(
+        fixture.ranker.rank(&owner(), 1, "lemon", &mut items).err(),
+        Some("Storage(Corrupt)".to_string())
+    );
+    assert_eq!(items, original);
+
+    std::fs::write(&snapshot, valid_bytes).unwrap();
+    fixture
+        .view
+        .current()
+        .expect("the restored signed CURRENT view independently verifies");
+    assert_eq!(
+        fixture.ranker.rank(&owner(), 1, "lemon", &mut items).err(),
+        Some("ranker unavailable; explicit reload required".to_string())
+    );
+    assert_eq!(items, original);
+}
+
+#[test]
 fn new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it() {
     let original = vec![item("one"), item("two")];
 

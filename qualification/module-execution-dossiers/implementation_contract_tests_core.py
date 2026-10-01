@@ -2,11 +2,75 @@
 import json
 import re
 import unittest
+from copy import deepcopy
 from fractions import Fraction as F
 from pathlib import Path
+from unittest import mock
 import implementation_contracts as c
 
 BASE=Path(__file__).resolve().parent
+
+class ImplementationProfileVocabularyTests(unittest.TestCase):
+    def setUp(self):
+        self.read=c.read_json
+        self.profiles=self.read(BASE/'IMPLEMENTATION_PROFILES.json')
+        self.schema=self.read(BASE/'IMPLEMENTATION_PROFILES.schema.json')
+
+    def verify(self, profiles=None, schema=None):
+        def read(path):
+            if path.name=='IMPLEMENTATION_PROFILES.json':
+                return self.profiles if profiles is None else profiles
+            if path.name=='IMPLEMENTATION_PROFILES.schema.json':
+                return self.schema if schema is None else schema
+            return self.read(path)
+        with mock.patch.object(c,'read_json',side_effect=read):
+            return c.verify_bundle(c.ROOT)
+
+    def test_versioned_owner_states_preserve_document_only_claims(self):
+        self.assertEqual(c.implementation_state_values(c.ROOT),{
+            'specified_not_product_evidence',
+            'source_implemented_product_composed_requires_candidate_evidence',
+            'durable_source_implemented_product_execution_pending',
+            'source_owner_implemented_not_product_evidence',
+        })
+        report=self.verify()
+        self.assertEqual(report['modules'],40)
+        for flag in ('nativeProductTestsExecuted','independentReview','allGapsClosed'):
+            self.assertIs(report[flag],False)
+
+    def test_unknown_and_non_string_states_cannot_self_certify(self):
+        for state in ('unknown_source_state','production_ready',True,['specified_not_product_evidence']):
+            profiles=deepcopy(self.profiles)
+            profiles['modules'][0]['implementationState']=state
+            with self.subTest(state=state), self.assertRaisesRegex(c.Invalid,'false source or deployment closure'):
+                self.verify(profiles=profiles)
+
+    def test_every_source_state_remains_independent_of_qualification_flags(self):
+        for state in c.implementation_state_values(c.ROOT):
+            for flag,value in (('nativeMappingRequired',False),('productTestsExecuted',True),('deploymentQualified',True)):
+                profiles=deepcopy(self.profiles)
+                profiles['modules'][0]['implementationState']=state
+                profiles['modules'][0][flag]=value
+                with self.subTest(state=state,flag=flag), self.assertRaises(c.Invalid):
+                    self.verify(profiles=profiles)
+
+    def test_owner_schema_identity_missing_duplicate_and_typed_enum_reject(self):
+        for mutation in ('id','version','missing','duplicate','type'):
+            schema=deepcopy(self.schema)
+            state=schema['properties']['modules']['items']['properties']['implementationState']
+            if mutation=='id':
+                schema['$id']='urn:unregistered:profile:v1'
+            elif mutation=='version':
+                schema['properties']['schemaVersion']['const']=2
+            elif mutation=='missing':
+                del state['enum']
+            elif mutation=='duplicate':
+                state['enum'].append(state['enum'][0])
+            else:
+                state['enum'].append(True)
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(c.Invalid,'owner schema identity/vocabulary'):
+                self.verify(schema=schema)
+
 class NumericTests(unittest.TestCase):
     def test_signed_half_ties(self):
         self.assertEqual([c.rescale(v,2,1) for v in (5,7,-5,-7)],[2,4,-2,-4])
