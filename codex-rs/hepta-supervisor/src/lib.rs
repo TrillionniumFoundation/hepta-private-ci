@@ -26,6 +26,8 @@ mod module_runtime_store;
 mod mutation_history;
 mod mutation_journal;
 mod mutation_journal_slots;
+#[cfg(unix)]
+mod observer_client;
 mod process_deadline;
 mod process_exit_witness;
 #[cfg(feature = "qualification")]
@@ -44,6 +46,8 @@ mod restart_state;
 mod result_fence;
 mod robrix_projection;
 mod robrix_protocol;
+#[cfg(unix)]
+pub use observer_client::SupervisorObserverClient;
 mod runtime;
 mod signed_authority;
 mod signed_intent;
@@ -206,6 +210,7 @@ pub use robrix_projection::SUPERVISORD_SCHEMA_FILE;
 pub use robrix_projection::generated_robrix_control_artifacts;
 pub use robrix_projection::verify_robrix_control_corpus;
 pub use robrix_projection::write_robrix_control_projection;
+pub use robrix_protocol::MAX_ROBRIX_SUPERVISORD_RESPONSE_BYTES;
 pub use robrix_protocol::ROBRIX_SUPERVISORD_ALLOWED_METHODS;
 pub use robrix_protocol::RobrixProtocolError;
 pub use robrix_protocol::RobrixSupervisordMethod;

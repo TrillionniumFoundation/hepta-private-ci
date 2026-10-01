@@ -51,6 +51,8 @@ pub(crate) struct Policy {
     pub matrix_resources: ResourceVectorV1,
     #[serde(default)]
     pub self_iteration_config_directory: Option<PathBuf>,
+    #[serde(default)]
+    pub observer_principal: Option<crate::daemon::observer::Principal>,
 }
 
 pub struct LocalFleetHost {
@@ -85,6 +87,13 @@ impl LocalFleetHost {
         }
         if let Some(directory) = &policy.self_iteration_config_directory {
             trust::validate_root_directory(directory)?;
+        }
+        if let Some(principal) = policy.observer_principal
+            && (principal.uid == 0 || principal.gid == 0)
+        {
+            return Err(ProcessDriverError::new(
+                "local observer requires an explicitly enrolled non-root principal",
+            ));
         }
         containment::prepare_base(&policy)?;
         containment::protect_registry(&registry, &policy)?;

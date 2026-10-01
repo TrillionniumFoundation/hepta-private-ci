@@ -20,6 +20,8 @@ use crate::daemon_protocol::SupervisordRequest;
 use crate::daemon_protocol::SupervisordResponse;
 
 pub const ROBRIX_SUPERVISORD_ALLOWED_METHODS: [&str; 3] = ["health", "roster", "snapshot"];
+/// A complete bounded fleet roster may exceed the smaller control request frame.
+pub const MAX_ROBRIX_SUPERVISORD_RESPONSE_BYTES: u64 = 1024 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -68,12 +70,34 @@ impl From<RobrixSupervisordRequest> for SupervisordRequest {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum RobrixSupervisordMethod {
     Health,
     Roster { limit: u16 },
     Snapshot { agent_id: AgentId },
+}
+
+impl<'de> Deserialize<'de> for RobrixSupervisordMethod {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        // Serde's internally tagged unit variant discards additional fields.
+        // An empty struct variant keeps the same wire shape and rejects them.
+        #[derive(Deserialize)]
+        #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+        enum Query {
+            Health {},
+            Roster { limit: u16 },
+            Snapshot { agent_id: AgentId },
+        }
+        Ok(match Query::deserialize(deserializer)? {
+            Query::Health {} => Self::Health,
+            Query::Roster { limit } => Self::Roster { limit },
+            Query::Snapshot { agent_id } => Self::Snapshot { agent_id },
+        })
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

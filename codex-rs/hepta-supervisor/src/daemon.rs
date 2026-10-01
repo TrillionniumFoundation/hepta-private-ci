@@ -143,6 +143,9 @@ use mutation::reconcile_ordinary_mutation;
 #[path = "daemon_mutex.rs"]
 mod mutex;
 #[cfg(unix)]
+#[path = "daemon_observer.rs"]
+pub(crate) mod observer;
+#[cfg(unix)]
 #[path = "daemon_owner.rs"]
 pub(crate) mod owner;
 #[cfg(unix)]
@@ -298,6 +301,7 @@ async fn run_supervisord_inner(
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let mut selection_uid = unsafe { libc::geteuid() };
     let mut selection_gid = unsafe { libc::getegid() };
+    let mut observer_principal = None;
     let mut local_maintenance: Option<tokio::task::JoinHandle<Result<(), SupervisorError>>> = None;
     #[cfg(all(target_os = "linux", feature = "local-host"))]
     let mut installed_host = None;
@@ -314,6 +318,7 @@ async fn run_supervisord_inner(
         let host = opened.outcome?;
         selection_uid = host.policy.workload_uid;
         selection_gid = host.policy.workload_gid;
+        observer_principal = host.policy.observer_principal;
         driver = driver.with_local_host(Arc::clone(&host));
         installed_host = Some(host);
     }
@@ -390,6 +395,19 @@ async fn run_supervisord_inner(
         selection_gid,
     )
     .await?;
+    let mut observer_task = match observer_principal {
+        Some(principal) => Some(tokio::spawn(
+            observer::ObserverServer::bind(
+                layout.run_root().join("observer/ctl"),
+                Arc::clone(&state),
+                cancellation.clone(),
+                principal,
+            )
+            .await?
+            .run(),
+        )),
+        None => None,
+    };
     let mut selection_task = tokio::spawn(selection_server.run());
     let tick_state = Arc::clone(&state);
     let tick_cancellation = cancellation.clone();
@@ -406,6 +424,7 @@ async fn run_supervisord_inner(
         }
     });
     let mut selection_finished = false;
+    let mut observer_finished = false;
     let mut maintenance_finished = false;
     let result = tokio::select! {
         result = server.run() => result,
@@ -419,8 +438,19 @@ async fn run_supervisord_inner(
             selection_finished = true;
             result.map_err(|error| SupervisorError::Invalid(format!("selection server failed: {error}")))?
         },
+        result = async {
+            match &mut observer_task { Some(task) => task.await, None => std::future::pending().await }
+        } => {
+            observer_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("observer server failed: {error}")))?
+        },
     };
     cancellation.cancel();
+    if !observer_finished && let Some(task) = observer_task {
+        task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("observer server failed: {error}"))
+        })??;
+    }
     if !selection_finished {
         selection_task.await.map_err(|error| {
             SupervisorError::Invalid(format!("selection server failed: {error}"))
