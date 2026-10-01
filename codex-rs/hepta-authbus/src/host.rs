@@ -38,6 +38,7 @@ use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
+#[cfg(unix)]
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
 const RECOVERY_BATCH: u32 = 256;
 

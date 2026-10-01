@@ -624,7 +624,7 @@ fn read_validation_rejects_tampered_metrics_digest_and_profile() {
         Err(Error::ProposalDigestMismatch)
     );
 
-    let mut tampered = proposal.clone();
+    let mut tampered = proposal;
     tampered.norm_profile.profile_digest = digest(b"tampered-profile");
     assert_eq!(
         verify_parameter_proposal_v2(&tampered),

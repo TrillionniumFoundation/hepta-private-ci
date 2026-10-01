@@ -1,5 +1,6 @@
 use super::*;
 use crate::migrations::QUEUE_MIGRATOR;
+use crate::runtime::test_support::create_private_test_directory;
 use crate::runtime::test_support::test_thread_metadata;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
@@ -1737,8 +1738,8 @@ async fn dispatch_lock_root_is_canonical_anchored_and_replacement_fails_closed()
     let real_home = parent.join("real-home");
     let redirected_home = parent.join("redirected-home");
     let configured_home = parent.join("configured-home");
-    fs::create_dir_all(&real_home).unwrap();
-    fs::create_dir_all(&redirected_home).unwrap();
+    create_private_test_directory(&real_home).unwrap();
+    create_private_test_directory(&redirected_home).unwrap();
     std::os::unix::fs::symlink(&real_home, &configured_home).unwrap();
 
     let runtime = StateRuntime::init(
@@ -1781,7 +1782,7 @@ async fn dispatch_lock_root_is_canonical_anchored_and_replacement_fails_closed()
     let lock_directory = real_home.join("queue-dispatch-locks");
     let retired_directory = real_home.join("queue-dispatch-locks-retired");
     fs::rename(&lock_directory, &retired_directory).unwrap();
-    fs::create_dir(&lock_directory).unwrap();
+    create_private_test_directory(&lock_directory).unwrap();
     let error = StateRuntime::init(
         crate::SqliteConfig::new_for_testing(real_home.as_path().abs()),
         "test-provider".to_string(),
@@ -1918,7 +1919,7 @@ async fn ordinary_queue_limit_remains_per_thread_not_database_wide() {
 #[tokio::test]
 async fn migrating_existing_queue_backfills_thread_revisions() {
     let home = unique_temp_dir();
-    tokio::fs::create_dir_all(&home).await.unwrap();
+    create_private_test_directory(&home).unwrap();
     let sqlite = crate::SqliteConfig::new_for_testing(home.as_path().abs());
     let queue_path = sqlite.queue_db_path();
     let old_queue_migrator = Migrator {

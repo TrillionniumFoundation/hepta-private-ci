@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_bellman_operator::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;

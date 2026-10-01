@@ -102,3 +102,12 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Measure all four growth/reopen points and 256 real atomic domain commits.
+# This full storage experiment preserves operation leases, child deadlines and
+# the product latency acceptance threshold.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_identity_and_domain_count_after_restart)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0

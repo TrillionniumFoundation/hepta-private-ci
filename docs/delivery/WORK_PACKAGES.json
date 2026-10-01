@@ -324,7 +324,7 @@
       "id": "DOC-2-DEFAULT-BRANCH-SELECTION",
       "module": "control.engineering",
       "priority": 0,
-      "state": "blocked_external",
+      "state": "source_implemented_execution_pending",
       "parallelClass": "serial_governance",
       "authorityDelta": "none",
       "developmentAfter": [
@@ -359,14 +359,12 @@
       "deliverables": [
         "exact_head_docs_verifier_pass",
         "merge_candidate_docs_verifier_pass",
-        "independent_review",
         "canonical_selection",
         "default_branch_contains_only_v8_document_set"
       ],
       "acceptanceCriteria": [
         "exact_head_docs_verifier_pass",
         "merge_candidate_docs_verifier_pass",
-        "independent_review",
         "canonical_selection",
         "default_branch_contains_only_v8_document_set"
       ],
