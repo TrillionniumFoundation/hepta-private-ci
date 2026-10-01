@@ -40,7 +40,7 @@ const PORTAL_OPEN_URI_PROGRAM: &str = include_str!("../portal/open_uri.py");
 #[cfg(target_os = "windows")]
 const WINDOWS_TOAST_PROGRAM: &str = include_str!("../portal/windows_toast.ps1");
 
-#[cfg(target_os = "windows")]
+#[cfg(any(target_os = "windows", test))]
 const WINDOWS_AUMID: &str = "Trillionnium.Hepta.Native";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -594,8 +594,14 @@ fn notification_supported() -> bool {
     let Some(marker) = windows_identity_marker() else {
         return false;
     };
-    windows_powershell().is_some()
-        && std::fs::read_to_string(marker).is_ok_and(|value| value.trim() == WINDOWS_AUMID)
+    windows_powershell().is_some() && registered_notification_identity(&marker)
+}
+
+#[cfg(any(target_os = "windows", test))]
+fn registered_notification_identity(marker: &Path) -> bool {
+    crate::file_input::read_bytes(marker, 128).is_ok_and(|bytes| {
+        std::str::from_utf8(&bytes).is_ok_and(|value| value.trim() == WINDOWS_AUMID)
+    })
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -818,3 +824,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "platform_terminality_tests.rs"]
 mod terminality_tests;
+
+#[cfg(test)]
+#[path = "platform_identity_tests.rs"]
+mod identity_tests;

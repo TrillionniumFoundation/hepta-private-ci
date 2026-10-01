@@ -87,7 +87,8 @@ namespace Hepta.Native.WindowsIdentity {
             var store = (IPropertyStore)link;
             var value = PropVariant.FromString(appUserModelId);
             try {
-                store.SetValue(ref AppUserModelId, ref value);
+                var key = AppUserModelId;
+                store.SetValue(ref key, ref value);
                 store.Commit();
                 persist.Save(shortcutPath, true);
             } finally {

@@ -56,6 +56,31 @@ class UiNativeConvergenceTests(unittest.TestCase):
                     ):
                         MODULE.check_job_environment_contexts(changed)
 
+    def test_actual_job_header_comments_cannot_hide_unavailable_contexts(self) -> None:
+        workflow = (ROOT / ".github/workflows/ui-native-qualification.yml").read_text()
+        for header in ("jobs: # qualification jobs", "jobs:   "):
+            annotated = workflow.replace("jobs:\n", header + "\n", 1)
+            MODULE.check_job_environment_contexts(annotated)
+            for job in ("qualify", "storage_scale"):
+                offset = annotated.index("    env:\n", annotated.index(f"  {job}:\n"))
+                offset += len("    env:\n")
+                with self.subTest(header=header, job=job):
+                    invalid = (
+                        annotated[:offset]
+                        + "      FIXTURE: ${{ runner.temp }}\n"
+                        + annotated[offset:]
+                    )
+                    with self.assertRaisesRegex(
+                        RuntimeError, f"job {job} env uses unavailable context 'runner'"
+                    ):
+                        MODULE.check_job_environment_contexts(invalid)
+                    quoted = (
+                        annotated[:offset]
+                        + "      FIXTURE: \"${{ format('literal # runner.temp', github.sha) }}\"\n"
+                        + annotated[offset:]
+                    )
+                    MODULE.check_job_environment_contexts(quoted)
+
     def test_context_guard_preserves_step_contexts_and_literal_names(self) -> None:
         workflow = """name: context scope fixture
 on: workflow_dispatch

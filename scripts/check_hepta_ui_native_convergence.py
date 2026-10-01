@@ -347,7 +347,9 @@ def check_job_environment_contexts(workflow: str) -> None:
             environment = []
             in_environment = False
         if indentation == 0:
-            in_jobs = stripped == "jobs:"
+            # A trailing YAML comment or whitespace does not change this
+            # block mapping header. Quoted inline scalar values are not headers.
+            in_jobs = re.fullmatch(r"jobs:(?:[ \t]+(?:#.*)?)?", stripped) is not None
             job = None
         elif in_jobs and indentation == 2:
             job = stripped.split(":", 1)[0]
