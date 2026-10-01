@@ -2,7 +2,7 @@ use super::*;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SystemAuthorityClock;
 
-fn config() -> Config {
+pub(super) fn config() -> Config {
     Config {
         schema_version: 1,
         signer_id: "ordinary-model-owner".into(),

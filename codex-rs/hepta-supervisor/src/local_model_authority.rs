@@ -6,6 +6,7 @@ use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::Read;
 use std::os::unix::fs::MetadataExt;
+#[cfg(test)]
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -32,10 +33,8 @@ use ed25519_dalek::SigningKey;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
-use sha2::Sha256;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
-use tokio::net::UnixListener;
 use tokio::net::UnixStream;
 use zeroize::Zeroizing;
 
@@ -54,6 +53,8 @@ pub use credentials::run_credential_worker;
 mod executable;
 #[path = "local_model_resources.rs"]
 mod resources;
+#[path = "local_model_startup.rs"]
+mod startup;
 #[path = "local_model_authority_store.rs"]
 mod store;
 use executable::ExecutableCache;
@@ -660,61 +661,7 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
         clock.clone(),
         frontier,
     )?;
-    let parent = config
-        .issuer_socket
-        .parent()
-        .context("issuer socket has no parent")?;
-    protected_directory(parent)?;
-    if config.issuer_socket.try_exists()? {
-        use std::os::unix::fs::FileTypeExt;
-        let metadata = std::fs::symlink_metadata(&config.issuer_socket)?;
-        anyhow::ensure!(
-            metadata.file_type().is_socket() && metadata.uid() == 0,
-            "unexpected issuer socket identity"
-        );
-        anyhow::ensure!(
-            std::os::unix::net::UnixStream::connect(&config.issuer_socket).is_err(),
-            "model issuer already active"
-        );
-        std::fs::remove_file(&config.issuer_socket)?;
-    }
-    let listener = UnixListener::bind(&config.issuer_socket)?;
-    std::fs::set_permissions(
-        &config.issuer_socket,
-        std::fs::Permissions::from_mode(0o660),
-    )?;
-    std::os::unix::fs::chown(&config.issuer_socket, Some(0), Some(config.socket_gid))?;
-    let pid = std::process::id();
-    let stat = read_proc(pid, "stat")?;
-    let (_, fields) = stat
-        .rsplit_once(") ")
-        .context("invalid issuer process stat")?;
-    let start_time_ticks = fields
-        .split_whitespace()
-        .nth(19)
-        .context("issuer start identity missing")?
-        .parse()?;
-    let executable_sha256 = format!("{:x}", Sha256::digest(std::fs::read("/proc/self/exe")?));
-    let identity = codex_hepta_contracts::ModelIssuerProcessIdentity {
-        schema_version: 1,
-        pid,
-        start_time_ticks,
-        executable_sha256,
-        cgroup_sha256: format!("{:x}", Sha256::digest(read_proc(pid, "cgroup")?.as_bytes())),
-        boot_id_sha256: format!(
-            "{:x}",
-            Sha256::digest(
-                std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
-                    .trim_end()
-                    .as_bytes()
-            )
-        ),
-    };
-    store::publish_identity(
-        &config.process_identity_file,
-        &serde_json::to_vec(&identity)?,
-        config.socket_gid,
-    )?;
+    let listener = startup::publish_listener(&config)?;
     let timeout = Duration::from_millis(config.request_timeout_ms);
     let issuer = Arc::new(Issuer {
         config,
