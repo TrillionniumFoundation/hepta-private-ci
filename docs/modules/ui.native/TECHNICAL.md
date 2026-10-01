@@ -464,11 +464,15 @@ CURRENT_SOURCE.json with inventory SHA256
 `347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`.
 Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
 separate scale entries ignored) and strict all-target/all-feature application
-Clippy in 7.75 s. The structural checker binds the 415/32/16 inventory. A separate
+Clippy in 7.75 s. Python ran 238 tests in 12.484 s: 237 passed and the one
+Windows-only real NTFS junction case was skipped on Linux. The structural checker binds the 415/32/16 inventory. A separate
 source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
 including both bounded FIFO cases, and strict Clippy; its reduced workspace is
 not the complete four-owner or platform qualification subject. New Darwin and
 Windows fixtures still require the exact target CI.
+Three release binaries built with locked/offline resolution in 317 s; the
+binary self-test and seven real child-fault checks passed. All effect, activation
+and release authorization flags remain false; this is a Linux local diagnostic.
 
 Historical source 703e9bf passed both Linux platform subjects (18 checks each),
 both macOS subjects and storage (48 traces and all hard budgets) in run

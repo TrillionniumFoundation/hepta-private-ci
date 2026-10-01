@@ -166,11 +166,15 @@ deployment and release flags remain false.
 
 Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
 separate scale entries ignored) and strict all-target/all-feature application
-Clippy in 7.75 s. The structural checker binds the 415/32/16 inventory. A separate
+Clippy in 7.75 s. Python ran 238 tests in 12.484 s: 237 passed and the one
+Windows-only real NTFS junction case was skipped on Linux. The structural checker binds the 415/32/16 inventory. A separate
 source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
 including both bounded FIFO cases, and strict Clippy; its reduced workspace is
 not the complete four-owner or platform qualification subject. New Darwin and
 Windows fixtures still require the exact target CI.
+Three release binaries built with locked/offline resolution in 317 s; the
+binary self-test and seven real child-fault checks passed. All effect, activation
+and release authorization flags remain false; this is a Linux local diagnostic.
 
 Historical source `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` has fresh clean-review-head Linux diagnostics:
 application 243/243 (three separate scale entries ignored, 4.803 s), Python 238

@@ -21,11 +21,15 @@ deployment and release flags remain false.
 
 Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
 separate scale entries ignored) and strict all-target/all-feature application
-Clippy in 7.75 s. The structural checker binds the 415/32/16 inventory. A separate
+Clippy in 7.75 s. Python ran 238 tests in 12.484 s: 237 passed and the one
+Windows-only real NTFS junction case was skipped on Linux. The structural checker binds the 415/32/16 inventory. A separate
 source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
 including both bounded FIFO cases, and strict Clippy; its reduced workspace is
 not the complete four-owner or platform qualification subject. New Darwin and
 Windows fixtures still require the exact target CI.
+Three release binaries built with locked/offline resolution in 317 s; the
+binary self-test and seven real child-fault checks passed. All effect, activation
+and release authorization flags remain false; this is a Linux local diagnostic.
 
 Historical source `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` has fresh clean-review-head Linux diagnostics:
 application 243/243 (three separate scale entries ignored, 4.803 s), Python 238
@@ -103,7 +107,11 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | optimize SHA-256 only in the test profile while hashing full executable symbols and preserving production update fences | `0c176c9d4df6055418529389bf0f749f74ac1a69` |
 | freeze checkout attributes and owner-lock LF; regress real autocrlf checkout and owned fixture command selection; fix macOS cfg/Unix FIFO and Windows PROPVARIANT layout/owned-shortcut roundtrip | `ebd04a7ed458aa5feaba69525f48f3623c4db033` |
 | use the actual Unix zero-exit executable and propagate Windows authority fixture errors while preserving strict checks | `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` |
-| reject Darwin private ACLs and ignored ownership, preserve unsafe atomic destinations, reject Unix authority FIFOs without blocking, and call the typed Windows registrar layout probe | `a1abe5b2a083213c095cdabaf4b3048144e3cad0` |
+| call the typed Windows registrar size probe; retain native offsets and owned shortcut roundtrip | `d18f3bb937980d182aa9969fde78f9f258b1117f` |
+| add the Darwin same-descriptor ACL/ownership utility, six actual ACL fixtures and required Cargo edges/locks | `4bb12103b9ae141bf0a416345ab6e89c8d0b9101` |
+| check native roots/children, private files, staged sources and atomic temp/existing destinations; add 14 Darwin fixtures | `bd552fb3e9ed0e52b691650d75053ede1001e91d` |
+| reject unsafe Darwin final-use state/claims and Unix authority FIFO reads; retain root and staging descriptors | `9491cf79e7b94e852b16bdbe30ab0943be673fb2` |
+| apply equivalent authority lease cuts and bounded FIFO rejection; freeze the complete five-stage source | `a1abe5b2a083213c095cdabaf4b3048144e3cad0` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;

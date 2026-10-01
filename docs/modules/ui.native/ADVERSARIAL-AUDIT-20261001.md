@@ -19,10 +19,14 @@ Cargo 依赖，inventory SHA256 为 `347ef5027e1d804d4b999da612733ef0f93708142c1
 lint、release、负向编译和七主体 CI；production/deployment/release 均为 false。
 
 新源实际 Linux 应用 243/243 通过（2.472 s，三项独立 scale ignored），strict
-app Clippy 通过（7.75 s），结构检查绑定 415/32/16 清单。独立 source-equivalent
+app Clippy 通过（7.75 s），Python 实际运行 238 项（237 通过，一项仅 Windows
+真实 NTFS junction 在 Linux 跳过，12.484 s）；结构检查绑定 415/32/16 清单。独立 source-equivalent
 owner 诊断通过 194 项 Linux contracts 测试（含两个 FIFO）与严格 Clippy；
 其缩小 workspace 不等于完整四个 owner 或真实跨平台 qualification。新增
 Darwin/Windows fixture 仍需新同次 CI。
+新源三个 release 二进制实际 locked/offline 构建通过（317 s）；binary self-test
+和七项真实 child-fault 检查通过，effect/activation/release 授权仍为 false。
+这些是 Linux 本地诊断，不是实体 GUI 或新完整跨平台验收。
 
 历史 703e9bf 源在干净 review head AE 上实际通过 Linux 应用 243/243
 （三项独立 scale ignored，4.803 s）、Python 238 项（237 pass/一项 Windows

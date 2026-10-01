@@ -182,11 +182,48 @@
       "acceptedQualification": false
     },
     "releaseBinaries": {
-      "status": "pending-current-source-execution",
+      "status": "passed-current-source-Linux-local-diagnostic",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "buildHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "buildProfile": "release",
+      "lockedOfflineBuild": true,
+      "buildSeconds": 317,
+      "built": 3,
+      "binaries": {
+        "hepta-native": {
+          "sha256": "e4c4cedec53e1b994005ff53bc551cdd66897446f171ebec3532ddec10a130f0",
+          "bytes": 24693368
+        },
+        "hepta-native-updater": {
+          "sha256": "7d323a3ef3410ad9cf65b82b6d1350f11e7a17842c5fc3c9731b5b11a03ad671",
+          "bytes": 3099128
+        },
+        "hepta-native-credential": {
+          "sha256": "491580f2597e9a7cac56d58ec8368f0fc9b3f99a5f5e0c167043b326a5268c4f",
+          "bytes": 6392504
+        }
+      },
+      "rawBuildLogSha256": "d42d59459b42d18c8585333061ebee3598a110f11de7a66792e5293c1125957e",
+      "binarySelfTestPassed": true,
+      "selfTestReceiptSha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13",
+      "realChildFaultChecksPassed": 7,
+      "realChildFaultReceiptSha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7",
+      "physicalGuiAcceptance": false,
+      "effectAuthorityGranted": false,
+      "activationAuthorityGranted": false,
+      "releaseAuthorityGranted": false,
       "acceptedQualification": false
     },
     "compileNegativeVerification": {
-      "status": "pending-clean-review-head-execution",
+      "status": "passed-clean-review-head-local-diagnostic",
+      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "cases": 3,
+      "allPrivacyDiagnosticsObserved": true,
+      "allExpectedExitCodes": true,
+      "allDependencyResolutionPinned": true,
+      "rawReceiptSha256": "38cfd95b6e7fc768c68ad70d74ad11bfe32e86f7962f1573160868b615218b2c",
       "acceptedQualification": false
     },
     "sourceStructuralVerification": {
@@ -195,7 +232,9 @@
       "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
       "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
       "rawLogSha256": "a72f9c118ff3e0c4a8f00fd31dcc41da1b7fc5a1feb0fdb1cfe84b5a925e970b",
-      "acceptedQualification": false
+      "acceptedQualification": false,
+      "cleanReviewHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "cleanReviewHeadRawLogSha256": "0d472370625ab45269621560c78ab3b0f384e3f3ab1dab8e70e0489841c93a3a"
     },
     "projectionVerification": {
       "status": "pending-current-source-execution"
@@ -208,7 +247,28 @@
       "acceptedQualification": false
     },
     "globalModuleDocsVerification": {
-      "status": "pending-final-clean-check",
+      "status": "failed-outside-ui-native-on-clean-review-head",
+      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "globalExitCode": 1,
+      "failedOtherModules": [
+        "automation.taskflow",
+        "cognitive.read",
+        "intelligence.control",
+        "kernel.authority",
+        "kernel.operations",
+        "knowledge.graph",
+        "learning.operator",
+        "learning.plasticity",
+        "memory.federation",
+        "memory.retrieval",
+        "platform.types",
+        "runtime.supervisor",
+        "utility.ndu"
+      ],
+      "strictNativeAdapterPassed": true,
+      "otherModuleRulesOrSourceAnchorsRelaxed": false,
+      "docsRawLogSha256": "40ba14c589927a0ec112049af416db1145392e818762e1091f6cdbd900ae2759",
+      "mapsRawLogSha256": "fee7a4fc49d009e2848d05543879e04604b261b1b9d42e7e5e09b42aa9098ade",
       "acceptedQualification": false
     },
     "workflowEntryValidation": {
@@ -216,7 +276,20 @@
       "remoteSevenSubjectQualificationPassed": false
     },
     "ciQualificationPassed": false,
-    "physicalPlatformAcceptanceComplete": false
+    "physicalPlatformAcceptanceComplete": false,
+    "localBuildResourceDiagnostics": {
+      "cachedLinkAttemptPassed": false,
+      "cachedLinkLogSha256": "c1db09834c4891da76e97aa47a0afc3e689823c289e708d3a9c80413399a7be9",
+      "subsequentBuildPassed": false,
+      "subsequentBuildLogSha256": "125abefc52cad6cf9acf2307bf0d2b68131966ff5aa909bdaf35155a522fc583",
+      "observedDiskExhaustion": true,
+      "observedGitIndexWriteFailure": true,
+      "observedLinkerBusError": true,
+      "onlyTaskOwnedReproducibleCargoCacheCleaned": true,
+      "freshApplicationAndReleaseBuildsPassed": true,
+      "productSourceChangedToHideBuildFailure": false,
+      "acceptedQualification": false
+    }
   },
   "historicalLocalAuditVerification": [
     {
