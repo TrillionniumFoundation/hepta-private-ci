@@ -22,6 +22,9 @@ jobs:
   source-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      HEPTA_REQUIRE_STRONG_SANDBOX: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -78,18 +81,99 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Install qualification tools on disposable runner
+        id: tools
         shell: bash
         run: |
           set -euo pipefail
+          exec > >(tee "$RUNNER_TEMP/control-engineering-sandbox-setup.log") 2>&1
           python3 -m pip install coverage==7.10.7 mypy==1.18.2 ruff==0.13.2
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends bubblewrap
+          # Match the dedicated sandbox runner in hepta-consolidated-source.yml.
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
           python3 -m pip freeze > "$RUNNER_TEMP/control-engineering-toolchain.txt"
           git --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
           bwrap --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
           python3 -c 'import sqlite3; print(sqlite3.sqlite_version)' >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
+      - name: Require native strong-sandbox admission and retain diagnostics
+        id: sandbox_admission
+        if: ${{ always() && steps.identity.outcome == 'success' && steps.tools.outcome == 'success' }}
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/control-engineering-sandbox-admission.log"
+          import json, os, pathlib, platform, shutil, subprocess, tempfile
+          def output_tail(value):
+              if isinstance(value, bytes):
+                  return value[-16384:].decode('utf-8', errors='replace')
+              return (value or '')[-16384:]
+          record = {
+              'schema': 'hepta.control-engineering-sandbox-admission.v1',
+              'sourceCommit': os.environ['CE_SOURCE_SHA'],
+              'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'kernel': platform.release(),
+              'bubblewrap': shutil.which('bwrap'),
+              'nativeOwnerAdmitted': False,
+              'qualification': 'not_claimed',
+          }
+          try:
+              from control_engineering_v2 import CandidateEnvelope
+              from control_engineering_v2.candidate import _admit_bubblewrap, _bubblewrap_command
+              with tempfile.TemporaryDirectory(prefix='hepta-strong-admission-', dir=os.environ['RUNNER_TEMP']) as temporary:
+                  workspace = pathlib.Path(temporary)
+                  envelope = CandidateEnvelope(
+                      envelope_id='ci-strong-sandbox-admission',
+                      base_commit=record['sourceCommit'],
+                      allowed_paths=('src',),
+                      require_network_isolation=True,
+                      wall_time_seconds=30,
+                      memory_bytes=512 * 1024 * 1024,
+                      processes=128,
+                  )
+                  try:
+                      _admit_bubblewrap(workspace, envelope)
+                      record['nativeOwnerAdmitted'] = True
+                  except Exception as failure:
+                      record['admissionError'] = {'type': type(failure).__name__, 'message': str(failure)}
+                      # The owner deliberately exposes only a stable failure code.
+                      # Capture raw namespace diagnostics without treating them as admission.
+                      if record['bubblewrap']:
+                          try:
+                              diagnostic = subprocess.run(
+                                  _bubblewrap_command(record['bubblewrap'], workspace,
+                                      ('/usr/bin/python3', '-I', '-c', "print('namespace diagnostic')")),
+                                  stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=10,
+                              )
+                              record['namespaceDiagnostic'] = {
+                                  'exitCode': diagnostic.returncode,
+                                  'timedOut': False,
+                                  'stdout': output_tail(diagnostic.stdout),
+                                  'stderr': output_tail(diagnostic.stderr),
+                              }
+                          except subprocess.TimeoutExpired as diagnostic_failure:
+                              record['namespaceDiagnostic'] = {
+                                  'exitCode': 124,
+                                  'timedOut': True,
+                                  'stdout': output_tail(diagnostic_failure.stdout),
+                                  'stderr': output_tail(diagnostic_failure.stderr),
+                              }
+                          except (OSError, subprocess.SubprocessError) as diagnostic_failure:
+                              record['diagnosticError'] = {'type': type(diagnostic_failure).__name__, 'message': str(diagnostic_failure)}
+          except Exception as failure:
+              record['nativeOwnerAdmitted'] = False
+              record['preflightError'] = {'type': type(failure).__name__, 'message': str(failure)}
+          destination = pathlib.Path(os.environ['RUNNER_TEMP']) / 'control-engineering-sandbox-admission.json'
+          destination.write_text(json.dumps(record, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          print(json.dumps(record, sort_keys=True), flush=True)
+          raise SystemExit(0 if record['nativeOwnerAdmitted'] else 1)
+          PY
       - name: Qualify unmodified source and fixed synthetic merge
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.identity.outcome == 'success' && steps.tools.outcome == 'success' && steps.sandbox_admission.outcome == 'success' }}
         env:
           PYTHONDONTWRITEBYTECODE: '1'
           PYTHONPATH: tools/hepta-engineering-control
@@ -117,6 +201,9 @@ jobs:
             ${{ runner.temp }}/control-engineering-qualification
             ${{ runner.temp }}/control-engineering-qualification.log
             ${{ runner.temp }}/control-engineering-toolchain.txt
+            ${{ runner.temp }}/control-engineering-sandbox-setup.log
+            ${{ runner.temp }}/control-engineering-sandbox-admission.log
+            ${{ runner.temp }}/control-engineering-sandbox-admission.json
           include-hidden-files: true
           if-no-files-found: warn
           retention-days: 30

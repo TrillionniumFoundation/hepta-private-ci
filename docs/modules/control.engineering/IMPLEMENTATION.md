@@ -91,6 +91,18 @@ caller that can directly rewrite its connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
+When `now_ns` is omitted, expiry-sensitive admission samples the clock only after
+acquiring the owner write lock. Waiting for that lock or preparing bounded inputs
+cannot freeze a previously valid window. An explicit `now_ns` remains the caller
+provided logical observation time and is not replaced with wall-clock time.
+Ordinary nested failures roll back to the owner's savepoint. If SQLite itself
+aborts the whole transaction, as `SQLITE_FULL` or an I/O failure can do, catching
+the error does not permit another write or a successful commit inside that owner
+scope: subsequent nested work fails with `owner_transaction_aborted`. After that
+scope unwinds, a reusable connection may begin a fresh transaction. A failed
+rollback instead marks `owner_transaction_unrecoverable`, closes the connection
+and requires a fresh owner to reopen and validate the durable predecessor; close
+does not commit the uncertain state.
 `SCHEMA.sql` is the single schema source, currently version 10. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
@@ -118,7 +130,10 @@ An owner mutation, its binding/frontier and audit event either commit together o
 roll back together. Equal identity and semantics replay idempotently; different
 semantics conflict. Startup checks exact table/index definitions, schema-version
 agreement, SQLite integrity, foreign keys, capacity-reservation consistency and the
-audit chain. Additive v2 through v9 stores migrate transactionally to v10; active
+audit chain. Schema comparison normalizes SQL keyword case and token whitespace
+while preserving quoted literals and identifiers, so a changed case-sensitive
+`CHECK` literal cannot pass as the original declaration.
+Additive v2 through v9 stores migrate transactionally to v10; active
 legacy claims receive capacity reservations derived from their durable plan before
 the new version is published. Historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
@@ -190,7 +205,12 @@ another owner context is rejected. Worker execution then uses `worker_registrati
 `worker_claims`, `worker_capacity_reservations` and `worker_completion_observations`:
 acknowledgement-loss replay is revision/audit-stable, accepted CI completion digests survive
 reopen, and a claim must match the scheduler-selected worker and an active fenced path
-lease. Startup reconciliation expires heartbeat claims, rechecks registration/lease/envelope
+lease. A capacity-only registration renewal may preserve the exact ACK of an
+already committed claim while its other profile bindings and current registration,
+envelope and lease constraints still match. This replay adds no reservation,
+revision or audit event. A fresh claim or retryable redispatch still requires the
+complete planned worker profile; the replay exception cannot allocate new work.
+Startup reconciliation expires heartbeat claims, rechecks registration/lease/envelope
 frontiers, releases capacity idempotently and preserves submitted results for the independent
 completion observer rather than redispatching them. The named product `claim()` fails closed
 with `product_startup_reconciliation_required` until that process generation has completed
@@ -203,7 +223,11 @@ a proposal; workers must acquire the exact local lease, and multi-host productio
 writes must additionally present a signed distributed fence matching epoch/token,
 paths, source and revocation frontier. Fence verification re-reads the current
 SQLite lease row and requires the same envelope, holder, revision, epoch, token,
-paths and expiry to still be active. Before production admission, the verified fence
+paths and expiry to still be active. External fence and audit-anchor admission also
+require the complete supplied envelope to match the live, checksum-consistent
+durable row, including source, owner, scope, revision and lifetime. Epochs, tokens
+and lease/envelope revisions require positive integers; booleans cannot impersonate
+those values. Before production admission, the verified fence
 advances two transactionally persisted high-water marks together with an audit
 event: a cluster-global leader-term/revocation frontier and a holder-local
 fence-token/revision frontier. Production control verification requires both to
@@ -214,6 +238,12 @@ cannot become valid again after process restart.
 A previously signed active receipt also fails immediately after local release or
 revocation. External fence and audit-anchor validity windows may not outlive their
 owning local lease/envelope.
+
+`verify_production_controls` checks the prefetched fence/revocation, audit-anchor
+and custody receipts at one observation time inside one owner transaction.
+Receipt-provider and remote HSM/KMS calls must finish before that transaction;
+the injected signature verifier must perform bounded local verification. The
+reference `HmacTrustStore` performs that verification without I/O.
 
 ## Candidate qualification
 
@@ -240,7 +270,11 @@ See [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md) for platform and mount policy.
 
 Checks use argument vectors without shell expansion, at most 64 checks, 256 arguments
 per check, 8192 characters per argument and 65536 characters per argument vector.
-One elapsed time budget covers all checks. `SandboxCoordinator` admits at most
+One monotonic deadline starts at executor entry and covers source preflight,
+exact Git-object materialization, manifests, Bubblewrap admission, every check,
+post-check verification, temporary-workspace cleanup and receipt construction.
+Expiration rejects the result even if every check exited zero; neither cleanup
+nor a slow identity/manifest read earns a fresh budget. `SandboxCoordinator` admits at most
 eight host-wide sandboxes across cooperating POSIX processes (with a process-local
 fallback on non-POSIX fixtures) and retries only explicitly classified infrastructure
 failures, at most twice; semantic rejection is never retried.

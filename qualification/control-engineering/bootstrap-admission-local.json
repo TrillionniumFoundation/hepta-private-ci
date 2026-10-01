@@ -1,0 +1,97 @@
+{
+  "actualHost": {
+    "exitCode": 1,
+    "record": {
+      "admissionError": {
+        "message": "network_isolation_unavailable",
+        "type": "EngineeringError"
+      },
+      "bubblewrap": "/usr/bin/bwrap",
+      "diagnosticError": {
+        "message": "Command '['/usr/bin/bwrap', '--die-with-parent', '--unshare-all', '--clearenv', '--ro-bind', '/usr', '/usr', '--symlink', 'usr/bin', '/bin', '--symlink', 'usr/sbin', '/sbin', '--symlink', 'usr/lib', '/lib', '--symlink', 'usr/lib64', '/lib64', '--proc', '/proc', '--dev', '/dev', '--tmpfs', '/tmp', '--dir', '/home', '--dir', '/home/sandbox', '--ro-bind', '/workspace/scratch/7b9383ad4cb1/control-bootstrap-behavior-g18ec7fl/actual/hepta-strong-admission-4se9abi2', '/workspace', '--chdir', '/workspace', '--setenv', 'PATH', '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin', '--setenv', 'HOME', '/home/sandbox', '--setenv', 'TMPDIR', '/tmp', '--setenv', 'XDG_CACHE_HOME', '/tmp/cache', '--setenv', 'CARGO_HOME', '/tmp/cargo-home', '--setenv', 'CARGO_TARGET_DIR', '/tmp/cargo-target', '--setenv', 'LANG', 'C', '--setenv', 'LC_ALL', 'C', '--setenv', 'PYTHONUTF8', '1', '--setenv', 'PYTHONDONTWRITEBYTECODE', '1', '--', '/usr/bin/python3', '-I', '-c', \"print('namespace diagnostic')\"]' timed out after 10 seconds",
+        "type": "TimeoutExpired"
+      },
+      "kernel": "6.18.44",
+      "nativeOwnerAdmitted": false,
+      "qualification": "not_claimed",
+      "schema": "hepta.control-engineering-sandbox-admission.v1",
+      "sourceCommit": "c2837627d18979c0f28921a3134d8de358b8531c",
+      "sourceTree": "9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8"
+    },
+    "retainedLog": true
+  },
+  "allRunBlocksBashParsed": true,
+  "currentProbeScenarios": [
+    {
+      "exitCode": 0,
+      "mode": "success",
+      "nativeOwnerAdmitted": true,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "diagnostic-success",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "diagnostic-launch-error",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "diagnostic-timeout",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "cleanup-error",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    }
+  ],
+  "evidenceKind": "repository-controlled-local-workflow-diagnostic",
+  "hostedStrongAdmissionProved": false,
+  "probePythonParsed": true,
+  "productionAcceptance": false,
+  "qualificationCondition": "${{ always() && steps.identity.outcome == 'success' && steps.tools.outcome == 'success' && steps.sandbox_admission.outcome == 'success' }}",
+  "scenarios": [
+    {
+      "exitCode": 0,
+      "mode": "success",
+      "nativeOwnerAdmitted": true,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "diagnostic-success",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "diagnostic-launch-error",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "diagnostic-timeout",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    },
+    {
+      "exitCode": 1,
+      "mode": "cleanup-error",
+      "nativeOwnerAdmitted": false,
+      "recordRetained": true
+    }
+  ],
+  "strongQualificationGranted": false,
+  "timeoutOutputTailVerified": true,
+  "workflowSha256": "319efeb54e1a19578c54c2446b2da70cf2fa135858e02e5dd04d5d7bd4e2149e",
+  "workflowYamlParsed": true
+}

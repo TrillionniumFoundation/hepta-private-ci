@@ -85,9 +85,13 @@ A receipt with unavailable isolation, no checks, incomplete execution, state dri
 
 The executor compares source HEAD, tree, refs and worktree, plus the candidate
 manifest, after every check. A later check cannot hide an earlier mutation. The
-source-boundary digest includes refs even when HEAD remains unchanged. All checks
-share one elapsed time budget; argument vectors are bounded to 256 arguments,
-8192 characters per argument and 65536 characters total.
+source-boundary digest includes refs even when HEAD remains unchanged. One total
+elapsed deadline begins at executor entry and includes source admission, exact
+Git materialization, isolation admission, all checks, post-check identity and
+manifest verification, temporary workspace cleanup and receipt formation.
+Subprocesses consume its remaining budget; exceeding it cannot return a successful
+receipt. Argument vectors are bounded to 256 arguments, 8192 characters per
+argument and 65536 characters total.
 
 ## Target-host profile reuse
 

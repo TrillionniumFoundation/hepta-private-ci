@@ -2,7 +2,7 @@
 
 This is a repository engineering report, not an acceptance receipt. The retained
 local execution summary is [ADVERSARIAL_AUDIT_LOCAL.json](ADVERSARIAL_AUDIT_LOCAL.json).
-Current hosted execution belongs to the exact head of
+Historical hosted evidence is retained in [HOSTED_EVIDENCE_C2837627.json](HOSTED_EVIDENCE_C2837627.json). Current hosted execution belongs to the exact head of
 [PR #1175](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1175).
 Results from an earlier head must not qualify a later candidate.
 
@@ -78,6 +78,17 @@ does not imply that runtime, merge or release authority was obtained.
 | Medium: source mutation | Historical helper/workflow could rewrite and self-push an alleged closure | Remove unreferenced materializers/self-pushing authoring workflow; retain read-only collection |
 | Medium: documentation drift | Python/Rust descriptions, canonical owner and native/adaptive target claims disagreed | Correct source placement, contract inventory and implementation-versus-deployment meaning |
 | Medium: type enforcement | Product/readiness boundaries were outside the existing strict gate | Resolve 11 typing gaps through typed validation and include both modules in the CI gate |
+| Medium: capacity-renewal acknowledgement | A valid capacity-only renewal made an already committed claim fail its original profile replay | Permit only the same durable claim to replay against current capacity; preserve all other profile, reservation and lifetime gates |
+| High: external fence context | A valid signature for a substituted source/owner could reuse a persisted envelope ID and lease | Match the complete durable envelope before admitting a fence |
+| High: external counter types | JSON `true` compared equal to integer fence epoch/token and lease/envelope revisions | Require positive exact integers before signature/context comparison |
+| High: external evidence consistency | A second connection could release a lease between fence verification and audit verification, while the aggregate still passed | Verify all owner-bound external controls at one timestamp in one owner transaction |
+| High: SQLite automatic rollback | Disk-full aborted an outer transaction; caught failure then allowed a later nested operation to commit independently | Track active owner scopes and abort state; retain the original error and prohibit further effects until scope exit |
+| Medium: schema identity | Startup normalization lowercased SQL string literals and accepted changed CHECK semantics | Preserve quoted token bytes while normalizing only SQL tokens; verify changed literals fail on reopen |
+| Medium: elapsed sandbox budget | Successful final checks followed by expensive identity/postcondition work could emit success beyond the total wall budget | Enforce the remaining total budget through preflight, execution and final evidence formation |
+| Medium: worker registration input | Signed negative observations could persist; oversized timestamps and unhashable skills raised raw exceptions | Bound registration timestamps to SQLite signed integers and validate skill element types before deduplication |
+| High: admission time cut | Waiting for the owner write lock could preserve a default timestamp and admit expired registrations, leases, source/completion/seal evidence or claims | Sample default time after lock acquisition; preserve explicit logical time and historical ACK semantics; real second-connection waiting regressions |
+| Medium: hosted collector setup | Both command lanes passed but strong tests skipped, correctly failing the collector's no-skips gate | Prepare the same disposable namespace host profile as the strong lane; require native admission and retain bounded failure diagnostics |
+
 
 Regression tests cover real Git repositories, signed fixtures, persisted/reopened
 SQLite state, public CLI composition and independent evaluator boundaries. Fixture
@@ -119,3 +130,30 @@ that module's behavior, provenance and claims are unchanged.
 The final review stopping condition is no additional reproducible defect in the
 reviewed repository boundaries after fixes and repeat qualification. It is not a
 claim that every possible optimization or deployment issue has been exhausted.
+
+## Continued review and hosted evidence
+
+The exact historical source `c2837627d18979c0f28921a3134d8de358b8531c`
+and tree `9aba17b8b37d3fcf87893752f10cfbd42bb8e6c8` received real hosted
+execution. Quality ran 453 tests (451 passed, two strong-host skips) and measured
+80.371969445367% branch-inclusive coverage. The separate source and base-merge
+strong lanes each passed all 453 tests with no skips and measured real namespace
+isolation, backup matching and controlled disk-full rollback. Both development
+verification lanes passed. Seven archive digests and the internal command/profile
+bindings were checked; their immutable identities are retained in the historical
+manifest. Product receipt jobs were still queued at that observation, so no paired
+product or production acceptance is inferred.
+
+The independent read-only collector correctly rejected that historical candidate
+because two strong-host tests skipped, even though all 15 commands in both lanes
+passed. Its namespace host preparation differed from the dedicated strong lanes.
+The bootstrap repair preserves the no-skips rule, requires the native owner probe
+and retains setup/admission diagnostics. Local checks of this workflow cover real
+host rejection and success/failure control flow; they do not establish strong
+hosted admission. Later source changes require new exact-candidate hosted evidence.
+
+A repeated adversarial pass reproduced the additional failures listed above using
+public product calls, signed context substitutions, a real concurrent owner connection,
+a real SQLite disk-full failure and real Git execution exceeding its budget. These
+are repairs within the existing engineering owner. They do not create an external
+provider, independent reviewer, native adaptive producer or deployment controller.

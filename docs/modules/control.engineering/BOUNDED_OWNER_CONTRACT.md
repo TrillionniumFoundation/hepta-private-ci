@@ -142,10 +142,14 @@ later renewal. The returned historical digest is not a new capability.
 New execution validates the live signed window, exact current revision and
 predecessor, monotonic observation time, non-regressing expiry, and currently
 reserved capacity. Key/skill/path rotation with active reservations is rejected.
-The guarded update and audit append share the existing owner transaction. A local
-savepoint protects nested callers that catch an audit-write failure and then
-continue or commit their outer transaction. Process restart and ambiguous response
-loss query the same identity; they do not generate a replacement command.
+The guarded update and audit append share the central owner transaction. Its
+nested savepoint permits continuation only after that operation has rolled back
+without aborting the enclosing SQLite transaction. A whole-transaction failure
+such as `SQLITE_FULL` marks the owner scope aborted: catching the error cannot
+permit another write or a successful outer commit. Failed rollback cleanup closes
+the connection and requires a fresh owner to reopen and validate durable state.
+Process restart and ambiguous response loss query the same identity; they do not
+generate a replacement command.
 
 The retained-outcome lookup uses an exact bounded result from the canonical audit.
 It can still scan renewal history; it is explicitly a cold-path limitation, not a
