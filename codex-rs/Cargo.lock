@@ -3830,8 +3830,11 @@ dependencies = [
 name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-prompt-registry",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "tempfile",
 ]
 
 [[package]]
