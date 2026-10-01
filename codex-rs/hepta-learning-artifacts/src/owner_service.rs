@@ -209,6 +209,10 @@ impl LearningArtifactOwnerService {
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                self.host.validate_recorded_publication_head(
+                    &request.signed_current_head,
+                    &recovery.checkpoint,
+                )?;
                 return receipt_from_checkpoint(&recovery.checkpoint);
             }
         }
@@ -281,12 +285,21 @@ fn validate_request_against_checkpoint(
     request: &LearningArtifactPublishRequestV1,
     checkpoint: &ArtifactOwnerPublicationCheckpointV1,
 ) -> Result<(), LearningArtifactOwnerServiceError> {
+    crate::verify_artifact_admission_v3(
+        &request.admission,
+        request.admission.withdrawal_head_digest,
+        request.admission.admitted_at,
+    )
+    .map_err(ArtifactPublicationError::from)?;
+    let manifest = &request.admission.validated_manifest.manifest;
     if checkpoint.operation_id != request.operation_id
         || checkpoint.admission_digest != request.admission.admission_digest
         || checkpoint.withdrawal_scope_digest != request.admission.withdrawal_scope_digest
         || checkpoint.withdrawal_head_digest != request.admission.withdrawal_head_digest
         || checkpoint.expected_registry_predecessor_head
             != request.expected_registry_predecessor_head
+        || request.payload.len() as u64 != manifest.encoded_size_bytes
+        || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
     {
         return Err(LearningArtifactOwnerServiceError::RequestMismatch);
     }
@@ -645,6 +658,20 @@ mod tests {
         let receipt = service.publish(request.clone()).fixture("publish");
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
+        let mut payload_drift = request.clone();
+        payload_drift.payload.push(b'!');
+        assert!(matches!(
+            service.publish(payload_drift),
+            Err(LearningArtifactOwnerServiceError::RequestMismatch)
+        ));
+        let mut signature_drift = request.clone();
+        signature_drift.signed_current_head.signature[0] ^= 1;
+        assert!(matches!(
+            service.publish(signature_drift),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::InvalidSignature
+            ))
+        ));
         let current_view = service
             .current_registry_view(20)
             .fixture("authenticated current registry view");
