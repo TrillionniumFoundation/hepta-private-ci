@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "kernel.authority",
   "sourceAnchor": {
-    "commit": "8207feeafa6ede89a244e8fc590ab4a2758b0c4e",
-    "tree": "b2f23d351eb6598ac36fbfa8f8f05687f4609eab"
+    "commit": "5a6e7cda38e8e5513babe48b9783dd7947446a4f",
+    "tree": "f9aa5a8200bfd9627b251138bbf1e4d065f16e20"
   },
   "preservedInvariants": [
     "one-authoritative-lease-and-final-use-owner",
@@ -125,7 +125,25 @@
     "codex-rs/hepta-operations/src/sqlite.rs",
     "codex-rs/state/src/sqlite.rs",
     "scripts/test_hepta_native_feedback.py",
-    "scripts/verify_hepta_callers.py"
+    "scripts/verify_hepta_callers.py",
+    "codex-rs/app-server-client/src/remote.rs",
+    "codex-rs/hepta-bao-adapter/Cargo.toml",
+    "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+    "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+    "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+    "codex-rs/hepta-bao-adapter/src/lib.rs",
+    "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-intelligence/src/canonical.rs",
+    "codex-rs/hepta-supervisor/src/matrix.rs",
+    "codex-rs/hepta-supervisor/src/restart_journal.rs",
+    "codex-rs/hepta-supervisor/src/restart_state.rs",
+    "codex-rs/hepta-supervisor/src/runtime.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_matrix_restart_recovery_tests.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+    "docs/modules/secrets.heptabao/TECHNICAL.md"
   ],
   "closures": {
     "trustedClockOwnership": {
