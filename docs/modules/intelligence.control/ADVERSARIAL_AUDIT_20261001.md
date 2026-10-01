@@ -169,16 +169,18 @@ live, terminal-publication and recovery cuts. Two independent closing source
 reviews found no additional confirmed actionable issue. The final focused
 verifier run passed all 143 Python tests, and tracked declarations and derived
 metadata checks passed. Scoped Rust formatting and `git diff --check` passed;
-the local native/default-Agentd test and package-fix commands had not completed
-at the final source snapshot; dependency compilation was constrained by an
-exhausted shared local disk. These attempts do not establish the new native
-assertions. Exact-candidate CI and required
+both latest local `just test` attempts failed during `codex-core` dependency
+compilation with SIGKILL, before their assertions ran. The scoped `just fix`
+attempt failed during `codex-otel` compilation with ENOSPC. The ten new native
+regressions were not executed locally. Exact-candidate CI and required
 production gates remain pending until their actual command records exist.
-The current head's development-documents run also passed all 691 Python tests;
+The historical development-documents run at
+`cc49113e8fec61c3c1ca955d3fd5bf3cc168f26f` passed all 691 Python tests;
 its final integration gate failed on other modules' historical source
 observations/anchors. Strict diagnostics failed on existing memory-extension
 and codex-core dependency lints. No failing gate is weakened or reported as a
-success.
+success. Those historical results do not qualify the latest cancellation
+candidate. This final report-only correction changes no Rust source or test.
 
 Source references, added tests and successful declaration checks are not
 substitutes for native test execution. No historical receipt, bootstrap artifact
