@@ -159,12 +159,12 @@
                 "properties": {
                   "matrix": {
                     "properties": {
-                      "active": {
+                      "healthy": {
                         "const": true
                       }
                     },
                     "required": [
-                      "active"
+                      "healthy"
                     ]
                   }
                 }
@@ -244,7 +244,7 @@
                   "type": "null"
                 },
                 {
-                  "minimum": 0,
+                  "minimum": 1,
                   "type": "integer"
                 }
               ]
@@ -255,7 +255,7 @@
                   "type": "null"
                 },
                 {
-                  "minimum": 0,
+                  "minimum": 1,
                   "type": "integer"
                 }
               ]

@@ -127,11 +127,28 @@ fn duplicate_and_unknown_flags_are_rejected() {
 
 #[test]
 fn relative_fleet_root_is_rejected_before_daemon_start() {
+    let cwd = std::env::current_dir().expect("working directory");
+    let temp = tempfile::tempdir_in(&cwd).expect("directory");
+    let fleet_root = temp.path().join("fleet");
+    let relative = fleet_root.strip_prefix(&cwd).expect("relative test root");
+    assert!(!relative.is_absolute());
     let error = parse_options_from([
         OsString::from("--fleet-root"),
-        OsString::from("relative/fleet"),
+        relative.as_os_str().to_os_string(),
     ])
     .err()
     .expect("relative fleet rejected");
-    assert!(error.to_string().contains("absolute"));
+    assert_eq!(error.to_string(), "validate HEPTA_FLEET_ROOT");
+    assert!(
+        error
+            .chain()
+            .any(|cause| cause.to_string().contains("absolute"))
+    );
+    assert!(!fleet_root.exists());
+    assert_eq!(
+        std::fs::read_dir(temp.path())
+            .expect("unchanged directory")
+            .count(),
+        0
+    );
 }
