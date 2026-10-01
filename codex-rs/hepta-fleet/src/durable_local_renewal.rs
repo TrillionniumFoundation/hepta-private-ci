@@ -265,3 +265,6 @@ async fn local_receipt_tx(
     Ok(receipt)
 }
 
+#[cfg(test)]
+#[path = "durable_local_renewal_tests.rs"]
+mod tests;

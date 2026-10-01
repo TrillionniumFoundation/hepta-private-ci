@@ -171,3 +171,17 @@ filter = 'package(codex-hepta-learning-artifacts) & test(owner_service::tests::s
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 6 }
 retries = 0
+
+# Ninety-six real authority publications and SQLite FULL commits prove bounded
+# acknowledged local upkeep while retaining generic receipts and stop holds.
+# This whole-experiment watchdog does not change any runtime lease deadline.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-fleet) & test(acknowledged_upkeep_is_bounded_and_generic_receipts_survive_retirement)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-fleet) & test(durable_local_renewal::tests)'
+test-group = 'hepta_durable_capacity'
+retries = 0
