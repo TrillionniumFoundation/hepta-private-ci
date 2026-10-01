@@ -33,6 +33,8 @@ use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 
+#[path = "durable_causal_chain/claim_lifecycle_tests.rs"]
+mod claim_lifecycle_tests;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const THREAD_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75ddd";
