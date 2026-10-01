@@ -23,7 +23,7 @@ pub(super) fn release_required(run_root: &Path) -> bool {
     )
 }
 
-fn known_absent(run_root: &Path, names: &[&str]) -> bool {
+pub(super) fn known_absent(run_root: &Path, names: &[&str]) -> bool {
     let Ok(parent) = std::fs::symlink_metadata(run_root) else {
         return false;
     };

@@ -22,7 +22,7 @@ pub(crate) use removal::ProcessLeaseRemoval;
 
 pub(crate) const PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
 pub(crate) const MATRIX_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
-const PROCESS_LEASE_FILE: &str = "supervisor-process.json";
+pub(crate) const PROCESS_LEASE_FILE: &str = "supervisor-process.json";
 const MAX_LEASE_BYTES: usize = 4_096;
 static LEASE_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
