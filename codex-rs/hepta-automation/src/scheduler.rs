@@ -8,6 +8,7 @@ use tokio::time::timeout;
 
 use crate::AutomationAdmission;
 use crate::AutomationError;
+use crate::AutomationQueueContact;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
 use crate::AutomationTick;
@@ -29,6 +30,24 @@ pub trait AutomationTurnQueue: Send + Sync {
         &self,
         admission: AutomationAdmission,
     ) -> AutomationFuture<'_, AutomationQueueReceipt>;
+
+    /// Consume the exact live check at first contact. This default is only for
+    /// immediately consuming adapters. Adapters that await connection or
+    /// send-queue work must override this default and move the
+    /// check to their transport consumer immediately before its first write.
+    fn enqueue_with_contact(
+        &self,
+        admission: AutomationAdmission,
+        contact: AutomationQueueContact,
+    ) -> AutomationFuture<'_, AutomationQueueReceipt> {
+        Box::pin(async move {
+            contact
+                .verify(&admission)
+                .await
+                .map_err(|_| AutomationError::DispatchUnknown)?;
+            self.enqueue(admission).await
+        })
+    }
 }
 
 pub struct AutomationScheduler<Q> {
@@ -103,7 +122,13 @@ where
             .record_dispatch_uncertain_from_tick(&lease, now_ms, started_at)
             .await?;
         let admission = lease.admission();
-        let result = timeout(self.dispatch_timeout, self.queue.enqueue(admission)).await;
+        let contact =
+            AutomationQueueContact::new(self.store.clone(), lease.clone(), now_ms, started_at);
+        let result = timeout(
+            self.dispatch_timeout,
+            self.queue.enqueue_with_contact(admission, contact),
+        )
+        .await;
         let receipt = match result {
             Ok(Ok(receipt)) => receipt,
             Ok(Err(AutomationError::AccessDenied)) => {
@@ -195,7 +220,7 @@ mod tests {
     #[tokio::test]
     async fn prepared_first_intent_samples_time_after_its_writer_wait() {
         let temp = tempfile::tempdir().unwrap();
-        let root = temp.path().join("automation");
+        let root = temp.path().canonicalize().unwrap().join("automation");
         let store = AutomationStore::open_root(
             root.clone(),
             AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap(),
