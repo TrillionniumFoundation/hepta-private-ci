@@ -64,6 +64,21 @@ pub(crate) fn runtime_composition(
 }
 
 impl VerifiedRunStoreRestart {
+    pub(crate) fn validate_host_binding(
+        &self,
+        identity: &AgentdIdentity,
+        registry: &FleetRegistry,
+    ) -> Result<(), AgentdError> {
+        if identity != &self.identity || registry.layout() != self.registry.layout() {
+            return Err(AgentdError::GenerationFenced(
+                "restart admission belongs to a different complete host identity".into(),
+            ));
+        }
+        self.validate_current().map_err(|error| {
+            AgentdError::GenerationFenced(format!("restart host binding: {error}"))
+        })
+    }
+
     pub(crate) fn validate_current(&self) -> Result<(), AgentRunError> {
         let checked = (|| -> Result<(), AgentdError> {
             let record = self.registry.load_agent(&self.identity.agent_id)?;

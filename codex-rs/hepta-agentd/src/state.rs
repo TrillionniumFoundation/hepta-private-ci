@@ -82,7 +82,7 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
-        Self::new_inner(identity, registry, event_capacity, None)
+        Self::new_inner(identity, registry, event_capacity, /*restart*/ None)
     }
 
     pub(crate) fn new_with_verified_restart(
@@ -91,6 +91,7 @@ impl AgentdState {
         event_capacity: usize,
         restart: &crate::config::VerifiedRunStoreRestart,
     ) -> Result<Self, AgentdError> {
+        restart.validate_host_binding(&identity, &registry)?;
         Self::new_inner(identity, registry, event_capacity, Some(restart))
     }
 

@@ -140,6 +140,21 @@ fn restart_migrates_real_empty_failed_spawn_to_generation_four_without_reset() -
     let admission = config.verified_run_store_restart()?;
     let current = runtime_composition(config.identity(), 4);
     let before = fs::read(fixture.path())?;
+    // Composition includes the run ceiling but does not encode every host
+    // resource field. A proof cannot be detached from its full Config identity.
+    let mut substituted = config.identity().clone();
+    substituted.resources.memory_limit_mib += 1;
+    assert_eq!(runtime_composition(&substituted, 4), current);
+    assert!(
+        crate::AgentdState::new_with_verified_restart(
+            substituted,
+            fixture.registry.clone(),
+            /*event_capacity*/ 128,
+            &admission,
+        )
+        .is_err()
+    );
+    assert_eq!(fs::read(fixture.path())?, before);
     assert!(AgentRunCoordinator::open_durable(current.clone(), fixture.path()).is_err());
     assert_eq!(fs::read(fixture.path())?, before);
     let migrated =
@@ -255,7 +270,10 @@ fn restart_rejects_unrelated_tuple_false_prior_spawn_corrupt_predecessor_and_sta
             3 => corrupt.composition.supervisor_generation = 2,
             4 => corrupt.composition = runtime_composition(config.identity(), 3), // true Stopped, not spawn
             5 => corrupt.composition = runtime_composition(config.identity(), 5), // future owner
-            6 => corrupt.previous_store_sha256 = Some("q".repeat(64)),
+            6 => {
+                corrupt.store_revision = 2;
+                corrupt.previous_store_sha256 = Some("q".repeat(64));
+            }
             7 => corrupt.composition.max_active_runs += 1,
             _ => unreachable!(),
         }
