@@ -1,3 +1,9 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
+)]
+
 //! Registered product-path regression retained across the async host migration.
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;

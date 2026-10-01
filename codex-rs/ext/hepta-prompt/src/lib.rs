@@ -38,7 +38,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
-use tokio::sync::Mutex;
+use tokio::sync::OnceCell;
 
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.runtime-codex.prompt-attachment.v1";
 const MAX_DEVELOPER_FRAGMENTS: usize = 128;
@@ -479,7 +479,7 @@ enum ResolvedAttachment {
 
 #[derive(Default)]
 struct PromptRuntimeTurnState {
-    resolved: Mutex<Option<ResolvedAttachment>>,
+    resolved: OnceCell<ResolvedAttachment>,
     injected: AtomicBool,
 }
 
@@ -497,31 +497,31 @@ impl PromptRuntimeExtension {
         turn_store: &ExtensionData,
     ) -> ResolvedAttachment {
         let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
-        let mut resolved = state.resolved.lock().await;
-        if let Some(value) = resolved.as_ref() {
-            return value.clone();
-        }
-        let value = match self
-            .host
-            .prepare(PromptRuntimePrepareRequest {
-                thread_id,
-                turn_id,
-                model_context_window,
+        state
+            .resolved
+            .get_or_init(|| async {
+                match self
+                    .host
+                    .prepare(PromptRuntimePrepareRequest {
+                        thread_id,
+                        turn_id,
+                        model_context_window,
+                    })
+                    .await
+                {
+                    Ok(Some(attachment)) => match attachment.validate() {
+                        Ok(()) => ResolvedAttachment::Ready(attachment),
+                        Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                            "prompt_runtime_attachment_invalid",
+                            error.to_string(),
+                        )),
+                    },
+                    Ok(None) => ResolvedAttachment::None,
+                    Err(error) => ResolvedAttachment::Failed(error),
+                }
             })
             .await
-        {
-            Ok(Some(attachment)) => match attachment.validate() {
-                Ok(()) => ResolvedAttachment::Ready(attachment),
-                Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
-                    "prompt_runtime_attachment_invalid",
-                    error.to_string(),
-                )),
-            },
-            Ok(None) => ResolvedAttachment::None,
-            Err(error) => ResolvedAttachment::Failed(error),
-        };
-        *resolved = Some(value.clone());
-        value
+            .clone()
     }
 }
 
@@ -692,6 +692,13 @@ struct PromptRuntimeAttemptLease {
     dispatch_unix_ms: u64,
 }
 
+type PromptTerminalMapping = (
+    PromptRuntimeTerminalOutcomeV1,
+    Option<String>,
+    Option<bool>,
+    Option<PromptDeliveryObservationV1>,
+);
+
 impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
     fn finish(
         self: Box<Self>,
@@ -757,15 +764,7 @@ impl PromptRuntimeAttemptLease {
     fn map_terminal(
         &self,
         terminal: ModelProviderTerminal,
-    ) -> Result<
-        (
-            PromptRuntimeTerminalOutcomeV1,
-            Option<String>,
-            Option<bool>,
-            Option<PromptDeliveryObservationV1>,
-        ),
-        PromptRuntimeError,
-    > {
+    ) -> Result<PromptTerminalMapping, PromptRuntimeError> {
         match terminal {
             ModelProviderTerminal::Completed { end_turn, .. } => {
                 let observation = self.delivery_observation(true, None)?;

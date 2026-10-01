@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "integration fixture setup must fail immediately on invalid input"
+)]
+
 use std::sync::Arc;
 use std::time::Duration;
 

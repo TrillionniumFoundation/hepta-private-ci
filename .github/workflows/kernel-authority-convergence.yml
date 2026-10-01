@@ -59,7 +59,6 @@ jobs:
     timeout-minutes: 20
     env:
       SUBJECT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      OUTPUT: ${{ runner.temp }}/kernel-authority-convergence/projection.json
     steps:
       - name: Checkout the exact source subject
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -72,6 +71,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          printf 'OUTPUT=%s/kernel-authority-convergence/projection.json\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$SUBJECT_SHA"
           test -z "$(git status --porcelain)"
           git rev-parse HEAD > "$RUNNER_TEMP/kernel-authority-candidate.txt"

@@ -88,6 +88,82 @@ fn stores() -> (ExtensionData, ExtensionData, ExtensionData) {
 }
 
 #[tokio::test]
+async fn concurrent_resolution_prepares_once_and_reuses_the_exact_attachment() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let prepare_calls = Arc::clone(&calls);
+    let host = PromptRuntimeHost::new(
+        "concurrent-resolution",
+        move |_| {
+            prepare_calls.fetch_add(1, Ordering::SeqCst);
+            Box::pin(async {
+                tokio::task::yield_now().await;
+                Ok(Some(attachment()))
+            })
+        },
+        |_| Box::pin(async { Ok(()) }),
+        |_| Box::pin(async { Ok(()) }),
+    )
+    .unwrap_or_else(|error| panic!("host: {error}"));
+    let extension = PromptRuntimeExtension { host };
+    let (_, _, turn_store) = stores();
+    let (left, right) = tokio::join!(
+        extension.resolve("thread".into(), "turn".into(), Some(128_000), &turn_store),
+        extension.resolve("thread".into(), "turn".into(), Some(128_000), &turn_store),
+    );
+    let (ResolvedAttachment::Ready(left), ResolvedAttachment::Ready(right)) = (left, right) else {
+        panic!("both contributors must receive a validated attachment");
+    };
+    assert_eq!(left, right);
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn cancelled_resolution_leaves_no_partial_cached_attachment() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let prepare_calls = Arc::clone(&calls);
+    let started = Arc::new(tokio::sync::Notify::new());
+    let prepare_started = Arc::clone(&started);
+    let host = PromptRuntimeHost::new(
+        "cancelled-resolution",
+        move |_| {
+            let attempt = prepare_calls.fetch_add(1, Ordering::SeqCst);
+            let started = Arc::clone(&prepare_started);
+            Box::pin(async move {
+                if attempt == 0 {
+                    started.notify_one();
+                    std::future::pending::<()>().await;
+                }
+                Ok(Some(attachment()))
+            })
+        },
+        |_| Box::pin(async { Ok(()) }),
+        |_| Box::pin(async { Ok(()) }),
+    )
+    .unwrap_or_else(|error| panic!("host: {error}"));
+    let extension = PromptRuntimeExtension { host };
+    let (_, _, turn_store) = stores();
+    {
+        let first = extension.resolve("thread".into(), "turn".into(), None, &turn_store);
+        tokio::pin!(first);
+        tokio::select! {
+            _ = started.notified() => {}
+            _ = &mut first => panic!("first preparation must remain pending"),
+        }
+    }
+    let resolved = extension
+        .resolve("thread".into(), "turn".into(), None, &turn_store)
+        .await;
+    assert!(matches!(resolved, ResolvedAttachment::Ready(_)));
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+    assert!(
+        turn_store
+            .get_or_init(PromptRuntimeTurnState::default)
+            .resolved
+            .initialized()
+    );
+}
+
+#[tokio::test]
 async fn developer_attachment_reaches_physical_provider_terminal_observation() {
     let dispatches = Arc::new(StdMutex::new(Vec::new()));
     let records = Arc::new(StdMutex::new(Vec::new()));

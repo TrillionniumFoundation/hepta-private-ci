@@ -1,3 +1,9 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
+)]
+
 use codex_hepta_agentd::AgentdIntuitionPolicyError;
 use codex_hepta_agentd::AgentdIntuitionPolicyHostV1;
 use codex_hepta_agentd::AgentdIntuitionPolicyPinsV1;

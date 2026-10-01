@@ -1,27 +1,10 @@
 name: Hepta audit remediation (read-only)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths:
-      - "qualification/cns-organ-reference/**"
-      - "tools/hepta-engineering-control/**"
-      - "scripts/hepta-cns.py"
-      - "scripts/hepta-module-docs.py"
-      - "scripts/hepta_module_doc_metadata.py"
-      - "scripts/test_hepta_module_doc_metadata.py"
-      - "scripts/hepta-gap-closure.py"
-      - "docs/cns/**"
-      - "docs/modules/MODULES.json"
-      - "docs/modules/MODULE_DOCS.json"
-      - "docs/modules/SOURCE_BINDINGS.json"
-      - "docs/modules/control.engineering/**"
-      - "docs/STATUS.md"
-      - "docs/readiness/GAP_CLOSURE_IMPLEMENTATION.md"
-      - "codex-rs/hepta-intelligence-eval/**"
-      - ".github/workflows/hepta-audit-remediation.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

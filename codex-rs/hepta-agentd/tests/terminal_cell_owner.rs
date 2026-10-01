@@ -1,3 +1,9 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
+)]
+
 use codex_hepta_bellman_operator::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -293,7 +299,9 @@ fn durable_owner_history_and_concurrent_training_profile() {
     for (agents, pairs) in [(1, 32), (1, 128), (1, 512), (4, 128)] {
         let started = Instant::now();
         let reports = std::thread::scope(|scope| {
-            let jobs=(0..agents).map(|agent| scope.spawn(move || {
+            let mut jobs = Vec::with_capacity(agents);
+            for agent in 0..agents {
+                jobs.push(scope.spawn(move || {
                 let fixture=Fixture::new();let mut writer=fixture.writer_with_limit(4096);
                 let mut append_latencies=Vec::new();
                 for index in 0..pairs {
@@ -316,7 +324,8 @@ fn durable_owner_history_and_concurrent_training_profile() {
                 let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,50).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
                 append_latencies.sort_unstable();
                 format!("OWNER_HISTORY_PROFILE agents={agents} agent={agent} records={} ledger_bytes={bytes} decision_outcome_p50_us={} p95_us={} p99_us={} fit_registry_reload_us={fit_and_reload_us} full_recovery_us={recovery_us} indexed_dataset_read_us={page_us} recovery_profile=complete_authenticated_history not_cold_compaction=true",pairs*2,append_latencies[pairs/2],append_latencies[(pairs*95/100).min(pairs-1)],append_latencies[(pairs*99/100).min(pairs-1)])
-            })).collect::<Vec<_>>();
+                }));
+            }
             jobs.into_iter()
                 .map(|job| job.join().unwrap())
                 .collect::<Vec<_>>()

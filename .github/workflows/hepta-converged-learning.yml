@@ -1,44 +1,10 @@
 name: Hepta converged learning qualification (read-only)
 
 on:
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - work/architecture-scalability-convergence-20260918
-    paths:
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-learning-artifacts/**"
-      - "codex-rs/hepta-intelligence-eval/**"
-      - "codex-rs/hepta-neuron/**"
-      - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-shadow-qualification/**"
-      - "codex-rs/hepta-types/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain*"
-      - "tools/hepta-engineering-control/**"
-      - "scripts/verify_cargo_lock.py"
-      - "scripts/test_verify_cargo_lock.py"
-      - ".github/scripts/check_ci_results.py"
-      - ".github/workflows/hepta-converged-learning.yml"
-  pull_request:
-    paths:
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-learning-artifacts/**"
-      - "codex-rs/hepta-intelligence-eval/**"
-      - "codex-rs/hepta-neuron/**"
-      - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-shadow-qualification/**"
-      - "codex-rs/hepta-types/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain*"
-      - "tools/hepta-engineering-control/**"
-      - "scripts/verify_cargo_lock.py"
-      - "scripts/test_verify_cargo_lock.py"
-      - ".github/scripts/check_ci_results.py"
-      - ".github/workflows/hepta-converged-learning.yml"
 
 permissions:
   contents: read

@@ -9,6 +9,7 @@ on:
       - 'codex-rs/hepta-contracts/**'
       - 'codex-rs/hepta-agentd/**'
       - '.github/workflows/kernel-authority-*.yml'
+      - '.github/actionlint.yaml'
   pull_request:
     paths:
       - 'qualification/kernel-authority/**'
@@ -16,6 +17,7 @@ on:
       - 'codex-rs/hepta-contracts/**'
       - 'codex-rs/hepta-agentd/**'
       - '.github/workflows/kernel-authority-*.yml'
+      - '.github/actionlint.yaml'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +39,18 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Verify authority workflow syntax and expression contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/kernel-authority-actionlint.tar.gz"
+          curl --fail --silent --show-error --location \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output "$archive"
+          printf '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  %s\n' "$archive" | sha256sum --check
+          tar --no-same-owner -xzf "$archive" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -shellcheck= -pyflakes= \
+            -config-file .github/actionlint.yaml .github/workflows/kernel-authority-*.yml
       - name: Bind source identity without executing a native pilot
         shell: bash
         env:

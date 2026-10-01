@@ -448,6 +448,11 @@ fn recovery_required(message: &str) -> AgentdError {
 
 #[cfg(all(test, unix))]
 mod tests {
+    #![allow(
+        clippy::unwrap_used,
+        reason = "private test fixtures fail immediately on invalid setup"
+    )]
+
     use std::collections::BTreeSet;
     use std::fs;
     use std::os::unix::fs::PermissionsExt;

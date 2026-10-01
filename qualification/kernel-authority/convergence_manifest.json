@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "kernel.authority",
   "sourceAnchor": {
-    "commit": "786b42cec201f61acc04e99e41bb06a17f3304db",
-    "tree": "cf51965dc7b96c1a701a97f2a5c625630fb2eb86"
+    "commit": "6637c61c204284d323f9adcb22289a4f1bed3f39",
+    "tree": "756866a2459692af24b45f31004a2361a801d788"
   },
   "preservedInvariants": [
     "one-authoritative-lease-and-final-use-owner",
@@ -57,7 +57,31 @@
     "docs/modules/kernel.authority/AUDIT_20261001.md",
     "scripts/hepta-implementation-maps.py",
     "scripts/hepta-lane-b-truth.py",
-    "scripts/test_hepta_ci_source_identity.py"
+    "scripts/test_hepta_ci_source_identity.py",
+    "codex-rs/Cargo.lock",
+    "codex-rs/core/src/client.rs",
+    "codex-rs/core/src/client_provider_policy_tests.rs",
+    "codex-rs/core/src/client_tests.rs",
+    "codex-rs/hepta-agentd/src/browser_servo.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/plasticity_host.rs",
+    "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+    "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-operations/Cargo.toml",
+    "codex-rs/hepta-operations/src/destination_dedupe.rs",
+    "codex-rs/hepta-operations/src/durable_store.rs"
   ],
   "closures": {
     "trustedClockOwnership": {

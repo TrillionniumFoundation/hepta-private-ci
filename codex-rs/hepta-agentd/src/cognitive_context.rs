@@ -496,6 +496,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 }
 
 #[cfg(test)]
+#[allow(
+    clippy::too_many_arguments,
+    reason = "adversarial fixtures keep independently mutable proof fields explicit"
+)]
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,

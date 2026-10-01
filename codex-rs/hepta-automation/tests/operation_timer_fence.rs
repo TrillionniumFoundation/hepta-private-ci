@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "integration fixture setup must fail immediately on invalid input"
+)]
+
 //! Every schedule writer, including the kernel.operations destination, must
 //! honor the same durable timer epoch. These tests use real owner SQLite stores.
 use codex_hepta_automation::AutomationError;

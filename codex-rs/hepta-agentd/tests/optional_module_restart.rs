@@ -1,3 +1,9 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
+)]
+
 //! A real optional service on the SAME RuntimeTasks used by Agentd, backed by
 //! AutomationStore, exercised in separate OS processes. Forty required echo
 //! services represent sibling liveness; these are not forty real Codex sessions.

@@ -47,9 +47,10 @@ jobs:
       SAMPLES: ${{ inputs.samples }}
       EXPECTED_DRIVER_SHA256: ${{ inputs.driver_sha256 }}
       EXPECTED_POLICY_SHA256: ${{ inputs.policy_sha256 }}
-      EVIDENCE_ROOT: ${{ runner.temp }}/kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Validate dispatch inputs and create a fresh private evidence root
+        env:
+          EVIDENCE_ROOT: ${{ runner.temp }}/kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}
         shell: bash
         run: |
           set -euo pipefail
@@ -62,6 +63,7 @@ jobs:
           [[ "$EXPECTED_POLICY_SHA256" =~ ^[0-9a-f]{64}$ ]]
           test ! -e "$EVIDENCE_ROOT"
           mkdir -m 0700 "$EVIDENCE_ROOT"
+          printf 'EVIDENCE_ROOT=%s\n' "$EVIDENCE_ROOT" >> "$GITHUB_ENV"
 
       - name: Checkout trusted collector from exact main dispatch source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

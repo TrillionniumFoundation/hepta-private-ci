@@ -147,15 +147,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -187,8 +187,8 @@
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "impossible_local_receipt_invariants_are_rejected"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -298,7 +298,11 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -540,8 +544,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "34d4101ce763dd2c97cd5ca5f00c14a2e66310bb",
-    "tree": "ea192ee91811e34fead4385ac5de66f39afe801d"
+    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -605,11 +609,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "988af8c5062397c17fc0869238bafdf33dfd9f2e"
+      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "bb334a5a301a5d3988b0b5c660d914f5d1c7d01a"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -633,7 +637,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "b86cdeefff22e19675cfd8357cff7f218b9b814c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
@@ -641,7 +645,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "776d6aa24763b35de925be2670586798156803f2"
+      "object": "47eef51e33f37bbe75b32edcaed37f2896233957"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
@@ -649,7 +653,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "ecd0a782917e32c8f024c624c013c44a0cdbc121"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -657,15 +661,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-      "object": "3018e57b24b4e5a3a86b9b205504744426ade4f0"
+      "object": "d14f039e8cf68191b393a37ead95f114c29f7ee1"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "object": "4fb64e91b45e3653b77a59f6f5ed3e2650929b0e"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-      "object": "3a8d8bc99aab620dc37e07b30024fc33f06738b4"
+      "object": "105341840e6d7e8b82df0b240868df650bb5499e"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol.rs",

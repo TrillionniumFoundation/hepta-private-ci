@@ -3,8 +3,6 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
@@ -30,16 +28,7 @@ impl DestinationDedupeStore {
     /// Standalone qualification/store mode. Product owners should normally add
     /// the table to their own migration lineage and call `from_migrated_pool`.
     pub async fn open_standalone(path: &Path) -> Result<Self, DurableOperationError> {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-        }
-        let home = AbsolutePathBuf::try_from(path.parent().unwrap_or_else(|| Path::new(".")))
-            .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-        let pool = SqliteConfig::from_sqlite_home(home)
-            .open_durable_evidence_pool(path)
-            .await
-            .map_err(sqlx_error)?;
+        let pool = crate::sqlite::open_durable_pool(path).await?;
         if let Err(error) = DESTINATION_MIGRATOR.run(&pool).await {
             pool.close().await;
             return Err(DurableOperationError::Corrupt(format!(

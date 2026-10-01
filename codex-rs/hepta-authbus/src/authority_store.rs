@@ -1,16 +1,13 @@
 use std::path::Path;
-use std::time::Duration;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthPolicy;
@@ -29,16 +26,11 @@ pub struct AuthBusAuthorityStore {
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
+        let path = std::path::absolute(path).map_err(storage)?;
+        let home = AbsolutePathBuf::try_from(path.parent().unwrap_or_else(|| Path::new(".")))
+            .map_err(storage)?;
+        let pool = SqliteConfig::from_sqlite_home(home)
+            .open_durable_evidence_pool(&path)
             .await
             .map_err(storage)?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
@@ -521,7 +513,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
 fn is_unique_violation(error: &sqlx::Error) -> bool {
     error
         .as_database_error()
-        .is_some_and(|database| database.is_unique_violation())
+        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
 }
 
 pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {

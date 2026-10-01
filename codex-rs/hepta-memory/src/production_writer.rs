@@ -50,6 +50,7 @@ use crate::MemoryRevisionDraft;
 use crate::QueuedReceipt;
 use crate::SourceDraft;
 use crate::StableMemoryId;
+use crate::cognitive_intelligence_writer::CognitiveCorrectionTarget;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 #[cfg(test)]
@@ -1608,8 +1609,10 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    CognitiveCorrectionTarget {
+                        memory_id,
+                        expected_revision,
+                    },
                     source,
                     draft,
                     facts,
@@ -3478,6 +3481,11 @@ mod takeover_regression_tests {
 
 #[cfg(all(test, unix))]
 mod final_use_dispatch_tests {
+    #![allow(
+        clippy::expect_used,
+        reason = "adversarial fixtures fail immediately on invalid setup"
+    )]
+
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;
     use codex_hepta_contracts::FinalUseRevocations;

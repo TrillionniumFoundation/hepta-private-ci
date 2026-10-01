@@ -1,12 +1,10 @@
+use codex_state::SqliteConfig;
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let pool = SqliteConfig::open_transient_reference_pool()
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");

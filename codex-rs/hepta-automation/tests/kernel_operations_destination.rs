@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "integration fixture setup must fail immediately on invalid input"
+)]
+
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationStore;

@@ -19,28 +19,32 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
         for replace in [false, true] {
             let path = root.path().join(format!("{name}-{replace}.sqlite"));
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
+            // Use one connection for the entire injected DDL cut. Another
+            // pooled connection may still hold the pre-drop schema image.
+            let mut connection = store.pool.acquire().await.unwrap();
             // These identifiers come from the freshly migrated reference.
             // Quote and escape them before forming identifier-only DDL; no
             // data or untrusted SQL fragments are interpolated.
             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
-                .execute(&store.pool)
+                .execute(&mut *connection)
                 .await
                 .unwrap();
             if replace {
                 sqlx::query(sqlx::AssertSqlSafe(format!(
                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
                 )))
-                .execute(&store.pool)
+                .execute(&mut *connection)
                 .await
                 .unwrap();
             }
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
-                .fetch_one(&store.pool)
+                .fetch_one(&mut *connection)
                 .await
                 .unwrap();
             assert_eq!(check, "ok");
+            drop(connection);
             store.pool.close().await;
             assert!(
                 matches!(
