@@ -246,3 +246,7 @@ fn remaining(deadline: Instant) -> HostResult<Duration> {
         .filter(|duration| !duration.is_zero())
         .ok_or_else(|| "fixed physical encoding total deadline elapsed".into())
 }
+
+#[cfg(test)]
+#[path = "initial_cpu_tick_tests.rs"]
+mod tests;
