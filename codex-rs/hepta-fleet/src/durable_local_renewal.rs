@@ -54,12 +54,12 @@ impl DurableFleetStore {
         execution_id: &str,
         request: LocalRenewalRequestV1<'_>,
     ) -> Result<FleetOperationReceiptV1, DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         let state = renewal_state_tx(&mut tx, execution_id).await?;
         match (&state.pending, request.observed_pending) {
             (Some(pending), None) => {
@@ -144,12 +144,12 @@ impl DurableFleetStore {
         execution_id: &str,
         observed: &FleetOperationReceiptV1,
     ) -> Result<(), DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let state = renewal_state_tx(&mut tx, execution_id).await?;
         acknowledge_receipt_tx(&mut tx, execution_id, &state, observed).await?;

@@ -17,13 +17,13 @@ impl DurableFleetStore {
     /// One coherent read transaction. Missing observations stay unknown; missing
     /// authoritative totals are corruption, never a healthy zero-capacity row.
     pub async fn metrics(&self) -> Result<FleetMetricsSnapshotV1, DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self.pool.begin().await.map_err(sqlx_error)?;
         let frontier: i64 =
             sqlx::query_scalar("SELECT last_now_ms FROM fleet_clock WHERE singleton = 1")
                 .fetch_one(&mut *tx)
                 .await
                 .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         if now_ms < to_u64(frontier)? {
             return Err(DurableFleetError::ClockRollback);
         }
@@ -171,12 +171,12 @@ impl DurableFleetStore {
                 "unregistered operational gauge".into(),
             ));
         }
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         sqlx::query(
             "INSERT INTO fleet_metric_counters(operation, result, value) VALUES(?, ?, ?)

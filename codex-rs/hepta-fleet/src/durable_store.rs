@@ -65,9 +65,6 @@ impl DurableFleetStore {
             std::fs::create_dir_all(parent)
                 .map_err(|error| DurableFleetError::Unavailable(error.to_string()))?;
         }
-        let now_ms = clock
-            .now_unix_ms()
-            .map_err(|_| DurableFleetError::ClockUnavailable)?;
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -80,27 +77,13 @@ impl DurableFleetStore {
             .connect_with(options)
             .await
             .map_err(sqlx_error)?;
-        if let Err(error) = initialize_schema(&pool, to_i64(now_ms)?).await {
-            pool.close().await;
-            return Err(error);
-        }
-        let persisted: i64 =
-            sqlx::query_scalar("SELECT last_now_ms FROM fleet_clock WHERE singleton = 1")
-                .fetch_one(&pool)
-                .await
-                .map_err(sqlx_error)?;
-        let persisted = to_u64(persisted)?;
-        if now_ms < persisted {
-            pool.close().await;
-            return Err(DurableFleetError::ClockRollback);
-        }
-        if now_ms > persisted {
-            sqlx::query("UPDATE fleet_clock SET last_now_ms = ? WHERE singleton = 1")
-                .bind(to_i64(now_ms)?)
-                .execute(&pool)
-                .await
-                .map_err(sqlx_error)?;
-        }
+        let now_ms = match initialize_schema(&pool, clock.as_ref()).await {
+            Ok(now_ms) => now_ms,
+            Err(error) => {
+                pool.close().await;
+                return Err(error);
+            }
+        };
         Ok(Self {
             pool,
             path: path.to_path_buf(),
@@ -118,20 +101,21 @@ impl DurableFleetStore {
     }
 
     pub(crate) fn owner_now_ms(&self) -> Result<u64, DurableFleetError> {
-        let now_ms = self
-            .clock
-            .now_unix_ms()
-            .map_err(|_| DurableFleetError::ClockUnavailable)?;
         loop {
+            // Observe the frontier before sampling. Another owner may advance
+            // it while this sample is taken; retry then reads the real clock.
             let current = self.last_now_ms.load(Ordering::Acquire);
+            let now_ms = self
+                .clock
+                .now_unix_ms()
+                .map_err(|_| DurableFleetError::ClockUnavailable)?;
             if now_ms < current {
                 return Err(DurableFleetError::ClockRollback);
             }
-            if now_ms == current
-                || self
-                    .last_now_ms
-                    .compare_exchange(current, now_ms, Ordering::AcqRel, Ordering::Acquire)
-                    .is_ok()
+            if self
+                .last_now_ms
+                .compare_exchange(current, now_ms, Ordering::AcqRel, Ordering::Acquire)
+                .is_ok()
             {
                 return Ok(now_ms);
             }
@@ -175,10 +159,6 @@ impl DurableFleetStore {
                 "invalid capacity observation interval".to_string(),
             ));
         }
-        let now_ms = self.owner_now_ms()?;
-        if observation.observed_at_ms > now_ms || now_ms >= observation.valid_until_ms {
-            return Err(DurableFleetError::Stale);
-        }
         let operation_id = operation_id(
             FleetMutationKindV1::HostObservation.as_str(),
             &content_digest(&(observation.host_id.as_str(), observation.generation))?,
@@ -189,6 +169,10 @@ impl DurableFleetStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
+        if observation.observed_at_ms > now_ms || now_ms >= observation.valid_until_ms {
+            return Err(DurableFleetError::Stale);
+        }
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let incarnation = sqlx::query(
             "SELECT boot_identity, generation FROM fleet_host_incarnations WHERE host_id = ?",
@@ -404,3 +388,7 @@ async fn upsert_host_tx(
 #[cfg(all(test, unix))]
 #[path = "durable_store_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "durable_clock_race_tests.rs"]
+mod clock_race_tests;

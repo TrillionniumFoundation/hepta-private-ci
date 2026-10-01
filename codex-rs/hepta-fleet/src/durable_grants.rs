@@ -38,13 +38,13 @@ impl DurableFleetStore {
         grant: AllocationGrant,
     ) -> Result<DurableGrantReceiptV1, DurableFleetError> {
         validate_grant(&grant)?;
-        let now_ms = self.owner_now_ms()?;
         let operation_id = operation_id("issue", &grant.allocation_id, grant.lease_generation);
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         self.collect_expired_tx(&mut tx, now_ms).await?;
 
@@ -153,12 +153,12 @@ impl DurableFleetStore {
             DurableLeaseDispositionV1::Revoke => "revoke",
         };
         let operation_id = operation_id(operation, allocation_id, next_generation);
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         self.collect_expired_tx(&mut tx, now_ms).await?;
         if let Some(receipt) = load_receipt_tx(&mut tx, &operation_id).await? {
@@ -227,12 +227,12 @@ impl DurableFleetStore {
     }
 
     pub async fn collect_expired(&self) -> Result<usize, DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let retired = self.collect_expired_tx(&mut tx, now_ms).await?;
         match tx.commit().await {
@@ -257,7 +257,6 @@ impl DurableFleetStore {
         validate_identity(principal_id, "principal")?;
         validate_identity(host_id, "host")?;
         validate_digest(semantic_digest)?;
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self.pool.begin().await.map_err(sqlx_error)?;
         let grant = select_grant_tx(&mut tx, allocation_id)
             .await?
@@ -265,6 +264,7 @@ impl DurableFleetStore {
         let host = select_host_tx(&mut tx, host_id)
             .await?
             .ok_or(DurableFleetError::Stale)?;
+        let now_ms = self.owner_now_ms()?;
         if grant.principal_id != principal_id
             || grant.host_id != host_id
             || grant.host_generation != host_generation
@@ -296,12 +296,12 @@ impl DurableFleetStore {
                 "compaction limit must be positive".into(),
             ));
         }
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let full_count: i64 =
             sqlx::query_scalar("SELECT COUNT(*) FROM fleet_grant_history WHERE compacted = 0")

@@ -1,18 +1,24 @@
+use codex_hepta_contracts::AuthorityClock;
 use sqlx::Row;
 use sqlx::SqlitePool;
 
 use crate::DURABLE_FLEET_LINEAGE;
 use crate::DURABLE_FLEET_SCHEMA_VERSION;
 use crate::DurableFleetError;
+use crate::durable_rows::to_i64;
 
 pub(crate) async fn initialize_schema(
     pool: &SqlitePool,
-    now_ms: i64,
-) -> Result<(), DurableFleetError> {
+    clock: &dyn AuthorityClock,
+) -> Result<u64, DurableFleetError> {
     let mut tx = pool
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(sqlx_error)?;
+    let now_ms = clock
+        .now_unix_ms()
+        .map_err(|_| DurableFleetError::ClockUnavailable)?;
+    let now_i64 = to_i64(now_ms)?;
     let checks: Vec<String> = sqlx::query_scalar("PRAGMA quick_check")
         .fetch_all(&mut *tx)
         .await
@@ -70,12 +76,12 @@ pub(crate) async fn initialize_schema(
         )
         .bind(DURABLE_FLEET_SCHEMA_VERSION)
         .bind(DURABLE_FLEET_LINEAGE)
-        .bind(now_ms)
+        .bind(now_i64)
         .execute(&mut *tx)
         .await
         .map_err(sqlx_error)?;
         sqlx::query("INSERT INTO fleet_clock(singleton, last_now_ms) VALUES(1, ?)")
-            .bind(now_ms)
+            .bind(now_i64)
             .execute(&mut *tx)
             .await
             .map_err(sqlx_error)?;
@@ -127,15 +133,16 @@ pub(crate) async fn initialize_schema(
             .fetch_one(&mut *tx)
             .await
             .map_err(sqlx_error)?;
-    if now_ms < persisted {
+    if now_i64 < persisted {
         return Err(DurableFleetError::ClockRollback);
     }
     sqlx::query("UPDATE fleet_clock SET last_now_ms = ? WHERE singleton = 1")
-        .bind(now_ms)
+        .bind(now_i64)
         .execute(&mut *tx)
         .await
         .map_err(sqlx_error)?;
-    tx.commit().await.map_err(sqlx_error)
+    tx.commit().await.map_err(sqlx_error)?;
+    Ok(now_ms)
 }
 
 pub(crate) fn sqlx_error(error: sqlx::Error) -> DurableFleetError {

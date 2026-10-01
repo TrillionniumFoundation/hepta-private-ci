@@ -21,7 +21,6 @@ impl DurableFleetStore {
         state: &DurableRevocationStateV1,
         convergence_deadline_ms: u64,
     ) -> Result<FleetOperationReceiptV1, DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let update = &state.update.update;
         let epoch = update.head.authority_epoch;
         let revision = update.head.revision;
@@ -42,6 +41,7 @@ impl DurableFleetStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         if let Some(row) = sqlx::query(
             "SELECT authority_epoch, revision, update_digest FROM fleet_revocation_frontier

@@ -19,12 +19,12 @@ impl DurableFleetStore {
         &self,
         snapshot: &FleetSnapshot,
     ) -> Result<(), DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         for record in snapshot.agents.values() {
             reserve_workspace_tx(
@@ -43,12 +43,12 @@ impl DurableFleetStore {
         agent_id: &str,
         workspace: &Path,
     ) -> Result<WorkspaceReservationV1, DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let reservation = reserve_workspace_tx(&mut tx, agent_id, workspace, now_ms).await?;
         match tx.commit().await {

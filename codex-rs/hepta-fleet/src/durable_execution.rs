@@ -95,12 +95,12 @@ impl DurableFleetStore {
     ) -> Result<u64, DurableFleetError> {
         validate_identity(host_id, "host")?;
         validate_identity(boot_identity, "boot identity")?;
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let current = sqlx::query(
             "SELECT boot_identity, generation FROM fleet_host_incarnations WHERE host_id = ?",
@@ -205,12 +205,12 @@ impl DurableFleetStore {
             .validate_nonzero()
             .map_err(|error| DurableFleetError::Invalid(error.to_string()))?;
         let boot = native_boot_identity()?;
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let incarnation = sqlx::query(
             "SELECT boot_identity, generation FROM fleet_host_incarnations WHERE host_id = ?",
@@ -309,12 +309,12 @@ impl DurableFleetStore {
             return Err(DurableFleetError::Stale);
         }
         let boot = native_boot_identity()?;
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let hold = sqlx::query(
             "SELECT context_json, containment_dev, containment_ino FROM fleet_execution_holds
@@ -443,12 +443,12 @@ impl DurableFleetStore {
     /// TTL and revocation never call this themselves. Require native absence of
     /// the recorded process, its process group and its protected cgroup subtree.
     pub async fn confirm_local_exit(&self, execution_id: &str) -> Result<(), DurableFleetError> {
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
         let row = sqlx::query(
             "SELECT context_json, boot_identity, state, process_id, process_group,

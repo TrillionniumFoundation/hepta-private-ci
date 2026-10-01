@@ -79,12 +79,12 @@ impl DurableFleetStore {
         execution_id: &str,
     ) -> Result<FleetExecutionHoldV1, DurableFleetError> {
         validate_identity(execution_id, "execution")?;
-        let now_ms = self.owner_now_ms()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(sqlx_error)?;
+        let now_ms = self.owner_now_ms()?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
 
         let row = sqlx::query(
