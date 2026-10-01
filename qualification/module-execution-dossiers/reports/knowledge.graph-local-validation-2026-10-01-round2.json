@@ -1,0 +1,749 @@
+{
+  "schema": "hepta.knowledge-graph-local-validation-audit.v1",
+  "date": "2026-10-01",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pullRequest": 1314,
+  "reviewedMain": {
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
+  },
+  "executedComponentCodeObservation": {
+    "commit": "be4004a11e374f49a5b0db2fa4e1dd87d318b11d",
+    "tree": "039ed37a41cf2981e4b9b1e42b635f1ba699d323",
+    "scope": "The named component code matches this committed source; local scoped execution is not complete candidate HEAD/merge qualification."
+  },
+  "rustTestsBeforeFinalFixAndFmt": [
+    {
+      "packages": [
+        "codex-hepta-kg"
+      ],
+      "passedPerPackage": {
+        "codex-hepta-kg": 33
+      },
+      "summary": "Summary [   0.100s] 33 tests run: 33 passed, 0 skipped",
+      "logSha256": "6ce42cc748935156fd7f5c1e7857a78ad9eeea5d28fa6b5ec5bd48578837870b",
+      "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-kernel-tests.log"
+    },
+    {
+      "packages": [
+        "codex-hepta-memory"
+      ],
+      "passedPerPackage": {
+        "codex-hepta-memory": 278
+      },
+      "summary": "Summary [  15.412s] 278 tests run: 278 passed, 8 skipped",
+      "logSha256": "7781c308dcbd59a1edb471161f521c2935f416aa15f54c21b9a83decdc4ed802",
+      "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-memory-tests.log"
+    },
+    {
+      "packages": [
+        "codex-hepta-prompt-optimizer"
+      ],
+      "passedPerPackage": {
+        "codex-hepta-prompt-optimizer": 48
+      },
+      "summary": "Summary [   0.597s] 48 tests run: 48 passed, 0 skipped",
+      "logSha256": "9bca4c02962c667dc81012703438f406944318a53a97d86f1af01adeacf36392",
+      "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-prompt-stage1-tests.log"
+    },
+    {
+      "packages": [
+        "codex-hepta-prompt-optimizer",
+        "codex-hepta-prompt-registry"
+      ],
+      "passedPerPackage": {
+        "codex-hepta-prompt-optimizer": 51,
+        "codex-hepta-prompt-registry": 55
+      },
+      "summary": "Summary [   4.636s] 106 tests run: 106 passed, 0 skipped",
+      "logSha256": "8193c57f91a3f3e2acb4f54c7bd0b653e39c61cbedcd98c5a587315ed2dc45eb",
+      "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-prompt-stage2-tests.log"
+    },
+    {
+      "packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-intelligence"
+      ],
+      "passedPerPackage": {
+        "codex-hepta-agentd": 5,
+        "codex-hepta-intelligence": 7
+      },
+      "summary": "Summary [   9.948s] 12 tests run: 12 passed, 241 skipped",
+      "logSha256": "c761083858a32c658d854c9ca01d01112678c825ba2aac624c242c2472ad386f",
+      "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-downstream-tests.log"
+    }
+  ],
+  "pythonGates": {
+    "claim": "local read-only Python gate verification; not exact-candidate remote CI qualification",
+    "qa_test_count": 29,
+    "records": [
+      {
+        "name": "caller-self-test",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.072,
+        "log": "/workspace/scratch/3e2c3465255c/ci-pr1314-ef725619/round2-final-python-caller-self-test.log"
+      },
+      {
+        "name": "caller-closed-set",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 28.396,
+        "log": "/workspace/scratch/3e2c3465255c/ci-pr1314-ef725619/round2-final-python-caller-closed-set.log",
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+        "boundaries": 47,
+        "rust_files_scanned": 4414,
+        "authority_granted": false
+      },
+      {
+        "name": "b4-no-bypass",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 11.267,
+        "log": "/workspace/scratch/3e2c3465255c/ci-pr1314-ef725619/round2-final-python-b4-no-bypass.log",
+        "test_count": 13
+      },
+      {
+        "name": "fault-matrix",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/fault-matrix",
+          "-p",
+          "test_*.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.042,
+        "log": "/workspace/scratch/3e2c3465255c/ci-pr1314-ef725619/round2-final-python-fault-matrix.log",
+        "test_count": 5
+      },
+      {
+        "name": "performance",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/performance",
+          "-p",
+          "test_*.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.044,
+        "log": "/workspace/scratch/3e2c3465255c/ci-pr1314-ef725619/round2-final-python-performance.log",
+        "test_count": 5
+      },
+      {
+        "name": "vertical-slice",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/vertical-slice",
+          "-p",
+          "test_*.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.064,
+        "log": "/workspace/scratch/3e2c3465255c/ci-pr1314-ef725619/round2-final-python-vertical-slice.log",
+        "test_count": 6
+      }
+    ]
+  },
+  "realProductE2e": {
+    "status": "executed_environment_blocked",
+    "selectedTests": [
+      "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+      "two_real_agentd_app_servers_never_cross_recall",
+      "cognitive_store_unavailable_fails_closed_before_provider"
+    ],
+    "failures": [
+      {
+        "phase": "link",
+        "result": "ENOSPC",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e.log"
+      },
+      {
+        "phase": "compile",
+        "result": "colliding StableCrateId values for core_test_support",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e-retry.log"
+      },
+      {
+        "phase": "compile/link",
+        "result": "colliding StableCrateId values for core_test_support",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e-retry2.log",
+        "logSha256": "92c0e988bd75382b453a50fab01056673b905c205e012dd6f66ca9c98ff13aa8"
+      },
+      {
+        "phase": "compile/link",
+        "result": "colliding StableCrateId values for core_test_support",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e-retry3.log",
+        "logSha256": "20011ae167ffefc2d9af979f75069b69f1905b4c504545f03d526316293f2018"
+      },
+      {
+        "phase": "compile/link",
+        "result": "seven dependency crates unavailable in required rlib form",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e-retry4.log",
+        "logSha256": "a2d1cb598492a4843f8baeba052195b58506ab358a27c0ead529f3e9ae47fd42"
+      },
+      {
+        "phase": "compile/link",
+        "result": "codex_hepta_memory_extension unavailable in required rlib form",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e-retry5.log",
+        "logSha256": "bef0606a1e61635744810db62f150b5fc02a28bfacfa3e47c4a435e1cfc364de"
+      }
+    ],
+    "resourceRecovery": "Scoped Cargo invalidation resolved initial ENOSPC, colliding StableCrateId and missing rlib build artifacts without source/dependency changes. Actual runtime subsequently hit Unix bind EPERM.",
+    "passed": 1,
+    "failed": 2,
+    "defaultSkipped": 10,
+    "runtimeSecondsExcludingBuild": 1.059,
+    "passedTests": [
+      "cognitive_store_unavailable_fails_closed_before_provider"
+    ],
+    "blockedTests": {
+      "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends": "Agentd readiness failed before product use: bind Unix control socket EPERM",
+      "two_real_agentd_app_servers_never_cross_recall": "Agentd readiness failed before product use: bind Unix control socket EPERM"
+    },
+    "automaticRetries": 2,
+    "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-cognitive-e2e-retry6.log",
+    "logSha256": "52d9f80927bb5da6509b5267b0c29068587c5ac75378a00194b2434fa72cd2b2",
+    "claim": "Compilation completed; fail-closed unavailable-store case passed. No successful mutation/recall product chain or isolation execution is claimed."
+  },
+  "fullCapacity": {
+    "status": "passed_local_complete_default_fixture",
+    "writes": 256,
+    "failures": [
+      {
+        "runtimeSecondsExcludingBuild": 841.882,
+        "phase": "write",
+        "result": "SQLite code 13 database or disk is full",
+        "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-full-capacity.log"
+      }
+    ],
+    "passed": true,
+    "runtimeSecondsExcludingBuild": 1269.858,
+    "receiptFile": "knowledge.graph-full-capacity-2026-10-01-round2.json",
+    "localLog": "/workspace/scratch/3e2c3465255c/kg-round2-full-capacity-retry.log",
+    "logSha256": "3fd24c03b2a13e149438eebc12ca4b7a1d5fb6a1abb30fafe0cf0c83570a1291",
+    "claim": "Complete local default fixture passed, including all writes, product queries and ordinary reopens. No target-host budget, controlled speedup, complete final HEAD/merge or release qualification follows."
+  },
+  "readCapacityReceipt": "knowledge.graph-read-capacity-2026-10-01-round2.json",
+  "independentReview": "Two frozen implementation stages independently reviewed; no additional reproducible defect within tested source, trust, time, accounting, history and resource attack surfaces. This is a bounded observation, not exhaustive security or global optimality.",
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "authorityGranted": false
+  },
+  "finalFixAndFormat": {
+    "fixPackages": [
+      "codex-hepta-kg",
+      "codex-hepta-memory",
+      "codex-hepta-prompt-optimizer",
+      "codex-hepta-intelligence",
+      "codex-hepta-agentd"
+    ],
+    "fixExitCode": 0,
+    "fixAutomaticSourceEdits": false,
+    "manualLintChange": "Two test-only pair clones replaced by std::slice::from_ref; no production behavior change.",
+    "fmtExitCode": 0,
+    "fmtBase": "ef72561919df90202bb10f42a7e9c816d4a32695",
+    "noRustTestsRerunAfterFixOrFmt": true,
+    "capacityExecutionNote": "Full-capacity process was launched before final fix/fmt and ran its already compiled component binary; subsequent source edits were formatting and the two test-only borrows.",
+    "strictPackages": [
+      "codex-hepta-kg",
+      "codex-hepta-prompt-registry",
+      "codex-hepta-prompt-optimizer"
+    ],
+    "strictAllTargetsWarningsDeniedExitCode": 0,
+    "broadOwnerWarnings": "Existing memory too_many_arguments and Agentd learning/plasticity dead_code/older test warnings remain; no lint policy relaxation.",
+    "formattedCodeObservation": {
+      "commit": "856dbd4f5c358803e58f83f902746a2390a13c30",
+      "tree": "2fdc044cb58572f13e170a43ac03d48a532d9ea5"
+    },
+    "additionalCiFormattingRepair": {
+      "componentCodeObservation": {
+        "commit": "b3b14c25821896eda3c27aaade20196d93b24aee",
+        "tree": "b22babb0050f74e4b27d4ac6ef1518f38f98aee7"
+      },
+      "path": "codex-rs/hepta-agentd/src/runtime_executable.rs",
+      "reason": "Newly registered test-only module exposes one previously unreachable Rustfmt layout discrepancy.",
+      "changes": "Line wrapping and an optional trailing comma only; no behavior change.",
+      "justFmtBase": "a89e97a1b9c4b2b0ceaff16e55d2e41302926f5e",
+      "justFmtExitCode": 0,
+      "ciEquivalentWholeWorkspaceRustFormatCheckExitCode": 0,
+      "noRustTestsRerun": true
+    }
+  },
+  "finalSourceIdentity": {
+    "candidate": {
+      "commit": "8d83af9a09bf252fe52b6de39272ac28fbefbbc3",
+      "tree": "cc3c3c96ce10e23a8cc351990565a3a19c712f5a"
+    },
+    "maps": [
+      {
+        "module": "knowledge.graph",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
+          "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+        },
+        "observedAtHead": {
+          "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
+          "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+        },
+        "sourceObjectCount": 70,
+        "checkedPathCount": 70
+      },
+      {
+        "module": "cognitive.store",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 19,
+        "checkedPathCount": 19
+      },
+      {
+        "module": "prompt.optimizer",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 0,
+        "checkedPathCount": 4
+      },
+      {
+        "module": "prompt.registry",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 0,
+        "checkedPathCount": 4
+      },
+      {
+        "module": "runtime.agentd",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
+          "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 16,
+        "checkedPathCount": 16
+      }
+    ],
+    "allFivePassed": true,
+    "scope": "source_identity_only_not_execution_or_qualification"
+  },
+  "finalDocumentationAndGlobalSourceChecks": {
+    "candidate": {
+      "commit": "ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f",
+      "tree": "c731cbba7d07844d5cc1aa268d639f4dddc15441"
+    },
+    "records": [
+      {
+        "command": [
+          "python",
+          "scripts/hepta-module-docs.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exitCode": 0,
+        "logSha256": "20a30d086a352bbc32bf2991e1a30f2ab5dbb521a9e30513ee9e95025523999a",
+        "result": {
+          "authorityGranted": false,
+          "historicalEvidenceRevalidated": false,
+          "modules": 40,
+          "productExecutionProved": false,
+          "sourceBindings": 40,
+          "status": "PASS_HEPTA_MODULE_DOCS_CLOSED_WORLD",
+          "technicalDocuments": 40,
+          "validationScope": "registry_ownership_paths_and_document_navigation",
+          "verificationProfile": "development"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-dossiers.py",
+          "verify"
+        ],
+        "exitCode": 0,
+        "logSha256": "e7987ea98babb939e930c4d58a35897ebb4b17edb2b1d333157f923c93676b2a",
+        "result": {
+          "authorityGranted": false,
+          "documentationGapsClosed": 12,
+          "externalGatesRetained": 9,
+          "faultProfiles": 7,
+          "lanes": 7,
+          "modules": 40,
+          "organs": 24,
+          "performanceProfiles": 8,
+          "receiptFields": 18,
+          "runtimeCompositionClaimed": false,
+          "status": "PASS_HEPTA_MODULE_EXECUTION_DOSSIERS"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-maps.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exitCode": 0,
+        "logSha256": "e0ecc8a5ee26e4ad25685a0c22d2aeaac7985c655841b1a027782b8c479aed40",
+        "result": {
+          "candidateBoundMaps": 0,
+          "candidateSource": {
+            "commit": "ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f",
+            "tree": "c731cbba7d07844d5cc1aa268d639f4dddc15441"
+          },
+          "currentSourceIdentityRequired": false,
+          "exactObservedFallbackMaps": 39,
+          "historicalEvidenceRevalidated": false,
+          "legacyProvenanceOnlyMaps": [],
+          "maps": 40,
+          "modules": 40,
+          "productionImplementationProved": false,
+          "provenanceAnchoredExactBlobMaps": 1,
+          "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+          "sourceObservationCount": 7,
+          "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
+          "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
+          "verificationProfile": "development"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-maps.py",
+          "verify",
+          "--profile",
+          "qualification"
+        ],
+        "exitCode": 1,
+        "logSha256": "0e4a4e2b925f70b6f5705230e20349fa1712baa9947db5402a4a853b7322fb86",
+        "failures": [
+          "platform.types: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "kernel.operations: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "runtime.supervisor: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "runtime.codex: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "inference.control: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', 'e8e81b7d541a81e75635cc1c0a713edaedb999d5']' returned non-zero exit status 128.",
+          "objective.compiler: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', 'e8e81b7d541a81e75635cc1c0a713edaedb999d5']' returned non-zero exit status 128.",
+          "utility.ndu: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "intelligence.control: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "cognitive.read: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "memory.retrieval: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "memory.federation: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "learning.ledger: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', 'e8e81b7d541a81e75635cc1c0a713edaedb999d5']' returned non-zero exit status 128.",
+          "learning.operator: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "learning.artifacts: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', 'e8e81b7d541a81e75635cc1c0a713edaedb999d5']' returned non-zero exit status 128.",
+          "learning.plasticity: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "automation.taskflow: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "channel.matrix: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'merge-base', '--is-ancestor', '331b81d385a88837e252bd80fda8b8ac35ea4191', 'ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f']' returned non-zero exit status 1.",
+          "ui.control: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'merge-base', '--is-ancestor', '331b81d385a88837e252bd80fda8b8ac35ea4191', 'ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f']' returned non-zero exit status 1.",
+          "ui.native: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'merge-base', '--is-ancestor', '331b81d385a88837e252bd80fda8b8ac35ea4191', 'ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f']' returned non-zero exit status 1.",
+          "control.runtime: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', '8914a46dfc5984532f03dd2d559bf547ca4f1e69']' returned non-zero exit status 128.",
+          "control.engineering: Command '['git', '--literal-pathspecs', '-c', 'core.fsmonitor=false', 'cat-file', '-t', 'e8e81b7d541a81e75635cc1c0a713edaedb999d5']' returned non-zero exit status 128."
+        ],
+        "failureCount": 21,
+        "attribution": "unchanged_other_owner_source_anchor_baseline; not_refreshed_as_part_of_this_audit"
+      }
+    ],
+    "claim": "navigation_and_source_identity_only_not_product_or_release_qualification"
+  },
+  "freshCiObservation": {
+    "observedHead": "a89e97a1b9c4b2b0ceaff16e55d2e41302926f5e",
+    "runs": {
+      "blocking": 36890948343,
+      "architecture": 36890947819,
+      "v8": 36890947959
+    },
+    "snapshotOnly": true,
+    "notFinalRepairedHeadQualification": true,
+    "formatFailure": {
+      "rust": {
+        "path": "codex-rs/hepta-agentd/src/runtime_executable.rs",
+        "status": "repaired_in_component_observation_b3b14c",
+        "repoJob": {
+          "jobId": 110466350461,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36890948343/job/110466350461",
+          "logSha256": "e53d4551c7fde83d27020cfc660a2c1e677527eae619c9239dd0f7ca8164155b"
+        }
+      },
+      "python": {
+        "status": "unchanged_main_baseline",
+        "checkedHead": "a89e97a1b9c4b2b0ceaff16e55d2e41302926f5e",
+        "checkedMain": "997e7beef8151160065df36b024bc8da5c989e93",
+        "allListedPathsHaveIdenticalGitBlob": true,
+        "paths": [
+          ".github/scripts/check_ci_results.py",
+          ".github/scripts/hepta_final_materializer.py",
+          ".github/scripts/llvm_header_parser_smoke.py",
+          ".github/scripts/macos-signing/notarize_with_akv.py",
+          ".github/scripts/macos-signing/test_notarize_with_akv.py",
+          ".github/scripts/run_bazel_with_buildbuddy.py",
+          ".github/scripts/test_llvm_header_parser_smoke.py",
+          ".github/scripts/test_run_bazel_ci.py",
+          ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+          ".github/scripts/test_run_bazel_windows_fallback.py",
+          ".github/scripts/test_rusty_v8_bazel.py",
+          ".github/scripts/v8_canary_changes.py",
+          ".github/scripts/verify_tui_core_boundary.py",
+          "scripts/hepta-readiness.py",
+          "scripts/hepta_ci_candidate.py",
+          "scripts/hepta_ci_scope.py",
+          "scripts/hepta_integration_diagnostics.py",
+          "scripts/hepta_ledger_scale.py",
+          "scripts/hepta_main_protection.py",
+          "scripts/hepta_workflow_commands.py",
+          "scripts/test_hepta_ci_cargo_entrypoints.py",
+          "scripts/test_hepta_ci_dependency_scaling.py",
+          "scripts/test_hepta_ci_exec_deadline.py",
+          "scripts/test_hepta_ci_module_inputs.py",
+          "scripts/test_hepta_ci_nested_inputs.py",
+          "scripts/test_hepta_ci_opaque_inputs.py",
+          "scripts/test_hepta_ci_owner_transitions.py",
+          "scripts/test_hepta_ci_scope_roots.py",
+          "scripts/test_hepta_cleanup_consumers.py",
+          "scripts/test_hepta_document_inventory.py",
+          "scripts/test_hepta_implementation_git_environment.py",
+          "scripts/test_hepta_implementation_identity.py",
+          "scripts/test_hepta_implementation_maps.py",
+          "scripts/test_hepta_integration_feedback.py",
+          "scripts/test_hepta_ledger_scale.py",
+          "scripts/test_hepta_main_protection.py",
+          "scripts/test_hepta_main_protection_freshness.py",
+          "scripts/test_hepta_module_projection_membership.py",
+          "scripts/test_hepta_preflight_logging.py",
+          "scripts/test_hepta_readiness_semantics.py",
+          "scripts/test_hepta_repository_controls.py",
+          "scripts/test_hepta_rust_ci_feedback.py",
+          "scripts/test_hepta_workflow_commands.py",
+          "scripts/test_hepta_workspace.py",
+          "scripts/test_hepta_workspace_inheritance.py",
+          "scripts/test_hepta_workspace_ownership.py",
+          "scripts/test_verify_cargo_lock.py",
+          "scripts/tests/test_hepta_ci_candidate.py",
+          "scripts/tests/test_hepta_ci_dependencies.py",
+          "scripts/tests/test_hepta_ci_scope.py",
+          "scripts/tests/test_hepta_repository_controls.py"
+        ]
+      }
+    },
+    "pythonSdkFailure": {
+      "jobId": 110466350527,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36890948343/job/110466350527",
+      "logSha256": "150a8427ce1671b507532d8a64ea290ebed8bc840a476ea56169a5aa044984d4",
+      "passed": 127,
+      "failed": 4,
+      "skipped": 38,
+      "attribution": "Unchanged root formatter assertions and python:3.12-slim container lacking git; relevant formatter, tests, workflow and dependency configuration equal reviewed main.",
+      "kgBehaviorClaim": false
+    },
+    "windowsBazelClippy": {
+      "jobId": 110466351453,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36890948343/job/110466351453",
+      "logSha256": "06c4b2cab38bd0bcc5152e1283bc6a6008452c27e21850b1cbd158558d240ec8",
+      "phase": "analysis_wrapper_before_any_compilation_result",
+      "error": "/usr/bin/env: 'python3': Argument list too long",
+      "claim": "No Rust clippy action failure is evidenced by this job."
+    },
+    "remainingNativeJobs": "in_progress_at_observation; no complete HEAD_or_merge_qualification_claim"
+  },
+  "priorSourceIdentityBeforeCiFormatRepair": {
+    "candidate": {
+      "commit": "ca4f672c81e30aeaa8a89cdd267b40f0cae9fb4f",
+      "tree": "c731cbba7d07844d5cc1aa268d639f4dddc15441"
+    },
+    "maps": [
+      {
+        "module": "knowledge.graph",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "sourceObjectCount": 70,
+        "checkedPathCount": 70
+      },
+      {
+        "module": "cognitive.store",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 19,
+        "checkedPathCount": 19
+      },
+      {
+        "module": "prompt.optimizer",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 0,
+        "checkedPathCount": 4
+      },
+      {
+        "module": "prompt.registry",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 0,
+        "checkedPathCount": 4
+      },
+      {
+        "module": "runtime.agentd",
+        "passed": true,
+        "mode": "path_only",
+        "sourceBase": {
+          "commit": "b37f823ee99e164ec22e1a230a8cf28459b43a0c",
+          "tree": "575b31e73b0553ac8386b0e9a64f9f35472e0888"
+        },
+        "observedAtHead": null,
+        "sourceObjectCount": 16,
+        "checkedPathCount": 16
+      }
+    ],
+    "allFivePassed": true,
+    "scope": "source_identity_only_not_execution_or_qualification"
+  },
+  "postCiFormatDocumentationChecks": {
+    "candidate": {
+      "commit": "8d83af9a09bf252fe52b6de39272ac28fbefbbc3",
+      "tree": "cc3c3c96ce10e23a8cc351990565a3a19c712f5a"
+    },
+    "records": [
+      {
+        "command": [
+          "python",
+          "scripts/hepta-module-docs.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exitCode": 0,
+        "result": {
+          "authorityGranted": false,
+          "historicalEvidenceRevalidated": false,
+          "modules": 40,
+          "productExecutionProved": false,
+          "sourceBindings": 40,
+          "status": "PASS_HEPTA_MODULE_DOCS_CLOSED_WORLD",
+          "technicalDocuments": 40,
+          "validationScope": "registry_ownership_paths_and_document_navigation",
+          "verificationProfile": "development"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-dossiers.py",
+          "verify"
+        ],
+        "exitCode": 0,
+        "result": {
+          "authorityGranted": false,
+          "documentationGapsClosed": 12,
+          "externalGatesRetained": 9,
+          "faultProfiles": 7,
+          "lanes": 7,
+          "modules": 40,
+          "organs": 24,
+          "performanceProfiles": 8,
+          "receiptFields": 18,
+          "runtimeCompositionClaimed": false,
+          "status": "PASS_HEPTA_MODULE_EXECUTION_DOSSIERS"
+        }
+      },
+      {
+        "command": [
+          "python",
+          "scripts/hepta-implementation-maps.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exitCode": 0,
+        "result": {
+          "candidateBoundMaps": 0,
+          "candidateSource": {
+            "commit": "8d83af9a09bf252fe52b6de39272ac28fbefbbc3",
+            "tree": "cc3c3c96ce10e23a8cc351990565a3a19c712f5a"
+          },
+          "currentSourceIdentityRequired": false,
+          "exactObservedFallbackMaps": 39,
+          "historicalEvidenceRevalidated": false,
+          "legacyProvenanceOnlyMaps": [],
+          "maps": 40,
+          "modules": 40,
+          "productionImplementationProved": false,
+          "provenanceAnchoredExactBlobMaps": 1,
+          "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+          "sourceObservationCount": 8,
+          "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
+          "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
+          "verificationProfile": "development"
+        }
+      }
+    ]
+  }
+}

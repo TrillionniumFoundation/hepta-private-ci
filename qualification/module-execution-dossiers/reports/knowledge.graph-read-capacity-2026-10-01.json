@@ -1,0 +1,36 @@
+{
+  "algorithm": "revision_facts_v1_immutable_generation_query_cache",
+  "claim": "read_and_reopen_measurements_only_not_full_write_capacity_completion",
+  "existingFleetRoot": "/tmp/.tmp5hHDNf/fleet",
+  "ownerAgentId": "00000000-0000-4000-8000-0000000000b9",
+  "queryNs": {
+    "p50": 5482285356,
+    "p95": 5744929233,
+    "p99": 5744929233
+  },
+  "querySamples": 20,
+  "reopenNs": {
+    "p50": 14173021219,
+    "p95": 15982671923,
+    "p99": 15982671923
+  },
+  "reopenSamples": 5,
+  "schema": "hepta.knowledge-graph-read-capacity.v1",
+  "sourceCut": {
+    "generation": 256,
+    "generationSha256": "5291173fddf3e9ce3d6b2725f6c482b59e385de6fa597fca2e3ceff1f60492f3",
+    "generationVectorSha256": "43e83803ef2093592eedd3da44183fbd40cb8d57feae83679842a52491d84c4f",
+    "graphProfileSha256": "ae5dccffabe45f0870ed063d3d2473a59877c03e6e3975d5402deb9996faf78e",
+    "heads": 256,
+    "inputHeadsSha256": "f9dcf2c315007fbe1522a71b1007eec91dae873d9815a4b9cca677b048bddd40",
+    "physicalEdges": 32768,
+    "physicalNodes": 4096,
+    "physicalOutputSha256": "71d00a9a22351f4416fc0f1801c0090c304931cc64bd16da0c0dc54f3bc71028",
+    "publicationSha256": "900affbeec6e6fc49f9faeafd9bc1d1dbb6df7f78c981d61e5fb92708e3056b9",
+    "sourceSnapshotSha256": "f9dcf2c315007fbe1522a71b1007eec91dae873d9815a4b9cca677b048bddd40"
+  },
+  "storage": {
+    "databaseBytes": 53215232,
+    "walBytes": 6451952
+  }
+}

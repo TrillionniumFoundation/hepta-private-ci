@@ -15,6 +15,7 @@ use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
 use crate::SourceDraft;
+use crate::cognitive_intelligence_writer::REVISION_FACT_VERIFICATION_PAGE;
 use crate::cognitive_intelligence_writer::canonical_entity_id;
 use crate::cognitive_kg_store::MAX_PROJECTION_SCOPES;
 use crate::cognitive_test_support::agent_id;
@@ -63,6 +64,177 @@ fn facts(first_label: &str, second_key: &str) -> KgFactSetDraft {
             to_entity_key: second_key.to_string(),
             relation: "contributes_to".to_string(),
         }],
+    }
+}
+
+#[tokio::test]
+async fn paged_fact_verification_checks_old_revisions_beyond_the_first_page() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(84);
+    let owner_layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&owner_layout).await.expect("store");
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let content = "Ada supports the retained historical project.";
+    let fact_set = facts("Ada Lovelace", "retained-project");
+    let first = store
+        .remember_with_kg(
+            &access,
+            &source("historical-source-1", content),
+            &MemoryDraft {
+                stable_key: "retained-history".to_string(),
+                revision: revision(content),
+            },
+            &fact_set,
+        )
+        .await
+        .expect("first revision");
+    let revision_count =
+        u64::try_from(REVISION_FACT_VERIFICATION_PAGE + 3).expect("bounded multi-page fixture");
+    for expected_revision in 1..revision_count {
+        store
+            .correct_with_kg(
+                &access,
+                &first.memory.id.memory_id,
+                expected_revision,
+                &source(
+                    &format!("historical-source-{}", expected_revision + 1),
+                    content,
+                ),
+                &revision(content),
+                &fact_set,
+            )
+            .await
+            .expect("retained correction");
+    }
+    store.pool.close().await;
+    drop(store);
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("all clean historical verification pages reopen on one connection");
+    let entity_trigger: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema WHERE name = 'kg_revision_entities_no_update'",
+    )
+    .fetch_one(&reopened.pool)
+    .await
+    .expect("entity trigger SQL");
+    let mut connection = reopened.pool.acquire().await.expect("tamper connection");
+    sqlx::query("DROP TRIGGER kg_revision_entities_no_update")
+        .execute(&mut *connection)
+        .await
+        .expect("drop entity trigger");
+    sqlx::query(
+        "UPDATE kg_revision_entities SET label = label || ' tampered'
+         WHERE memory_id = ? AND memory_revision = ? AND entity_key = 'ada'",
+    )
+    .bind(first.memory.id.memory_id.as_str())
+    .bind(REVISION_FACT_VERIFICATION_PAGE + 1)
+    .execute(&mut *connection)
+    .await
+    .expect("tamper a historical revision beyond page one and before current/predecessor");
+    sqlx::query(sqlx::AssertSqlSafe(entity_trigger.as_str()))
+        .execute(&mut *connection)
+        .await
+        .expect("restore exact entity trigger");
+    drop(connection);
+    reopened.pool.close().await;
+    drop(reopened);
+    let error = match CognitiveStore::open(&owner_layout).await {
+        Ok(_) => panic!("tampered historical fact beyond the first page must fail reopen"),
+        Err(error) => error,
+    };
+    assert!(matches!(
+        error,
+        CognitiveStoreError::Corrupt(message)
+            if message == "KG fact-set digest failed canonical recomputation"
+    ));
+}
+
+#[tokio::test]
+async fn reopen_rejects_narrowed_historical_fact_validity_after_restoring_triggers() {
+    for relation in [false, true] {
+        let temp = TempDir::new().expect("temp dir");
+        let owner = agent_id(85);
+        let owner_layout = layout(&temp, &owner);
+        let store = CognitiveStore::open(&owner_layout).await.expect("store");
+        let access = CognitiveAccess::agent_private(owner);
+        let content = "Ada supports a retained historical interval.";
+        let fact_set = facts("Ada Lovelace", "historical-interval");
+        let first = store
+            .remember_with_kg(
+                &access,
+                &source("interval-source-1", content),
+                &MemoryDraft {
+                    stable_key: "historical-interval".to_string(),
+                    revision: revision(content),
+                },
+                &fact_set,
+            )
+            .await
+            .expect("first revision");
+        for expected_revision in 1..4 {
+            store
+                .correct_with_kg(
+                    &access,
+                    &first.memory.id.memory_id,
+                    expected_revision,
+                    &source(
+                        &format!("interval-source-{}", expected_revision + 1),
+                        content,
+                    ),
+                    &revision(content),
+                    &fact_set,
+                )
+                .await
+                .expect("retained correction");
+        }
+        store.pool.close().await;
+        drop(store);
+        let reopened = CognitiveStore::open(&owner_layout)
+            .await
+            .expect("legitimate exact fact intervals reopen");
+        let (trigger_name, drop_trigger, update_fact) = if relation {
+            (
+                "kg_revision_relations_no_update",
+                "DROP TRIGGER kg_revision_relations_no_update",
+                "UPDATE kg_revision_relations SET valid_to_unix_seconds = 200
+                 WHERE memory_id = ? AND memory_revision = 2",
+            )
+        } else {
+            (
+                "kg_revision_entities_no_update",
+                "DROP TRIGGER kg_revision_entities_no_update",
+                "UPDATE kg_revision_entities SET valid_from_unix_seconds = 101
+                 WHERE memory_id = ? AND memory_revision = 2",
+            )
+        };
+        let trigger_sql: String =
+            sqlx::query_scalar("SELECT sql FROM sqlite_schema WHERE name = ?")
+                .bind(trigger_name)
+                .fetch_one(&reopened.pool)
+                .await
+                .expect("original fact immutability trigger SQL");
+        let mut connection = reopened.pool.acquire().await.expect("tamper connection");
+        sqlx::query(sqlx::AssertSqlSafe(drop_trigger))
+            .execute(&mut *connection)
+            .await
+            .expect("drop fact immutability trigger");
+        sqlx::query(sqlx::AssertSqlSafe(update_fact))
+            .bind(first.memory.id.memory_id.as_str())
+            .execute(&mut *connection)
+            .await
+            .expect("narrow revision two before current four and predecessor three");
+        sqlx::query(sqlx::AssertSqlSafe(trigger_sql.as_str()))
+            .execute(&mut *connection)
+            .await
+            .expect("restore the exact original fact immutability trigger");
+        drop(connection);
+        reopened.pool.close().await;
+        drop(reopened);
+        assert!(matches!(
+            CognitiveStore::open(&owner_layout).await,
+            Err(CognitiveStoreError::Corrupt(message))
+                if message == "KG fact validity does not match its immutable memory revision"
+        ));
     }
 }
 
@@ -659,6 +831,65 @@ async fn reopen_rejects_same_name_permissive_trigger_and_fts_count_tampering() {
 }
 
 #[tokio::test]
+async fn historical_verification_preflights_stored_identifier_bytes() {
+    for source_id in [true, false] {
+        let temp = TempDir::new().expect("temp dir");
+        let owner = agent_id(86);
+        let owner_layout = layout(&temp, &owner);
+        let store = seeded_store(&temp, &owner).await;
+        let insert = if source_id {
+            "INSERT INTO source_ledger (
+                 source_id, source_revision, owner_agent_id, scope_kind,
+                 workspace_sha256, source_kind, content, content_sha256,
+                 observed_at_unix_seconds, recorded_at_unix_seconds
+             ) SELECT ?, source_revision, owner_agent_id, scope_kind,
+                 workspace_sha256, source_kind, content, content_sha256,
+                 observed_at_unix_seconds, recorded_at_unix_seconds
+               FROM source_ledger LIMIT 1"
+        } else {
+            "INSERT INTO memory_revisions (
+                 memory_id, revision, owner_agent_id, scope_kind,
+                 workspace_sha256, content, content_sha256, verification,
+                 lifecycle, tombstone_reason, valid_from_unix_seconds,
+                 valid_to_unix_seconds, supersedes_revision, recorded_at_unix_seconds
+             ) SELECT ?, revision, owner_agent_id, scope_kind,
+                 workspace_sha256, content, content_sha256, verification,
+                 lifecycle, tombstone_reason, valid_from_unix_seconds,
+                 valid_to_unix_seconds, supersedes_revision, recorded_at_unix_seconds
+               FROM memory_revisions WHERE revision = 1 LIMIT 1"
+        };
+        sqlx::query(sqlx::AssertSqlSafe(insert))
+            .bind("x".repeat(128))
+            .execute(&store.pool)
+            .await
+            .expect("bounded legacy or adapter identifier remains permitted");
+        crate::cognitive_intelligence_writer::verify_revision_fact_digests(&store.pool, &owner)
+            .await
+            .expect("128-byte compatibility ceiling remains accepted");
+        // 43 Unicode scalars occupy 129 UTF-8 bytes: character length cannot
+        // enforce the allocation bound used by the historical verifier.
+        sqlx::query(sqlx::AssertSqlSafe(insert))
+            .bind("界".repeat(43))
+            .execute(&store.pool)
+            .await
+            .expect("malformed oversized ID is legal under the retained SQL schema");
+        assert!(matches!(
+            crate::cognitive_intelligence_writer::verify_revision_fact_digests(&store.pool, &owner)
+                .await,
+            Err(CognitiveStoreError::Corrupt(message))
+                if message == "KG source or memory identifier exceeds the stable identifier byte bound"
+        ));
+        store.pool.close().await;
+        drop(store);
+        assert!(matches!(
+            CognitiveStore::open(&owner_layout).await,
+            Err(CognitiveStoreError::Corrupt(message))
+                if message == "KG source or memory identifier exceeds the stable identifier byte bound"
+        ));
+    }
+}
+
+#[tokio::test]
 async fn reopen_rejects_fact_count_and_canonical_digest_tampering() {
     let count_temp = TempDir::new().expect("temp dir");
     let count_owner = agent_id(37);
@@ -674,7 +905,7 @@ async fn reopen_rejects_fact_count_and_canonical_digest_tampering() {
         .execute(&mut *count_connection)
         .await
         .expect("drop fact-set trigger");
-    sqlx::query("UPDATE kg_revision_fact_sets SET entity_count = entity_count + 1")
+    sqlx::query("UPDATE kg_revision_fact_sets SET entity_count = 10000")
         .execute(&mut *count_connection)
         .await
         .expect("tamper fact count");
@@ -683,6 +914,15 @@ async fn reopen_rejects_fact_count_and_canonical_digest_tampering() {
         .await
         .expect("restore exact fact-set trigger");
     drop(count_connection);
+    assert!(matches!(
+        crate::cognitive_intelligence_writer::verify_revision_fact_digests(
+            &count_store.pool,
+            &count_owner,
+        )
+        .await,
+        Err(CognitiveStoreError::Corrupt(message))
+            if message == "KG fact-set receipt exceeds the structured extraction bounds"
+    ));
     count_store.pool.close().await;
     drop(count_store);
     assert!(matches!(

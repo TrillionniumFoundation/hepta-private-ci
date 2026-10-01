@@ -14,12 +14,15 @@ use std::fmt;
 use codex_hepta_kg::KnowledgeGenerationV2;
 use codex_hepta_kg::KnowledgeRelationKindV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
+use codex_hepta_kg::PromptFactorProjectionV1;
 use codex_hepta_kg::query_relations;
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::validate_candidate_set_completeness;
+use codex_hepta_learning_ledger::verify_signed_role_separation;
 use codex_hepta_prompt_registry::PromptModelTupleV2;
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRegistry;
@@ -28,6 +31,23 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+#[path = "canonical_binding.rs"]
+mod binding;
+
+#[path = "canonical_input_binding.rs"]
+mod input_binding;
+
+use input_binding::verify_pricing_admission;
+
+#[path = "canonical_evidence.rs"]
+mod evidence;
+
+pub use evidence::PromptPairUtilityEvidenceV2;
+pub use evidence::PromptPricingEvidenceV2;
+pub use evidence::pair_utility_evidence_signing_payload_v2;
+pub use evidence::pricing_evidence_signing_payload_v2;
+use evidence::translate_pricing_confidence_bound;
 
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
@@ -63,6 +83,11 @@ pub struct EnumeratedPromptCandidatesV1 {
     pub omitted_count: u32,
     pub candidates: Vec<PromptCandidateBindingV1>,
     pub receipt: PromptCandidateSetReceiptV1,
+    // Emitted by the registry owner, retained across pricing, and unavailable
+    // to callers for rebinding a cloned enumeration to another source cut.
+    factor_graph_source_digest: Digest32,
+    issued_registry_snapshot: PromptRegistrySnapshotV2,
+    sealed_input_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -95,7 +120,10 @@ pub fn enumerate_factors_v1(
     }
     let maximum_candidates = usize::try_from(request.maximum_candidates)
         .map_err(|_| CanonicalPromptError::CandidateLimit)?;
-    if maximum_candidates == 0 || maximum_candidates > MAX_CANONICAL_PROMPT_FACTORS {
+    if maximum_candidates == 0
+        || maximum_candidates > MAX_CANONICAL_PROMPT_FACTORS
+        || request.required_factor_ids.len() > MAX_CANONICAL_PROMPT_FACTORS
+    {
         return Err(CanonicalPromptError::CandidateLimit);
     }
 
@@ -177,8 +205,8 @@ pub fn enumerate_factors_v1(
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     };
-    Ok(EnumeratedPromptCandidatesV1 {
-        registry_snapshot: snapshot,
+    let mut result = EnumeratedPromptCandidatesV1 {
+        registry_snapshot: snapshot.clone(),
         model_tuple: request.model_tuple,
         generation_vector_digest: request.generation_vector_digest,
         candidates_digest,
@@ -186,7 +214,13 @@ pub fn enumerate_factors_v1(
         omitted_count: u32::try_from(omitted).unwrap_or(u32::MAX),
         candidates,
         receipt,
-    })
+        factor_graph_source_digest: registry.factor_graph_source_v1().source_digest(),
+        issued_registry_snapshot: snapshot,
+        sealed_input_digest: Digest32::ZERO,
+    };
+    result.sealed_input_digest = result.compute_input_digest();
+    result.validate()?;
+    Ok(result)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -288,6 +322,18 @@ pub struct PricedPromptCandidatesV1 {
     pub rows: Vec<PricedPromptCandidateV1>,
     pub pricing_set_digest: Digest32,
     pub authority: AuthorityPosture,
+    sealed_input_digest: Digest32,
+    admission_trust_digest: Digest32,
+    admitted_at_unix_ms: u64,
+    admission_expires_at_unix_ms: u64,
+    admission_proofs: Vec<PromptPricingAdmissionProofV1>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct PromptPricingAdmissionProofV1 {
+    role: LearningEvidenceRoleV1,
+    evidence: SignedLearningEvidenceV1,
+    payload: Vec<u8>,
 }
 
 pub fn candidate_completeness_signing_payload_v1(
@@ -332,7 +378,7 @@ pub fn price_factors_v1(
     candidates: EnumeratedPromptCandidatesV1,
     completeness: &CandidateSetCompletenessReceiptV1,
     completeness_evidence: &SignedLearningEvidenceV1,
-    pricing_evidence: Vec<PromptPricingEvidenceV1>,
+    pricing_evidence: Vec<PromptPricingEvidenceV2>,
     verifier: &LearningEvidenceVerifierV1,
     policy: &PromptPricingPolicyV1,
     now_unix_ms: u64,
@@ -340,9 +386,13 @@ pub fn price_factors_v1(
     if now_unix_ms == 0 {
         return Err(CanonicalPromptError::InvalidTime);
     }
+    candidates.validate()?;
+    if candidates.receipt.objective_digest != verifier.objective_digest() {
+        return Err(CanonicalPromptError::ObjectiveMismatch);
+    }
     validate_candidate_binding(&candidates, completeness)?;
     let completeness_payload = candidate_completeness_signing_payload_v1(completeness)?;
-    verifier
+    let generator = verifier
         .verify(
             LearningEvidenceRoleV1::Generator,
             completeness_evidence,
@@ -350,6 +400,12 @@ pub fn price_factors_v1(
             now_unix_ms,
         )
         .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+    let mut admission_proofs = vec![PromptPricingAdmissionProofV1 {
+        role: LearningEvidenceRoleV1::Generator,
+        evidence: completeness_evidence.clone(),
+        payload: completeness_payload,
+    }];
+    let mut admission_expires_at = completeness_evidence.expires_at;
 
     let pricing_policy_digest = policy.digest()?;
     let by_factor = candidates
@@ -357,15 +413,15 @@ pub fn price_factors_v1(
         .iter()
         .map(|candidate| (candidate.factor_id.clone(), candidate))
         .collect::<BTreeMap<_, _>>();
-    let mut evidence_rows = BTreeMap::<StableId, PromptPricingEvidenceV1>::new();
+    let mut evidence_rows = BTreeMap::<StableId, PromptPricingEvidenceV2>::new();
     for evidence in pricing_evidence {
-        if !by_factor.contains_key(&evidence.factor_id) {
+        if !by_factor.contains_key(&evidence.pricing.factor_id) {
             return Err(CanonicalPromptError::UnknownFactor(
-                evidence.factor_id.to_string(),
+                evidence.pricing.factor_id.to_string(),
             ));
         }
         if evidence_rows
-            .insert(evidence.factor_id.clone(), evidence)
+            .insert(evidence.pricing.factor_id.clone(), evidence)
             .is_some()
         {
             return Err(CanonicalPromptError::DuplicatePricingEvidence);
@@ -377,9 +433,17 @@ pub fn price_factors_v1(
         let evidence = evidence_rows.remove(&candidate.factor_id).ok_or_else(|| {
             CanonicalPromptError::MissingPricingEvidence(candidate.factor_id.to_string())
         })?;
+        if evidence.candidate_set_digest != candidates.receipt.receipt_digest
+            || evidence.binding_digest != candidate.binding_digest
+        {
+            return Err(CanonicalPromptError::InvalidPricingEvidence(
+                candidate.factor_id.to_string(),
+            ));
+        }
+        let payload = pricing_evidence_signing_payload_v2(&evidence);
+        let evidence = evidence.pricing;
         validate_pricing_evidence(&candidates, &evidence, policy)?;
-        let payload = pricing_evidence_signing_payload_v1(&evidence);
-        verifier
+        let evaluator = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
                 &evidence.evidence,
@@ -387,6 +451,14 @@ pub fn price_factors_v1(
                 now_unix_ms,
             )
             .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+        verify_signed_role_separation(&generator, &evaluator, now_unix_ms)
+            .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+        admission_expires_at = admission_expires_at.min(evidence.evidence.expires_at);
+        admission_proofs.push(PromptPricingAdmissionProofV1 {
+            role: LearningEvidenceRoleV1::Evaluator,
+            evidence: evidence.evidence.clone(),
+            payload,
+        });
 
         let token_cost = candidate.realization.token_cost;
         let mut net = evidence.expected_incremental_utility_q32;
@@ -415,8 +487,16 @@ pub fn price_factors_v1(
                 .map_err(|_| CanonicalPromptError::Arithmetic)?;
         }
         let confidence_interval = PromptConfidenceIntervalV1 {
-            lower_q32: evidence.confidence_lower_q32,
-            upper_q32: evidence.confidence_upper_q32,
+            lower_q32: translate_pricing_confidence_bound(
+                evidence.confidence_lower_q32,
+                evidence.expected_incremental_utility_q32,
+                net,
+            )?,
+            upper_q32: translate_pricing_confidence_bound(
+                evidence.confidence_upper_q32,
+                evidence.expected_incremental_utility_q32,
+                net,
+            )?,
             support_count: evidence.support_count,
             support_audit_digest: evidence.support_audit_digest,
         };
@@ -457,14 +537,22 @@ pub fn price_factors_v1(
     let pricing_set_digest = digest_pricing_set(&rows, pricing_policy_digest);
     let completeness_digest = validate_candidate_set_completeness(completeness)
         .map_err(|e| CanonicalPromptError::CandidateCompleteness(format!("{e:?}")))?;
-    Ok(PricedPromptCandidatesV1 {
+    let mut result = PricedPromptCandidatesV1 {
         candidates,
         completeness_digest,
         pricing_policy_digest,
         rows,
         pricing_set_digest,
         authority: AuthorityPosture::DENY_ALL,
-    })
+        sealed_input_digest: Digest32::ZERO,
+        admission_trust_digest: verifier.trust_digest(),
+        admitted_at_unix_ms: now_unix_ms,
+        admission_expires_at_unix_ms: admission_expires_at,
+        admission_proofs,
+    };
+    result.sealed_input_digest = result.compute_input_digest();
+    result.validate()?;
+    Ok(result)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -539,6 +627,9 @@ pub struct SelectedPromptPortfolioV1 {
     pub graph_generation_digest: Digest32,
     pub selection_method: PromptSelectionMethodV1,
     pub optimality: PromptOptimalityDisclosureV1,
+    registry_snapshot: PromptRegistrySnapshotV2,
+    sealed_output_digest: Digest32,
+    selected_at_unix_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -550,10 +641,13 @@ pub struct PromptPortfolioRequestV1 {
     pub requested_valid_until_unix_ms: u64,
 }
 
+/// Selects against the sealed registry-owner projection and authenticated
+/// pricing result from the exact source cut captured during enumeration.
+/// Arbitrary bare graphs cannot replace or omit the owner's relation facts.
 pub fn select_portfolio_v1(
     priced: &PricedPromptCandidatesV1,
-    graph: &KnowledgeGenerationV2,
-    pair_evidence: Vec<PromptPairUtilityEvidenceV1>,
+    factor_graph: &PromptFactorProjectionV1,
+    pair_evidence: &[PromptPairUtilityEvidenceV2],
     verifier: &LearningEvidenceVerifierV1,
     request: PromptPortfolioRequestV1,
     now_unix_ms: u64,
@@ -569,18 +663,78 @@ pub fn select_portfolio_v1(
     if now_unix_ms == 0 || request.requested_valid_until_unix_ms <= now_unix_ms {
         return Err(CanonicalPromptError::InvalidTime);
     }
-    graph
+    priced.validate()?;
+    if priced.candidates.receipt.objective_digest != verifier.objective_digest() {
+        return Err(CanonicalPromptError::ObjectiveMismatch);
+    }
+    if priced.admission_trust_digest != verifier.trust_digest() {
+        return Err(CanonicalPromptError::PricingTrustMismatch);
+    }
+    if now_unix_ms < priced.admitted_at_unix_ms {
+        return Err(CanonicalPromptError::InvalidTime);
+    }
+    if now_unix_ms > priced.admission_expires_at_unix_ms {
+        return Err(CanonicalPromptError::PricingAdmissionExpired);
+    }
+    let generator = verify_pricing_admission(&priced.admission_proofs, verifier, now_unix_ms)?;
+    factor_graph
         .validate()
         .map_err(|e| CanonicalPromptError::KnowledgeGraph(format!("{e:?}")))?;
+    let graph = factor_graph.generation();
     if graph.generation_vector_digest != priced.candidates.generation_vector_digest {
         return Err(CanonicalPromptError::GenerationVectorMismatch);
     }
+    if factor_graph.source_digest() != priced.candidates.factor_graph_source_digest
+        || factor_graph.registry_revision()
+            != priced.candidates.issued_registry_snapshot.revision.get()
+        || factor_graph.registry_snapshot_digest()
+            != priced.candidates.issued_registry_snapshot.registry_digest
+    {
+        return Err(CanonicalPromptError::GraphSourceMismatch);
+    }
 
+    select_from_validated_inputs(
+        priced,
+        graph,
+        pair_evidence,
+        verifier,
+        request,
+        now_unix_ms,
+        Some(&generator),
+    )
+}
+
+// The public entrypoint authenticates both owner-issued inputs before this
+// engine applies the relation semantics. Generic future relation semantics are
+// exercised by private algorithm fixtures until an owner can emit them.
+fn select_from_validated_inputs(
+    priced: &PricedPromptCandidatesV1,
+    graph: &KnowledgeGenerationV2,
+    pair_evidence: &[PromptPairUtilityEvidenceV2],
+    verifier: &LearningEvidenceVerifierV1,
+    request: PromptPortfolioRequestV1,
+    now_unix_ms: u64,
+    generator: Option<&VerifiedLearningEvidenceV1>,
+) -> Result<SelectedPromptPortfolioV1, CanonicalPromptError> {
+    if priced.rows.len() > MAX_CANONICAL_PROMPT_FACTORS {
+        return Err(CanonicalPromptError::CandidateLimit);
+    }
     let factor_ids = priced
         .rows
         .iter()
         .map(|row| row.binding.factor_id.clone())
         .collect::<Vec<_>>();
+    let graph_nodes = graph
+        .nodes
+        .iter()
+        .map(|node| &node.node_id)
+        .collect::<BTreeSet<_>>();
+    if let Some(missing) = factor_ids
+        .iter()
+        .find(|factor_id| !graph_nodes.contains(factor_id))
+    {
+        return Err(CanonicalPromptError::UnknownFactor(missing.to_string()));
+    }
     let relation_result = query_relations(
         graph,
         KnowledgeRelationQueryV2 {
@@ -658,14 +812,29 @@ pub fn select_portfolio_v1(
     }
     validate_requires_acyclic(&known, &requires)?;
 
+    let by_factor = priced
+        .rows
+        .iter()
+        .map(|row| (row.binding.factor_id.clone(), row))
+        .collect::<BTreeMap<_, _>>();
     let mut pair_rows = BTreeMap::<(StableId, StableId), FixedQ32>::new();
     let mut pair_evidence_digests = Vec::new();
-    for evidence in pair_evidence {
+    let mut pair_admission_proofs = Vec::new();
+    let mut admission_expires_at = priced.admission_expires_at_unix_ms;
+    for context in pair_evidence {
+        let evidence = &context.pair;
         let key = pair_key(&evidence.left_factor_id, &evidence.right_factor_id);
         let Some((validity_digest, _)) = numeric_edges.get(&key) else {
             return Err(CanonicalPromptError::UnexpectedPairEvidence);
         };
         if evidence.left_factor_id >= evidence.right_factor_id
+            || context.model_tuple_digest != priced.candidates.model_tuple.digest()
+            || by_factor
+                .get(&evidence.left_factor_id)
+                .is_none_or(|row| row.binding.binding_digest != context.left_binding_digest)
+            || by_factor
+                .get(&evidence.right_factor_id)
+                .is_none_or(|row| row.binding.binding_digest != context.right_binding_digest)
             || evidence.state_digest != priced.candidates.receipt.state_digest
             || evidence.graph_generation_digest != graph.generation_digest
             || evidence.edge_validity_digest != *validity_digest
@@ -675,7 +844,7 @@ pub fn select_portfolio_v1(
         {
             return Err(CanonicalPromptError::InvalidPairEvidence);
         }
-        let payload = pair_utility_evidence_signing_payload_v1(&evidence);
+        let payload = pair_utility_evidence_signing_payload_v2(context);
         let verified = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
@@ -685,6 +854,16 @@ pub fn select_portfolio_v1(
             )
             .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
         pair_evidence_digests.push(verified.payload_digest());
+        if let Some(generator) = generator {
+            verify_signed_role_separation(generator, &verified, now_unix_ms)
+                .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+        }
+        admission_expires_at = admission_expires_at.min(evidence.evidence.expires_at);
+        pair_admission_proofs.push(PromptPricingAdmissionProofV1 {
+            role: LearningEvidenceRoleV1::Evaluator,
+            evidence: evidence.evidence.clone(),
+            payload,
+        });
         if pair_rows
             .insert(key, evidence.marginal_utility_q32)
             .is_some()
@@ -701,11 +880,6 @@ pub fn select_portfolio_v1(
         }
     }
 
-    let by_factor = priced
-        .rows
-        .iter()
-        .map(|row| (row.binding.factor_id.clone(), row))
-        .collect::<BTreeMap<_, _>>();
     let mut selected = BTreeSet::<StableId>::new();
     loop {
         if selected.len() >= request.maximum_selected_factors {
@@ -775,7 +949,9 @@ pub fn select_portfolio_v1(
         .iter()
         .map(|row| row.factor_id.clone())
         .collect::<Vec<_>>();
-    let mut valid_until = request.requested_valid_until_unix_ms;
+    let mut valid_until = request
+        .requested_valid_until_unix_ms
+        .min(admission_expires_at);
     for binding in &selected_bindings {
         if let Some(expires) = binding.realization.expires_unix_ms {
             valid_until = valid_until.min(expires);
@@ -783,6 +959,20 @@ pub fn select_portfolio_v1(
     }
     if valid_until <= now_unix_ms {
         return Err(CanonicalPromptError::PortfolioExpired);
+    }
+    if generator.is_some() {
+        let last_valid_at = valid_until
+            .checked_sub(1)
+            .ok_or(CanonicalPromptError::InvalidTime)?;
+        let generator =
+            verify_pricing_admission(&priced.admission_proofs, verifier, last_valid_at)?;
+        for proof in pair_admission_proofs {
+            let evaluator = verifier
+                .verify(proof.role, &proof.evidence, &proof.payload, last_valid_at)
+                .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+            verify_signed_role_separation(&generator, &evaluator, last_valid_at)
+                .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+        }
     }
     pair_evidence_digests.sort();
     let interaction_digest = digest_interactions(
@@ -802,7 +992,7 @@ pub fn select_portfolio_v1(
         priced.pricing_set_digest,
         graph.generation_digest,
     );
-    Ok(SelectedPromptPortfolioV1 {
+    let mut selected_portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
             candidate_set_digest: priced.candidates.candidates_digest,
@@ -824,7 +1014,13 @@ pub fn select_portfolio_v1(
         graph_generation_digest: graph.generation_digest,
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    })
+        registry_snapshot: priced.candidates.issued_registry_snapshot.clone(),
+        sealed_output_digest: Digest32::ZERO,
+        selected_at_unix_ms: now_unix_ms,
+    };
+    selected_portfolio.sealed_output_digest = selected_portfolio.compute_output_digest();
+    selected_portfolio.validate()?;
+    Ok(selected_portfolio)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -878,6 +1074,7 @@ pub fn exercise_v1(
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptExerciseRequestV1,
 ) -> Result<PromptExerciseDecisionV1, CanonicalPromptError> {
+    portfolio.validate()?;
     for (name, digest) in [
         ("current_state", request.current_state_digest),
         ("generation_vector", request.generation_vector_digest),
@@ -891,7 +1088,8 @@ pub fn exercise_v1(
 
     let mut decision = if portfolio.selected.is_empty() {
         PromptExerciseActionV1::NoIntervention
-    } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
+    } else if request.now_unix_ms < portfolio.selected_at_unix_ms
+        || request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
         || request.current_state_digest != portfolio.state_digest
         || request.generation_vector_digest != portfolio.generation_vector_digest
         || request.model_tuple != portfolio.model_tuple
@@ -916,6 +1114,9 @@ pub fn exercise_v1(
             MAX_CANONICAL_PROMPT_FACTORS as u32,
         );
         match current {
+            _ if current_snapshot != portfolio.registry_snapshot => {
+                PromptExerciseActionV1::RejectStale
+            }
             Err(_) => PromptExerciseActionV1::RejectStale,
             Ok(set) => {
                 let current_by_realization = set
@@ -1363,6 +1564,14 @@ pub enum CanonicalPromptError {
     UnknownFactor(String),
     KnowledgeGraph(String),
     GenerationVectorMismatch,
+    GraphSourceMismatch,
+    CandidateOwnerBindingMismatch,
+    CandidateBindingMismatch,
+    PricingBindingMismatch,
+    ObjectiveMismatch,
+    PricingTrustMismatch,
+    PricingAdmissionExpired,
+    PortfolioBindingMismatch,
     InteractionProjectionIncomplete(u32),
     RequiredFactorUnavailable(String),
     DuplicateInteraction,
@@ -1386,3 +1595,11 @@ impl StdError for CanonicalPromptError {}
 #[cfg(test)]
 #[path = "canonical_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "canonical_adversarial_tests.rs"]
+mod adversarial_tests;
+
+#[cfg(test)]
+#[path = "canonical_evidence_tests.rs"]
+mod evidence_tests;

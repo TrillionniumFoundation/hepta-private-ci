@@ -29,6 +29,7 @@ pub struct GraphBoundPromptPortfolioReceipt {
     pub observed_conflict_count: u32,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
+    sealed_binding_digest: Digest32,
 }
 
 impl GraphBoundPromptPortfolioReceipt {
@@ -46,7 +47,10 @@ impl GraphBoundPromptPortfolioReceipt {
         Digest32::of_bytes(&bytes)
     }
 
+    /// Checks the optimizer-owned portfolio and its original graph binding.
+    /// A valid standalone portfolio cannot replace the graph-constrained result.
     pub fn validate(&self) -> Result<(), Error> {
+        self.portfolio.validate()?;
         let typed_relation_count = u64::from(self.observed_complement_count)
             + u64::from(self.observed_substitute_count)
             + u64::from(self.observed_conflict_count);
@@ -55,6 +59,7 @@ impl GraphBoundPromptPortfolioReceipt {
             || self.relation_result_digest.is_zero()
             || typed_relation_count != u64::from(self.observed_relation_count)
             || self.receipt_digest != self.compute_receipt_digest()
+            || self.receipt_digest != self.sealed_binding_digest
             || self.authority.grants_any()
         {
             return Err(Error::FactorGraph(
@@ -69,6 +74,7 @@ pub fn optimize_with_factor_graph(
     request: OptimizationRequest,
     factor_graph: &PromptFactorProjectionV1,
 ) -> Result<GraphBoundPromptPortfolioReceipt, Error> {
+    crate::validate_request(&request)?;
     factor_graph
         .validate()
         .map_err(|error| Error::FactorGraph(format!("invalid factor graph: {error}")))?;
@@ -172,8 +178,14 @@ pub fn optimize_with_factor_graph(
         observed_conflict_count: conflict_count,
         receipt_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
+        sealed_binding_digest: Digest32::ZERO,
     };
     result.receipt_digest = result.compute_receipt_digest();
+    result.sealed_binding_digest = result.receipt_digest;
     result.validate()?;
     Ok(result)
 }
+
+#[cfg(test)]
+#[path = "graph_tests.rs"]
+mod tests;

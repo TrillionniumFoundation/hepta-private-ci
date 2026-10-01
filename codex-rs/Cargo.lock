@@ -3483,6 +3483,7 @@ dependencies = [
  "codex-hepta-intelligence",
  "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
+ "codex-hepta-kg",
  "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-memory",
@@ -3786,6 +3787,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
+ "codex-hepta-kg",
  "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-ndu",
@@ -3821,8 +3823,11 @@ dependencies = [
 name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-prompt-registry",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "tempfile",
 ]
 
 [[package]]

@@ -3,9 +3,9 @@ use std::collections::BTreeSet;
 use std::future::Future;
 
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_kg::KnowledgeGenerationV2;
+use codex_hepta_kg::KnowledgeRelationKindV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
-use codex_hepta_kg::query_relations;
+use codex_hepta_kg::ValidatedKnowledgeGenerationV2;
 use codex_hepta_types::StableId;
 use serde::Serialize;
 use sqlx::Row;
@@ -26,8 +26,7 @@ use crate::MemoryVerification;
 use crate::ProjectionGeneration;
 use crate::SourceRevisionId;
 use crate::StableMemoryId;
-use crate::cognitive_kg_store::load_canonical_generation_tx;
-use crate::cognitive_kg_store::load_compact_edge_support_index_tx;
+use crate::cognitive_kg_store::load_generation_query_cut_tx;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 
@@ -45,8 +44,34 @@ pub const MAX_RETRIEVAL_RESULTS: usize = 4;
 pub(crate) const MAX_RETRIEVAL_OWNER_CHANNELS: usize = 7;
 
 // Scratch space for one SQLite read transaction, never shared across requests.
-// Each selected scope/generation is materialized once across relation channels.
-type RetrievalGenerations = BTreeMap<(String, i64), KnowledgeGenerationV2>;
+// Each selected scope/generation, relation inventory and physical support index
+// are materialized once across seeds and relation channels. The sealed value
+// proves immutable graph consistency, not source authentication: every seed
+// still requires the persisted generation-digest fence below.
+type RetrievalGenerations = BTreeMap<(String, i64), RetrievalGeneration>;
+
+struct RetrievalGeneration {
+    canonical: ValidatedKnowledgeGenerationV2,
+    relation_kinds: BTreeSet<KnowledgeRelationKindV2>,
+    compact_supports: Option<BTreeMap<String, (String, i64)>>,
+}
+
+#[derive(Clone, Copy)]
+enum RetrievalScopes {
+    Accessible,
+    ExactAgentPrivate,
+    ExactWorkspacePrivate,
+}
+
+impl RetrievalScopes {
+    fn exact_scope_kind(self) -> Option<&'static str> {
+        match self {
+            Self::Accessible => None,
+            Self::ExactAgentPrivate => Some("agent_private"),
+            Self::ExactWorkspacePrivate => Some("workspace_private"),
+        }
+    }
+}
 
 const RRF_K: u64 = 60;
 const RRF_SCALE: u64 = 1_000_000;
@@ -323,7 +348,13 @@ impl CognitiveStore {
         let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let batch = self
-            .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query)
+            .retrieve_memory_candidates_tx(
+                &mut transaction,
+                access,
+                request,
+                &fts_query,
+                RetrievalScopes::Accessible,
+            )
             .await?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(batch)
@@ -331,7 +362,9 @@ impl CognitiveStore {
 
     /// Retrieves one exact scope and its memory frontier from the same SQLite
     /// read snapshot. Federation receipts use this owner data frontier rather
-    /// than substituting a capability revision for memory state.
+    /// than substituting a capability revision for memory state. The scope is
+    /// selected before channel limits and ranking, so other authorized scopes
+    /// cannot consume this scope's bounded candidate budget.
     pub(crate) async fn retrieve_memory_candidates_for_scope(
         &self,
         access: &CognitiveAccess,
@@ -341,12 +374,13 @@ impl CognitiveStore {
         self.authorize(access, scope)?;
         let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let mut batch = self
-            .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query)
+        let scopes = match scope {
+            CognitiveScope::AgentPrivate => RetrievalScopes::ExactAgentPrivate,
+            CognitiveScope::WorkspacePrivate { .. } => RetrievalScopes::ExactWorkspacePrivate,
+        };
+        let batch = self
+            .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query, scopes)
             .await?;
-        batch
-            .candidates
-            .retain(|candidate| candidate.memory.scope == *scope);
 
         let (scope_kind, workspace_sha256) = scope.database_parts();
         let memory_frontier: i64 = sqlx::query_scalar(
@@ -374,9 +408,10 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         request: &RetrievalRequest,
         fts_query: &str,
+        scopes: RetrievalScopes,
     ) -> Result<RetrievalBatch, CognitiveStoreError> {
         let generated = self
-            .generate_retrieval_tx(transaction, access, request, fts_query)
+            .generate_retrieval_tx(transaction, access, request, fts_query, scopes)
             .await?;
         let candidates = self
             .resolve_retrieval_tx(
@@ -599,6 +634,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         fts_query: &str,
         now: i64,
+        scopes: RetrievalScopes,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let rows = sqlx::query(
             "SELECT f.memory_id, f.revision FROM memory_fts f
@@ -607,6 +643,7 @@ impl CognitiveStore {
              WHERE memory_fts MATCH ? AND r.owner_agent_id = ?
                AND (r.scope_kind = 'agent_private' OR
                     (r.scope_kind = 'workspace_private' AND r.workspace_sha256 = ?))
+               AND r.scope_kind = COALESCE(?, r.scope_kind)
                AND r.verification = 'verified' AND r.lifecycle = 'active'
                AND r.valid_from_unix_seconds <= ?
                AND (r.valid_to_unix_seconds IS NULL OR ? < r.valid_to_unix_seconds)
@@ -615,6 +652,7 @@ impl CognitiveStore {
         .bind(fts_query)
         .bind(self.owner_agent_id.as_str())
         .bind(access.workspace_sha256().map(Sha256Digest::as_str))
+        .bind(scopes.exact_scope_kind())
         .bind(now)
         .bind(now)
         .bind(channel_limit())
@@ -635,6 +673,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         fts_query: &str,
         now: i64,
+        scopes: RetrievalScopes,
     ) -> Result<ChannelOutput<EntitySeed>, CognitiveStoreError> {
         let workspace_scope = access
             .workspace_sha256()
@@ -666,6 +705,7 @@ impl CognitiveStore {
               AND s.generation = p.generation
              WHERE kg_revision_entity_fts MATCH ?
                AND (p.projection_scope = 'agent_private' OR p.projection_scope = ?)
+               AND r.scope_kind = COALESCE(?, r.scope_kind)
                AND k.valid_from_unix_seconds <= ?
                AND (k.valid_to_unix_seconds IS NULL OR ? < k.valid_to_unix_seconds)
                AND r.owner_agent_id = ? AND r.verification = 'verified'
@@ -676,6 +716,7 @@ impl CognitiveStore {
         )
         .bind(fts_query)
         .bind(workspace_scope)
+        .bind(scopes.exact_scope_kind())
         .bind(now)
         .bind(now)
         .bind(self.owner_agent_id.as_str())
@@ -799,17 +840,39 @@ impl CognitiveStore {
 
             let generation =
                 match generations.entry((seed.projection_scope.clone(), seed.generation)) {
-                    std::collections::btree_map::Entry::Vacant(entry) => entry.insert(
-                        load_canonical_generation_tx(
+                    std::collections::btree_map::Entry::Vacant(entry) => {
+                        let (canonical, compact_supports) = load_generation_query_cut_tx(
                             transaction,
                             &seed.projection_scope,
                             seed.generation,
                         )
-                        .await?,
-                    ),
+                        .await?;
+                        let relation_kinds = canonical
+                            .edges
+                            .iter()
+                            .map(|edge| edge.identity.relation.clone())
+                            .collect();
+                        let canonical =
+                        ValidatedKnowledgeGenerationV2::new(canonical).map_err(|error| {
+                            CognitiveStoreError::Corrupt(format!(
+                                "persisted KG generation failed immutable read validation: {error}"
+                            ))
+                        })?;
+                        entry.insert(RetrievalGeneration {
+                            canonical,
+                            relation_kinds,
+                            compact_supports,
+                        })
+                    }
                     std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
                 };
-            if generation.generation_digest.to_string() != generation_sha256.as_str() {
+            if generation
+                .canonical
+                .as_generation()
+                .generation_digest
+                .to_string()
+                != generation_sha256.as_str()
+            {
                 return Err(CognitiveStoreError::Corrupt(
                     "KG product query generation digest diverged from persisted semantics"
                         .to_string(),
@@ -831,16 +894,20 @@ impl CognitiveStore {
             .map(|kind| crate::cognitive_kg_store::canonical_relation_kind(kind.relation()))
             .collect::<Result<BTreeSet<_>, _>>()?;
             let relation_kinds = match semantic {
-                Some(kind) => vec![crate::cognitive_kg_store::canonical_relation_kind(
-                    kind.relation(),
-                )?],
+                Some(kind) => {
+                    let kind = crate::cognitive_kg_store::canonical_relation_kind(kind.relation())?;
+                    // No edge of this kind exists in the immutable generation.
+                    // Skip repeated empty queries only after this seed's fence.
+                    if !generation.relation_kinds.contains(&kind) {
+                        continue;
+                    }
+                    vec![kind]
+                }
                 None => generation
-                    .edges
+                    .relation_kinds
                     .iter()
-                    .map(|edge| edge.identity.relation.clone())
-                    .filter(|kind| !typed_kinds.contains(kind))
-                    .collect::<BTreeSet<_>>()
-                    .into_iter()
+                    .filter(|kind| !typed_kinds.contains(*kind))
+                    .cloned()
                     .collect(),
             };
             // An empty KG query filter means all relations; an empty generic
@@ -848,9 +915,9 @@ impl CognitiveStore {
             if relation_kinds.is_empty() {
                 continue;
             }
-            let query_result = query_relations(
-                generation,
-                KnowledgeRelationQueryV2 {
+            let query_result = generation
+                .canonical
+                .query_relations(KnowledgeRelationQueryV2 {
                     query_id: StableId::new("query:cognitive-retrieval-graph-v2").map_err(
                         |error| {
                             CognitiveStoreError::Corrupt(format!(
@@ -858,7 +925,7 @@ impl CognitiveStore {
                             ))
                         },
                     )?,
-                    generation_digest: generation.generation_digest,
+                    generation_digest: generation.canonical.as_generation().generation_digest,
                     seed_node_ids: vec![seed_node_id],
                     relation_kinds,
                     valid_at_unix_seconds: Some(now),
@@ -867,26 +934,21 @@ impl CognitiveStore {
                             "graph retrieval limit exceeds u32".to_string(),
                         )
                     })?,
-                },
-            )
-            .map_err(|error| {
-                CognitiveStoreError::Corrupt(format!(
-                    "persisted KG generation failed canonical V2 query: {error}"
-                ))
-            })?;
+                })
+                .map_err(|error| {
+                    CognitiveStoreError::Corrupt(format!(
+                        "persisted KG generation failed canonical V2 query: {error}"
+                    ))
+                })?;
             if query_result.omitted_count != 0 {
                 limit = RetrievalLimitObservation::LimitReached;
             }
 
-            let compact_supports = load_compact_edge_support_index_tx(
-                transaction,
-                &seed.projection_scope,
-                seed.generation,
-            )
-            .await?;
             for edge in query_result.edges {
                 for support in edge.supports {
-                    let (memory_id, revision) = if let Some(index) = compact_supports.as_ref() {
+                    let (memory_id, revision) = if let Some(index) =
+                        generation.compact_supports.as_ref()
+                    {
                         index
                             .get(support.source_id.as_str())
                             .cloned()
@@ -997,6 +1059,7 @@ impl CognitiveStore {
         transaction: &mut Transaction<'_, Sqlite>,
         workspace: Option<&str>,
         now: i64,
+        scopes: RetrievalScopes,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision FROM memory_heads h
@@ -1004,6 +1067,7 @@ impl CognitiveStore {
              WHERE r.owner_agent_id = ?
                AND (r.scope_kind = 'agent_private' OR
                     (r.scope_kind = 'workspace_private' AND r.workspace_sha256 = ?))
+               AND r.scope_kind = COALESCE(?, r.scope_kind)
                AND r.verification = 'verified' AND r.lifecycle = 'active'
                AND r.valid_from_unix_seconds <= ?
                AND (r.valid_to_unix_seconds IS NULL OR ? < r.valid_to_unix_seconds)
@@ -1011,6 +1075,7 @@ impl CognitiveStore {
         )
         .bind(self.owner_agent_id.as_str())
         .bind(workspace)
+        .bind(scopes.exact_scope_kind())
         .bind(now)
         .bind(now)
         .bind(channel_limit())

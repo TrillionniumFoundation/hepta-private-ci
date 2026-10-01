@@ -42,6 +42,120 @@ fn revision(scope: CognitiveScope, content: &str) -> MemoryRevisionDraft {
 }
 
 #[tokio::test]
+async fn exact_scope_retrieval_filters_before_channel_limits_and_top_four() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(83);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let workspace_sha256 = workspace("exact-scope-retrieval");
+    let workspace_scope = CognitiveScope::WorkspacePrivate {
+        workspace_sha256: workspace_sha256.clone(),
+    };
+    let access = CognitiveAccess::workspace_private(owner, workspace_sha256);
+    let entities = vec![
+        KgEntityFactDraft {
+            key: "beacon".to_string(),
+            entity_type: "concept".to_string(),
+            label: "Beacon".to_string(),
+        },
+        KgEntityFactDraft {
+            key: "destination".to_string(),
+            entity_type: "concept".to_string(),
+            label: "Destination".to_string(),
+        },
+    ];
+    let facts = KgFactSetDraft {
+        entities,
+        relations: vec![KgRelationFactDraft {
+            key: "beacon-destination".to_string(),
+            from_entity_key: "beacon".to_string(),
+            to_entity_key: "destination".to_string(),
+            relation: "references".to_string(),
+        }],
+    };
+    let target_content = "A workspace observation with enough context to be less lexically relevant than the competing private Beacon memories.";
+    let target = store
+        .remember_with_kg(
+            &access,
+            &source(workspace_scope.clone(), "workspace-target", target_content),
+            &MemoryDraft {
+                stable_key: "workspace-target".to_string(),
+                revision: revision(workspace_scope.clone(), target_content),
+            },
+            &facts,
+        )
+        .await
+        .expect("workspace target");
+    for index in 0..MAX_RETRIEVAL_CHANNEL_CANDIDATES + 8 {
+        store
+            .remember_with_kg(
+                &access,
+                &source(
+                    CognitiveScope::AgentPrivate,
+                    &format!("private-competitor-{index}"),
+                    "Beacon",
+                ),
+                &MemoryDraft {
+                    stable_key: format!("private-competitor-{index}"),
+                    revision: revision(CognitiveScope::AgentPrivate, "Beacon"),
+                },
+                &facts,
+            )
+            .await
+            .expect("private competitor");
+    }
+    let request = RetrievalRequest::new("Beacon", 200);
+    let mixed = store
+        .retrieve_memory_candidates(&access, &request)
+        .await
+        .expect("mixed retrieval");
+    assert!(
+        mixed
+            .candidates
+            .iter()
+            .all(|candidate| { candidate.memory.scope == CognitiveScope::AgentPrivate })
+    );
+    let (exact, frontier) = store
+        .retrieve_memory_candidates_for_scope(&access, &workspace_scope, &request)
+        .await
+        .expect("exact workspace retrieval");
+    assert_eq!(frontier, 1);
+    assert_eq!(
+        exact
+            .candidates
+            .iter()
+            .map(|candidate| (candidate.memory.id.clone(), candidate.channels.clone()))
+            .collect::<Vec<_>>(),
+        vec![(
+            target.memory.id,
+            vec![
+                RetrievalChannel::MemoryFts,
+                RetrievalChannel::EntityFts,
+                RetrievalChannel::GraphOneHop,
+                RetrievalChannel::Recency,
+            ],
+        )]
+    );
+
+    let (agent, frontier) = store
+        .retrieve_memory_candidates_for_scope(&access, &CognitiveScope::AgentPrivate, &request)
+        .await
+        .expect("exact agent retrieval");
+    assert_eq!(
+        frontier,
+        u64::try_from(MAX_RETRIEVAL_CHANNEL_CANDIDATES + 8).expect("bounded fixture")
+    );
+    assert_eq!(agent.candidates.len(), crate::MAX_RETRIEVAL_RESULTS);
+    assert!(
+        agent
+            .candidates
+            .iter()
+            .all(|candidate| { candidate.memory.scope == CognitiveScope::AgentPrivate })
+    );
+}
+
+#[tokio::test]
 async fn retrieval_rrf_is_deterministic_explainable_and_revalidated() {
     let temp = TempDir::new().expect("temp dir");
     let agent_id = agent_id(5);

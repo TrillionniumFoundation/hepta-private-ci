@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.knowledge-graph-full-capacity-audit.v1",
+  "date": "2026-10-01",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pullRequest": 1314,
+  "componentCodeObservation": {
+    "commit": "be4004a11e374f49a5b0db2fa4e1dd87d318b11d",
+    "tree": "039ed37a41cf2981e4b9b1e42b635f1ba699d323",
+    "scope": "The named component code matches this committed source; local scoped execution is not complete candidate HEAD/merge qualification."
+  },
+  "runtimeSecondsExcludingBuild": 1269.858,
+  "profile": {
+    "optLevel": 0,
+    "debugInfo": 0,
+    "memoryTestCodegenUnits": 8,
+    "buildJobs": 1,
+    "host": "shared contended execution host"
+  },
+  "passed": true,
+  "receipt": {
+    "algorithm": "revision_facts_v1_per_trigger_generation",
+    "claim": "measurement_only_no_host_independent_latency_threshold",
+    "compactGenerationWitnessRows": 256,
+    "currentGeneration": 256,
+    "legacySnapshotEdgeRows": 0,
+    "legacySnapshotNodeRows": 0,
+    "logicalEdges": 32768,
+    "logicalNodes": 4096,
+    "mutationNs": {
+      "p50": 4642611383,
+      "p95": 8196905699,
+      "p99": 8549393566,
+      "throughputMilliOpsPerSecond": 223,
+      "total": 1147652705313
+    },
+    "process": {
+      "linuxCpuTicksDelta": 127613,
+      "rssKiBAfter": 168556,
+      "rssKiBBefore": 24476
+    },
+    "queryNs": {
+      "p50": 3377370820,
+      "p95": 3717962550,
+      "p99": 3717962550
+    },
+    "querySamples": 20,
+    "reopenNs": {
+      "p50": 10804119826,
+      "p95": 11428328621,
+      "p99": 11428328621
+    },
+    "reopenSamples": 5,
+    "revisionEntityRows": 4096,
+    "revisionRelationRows": 32768,
+    "schema": "hepta.knowledge-graph-perf-library.v1",
+    "storage": {
+      "databaseBytes": 53215232,
+      "walBytes": 6451952
+    },
+    "writes": 256
+  },
+  "fixtureSemantics": "4096 entity/32768 relation support occurrences over 256 heads; the repeated fixture projects to 16 canonical nodes/128 canonical edges; not a 4096-unique-canonical-node benchmark. Full receipt does not export source-cut digests.",
+  "claim": "Complete local default fixture passed, including all writes, product queries and ordinary reopens. No target-host budget, controlled speedup, complete final HEAD/merge or release qualification follows.",
+  "logSha256": "3fd24c03b2a13e149438eebc12ca4b7a1d5fb6a1abb30fafe0cf0c83570a1291",
+  "firstRoundFailure": "256 writes completed then query phase 30-minute watchdog; preserved as historical failure",
+  "thisRoundFirstFailure": "841.882 s write phase SQLite disk-full failure; preserved as historical failure",
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "authorityGranted": false
+  }
+}

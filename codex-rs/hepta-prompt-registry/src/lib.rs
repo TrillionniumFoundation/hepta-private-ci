@@ -9,6 +9,7 @@
 mod admission;
 mod delivery;
 mod durable;
+mod factor_relation;
 mod protocol;
 mod v2;
 
@@ -37,6 +38,8 @@ pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
 pub use delivery::RealizationDeliveryV2;
 pub use durable::DurablePromptRegistry;
 pub use durable::DurableRegistryError;
+pub use durable::final_use_factor_relation_binding;
+pub use durable::final_use_factor_relation_revocation_binding;
 pub use protocol::PromptFactorV1;
 pub use protocol::PromptRealizationV1;
 pub use protocol::ProtocolCodecError;
@@ -353,6 +356,7 @@ pub struct PromptRegistry {
     realizations: BTreeMap<StableId, PromptRealization>,
     realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
     relations: BTreeMap<StableId, PromptFactorRelation>,
+    relation_withdrawals: BTreeMap<StableId, factor_relation::RelationWithdrawal>,
     realization_payloads: BTreeMap<StableId, Arc<[u8]>>,
     realization_supersessions: BTreeMap<StableId, StableId>,
     lifecycle_events: Vec<LifecycleEvent>,
@@ -375,6 +379,7 @@ impl PromptRegistry {
             realizations: BTreeMap::new(),
             realization_bindings: BTreeMap::new(),
             relations: BTreeMap::new(),
+            relation_withdrawals: BTreeMap::new(),
             realization_payloads: BTreeMap::new(),
             realization_supersessions: BTreeMap::new(),
             lifecycle_events: Vec::new(),
@@ -560,7 +565,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
-    pub fn register_factor_relation(
+    pub(crate) fn register_factor_relation(
         &mut self,
         relation: PromptFactorRelation,
     ) -> Result<RegistryReceipt, Error> {
@@ -580,6 +585,12 @@ impl PromptRegistry {
                 return Err(Error::FactorNotAdmitted(factor_id.to_string()));
             }
         }
+        if self
+            .relation_withdrawals
+            .contains_key(&relation.relation_id)
+        {
+            return Err(Error::InvalidTransition);
+        }
         if let Some(existing) = self.relations.get(&relation.relation_id) {
             if existing == &relation {
                 return Ok(self.receipt(MutationDisposition::Unchanged));
@@ -587,7 +598,10 @@ impl PromptRegistry {
             return Err(Error::RelationConflict(relation.relation_id.to_string()));
         }
         if self.relations.values().any(|existing| {
-            existing.left_factor_id == relation.left_factor_id
+            !self
+                .relation_withdrawals
+                .contains_key(&existing.relation_id)
+                && existing.left_factor_id == relation.left_factor_id
                 && existing.right_factor_id == relation.right_factor_id
                 && existing.kind == relation.kind
         }) {
@@ -624,7 +638,11 @@ impl PromptRegistry {
             .relations
             .values()
             .filter(|relation| {
-                live.contains(&relation.left_factor_id) && live.contains(&relation.right_factor_id)
+                !self
+                    .relation_withdrawals
+                    .contains_key(&relation.relation_id)
+                    && live.contains(&relation.left_factor_id)
+                    && live.contains(&relation.right_factor_id)
             })
             .cloned()
             .collect::<Vec<_>>();
@@ -905,6 +923,17 @@ impl PromptRegistry {
         }
         for relation in self.relations.values() {
             push_relation(&mut bytes, relation);
+        }
+        if !self.relation_withdrawals.is_empty() {
+            bytes.extend_from_slice(b"hepta.prompt-registry.snapshot.relation-withdrawals.v1");
+            bytes.extend_from_slice(
+                &u64::try_from(self.relation_withdrawals.len())
+                    .unwrap_or(u64::MAX)
+                    .to_be_bytes(),
+            );
+            for withdrawal in self.relation_withdrawals.values() {
+                bytes.extend_from_slice(withdrawal.withdrawal_digest.as_array());
+            }
         }
         for (realization_id, payload) in &self.realization_payloads {
             push_id(&mut bytes, realization_id);

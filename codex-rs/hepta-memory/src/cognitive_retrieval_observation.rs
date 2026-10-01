@@ -94,7 +94,13 @@ impl CognitiveStore {
         let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let generated = self
-            .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
+            .generate_retrieval_tx(
+                &mut transaction,
+                access,
+                request,
+                &fts_query,
+                RetrievalScopes::Accessible,
+            )
             .await?;
         let mut candidates = self
             .resolve_retrieval_tx(
@@ -177,13 +183,14 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         request: &RetrievalRequest,
         fts_query: &str,
+        scopes: RetrievalScopes,
     ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
         let now = request.now_unix_seconds;
         let memory = self
-            .memory_fts_channel_tx(transaction, access, fts_query, now)
+            .memory_fts_channel_tx(transaction, access, fts_query, now, scopes)
             .await?;
         let seeds = self
-            .entity_fts_channel_tx(transaction, access, fts_query, now)
+            .entity_fts_channel_tx(transaction, access, fts_query, now, scopes)
             .await?;
         let entity = seeds
             .values
@@ -226,6 +233,7 @@ impl CognitiveStore {
                 transaction,
                 access.workspace_sha256().map(Sha256Digest::as_str),
                 now,
+                scopes,
             )
             .await?;
         let mut ranked = BTreeMap::new();
