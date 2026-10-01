@@ -149,6 +149,24 @@ Artifacts 修复限定 test adapter 的损坏锁定，生产 Agentd ranker 原�
 
 当前整合候选已通过 development profile 的40份实施映射导航检查。该检查先真实拒绝 learning.plasticity 中已重命名的 controller-collision 回归引用；引用已改为实际 sealed product owner 拒绝资格的函数，并通过官方命令同步塑性派生状态。54份新历史快照已逐份与真实 Git commit/tree/map blob 核对，原始历史 JSON 保持不变。
 
+### 完整工具链复审与休眠实现退役
+
+后续在本地检查点 `f486e48f053a0de71d5f7ff9d65a6403fa352ee4` 实际执行全部 `scripts/test_hepta_*.py`：768 项、10 failures、18 errors、47.935s、退出1；Lane E strict verify 同时报告8项 legacy-writer findings。这些失败保留为本轮整改输入，没有用先前710项成功或局部成功替代。最新版整合遗漏了严格 writer 词法扫描和全局 owner 解析；部分 fixture 仍依赖旧工作流入口或旧 alias 格式。
+
+Lane B path guard 与正式 truth verifier 现从 canonical registry 解析全局唯一根，要求 map 根精确一致；已登记 foreign owner 的源码不能借直接 Cargo 依赖改写 owner 标签，未登记的真实 helper 依赖仍保留导航兼容。Lane E 从实际版本化 matrix、MODULES 与 dossier 动态读取操作和 case 注册；拒绝缺失、额外、重复、源码/符号替换和 case 归属交换，保留主线扩展能力。源码、注册表和 dossier 读取统一核对真实仓库路径，拒绝 leaf/ancestor symlink 与仓库外输入；符号检查先屏蔽 Rust 注释和字符串，再区分顶层类型、直接 impl 方法与 free function，不能用局部声明或文档片段伪造入口。严格 writer 检查继续区分显式非默认资格代码、只读封存读取与产品写入，不提升任何执行资格。
+
+真实通用 CI 还暴露了基线调用者清单和 fixture 漂移：8条 malformed regex、未分类的 privileged 方法、合法只读 API 以及真实 Memory/Automation 调用。修复保持新增 privileged 入口的产品调用者集合为空，并以真实 receiver、UFCS、泛型及未登记 caller 回归验证。该守卫证明的是已声明词法模式的源码集合，不是完整 Rust 名称解析或调用图；generic `claim` 和 free-function 的跨文件 alias 仍有 P2 覆盖局限。未据此发现运行时 grant 或签名校验绕过，也不能宣称所有 alias 已闭合。
+
+SDK formatter fixture 已对齐主线 changed-file 默认、`--base` 与显式 `--all`；自动 CI 路由 fixture 改为验证真实 scope/dependency selector，未恢复重复 PR fan-out。远端 Windows Bazel lint 在进入 Python wrapper 前因长 argv 退出126；长目标列表的传输修复需保持全部真实目标、顺序、原配置及失败退出语义，不能过滤目标取得表面成功。
+
+随后实际发布的 `fd7104df19a099a645ca212d97091a4595b8a29f` 获得完整 [Architecture source job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36876516230/job/110417234818) 反馈：Operations 44项、Automation retirement 4项、Objective 62项、Prompt 32项、Agentd browser 15项及 selected ranker 1项均实际通过；推理82项和显式 scale 1项、Fleet catalog 7项、ControlPlane ABI 15项、Supervisor module 17项/writer-handoff 11项、Plasticity49项、Eval三个筛选分别17/3/1项、Ledger118项也有真实成功记录。筛选、原有 ignored 和重复匹配不计为未执行的全库覆盖。Agentd生产及测试目标已成功编译，但本轮新 FIFO/目录/config 回归没有被该筛选执行，尚不能据编译写成行为通过。
+
+该 source job 最终在 `runtime-image` 正确失败：Cargo自身退出0，但真实执行0项，`hepta_ci_exec` 因 `minimum-tests=1` 退出1；后续 operation-timer 和 optional-process-restart 命令未执行，aggregate失败。base-merge tree等价，native步骤 skipped，其success不计为另一次执行。这些记录只属于 `fd7104d`，不覆盖后续脚本、清理和源码绑定提交。
+
+官方 cargo-shear 1.11.2 报告的 Agentd 六个 orphan 在 `997e7be` 已存在，且确实不从任何模块入口编译。已退役 `objective_dispatch`、`objective_host`、旧 `objective_ingress`、`operations_host`、`runtime_executable`、`runtime_module_state` 和三个唯一局部测试，共1884行；原始内容保留于 Git 历史。当前 Objective 使用真实 RunStart/ObjectiveRuntimeHost 通路，TaskFlow 创建和 effect owner 各自保留原职责。没有把旧代码接入生产、增加忽略或把未执行测试算为覆盖。
+
+`RUNTIME_EXTENSIONS.md` 同步纠正了“TaskFlow 已使用 ABI-bound API”、不存在的 `attach_runtime_module_with_interface` 和“内建 executable observation 已安装”的描述。当前 executable image observation/catalog adapter 没有已安装替代；Architecture workflow 的旧 `runtime_executable` filter 无法执行测试，`minimum-tests=1` 必须继续拒绝0项执行。发布 artifact SHA、PID 健康检查和其它 ABI 测试均不能代替已运行镜像的产品证明。这是明确的产品/资格缺口，未改为通过。
+
 本轮独立复审继续发现 Unix 文件预检与普通 read-open 之间的 FIFO 替换窗口。它发生在可信 same-UID/root 的并发发布范围，属于打开操作的可用性缺口，不是非 owner 权限绕过。Prompt、authority/checkpoint、AuthBus/Evidence trust 与 frontier、effect/bootstrap/browser 的实际打开路径统一使用 `O_NOFOLLOW | O_NONBLOCK`，目录 handle 另加 `O_DIRECTORY`；所有原有 same-descriptor、regular、权限/link、namespace 和 EOF/currentness 检查继续保留。完整扫尾还发现并修复了 Objective 私有目录 open/fsync 和 Browser 宿主配置读取的同类开口；配置保留 relative/初始 leaf alias/hardlink/只读输入，不新增 UID/mode 授权规则。Objective 目录 IO 提取为私有组件；Browser binary 的测试移入 owner 子目录以避免被 Cargo 误发现为额外 binary，并显式启用其测试目标、加入 deep qualification 和15项接线检查。独立复审发现的未声明 `pretty_assertions` 导入已改用标准 `assert_eq!`。这些 flag 仅避免特殊文件的打开等待和最终分量 symlink 跟随，不承诺强制取消任意 kernel/network-filesystem I/O。新增确定性竞态回归的执行结果须单独记录。
 
 | 确证问题 | 本轮修复及兼容边界 |
