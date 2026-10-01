@@ -20,6 +20,10 @@ use crate::native_app_server::NativeAdmission;
 
 const NATIVE_PROMPT_LIMIT: usize = 32 * 1024;
 
+#[path = "self_iteration_reference.rs"]
+mod reference;
+pub use reference::NativeReferenceObservationV1;
+
 /// A bounded, durable model port. The caller configures the existing native
 /// driver's final-use authorizer; this adapter neither issues grants nor signs
 /// evaluation/selection evidence. The journal is retained across all roles.

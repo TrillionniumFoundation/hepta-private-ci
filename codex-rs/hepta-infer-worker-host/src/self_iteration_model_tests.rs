@@ -22,7 +22,7 @@ fn request() -> SelfIterationModelRequestV1 {
 // These exercise the adapter's receipt boundary with real durable journal
 // transitions and reopening. Provider execution is covered by product E2E;
 // this fixture does not claim to establish provider or issuer authority.
-fn settle_fixture(control: &mut DurableInferenceControl) -> NativeRunOutput {
+pub(super) fn settle_fixture(control: &mut DurableInferenceControl) -> NativeRunOutput {
     control
         .reserve_native(
             NativeRequest {

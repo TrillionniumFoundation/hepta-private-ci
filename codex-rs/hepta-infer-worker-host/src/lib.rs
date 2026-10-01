@@ -53,6 +53,7 @@ pub mod runtime_codex_quarantine;
 mod self_iteration_model;
 mod sqlite;
 pub use self_iteration_model::AppServerSelfIterationModelPortV1;
+pub use self_iteration_model::NativeReferenceObservationV1;
 
 use std::error::Error as StdError;
 use std::fmt;
