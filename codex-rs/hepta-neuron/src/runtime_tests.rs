@@ -14,6 +14,9 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+#[path = "runtime_recovery_tests.rs"]
+mod recovery;
+
 const Q: i64 = 1 << 24;
 static NEXT: AtomicU64 = AtomicU64::new(0);
 

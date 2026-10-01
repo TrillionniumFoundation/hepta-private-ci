@@ -40,6 +40,36 @@ errors. These errors do not initialize, truncate, rewrite, or silently choose a
 new predecessor. The handle closes normally on rejection. Normal clock, scope,
 configuration, replay, quota, and cooperating-writer fencing checks remain intact.
 
+For a chain whose witness lies beyond the segment being recovered, that segment
+was already sealed and acknowledged. The owner uses a locked complete-segment
+recovery policy: its length must exactly equal its header plus its full frame
+quota before initialization or tail repair can occur. An empty root, a torn last
+acknowledged frame, or an extra partial tail rejects while preserving the bytes.
+The successor header still verifies the exact predecessor checkpoint, and state
+publication remains blocked until the chain reaches the independent witness.
+
+## Recovery before the first acknowledgement
+
+Successful bootstrap enrolls a root header before it acknowledges any tick. A
+restart at that point must not repeat bootstrap or invent an external anchor.
+`NeuronRuntime::recover_unacknowledged` accepts the existing nonempty root only
+when the authenticated, independently enrolled witness has no acknowledged
+frontier. It verifies the complete runtime configuration, scope and generation
+before root parsing or repair. A header-only root retains no checkpoint or
+anchor; a partial first frame is discarded and synced; a complete first frame is replayed,
+synced and independently acknowledged through `compare_and_swap(None, anchor)`.
+Recovery invokes no model and does not repeat the committed tick.
+Multiple complete ticks or any bytes of a second frame with an empty witness
+are rejected before repair: a canonical owner cannot advance past its first
+tick before that first acknowledgement succeeds.
+
+This entry point rejects empty/missing files, successor segments and a witness
+that already contains acknowledgement history. An existing witness must never
+be replaced with an empty witness to qualify for this path. Once any anchor is
+acknowledged, use anchored root or chain recovery. Bootstrap and fresh rollover
+also verify emptiness under the acquired journal lock, so their initial metadata
+checks cannot accidentally become recovery of a concurrently populated file.
+
 ## Host integration boundary
 
 The legacy `open` method remains available for bootstrap and explicitly

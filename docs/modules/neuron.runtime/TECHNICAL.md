@@ -165,6 +165,19 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The current owner source is `NeuronRuntime` in [codex-rs/hepta-neuron/src/runtime.rs](../../../codex-rs/hepta-neuron/src/runtime.rs). One tick verifies the canonical owner input, obtains an exact inference-control feature receipt through `InferenceControlModelPort`, computes the deterministic sparse successor, commits the journal before publication, evaluates calibrated/OOD/resource disposition, and advances an independently retained `AnchorWitnessStore`. Journal and witness uncertainty are fail-closed and poison the affected handle instead of fabricating acknowledgement. [codex-rs/hepta-agentd/src/neuron_runtime.rs](../../../codex-rs/hepta-agentd/src/neuron_runtime.rs) now provides the compiled Agentd-owned long-lived source boundary and [codex-rs/hepta-intelligence/src/neuron_runtime.rs](../../../codex-rs/hepta-intelligence/src/neuron_runtime.rs) remains a typed caller. The Agentd daemon startup/run-lifecycle owner is still composed on the separate `runtime.agentd` convergence line; source presence here is not daemon activation or product-execution evidence.
 
+[codex-rs/hepta-neuron/src/runtime_recovery.rs](../../../codex-rs/hepta-neuron/src/runtime_recovery.rs)
+owns root/segment recovery and the pre-first-acknowledgement reopen path.
+`recover_unacknowledged` requires an independently enrolled, config/context-bound
+witness with an empty acknowledgement frontier and an existing root journal;
+it can reconcile a complete first tick after volatile pending state is lost.
+It does not enroll a witness, initialize missing history or replace anchored
+recovery after any acknowledgement. A witness in a later segment requires
+complete sealed predecessor segments before replay can repair any tail.
+`recover_next_segment` requires a full predecessor, and owner `rollover` creates
+only a fresh successor; an existing successor goes through recovery instead.
+Fresh/existing file admission is checked while holding the cooperating-writer
+lock. This is not a guarantee against writers that ignore that advisory lock.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
@@ -189,6 +202,17 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 ## 10. Performance, capacity and hot-path policy
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-neuron/src/lib.rs](../../../codex-rs/hepta-neuron/src/lib.rs) and the linked implementation components.
+
+Native `checkpoint_bytes` is a conservative mechanism binary payload bound:
+the domain tag, seven retained digests, sequence/time, projection metadata and
+five framed numeric vectors. It is not the canonical JSON size, allocator
+footprint or a disk measurement. Correcting the formerly omitted fields can
+change resource receipts and budget disposition without changing the V1
+checkpoint digest or journal bytes. `execution_micros` covers model execution
+through durable witness acknowledgement; transient allocation remains an
+inference-driver observation, and journal bytes/write amplification cover the
+tick journal frame only. Headers, witness appends, filesystem overhead and the
+owner's complete allocation/I/O profile require separate measurements.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -219,6 +243,7 @@ qualification chains while retaining V1 journal replay bytes.
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-neuron/src/runtime_tests.rs](../../../codex-rs/hepta-neuron/src/runtime_tests.rs) — canonical owner composition, calibration/OOD/resource fail-closed behavior and acknowledgement reconciliation.
+- [codex-rs/hepta-neuron/src/runtime_recovery_tests.rs](../../../codex-rs/hepta-neuron/src/runtime_recovery_tests.rs) — enrolled first-acknowledgement recovery and rejection of damaged acknowledged root/intermediate segments without initializing or repairing them.
 - [codex-rs/hepta-neuron/src/protocol_tests.rs](../../../codex-rs/hepta-neuron/src/protocol_tests.rs) — registered canonical JSON runtime/tick/signal/checkpoint projections, owner-derived checkpoint publication and unknown-critical-field rejection.
 - [codex-rs/hepta-neuron/src/population_v2_tests.rs](../../../codex-rs/hepta-neuron/src/population_v2_tests.rs) — distinct `d_h`/`d_z`, complete population partition, per-population-first/global competition and deterministic successor semantics.
 - [codex-rs/hepta-neuron/src/inference_control_tests.rs](../../../codex-rs/hepta-neuron/src/inference_control_tests.rs) — exact inference-control feature-receipt binding and model tuple drift rejection.
