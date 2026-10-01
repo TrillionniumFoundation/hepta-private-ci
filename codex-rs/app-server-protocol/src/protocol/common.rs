@@ -552,6 +552,11 @@ client_request_definitions! {
         serialization: thread_id(params.thread_id),
         response: v2::ThreadUnsubscribeResponse,
     },
+    ThreadEphemeralRetain => "thread/ephemeral/retain" {
+        params: v2::ThreadEphemeralRetainParams,
+        serialization: thread_id(params.thread_id),
+        response: v2::ThreadEphemeralRetainResponse,
+    },
     #[experimental("thread/increment_elicitation")]
     /// Increment the thread-local out-of-band elicitation counter.
     ///

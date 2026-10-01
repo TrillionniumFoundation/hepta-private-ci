@@ -1240,6 +1240,11 @@ impl MessageProcessor {
                     .thread_unsubscribe(&request_id, params)
                     .await
             },
+            ClientRequest::ThreadEphemeralRetain { params, .. } => {
+                processor.thread_processor
+                    .thread_ephemeral_retain(&request_id, params)
+                    .await
+            },
             ClientRequest::ThreadResume { params, .. } => {
                 processor.thread_processor
                     .thread_resume(

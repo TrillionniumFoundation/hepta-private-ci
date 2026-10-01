@@ -1,6 +1,9 @@
 #[path = "ephemeral_disposal.rs"]
 mod ephemeral_disposal;
 
+#[path = "ephemeral_retention.rs"]
+mod ephemeral_retention;
+
 use super::persisted_resume_settings::PersistedResumeSettings;
 use super::persisted_resume_settings::latest_persisted_resume_settings;
 use super::thread_enrichment::enrich_loaded_threads;

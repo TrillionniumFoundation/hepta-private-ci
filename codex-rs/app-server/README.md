@@ -2725,3 +2725,22 @@ implied. Native workers retain their durable cleanup obligation until this
 acknowledgement and must first settle the original control record and any
 Intelligence terminal-publication outbox. Ordinary unsubscribe statuses cannot
 acknowledge ephemeral disposal.
+
+### Retaining an uncertain ephemeral runtime
+
+Native workers call `thread/ephemeral/retain` before admitting an external effect,
+with `protocolVersion: 1`, the original `threadId`, `expectedSessionId`, and
+durable `operationId`. They proceed only after all four bindings match the
+explicit V1 response. An unsupported older server or an ignored field cannot
+promise retention. The server accepts only a subscribed connection and the exact
+loaded ephemeral runtime without persistent history. A repeat of the same
+operation is idempotent; another operation or runtime is refused.
+
+At most 32 runtimes can be retained in one server. Retention survives ordinary
+unsubscribe and connection loss, prevents idle unloading of that exact runtime,
+and returns capacity when its original thread state is torn down after disposal.
+It grants no execution, terminal, or cleanup authority. Native cleanup still
+requires the original control record and its required terminal-publication ACK.
+The server process cannot preserve live memory across a process death; durable
+control and cleanup obligations remain the recovery source. Persistent threads
+and clients that do not opt in keep their existing idle policy.
