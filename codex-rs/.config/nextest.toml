@@ -115,6 +115,17 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
+# This regression commits 256 signed records with a separate synced witness for
+# every record, then cold-reopens both files and retries the original identity.
+# On the target host its 519 successful fsyncs took 144 seconds. Keep the full
+# workload and serialize it with the other durability experiments; this bounded
+# whole-case watchdog does not change any product operation or lease deadline.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-ledger) & test(product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 10 }
+retries = 0
+
 # Measure all four growth/reopen points and 256 real atomic domain commits.
 # This is a full storage experiment; its watchdog does not change an operation
 # lease, child-process deadline or product latency acceptance threshold.

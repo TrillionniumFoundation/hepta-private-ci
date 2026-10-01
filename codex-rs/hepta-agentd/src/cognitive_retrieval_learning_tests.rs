@@ -387,7 +387,7 @@ fn durable_native_reopen_never_promotes_write_ahead_dispatch_to_exposure() {
         .expect("WAL");
     assert_eq!(
         before_crash.stage,
-        RetrievalDeliveryStageV1::AssignmentPrepared
+        RetrievalDeliveryStageV1::DispatchOutcomeUnknown
     );
     drop(native);
     let mut native = DurableInferenceControl::open(&journal_path, 16).expect("reopen");

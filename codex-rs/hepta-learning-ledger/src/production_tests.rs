@@ -115,10 +115,10 @@ fn trust_root_key() -> SigningKey {
 }
 
 fn activated_trust() -> ActivatedLearningTrustV1 {
-    activated_trust_until(/*expires_at*/ 90)
+    activated_trust_until(/*expires_at*/ 90, /*now*/ 50)
 }
 
-fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
+fn activated_trust_until(expires_at: u64, now: u64) -> ActivatedLearningTrustV1 {
     let root_key = trust_root_key();
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -147,7 +147,7 @@ fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
                 .unwrap_or_else(|error| panic!("production trust signing bytes: {error:?}")),
         )
         .to_bytes();
-    activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50)
+    activate_learning_trust(&root, signed, /*previous*/ None, now)
         .unwrap_or_else(|error| panic!("production trust activation: {error:?}"))
 }
 

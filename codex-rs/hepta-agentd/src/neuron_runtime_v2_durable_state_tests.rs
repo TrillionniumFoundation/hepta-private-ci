@@ -210,6 +210,9 @@ fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
     assert_eq!(sealed.active_generation, 1);
     assert_eq!(sealed.reload_target_generation, None);
 
+    // A cold reopen releases the previous physical writer first.
+    drop(old_topology);
+
     checked(write_agentd_neuron_generation_state_v2(&path, &interrupted));
     let (new_active, new_owner) = handle(2);
     let (old_retained, old_owner) = handle(1);
@@ -232,6 +235,8 @@ fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
     assert_eq!(serving.active_generation, 2);
     assert_eq!(serving.retained_generations, vec![1]);
     assert_eq!(serving.reload_target_generation, None);
+
+    drop(completed_topology);
 
     checked(write_agentd_neuron_generation_state_v2(&path, &interrupted));
     let (ambiguous_active, _) = handle(3);

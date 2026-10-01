@@ -4,9 +4,11 @@ use pretty_assertions::assert_eq;
 #[test]
 fn signed_decision_requires_current_distribution_without_writes_after_expiry()
 -> Result<(), Box<dyn std::error::Error>> {
-    for now in [50, 51] {
+    for now in [49, 50, 51] {
         let fixture = Fixture::new();
-        let mut writer = fixture.writer_with_trust(activated_trust_until(/*expires_at*/ 50));
+        let mut writer = fixture.writer_with_trust(activated_trust_until(
+            /*expires_at*/ 50, /*now*/ 49,
+        ));
         let request = decision();
         let payload = decision_signing_payload_v2(&request)?;
         let evidence = sign(
@@ -26,7 +28,7 @@ fn signed_decision_requires_current_distribution_without_writes_after_expiry()
         );
         let frontier = writer.witness_frontier()?;
         let result = writer.append_decision(Digest32::ZERO, request, &evidence, now);
-        if now == 50 {
+        if now == 49 {
             assert_eq!(result?.disposition, AppendDisposition::Appended);
             assert_eq!(writer.records()?.len(), 1);
             assert_eq!(writer.witness_frontier()?.anchor.sequence, 1);
