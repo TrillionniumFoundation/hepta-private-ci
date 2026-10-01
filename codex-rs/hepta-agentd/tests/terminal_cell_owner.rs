@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 #![cfg(feature = "server")]
 
 use codex_hepta_agent_components::bellman_operator::*;

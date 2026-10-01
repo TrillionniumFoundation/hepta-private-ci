@@ -21,6 +21,7 @@ use crate::authbus_trust::hex_bytes;
 
 const MAX_EVIDENCE_ISSUERS: usize = 32;
 const MAX_EVIDENCE_ROLES_PER_ISSUER: usize = 16;
+#[cfg(unix)]
 const MAX_EVIDENCE_TRUST_FILE_BYTES: u64 = 32_768;
 
 #[derive(Deserialize)]

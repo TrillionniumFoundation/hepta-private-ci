@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
 use codex_hepta_intelligence::decide_authenticated_intuition_v2;
 use codex_hepta_intuition::AssignmentCommitmentV1;
