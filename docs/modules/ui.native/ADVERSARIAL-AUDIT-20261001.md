@@ -5,6 +5,18 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
+本次后续修订冻结于 `32310eefbef2a80164b669fe3bfcaef69b47b9da`，tree 为
+`90e28eb295688c11e93d4aec0ad983ba53e0e612`。该源仍是未完整验收的实现候选：
+非 Linux Open/Reveal 缺少等价资源能力适配，完整同源 CI、实体桌面、签名及
+独立发布审批均未完成。最终同源的 release 应用回归 243/243 通过（1.469 s），
+包含真实 headless egui text snapshot；all-targets/all-features 严格应用 Clippy
+通过（4.78 s）。三项 ignored 是两个独立规模主体及其 worker；原生资格 Python
+227/227 和严格 native-map adapter 86/86 通过，两个完整 release 规模主体也通过。
+三个 release 二进制构建、自检和真实子进程 qualification-e2e 通过。ca66 的先期
+243 项回归、ed5 的 212/226 项回归及 21cbe83 的 210 项 owner 回归保留为历史，
+不能继承为最终源 owner 或平台验收。最后一次独立静态复审未发现
+新的同范围可复现问题；这不是对所有未来缺陷或生产完成度的保证。
+
 ## 完成度结论
 
 模块有详细技术开发文档：TECHNICAL.md 覆盖所有权、持久化、最终使用授权、
@@ -59,6 +71,13 @@
 | P2 | 远端工作流在 job.env 使用 runner.temp，GitHub 在创建 job 前拒绝语义验证 | 将临时路径放到 runner 执行的初始化 step，并写入 GITHUB_ENV；保留 step 级合法 runner 上下文 |
 | P2 | 外部 compile-negative 夹具缺少锁文件，离线浮动解析先失败，未执行隐私验证 | 从精确应用锁 seed 归一化，逐项拒绝版本/摘要/依赖边漂移，再执行 locked 负向编译；保留失败诊断 |
 | P2 | 全局实现映射检查器只接受 v3，拒绝当前 ui.native v6 映射 | 仅对该模块提供只读严格适配，复用完整冻结检查；其他模块规则和所有权保持严格 |
+| P2 | 生成 binding 在 GUI 线程执行资源确认；输入或 authenticated view 改变后可能展示旧结果 | 移至受监督 runtime lane，准入时复验精确 view，完成时比对全部输入、页面及连接；编辑使结果失效；独立 owner 仍负责签署 grant |
+| P1 | 启动记录的父目录在初始化后可替换；更新 JSON、锁和 staged 路径未完整保留目录身份 | StartupRecorder 固定已有私有父目录；更新读写、锁、ACK/取消和清理保留根能力；staged 使用已验证子目录能力，替换与 trust drift 拒绝 |
+| P1 | Windows 私有父目录不保证已有子文件 ACL；可写 WAL/锁的硬链接别名可影响根外文件 | 在实际打开句柄检查 child owner/DACL；所有非 Read 可变打开要求单链接；公共 utility 的读写 open_file 同样执行保护，覆盖 contracts authority store 调用 |
+| P1 | 更新助手已有 manager，却重新调用 standalone 激活入口打开根路径，丢失已固定身份 | 沿现有 UpdateManager 的私有根能力激活；standalone 保留为独立入口边界 |
+| P2 | 崩溃遗留的其他 staged digest 或未知临时文件可继续累积 | 暂存准入仅允许当前 digest 的单个 package，并校验重试内容；未知、其他 digest 和 crash temporary 均保留并拒绝新暂存，交由显式恢复 |
+| P2 | Windows notification identity marker 无界读取；打包 C# 将 readonly 字段以 ref 传入而无法编译 | 正规文件读取限 128 bytes 并核对 UTF-8/AUMID；readonly key 复制为局部变量，Windows 专属测试编译实际打包源码；不等于安装或可见通知验收 |
+| P2 | 合法 jobs header 尾随注释或空白可能令 job.env 上下文检查漏检 | 按 block header 语义识别 jobs 并保留 env 上下文限制；覆盖注释/空白入口回归，排队 CI 仍是待执行证据 |
 
 基线远端 run 36682622270 的六个平台在构造阶段就因输出污染失败；storage
 以 --locked 拒绝不一致依赖状态。此前 run 36670666771 亦同。因此基线
@@ -79,11 +98,50 @@ UI 改进保持 picker/read/mutation 分工：对话框可以独立工作，读�
 互斥；输入、历史和诊断保持有界；关闭窗口保留任务所有权。实体平台缺口必须
 通过真实能力适配与验收补齐，不能用宽松路径命令替代验证 FD。
 
+异步 binding 只是准备独立 authority owner 的输入，不执行平台效果或自行选择
+grant identity、nonce、epoch、有效期和签名。真实 headless egui text snapshot
+检查生成中及 stale-result 提示，不是 GPU、实体平台或无障碍验收。
+暂存 package 上限为 512 MiB；原子替换期间可额外持有一份至多 512 MiB 的
+临时副本，不能声称峰值磁盘占用仅 512 MiB。前驱备份限制单独适用。
+Unix Read 不修改文件，允许当前主体所有且无 group/world 权限的 0400、0500、
+0600 或 0700 文件及不可变迁移资产别名，
+仍需内容和身份认证；单链接准入检查不能阻止可信主体随后新增硬链接。
+
 ## 验证与复审
 
-本轮常规应用回归 212/212、相关 owner 回归 210/210 通过；应用的三项
+最终源 32310 的常规 release 应用 243/243、严格 all-targets/all-features
+应用 Clippy、资格 Python 227/227（13.041 s）及 native-map adapter 86/86
+（7.671 s）通过；源码冻结结构检查和 19 项 convergence 回归通过。
+两个完整规模主体通过：4096-active 用时 2.461 s，百万 retired 加 4096-active
+共存负载用时 52.572 s。每项 open/rebuild 为 20 个独立新进程，原始数组的
+分位数独立复算一致，预算未放宽：
+
+| 最终 32310 release 本地诊断 | 测量 | 冻结预算 |
+| --- | --- | --- |
+| 4096 active open p95 | 31.413 ms | 2000 ms |
+| 12288 mutation p50 / p95 / p99 | 0.022 / 0.043 / 0.234 ms | 25 / 100 / 250 ms |
+| active 64-record page p95 / retained JSON | 0.047 ms / 28417 bytes | 25 ms / 2 MiB |
+| 百万 retired indexed open p95 | 0.414 ms | 2000 ms |
+| 百万 mixed、零派生资产 rebuild p95 | 1866.871 ms | 30000 ms |
+| 4096 active + 百万 retired journal open p95 | 462.509 ms | 2000 ms |
+| 共存 64-record page p95 / retained JSON | 0.042 ms / 28417 bytes | 25 ms / 2 MiB |
+| active / retired+combined peak RSS | 22 / 31 MiB | 256 / 256 MiB |
+| retired storage | 144415688 bytes | 256 MiB |
+
+active snapshot 为 2608315 bytes，最终 WAL 为 0 bytes。百万权威夹具包含 977
+个混合前缀段，每段至少 228 个前缀；各零派生资产重建得到相同 head SHA256
+`a437b567ef1c9757305487f41331d5beb33ad2c19155ff11d0e675ce3fd7e44a`。
+三个 release 二进制真实构建（0.39 s）、self-test 和实际子进程故障
+qualification-e2e 均通过，receipt 七项故障/授权围栏检查为 true，三项 authority
+grant 标志为 false。package/portal 36/36、投影 generate/verify/lint 与 7 项测试
+通过，registry 记录 84 个文件。上述均为共享 Linux 容器本地诊断，
+page cache 未控制、retained JSON bytes 不是 allocator profile；没有可用
+durability syscall trace，也没有完整同次七主体或实体平台验收。百万夹具仍为
+legacy identity-only tombstones，不能作为百万完整归档 receipt 的容量结论。
+
+历史 ed5 阶段常规应用回归 212/212、相关 owner 回归 210/210 通过；应用的三项
 ignored 项是两个完整规模主体及其子进程 worker，规模主体单独运行。
-最终 Python 验证 226/226、36 项打包/portal 测试、7 项投影测试、4 项 registry
+该历史阶段 Python 验证 226/226、36 项打包/portal 测试、7 项投影测试、4 项 registry
 测试和源码冻结检查通过；严格 Clippy 两组通过。项目图遍历 195 个本地
 manifest、0 错误，53 项分层回归通过；实际 Bazel 9.0.0 lock-update 与
 lock-check 通过，锁无需改变。新增回归覆盖实际
@@ -91,6 +149,11 @@ temp-Git shell、重算摘要后的语义证据替换、真实更新子进程死
 链接与目录替换、复制内容漂移、实际 egui 粘贴/焦点事件，以及有界诊断失败后
 的 displayed-binding 失效。当前环境拒绝 Unix socket bind，socket 夹具输出
 明确诊断；软链接断言仍执行，socket 拒绝场景需 hosted CI 实际执行。
+
+这些旧数量不覆盖新源。公共 Windows utility 已变更，不能用旧 owner 树或
+旧 210 项结果代替最终源 owner 验证。修订后的 manifest 已实际执行 Bazel
+9.0.0 lock-update 与 lock-check，两者通过且锁无需改变；它们是依赖元数据
+检查，不是 Bazel 编译或 Windows 主机执行证明。
 
 历史冻结源 `21cbe83cf85994bcbfd29666b5acd9d82cc15294` 的三个 release
 二进制真实构建、自检及真实子进程故障 qualification-e2e 通过；覆盖父进程
@@ -135,12 +198,12 @@ strace 实际尝试被环境以 PTRACE_TRACEME Operation not permitted 拒绝，
 声称 fsync 数量或写放大已完成实测验收。七主体 CI、release/package、Linux
 真实 keyring/Xvfb 生命周期仍以独立同次 CI artifacts 为准。
 
-最终源 ed5fd222 的两个完整 release 规模主体实际通过，分别用时 2.482 s
+历史冻结源 ed5fd222 的两个完整 release 规模主体实际通过，分别用时 2.482 s
 和 49.096 s。20 个重建 worker 各自从零派生资产开始；977 段全为混合前缀，
 每段至少 228 个前缀，每个 worker 重建 head 摘要一致。原始分位数独立复算，
 源码和实际编译 profile 绑定，预算没有放宽：
 
-| 最终源 release 本地诊断 | 测量 | 冻结预算 |
+| 历史 ed5 release 本地诊断 | 测量 | 冻结预算 |
 | --- | --- | --- |
 | 4096 active open p95 | 25.115 ms | 2000 ms |
 | mutation p50 / p95 / p99 | 0.022 / 0.045 / 0.296 ms | 25 / 100 / 250 ms |
@@ -151,12 +214,12 @@ strace 实际尝试被环境以 PTRACE_TRACEME Operation not permitted 拒绝，
 | 共存 history page p95 / retained JSON | 0.060 ms / 28417 bytes | 25 ms / 2 MiB |
 | active / retired subject peak RSS | 22 / 31 MiB | 256 / 256 MiB |
 
-最终源的三个 release 二进制真实构建、self-test 及实际子进程故障
+该历史源的三个 release 二进制真实构建、self-test 及实际子进程故障
 qualification-e2e 均通过。以上是共享 Linux 容器本地诊断；page cache 未控制、
 当时 review metadata 尚未提交，且没有 durability syscall trace，不能升级为
 七主体验收或发布资格。权威夹具构造用时不是 store append 性能测量。
 
-最终冻结源为 ed5fd2229502099addd6bedec2fae18783d5c162。新迁移回归涵盖
+该阶段历史冻结源为 ed5fd2229502099addd6bedec2fae18783d5c162。迁移回归涵盖
 混合段、重复身份、暂存篡改、正常失败清理、无资产重试、异常旧文件碰撞及
 坏归档。每前缀暂存先执行条数/bytes 上限；同句柄内容受写入摘要认证。
 确定性 authority-chain 命名使崩溃重试不能继续增加暂存集合；碰到遗留文件

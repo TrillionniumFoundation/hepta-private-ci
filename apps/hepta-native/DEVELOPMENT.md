@@ -1,9 +1,25 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`ed5fd2229502099addd6bedec2fae18783d5c162`, tree
-`4641d2abbf7db038404863b2f6a7975c28977fe1`. The source is an implementation
+`32310eefbef2a80164b669fe3bfcaef69b47b9da`, tree
+`90e28eb295688c11e93d4aec0ad983ba53e0e612`. The source is an implementation
 candidate; production, deployment and release flags remain false.
+
+This final source passed 243 of 243 normal release-profile application tests
+(1.469 s), including the actual headless egui text snapshot, and strict release
+application Clippy with all targets/features (4.78 s). The three ignored cases
+are the two separate scale subjects and their worker. Native qualification
+Python tests passed 227/227 and the strict native-map adapter suite passed 86/86.
+Both full scale subjects passed: 4096-active in 2.461 s and one-million-retired
+with 4096-active combined load in 52.572 s. Each open/rebuild population contains
+20 fresh processes; performance ceilings were preserved. All three release
+binaries built and passed self-test and real subprocess qualification-e2e.
+Package/portal tests passed 36/36; projection generation, verification, lint and
+7 tests passed with an 84-file registry inventory. These are local Linux
+diagnostics; OS page cache was uncontrolled and durability tracing was unavailable.
+Earlier ca66 results and ed5's older
+212 application / 226 Python / 210 owner counts remain historical evidence.
+Queued CI and Windows-only tests do not yet establish platform qualification.
 
 ## Toolchain and source identity
 
@@ -71,6 +87,20 @@ Do not reorder barriers, cache authorization across mutable work or interpret a
 timeout, helper exit or cancellation as known non-execution. UNKNOWN is never
 automatically replayed.
 
+Preparing a binding can open and verify an OS resource, so `PrepareBinding` runs
+on the supervised runtime-owner lane. Capture the exact subject, operation ID,
+action, payload and authenticated view. The worker rechecks that view under the
+runtime owner; completion is displayed only while the input, connection,
+Operations screen and exact view still match. Editing bound input invalidates
+the result. Cancel before admission and join admitted work on shutdown. This
+prepares independent authority input; the shell neither grants nor signs it.
+
+Preserve `ui/binding_prepare_tests.rs` cases for blocked OS confirmation, edited
+input, changed view, queued cancellation and admitted shutdown. The real headless
+egui text snapshot in `ui/binding_prepare_snapshot_tests.rs` records pending and
+stale-result projection. Its pinned `insta` dependency and snapshot are test
+assets; this is not GPU, physical desktop or accessibility acceptance.
+
 ## Journal, WAL and retirement
 
 Current schemas:
@@ -92,6 +122,37 @@ and reconcile; never retry through the same object or delete history.
 Retirement segments and archived records are authority. Manifests, buckets and
 cache are rebuildable acceleration. Index uncertainty rejects or rebuilds; it
 never makes a retired identity executable.
+
+Keep the private-root capability through the complete persistence operation.
+`StartupRecorder` pins an existing private parent at construction and publishes
+through it. Update pending/result JSON, owner and runner locks, readiness,
+ACK/cancellation and cleanup use the retained update root. Packages use its
+verified `staged` child. Pass that child into digest/copy/removal helpers;
+root replacement or trust drift is an error.
+
+The updater helper activates through its existing `UpdateManager`, retaining
+the manager's pinned root through admission and replacement. The standalone
+path activation API is an independent entry boundary, not a reason to reopen
+the root inside an already owned helper lifecycle.
+
+Stage admission allows an empty directory or one exact `<digest>.package` whose
+content matches the current manifest; a same-digest retry may reuse it. Another
+digest, an unknown crash temporary, redirected entry or changed content rejects
+staging and remains for explicit recovery. Do not delete unknown files
+automatically. Each package is bounded to 512 MiB; an atomic replacement may
+temporarily hold an additional copy of up to 512 MiB. This is not a 512 MiB peak
+disk-space guarantee. Predecessor backup limits remain separate.
+
+Legacy staging permissions may be tightened only on a verified current-principal
+handle, with a single-link check before file mode changes. Mutable private opens
+(`Write`, `Append`, `Lock`, `CreateNew`) require one hardlink. Unix `Read` is
+non-mutating, accepts owner-readable files with no group/world permissions
+(modes 0400, 0500, 0600 or 0700) and preserves immutable
+migration aliases; identity/content validation remains mandatory. Windows checks
+the actual opened child's owner and ACL. The shared utility's read/write
+`open_file` also applies mutable-file checks, protecting its contracts callers.
+An admission check cannot prevent a trusted principal from adding a later
+hardlink. Preserve target-OS root replacement, ACL drift and alias regressions.
 
 ## Linux picker and verified resource handoff
 
@@ -127,6 +188,14 @@ packaged executable, inspect the Start Menu shortcut's AppUserModelID, launch th
 packaged process and exercise a WinRT toast. Preserve the shortcut identity,
 script digest, package digest, logs and screenshots/automation evidence. The
 marker must never be pre-created to bypass registration.
+
+Notification support reads that marker as a bounded regular file: 128 bytes,
+valid UTF-8 and the registered AUMID after trimming. Read failure denies support.
+`tests/windows_registrar.rs` compiles the C# embedded in the actual packaged
+PowerShell registrar using system PowerShell; the readonly property key is copied
+to a local value before a `ref` call. This Windows-only compilation test does not
+register a shortcut or prove visible toast delivery. Linux test totals do not
+establish its execution.
 
 ## UI lanes and persistent history
 

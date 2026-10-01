@@ -5,6 +5,21 @@ The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 `work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the
 immutable implementation SHA/tree and ADVERSARIAL-AUDIT-20261001.md for findings.
 
+The final implementation source for this follow-up is
+`32310eefbef2a80164b669fe3bfcaef69b47b9da`, tree
+`90e28eb295688c11e93d4aec0ad983ba53e0e612`. Final same-source normal release
+application tests passed 243/243, and strict application Clippy passed for all
+targets/features. Native qualification Python passed 227/227 and the strict
+native-map adapter suite passed 86/86. Both full release scale subjects passed,
+including one-million-retired with 4096-active combined load and 20 fresh-process
+populations. All three release binaries built and passed self-test and real
+subprocess qualification-e2e. Package/portal 36/36 and projection
+generation/verification/lint with 7 tests passed; the registry inventoried 84 files.
+These are local Linux diagnostics; durability tracing and same-run platform
+qualification remain pending. Earlier
+ed5 and ca66 results remain historical;
+queued CI and Windows-only fixtures do not establish platform qualification.
+
 Historical WAL/index, portal, paging and package commits remain ancestry. The
 old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 `6f145464d9d58233c59aafe262a1250a5ea873a8` review base describe earlier work.
@@ -23,6 +38,13 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | qualify combined storage using the product release profile | `d6502257d890b915d2287cfc188509d8f18bdd6b` |
 | bind WAL regression imports to the journal owner | `21cbe83cf85994bcbfd29666b5acd9d82cc15294` |
 | rebuild mixed retirement histories with bounded authenticated spools; bind real first-migration samples and qualification boundaries | `ed5fd2229502099addd6bedec2fae18783d5c162` |
+| validate private child capabilities and keep mutable files single-linked | `f1d5eff58fffe8fba355f9ec94b9aa050d6ec33e` |
+| prepare bindings on the supervised worker and discard stale input/view projections | `8cec5eba730f07e128b8b8d925a0f6acf9b6001d` |
+| bind update persistence, lock contention and staged copies to retained roots | `4355faf5ceddb91a2e571f3448f062038f921e8f` |
+| retain updater activation ownership and admit only one exact staged package | `768f53e42c17c0983587175c6f693ad30f7bad71` |
+| regress namespace replacement, failed stage publication and rooted startup records | `9f1bcbdc28c9f48f55266528dd030cd3cde20ca7` |
+| bound Windows notification identity and compile the packaged registrar source | `ca66da671da6f22f1fe8e4ff4ddb4c8fdb8cf7b3` |
+| use a fixed oversize marker fixture under strict native lint | `32310eefbef2a80164b669fe3bfcaef69b47b9da` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;
@@ -40,8 +62,12 @@ python3 scripts/check_hepta_ui_native_convergence.py
 ```
 
 Review directory-handle ownership and WAL/checkpoint recovery first; then update
-copy digests, rollback identity, ACK/cancellation arbitration, session and input
-fences. Finally inspect exact source/package/SBOM semantics, raw performance
+child-root ownership, same-handle Windows ACL checks, mutable hardlink rejection,
+copy digests, rollback identity, ACK/cancellation arbitration and bounded staging
+admission. Trace helper activation through its existing manager root and binding
+preparation through exact input/view capture, worker admission and stale-result
+discard. Inspect the headless egui projection and packaged C# compile regression
+within their stated test scopes. Finally inspect exact source/package/SBOM semantics, raw performance
 samples, durability counts and the seven-subject evidence aggregate.
 
 The result is an incomplete implementation candidate. Non-Linux verified

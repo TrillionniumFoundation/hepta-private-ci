@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `ed5fd2229502099addd6bedec2fae18783d5c162`
-**Implementation tree:** `4641d2abbf7db038404863b2f6a7975c28977fe1`
+**Immutable implementation source:** `32310eefbef2a80164b669fe3bfcaef69b47b9da`
+**Implementation tree:** `90e28eb295688c11e93d4aec0ad983ba53e0e612`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -48,7 +48,8 @@ The convergence chain is a normal Git history:
 4. UI lane split and durable paging `172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3`;
 5. historical closed unsigned package inventory `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`;
 6. audit base `9be52d267d02a76f73e8a94fd086191c351d1c70`;
-7. adversarial audit source `ed5fd2229502099addd6bedec2fae18783d5c162` (this immutable candidate).
+7. historical adversarial audit source `ed5fd2229502099addd6bedec2fae18783d5c162`;
+8. current audited source `32310eefbef2a80164b669fe3bfcaef69b47b9da`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -67,6 +68,17 @@ utility; `hepta-private-state` remains a compatibility export for the native
 application. Domain authority stays with the calling owner. This avoids a
 shared-contract dependency on a product module while preserving OS behavior.
 
+Windows file validation checks regular-file identity, owner and DACL on the
+same opened handle, including child ACL drift beneath a still-private root.
+The shared utility's read/write `open_file` also requires one hardlink; shared
+contract callers cannot bypass mutable-file checks by using that entry point.
+Native write, append, lock and create opens reject multiple hardlinks on Unix
+and Windows. Native Unix Read opens do not chmod private owner-only files
+(including modes 0400, 0500, 0600 and 0700), and linked immutable migration inputs
+remain readable subject to content and identity validation. A trusted principal
+can still add a link after validation; these checks do not create domain
+authority or an OS-wide ownership guarantee.
+
 `journal.rs` owns the active operation state machine and exact
 `HashMap<OperationKey, usize>` lookup. `journal_storage.rs` owns snapshots and
 framed WAL persistence. `retirement.rs` owns immutable segments, archived
@@ -75,6 +87,13 @@ redirects and permissions. Unix journal reads and mutations use the pinned
 directory descriptor; atomic replacement verifies its parent descriptor and
 synchronizes that same directory. Operator-selected ancestry remains trusted;
 local checksums do not establish an external anti-rollback authority.
+
+`StartupRecorder` pins an already provisioned private parent at construction;
+it does not create an absent parent. Publication validates the exact session
+and view identity and uses the rooted atomic JSON writer. Parent replacement
+rejects publication instead of redirecting the observation. The startup record
+describes a completed GUI frame callback and keeps acceptance/release flags
+false.
 
 Startup retirement reconciliation groups at most 4096 active identities by
 index prefix, validates each referenced immutable bucket once, and preserves
@@ -87,6 +106,24 @@ Readiness keeps ActivatedUnconfirmed; receiving the ACK commits Confirmed.
 Cancellation and confirmation share the update owner lock, so timeout cleanup
 cannot kill a candidate after confirmation won. Critical copies validate the
 actual copied bytes before atomic publication.
+
+Pending/result JSON reads, atomic writes and removal, owner/runner locks and
+readiness/ACK/cancellation transitions retain the update `PrivateStateRoot`.
+Contention retries the same pinned owner; directory replacement remains an
+error. The updater helper activates through its existing `UpdateManager`,
+preserving that manager's root identity across runner locking and activation.
+The standalone activation entry point establishes one root identity at entry.
+
+The staged directory is a verified private child capability. Copy, digest
+checks and cleanup retain that child identity; Unix atomic staging publication
+compares the held parent descriptor with the pinned child before commit.
+Legacy staging permissions are tightened through verified current-principal
+handles; file permission migration requires one hardlink. New stage admission
+allows an empty directory or one exact current-digest `.package` whose bytes
+match a retry. Another digest, unknown entry or crash temporary is preserved
+and rejects admission until explicit operator recovery. Each package is bounded
+to 512 MiB. Atomic replacement can transiently retain an additional 512 MiB
+copy, so this is not a 512 MiB peak-directory guarantee.
 
 New activation admits at most four digest-named predecessor backups per target,
 each at most 512 MiB and together at most 2 GiB. The bounded directory scan
@@ -149,6 +186,16 @@ chain detects corruption and partial rollback; it is not an external anti-rollba
 authority if every local file is restored consistently.
 
 ## 6. Final-use and platform effect protocol
+
+`ui/binding_prepare.rs` prepares resource-bound input in the supervised runtime
+lane because confirmation can perform OS I/O. It captures the exact subject,
+operation, action, payload and authenticated `RuntimeView`, then rechecks that
+view under the runtime owner before calling confirmation. A result is displayed
+only if the Operations screen, connection, full view identity and captured
+input still match. Edits or stale completion discard it. Cancellation before
+admission does not call the confirmation owner; shutdown drains admitted work.
+Preparation does not invoke an effect, mint a grant, select nonce/epoch/lifetime
+or sign authority. The independent authority owner signs the complete grant.
 
 The effect order is:
 
@@ -218,6 +265,14 @@ commits `Trillionnium.Hepta.Native` through `IPropertyStore`, and writes the loc
 identity marker only after shortcut and property-store commits succeed.
 
 The WinRT toast adapter requires that marker and uses the exact registered AUMID.
+Marker input is a bounded regular-file read of at most 128 bytes, with strict
+UTF-8 and an exact AUMID after trimming. Missing, malformed, oversized or final
+symlink/reparse markers reject support. The reader does not sandbox parent
+directories. The registrar copies its static readonly property key to a local
+variable before passing it by `ref`. `tests/windows_registrar.rs` compiles the
+actual packaged C# source in system PowerShell; compilation is distinct from
+successful registration or toast delivery.
+
 The source and package inventory are implemented, but successful registration,
 shortcut property verification and visible toast behavior require a packaged
 physical Windows qualification run. Their presence in source is not execution,
@@ -235,6 +290,11 @@ The picker lane may remain open without blocking refresh or reconciliation. The
 read lane and mutation lane never run concurrently, preserving one journal and
 runtime authority. Shutdown cancels waiting tasks, waits for admitted tasks and
 only permits update activation after every lane and runtime close are confirmed.
+
+`ui/binding_prepare_snapshot_tests.rs` runs the actual egui widgets and painter
+headlessly and snapshots visible text for pending preparation and stale-result
+discard. The matching snapshot covers those presentation states; it does not
+exercise a native window, GPU, compositor, IME or physical accessibility stack.
 
 ## 11. Performance and hard budgets
 
@@ -256,10 +316,10 @@ The active subject measures 12,288 state transitions, fresh-process reopen,
 Nearest-rank p95 is derived from complete 20-process sample arrays; validators
 recompute percentiles and reject short, substituted or non-finite populations. `strace -ff -yy` records successful write/pwrite and
 fsync/fdatasync calls whose descriptors resolve inside the qualification root.
-The retirement subject builds one million exact identities, verifies indexed
-cold open and requires deterministic legacy-index rebuild. It also measures
+The retirement subject builds one million exact identities, measures fresh-process
+indexed open and requires deterministic legacy-index rebuild. It also measures
 20 actual journal opens with both 4096 active records and one million retired
-identities, followed by history pages spread across all 64 active-history pages.
+identities, followed by 20 history pages sampled across the full 64-page range.
 The same open, history and RSS ceilings apply to this combined population.
 
 Legacy rebuild validates every immutable segment and committed archive before
@@ -304,15 +364,42 @@ Each platform subject emits:
   subject, implementation source, runner and package digest.
 
 The aggregate revalidates all six bundles and binds their supply-chain digests.
+The workflow environment-context guard recognizes top-level `jobs:` block
+headers with trailing whitespace or comments; a comment cannot suppress job
+checks. Inline scalar values are not treated as block headers.
+
 SBOM and provenance generation is repository-controlled evidence only. It does
 not establish production signing, notarization, Authenticode, physical-host
 acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The audit revision has passed 212 local application regressions, 210 related
-owner regressions and strict application/owner Clippy. These Linux container
-checks do not establish the complete same-source CI or target-platform result.
+The previous `ed5fd2229502099addd6bedec2fae18783d5c162` evidence recorded
+212 application tests, 226 Python tests, 210 related owner tests and strict
+application/owner Clippy. Those counts and checks are historical and do not
+qualify the revised source. The final frozen source passed 243 of 243 normal
+release application tests in 1.469 s, including the actual egui text snapshot,
+and strict release application Clippy for all targets/features in 4.78 s.
+The three ignored entries are the two separate scale subjects and their worker;
+native qualification Python passed 227/227 and the strict native-map adapter
+suite passed 86/86. Both full release scale subjects passed: 4096-active in
+2.461 s and one-million-retired with 4096-active combined load in 52.572 s.
+Each open/rebuild population contains 20 fresh processes. Active, retired and
+combined open p95 were 31.413, 0.414 and 462.509 ms; zero-derived-asset mixed
+rebuild p95 was 1866.871 ms, within unchanged provisional ceilings. All three
+release binaries built and passed self-test and real subprocess qualification-e2e;
+seven fault/fence checks were true and all three authority-grant flags stayed
+false. Package/portal 36/36 and projection generation/verification/lint with
+7 tests passed; the registry inventoried 84 files. These are local Linux
+diagnostics with uncontrolled OS page cache and no durability syscall trace.
+Earlier ca66 results remain
+historical. Actual Bazel 9 dependency metadata update/check passed against the
+revised manifest without changing its module lockfile. Current owner and Windows
+results remain pending. Queued CI is
+pending evidence. An independent static review found no additional
+reproducible issue within the reviewed scope; it does not establish complete
+same-source CI or target-platform acceptance.
+
 Equivalent verified-resource Open/Reveal adapters on macOS and Windows remain
 a product implementation gap. Promotion also requires:
 
@@ -335,7 +422,13 @@ Until those gates close, `productionQualified`, `deploymentQualified` and
 
 Read `ADVERSARIAL-AUDIT-20261001.md` for reproduced defects, fixes and local
 verification. The previous implementation source remains provenance; a new
-ordinary source commit must be frozen before qualification. Exact filenames,
-input caps, stable focus IDs and a 4 MiB worker-rendered diagnostic cache keep
+ordinary source commit is frozen at the identity above and requires its own
+qualification receipts. Binding, startup, rooted update and child ACL regressions
+are in `ui/binding_prepare_tests.rs`,
+`startup_tests.rs`, `update_root_storage_tests.rs`, `journal_windows_tests.rs`
+and the shared utility's `windows_acl_tests.rs`. These cases validate local
+ownership and substitution boundaries without minting execution authority.
+Exact filenames, input caps, stable focus IDs and a 4 MiB worker-rendered
+diagnostic cache keep
 presentation bounded without changing final-use authority. Explicit staged
 package cleanup preserves unrelated files and predecessor recovery evidence.
