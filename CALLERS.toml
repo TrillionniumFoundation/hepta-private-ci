@@ -51,7 +51,9 @@ required_boundary_ids = [
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect"
+  "final_use_guarded_effect",
+  "final_use_entry_raw",
+  "bao_authbus_final_use_consumer"
 ]
 
 [[boundary]]
@@ -164,10 +166,10 @@ caller_markers = ["claim_final_use"]
 [[boundary]]
 id = "final_use_claim_raw"
 symbol = "FinalUseAuthority::claim"
-call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
+call_pattern = '(?:\b(?:authority|final_use)\s*\.\s*claim|FinalUseAuthority\s*::\s*claim)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["authority", "binding"]
 
 [[boundary]]
@@ -496,10 +498,11 @@ release = false
 [[boundary]]
 id = "final_use_async_dispatch_fence"
 symbol = "FinalUseAuthority::with_verified_use_async"
+call_pattern = '(?:\.|::)\s*(?:r#)?with_verified_use_async\b'
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub async fn with_verified_use_async", "DispatchInProgress", "active_dispatches"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-memory/src/production_writer.rs"]
+caller_markers = ["with_verified_use_async", "binding"]
 
 
 [[boundary]]
@@ -514,8 +517,28 @@ caller_markers = []
 [[boundary]]
 id = "final_use_guarded_effect"
 symbol = "FinalUseAuthority::with_verified_effect"
-call_pattern = '\bauthority\s*\.\s*with_verified_effect\s*\('
+call_pattern = '(?:\.|::)\s*(?:r#)?with_verified_effect\b'
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
 caller_markers = ["with_verified_effect"]
+
+# Existing admission method; no product caller is authorized by this row.
+[[boundary]]
+id = "final_use_entry_raw"
+symbol = "FinalUseAuthority::enter_verified_use"
+call_pattern = '(?:\.|::)\s*(?:r#)?enter_verified_use\b'
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn enter_verified_use", "Arc::ptr_eq", "token.enter(expected)"]
+product_callers = []
+caller_markers = []
+
+# Existing quota/final-use composition; it has no registered product caller.
+[[boundary]]
+id = "bao_authbus_final_use_consumer"
+symbol = "BaoClient::consume_kv_v2_with_authbus"
+call_pattern = '(?:\.|::)\s*(?:r#)?consume_kv_v2_with_authbus\b'
+definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+definition_markers = ["pub async fn consume_kv_v2_with_authbus", "mark_dispatch_attempted", ".consume_kv_v2(authority, grant, request, consumer)"]
+product_callers = []
+caller_markers = []
