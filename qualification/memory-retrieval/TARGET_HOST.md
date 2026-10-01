@@ -11,11 +11,16 @@ a target-host claim.
 
 ## Qualification-host evidence collector
 
-`.github/workflows/hepta-memory-retrieval-qualification-host.yml` executes all three
+`.github/workflows/hepta-memory-retrieval-qualification-host.yml` executes all four
 release-mode probes on an exact PR/source SHA, records the source tree and runner
 identity, captures kernel/CPU/memory/Rust toolchain facts, preserves raw stdout/
 stderr plus GNU `/usr/bin/time -v` output, and uploads the complete record as a
-30-day workflow artifact. A GitHub-hosted run is useful reproducible
+30-day workflow artifact. The repository's `just test`/nextest runner explicitly
+fails if a probe or regression filter selects zero tests; removed/renamed tests
+cannot silently create successful qualification evidence. Native, learning-ledger
+retrieval and SQLite adapter/revalidation regression logs are retained alongside
+the measurements. A separate debug-profile job retains the exact-source Agentd
+context/delivery regression log and host identity. A GitHub-hosted run is useful reproducible
 qualification-host evidence; it is **not** the approved named production target
 host and cannot satisfy target-host acceptance by relabeling the runner.
 
@@ -25,13 +30,13 @@ identity and raw-measurement fields before any performance claim advances.
 
 ## 1. Owner SQLite / source-revalidation probe
 
-From `codex-rs` on the named target host:
+From the repository root on the named target host:
 
 ```sh
 /usr/bin/time -v \
-  cargo test --release --locked -p codex-hepta-memory \
-  target_host_owner_retrieval_reports_latency_percentiles \
-  -- --ignored --nocapture --test-threads=1
+  just test --release --locked -p codex-hepta-memory \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_owner_retrieval_reports_latency_percentiles)'
 ```
 
 The ignored fixture creates 1,024 verified owner memories and executes 200
@@ -49,9 +54,9 @@ not assert full-store recall.
 
 ```sh
 /usr/bin/time -v \
-  cargo test --release --locked -p codex-hepta-memory-retrieval \
-  target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling \
-  -- --ignored --nocapture --test-threads=1
+  just test --release --locked -p codex-hepta-memory-retrieval \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling)'
 ```
 
 The fixture executes 100 deterministic HNMF recalls with 512 candidate events,
@@ -64,18 +69,37 @@ substitute for the SQLite/Agentd end-to-end observation above.
 
 ```sh
 /usr/bin/time -v \
-  cargo test --release --locked -p codex-hepta-memory-retrieval \
-  target_host_hnmf_validates_full_structural_ceiling \
-  -- --ignored --nocapture --test-threads=1
+  just test --release --locked -p codex-hepta-memory-retrieval \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_hnmf_validates_full_structural_ceiling)'
 ```
 
 This fixture constructs and validates the exact 4,096-node / 32,768-synapse
-structural ceiling and prints construction plus validation microseconds.
-GNU `time -v` supplies CPU and RSS/peak-memory observations for the same
-process. This is a structural-capacity probe, not a claim that worst-case
-four-step traversal of every edge meets any latency target.
+structural ceiling, then executes 50 recalls with 512 candidates and four settling
+steps. It checks 4,096 expanded nodes and 131,072 synapse traversals and prints
+recall p50/p95/p99 plus construction and validation microseconds. GNU `time -v`
+supplies CPU and RSS/peak-memory observations for the same process. This fixture
+does not establish an approved latency target for all possible support densities,
+population mixes or target hosts.
 
-## 4. Functional qualification matrix
+## 4. HNMF outside-support working-set probe
+
+```sh
+/usr/bin/time -v \
+  just test --release --locked -p codex-hepta-memory-retrieval \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_hnmf_ranking_reports_outside_support_latency)'
+```
+
+This fixture has two current candidates, 448 active nodes and 512 exact supports
+per node (229,376 support events). Most supports are outside the current cut.
+Twenty samples independently measure deterministic candidate ranking and full
+receipt validation, with selection parity and successful validation checked for
+every sample. The two JSON phases are `hnmf-ranking-outside-support` and
+`hnmf-receipt-validation-outside-support`. They isolate temporary-index overhead;
+they do not measure settling, SQLite I/O or end-to-end Agentd latency.
+
+## 5. Functional qualification matrix
 
 The ordinary package tests cover:
 
@@ -93,7 +117,7 @@ The ordinary package tests cover:
 These fixtures establish deterministic correctness and separable interventions.
 They do not establish real-world recall quality or learned-policy uplift.
 
-## 5. Evidence that remains independent
+## 6. Evidence that remains independent
 
 A performance receipt records measurements; it does not select, accept, promote
 or release the candidate. Real recall-quality and causal-utility claims require

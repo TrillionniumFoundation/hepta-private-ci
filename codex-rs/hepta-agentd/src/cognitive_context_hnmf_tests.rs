@@ -63,6 +63,42 @@ impl CurrentMemoryRetrievalContext for SwitchingContext {
     }
 }
 
+struct MutatingOwnerContext {
+    owner: AgentId,
+    store: CognitiveStore,
+    context: RetrievalExecutionContextV1,
+    mutate_on_call: usize,
+    calls: AtomicUsize,
+}
+
+impl CurrentMemoryRetrievalContext for MutatingOwnerContext {
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
+        if owner != &self.owner || body_generation != 1 {
+            return Err("wrong retrieval host identity".to_string());
+        }
+        if self.calls.fetch_add(1, Ordering::SeqCst) == self.mutate_on_call {
+            tokio::runtime::Handle::current()
+                .block_on(self.store.append_source(
+                    &CognitiveAccess::agent_private(owner.clone()),
+                    &SourceDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        kind: LedgerSourceKind::ExplicitMemoryDirective,
+                        event_key: "source-during-context-validation".to_string(),
+                        content:
+                            b"owner source changed during external context validation".to_vec(),
+                        observed_at_unix_seconds: 100,
+                    },
+                ))
+                .map_err(|error| error.to_string())?;
+        }
+        Ok(self.context.clone())
+    }
+}
+
 async fn fixture(
     suffix: u16,
 ) -> (
@@ -302,4 +338,72 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
             codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
         ))
     ));
+}
+
+#[tokio::test]
+async fn owner_drift_during_hnmf_publication_validation_fails_closed() {
+    let (_temp, store, owner, context, _) = fixture(134).await;
+    let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(MutatingOwnerContext {
+        owner: owner.clone(),
+        store: store.clone(),
+        context,
+        mutate_on_call: 1,
+        calls: AtomicUsize::new(0),
+    });
+    let result =
+        read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider)).await;
+    assert!(
+        matches!(
+            &result,
+            Err(CognitiveContextError::Store(
+                codex_hepta_memory::CognitiveStoreError::Conflict(_)
+            ))
+        ),
+        "owner drift must fail publication: {result:?}"
+    );
+}
+
+#[tokio::test]
+async fn owner_drift_during_hnmf_final_use_validation_fails_closed() {
+    let (_temp, store, owner, context, _) = fixture(135).await;
+    let stable: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context.clone(),
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let response = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&stable))
+        .await
+        .unwrap();
+    let mutating: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(MutatingOwnerContext {
+        owner: owner.clone(),
+        store: store.clone(),
+        context,
+        mutate_on_call: 0,
+        calls: AtomicUsize::new(0),
+    });
+    let result = crate::cognitive_context::revalidate_with_retrieval_context(
+        &store,
+        &owner,
+        &response.snapshot_digest,
+        &response.read_digest,
+        response.omitted_records,
+        &response.items,
+        response.plan.as_ref(),
+        None,
+        1,
+        Some(&mutating),
+    )
+    .await;
+    assert!(
+        matches!(
+            &result,
+            Err(CognitiveContextError::Store(
+                codex_hepta_memory::CognitiveStoreError::Conflict(_)
+            ))
+        ),
+        "owner drift must fail final use: {result:?}"
+    );
 }

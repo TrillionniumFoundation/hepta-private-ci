@@ -231,6 +231,9 @@ pub struct GeneratedCandidateInputV1 {
 
 impl GeneratedCandidateInputV1 {
     pub fn new(mut batches: Vec<RetrievalGeneratorBatchV1>) -> Result<Self, GeneratorErrorV1> {
+        if batches.is_empty() || batches.len() > MAX_RETRIEVAL_GENERATORS {
+            return Err(GeneratorErrorV1::InvalidGeneratorCount);
+        }
         batches.sort_by_key(|batch| batch.receipt.generator);
         let source_completeness_digest = completeness_digest(&batches)?;
         let value = Self {
@@ -342,7 +345,25 @@ pub struct GeneratedCandidateUnionV1 {
 impl GeneratedCandidateUnionV1 {
     pub fn validate(&self) -> Result<(), GeneratorErrorV1> {
         self.union.validate().map_err(GeneratorErrorV1::Recall)?;
-        validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let total = validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let channels = self
+            .generator_receipts
+            .iter()
+            .filter(|receipt| receipt.candidate_count > 0)
+            .map(|receipt| receipt.generator.channel())
+            .collect::<BTreeSet<_>>();
+        if self.union.entries.len().saturating_add(
+            usize::try_from(self.union.omitted_by_channel_limits).unwrap_or(usize::MAX),
+        ) > usize::try_from(total).unwrap_or(0)
+            || self.union.entries.iter().any(|entry| {
+                entry
+                    .channels
+                    .iter()
+                    .any(|channel| !channels.contains(channel))
+            })
+        {
+            return Err(GeneratorErrorV1::CandidateCountMismatch);
+        }
         if self
             .generator_receipts
             .iter()
@@ -385,7 +406,29 @@ pub struct GeneratedRecallV1 {
 impl GeneratedRecallV1 {
     pub fn validate(&self) -> Result<(), GeneratorErrorV1> {
         self.packet.validate().map_err(GeneratorErrorV1::Recall)?;
-        validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let total = validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let channels = self
+            .generator_receipts
+            .iter()
+            .filter(|receipt| receipt.candidate_count > 0)
+            .map(|receipt| receipt.generator.channel())
+            .collect::<BTreeSet<_>>();
+        if self
+            .packet
+            .selections
+            .len()
+            .saturating_add(usize::try_from(self.packet.omitted_count).unwrap_or(usize::MAX))
+            > usize::try_from(total).unwrap_or(0)
+            || usize::try_from(self.packet.distinct_channels).unwrap_or(usize::MAX) > channels.len()
+            || self.packet.selections.iter().any(|selection| {
+                selection
+                    .channels
+                    .iter()
+                    .any(|channel| !channels.contains(channel))
+            })
+        {
+            return Err(GeneratorErrorV1::CandidateCountMismatch);
+        }
         if self
             .generator_receipts
             .iter()
@@ -599,14 +642,27 @@ fn ensure_input_generation(
 fn validate_receipts(
     receipts: &[RetrievalGeneratorReceiptV1],
     expected_completeness_digest: Digest32,
-) -> Result<(), GeneratorErrorV1> {
+) -> Result<u32, GeneratorErrorV1> {
     if receipts.is_empty() || receipts.len() > MAX_RETRIEVAL_GENERATORS {
         return Err(GeneratorErrorV1::InvalidGeneratorCount);
     }
     let mut seen = BTreeSet::new();
     let mut previous = None;
+    let mut total_candidates = 0_u32;
     for receipt in receipts {
         receipt.validate()?;
+        if receipt.completeness == RetrievalSourceCompletenessV1::Unavailable {
+            return Err(GeneratorErrorV1::RequiredGeneratorUnavailable(
+                receipt.generator.channel(),
+            ));
+        }
+        total_candidates = total_candidates
+            .checked_add(receipt.candidate_count)
+            .ok_or(GeneratorErrorV1::CandidateLimitExceeded)?;
+        if usize::try_from(total_candidates).unwrap_or(usize::MAX) > MAX_GENERATION_BOUND_CANDIDATES
+        {
+            return Err(GeneratorErrorV1::CandidateLimitExceeded);
+        }
         if !seen.insert(receipt.generator) {
             return Err(GeneratorErrorV1::DuplicateGenerator(receipt.generator));
         }
@@ -624,7 +680,7 @@ fn validate_receipts(
     if Digest32::of_bytes(&bytes) != expected_completeness_digest {
         return Err(GeneratorErrorV1::DigestMismatch("source_completeness"));
     }
-    Ok(())
+    Ok(total_candidates)
 }
 
 fn completeness_digest(

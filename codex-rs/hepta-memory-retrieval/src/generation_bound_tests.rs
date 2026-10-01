@@ -584,3 +584,38 @@ fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
         ))
     );
 }
+
+#[test]
+fn recomputed_public_receipts_bound_nested_evidence_and_policy_omissions() {
+    let candidates = vec![
+        candidate(record(1), RetrievalChannelV1::Lexical, 1),
+        candidate(record(1), RetrievalChannelV1::Entity, 1),
+    ];
+    let original = build_candidate_union(&cue(), &policy(), candidates.clone()).expect("union");
+    let mut union = original.clone();
+    union.omitted_by_channel_limits = 512;
+    union.union_digest = union.compute_union_digest();
+    assert_eq!(union.validate(), Err(RecallErrorV1::CandidateLimitExceeded));
+    let mut supports = vec![
+        digest("support:1"),
+        digest("support:2"),
+        digest("support:3"),
+    ];
+    supports.sort();
+    let mut union = original;
+    union.entries[0].support_digests = supports.clone();
+    union.union_digest = union.compute_union_digest();
+    assert_eq!(
+        union.validate(),
+        Err(RecallErrorV1::InvalidUnionEntry("memory:1".to_string()))
+    );
+    let mut packet = recall(&cue(), &policy(), candidates).expect("recall");
+    packet.selections[0].support_digests = supports;
+    packet.packet_digest = packet.compute_packet_digest();
+    assert_eq!(
+        packet.validate(),
+        Err(RecallErrorV1::InvalidRecallSelection(
+            "memory:1".to_string()
+        ))
+    );
+}
