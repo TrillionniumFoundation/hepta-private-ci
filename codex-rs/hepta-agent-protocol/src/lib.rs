@@ -4,6 +4,7 @@
 
 mod authbus;
 mod capabilities;
+mod cognitive_preparation;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -21,6 +22,9 @@ pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
 pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
+pub use cognitive_preparation::COGNITIVE_CONTEXT_PREPARATION_CAPABILITY;
+pub use cognitive_preparation::CognitiveContextPreparation;
+pub use cognitive_preparation::CognitivePreparationReceipt;
 pub use evidence::KernelEvidenceAppendIngress;
 pub use evidence::KernelEvidenceCandidateV1;
 pub use evidence::KernelEvidenceQueryV1;
@@ -599,6 +603,10 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextPrepare {
+        query: String,
+        limit: u16,
+    },
     CognitiveContextRevalidate {
         snapshot_digest: String,
         read_digest: String,
@@ -746,6 +754,7 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextPrepared(CognitiveContextPreparation),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     KernelEvidenceResult(KernelEvidenceResult),

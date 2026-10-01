@@ -469,16 +469,19 @@ async fn ordinary_socket_reads_from_new_clients_do_not_reuse_assignment_identity
     let task = tokio::spawn(server.run());
     let first = crate::AgentdClient::new(socket.clone(), owner(), /*spawn_generation*/ 1)
         .unwrap()
-        .cognitive_context("lemon".to_string(), /*limit*/ 4)
+        .prepare_cognitive_context("lemon".to_string(), /*limit*/ 4)
         .await
         .unwrap();
-    let second = crate::AgentdClient::new(socket, owner(), /*spawn_generation*/ 1)
+    let second = crate::AgentdClient::new(socket.clone(), owner(), /*spawn_generation*/ 1)
         .unwrap()
-        .cognitive_context("orchard".to_string(), /*limit*/ 4)
+        .prepare_cognitive_context("orchard".to_string(), /*limit*/ 4)
         .await
         .unwrap();
-    assert_eq!(first.items, second.items);
-    assert_eq!(first.items.len(), 1);
+    assert_eq!(first.snapshot.items, second.snapshot.items);
+    assert_eq!(first.snapshot.items.len(), 1);
+    let capabilities = crate::AgentdClient::new(socket.clone(), owner(), /*spawn_generation*/ 1)
+        .unwrap().capabilities().await.unwrap();
+    assert!(capabilities.capabilities.iter().any(|capability| capability.id == crate::COGNITIVE_CONTEXT_PREPARATION_CAPABILITY && capability.major == 1));
     let snapshot = sink.writer.lock().unwrap().snapshot().unwrap();
     assert_eq!(snapshot.records().len(), 2);
     let assignments = snapshot
@@ -505,8 +508,22 @@ async fn ordinary_socket_reads_from_new_clients_do_not_reuse_assignment_identity
                 .as_str()
                 .starts_with("retrieval-preparation-episode:")
         );
-        let expected = Digest32::of_bytes(&serde_json::to_vec(published).unwrap());
+        let expected = Digest32::of_bytes(&serde_json::to_vec(&published.snapshot).unwrap());
         assert_eq!(assignment.published_context_digest, Some(expected));
+        let receipt = published.preparation.as_ref().unwrap();
+        assert_eq!(receipt.read_request_id, 1);
+        receipt.validate().unwrap();
+        let inspect = |agent: &AgentId, generation, request_id, context_digest| sink.with_owner_preparation(
+            agent, generation, request_id, receipt.sequence,
+            receipt.event_digest.parse().unwrap(), receipt.chain_digest.parse().unwrap(),
+            context_digest, |actual, _| Ok(actual.clone()),
+        );
+        assert_eq!(inspect(&owner(), 1, 1, expected).unwrap(), **assignment);
+        assert!(inspect(&owner(), 2, 1, expected).is_err());
+        assert!(inspect(&owner(), 1, 2, expected).is_err());
+        let other_owner = AgentId::parse("00000000-0000-4000-8000-000000000142").unwrap();
+        assert!(inspect(&other_owner, 1, 1, expected).is_err());
+        assert!(inspect(&owner(), 1, 1, digest("wrong-context")).is_err());
         assert!(
             sink.with_prepared_assignment(
                 &owner(),

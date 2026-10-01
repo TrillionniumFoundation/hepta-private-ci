@@ -160,6 +160,7 @@ pub(crate) async fn read_with_retrieval_context(
     .await
 }
 
+#[cfg(test)]
 pub(crate) async fn read_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -171,6 +172,32 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_prepared_with_retrieval_context_and_learning(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        current_retrieval,
+        learning_sink,
+        request_id,
+    )
+    .await
+    .map(|prepared| prepared.snapshot)
+}
+
+pub(crate) async fn read_prepared_with_retrieval_context_and_learning(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    request_id: Option<u64>,
+) -> Result<crate::CognitiveContextPreparation, CognitiveContextError> {
     let mut operation = OperationObservation::start(Phase::Read);
     if query.is_empty()
         || query.len() > 2048
@@ -486,6 +513,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             return Err(CognitiveContextError::RetrievalContextUnavailable);
         }
     }
+    let mut preparation = None;
     if let Some(sink) = learning_sink {
         let assignment =
             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
@@ -526,7 +554,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         };
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
-        tokio::task::spawn_blocking(move || {
+        let receipt = tokio::task::spawn_blocking(move || {
             sink.append_preparation_with_delivery_policy(
                 &owner,
                 body_generation,
@@ -542,6 +570,12 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .await
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
+        preparation = Some(crate::CognitivePreparationReceipt {
+            read_request_id: request_id,
+            sequence: receipt.sequence.get(),
+            event_digest: receipt.event_digest.to_string(),
+            chain_digest: receipt.chain_digest.to_string(),
+        });
     }
     // Publication is the last memory-owner observation, after every awaited
     // ranker/retrieval/learning operation. A write-ahead learning assignment may
@@ -558,7 +592,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     fresh_plan.ensure_current(plan_binding::now_micros()?)?;
     cognitive_context_metrics::record_selected(response.items.len());
     operation.succeed();
-    Ok(response)
+    Ok(crate::CognitiveContextPreparation {
+        snapshot: response,
+        preparation,
+    })
 }
 
 #[cfg(test)]
