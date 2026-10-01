@@ -62,14 +62,23 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
             canonical,
             self.source_test_names("codex-rs/hepta-fleet/src/registry_tests.rs"),
         )
-        required = tuple(
-            f"release::{module}::{name}"
-            for file, module in (
-                ("release_copy_tests.rs", "copy_tests"),
-                ("release_publish_tests.rs", "publish_tests"),
+        required = (
+            tuple(
+                f"release::{module}::{name}"
+                for file, module in (
+                    ("release_copy_tests.rs", "copy_tests"),
+                    ("release_publish_tests.rs", "publish_tests"),
+                )
+                for name in self.source_test_names("codex-rs/hepta-fleet/src/" + file)
             )
-            for name in self.source_test_names("codex-rs/hepta-fleet/src/" + file)
-        ) + (f"registry::tests::{canonical}",)
+            + (f"registry::tests::{canonical}",)
+            + tuple(
+                f"regular_file::tests::{name}"
+                for name in self.source_test_names(
+                    "codex-rs/hepta-fleet/src/regular_file_tests.rs"
+                )
+            )
+        )
         fleet_binary = "codex-hepta-fleet"
         self.assertEqual(
             required, self.plan.required_binary_tests["fleet-library"][fleet_binary]
@@ -116,7 +125,21 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
         # transcript and aggregate count stay valid after replacing a PASS;
         # only exact mandatory identity can reject the weaker receipt.
         critical = []
+        resolution = "signed_explicit_rollback_source_restoration_can_recover_without_new_dispatch"
+        self.assertIn(
+            resolution,
+            self.source_test_names(
+                "codex-rs/hepta-supervisor/src/release_signed_recovery_tests.rs"
+            ),
+        )
+        critical.append(
+            "supervisor::tests::release_retry_tests::signed_recovery::" + resolution
+        )
         for file, namespace in (
+            (
+                "signed_effect_boundary_tests.rs",
+                "daemon::authority_tests::effect_boundary_tests",
+            ),
             ("daemon_read_projection_tests.rs", "daemon::read_view::projection_tests"),
             (
                 "automatic_restart_event_tests.rs",
@@ -125,6 +148,22 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
             (
                 "tick_control_fault_tests.rs",
                 "supervisor::tests::tick_control_fault_tests",
+            ),
+            (
+                "tick_control_deadline_tests.rs",
+                "supervisor::tests::tick_control_fault_tests::deadline_tests",
+            ),
+            (
+                "tick_control_budget_tests.rs",
+                "supervisor::tests::tick_control_fault_tests::deadline_tests::budget_tests",
+            ),
+            (
+                "tick_matrix_fault_tests.rs",
+                "supervisor::tests::tick_control_fault_tests::matrix_fault_tests",
+            ),
+            (
+                "tick_pending_deadline_tests.rs",
+                "supervisor::tests::tick_control_fault_tests::pending_deadline_tests",
             ),
             ("matrix_control_order_tests.rs", "matrix::tick::tests::control_order"),
             ("daemon_startup_tests.rs", "daemon::startup_tests"),
@@ -138,6 +177,10 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
             ),
             ("unix_peer_identity_tests.rs", "unix::peer_identity_tests"),
             ("unix_control_io_tests.rs", "unix::control_io::tests"),
+            ("authority_bundle_open_tests.rs", "authority_bundle::open_tests"),
+            ("regular_file_io_tests.rs", "regular_file_io::tests"),
+            ("directory_io_tests.rs", "directory_io::tests"),
+            ("matrix_binding_io_tests.rs", "matrix::binding_io_tests"),
             (
                 "constructor_hydration_tests.rs",
                 "supervisor::constructor_hydration::tests",

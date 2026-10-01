@@ -296,3 +296,160 @@ tree `f0eb8dd82c1eb058dc233e0b089144b798ae6880`。两个 reviewable stages
 分别为 237 和 40 changed lines，API 与本地 tree 一致。再次完成 scoped fix、
 完整 fmt 和默认／qualification-offline all-target strict Clippy，未在其后
 重跑本地测试。新发布候选须取得自己的 Linux/macOS source 和 merge 执行。
+
+## 已确认控制阶段的期限升级不得被观测错误饿死
+
+最后一轮全模块对抗复审发现另一条真实路径：driver 成功接受 Drain 或 Stop
+后，pending control 被清空，而阶段的原期限仍有效。随后持续的坏 Drain
+回复让 poll 返回错误，旧 tick 在检查阶段期限前返回，因此 Stop／Kill
+升级可以永久饥饿。即使 poll 有界，重复失败也不能保证已接受的期限执行。
+同样，完整 Fleet 读取中的 unrelated Agent manifest 损坏会更早阻断升级。
+
+现有 Draining／Stopping 阶段到期时，按当前已持有进程的 spawn generation
+恢复控制意图，合并时保留更强的 Kill 和更早的期限。Drain 到期沿用原
+Drain limit 加 stop grace；迟到超过两个期限可直接 Kill，不重新给预算。
+这些已确认且到期的阶段及下述已准入的当前意图，在可失败的 Fleet 读取及
+poll 前执行终止控制。
+新准入、普通未到期 pending 控制和生命周期 CAS 继续原有完整 Fleet 校验；
+已保存的真实 observed exit 保持最先处理，不再发送信号。
+
+成功事件只发出一次；信号、Fleet、poll 错误在实际发生的路径分别保留，
+不把错误改成 DrainAck、健康、退出证明或清理授权。generation 漂移仍执行
+原 fencing 和精确句柄终止；已成功 Kill 不重复发送。失败不丢弃 owner 或
+删除租约，只有真实进程退出观测及原有 durable finalization 才完成清理。
+
+新增五项公共 Supervisor::tick 回归，使用真实 Fleet 文件和既有进程测试
+driver，覆盖确认 Drain／Stop 后持续 poll 错误、信号与 poll 双错、原预算
+和更强 Kill，以及确认 Stop 后全局 manifest 损坏。检查原租约字节、句柄
+保留、真实 fault 和事件次数；修复观测后才允许真实退出清理。五个精确
+叶身份加入 v3 mandatory requirements，缺失、前缀及错误 binary 收据仍
+必须被拒绝。它们只能由后续自己的源码 head 执行，不能引用 1f 或旧 CI。
+
+这项修复只关闭已有进程终止控制的观测错误饥饿路径，不填补跨 daemon
+退出清理见证、完整 launch-before-lease lineage、原子恢复观察或逐 Agent
+调度隔离缺口。16 项能力的 12／2／2 状态与全部验收边界保持不变。
+
+同轮边界复核还确认，非零 Duration 不等于 Instant 上可表示的组合期限。
+stop grace 为 Duration::MAX 时，旧配置检查可以通过，Drain 也可成功开始，
+但原 Drain limit 加 stop grace 每次都溢出，永远不能升级。恢复入口在取得
+任何 driver 所有权前检查给定 now 的完整 Drain／Stop 预算；每次 Drain 在
+deferral、fencing、CAS、信号前按实际 now 再检查。不可表示的预算直接拒绝，
+不把溢出解释为 Kill 权限。两项真实文件／进程 driver 回归验证恢复零取得
+和现有运行进程的生命周期、租约字节、事件及调用次数不变。
+
+Matrix 的直接 containment 路径也曾丢失诊断：首次 Kill 失败后，随后的
+poll、Fleet 读取或租约清理失败可覆盖该信号错误；旧回归只覆盖较早的
+generation fencing 控制路径。私有 companion tick 现在携带当前 TickReport，
+在后续失败返回前保留控制错误一次，直接返回控制错误时不重复记录。
+公共 tick 回归覆盖 main poll／Matrix Kill／Matrix poll 三错，以及真实
+Matrix exit 后的租约清理失败；双进程所有权和租约保留，保存 terminal 后
+仅重试清理，不重复发送信号。已完成的真实退出仍由原条件决定，不改成
+虚构故障、Exit 或恢复授权。这些新增具名回归同样须取得新 head 的执行。
+
+扩大同类复核后，首次 Drain／Stop 信号失败留下的已准入 pending control
+也必须覆盖：此时 runtime 仍可为 Running，但同 incarnation 的原意图和期限
+已经建立。坏 Fleet 记录不能阻断到期的 Stop／Kill；已有 current pending
+Kill 也须立即重试。过期阶段和这些已建立的当前意图共用同一执行／事件／
+错误复用路径。未到期 Drain／Stop、stale spawn 意图及新准入没有获得额外
+权限。三项公共 API／真实损坏 manifest 回归分别覆盖首次 Drain、Stop、Kill
+失败，并验证 stale incarnation 不发送信号。
+
+Matrix 的统一 kill helper 同样须尊重已保存 terminal：真实 exit 已记录、
+但 foreign lease 阻止清理时，随后主进程 generation CAS 曾再次调用伴随
+进程 kill，制造 ESRCH 或虚假 KillRequested。统一 helper 现在只撤销健康和
+服务权限，保留句柄、租约及原阶段；该 terminal 不再 signal。已有清理回归
+增加真实 Fleet CAS 和必定失败的 probe／signal，证明只重试准确所有权清理。
+
+## 签名变更的 durable effect boundary
+
+有效签名的升级可能已发布 Prepared intent、release transaction、推进
+lifecycle 并发送 Drain，却在第二次 Queued intent 发布确认时失败。旧入口
+返回普通 Driver／Invalid，RPC 又按 mutation_started=false 给出安全拒绝，
+错误暗示没有发生变更。签名 recovery 的两个 terminal 发布之间也有同类
+durability ambiguity：rename 已发生但 directory sync 确认失败。
+
+另确认一个既有协议缺口：Prepared intent 已发布但还没有 release transaction
+时，现有签名 resolution 强制要求 transaction digest，无法解除该隔离。
+离线 legacy abort 只写 digest-only directive，生产恢复不消费它；现有真实
+integration test 明确验证仍 blocked。旧指南称退出后自动 Aborted／ready，
+runbook 暗示离线可以 terminalize，均与实现不符，现已改为明确不支持。
+本次错误分类只保证可信隔离和真实未知结果，不伪造缺失的 journal、物理
+退出或签名授权。这条缺口须由带版本的授权终止协议补齐，不作已完成声明。
+
+验签、catalog 和 preflight 的纯拒绝保留原分类。首次持久化发布尝试之后，
+无法确认的失败使用已有 SignedMutationIndeterminate，由已有安全 RPC 映为
+operation_indeterminate。保留可信 RecoveryRequired intent、原始 bounded
+diagnostic 和精确进程所有权；恢复 marker 自己发布失败也不解除隔离。处理
+terminal recovery 时保留磁盘中原决定的精确 replay witness，仍验证签名、
+expiry、epoch、frontier 和状态；两个 durable 确认全部完成才推进 revision。
+发布尝试和不确定性都不冒充已完成物理执行、退出或权威验收。
+
+新增三个真实签名／Fleet／RPC 回归分别覆盖纯拒绝零效果、真实 Drain 后的
+Queued 发布失败，以及 Prepared rename 后 sync 失败且零进程交付。既有
+signed rollback recovery 回归保留所有实际 publication fault cuts 和精确
+重试／revision 断言，并加强为明确的 Indeterminate 错误类别。编译曾发现
+assert_eq 导入歧义及不存在的 measured try_lock；改用现有异步 lock，失败
+日志保留，没有为测试扩大锁接口。
+
+## 文件与目录的特殊文件替换窗口
+
+另一个真实可避免阻塞是 lstat 校验与重新 pathname open 之间的 FIFO 替换。
+无 O_NONBLOCK 的只读 FIFO open 会等待 writer，后面的 fd type／inode 校验
+无法执行；[POSIX open](https://pubs.opengroup.org/onlinepubs/9799919799/functions/open.html)
+定义了这一行为。这个问题在 owner 可修改的控制文件／安装输入中成立；
+sealed catalog 的同 owner 替换还需要恢复目录写权限。它不是跨 UID 的授权
+绕过，也不同于不能抢占的正规文件系统／内核调用。
+
+authority bundle 保留 inode、euid、private mode、link 和 digest pin；Matrix
+binding、signer request 文件、三个 private seed loader、public-key CLI 共用
+非阻塞 fd 打开并在读取前核验普通文件／字节界限。读取使用 maximum+1，
+文件在打开后增长也不能解除界限；seed 保留 Zeroizing storage 和原 32 字节
+及权限约束，stdin／显式 key-fd 的流式协议不改变。public-key 文件建立
+8 KiB 输入上限，仍接受原 32 字节原始值或 trim 后 64 位 hex 表示。
+
+Fleet 的 Agent TOML／lifecycle、catalog／allow／revoke／release state 和
+frontier 读取，以及源程序复制和 digest 读取，都绑定非阻塞 fd 的真实类型
+与身份。原 32 KiB JSON 上限保留；没有固定上限的记录／程序以捕获的长度
+界定此次操作，复制和 hash 要求长度一致。全部 canonical、closed-world、
+catalog seal、全局校验和 CAS 继续执行。为使用命名 ABI flags，Fleet 仅添加
+已有锁定 workspace libc 的 Unix 依赖边，Cargo.lock 仅增加该边，无新版本。
+
+同类 directory→FIFO 替换也不能让 publication／lease cleanup 在 fsync 前
+卡住：Unix 目录 fd 使用 O_DIRECTORY／NOFOLLOW／NONBLOCK／CLOEXEC，并核验
+真实 directory，再执行原 fsync。原 durability fault hooks 与确认顺序保持。
+Windows 目录同步契约不改变。它不证明可抢占所有祖先路径或正规 fsync。
+
+真实 regular／directory metadata 后的 rename-cut 回归共用生产 helper，
+外层 watchdog 只为旧阻塞实现提供退出清理，修复必须在释放 writer 前拒绝。
+Fleet 回归通过公共 load／catalog／digest／install API 验证拒绝、原记录、
+marker 与 staging cleanup；descriptor 增长回归验证实际打开后的字节界限。
+新增 exact binary/test 身份和有效 Fleet 收据样本一起更新，missing、prefix、
+wrong-binary 拒绝规则保持，不能只有生产必测项增加而样本仍缺失。
+
+## 后续真实 CI 与本轮源码的边界
+
+1f1113884a5af82a6153fc694f2d290224f1f07a 的六 native lanes 和两条 deep
+lanes 已实际全部通过，官方八份 ZIP、90 条 native 原始日志的字节／SHA
+与具名结果完成核对，冻结在
+[1f 远端观察](REMOTE_CI_OBSERVATION_20261001_1F111388.json)。Linux 每 lane
+default／production 386、qualification 391、Fleet 42 全通过；macOS 每 lane
+为 385／385／390／42，差一项 Linux 专有满队列回归。各 native lane 的
+default products 15、products 26、真实五对协议、typed Drain、256 Agent
+roster、HOL、SIGKILL parent、authority smoke、两 lint 和 clean identity
+均通过，既有 helper 的 ignored 状态单独记录。macOS 的三个旧 peer 失败
+与四个共同传输回归，在三种 library 中全部按精确名字通过。
+
+这些成功只验证 1f 的传输／fixture／constructor 等原字节，不验证本节
+之后的阶段／pending 期限、signed effect 分类、文件／目录 fd 读取源码。
+最新补修新增 20 个 Supervisor 和两个 Fleet 测试叶；common repair mandatory
+为 76 个，Fleet 为五个，其中一个既有 signed terminal 回归仅加强断言。
+这是静态源码要求，须在自己的新 head 上真实执行，不能把数量预测或历史
+通过填入新收据。验收、当前 main 合入、生产激活与发布仍未建立。
+
+Cargo 的包集合、版本及 checksum 全部保持，仅增加 Fleet→libc 依赖边。
+本地必需 Bazel lock 更新首次因工具缺失失败，官方二进制网络读取超时；
+保留真实失败日志。现有只读 diagnostic workflow 增加本审计分支的 Cargo
+路径 push 触发，只有 Bazel lock candidate job 自动运行，其余四项仍仅
+workflow_dispatch。使用真实 Bazel 生成及后验 lock-check artifact；job green
+不足以证明生成成功，必须核对 update／after exit、head 和文件身份。
+这不减少既有检查、修改 required gate、增加 retry 或延长门槛。

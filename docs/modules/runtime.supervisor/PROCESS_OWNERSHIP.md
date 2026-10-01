@@ -32,7 +32,10 @@ Already-fenced runtime polling attempts termination before registry reads and
 before process polling. A failed signal does not suppress an exit observation;
 a failed probe does not suppress the preceding termination attempt. This also
 applies to the existing adopted-release rejection path. Ordinary unfenced
-control still uses live registry generation validation.
+admission still uses live full-Fleet generation validation. The existing-deadline
+continuation below is limited to exact already owned incarnations with an
+expired Draining/Stopping phase, an admitted due Drain/Stop request or an
+admitted pending Kill.
 
 ## Same-owner cleanup witness
 
@@ -72,6 +75,21 @@ failed signal. After one exact exit, only durable cleanup is retried; a failed
 sync does not cause repeated signaling or polling. Normal missing leases reject;
 only a retained failed-publication witness allows initial absence. Changed,
 corrupt or reappearing leases do not authorize cleanup.
+
+The Matrix tick's direct fencing/kill error is retained if a later poll,
+complete Fleet read or exact lease cleanup also fails. Every owning tick branch
+passes the same report, preserving the original signal fault once beside the
+later unresolved fault; a primary signal error is not duplicated. Real exit
+with successful exact cleanup keeps the existing terminal contract. If cleanup
+fails after that exit is stored, the next tick retries only cleanup and retains
+the owner, without another signal or poll. This also applies to preceding
+containment callers after a main-generation fence: `kill_matrix_now` marks
+unhealthy/fenced and returns for a stored exit without a signal, Killing-phase
+transition or MatrixKillRequested event. Two
+`supervisor::tests::tick_control_fault_tests::matrix_fault_tests` cases in
+`tick_matrix_fault_tests.rs` use real lease files and explicit process-driver
+outcomes to cover combined poll faults and failed cleanup; source presence is
+not a native execution receipt.
 
 ## Rejected identity is not process absence
 
@@ -270,6 +288,50 @@ main termination is attempted first and Matrix termination is attempted separate
 a failing companion cannot prevent the preceding main kill. This does not yet
 persist restart-internal drain deadlines or a durable Matrix quarantine.
 
+A successful driver Drain/Stop call clears its pending retry, not the deadline
+of the acknowledged Draining/Stopping phase. Repeated poll errors or an
+unrelated Agent's corrupt Fleet manifest previously prevented the later expiry
+branch from running. A corrupt full-Fleet read could also block an already
+admitted pending request after its first signal failed. An expired, unfenced
+phase, an admitted current-spawn pending Drain/Stop whose deadline is due, or
+an admitted current-spawn pending Kill now permits only containment bound to
+the exact retained main incarnation before registry observation and polling.
+Stale or fenced pending requests grant no such continuation; not-yet-due
+Drain/Stop remains behind full Fleet validation. The same tick reuses its
+pre-read signal result for an unchanged generation. Drain escalation keeps
+`drain_deadline + stop_grace`; a delayed tick does not allocate a new grace.
+An already expired total budget can proceed directly to Kill.
+A same-incarnation pending Kill remains
+dominant.
+
+Recovery validates the representability of its supplied
+`now + drain_timeout + stop_grace` before acquiring process handles.
+`drain_slot` repeats the checked total at the actual invocation time before
+deferral, fencing, CAS or signaling. An overflow rejects the operation; it is
+not an elapsed budget and cannot authorize immediate Kill.
+
+An exact `observed_exit` remains the first branch: only finalization is retried,
+without another signal or poll. Observed signal, registry and poll faults are
+retained independently once on unresolved paths. Signal delivery never supplies
+a DrainAck, exit or cleanup proof, and the exact owner and lease survive until
+real exit and durable finalization. Ordinary admission and not-yet-due Drain/Stop retain
+complete Fleet validation. This continuation changes no lease identity,
+durable record format, Matrix ownership or cross-daemon exit-cleanup contract.
+
+Five `supervisor::tests::tick_control_fault_tests::deadline_tests` functions in
+`tick_control_deadline_tests.rs` exercise acknowledged Drain/Stop with repeated
+poll faults, combined signal/poll failure, stronger pending Kill and unrelated
+Fleet corruption. They use real Fleet files and explicit process-driver
+doubles, with owner/lease retention assertions. Two child
+`deadline_tests::budget_tests` cases in `tick_control_budget_tests.rs` verify
+overflow rejection before any recovery acquisition and before Drain side
+effects, preserving the complete Agent record, snapshot, raw lease and driver
+counts. Three `tick_control_fault_tests::pending_deadline_tests` functions in
+`tick_pending_deadline_tests.rs` exercise first-signal failures for Drain, Stop
+and Kill against a real corrupt unrelated Fleet manifest, original deadlines,
+and stale-spawn rejection. These also use explicit process-driver doubles.
+Test source is not actual-child, current-head or target-host execution evidence.
+
 ## Control-intent file boundary
 
 The unchanged V1 control-intent codec now reads at most 8,193 bytes from an
@@ -279,6 +341,93 @@ owner, single link, non-writable group/world mode and path/descriptor stability.
 FIFO, symlink, multiply linked and replaced final components reject. New intent
 files are created owner-private. Parent-directory substitution, authenticated
 backup rollback and cross-record transaction integrity remain separate concerns.
+
+## Signed publication effect boundary
+
+Signature, catalog, preflight and digest-bound status construction precede the
+first durable publication attempt in signed grant application. Signed recovery
+also verifies the decision, frontier, outcome and replay before terminal
+transaction publication. Those pre-publication refusals remain safe rejection.
+After the first publication attempt, failed publication, acknowledgement or
+continuation returns `SignedMutationIndeterminate`, surfaced as
+`operation_indeterminate` by the signed RPC handlers. This is true even if no
+process delivery has been confirmed: possibly published bytes cannot be treated
+as absent because their durability acknowledgement failed.
+
+The same lifecycle owner retains trusted RecoveryRequired intent and bounded
+original diagnostics without discarding exact process handles or leases.
+Grant application makes a best-effort durable recovery-marker write; its failure
+still leaves in-memory quarantine. Recovery preserves possibly published
+terminal records for the same signed decision's retry, rather than overwriting
+them with a recovery marker. Both terminal acknowledgements and the revision
+update must succeed before quarantine is released. Failure leaves the recovery
+revision unchanged; exact successful retry increments once. An indeterminate
+error is neither a physical-effect receipt nor authority/operator acceptance,
+and supplies no exit or cleanup proof.
+
+A Prepared intent can be quarantined before any release transaction exists.
+The supported signed recovery API requires an exact transaction and its
+decision-bound digest, so it cannot terminalize this no-journal case. The
+legacy offline abort writes a digest-only directive with no production
+consumer; it cannot produce Aborted or authorize reuse after process exit.
+This pre-existing crash cut remains blocked until a separately designed and
+authorized recovery protocol exists. Do not fabricate a transaction or delete
+the intent to bypass this boundary.
+
+Three `daemon::authority_tests::effect_boundary_tests` functions in
+`signed_effect_boundary_tests.rs` exercise pure rejection and real signed-intent
+publication faults before and after driver Drain delivery. The existing
+`supervisor::tests::release_retry_tests::signed_recovery` source-restoration
+case in `release_signed_recovery_tests.rs` adds terminal transaction/intent
+fault cuts and exact decision retries. They use real durable files and explicit
+process-driver doubles, not actual target-host or current-head execution receipts.
+
+## Public authority-bundle input boundary
+
+Startup captures regular-file metadata for the pinned public authority bundle
+and opens its final component with Unix NOFOLLOW/NONBLOCK/CLOEXEC. A FIFO
+substituted after the metadata check therefore cannot wait for a writer before
+descriptor validation. The descriptor must be regular, bounded, unchanged in
+device/inode, effective-user owned, single-link and private to that user before
+the bounded read. There is no after-read metadata recheck. Canonical and external
+pinned digests still validate the read bytes before verifier construction;
+protected parent directories and external provisioning remain requirements.
+This reader changes no process, lease, grant or recovery ownership.
+
+The Unix `authority_bundle::open_tests` regression in
+`authority_bundle_open_tests.rs` uses real regular-file-to-FIFO replacement and
+must reject before its old-path watchdog releases a blocked open. It is source
+coverage rather than a native execution or deployment receipt.
+
+## Regular-file and parent-directory I/O
+
+Supervisor's private regular-file reader checks opened type and existing bounds
+before maximum-plus-one reads. Matrix binding uses 64 KiB and compares the
+opened inode with prior metadata; external signer request paths retain 8 MiB;
+the three final-use seed tools retain exactly 32 bytes plus effective-user,
+private-mode, single-link and Zeroizing checks. The bundle-construction CLI
+public-key reader has an 8 KiB input bound and keeps absolute-path,
+32-raw-byte/64-trimmed-hex validation. Stdin and explicit key-fd stream semantics
+remain unchanged. Unix NOFOLLOW/NONBLOCK/CLOEXEC prevents special-file open
+waits without granting new authority.
+
+Fleet's independent private reader uses captured file length for registry and
+lifecycle text and the existing 32 KiB bounds for release JSON/frontier input.
+Copy/hash reads at most captured length plus one and rejects a final length
+different from the original, without adding a binary-size ceiling. Opened
+regular type/size/inode checks supplement full global catalog, canonical,
+immutable mode, digest/seal and CAS validation. The dependency edge is only
+existing workspace `libc` on Unix, with no version change. Its two actual
+registry/catalog FIFO source tests carry no platform-pass credit here.
+
+Durable journal publication, main lease sync, Matrix cleanup and bundle CLI
+parent sync use a shared Unix directory open with O_DIRECTORY/NOFOLLOW/NONBLOCK/
+CLOEXEC, descriptor-directory validation and `sync_all`; Fleet applies the
+same pattern privately. Existing durability hooks/errors and Windows behavior
+remain. A real directory-to-FIFO replacement regression rejects before a
+watchdog release. No failed sync releases the exact owner, manufactures cleanup
+or proves parent-inode binding. Regular storage and ancestor integrity remain
+host prerequisites; this adds no preemption or latency SLO.
 
 ## Added regression source and execution boundary
 

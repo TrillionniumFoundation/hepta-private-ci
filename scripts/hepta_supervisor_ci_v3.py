@@ -10,6 +10,27 @@ else:
 
 
 CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
+    "directory_io::tests::fifo_swap_after_directory_observation_is_rejected_before_watchdog_release",
+    "regular_file_io::tests::fifo_key_and_request_paths_are_rejected_before_watchdog_release",
+    "regular_file_io::tests::read_bound_is_enforced_after_opened_file_grows",
+    "matrix::binding_io_tests::fifo_swap_after_binding_metadata_is_rejected_before_watchdog_release",
+    "daemon::authority_tests::effect_boundary_tests::signature_and_preflight_rejections_preserve_zero_publication_and_delivery",
+    "daemon::authority_tests::effect_boundary_tests::queued_publication_failure_after_drain_is_indeterminate_and_quarantined",
+    "daemon::authority_tests::effect_boundary_tests::prepared_directory_sync_failure_is_indeterminate_without_claiming_process_delivery",
+    "supervisor::tests::release_retry_tests::signed_recovery::signed_explicit_rollback_source_restoration_can_recover_without_new_dispatch",
+    "authority_bundle::open_tests::fifo_swap_after_regular_metadata_is_rejected_before_watchdog_release",
+    "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::failed_initial_drain_escalates_through_corrupt_fleet_at_original_deadlines",
+    "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::failed_initial_stop_escalates_through_corrupt_fleet_at_original_deadline",
+    "supervisor::tests::tick_control_fault_tests::pending_deadline_tests::failed_initial_kill_retries_through_corrupt_fleet_without_signalling_stale_owner",
+    "supervisor::tests::tick_control_fault_tests::matrix_fault_tests::direct_companion_kill_failure_survives_main_and_matrix_poll_failures",
+    "supervisor::tests::tick_control_fault_tests::matrix_fault_tests::direct_companion_kill_failure_survives_exact_exit_lease_cleanup_failure",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::budget_tests::recovery_rejects_unrepresentable_drain_budget_before_driver_acquisition",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::budget_tests::drain_rejects_unrepresentable_total_deadline_without_side_effects",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::acknowledged_drain_deadlines_escalate_despite_persistent_poll_errors",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::acknowledged_stop_deadline_kills_despite_persistent_poll_errors",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::expired_drain_signal_and_poll_faults_retain_owner_and_original_budget",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::expired_phase_preserves_a_stronger_pending_kill",
+    "supervisor::tests::tick_control_fault_tests::deadline_tests::acknowledged_stop_escalates_before_corrupt_fleet_observation",
     "unix::control_io::tests::same_peer_complete_frame_preserves_first_newline_and_request",
     "unix::control_io::tests::successful_partial_reads_cannot_renew_the_whole_exchange_deadline",
     "unix::control_io::tests::mismatched_peer_is_rejected_before_any_request_byte",
@@ -76,6 +97,8 @@ CURRENT_FLEET_LIBRARY_REQUIREMENTS = (
     "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
     "release::publish_tests::interrupted_directory_seal_cannot_admit_or_overwrite_the_release",
     "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+    "regular_file::tests::registry_fifo_swap_after_metadata_is_rejected_without_watchdog_release",
+    "regular_file::tests::catalog_fifo_swap_after_metadata_is_rejected_without_watchdog_release",
 )
 CURRENT_INTEGRATION_REQUIREMENTS = {
     "restart_budget": (

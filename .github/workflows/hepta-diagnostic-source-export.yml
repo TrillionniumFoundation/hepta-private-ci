@@ -2,6 +2,13 @@ name: Hepta diagnostic source export
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/runtime-supervisor-adversarial-audit-20261001
+    paths:
+      - codex-rs/hepta-fleet/Cargo.toml
+      - codex-rs/Cargo.lock
+      - .github/workflows/hepta-diagnostic-source-export.yml
 
 permissions:
   contents: read
@@ -12,6 +19,7 @@ concurrency:
 
 jobs:
   export-exact-source:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -45,6 +53,7 @@ jobs:
           retention-days: 1
 
   rust-policy-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -140,6 +149,7 @@ jobs:
           retention-days: 1
 
   python-sdk-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -184,6 +194,7 @@ jobs:
           retention-days: 1
 
   python-format-candidate:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
