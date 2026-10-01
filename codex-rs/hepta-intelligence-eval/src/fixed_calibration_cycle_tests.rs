@@ -172,12 +172,40 @@ fn fixed_calibration_cycle_cannot_change_independent_evaluator_private_key_ident
     );
 }
 #[test]
+fn cycle_accepts_the_actual_offline_producer_schema_and_rejects_ambiguous_authority() {
+    let ids = vec!["scifact.calibration.0".to_owned()];
+    let actual = serde_json::json!({
+        "schema":"hepta.cpu-neuron.offline-observation.v1",
+        "request_id":"scifact.calibration.0","executed_at_ms":101,
+        "terminal_observed":true,"succeeded":true,
+        "authority_grants_any":false,"qualified":false
+    });
+    let stream = |value: &Value| format!("{value}\n").into_bytes();
+    assert!(require_fresh_native_stream(&stream(&actual), &ids, 100, 110).is_ok());
+    for field in ["schema", "authority_grants_any"] {
+        let mut missing = actual.clone();
+        missing.as_object_mut().unwrap().remove(field);
+        assert!(require_fresh_native_stream(&stream(&missing), &ids, 100, 110).is_err());
+    }
+    for (field, value) in [
+        ("schema", Value::from("unadmitted.offline.v2")),
+        ("authority_grants_any", Value::from(true)),
+        ("authority", Value::from(false)),
+        ("authority", Value::from(true)),
+    ] {
+        let mut changed = actual.clone();
+        changed[field] = value;
+        assert!(require_fresh_native_stream(&stream(&changed), &ids, 100, 110).is_err());
+    }
+}
+
+#[test]
 fn cycle_requires_actual_fresh_whole_native_source_stream_not_cached_or_success_subset() {
     let ids = vec!["original-a".to_owned(), "original-b".to_owned()];
     let stream = |second: Value| {
-        format!("{}\n{}\n",serde_json::json!({"request_id":"original-a","executed_at_ms":101,"terminal_observed":true,"succeeded":true,"authority":false,"qualified":false}),second).into_bytes()
+        format!("{}\n{}\n",serde_json::json!({"schema":"hepta.cpu-neuron.offline-observation.v1","request_id":"original-a","executed_at_ms":101,"terminal_observed":true,"succeeded":true,"authority_grants_any":false,"qualified":false}),second).into_bytes()
     };
-    let good = serde_json::json!({"request_id":"original-b","executed_at_ms":102,"terminal_observed":true,"succeeded":true,"authority":false,"qualified":false});
+    let good = serde_json::json!({"schema":"hepta.cpu-neuron.offline-observation.v1","request_id":"original-b","executed_at_ms":102,"terminal_observed":true,"succeeded":true,"authority_grants_any":false,"qualified":false});
     assert!(require_fresh_native_stream(&stream(good.clone()), &ids, 100, 110).is_ok());
     for (field, value) in [
         ("request_id", Value::from("original-a")),
@@ -185,7 +213,7 @@ fn cycle_requires_actual_fresh_whole_native_source_stream_not_cached_or_success_
         ("executed_at_ms", Value::from(111)),
         ("succeeded", Value::from(false)),
         ("terminal_observed", Value::from(false)),
-        ("authority", Value::from(true)),
+        ("authority_grants_any", Value::from(true)),
         ("qualified", Value::from(true)),
     ] {
         let mut bad = good.clone();

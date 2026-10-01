@@ -390,13 +390,15 @@ fn require_fresh_native_stream(
     }
     for (line, id) in rows.into_iter().zip(expected) {
         let observation: Value = serde_json::from_slice(line)?;
-        if observation["executed_at_ms"]
-            .as_u64()
-            .is_none_or(|event| event < started || event > now)
+        if observation["schema"] != "hepta.cpu-neuron.offline-observation.v1"
+            || observation["executed_at_ms"]
+                .as_u64()
+                .is_none_or(|event| event < started || event > now)
             || observation["request_id"] != *id
             || observation["terminal_observed"] != true
             || observation["succeeded"] != true
-            || observation["authority"] != false
+            || observation["authority_grants_any"] != false
+            || observation.get("authority").is_some()
             || observation["qualified"] != false
         {
             return Err(
