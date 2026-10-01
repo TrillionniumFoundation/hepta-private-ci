@@ -22,10 +22,8 @@ for (const terminalObserved of [false, true]) {
       const parentToChild = new PassThrough();
       const childToParent = new PassThrough();
       let running;
-      t.after(async () => {
-        parentToChild.end();
-        childToParent.end();
-        await running?.catch(() => {});
+      t.after(() => {
+        running?.catch(() => {});
         parentToChild.destroy();
         childToParent.destroy();
       });

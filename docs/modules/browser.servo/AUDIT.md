@@ -141,6 +141,12 @@ All six workflows that run Browser Node checks select Node 24 and install the ex
 
 The first-round 15 native-source tests, 8 pure state tests and successful serial `just fix` remain historical results. Earlier in this round, cached rlibs disappeared and shared disk exhaustion blocked native execution; the later locked isolated harness recovered actual source execution with 27 default tests plus one explicit Rust-to-Node fixture passing (28/28 executed), and a successful offline test build and scoped Clippy check. Those isolated results do not replace complete Agentd all-target checks, the current-pin locked Servo build, committed worker lock, real renderer behavior or target qualification, which remain unproved.
 
+### Late test-lifecycle hardening
+
+The remote Browser job for candidate `699886568f87769d305c194a69e94bd52592c08d` remained running beyond its configured ten-minute job limit. A separate static review found that a pre-intent rejection could leave the durable-intent fixture waiting forever, and a replay cleanup hook could await an unfinished service without a bound. The fixtures now use test deadlines, unconditional stream/gate cleanup and immediate propagation of a pre-intent rejection. These findings are not asserted to be the root cause of that remote run without its logs.
+
+The focused authority/replay/source-main/bundle-build suite passed **16/16** after the fixture changes. A controlled expired-deadline injection failed explicitly in **0.111 seconds**, rather than hanging. The earlier full-suite **175/175** remains a recorded local result; it is not a successful final-candidate remote-CI receipt. Latest CI status is recorded in the draft PR separately from these source checks.
+
 ### Remaining priorities
 
 1. Complete Agentd all-target native checks beyond the passing locked isolated source harness, then obtain a successful exact-pin Servo build with a reviewed committed lock and reproducible artifact evidence.
