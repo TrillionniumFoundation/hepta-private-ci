@@ -1,7 +1,10 @@
 use std::fs;
 use std::time::Instant;
 
+use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_paths::HeptaFleetRoot;
 use serde_json::json;
+use sqlx::Row;
 use tempfile::TempDir;
 
 use crate::CognitiveAccess;
@@ -15,6 +18,7 @@ use crate::MemoryDraft;
 use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
+use crate::RetrievalChannel;
 use crate::RetrievalRequest;
 use crate::SourceDraft;
 use crate::cognitive_test_support::agent_id;
@@ -25,6 +29,10 @@ const ENTITIES_PER_WRITE: usize = 16;
 const RELATIONS_PER_WRITE: usize = 128;
 const DEFAULT_QUERY_SAMPLES: usize = 20;
 const DEFAULT_REOPEN_SAMPLES: usize = 5;
+
+fn benchmark_retrieval_request() -> RetrievalRequest {
+    RetrievalRequest::new("Benchmark Graph", 200)
+}
 
 fn configured_count(name: &str, default: usize, maximum: usize) -> usize {
     std::env::var(name)
@@ -251,7 +259,7 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     for _ in 0..query_samples {
         let started = Instant::now();
         let result = store
-            .retrieve_memory_candidates(&access, &RetrievalRequest::new("Benchmark Graph", 200))
+            .retrieve_memory_candidates(&access, &benchmark_retrieval_request())
             .await
             .expect("KG benchmark retrieval");
         assert!(
@@ -344,5 +352,215 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     println!(
         "HEPTA_KNOWLEDGE_GRAPH_PERF_RECEIPT={}",
         serde_json::to_string(&receipt).expect("serialize KG performance receipt")
+    );
+}
+
+/// Measures reads against an existing full-capacity source cut, without writes.
+///
+/// Manually select this ignored test and provide HEPTA_KG_BENCH_READ_FLEET_ROOT.
+/// Ordinary owner validation remains enabled. This separate receipt cannot stand
+/// in for successful completion of the full write/query/reopen qualification.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "qualification: existing 256-write KG snapshot; requires HEPTA_KG_BENCH_READ_FLEET_ROOT"]
+async fn qualification_knowledge_graph_existing_read_capacity_receipt() {
+    let fleet_path = std::env::var_os("HEPTA_KG_BENCH_READ_FLEET_ROOT")
+        .expect("manual read-capacity qualification requires an explicit existing fleet root");
+    let fleet = HeptaFleetRoot::parse(std::path::PathBuf::from(fleet_path))
+        .expect("absolute non-root benchmark fleet path");
+    let owner = agent_id(185);
+    let owner_layout = fleet.layout().agent(&owner);
+    assert!(
+        fs::read_dir(owner_layout.cognitive_root())
+            .expect("existing benchmark cognitive owner root")
+            .any(|entry| entry.is_ok_and(|entry| {
+                entry.path().is_file()
+                    && entry
+                        .path()
+                        .extension()
+                        .is_some_and(|extension| extension == "sqlite3")
+            })),
+        "read capacity requires an existing owner database, not a new empty store"
+    );
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let store = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("ordinary validated benchmark owner open");
+    assert_eq!(store.owner_agent_id(), &owner);
+    let current = sqlx::query(
+        "SELECT p.generation, r.node_count, r.edge_count,
+                r.input_heads_sha256, r.output_sha256,
+                s.source_snapshot_sha256, s.generation_vector_sha256,
+                s.graph_profile_sha256, s.generation_sha256, s.publication_sha256
+         FROM kg_projection p
+         JOIN kg_projection_generation_receipts r
+           ON r.projection_scope = p.projection_scope AND r.generation = p.generation
+         JOIN kg_projection_generation_semantics s
+           ON s.projection_scope = p.projection_scope AND s.generation = p.generation
+         WHERE p.projection_scope = ?",
+    )
+    .bind(scope.projection_key())
+    .fetch_one(&store.pool)
+    .await
+    .expect("exact current projection and semantic receipt");
+    let generation: i64 = current.try_get("generation").expect("generation");
+    let node_count: i64 = current.try_get("node_count").expect("node count");
+    let edge_count: i64 = current.try_get("edge_count").expect("edge count");
+    assert_eq!(generation, i64::try_from(DEFAULT_WRITES).expect("writes"));
+    assert_eq!(
+        node_count,
+        i64::try_from(DEFAULT_WRITES * ENTITIES_PER_WRITE).expect("nodes")
+    );
+    assert_eq!(
+        edge_count,
+        i64::try_from(DEFAULT_WRITES * RELATIONS_PER_WRITE).expect("edges")
+    );
+    let input_heads: String = current
+        .try_get("input_heads_sha256")
+        .expect("input heads cut");
+    let source_snapshot: String = current
+        .try_get("source_snapshot_sha256")
+        .expect("source snapshot");
+    let generation_digest: String = current
+        .try_get("generation_sha256")
+        .expect("generation digest");
+    let publication_digest: String = current
+        .try_get("publication_sha256")
+        .expect("publication digest");
+    let generation_digest =
+        Sha256Digest::parse(generation_digest).expect("canonical generation digest");
+    assert_eq!(
+        input_heads, source_snapshot,
+        "semantic receipt must bind exact source cut"
+    );
+    Sha256Digest::parse(input_heads.clone()).expect("source cut digest");
+    Sha256Digest::parse(publication_digest.clone()).expect("publication receipt digest");
+    let source_counts: (i64, i64, i64, i64) = sqlx::query_as(
+        "SELECT (SELECT COUNT(*) FROM memory_heads),
+                (SELECT COUNT(*) FROM kg_revision_entities),
+                (SELECT COUNT(*) FROM kg_revision_relations),
+                (SELECT COUNT(*) FROM kg_projection_generation_storage
+                 WHERE projection_scope = ? AND storage_mode = 'revision_facts_v1')",
+    )
+    .bind(scope.projection_key())
+    .fetch_one(&store.pool)
+    .await
+    .expect("existing source fact and storage witness counts");
+    assert_eq!(
+        source_counts,
+        (generation, node_count, edge_count, generation)
+    );
+    eprintln!(
+        "KG_READ_PHASE query generation={generation} heads={} nodes={node_count} edges={edge_count}",
+        source_counts.0
+    );
+    let mut query_ns = Vec::with_capacity(DEFAULT_QUERY_SAMPLES);
+    for _ in 0..DEFAULT_QUERY_SAMPLES {
+        let started = Instant::now();
+        let result = store
+            .retrieve_memory_candidates(&access, &benchmark_retrieval_request())
+            .await
+            .expect("full-capacity product retrieval");
+        query_ns.push(elapsed_ns(started));
+        assert!(
+            !result.candidates.is_empty(),
+            "benchmark product query returned empty"
+        );
+        assert!(
+            result
+                .candidates
+                .iter()
+                .any(|candidate| candidate.channels.contains(&RetrievalChannel::GraphOneHop)),
+            "benchmark did not execute graph product channel"
+        );
+        for candidate in &result.candidates {
+            assert_eq!(
+                candidate
+                    .revalidation
+                    .kg_projection_generation
+                    .map(crate::ProjectionGeneration::get),
+                Some(u64::try_from(generation).expect("generation"))
+            );
+            assert_eq!(
+                candidate
+                    .revalidation
+                    .kg_projection_generation_sha256
+                    .as_ref(),
+                Some(&generation_digest)
+            );
+        }
+    }
+    let database_path = store.path().to_path_buf();
+    let database_bytes = file_size(&database_path);
+    let wal_bytes = file_size(&database_path.with_extension("sqlite3-wal"));
+    store.pool.close().await;
+    let mut reopen_ns = Vec::with_capacity(DEFAULT_REOPEN_SAMPLES);
+    for _ in 0..DEFAULT_REOPEN_SAMPLES {
+        let started = Instant::now();
+        let reopened = CognitiveStore::open(&owner_layout)
+            .await
+            .expect("ordinary full-capacity reopen");
+        reopen_ns.push(elapsed_ns(started));
+        assert_eq!(reopened.owner_agent_id(), &owner);
+        assert_eq!(reopened.path(), database_path.as_path());
+        let reopened_cut: (i64, String, String) = sqlx::query_as(
+            "SELECT p.generation, r.input_heads_sha256, s.generation_sha256
+             FROM kg_projection p
+             JOIN kg_projection_generation_receipts r
+               ON r.projection_scope = p.projection_scope AND r.generation = p.generation
+             JOIN kg_projection_generation_semantics s
+               ON s.projection_scope = p.projection_scope AND s.generation = p.generation
+             WHERE p.projection_scope = ?",
+        )
+        .bind(scope.projection_key())
+        .fetch_one(&reopened.pool)
+        .await
+        .expect("reopen source cut receipt");
+        assert_eq!(
+            reopened_cut,
+            (
+                generation,
+                input_heads.clone(),
+                generation_digest.as_str().to_owned()
+            )
+        );
+        reopened.pool.close().await;
+    }
+    let receipt = json!({
+        "schema": "hepta.knowledge-graph-read-capacity.v1",
+        "algorithm": "revision_facts_v1_immutable_generation_query_cache",
+        "existingFleetRoot": fleet.as_path(),
+        "ownerAgentId": owner.as_str(),
+        "sourceCut": {
+            "generation": generation,
+            "heads": source_counts.0,
+            "physicalNodes": node_count,
+            "physicalEdges": edge_count,
+            "inputHeadsSha256": input_heads,
+            "sourceSnapshotSha256": source_snapshot,
+            "generationVectorSha256": current.try_get::<String, _>("generation_vector_sha256").expect("vector digest"),
+            "graphProfileSha256": current.try_get::<String, _>("graph_profile_sha256").expect("profile digest"),
+            "generationSha256": generation_digest.as_str(),
+            "publicationSha256": publication_digest,
+            "physicalOutputSha256": current.try_get::<String, _>("output_sha256").expect("physical output digest"),
+        },
+        "querySamples": DEFAULT_QUERY_SAMPLES,
+        "reopenSamples": DEFAULT_REOPEN_SAMPLES,
+        "queryNs": {
+            "p50": percentile_ns(&query_ns, 50),
+            "p95": percentile_ns(&query_ns, 95),
+            "p99": percentile_ns(&query_ns, 99),
+        },
+        "reopenNs": {
+            "p50": percentile_ns(&reopen_ns, 50),
+            "p95": percentile_ns(&reopen_ns, 95),
+            "p99": percentile_ns(&reopen_ns, 99),
+        },
+        "storage": { "databaseBytes": database_bytes, "walBytes": wal_bytes },
+        "claim": "read_and_reopen_measurements_only_not_full_write_capacity_completion",
+    });
+    println!(
+        "HEPTA_KNOWLEDGE_GRAPH_READ_CAPACITY_RECEIPT={}",
+        serde_json::to_string(&receipt).expect("serialize separate read-capacity receipt")
     );
 }

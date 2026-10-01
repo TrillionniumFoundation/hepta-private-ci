@@ -1346,9 +1346,13 @@
           {
             "path": "codex-rs/hepta-kg/src/prompt_factor.rs",
             "symbol": "build_prompt_factor_projection_v1"
+          },
+          {
+            "path": "codex-rs/hepta-kg/src/validated_generation.rs",
+            "symbol": "ValidatedKnowledgeGenerationV2::new / query_relations"
           }
         ],
-        "stateAndRecovery": "KnowledgeGenerationV2 binds canonical source/revision/validity support and a generation vector. The cognitive SQLite owner builds, validates exact-predecessor publication and persists receipts before CAS selection in the same transaction; reopen validates the current generation and predecessor. The prompt registry supplies a sealed factor relation source to the generation-bound optimizer. Graph projections do not become source facts or mutation authority.",
+        "stateAndRecovery": "KnowledgeGenerationV2 binds canonical source/revision/validity support and a generation vector. The cognitive SQLite owner builds, validates exact-predecessor publication and persists receipts before CAS selection in the same transaction; reopen validates the current generation and predecessor. The prompt registry supplies a sealed factor relation source to the generation-bound optimizer. Graph projections do not become source facts or mutation authority. Immutable owned readers reuse semantic admission within one read transaction; each seed still fences the persisted generation digest. An absent typed relation kind skips empty queries only after that fence. Read-capacity receipts do not substitute for full write qualification.",
         "testFiles": [
           "codex-rs/hepta-kg/src/generation_tests.rs",
           "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
@@ -1360,7 +1364,10 @@
           "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs",
           "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
           "codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs",
-          "codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs"
+          "codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs",
+          "codex-rs/hepta-kg/src/validated_generation_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-memory/LANE_C_SQLITE.md"
