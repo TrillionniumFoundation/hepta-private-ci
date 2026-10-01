@@ -433,3 +433,45 @@ Using the dependency's supported explicit system include/library directories
 recovered that setup, but compilation then exhausted the shared filesystem
 while building `rmcp`, before the changed module. Both attempts exited 101 and
 provide no lint or test pass. Only this task's compiler cache was cleared.
+
+### Final source results and process-measurement correction
+
+The canonical macOS fixture repair `1873ffcc8cf2622ac227d6e894d489f7c1561422`,
+tree `f664ae7cdc534e2471c4061a5c259d402a6bb576`, passed all six package test
+commands in push, source-head and actual base-merge lanes: 104 intelligence,
+52 operations, 119 ledger, 63 native, 223 default Agentd and 226 feature
+assertions, with the four documented ignored tests retained. The actual tested
+synthetic merge was `6f2abf6b103862efbd75b5d4ac1544a116ac449a`; its tree matches
+the candidate and its ordered parents are reviewed main and that source head.
+macOS passed 156 intelligence/operations and 60 filtered Agentd assertions,
+including the repaired writer fixture, with zero failures and one ignored
+Agentd test. All-target compilation and formatting passed. Strict lint still
+failed on four memory-extension and six core diagnostics at sites unchanged
+from main. Execution projections skipped; both actual readiness manifests
+remain `mergeReady=false` and `productionQualified=false`.
+
+Qualification-host run `36827814499`, job `110257639262`, succeeded on that exact
+source. Its release binaries executed 32 assertion invocations covering 22
+distinct tests, including five semantic conformance cases, with zero failures.
+It retained 2,000 signature samples and nine real-child hard-kill samples in
+artifact `11147978901` (SHA256
+`c8d4251ae9cc7966e45eb943e91fe522c91220b2f6a1adc2c939404486fd0b0a`).
+Signature p50/p99 were 54.031/74.179 microseconds; hard-kill spawn-to-exit-70
+p50/p99 were 45.956784/46.165455 milliseconds. These are observations on that
+GitHub host, not production-target or real-model acceptance.
+
+The same raw artifact exposed a measurement defect: GNU time reports elapsed
+and CPU seconds to two decimals, so every short owner-admission sample became
+`0.00` and the derived CPU percentage was uninformative. Those historical
+measurements cannot establish zero cost. The follow-up replaces GNU time with
+a fresh Linux Python parent for every sample: `perf_counter_ns` wall timing,
+terminated/waited-child resource accounting, full decimal CSV and explicit
+method metadata. It kills the sample process group and reaps the direct child
+on timeout; nonzero or timed-out samples produce no successful row. The summary
+rejects zero/nonfinite wall time, negative CPU, duplicate/reordered samples and
+CSV/metadata disagreement. Wall time includes process startup, fixture work,
+IO and parent wait scheduling; RSS is the largest child peak, not total tree
+RSS. Decimal representation does not promise nanosecond measurement accuracy.
+Real-process helper regressions cover successful execution, CPU/log capture,
+failure, timeout cleanup and invalid inputs. Fresh workflow measurements must
+retain their own source identity; the prior run is not relabeled as their pass.

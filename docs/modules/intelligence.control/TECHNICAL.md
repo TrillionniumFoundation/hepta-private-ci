@@ -380,6 +380,20 @@ latency, signature cost, memory use or recovery throughput on the selected host.
 [Shared performance requirements](../README.md#shared-performance-and-capacity)
 and selected-host measurements remain applicable.
 
+The GitHub qualification-host workflow records nine fresh test-process samples
+with `scripts/hepta-intelligence-measure-process.py`. Its monotonic wall clock
+covers process launch through parent-observed wait/reap, including fixtures, IO
+and wait scheduling; this is neither pure owner-call nor model inference latency.
+Each sample has a fresh Python parent, so terminated/waited-child CPU accounting
+does not accumulate across samples. Linux RSS is the largest child's peak KiB,
+not simultaneous process-tree or wrapper RSS. CPU percentage may exceed 100%.
+Raw CSV and per-sample method/clock metadata are retained. Timeout kills the
+session's process group and reaps the direct child; failure produces no successful
+sample. This is measurement cleanup, not isolation against escaped descendants.
+These probes do not qualify the production target, real provider/model quality,
+independent security acceptance or activation. Earlier GNU time `0.00` values
+are censored by centisecond reporting and cannot establish zero latency or CPU.
+
 ## 11. Observability and operations
 
 Telemetry includes worker activity/peak/busy, timeout/late completion/crash,

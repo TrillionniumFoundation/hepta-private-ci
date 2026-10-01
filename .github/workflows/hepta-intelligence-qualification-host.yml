@@ -15,6 +15,7 @@ on:
       - "docs/modules/intelligence.control/**"
       - ".github/workflows/hepta-intelligence-qualification-host.yml"
       - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta-intelligence-measure-process*.py"
   workflow_dispatch:
 
 permissions:
@@ -62,7 +63,7 @@ jobs:
             free -b
             rustc -Vv
             cargo -V
-            /usr/bin/time --version
+            python3 --version
           } > "$root/host.txt" 2>&1
 
       - name: Prepare native prerequisites
@@ -73,6 +74,9 @@ jobs:
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
+
+      - name: Verify process measurement failure and timeout handling
+        run: python3 scripts/hepta-intelligence-measure-process-tests.py
 
       - name: Install DotSlash
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
@@ -274,9 +278,10 @@ jobs:
           for sample in $(seq 1 9); do
             output="$root/sample-${sample}.log"
             timing="$root/sample-${sample}.time"
-            timeout 180 /usr/bin/time -f "${sample},%e,%U,%S,%M" -o "$timing" \
-              "$AGENTD_TEST_BINARY" "$filter" --nocapture --test-threads=1 \
-              > "$output" 2>&1
+            python3 ../scripts/hepta-intelligence-measure-process.py \
+              --sample "$sample" --timeout 180 --output "$output" --timing "$timing" \
+              --metadata "$root/sample-${sample}-measurement.json" -- \
+              "$AGENTD_TEST_BINARY" "$filter" --nocapture --test-threads=1
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
             cat "$timing" >> "$root/samples.csv"
           done
@@ -284,12 +289,36 @@ jobs:
           import csv, json, math, pathlib, statistics, sys
           root = pathlib.Path(sys.argv[1])
           rows = list(csv.DictReader((root / "samples.csv").open()))
+          if [row["sample"] for row in rows] != [str(value) for value in range(1, 10)]:
+              raise SystemExit("expected nine distinct ordered process samples")
+          measurements = [
+              json.loads((root / f"sample-{index}-measurement.json").read_text())
+              for index in range(1, 10)
+          ]
+          for index, measurement in enumerate(measurements, 1):
+              if (
+                  measurement.get("schema") != "hepta.intelligence-control.process-measurement.v1"
+                  or type(measurement.get("sample")) is not int
+                  or measurement.get("sample") != index
+                  or type(measurement.get("elapsedNanoseconds")) is not int
+                  or measurement["elapsedNanoseconds"] <= 0
+                  or measurement.get("timingMethod") != measurements[0]["timingMethod"]
+              ):
+                  raise SystemExit("inconsistent process measurement metadata")
           signature = json.loads((root / "signature-profile.json").read_text())
           hard_kill = json.loads((root / "hard-kill-profile.json").read_text())
           if signature.get("schema") != "hepta.intelligence-control.signature-profile.v1":
               raise SystemExit("unexpected signature profile schema")
           if hard_kill.get("schema") != "hepta.intelligence-control.hard-kill-profile.v1":
               raise SystemExit("unexpected hard-kill profile schema")
+          for profile, expected in ((signature, 2000), (hard_kill, 9)):
+              samples = profile.get("samplesNanos")
+              if (
+                  not isinstance(samples, list)
+                  or len(samples) != expected
+                  or any(type(value) is not int or value <= 0 for value in samples)
+              ):
+                  raise SystemExit("invalid or incomplete nanosecond profile")
           def distribution(values):
               values = sorted(values)
               if not values:
@@ -307,8 +336,18 @@ jobs:
           user_cpu = [float(row["user_cpu_seconds"]) for row in rows]
           system_cpu = [float(row["system_cpu_seconds"]) for row in rows]
           rss = [int(row["max_rss_kib"]) for row in rows]
+          if (
+              any(not math.isfinite(value) or value <= 0 for value in elapsed)
+              or any(not math.isfinite(value) or value < 0 for value in user_cpu + system_cpu)
+              or any(value <= 0 for value in rss)
+              or any(
+                  abs(wall - measurement["elapsedNanoseconds"] / 1_000_000_000) > 1e-9
+                  for wall, measurement in zip(elapsed, measurements)
+              )
+          ):
+              raise SystemExit("invalid or mismatched process measurement")
           cpu_percent = [
-              100.0 * (user + system) / max(wall, 1e-9)
+              100.0 * (user + system) / wall
               for wall, user, system in zip(elapsed, user_cpu, system_cpu)
           ]
           signature_micros = [value / 1_000.0 for value in signature["samplesNanos"]]
@@ -317,6 +356,7 @@ jobs:
               "schema": "hepta.intelligence-control.qualification-host.v2",
               "sourceCommit": sys.argv[2],
               "sampleCount": len(rows),
+              "timingMethod": measurements[0]["timingMethod"],
               "elapsedSeconds": distribution(elapsed),
               "userCpuSeconds": distribution(user_cpu),
               "systemCpuSeconds": distribution(system_cpu),
@@ -326,6 +366,7 @@ jobs:
               "hardKillSpawnToExit70Millis": distribution(hard_kill_millis),
               "rawEvidence": {
                   "samplesCsv": "samples.csv",
+                  "processMeasurements": [f"sample-{index}-measurement.json" for index in range(1, 10)],
                   "signatureProfile": "signature-profile.json",
                   "hardKillProfile": "hard-kill-profile.json",
               },
