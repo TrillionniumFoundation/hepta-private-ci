@@ -1,17 +1,10 @@
 name: Hepta organ implementation (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-neuron/**"
-      - "codex-rs/hepta-control-plane/**"
-      - "codex-rs/hepta-runtime/**"
-      - "codex-rs/hepta-types/**"
-      - "codex-rs/hepta-wire/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain.toml"
-      - ".github/workflows/hepta-organ-implementation.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

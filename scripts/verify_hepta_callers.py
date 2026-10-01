@@ -25,6 +25,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
@@ -453,8 +454,14 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 raise VerificationFailure(
                     f"{relative}: required marker missing: {marker!r}"
                 )
+        code = _strip_cfg_test_items(_strip_rust_non_code(text))
         for marker in _string_tuple(row, "forbidden"):
-            if marker in text:
+            pattern = re.escape(marker)
+            if marker and (marker[0].isalnum() or marker[0] == "_"):
+                pattern = r"(?<!\w)" + pattern
+            if marker and (marker[-1].isalnum() or marker[-1] == "_"):
+                pattern += r"(?!\w)"
+            if re.search(pattern, code):
                 raise VerificationFailure(
                     f"{relative}: forbidden marker present: {marker!r}"
                 )
@@ -517,6 +524,35 @@ def main() -> int:
             or "authority.claim(y)" not in cfg_code
         ):
             raise VerificationFailure("cfg-test stripping self-test failed")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            protected = root / "protected.rs"
+            manifest = {
+                "protected_file": [
+                    {
+                        "path": "protected.rs",
+                        "required": ["required_error_code"],
+                        "forbidden": ["codex_hepta_memory::CognitiveStore"],
+                    }
+                ]
+            }
+            protected.write_text(
+                "let error = codex_hepta_memory::CognitiveStoreError;\n"
+                'let code = "required_error_code";\n'
+                "// codex_hepta_memory::CognitiveStore\n"
+                'let example = "codex_hepta_memory::CognitiveStore";\n'
+                "#[cfg(test)] mod tests { use codex_hepta_memory::CognitiveStore; }\n",
+                encoding="utf-8",
+            )
+            _verify_protected_files(root, manifest)
+            with protected.open("a", encoding="utf-8") as handle:
+                handle.write("use codex_hepta_memory::CognitiveStore;\n")
+            try:
+                _verify_protected_files(root, manifest)
+            except VerificationFailure:
+                pass
+            else:
+                raise VerificationFailure("protected code boundary self-test failed")
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )
