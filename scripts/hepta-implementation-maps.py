@@ -540,9 +540,21 @@ EXECUTION_CLAIMS = frozenset(
     {
         "productionImplementation",
         "productExecutionProved",
+        "requestLocalReadOnlyProductExecutionProved",
+        "authenticatedProductionProductExecutionProved",
+        "productExecutionComplete",
+        "productionQualified",
+        "deploymentQualified",
+        "deploymentQualificationComplete",
         "independentAcceptance",
+        "independentAcceptanceComplete",
+        "independentDecisionEvidenceProved",
+        "targetHostQualified",
+        "namedHostQualificationReceiptProved",
         "activation",
+        "productionWriterActivated",
         "release",
+        "releaseAuthorized",
     }
 )
 BOOLEAN_CLAIMS = EXECUTION_CLAIMS | {

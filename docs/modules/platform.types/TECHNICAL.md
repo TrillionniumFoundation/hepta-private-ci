@@ -567,8 +567,11 @@ composition, deployment or external effect authority.
 | registry-admitted conversion | `rescale_signal_registered` | `codex-rs/hepta-types/src/numeric_conversion.rs` | normalization + both-profile admission |
 | generated bindings | `generate_bindings.py` | `codex-rs/hepta-types/bindings/` | generator drift + Python/JavaScript consumer gates |
 
-- Exact source binding is recorded in `IMPLEMENTATION_MAP.json` using
-  `latest_declared_root_commit_v1`.
+- `IMPLEMENTATION_MAP.json` uses `candidate_or_exact_observation_v1`.
+  Under `mappingSourceIdentityMode=exact_blob`, `sourceBase` retains historical
+  provenance while `observedAtHead` and `sourceObjects` bind current navigation.
+  Historical receipts remain bound to their original commits; navigation
+  rebinding does not establish current execution qualification.
 - `implementedOperationMappingComplete=true` means the rows above have native
   source and verification anchors.
 - `ownedTargetProtocolSourceComplete=false` while
