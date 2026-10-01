@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1dbdaa910388d140d442ce5ff43fc14871c91bc2",
-    "tree": "5ffc2e5f5a3909dbbc2d26afaae2f8bf72e68abf"
+    "commit": "c94cc7929dc7ecd7f3c47d7c2ebe123e6fc4a6c1",
+    "tree": "04b12c071e9179676b95cfcdb1e481f507f9facc"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -321,6 +321,20 @@
       "designOperation": "original_effect_clock",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "maintain_original_runtime_policy",
+      "nativeSymbol": "maintain_secrets_runtime_policy",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_maintenance.rs",
+      "state": "original_owner_offline_signed_clock_revision_cas_qualified_installed_activation_pending",
+      "authority": "root_exact_configuration_and_original_authbus_revision_owner",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/runtime_maintenance_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "explicit original policy expiry extension/revocation without replacing quota or history",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -402,6 +416,21 @@
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
       "nativeSymbol": "SecretsConsumeOriginal",
       "state": "ordinary_private_agentd_control_routes_exact_original_operation"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs",
+      "nativeSymbol": "maintain_secrets_runtime_policy",
+      "state": "enrolled_uid992_strict_root_configuration_and_original_intent"
+    },
+    {
+      "sourcePath": "scripts/hepta-install-secrets-product",
+      "nativeSymbol": "prepare",
+      "state": "root_exclusive_new_instance_emits_units_no_installed_activation"
+    },
+    {
+      "sourcePath": "scripts/hepta-maintain-secrets-product",
+      "nativeSymbol": "apply",
+      "state": "root_original_revision_cas_and_same_pending_publication_recovery"
     }
   ],
   "sourceObjects": [
@@ -423,7 +452,7 @@
     },
     {
       "path": "codex-rs/hepta-bao-adapter",
-      "object": "f2c2ad94bc9e010025ac17f4a428b4c5dad1b167"
+      "object": "5bf01b61b16b1f7a20276c8d58af9c22da04b6a0"
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/authority_frontier.rs",
@@ -444,6 +473,10 @@
     {
       "path": "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs",
       "object": "bc580618be1ba880bdbc395f586d2176db517a13"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs",
+      "object": "c64830a73f386bcab0a6a140545a9d31e5103a5f"
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs",
@@ -518,8 +551,16 @@
       "object": "95baf40242202b08035e8a0cb7512531db186580"
     },
     {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_maintenance.rs",
+      "object": "58348977ab69fac473139157f6e69d11574792a6"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_maintenance_tests.rs",
+      "object": "a99c1e6d78edb87014cbb6a5ffa63f38df47d118"
+    },
+    {
       "path": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
-      "object": "34ca807afd6a1d147d6a12df204a4b9384fc802d"
+      "object": "0f6df28a47d3cf3f12ba6e23d499e675688949bd"
     },
     {
       "path": "docs/modules/secrets.heptabao/TECHNICAL.md",
@@ -528,6 +569,14 @@
     {
       "path": "external/HeptaBao",
       "object": "6a053b487ff726d39eaa1c921d02dc3bf95fb44f"
+    },
+    {
+      "path": "scripts/hepta-install-secrets-product",
+      "object": "0b66076b2567f0e0cece8a5816f38308e07c27aa"
+    },
+    {
+      "path": "scripts/hepta-maintain-secrets-product",
+      "object": "1a89ce7000fc86384941534ada109980d0552d11"
     }
   ],
   "agentdQualification": {
@@ -552,5 +601,36 @@
     "newOriginalOperationMaximumMs": 30000,
     "installedCaller": false,
     "dynamicCapabilitiesEnabled": false
+  },
+  "originalPolicyMaintenanceQualification": {
+    "packageNativePassed": 128,
+    "packageOriginalSkips": 2,
+    "testThreads": 2,
+    "retries": 0,
+    "actualNondevChecks": 12,
+    "roleUids": [
+      982,
+      981,
+      983,
+      992
+    ],
+    "agentUids": [
+      986,
+      969
+    ],
+    "agentPrimaryGid": 975,
+    "durability": "FULL SQL and original external frontier on protected /var/lib SSD namespace device2067",
+    "scope": "Real policy expiry, original-writer exclusion, interrupted publication after committed revision2, same-intent resume, original four-owner restart, new KV2 operation using revision2 and independent FULL ACK/settlement, explicit revoke3 with retained terminal Status/Recover, second Root writer rejection and missing volatile endpoint-parent recovery. Installed activation remains pending.",
+    "oldGrantNonceQuotaReservationAckReplaced": false,
+    "retirementOrQuotaMutationEnabled": false
+  },
+  "firstInstallConfiguration": {
+    "defaultPolicyDays": 7,
+    "defaultPerAgentOriginalPeriodQuota": 1000,
+    "newOriginalOperationMaximumMs": 30000,
+    "roleRpcAndPreparationMs": 4000,
+    "originalAgentControlDeadlineMs": 2000,
+    "existingGrantAndOperationExpiryClipped": true,
+    "formalInstalledActivation": false
   }
 }
