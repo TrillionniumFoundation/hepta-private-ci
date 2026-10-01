@@ -1,42 +1,76 @@
 use super::*;
+#[cfg(unix)]
 use codex_hepta_prompt_optimizer::canonical::*;
 
+#[cfg(unix)]
 use std::collections::BTreeSet;
+#[cfg(unix)]
 use std::time::SystemTime;
+#[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
+#[cfg(unix)]
 use codex_hepta_context_compiler::ContextCompilerV2Error;
+#[cfg(unix)]
 use codex_hepta_context_compiler::ContextModelProfileV2;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_kg::KnowledgeNodeV2;
+#[cfg(unix)]
 use codex_hepta_kg::KnowledgeProjectionInputV2;
+#[cfg(unix)]
 use codex_hepta_kg::KnowledgeSupportV2;
+#[cfg(unix)]
 use codex_hepta_kg::build_complete_generation;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+#[cfg(unix)]
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::FactorSource;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::Lifecycle;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptFactor;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptModelTupleV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptRoleV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_admission_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_realization_binding;
 use codex_hepta_types::Digest32;
+#[cfg(unix)]
 use codex_hepta_types::FixedQ32;
+#[cfg(unix)]
 use codex_hepta_types::Generation;
 use codex_hepta_types::PromptDeliveryObservationV1;
+#[cfg(unix)]
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
+#[cfg(unix)]
 use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
@@ -47,8 +81,10 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[cfg(unix)]
 struct ByteTokenizer(Digest32);
 
+#[cfg(unix)]
 impl ExactTokenizerV2 for ByteTokenizer {
     fn tokenizer_digest(&self) -> Digest32 {
         self.0
@@ -526,6 +562,7 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
     );
 }
 
+#[cfg(unix)]
 #[test]
 fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));

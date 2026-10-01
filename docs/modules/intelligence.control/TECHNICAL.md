@@ -740,3 +740,9 @@ state tests remain cross-platform; the prompt extension's in-memory asynchronous
 initialization tests require no anchored-directory profile. These registrations
 do not provide a Windows secure-handle implementation or qualify a Windows
 canonical product embedding.
+
+The capability-specific test registrations also cover all eleven Intelligence
+delivery/pipeline fixture cases and Agentd signed/anchored-profile callers.
+The mixed Agentd prompt-runtime suite keeps its eight memory/portable-reopen
+cases cross-platform and gates only its actual registry pipeline case. The
+pure aborted-worker capacity assertion likewise remains cross-platform.

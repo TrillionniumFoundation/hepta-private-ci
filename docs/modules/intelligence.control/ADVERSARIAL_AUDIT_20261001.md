@@ -730,3 +730,32 @@ and signed-profile fixtures still have Unix-profile prerequisites and non-Unix
 registration debt; this audit does not claim whole-module Windows test or
 production parity. This documentation correction leaves all production and test
 source unchanged.
+
+## Existing Unix-profile fixture registration closure
+
+The whole-module closing review also confirmed that existing Intelligence and
+Agentd fixture registrations could fail on non-Unix hosts before reaching their
+intended boundary. These registration omissions are repaired rather than left
+as known actionable module debt. Both Intelligence test modules contain only
+actual registry/authority cases (three delivery and eight pipeline assertions),
+so their shared helpers and consumers use matching Unix registration. Agentd's
+mixed prompt-runtime suite gates only its one actual registry pipeline case and
+its exclusive tokenizer/imports; its eight memory/portable-reopen assertions
+remain cross-platform. Signed/anchored-profile product integrations and their
+exclusive helpers/imports are registered on Unix, while the pure aborted-worker
+capacity/Busy assertion and shared in-memory fixture stay cross-platform.
+
+These changes preserve every Unix test name and assertion, and alter no
+production behavior, trust, error handling, durable grammar, dependency or
+workflow. They close the inspected fixture registration debt without inventing
+a Windows registry/rollback implementation or granting Windows product
+qualification. Two independent closing reviews verified the conditional helper/import
+closure and retained pure tests without a new actionable source finding. Earlier candidate executions remain
+historical; the next published source requires its own platform evidence.
+
+The final registration worktree passed Rust formatting and the affected
+Intelligence/Agentd scoped `just fix` with exit zero and no automatic source
+edits. Baseline lint warnings remain visible; this is not a strict lint pass.
+Development-document verification passed for 40 module guides/205 contracts,
+and the status/review suites passed 21/14 assertions with all six formal review
+allocations still pending. Final-source CI must supply its own execution records.

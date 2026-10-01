@@ -11,10 +11,10 @@ fn product_test_coordinator() -> AgentRunCoordinator {
 }
 
 use crate::AgentRunCoordinator;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use crate::RunPhase;
 use crate::RuntimeComposition;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use std::fs::OpenOptions;
 
 use super::*;
@@ -35,15 +35,15 @@ use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::AppendDisposition;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::DurableLedger;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::LedgerAnchor;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::LedgerEvent;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
@@ -84,6 +84,7 @@ use codex_hepta_prompt_optimizer::PromptCandidate;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -335,6 +336,7 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     }
 }
 
+#[cfg(unix)]
 fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
@@ -372,6 +374,7 @@ fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], front
 struct Fixture {
     request: CanonicalIntelligenceRunRequestV1,
     inputs: AgentdIntelligenceOwnerInputsV1,
+    #[cfg(unix)]
     owners: Vec<OwnerBindingV1>,
 }
 
@@ -685,11 +688,12 @@ fn fixture() -> Fixture {
             evaluation_request,
             signed_evaluation: None,
         },
+        #[cfg(unix)]
         owners,
     }
 }
 
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     let (fixture, trust) = signed::signed_fixture();
@@ -827,6 +831,7 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn unsigned_currentness_substitution_fails_before_owner_use() {
     let fixture = fixture();
@@ -858,7 +863,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
     ));
 }
 
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
     let (fixture, trust) = signed::signed_fixture();
@@ -910,6 +915,7 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
     assert!(ledger.records().expect("records").is_empty());
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn missing_current_owner_fails_before_product_use() {
     let fixture = fixture();
@@ -934,6 +940,7 @@ async fn missing_current_owner_fails_before_product_use() {
     ));
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
     let mut fixture = fixture();
@@ -1026,9 +1033,11 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
     assert_eq!(ready.await.expect("new work completes"), 7);
 }
 
+#[cfg(unix)]
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
 
+#[cfg(unix)]
 #[path = "intelligence_product_learning_tests.rs"]
 mod learning;
 
@@ -1036,6 +1045,6 @@ mod learning;
 #[path = "config_factory_containment_tests.rs"]
 mod factory_containment;
 
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 #[path = "intelligence_product_qualification_integrity_tests.rs"]
 mod qualification_integrity;

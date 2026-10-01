@@ -767,6 +767,6 @@ fn ensure_exercisable(decision: PromptExerciseActionV1) -> Result<(), PromptPipe
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "prompt_pipeline_tests.rs"]
 mod tests;
