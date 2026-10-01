@@ -387,7 +387,10 @@ pub(super) fn canonical_json_bytes<T: CognitiveContractV1>(
         },
     )?;
     let value = serde_json::from_slice(&serialized).map_err(CognitiveWireError::Json)?;
-    let mut output = String::new();
+    let canonical_capacity = serialized.len();
+    // Value owns its data: release the temporary wire buffer before retaining output.
+    drop(serialized);
+    let mut output = String::with_capacity(canonical_capacity);
     write_canonical_value(&value, &mut output)?;
     Ok(output.into_bytes())
 }

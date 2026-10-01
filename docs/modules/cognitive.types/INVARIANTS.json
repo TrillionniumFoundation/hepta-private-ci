@@ -168,17 +168,21 @@
     },
     {
       "id": "CTYPE-CAPACITY",
-      "obligation": "Bounded serialization, byte-boundary CPU/RSS/DHAT observations and maximum span/key-count timing preserve historical canonical bytes; observations are candidate- and host-specific and do not create product thresholds.",
+      "obligation": "Bounded actual serialization and recall resource-receipt lower bounds preserve historical canonical bytes; byte-boundary CPU/RSS/DHAT and maximum span/key-count observations are candidate- and host-specific and do not create product thresholds.",
       "source": [
         "codex-rs/hepta-cognitive-types/src/bounded.rs",
-        "codex-rs/hepta-cognitive-types/src/wire.rs"
+        "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "codex-rs/hepta-cognitive-types/src/wire_legacy.rs",
+        "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs"
       ],
       "tests": [
         "codex-rs/hepta-cognitive-types/src/codec_tests.rs",
         "qualification/cognitive-types-v1/quality_checks.py",
         "qualification/cognitive-types-v1/resource_profile.py",
         "qualification/cognitive-types-v1/resource_workloads.py",
-        "qualification/cognitive-types-v1/test_resource_profile.py"
+        "qualification/cognitive-types-v1/test_resource_profile.py",
+        "codex-rs/hepta-cognitive-types/src/wire_budget_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/recall_resource_tests.rs"
       ],
       "checks": [
         "package-tests",
