@@ -38,6 +38,9 @@ use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 const COMPILED_DELIVERY_DOMAIN: &[u8] = b"hepta.prompt-registry.compiled-context.v3";
 const SERIALIZED_PAYLOAD_DOMAIN: &[u8] = b"hepta.prompt-registry.serialized-context.v3";
 const SELECTED_PROMPT_GROUP_ID: &str = "prompt:exercise-selected";
+// The repository caps every individual model-visible item at 10K tokens.
+// Registry token cost is a declared bound, not an exact tokenizer attestation.
+const MAX_PROMPT_FRAGMENT_TOKENS: u32 = 10_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRegistryCompilationRequestV2 {
@@ -136,6 +139,7 @@ impl PromptRegistryCompiledContextV2 {
                 || candidate.content_digest != delivery.binding.payload_digest
                 || candidate.source_digest != delivery.binding.digest()
                 || candidate.tokenization.token_count() != u64::from(delivery.binding.token_cost)
+                || delivery.binding.token_cost > MAX_PROMPT_FRAGMENT_TOKENS
             {
                 return Err(PromptRegistryCompilationErrorV2::Integrity);
             }
@@ -195,6 +199,17 @@ pub fn compile_prompt_registry_v2(
     exercise_request: &PromptExerciseRequestV1,
     request: PromptRegistryCompilationRequestV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
+    portfolio
+        .validate()
+        .map_err(|error| PromptPipelineErrorV1::Optimizer(format!("{error:?}")))
+        .map_err(PromptRegistryCompilationErrorV2::Pipeline)?;
+    if portfolio
+        .selected
+        .iter()
+        .any(|selected| selected.realization.token_cost > MAX_PROMPT_FRAGMENT_TOKENS)
+    {
+        return Err(PromptRegistryCompilationErrorV2::PromptFragmentTokenLimit);
+    }
     if request.registry_model_tuple != portfolio.model_tuple
         || request.now_unix_ms != exercise_request.now_unix_ms
     {
@@ -344,6 +359,7 @@ pub enum PromptRegistryCompilationErrorV2 {
     Context(ContextCompilerV2Error),
     ProfileMismatch,
     Integrity,
+    PromptFragmentTokenLimit,
 }
 
 impl fmt::Display for PromptRegistryCompilationErrorV2 {

@@ -1,6 +1,5 @@
 use super::*;
 use codex_hepta_prompt_optimizer::canonical::*;
-use codex_hepta_types::AuthorityPosture;
 
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -26,6 +25,9 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[path = "prompt_selection_fixture_tests.rs"]
+mod selection_fixture;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -34,7 +36,7 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn attachment() -> PromptRuntimeAttachmentV1 {
+pub(super) fn attachment() -> PromptRuntimeAttachmentV1 {
     PromptRuntimeAttachmentV1::new(
         id("compilation:agentd-prompt"),
         digest("attachment"),
@@ -49,7 +51,7 @@ fn attachment() -> PromptRuntimeAttachmentV1 {
     .unwrap_or_else(|error| panic!("attachment: {error}"))
 }
 
-fn stage_raw(
+pub(super) fn stage_raw(
     owner: &AgentdPromptRuntimeOwner,
     thread_id: &str,
     turn_id: &str,
@@ -69,7 +71,7 @@ fn stage_raw(
         .unwrap_or_else(|error| panic!("stage raw: {error}"));
 }
 
-fn dispatch(
+pub(super) fn dispatch(
     value: &PromptRuntimeAttachmentV1,
     thread_id: &str,
     turn_id: &str,
@@ -91,7 +93,7 @@ fn dispatch(
     }
 }
 
-fn delivered_terminal(
+pub(super) fn delivered_terminal(
     value: &PromptRuntimeAttachmentV1,
     attempt_id: &str,
     request_binding_id: &str,
@@ -674,29 +676,8 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         })
         .unwrap_or_else(|error| panic!("enumerate: {error}"));
     assert_eq!(candidates.candidates[0].realization, realization);
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:agentd-product"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![factor.factor_id],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: logical_now + 10_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
-        objective_digest: digest("objective:agentd-product"),
-        state_digest: digest("state:agentd-product"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
-        generation_vector_digest: digest("generation:agentd-product"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
+    let portfolio =
+        selection_fixture::select_candidates(candidates, logical_now, logical_now + 10_000);
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: portfolio.state_digest,

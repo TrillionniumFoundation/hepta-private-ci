@@ -21,6 +21,9 @@ use codex_hepta_types::FixedQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[path = "prompt_selection_fixture_tests.rs"]
+mod selection_fixture;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -32,6 +35,20 @@ fn digest(value: &str) -> Digest32 {
 pub(crate) fn admitted_registry(
     root: &std::path::Path,
     payload: &[u8],
+) -> (
+    DurablePromptRegistry,
+    PromptModelTupleV2,
+    FinalUseAuthority,
+    SigningKey,
+    u64,
+) {
+    admitted_registry_with_token_cost(root, payload, /*token_cost*/ 4)
+}
+
+pub(crate) fn admitted_registry_with_token_cost(
+    root: &std::path::Path,
+    payload: &[u8],
+    token_cost: u32,
 ) -> (
     DurablePromptRegistry,
     PromptModelTupleV2,
@@ -131,7 +148,7 @@ pub(crate) fn admitted_registry(
         locale_id: tuple.locale_id.clone(),
         role: PromptRoleV2::DeveloperInstruction,
         payload_digest: Digest32::of_bytes(payload),
-        token_cost: 4,
+        token_cost,
         expires_unix_ms: None,
     };
     let realization_actor = id("publisher:prompt");
@@ -204,29 +221,8 @@ pub(crate) fn canonical_selection(
         },
     )
     .expect("enumerate current registry");
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:1"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![id("factor:verify")],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: 9_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
-        objective_digest: digest("objective"),
-        state_digest: digest("state"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
-        generation_vector_digest: digest("generation-vector"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
+    let portfolio =
+        selection_fixture::select_candidates(candidates, now, /*valid_until*/ 9_000);
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: digest("state"),
@@ -239,6 +235,102 @@ pub(crate) fn canonical_selection(
     CanonicalSelection {
         portfolio,
         exercise_request,
+    }
+}
+
+#[test]
+fn portfolio_expiry_and_utility_tampering_is_rejected_before_compilation() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let (registry, tuple, _authority, _key, _now) = admitted_registry(
+        &temporary.path().join("registry"),
+        b"Verify before mutation.",
+    );
+    let selected = canonical_selection(&registry, &tuple, /*now*/ 100);
+    let request = PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:forged-portfolio"),
+        serialization_id: id("serialization:forged-portfolio"),
+        attachment_id: id("attachment:forged-portfolio"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 128,
+        },
+        now_unix_ms: 100,
+        token_budget: 128,
+        truncation_policy_digest: digest("truncation"),
+    };
+    for mutate in [
+        (|portfolio: &mut SelectedPromptPortfolioV1| portfolio.receipt.valid_until_unix_ms = 90_000)
+            as fn(&mut SelectedPromptPortfolioV1),
+        |portfolio| portfolio.receipt.expected_utility_q32 = FixedQ32::from_raw(i64::MAX),
+    ] {
+        let mut portfolio = selected.portfolio.clone();
+        mutate(&mut portfolio);
+        assert!(matches!(
+            compile_prompt_registry_v2(
+                &registry,
+                &portfolio,
+                &selected.exercise_request,
+                request.clone(),
+            ),
+            Err(PromptRegistryCompilationErrorV2::Pipeline(
+                PromptPipelineErrorV1::Optimizer(_)
+            ))
+        ));
+    }
+}
+
+#[test]
+fn signed_prompt_fragment_declared_token_cost_obeys_individual_item_cap() {
+    for token_cost in [10_000, 10_001] {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let (registry, tuple, _authority, _key, _now) = admitted_registry_with_token_cost(
+            &temporary.path().join("registry"),
+            b"Verify before mutation.",
+            token_cost,
+        );
+        let selected = canonical_selection(&registry, &tuple, /*now*/ 100);
+        let result = compile_prompt_registry_v2(
+            &registry,
+            &selected.portfolio,
+            &selected.exercise_request,
+            PromptRegistryCompilationRequestV2 {
+                compilation_id: id("compilation:fragment-cap"),
+                serialization_id: id("serialization:fragment-cap"),
+                attachment_id: id("attachment:fragment-cap"),
+                registry_model_tuple: tuple.clone(),
+                context_model_profile: ContextModelProfileV2 {
+                    model_digest: tuple.model_digest,
+                    provider_id_digest: digest("provider"),
+                    provider_model_digest: tuple.model_digest,
+                    tokenizer_digest: tuple.tokenizer_digest,
+                    serializer_digest: digest("serializer"),
+                    template_digest: tuple.template_digest,
+                    tool_schema_digest: tuple.tool_schema_digest,
+                    maximum_context_tokens: 20_000,
+                },
+                now_unix_ms: 100,
+                token_budget: 20_000,
+                truncation_policy_digest: digest("truncation"),
+            },
+        );
+        if token_cost == 10_000 {
+            result
+                .expect("item at cap")
+                .validate()
+                .expect("valid item at cap");
+        } else {
+            assert!(matches!(
+                result,
+                Err(PromptRegistryCompilationErrorV2::PromptFragmentTokenLimit)
+            ));
+        }
     }
 }
 

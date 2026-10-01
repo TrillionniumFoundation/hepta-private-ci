@@ -137,7 +137,25 @@ impl VerifiedLearningEvidenceV1 {
     pub fn objective_digest(&self) -> Digest32 {
         self.objective_digest
     }
+
+    /// Exclusive end of this proof's validity under its immutable trust snapshot.
+    ///
+    /// Signed and principal expiries are inclusive in `verify`; the consumer
+    /// deadline is one millisecond later, capped by any known revocation time.
+    /// Saturation conservatively excludes `u64::MAX` when an exclusive end is
+    /// not representable. A changed trust snapshot still requires verification.
+    #[must_use]
+    pub fn valid_until_unix_ms(&self) -> u64 {
+        self.expires_at
+            .min(self.principal.expires_at)
+            .saturating_add(1)
+            .min(self.revoked_at.unwrap_or(u64::MAX))
+    }
 }
+
+#[cfg(test)]
+#[path = "signed_evidence_horizon_tests.rs"]
+mod horizon_tests;
 
 #[derive(Clone, Debug)]
 pub struct LearningEvidenceVerifierV1 {
