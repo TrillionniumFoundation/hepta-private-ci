@@ -2485,3 +2485,11 @@ mod admission_quota_tests;
 #[cfg(test)]
 #[path = "owner_capacity_tests.rs"]
 mod capacity_tests;
+
+#[cfg(test)]
+#[path = "owner_begin_capacity_tests.rs"]
+mod begin_capacity_tests;
+
+#[cfg(test)]
+#[path = "owner_head_capacity_tests.rs"]
+mod head_capacity_tests;
