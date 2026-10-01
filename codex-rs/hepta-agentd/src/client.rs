@@ -416,7 +416,30 @@ impl AgentdClient {
         proof_digest: String,
         reason: String,
     ) -> Result<AgentRunReceipt, AgentdError> {
-        match self
+        self.run_abort_before_effect_with_generation(
+            run_id,
+            expected_revision,
+            dispatch_binding_digest,
+            abort_nonce_hex,
+            proof_digest,
+            reason,
+        )
+        .await
+        .map(|(_, receipt)| receipt)
+    }
+
+    /// Pair the original abort acknowledgement with its current lifecycle
+    /// generation without changing the bound process or the abort protocol.
+    pub async fn run_abort_before_effect_with_generation(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    ) -> Result<(u64, AgentRunReceipt), AgentdError> {
+        let response = self
             .send(AgentdRequest::run_abort_before_effect(
                 self.request_id(),
                 self.spawn_generation,
@@ -427,10 +450,9 @@ impl AgentdClient {
                 proof_digest,
                 reason,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            .await?;
+        match response.payload {
+            AgentdPayload::RunReceipt(receipt) => Ok((response.current_generation, receipt)),
             payload => unexpected(payload),
         }
     }
@@ -482,16 +504,26 @@ impl AgentdClient {
     }
 
     pub async fn run_status(&self, run_id: String) -> Result<Option<AgentRunReceipt>, AgentdError> {
-        match self
+        self.run_status_with_generation(run_id)
+            .await
+            .map(|(_, run)| run)
+    }
+
+    /// Observe the current lifecycle generation and original run in the same
+    /// response. The client remains bound to its separate process generation.
+    pub async fn run_status_with_generation(
+        &self,
+        run_id: String,
+    ) -> Result<(u64, Option<AgentRunReceipt>), AgentdError> {
+        let response = self
             .send(AgentdRequest::run_status(
                 self.request_id(),
                 self.spawn_generation,
                 run_id,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::RunStatus { run } => Ok(run),
+            .await?;
+        match response.payload {
+            AgentdPayload::RunStatus { run } => Ok((response.current_generation, run)),
             payload => unexpected(payload),
         }
     }

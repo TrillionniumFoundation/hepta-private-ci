@@ -298,6 +298,7 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
     let original = NativeIntelligenceRunBinding {
         run_id: "intelligence-run".to_string(),
         expected_revision: 2,
+        agent_generation: 7,
         absolute_deadline_ms: 10_000,
         context_digest: "a".repeat(64),
         envelope_digest: "b".repeat(64),
@@ -312,14 +313,15 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
     )
     .unwrap();
     assert_ne!(none, bound);
-    for field in 0..5 {
+    for field in 0..6 {
         let mut changed = original.clone();
         match field {
             0 => changed.run_id.push_str("-other"),
             1 => changed.expected_revision += 1,
             2 => changed.context_digest = "c".repeat(64),
             3 => changed.absolute_deadline_ms += 1,
-            _ => changed.envelope_digest = "d".repeat(64),
+            4 => changed.envelope_digest = "d".repeat(64),
+            _ => changed.agent_generation += 1,
         }
         assert_ne!(
             bound,
@@ -442,6 +444,70 @@ fn agentd_admitted_binding_is_derived_from_durable_owner_state() {
     )
     .unwrap();
     assert_eq!(dispatched, attached);
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn admitted_loader_binds_current_lifecycle_without_conflating_process_generation() {
+    use codex_hepta_agentd::AgentdPayload;
+    use codex_hepta_agentd::AgentdRequest;
+    use codex_hepta_agentd::AgentdResponse;
+    use tokio::io::AsyncBufReadExt;
+    use tokio::io::AsyncWriteExt;
+    use tokio::io::BufReader;
+    use tokio::net::UnixListener;
+
+    for (current_generation, receipt_generation, accepted) in
+        [(8, 8, true), (8, 7, false), (0, 8, false)]
+    {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("agentd.sock");
+        let listener = UnixListener::bind(&path).unwrap();
+        let agent = AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap();
+        let owner = agent.clone();
+        let mut receipt = admitted_receipt(AgentRunPhase::ContextAttached);
+        receipt.generation = receipt_generation;
+        let expected = NativeIntelligenceRunBinding::from_agentd_receipt(
+            "intelligence-run",
+            current_generation,
+            receipt.clone(),
+        );
+        let server = tokio::spawn(async move {
+            let (stream, _) = listener.accept().await.unwrap();
+            let (reader, mut writer) = tokio::io::split(stream);
+            let mut reader = BufReader::new(reader);
+            let mut bytes = Vec::new();
+            reader.read_until(b'\n', &mut bytes).await.unwrap();
+            let request: AgentdRequest = serde_json::from_slice(&bytes).unwrap();
+            assert_eq!(
+                request,
+                AgentdRequest::run_status(request.request_id, 7, "intelligence-run".into())
+            );
+            let response = AgentdResponse {
+                schema_version: codex_hepta_agentd::AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: owner,
+                spawn_generation: 7,
+                current_generation,
+                payload: AgentdPayload::RunStatus { run: Some(receipt) },
+            };
+            let mut bytes = serde_json::to_vec(&response).unwrap();
+            bytes.push(b'\n');
+            writer.write_all(&bytes).await.unwrap();
+        });
+        let observed = NativeIntelligenceRunBinding::load_from_agentd(
+            path,
+            agent,
+            7,
+            "intelligence-run".into(),
+        )
+        .await;
+        server.await.unwrap();
+        assert_eq!(observed.is_ok(), accepted);
+        if accepted {
+            assert_eq!(observed.unwrap(), expected.unwrap());
+        }
+    }
 }
 
 #[test]

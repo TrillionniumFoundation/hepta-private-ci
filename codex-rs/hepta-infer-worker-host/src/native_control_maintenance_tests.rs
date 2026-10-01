@@ -119,7 +119,7 @@ async fn serve_terminal(
         context_digest: Some(owner.context_digest.clone()),
         compilation_receipt_digest: Some(owner.envelope_digest.clone()),
         authority_epoch: 1,
-        generation: 1,
+        generation: 2,
         fence_digest: "e".repeat(64),
         deadline_ms: 1,
         dispatch_binding_digest: Some("d".repeat(64)),
@@ -149,7 +149,7 @@ async fn serve_terminal(
         request_id: request.request_id,
         agent_id: AgentId::parse(AGENT)?,
         spawn_generation: 1,
-        current_generation: 1,
+        current_generation: 2,
         payload: AgentdPayload::RunStatus { run: Some(receipt) },
     };
     let mut bytes = serde_json::to_vec(&response)?;
@@ -197,7 +197,7 @@ fn acknowledgement(record: &NativeRunRecord) -> Result<AgentRunReceipt> {
         context_digest: Some("b".repeat(64)),
         compilation_receipt_digest: Some("c".repeat(64)),
         authority_epoch: 1,
-        generation: 1,
+        generation: 2,
         fence_digest: "e".repeat(64),
         deadline_ms: 1,
         dispatch_binding_digest: Some(abort.dispatch_binding_digest.clone()),
@@ -260,7 +260,7 @@ async fn serve_abort(
             request_id: request.request_id,
             agent_id: AgentId::parse(AGENT)?,
             spawn_generation: 1,
-            current_generation: 1,
+            current_generation: 2,
             payload: AgentdPayload::RunReceipt(receipt),
         };
         let mut bytes = serde_json::to_vec(&response)?;

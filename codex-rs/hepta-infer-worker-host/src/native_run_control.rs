@@ -29,13 +29,15 @@ pub struct NativeAdmission {
 pub struct NativeIntelligenceRunBinding {
     pub(super) run_id: String,
     pub(super) expected_revision: u64,
+    pub(super) agent_generation: u64,
     pub(super) absolute_deadline_ms: u64,
     pub(super) context_digest: String,
     pub(super) envelope_digest: String,
 }
 
 impl NativeIntelligenceRunBinding {
-    /// Load the immutable product binding through the exact Agentd generation.
+    /// Load the immutable product binding through the exact Agentd process.
+    /// The current lifecycle generation comes from that same owner response.
     ///
     /// runtime.codex-agentd-admitted-loader-v1: this is the only public
     /// constructor. Callers select a durable run ID but cannot supply its
@@ -43,14 +45,15 @@ impl NativeIntelligenceRunBinding {
     pub async fn load_from_agentd(
         socket_path: std::path::PathBuf,
         agent_id: codex_hepta_contracts::AgentId,
-        generation: u64,
+        spawn_generation: u64,
         run_id: String,
     ) -> Result<Self> {
-        let receipt = AgentdClient::new(socket_path, agent_id, generation)?
-            .run_status(run_id.clone())
-            .await?
-            .ok_or("Agentd has no durable admitted work for the requested run")?;
-        Self::from_agentd_receipt(&run_id, generation, receipt)
+        let (current_generation, receipt) =
+            AgentdClient::new(socket_path, agent_id, spawn_generation)?
+                .run_status_with_generation(run_id.clone())
+                .await?;
+        let receipt = receipt.ok_or("Agentd has no durable admitted work for the requested run")?;
+        Self::from_agentd_receipt(&run_id, current_generation, receipt)
     }
 
     /// Validate a receipt already obtained through the exact Agentd client.
@@ -125,6 +128,7 @@ impl NativeIntelligenceRunBinding {
         Ok(Self {
             run_id: receipt.run_id,
             expected_revision,
+            agent_generation: receipt.generation,
             absolute_deadline_ms: receipt.deadline_ms,
             context_digest,
             envelope_digest,
@@ -403,13 +407,14 @@ fn native_source_payload_digest(
             timeout_ms,
         ))?,
         (Some(binding), NativeDeadlinePolicy::Profile) => serde_json::to_vec(&(
-            "hepta.native-intelligence-request.v2",
+            "hepta.native-intelligence-request.v3",
             prompt,
             context_query,
             socket,
             timeout_ms,
             &binding.run_id,
             binding.expected_revision,
+            binding.agent_generation,
             &binding.context_digest,
             &binding.envelope_digest,
             binding.absolute_deadline_ms,

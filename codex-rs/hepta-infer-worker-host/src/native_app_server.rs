@@ -536,8 +536,8 @@ async fn abort_pre_effect_consistently(
         .pre_effect_abort
         .clone()
         .ok_or("prepared native abort omitted its durable proof")?;
-    let aborted = owner
-        .run_abort_before_effect(
+    let (current_generation, aborted) = owner
+        .run_abort_before_effect_with_generation(
             abort.owner_run_id.clone(),
             abort.owner_dispatch_revision,
             abort.dispatch_binding_digest.clone(),
@@ -548,7 +548,8 @@ async fn abort_pre_effect_consistently(
         .await?;
     if aborted.phase != AgentRunPhase::AbortedBeforeEffect
         || aborted.run_id != abort.owner_run_id
-        || aborted.generation != prepared.request.worker_generation
+        || aborted.generation != intelligence.agent_generation
+        || current_generation != intelligence.agent_generation
         || aborted.revision
             != abort
                 .owner_dispatch_revision
@@ -595,8 +596,8 @@ impl AppServerModelDriver {
             self.config.agent_id.clone(),
             self.config.generation,
         )?;
-        let aborted = owner
-            .run_abort_before_effect(
+        let (current_generation, aborted) = owner
+            .run_abort_before_effect_with_generation(
                 abort.owner_run_id.clone(),
                 abort.owner_dispatch_revision,
                 abort.dispatch_binding_digest.clone(),
@@ -607,7 +608,8 @@ impl AppServerModelDriver {
             .await?;
         if aborted.phase != AgentRunPhase::AbortedBeforeEffect
             || aborted.run_id != abort.owner_run_id
-            || aborted.generation != record.request.worker_generation
+            || aborted.generation != current_generation
+            || current_generation == 0
             || aborted.revision
                 != abort
                     .owner_dispatch_revision
@@ -916,7 +918,7 @@ impl AppServerModelDriver {
             self.config.agent_id.clone(),
             self.config.generation,
         )?;
-        match publish_terminal_outbox_once(&owner, self.config.generation, &publication).await {
+        match publish_terminal_outbox_once(&owner, &publication).await {
             Ok(owner_revision) => {
                 control.acknowledge_native_terminal_publication(
                     request_id,
@@ -940,16 +942,16 @@ impl AppServerModelDriver {
 
 async fn publish_terminal_outbox_once(
     owner: &AgentdClient,
-    generation: u64,
     publication: &NativeTerminalPublication,
 ) -> Result<u64> {
     let desired_phase = agentd_terminal_phase(publication.phase);
-    let current = owner
-        .run_status(publication.owner.run_id.clone())
-        .await?
-        .ok_or("Agentd terminal owner disappeared")?;
+    let (generation, current) = owner
+        .run_status_with_generation(publication.owner.run_id.clone())
+        .await?;
+    let current = current.ok_or("Agentd terminal owner disappeared")?;
     if current.run_id != publication.owner.run_id
         || current.generation != generation
+        || generation == 0
         || current.context_digest.as_deref() != Some(publication.owner.context_digest.as_str())
         || current.compilation_receipt_digest.as_deref()
             != Some(publication.owner.envelope_digest.as_str())

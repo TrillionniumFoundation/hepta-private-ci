@@ -16,12 +16,12 @@ use app_test_support::MockResponsesConfig;
 use codex_hepta_agent_components::contracts::FinalUseBinding;
 use codex_hepta_agent_components::contracts::FinalUseGrant;
 use codex_hepta_agent_components::contracts::FinalUseRevocations;
+use codex_hepta_agent_components::contracts::Sha256Digest;
 use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
 
 use codex_hepta_agentd::AgentContextAttachment;
 use codex_hepta_agentd::AgentRunPhase;
 use codex_hepta_agentd::AgentRunSnapshot;
-use codex_hepta_agentd::AgentdClient;
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::final_use_authorizer::FinalUseAuthorizerConfig;
@@ -84,20 +84,29 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
 
     let provider = responses::start_mock_server().await;
     MockResponsesConfig::new(&provider.uri()).write(agent.layout.home_root())?;
-    mount_terminal_response(&provider).await;
 
     fleet.start(&agent)?;
-    let (_, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
+    let (agentd, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     ensure!(health.ready && !health.fenced);
+    let spawn_generation = fleet
+        .supervisor
+        .snapshot(&agent.agent_id)
+        .context("ready Agent omitted its Supervisor observation")?
+        .spawn_generation
+        .context("ready Agent omitted its real process generation")?;
+    let generation = fleet
+        .registry
+        .load_agent(&agent.agent_id)?
+        .lifecycle
+        .generation;
+    let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    fence.extend_from_slice(agent.agent_id.as_str().as_bytes());
+    fence.extend_from_slice(&spawn_generation.to_be_bytes());
+    fence.extend_from_slice(&generation.to_be_bytes());
 
     // runtime.codex-agentd-admitted-product-e2e-v1: create and attach the
     // durable owner record first. The worker derives its immutable binding
     // from this receipt rather than accepting caller-selected fields.
-    let agentd = AgentdClient::new(
-        agent.layout.agentd_control_socket().to_path_buf(),
-        agent.agent_id.clone(),
-        1,
-    )?;
     let deadline_ms = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?
         .checked_add(60_000)
         .context("runtime.codex product deadline overflow")?;
@@ -108,8 +117,8 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         body_digest: "3".repeat(64),
         artifact_set_digest: "4".repeat(64),
         authority_epoch: 9,
-        generation: 1,
-        fence_digest: "5".repeat(64),
+        generation,
+        fence_digest: Sha256Digest::for_bytes(&fence).as_str().to_string(),
         deadline_ms,
     };
     let admitted = agentd.run_start(snapshot.clone()).await?;
@@ -138,7 +147,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let intelligence = NativeIntelligenceRunBinding::load_from_agentd(
         agent.layout.agentd_control_socket().to_path_buf(),
         agent.agent_id.clone(),
-        1,
+        spawn_generation,
         REQUEST_ID.to_string(),
     )
     .await
@@ -177,7 +186,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: agent.layout.agentd_control_socket().to_path_buf(),
         agent_id: agent.agent_id.clone(),
-        generation: 1,
+        generation: spawn_generation,
         model: MODEL.to_string(),
         timeout: Duration::from_secs(20),
     })
@@ -188,6 +197,9 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let journal = journal_root.path().join("runtime-codex.journal");
     let mut control = DurableInferenceControl::open(&journal, /*capacity*/ 32)?;
     let cancellation = CancellationToken::new();
+    // Verify the real provider send only after the owner run and authority
+    // fixture are ready, so a setup error is not hidden by mock drop checks.
+    mount_terminal_response(&provider).await;
     let output = driver
         .run_intelligence(
             &mut control,
@@ -201,6 +213,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
             &cancellation,
         )
         .await
+        .inspect_err(|error| eprintln!("runtime.codex product dispatch failed: {error}"))
         .map_err(|error| anyhow::anyhow!(error.to_string()))?;
 
     issuer

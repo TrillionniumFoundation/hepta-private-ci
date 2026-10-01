@@ -434,7 +434,7 @@ impl AppServerModelDriver {
                     || dispatched.pre_effect_abort_commitment_digest.as_deref()
                         != Some(commitment.as_str())
                     || dispatched.pre_effect_abort_proof_digest.is_some()
-                    || dispatched.generation != self.config.generation
+                    || dispatched.generation != binding.agent_generation
                     || dispatched.terminal_observed
                     || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
                     || dispatched.compilation_receipt_digest.as_deref()
