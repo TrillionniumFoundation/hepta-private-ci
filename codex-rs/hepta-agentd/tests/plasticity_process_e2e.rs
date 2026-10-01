@@ -376,7 +376,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 _ => "evaluator",
             };
             json!({
-                "principal": principal_json(&principal),
+                "principal": principal_json(principal),
                 "controller_id": format!("plasticity-process-controller-{index}"),
                 "verifying_key_hex": hex32(key.verifying_key().to_bytes()),
                 "roles": [role],
