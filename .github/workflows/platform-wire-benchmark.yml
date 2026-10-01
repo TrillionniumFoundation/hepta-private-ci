@@ -114,9 +114,7 @@ jobs:
             echo "managed-fleet rounds must be within 8..256" >&2
             exit 2
           fi
-          echo "near=$near" >> "$GITHUB_OUTPUT"
-          echo "long=$long" >> "$GITHUB_OUTPUT"
-          echo "fleet=$fleet" >> "$GITHUB_OUTPUT"
+          printf 'near=%s\nlong=%s\nfleet=%s\n' "$near" "$long" "$fleet" >> "$GITHUB_OUTPUT"
 
       - name: Install the repository-pinned measurement toolchain
         shell: bash

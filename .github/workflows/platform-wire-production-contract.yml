@@ -122,6 +122,8 @@ jobs:
               assert identity not in seen
               seen.add(identity)
           '
+          # Expand runtime variables in the child shell that is recorded.
+          # shellcheck disable=SC2016
           record clean-tree 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
           exit "$status"
 

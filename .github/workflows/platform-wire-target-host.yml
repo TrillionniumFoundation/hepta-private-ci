@@ -39,8 +39,6 @@ jobs:
       TESTED_SHA: ${{ github.sha }}
       HEPTA_CI_LANE: source-head
       HOST_PROFILE: ${{ inputs.host_profile }}
-      RECORDS: ${{ runner.temp }}/platform-wire-target-${{ github.run_id }}-${{ github.run_attempt }}/evidence
-      CARGO_TARGET_DIR: ${{ runner.temp }}/platform-wire-target-${{ github.run_id }}-${{ github.run_attempt }}/build
     steps:
       - name: Check out dispatched exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -48,6 +46,13 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
+
+      - name: Initialize isolated evidence and build paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_root="$RUNNER_TEMP/platform-wire-target-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf 'RECORDS=%s\nCARGO_TARGET_DIR=%s\n' "$evidence_root/evidence" "$evidence_root/build" >> "$GITHUB_ENV"
 
       - name: Verify trusted subject and pre-provisioned pinned toolchain
         id: setup

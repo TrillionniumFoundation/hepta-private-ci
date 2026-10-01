@@ -26,12 +26,17 @@ jobs:
       OBSERVATION_WORKFLOW_PATH: ${{ inputs.observation_workflow_path }}
       OBSERVATION_ARTIFACT: ${{ inputs.observation_artifact }}
       PLAN_SHA256: ${{ inputs.plan_sha256 }}
-      INPUT_DIR: ${{ runner.temp }}/platform-wire-production/input
-      RECORDS: ${{ runner.temp }}/platform-wire-production/evidence
       REGISTRY: docs/modules/platform.wire/PRODUCTION_PRODUCERS.json
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with: {ref: '${{ github.sha }}', persist-credentials: false, fetch-depth: 0}
+
+      - name: Initialize isolated evidence paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_root="$RUNNER_TEMP/platform-wire-production-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf 'INPUT_DIR=%s\nRECORDS=%s\n' "$evidence_root/input" "$evidence_root/evidence" >> "$GITHUB_ENV"
 
       - name: Verify exact source and producer run
         id: setup
