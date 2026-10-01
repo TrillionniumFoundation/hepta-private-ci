@@ -37,6 +37,9 @@ pub const MAX_CANONICAL_TOKEN_BUDGET: u64 = 1_000_000;
 #[path = "canonical_integrity.rs"]
 mod integrity;
 
+#[path = "canonical_temporal.rs"]
+mod temporal;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptCandidateSetReceiptV1 {
     pub set_id: StableId,
@@ -703,7 +706,14 @@ pub fn select_portfolio_v1(
 
     let mut pair_rows = BTreeMap::<(StableId, StableId), FixedQ32>::new();
     let mut pair_evidence_digests = Vec::new();
-    let mut evidence_valid_until_unix_ms = priced.verified_valid_until_unix_ms;
+    let mut evidence_valid_until_unix_ms =
+        priced
+            .verified_valid_until_unix_ms
+            .min(temporal::graph_valid_until_unix_ms(
+                graph,
+                &known,
+                now_unix_ms,
+            ));
     for evidence in pair_evidence {
         let key = pair_key(&evidence.left_factor_id, &evidence.right_factor_id);
         let Some((validity_digest, _)) = numeric_edges.get(&key) else {
@@ -943,17 +953,16 @@ pub fn exercise_v1(
         return Err(CanonicalPromptError::InvalidTime);
     }
 
-    let decision = if request.now_unix_ms < portfolio.selected_at_unix_ms {
-        PromptExerciseActionV1::RejectStale
-    } else if portfolio.selected.is_empty() {
-        PromptExerciseActionV1::NoIntervention
-    } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
+    let decision = if request.now_unix_ms < portfolio.selected_at_unix_ms
+        || request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
         || request.current_state_digest != portfolio.state_digest
         || request.generation_vector_digest != portfolio.generation_vector_digest
         || request.model_tuple != portfolio.model_tuple
         || request.model_tuple.digest() != portfolio.model_tuple_digest
     {
         PromptExerciseActionV1::RejectStale
+    } else if portfolio.selected.is_empty() {
+        PromptExerciseActionV1::NoIntervention
     } else {
         let current_snapshot = registry
             .snapshot_v2(request.generation_vector_digest, &request.model_tuple)
