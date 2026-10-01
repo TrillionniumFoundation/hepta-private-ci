@@ -1,7 +1,7 @@
 # context.compiler execution dossier
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `c5fa257d195dd0ec013e60432dff45496c359a6ffb6da7ddbb64eab36681a728`. Source anchor: `4a0ffa709a07b0e34d872271908b433a4feb7ee4`.
+State SHA-256: `6a00122845fae17eb374ba51f3982b06eb7f33f29c80fdbfc85d3e4265963739`. Source anchor: `3cded1578fdde5c6c081883c1c2a37c439375623`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
