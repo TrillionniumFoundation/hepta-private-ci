@@ -664,13 +664,16 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     drop(durable);
     let reopened = DurableInferenceControl::open(&journal, 8)?;
     assert_eq!(
-        reopened.native_record(ACCEPT_REQUEST_ID),
-        Some(&accepted_record)
+        reopened.native_record_resolved(ACCEPT_REQUEST_ID)?,
+        Some(accepted_record)
     );
-    assert_eq!(reopened.native_record(RACE_REQUEST_ID), Some(&stopped));
     assert_eq!(
-        reopened.native_record(CORRECTION_REQUEST_ID),
-        Some(&correction_stopped)
+        reopened.native_record_resolved(RACE_REQUEST_ID)?,
+        Some(stopped)
+    );
+    assert_eq!(
+        reopened.native_record_resolved(CORRECTION_REQUEST_ID)?,
+        Some(correction_stopped)
     );
     drop(reopened);
     let _ = std::fs::remove_file(&journal);
