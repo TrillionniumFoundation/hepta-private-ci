@@ -35,12 +35,14 @@
         "with_dispatch_boundary": "final_use_dispatch_raw",
         "open_state_dir_with_issuer_keys": "final_use_open_state",
         "with_verified_effect": "final_use_guarded_effect",
-        "with_verified_use_async": "final_use_async_dispatch_fence"
+        "with_verified_use_async": "final_use_async_dispatch_fence",
+        "enter_verified_use": "final_use_enter_verified_use"
       },
       "nonPrivilegedMethods": [
         "issuer_key_ids",
         "frontier",
-        "capacity"
+        "capacity",
+        "revocation_head"
       ]
     },
     {
@@ -115,11 +117,13 @@
       "typeName": "BaoClient",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "privilegedMethods": {
-        "consume_kv_v2": "bao_final_use_consumer"
+        "consume_kv_v2": "bao_final_use_consumer",
+        "consume_kv_v2_with_authbus": "bao_authbus_final_use_consumer"
       },
       "nonPrivilegedMethods": [
         "new",
-        "binding"
+        "binding",
+        "authbus_effect_digest"
       ]
     },
     {
@@ -154,11 +158,12 @@
         "FinalUseAuthority\\s*::\\s*open_state_dir\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\\\(",
-        "FinalUseAuthority\\\\s*::\\\\s*open_state_dir_with_issuer_keys\\\\s*\\\\("
+        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
     {
@@ -181,7 +186,17 @@
         "\\.\\s*claim\\s*\\(",
         "FinalUseAuthority\\s*::\\s*claim\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_relations.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
     },
     {
       "id": "final_use_delivery",
@@ -211,7 +226,15 @@
         "\\.\\s*with_verified_use\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_verified_use\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_relations.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
     },
     {
       "id": "final_use_dispatch",
@@ -252,7 +275,9 @@
         "FinalUseAuthority\\s*::\\s*update_revocations\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
     {
@@ -306,8 +331,7 @@
       "typeMarker": "FinalUseRevocationConvergenceVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\\\(",
-        "FinalUseRevocationConvergenceVerifier\\\\s*::\\\\s*new\\\\s*\\\\("
+        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\("
       ],
       "allowedCallers": []
     },
@@ -316,10 +340,8 @@
       "typeMarker": "FinalUseRevocationConvergenceVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "convergence_verifier\\s*\\\\.\\s*verify\\s*\\\\(",
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*verify\\s*\\\\(",
-        "convergence_verifier\\\\s*\\\\.\\\\s*verify\\\\s*\\\\(",
-        "FinalUseRevocationConvergenceVerifier\\\\s*::\\\\s*verify\\\\s*\\\\("
+        "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
+        "FinalUseRevocationConvergenceVerifier\\s*::\\s*verify\\s*\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/revocation_control.rs"
@@ -445,9 +467,7 @@
         "\\.\\s*with_verified_use\\s*\\(",
         "AuthorityLeaseVerifier\\s*::\\s*with_verified_use\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
+      "allowedCallers": []
     },
     {
       "id": "authority_lease_delivery_witness",
@@ -478,6 +498,50 @@
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
+    },
+    {
+      "id": "final_use_guarded_effect",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*with_verified_effect\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ]
+    },
+    {
+      "id": "final_use_async_dispatch_fence",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*with_verified_use_async\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*with_verified_use_async\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ]
+    },
+    {
+      "id": "final_use_enter_verified_use",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*enter_verified_use\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*enter_verified_use\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "bao_authbus_final_use_consumer",
+      "typeMarker": "BaoClient",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "callPatterns": [
+        "\\.\\s*consume_kv_v2_with_authbus\\s*\\(",
+        "BaoClient\\s*::\\s*consume_kv_v2_with_authbus\\s*\\("
+      ],
+      "allowedCallers": []
     }
   ]
 }

@@ -12,11 +12,27 @@ MODULE = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = MODULE
 SPEC.loader.exec_module(MODULE)
 
+CALLER_SPEC = importlib.util.spec_from_file_location(
+    "vertical_caller_proof", ROOT / "scripts/verify_hepta_callers.py"
+)
+assert CALLER_SPEC is not None and CALLER_SPEC.loader is not None
+CALLER_PROOF = importlib.util.module_from_spec(CALLER_SPEC)
+sys.modules[CALLER_SPEC.name] = CALLER_PROOF
+CALLER_SPEC.loader.exec_module(CALLER_PROOF)
+
 Phase = MODULE.Phase
 RuntimeSlice = MODULE.RuntimeSlice
 
 
 class VerticalSliceTests(unittest.TestCase):
+    def rust_body(self, source: str, declaration: str) -> str:
+        start = source.index(declaration)
+        brace = source.index("{", start)
+        end = CALLER_PROOF._matching_delimiter(source, brace, "{", "}")
+        self.assertIsNotNone(end, f"unbalanced {declaration}")
+        assert end is not None
+        return source[brace + 1 : end]
+
     def ready(self) -> RuntimeSlice:
         runtime = RuntimeSlice(7)
         runtime.start(7)
@@ -70,10 +86,38 @@ class VerticalSliceTests(unittest.TestCase):
 
     def test_product_source_has_exact_readiness_and_task_fail_closed_markers(self) -> None:
         agent_runtime = (ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(encoding="utf-8")
+        runtime_tasks = (ROOT / "codex-rs/hepta-agentd/src/runtime_tasks.rs").read_text(encoding="utf-8")
         unix_driver = (ROOT / "codex-rs/hepta-supervisor/src/unix.rs").read_text(encoding="utf-8")
+        agent_runtime, runtime_tasks, unix_driver = (
+            CALLER_PROOF._strip_cfg_test_items(CALLER_PROOF._strip_rust_non_code(source))
+            for source in (agent_runtime, runtime_tasks, unix_driver)
+        )
         self.assertIn("probe_app_server", agent_runtime)
         self.assertIn("mark_app_server_ready", agent_runtime)
-        self.assertIn("cleanup_runtime_tasks", agent_runtime)
+        self.assertRegex(
+            agent_runtime,
+            r"let\s+mut\s+tasks\s*=\s*RuntimeTasks::new\(cancellation\.clone\(\),\s*TASK_SHUTDOWN_GRACE\)\?",
+        )
+        self.assertRegex(
+            agent_runtime,
+            r"if\s+let\s+Err\(error\)\s*=\s*startup\s*\{\s*tasks\.shutdown\(\)\.await;\s*return\s+Err\(error\);",
+        )
+        self.assertRegex(
+            agent_runtime,
+            r"tasks\s*\.run_until\(async\s+move\s*\{\s*shutdown_signal\(\)\.await\?;\s*drain_runtime\(state\)\.await\s*\}\)\s*\.await",
+        )
+        task_fields = self.rust_body(runtime_tasks, "pub struct RuntimeTasks")
+        self.assertIn("tasks: JoinSet<Result<(), AgentdError>>", task_fields)
+        self.assertIn("cancellation: CancellationToken", task_fields)
+        self.assertIn("shutdown_grace: Duration", task_fields)
+        run_until = self.rust_body(runtime_tasks, "pub async fn run_until<")
+        self.assertIn("self.observe_next()", run_until)
+        self.assertRegex(run_until, r"self\.shutdown\(\)\.await;\s*if\s+result\.is_ok\(\)\s*&&\s*self\.failed")
+        shutdown = self.rust_body(runtime_tasks, "pub async fn shutdown(")
+        self.assertRegex(
+            shutdown,
+            r"(?s)self\.cancellation\.cancel\(\);.*timeout\(grace,.*self\.tasks\.join_next_with_id\(\)\.await.*self\.tasks\.abort_all\(\);.*self\.tasks\.join_next_with_id\(\)\.await",
+        )
         self.assertIn("exact_identity", unix_driver)
         self.assertIn("readiness_matches", unix_driver)
         self.assertIn("fenced", unix_driver)

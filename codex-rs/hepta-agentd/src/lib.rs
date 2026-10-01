@@ -41,6 +41,8 @@ mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
+#[cfg(test)]
+mod runtime_executable;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;
