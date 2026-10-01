@@ -2,7 +2,12 @@ import {
   AgentdBrowserFrameDecoder,
   encodeAgentdBrowserFrame,
   buildAgentdBrowserFrame,
+  canonicalAgentdBrowserJson,
+  MAX_BROWSER_AGENTD_FRAME_BYTES,
 } from "./agentd-protocol.js";
+
+const MAX_QUEUED_FRAMES = 64;
+const MAX_QUEUED_BYTES = 4 * MAX_BROWSER_AGENTD_FRAME_BYTES;
 
 const SERVICE_METHODS = new Set([
   "open_profile",
@@ -54,6 +59,7 @@ export class AgentdBrowserChannel {
   #nextIncomingSequence = 1;
   #nextOutgoingSequence = 1;
   #queue = [];
+  #queuedBytes = 0;
   #waiters = [];
   #failed = null;
   #ended = false;
@@ -69,16 +75,42 @@ export class AgentdBrowserChannel {
     input.on("data", (chunk) => this.#onBytes(chunk));
     input.on("end", () => this.#onEnd());
     input.on("error", (error) => this.#fail(error));
+    input.on("close", () => {
+      if (!this.#ended)
+        this.#fail(new Error("Agentd browser input closed unexpectedly"));
+    });
     output.on?.("error", (error) => this.#fail(error));
   }
 
-  async nextFrame() {
-    if (this.#queue.length) return this.#queue.shift();
+  async nextFrame({ signal } = {}) {
+    if (signal?.aborted) throw signal.reason;
     if (this.#failed) throw this.#failed;
+    if (this.#queue.length) {
+      const queued = this.#queue.shift();
+      this.#queuedBytes -= queued.bytes;
+      return queued.frame;
+    }
     if (this.#ended) return null;
-    return new Promise((resolve, reject) =>
-      this.#waiters.push({ resolve, reject }),
-    );
+    return new Promise((resolve, reject) => {
+      const cleanup = () => signal?.removeEventListener("abort", abort);
+      const waiter = {
+        resolve(frame) {
+          cleanup();
+          resolve(frame);
+        },
+        reject(error) {
+          cleanup();
+          reject(error);
+        },
+      };
+      const abort = () => {
+        const index = this.#waiters.indexOf(waiter);
+        if (index !== -1) this.#waiters.splice(index, 1);
+        waiter.reject(signal.reason);
+      };
+      signal?.addEventListener("abort", abort, { once: true });
+      this.#waiters.push(waiter);
+    });
   }
 
   send(kind, requestId, payload) {
@@ -87,17 +119,25 @@ export class AgentdBrowserChannel {
       return Promise.reject(new Error("Agentd browser channel is closed"));
     const encoded = encodeAgentdBrowserFrame(
       buildAgentdBrowserFrame({
-        sequence: this.#nextOutgoingSequence++,
+        sequence: this.#nextOutgoingSequence,
         kind,
         requestId,
         payload,
       }),
     );
+    this.#nextOutgoingSequence += 1;
     return new Promise((resolve, reject) => {
-      this.#output.write(encoded, (error) => {
-        if (error) reject(error);
-        else resolve();
-      });
+      try {
+        this.#output.write(encoded, (error) => {
+          if (error) {
+            this.#fail(error);
+            reject(error);
+          } else resolve();
+        });
+      } catch (error) {
+        this.#fail(error);
+        reject(error);
+      }
     });
   }
 
@@ -119,7 +159,21 @@ export class AgentdBrowserChannel {
       }
       const waiter = this.#waiters.shift();
       if (waiter) waiter.resolve(frame);
-      else this.#queue.push(frame);
+      else {
+        const bytes = Buffer.byteLength(
+          canonicalAgentdBrowserJson(frame),
+          "utf8",
+        );
+        if (
+          this.#queue.length >= MAX_QUEUED_FRAMES ||
+          this.#queuedBytes + bytes > MAX_QUEUED_BYTES
+        ) {
+          this.#fail(new TypeError("Agentd browser input queue exceeds limit"));
+          return;
+        }
+        this.#queue.push({ frame, bytes });
+        this.#queuedBytes += bytes;
+      }
     }
   }
 
@@ -138,6 +192,8 @@ export class AgentdBrowserChannel {
   #fail(error) {
     if (this.#failed) return;
     this.#failed = error instanceof Error ? error : new Error(String(error));
+    this.#queue.length = 0;
+    this.#queuedBytes = 0;
     for (const waiter of this.#waiters.splice(0)) waiter.reject(this.#failed);
   }
 }
@@ -145,6 +201,7 @@ export class AgentdBrowserChannel {
 export class ParentFinalUseAuthority {
   #channel;
   #activeRequestId = null;
+  #activeRequestController = null;
 
   constructor(channel) {
     if (!(channel instanceof AgentdBrowserChannel)) {
@@ -162,10 +219,18 @@ export class ParentFinalUseAuthority {
       );
     }
     this.#activeRequestId = requestId;
+    const controller = new AbortController();
+    this.#activeRequestController = controller;
     try {
       return await call();
     } finally {
+      controller.abort(
+        new Error(
+          "browser authority request ended before authorization completed",
+        ),
+      );
       this.#activeRequestId = null;
+      this.#activeRequestController = null;
     }
   }
 
@@ -177,6 +242,7 @@ export class ParentFinalUseAuthority {
       );
     }
     const requestId = this.#activeRequestId;
+    const signal = this.#activeRequestController.signal;
     const requestDigest = digest(request.requestDigest, "requestDigest");
     const authorityEpoch = positiveInteger(
       request.authorityEpoch,
@@ -187,7 +253,7 @@ export class ParentFinalUseAuthority {
       requestDigest,
       authorityEpoch,
     });
-    const enter = await this.#channel.nextFrame();
+    const enter = await this.#channel.nextFrame({ signal });
     if (
       !enter ||
       enter.kind !== "authority_enter" ||
@@ -229,7 +295,11 @@ export class BrowserAgentdService {
   #authority;
 
   constructor({ host, channel, authority }) {
-    requireRecord(host, "browser host");
+    if (host === null || typeof host !== "object" || Array.isArray(host)) {
+      throw new TypeError(
+        "browser host must implement the Browser owner interface",
+      );
+    }
     for (const method of [
       "openProfile",
       "admitEffectGrant",

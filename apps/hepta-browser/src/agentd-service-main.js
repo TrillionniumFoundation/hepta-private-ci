@@ -86,4 +86,8 @@ try {
     `hepta-browser Agentd service failed: ${String(error?.message ?? error)}\n`,
   );
   process.exitCode = 1;
+} finally {
+  // Parent EOF or a corrupt parent channel must also end the isolated worker.
+  // Shutdown is cleanup; unresolved journal identities remain indeterminate.
+  await driver.shutdown();
 }
