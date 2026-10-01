@@ -2009,9 +2009,15 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
             .install_release(release_id.clone(), &source_program, Vec::new())?;
         fleet.registry.allow_release(&fleet.first, release_id)?;
     }
-    fleet.registry.compare_and_set_release_state(
+    let prepared = fleet.registry.compare_and_set_release_state(
         &fleet.first,
         0,
+        Some(source.clone()),
+        None,
+    )?;
+    let committed = fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        prepared.generation,
         Some(target.clone()),
         Some(source.clone()),
     )?;
@@ -2030,6 +2036,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
         .agent(&fleet.first)
         .cloned()
         .expect("registered agent");
+    assert_eq!(record.release_state, committed);
     let grant = Sha256Digest::for_bytes(b"terminal-transaction-grant");
     let intent = crate::signed_intent::SignedSupervisorIntent::new(
         grant.clone(),
@@ -2062,7 +2069,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
                 .registry
                 .resolve_release_binding(&fleet.first, &target)?,
         ),
-        record.release_state.generation,
+        prepared.generation,
         record.lifecycle.generation,
     )
     .expect("release transaction")

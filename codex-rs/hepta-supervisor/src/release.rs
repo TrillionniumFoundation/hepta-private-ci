@@ -20,10 +20,10 @@ use crate::runtime::ReleaseChangePhase;
 use crate::runtime::bounded_message;
 
 impl<D: ProcessDriver> Supervisor<D> {
-    /// Re-admit a release at the final-use boundary. Product/catalog releases
-    /// must still exist, remain allowed, and not be revoked. Direct in-process
-    /// qualification fixtures historically use unregistered AgentRelease
-    /// values; only UnknownRelease falls back to that local value.
+    /// Re-admit immediately before every launch. Catalog descriptors retain
+    /// their admission origin even if the underlying entry disappears. Only
+    /// an explicitly catalog-free plant can use the direct qualification API;
+    /// it cannot bypass policy for an existing or revoked catalog identity.
     pub(crate) fn refresh_release_for_transition(
         &self,
         agent_id: &AgentId,
@@ -34,9 +34,112 @@ impl<D: ProcessDriver> Supervisor<D> {
             .resolve_release(agent_id, release.release_id())
         {
             Ok(current) => AgentRelease::try_from(current),
-            Err(FleetRegistryError::UnknownRelease(_)) => Ok(release.clone()),
+            Err(
+                FleetRegistryError::UnknownRelease(_)
+                | FleetRegistryError::ReleaseNotAllowed { .. },
+            ) if release.is_catalog_free_qualification()
+                && matches!(std::fs::symlink_metadata(
+                        self.registry.layout().releases_root().join(release.identity())),
+                        Err(ref absent) if absent.kind() == std::io::ErrorKind::NotFound) =>
+            {
+                Ok(release.clone())
+            }
             Err(error) => Err(error.into()),
         }
+    }
+
+    pub(crate) fn signed_transaction_matches(
+        intent: &crate::SignedSupervisorIntent,
+        transaction: &DurableReleaseTransaction,
+    ) -> bool {
+        matches!(
+            (intent.transition, transaction.kind),
+            (
+                crate::H7H89ProductionTransition::Upgrade,
+                ReleaseTransactionKind::Upgrade
+            ) | (
+                crate::H7H89ProductionTransition::Rollback,
+                ReleaseTransactionKind::ExplicitRollback
+            )
+        ) && transaction.agent_id == intent.agent_id
+            && transaction.grant_sha256.as_ref() == Some(&intent.grant_sha256)
+            && transaction.authority_epoch == Some(intent.authority_epoch)
+            && transaction.expected_lifecycle_generation == intent.expected_lifecycle_generation
+            && transaction.source_release == intent.source_release
+            && transaction.target_release == intent.target_release
+    }
+
+    pub(crate) fn signed_recovery_outcome<'a>(
+        intent: &'a crate::SignedSupervisorIntent,
+        transaction: &'a DurableReleaseTransaction,
+        selection: &codex_hepta_fleet::AgentReleaseState,
+        outcome: crate::ProductionRecoveryOutcome,
+    ) -> Result<(&'a str, &'a crate::release_transaction::ReleaseBindingWire), SupervisorError>
+    {
+        if selection.agent_id.to_string() != intent.agent_id
+            || !Self::signed_transaction_matches(intent, transaction)
+        {
+            return Err(SupervisorError::Invalid(
+                "production recovery transaction does not match the signed intent".to_string(),
+            ));
+        }
+        let current = selection
+            .current
+            .as_ref()
+            .map(codex_hepta_fleet::ReleaseId::as_str);
+        let previous = selection
+            .previous
+            .as_ref()
+            .map(codex_hepta_fleet::ReleaseId::as_str);
+        let source_frontier = current == Some(intent.source_release.as_str())
+            && previous == transaction.rollback_predecessor.as_deref()
+            && selection.generation == transaction.expected_release_state_generation;
+        let target_frontier = current == Some(intent.target_release.as_str())
+            && previous == Some(intent.source_release.as_str())
+            && transaction.expected_release_state_generation.checked_add(1)
+                == Some(selection.generation);
+        let source_outcome = matches!(
+            (intent.transition, outcome),
+            (
+                crate::H7H89ProductionTransition::Upgrade,
+                crate::ProductionRecoveryOutcome::RolledBack
+            ) | (
+                crate::H7H89ProductionTransition::Rollback,
+                crate::ProductionRecoveryOutcome::RolledBack
+            )
+        );
+        let target_outcome = matches!(
+            (intent.transition, outcome),
+            (
+                crate::H7H89ProductionTransition::Upgrade,
+                crate::ProductionRecoveryOutcome::Committed
+            ) | (
+                crate::H7H89ProductionTransition::Rollback,
+                crate::ProductionRecoveryOutcome::RolledBack
+            )
+        );
+        let observed = if source_frontier && source_outcome {
+            (
+                intent.source_release.as_str(),
+                transaction.source_binding.as_ref(),
+            )
+        } else if target_frontier && target_outcome {
+            (
+                intent.target_release.as_str(),
+                transaction.target_binding.as_ref(),
+            )
+        } else {
+            return Err(SupervisorError::Invalid(
+                "production recovery outcome is outside the exact prepared release frontier"
+                    .to_string(),
+            ));
+        };
+        let binding = observed.1.ok_or_else(|| {
+            SupervisorError::Invalid(
+                "production recovery requires a registered release binding".to_string(),
+            )
+        })?;
+        Ok((observed.0, binding))
     }
 
     fn release_binding_for_transition(

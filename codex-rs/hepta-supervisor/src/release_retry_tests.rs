@@ -619,6 +619,18 @@ fn public_verified_grant_commits_registered_source_and_rejects_qualification_sou
             assert_eq!(supervisor.tick(now), TickReport::default());
             supervisor
         };
+        if source_case == "noncanonical" {
+            // The launch boundary now restores canonical catalog commands.
+            // Inject a corrupted selection witness after that safe launch to
+            // retain this grant admission regression's independent invariant.
+            supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+                slot.active_release = Some(AgentRelease::new(
+                    "retry-source",
+                    AgentCommand::new(fake_program("fixture-source"), Vec::new())?,
+                )?);
+                Ok(())
+            })?;
+        }
         admitted_release(&fleet, &fleet.first, "verified-grant-target")?;
         let snapshot = supervisor.snapshot(&fleet.first).expect("snapshot");
         let lifecycle_generation = supervisor.record(&fleet.first)?.lifecycle.generation;

@@ -278,6 +278,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} requires durable recovery before starting a process"
             )));
         }
+        let release = self.refresh_release_for_transition(agent_id, &release)?;
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
