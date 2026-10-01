@@ -34,11 +34,19 @@ checksum (32 bytes): 304+16*d bytes total. All numbers are big-endian; no untrus
 record length is allocated. The receipt and checkpoint are reconstructed together
 by the frozen deterministic kernel, then compared with the stored output digests.
 
+Here, receipt means the mechanism `SparseSignalReceipt`, not the full
+`NeuronRuntimeOutputV1`. Frames do not retain `tickId` or the owner's complete
+model-runtime observations, calibrated disposition and resource receipt. Native
+replay therefore cannot return that original full owner output or implement a
+historical `tickId` conflict lookup.
+
 `commit(expected_predecessor, tick)` validates before writing and uses exact
 compare-and-append. It returns success and publishes state only after `sync_data`.
-An equal retry returns the exact original receipt without another write, even
+An equal retry returns the exact original `SparseSignalReceipt` without another write, even
 after later ticks; changed content or predecessor conflicts. Missing sequences
 and clock regression reject. No last-write-wins or success-from-queue behavior.
+This guarantee belongs to `SparseJournal::commit`; it does not establish full
+owner receipt idempotency for `NeuronRuntime::tick`.
 
 Recovery validates all complete frames before truncating and syncing an
 incomplete final frame. A complete bad frame, damaged header, unknown version or

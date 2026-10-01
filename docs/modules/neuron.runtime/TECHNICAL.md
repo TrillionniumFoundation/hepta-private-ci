@@ -194,12 +194,39 @@ the resolver itself does not read the independent witness.
 
 The current owner source is `NeuronRuntime` in [codex-rs/hepta-neuron/src/runtime.rs](../../../codex-rs/hepta-neuron/src/runtime.rs). One tick verifies the canonical owner input, obtains an exact inference-control feature receipt through `InferenceControlModelPort`, computes the deterministic sparse successor, commits the journal before publication, evaluates calibrated/OOD/resource disposition, and advances an independently retained `AnchorWitnessStore`. Journal and witness uncertainty are fail-closed and poison the affected handle instead of fabricating acknowledgement. [codex-rs/hepta-agentd/src/neuron_runtime.rs](../../../codex-rs/hepta-agentd/src/neuron_runtime.rs) now provides the compiled Agentd-owned long-lived source boundary and [codex-rs/hepta-intelligence/src/neuron_runtime.rs](../../../codex-rs/hepta-intelligence/src/neuron_runtime.rs) remains a typed caller. The Agentd daemon startup/run-lifecycle owner is still composed on the separate `runtime.agentd` convergence line; source presence here is not daemon activation or product-execution evidence.
 
+Full owner receipt idempotency remains incomplete. `NeuronRuntime::tick` retains
+`NeuronRuntimeOutputV1` only for same-process, same-input pending-witness
+reconciliation. After successful acknowledgement, repeating that tick is rejected
+with `Sequence`; reopening recovers checkpoint history without the original full
+owner output. `SparseJournal` exact retry/replay returns `SparseSignalReceipt`,
+not the model/calibration/resource output, and the owner has no historical
+`tickId` conflict lookup. The duplicate/conflict and restart-receipt requirements
+in `RDY-NEU` section 4 and `NEU-GV-002` remain required. Completing them needs a
+separately reviewed, versioned and bounded committed-output or owner-outbox
+protocol, exact receipt/input/model/resource binding and crash/restart tests.
+No new persistent format or reinterpretation of V1 journal frames is specified here.
+
 The [worker receipt producer](../../../codex-rs/hepta-infer-worker-host/src/model_worker.rs)
 validates bounded borrowed requests before copying or dispatching. It preserves
 `Succeeded`, `Failed`, `Cancelled` and `Indeterminate`; only success publishes
 drive/prediction vectors. Other outcomes discard partial tensors while retaining
 identity and resource observations. This producer's source is not proof that a
 concrete inference-control port has been composed into the daemon.
+
+The generic worker cleans up a returned handle before rejecting its identity or
+memory observation. A load/cleanup/unload error leaves driver resources
+uncertain and quarantines the worker; failed unload retains its model record.
+An execution error or missing terminal observation retains its in-flight slot
+and likewise blocks later model operations. The first nonterminal feature
+observation still produces `Indeterminate`; later calls return
+`DriverStateUncertain`. Host recovery must independently establish cleanup and
+compose a fresh worker; no blind retry or local reset authenticates quiescence.
+These source checks do not qualify the separate native app-server driver path.
+
+The current generic worker memory cap compares each handle or invocation's
+reported observation with the grant. It does not account for aggregate model
+residency, unique shared tensors or process RSS. The host must declare and measure
+that accounting separately before claiming a total host memory budget.
 
 [codex-rs/hepta-neuron/src/runtime_recovery.rs](../../../codex-rs/hepta-neuron/src/runtime_recovery.rs)
 owns root/segment recovery and the pre-first-acknowledgement reopen path.

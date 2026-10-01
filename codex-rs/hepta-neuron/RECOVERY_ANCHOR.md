@@ -70,6 +70,8 @@ before root parsing or repair. A header-only root retains no checkpoint or
 anchor; a partial first frame is discarded and synced; a complete first frame is replayed,
 synced and independently acknowledged through `compare_and_swap(None, anchor)`.
 Recovery invokes no model and does not repeat the committed tick.
+It restores the checkpoint and acknowledgement frontier, not the original full
+`NeuronRuntimeOutputV1`; the V1 journal replays only the mechanism receipt.
 Multiple complete ticks or any bytes of a second frame with an empty witness
 are rejected before repair: a canonical owner cannot advance past its first
 tick before that first acknowledgement succeeds.

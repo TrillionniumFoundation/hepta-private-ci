@@ -206,6 +206,7 @@
     }
   ],
   "repositoryControlledGaps": [
+    "Implement and qualify bounded durable full-owner receipt idempotency, historical tickId conflict detection and restart return of the original model/calibration/resource output. SparseJournal mechanism replay and process-local pending-witness reconciliation do not satisfy RDY-NEU section 4 or NEU-GV-002.",
     "Stack/rebase the compiled AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind a concrete current inference.control feature port plus selected-artifact/witness lifecycle; a compiled owner boundary is not daemon activation.",
     "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration and recovery path; never reinterpret V1 journal bytes as V2 state.",
     "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation or productExecutionProved.",
