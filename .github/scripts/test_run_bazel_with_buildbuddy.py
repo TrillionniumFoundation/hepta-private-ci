@@ -12,6 +12,17 @@ import run_bazel_with_buildbuddy
 
 
 class RunBazelWithBuildBuddyTest(unittest.TestCase):
+    def test_raw_target_patterns_still_reject_embedded_and_trailing_line_breaks(
+        self,
+    ) -> None:
+        for target in ["//bad\rtarget", "//bad\ntarget", "//bad:target\r"]:
+            with self.subTest(target=target):
+                with self.assertRaisesRegex(ValueError, "cannot contain line breaks"):
+                    with run_bazel_with_buildbuddy.windows_target_patterns(
+                        ["bazel", "build", "--", target], {"RUNNER_OS": "Windows"}
+                    ):
+                        self.fail("invalid target must not reach native Bazel")
+
     def test_explicit_pattern_file_is_not_replaced_or_deleted_by_transport(
         self,
     ) -> None:
