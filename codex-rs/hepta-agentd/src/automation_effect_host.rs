@@ -742,6 +742,7 @@ mod tests {
     }
 
     impl Fixture {
+        #[allow(clippy::expect_used)]
         async fn new() -> Self {
             let temp = tempfile::tempdir().expect("temp root");
             let root = temp.path().canonicalize().expect("canonical temp root");
@@ -784,10 +785,11 @@ mod tests {
         }
     }
 
+    #[allow(clippy::expect_used)]
     fn definition() -> TaskFlowDefinition {
         TaskFlowDefinition::new(
             "agentd-product-effect",
-            1,
+            /*version*/ 1,
             "effect",
             vec![
                 TaskFlowNodeSpec::effect("effect", "provider.deliver", "provider-key-v1"),
@@ -821,6 +823,7 @@ mod tests {
         }
     }
 
+    #[allow(clippy::expect_used)]
     async fn prepare_effect(
         fixture: &Fixture,
         now_ms: u64,
@@ -830,8 +833,8 @@ mod tests {
         let fence = TaskFlowFence::new(
             fixture.identity.agent_id.clone(),
             "agentd-product-effect-owner",
-            1,
-            1,
+            /*owner_epoch*/ 1,
+            /*generation*/ 1,
             "agentd-product-effect-fence",
         )
         .expect("fence");
@@ -854,7 +857,12 @@ mod tests {
             .expect("create run");
         let claimed = fixture
             .store
-            .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
+            .claim_taskflow_run(
+                &intent.run_id,
+                &fence,
+                now_ms + 1,
+                /*lease_duration_ms*/ 60_000,
+            )
             .await
             .expect("claim run");
         fixture
@@ -904,6 +912,7 @@ mod tests {
         fence
     }
 
+    #[allow(clippy::expect_used)]
     fn signed_final_use(
         intent: &AuthorizedEffectIntent,
         now_ms: u64,
@@ -927,6 +936,7 @@ mod tests {
         SignedFinalUseGrant { grant, signature }
     }
 
+    #[allow(clippy::expect_used)]
     fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
         decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
     }

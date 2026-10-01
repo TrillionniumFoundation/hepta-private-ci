@@ -3,6 +3,9 @@ use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
+// Legacy migration setup needs one in-memory connection without current owner
+// initialization; production and reopened owner pools still use the state shim.
+#[allow(clippy::disallowed_methods)]
 async fn historical_pool(displaced: bool) -> SqlitePool {
     let pool = SqlitePoolOptions::new()
         .max_connections(1)

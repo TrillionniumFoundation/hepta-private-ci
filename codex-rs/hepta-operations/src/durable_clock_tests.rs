@@ -319,7 +319,6 @@ struct EntryWaitClock {
 #[cfg(unix)]
 impl codex_hepta_contracts::AuthorityClock for EntryWaitClock {
     fn now_unix_ms(&self) -> Result<u64, codex_hepta_contracts::AuthorityTrustError> {
-        use codex_hepta_contracts::AuthorityClock;
         use std::sync::atomic::Ordering;
         // Construction samples once and claim samples twice. Delay only the
         // final authority check before its synchronous consumer is invoked.

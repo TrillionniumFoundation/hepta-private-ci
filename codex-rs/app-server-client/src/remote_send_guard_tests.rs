@@ -102,20 +102,15 @@ async fn server(
     methods
 }
 
-fn check(
-    live: Arc<AtomicBool>,
-    polls: Arc<AtomicUsize>,
-) -> impl Future<Output = io::Result<()>> + Send + 'static {
-    async move {
-        polls.fetch_add(/*val*/ 1, Ordering::SeqCst);
-        if live.load(Ordering::SeqCst) {
-            Ok(())
-        } else {
-            Err(io::Error::new(
-                io::ErrorKind::PermissionDenied,
-                "owner lease expired",
-            ))
-        }
+async fn check(live: Arc<AtomicBool>, polls: Arc<AtomicUsize>) -> io::Result<()> {
+    polls.fetch_add(/*val*/ 1, Ordering::SeqCst);
+    if live.load(Ordering::SeqCst) {
+        Ok(())
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "owner lease expired",
+        ))
     }
 }
 

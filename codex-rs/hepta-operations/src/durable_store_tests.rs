@@ -636,23 +636,9 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
         (Cut::NewOwner, ReconciliationOutcome::Applied),
     ] {
         let directory = tempfile::tempdir().expect("tempdir");
-        let mut store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
+        let store = DurableOperationStore::open(&directory.path().join("operations.sqlite3"))
             .await
             .expect("source open");
-        let options = store.pool.connect_options();
-        let pool_options = store
-            .pool
-            .options()
-            .clone()
-            .max_connections(/*max*/ 1)
-            .min_connections(/*min*/ 1);
-        store.pool.close().await;
-        // Keep the production connection policy and actual migrated database.
-        // One fair pool connection makes owner/producer ordering deterministic.
-        store.pool = pool_options
-            .connect_with((*options).clone())
-            .await
-            .expect("single source connection");
         let destination =
             DestinationDedupeStore::open_standalone(&directory.path().join("destination.sqlite3"))
                 .await
@@ -676,6 +662,12 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
             .authorize_dispatch(&authority, &signed, &claim)
             .await
             .expect("authorize");
+        // Keep the production pool and hold its other connections idle. One
+        // available fair permit makes owner/producer ordering deterministic.
+        let mut held_connections = Vec::new();
+        for _ in 1..store.pool.options().get_max_connections() {
+            held_connections.push(store.pool.acquire().await.expect("hold spare connection"));
+        }
         let observer_store = store.clone();
         let observer_destination = destination.clone();
         let observer_intent = operation.clone();
@@ -770,7 +762,8 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
                 calls += 1;
                 let mut observer = Box::pin(observer);
                 // Register the owner as an actual pool waiter while the source
-                // entry owns its only connection. This poll cannot write/wait.
+                // entry owns its only available connection. This poll cannot
+                // write/wait.
                 assert!(
                     observer
                         .as_mut()
@@ -835,6 +828,7 @@ async fn authoritative_applied_receipt_wins_over_late_transport_projection() {
             }
         );
         destination.close().await;
+        drop(held_connections);
         store.close().await;
     }
 }
