@@ -24,6 +24,7 @@ use codex_hepta_agent_components::cognitive_store::MemoryVerification;
 use codex_hepta_agent_components::cognitive_store::ProductionAuthorityLease;
 use codex_hepta_agent_components::cognitive_store::ProductionAuthorityToken;
 use codex_hepta_agent_components::cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_agent_components::cognitive_store::ProductionDurableWriter;
 use codex_hepta_agent_components::cognitive_store::SourceDraft;
 use codex_hepta_agent_components::cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_agent_components::contracts::AgentId;
@@ -143,8 +144,6 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    drop(store);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -173,6 +172,19 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    // Recover an existing durable lease. Admitting the first lease changes an
+    // empty cut; reopening this live lease must preserve the entire anchor.
+    let predecessor = ProductionDurableWriter::open_with_live_verifier(
+        store,
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await?;
+    let expected = predecessor.recovery_anchor().await?;
+    drop(predecessor);
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
