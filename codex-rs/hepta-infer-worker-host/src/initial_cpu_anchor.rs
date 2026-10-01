@@ -22,6 +22,8 @@ use profile::Role;
 use profile::Source;
 #[path = "initial_cpu_current.rs"]
 mod current;
+#[path = "initial_cpu_goal.rs"]
+mod goal;
 #[path = "initial_cpu_publication.rs"]
 mod publication;
 #[path = "initial_cpu_renewal.rs"]
@@ -36,6 +38,9 @@ pub use current::open_current_cpu_neuron;
 pub use current::open_current_cpu_neuron_v2;
 pub fn describe_current_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     current::describe_current_operational(path, pin)
+}
+pub fn preview_initial_cpu_objective(path: &Path, pin: Digest32) -> HostResult<Value> {
+    goal::preview(path, pin)
 }
 
 #[derive(Deserialize)]

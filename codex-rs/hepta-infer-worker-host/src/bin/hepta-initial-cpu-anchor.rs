@@ -8,6 +8,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::path::Path::new(&arguments[1]);
     let pin = arguments[2].parse()?;
     let report = match arguments[0].as_str() {
+        "preview-initial-objective" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::preview_initial_cpu_objective(
+                path, pin,
+            )?
+        }
         "publish-initial-operational" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::publish_initial_cpu_anchor(
                 path, pin,
