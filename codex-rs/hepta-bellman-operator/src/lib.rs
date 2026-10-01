@@ -214,7 +214,16 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
     }
 
     let count = i128::try_from(targets.len()).map_err(|_| Error::Arithmetic)?;
-    let terminal_raw = (i128::from(terminal_count) * SCALE) / count;
+    let terminal_numerator = i128::from(terminal_count) * SCALE;
+    let terminal_quotient = terminal_numerator / count;
+    let terminal_twice_remainder = (terminal_numerator % count) * 2;
+    let terminal_raw = if terminal_twice_remainder > count
+        || (terminal_twice_remainder == count && terminal_quotient % 2 != 0)
+    {
+        terminal_quotient + 1
+    } else {
+        terminal_quotient
+    };
     let regularity = RegularityProfile {
         sample_count: u32::try_from(targets.len()).map_err(|_| Error::Arithmetic)?,
         maximum_absolute_target: FixedQ32::from_raw(maximum),

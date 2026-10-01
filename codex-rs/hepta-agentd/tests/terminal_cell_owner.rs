@@ -299,7 +299,8 @@ fn terminal_owner_rejects_self_consistent_foreign_context_and_frontier_receipts(
     // Latest-observable watermark 45 and finalization 46 are distinct clocks.
     assert!(freeze_terminal_cell_from_owner_v1(&owner, &receipt, profile(1), 45).is_err());
 
-    let mutations: [(&str, fn(&mut DatasetFreezeRequestV1)); 9] = [
+    type FreezeReceiptMutation = fn(&mut DatasetFreezeRequestV1);
+    let mutations: [(&str, FreezeReceiptMutation); 9] = [
         ("foreign scope", |request| {
             request.producer.scope_digest = digest("foreign-scope");
         }),
@@ -440,7 +441,7 @@ fn signed_terminal_owner_freeze_authenticates_the_exact_complete_dataset_request
             .unwrap();
     assert_eq!(frozen.sample_count(), 2);
     assert_eq!(frozen.dataset().snapshot.source_record_digests.len(), 4);
-    assert!(fit_terminal_cell_from_owner_v1(&owner, frozen, 50).is_ok());
+    let trained = fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), 50).unwrap();
 
     let mut changed = plan.clone();
     changed.inclusion_policy_digest = digest("unattested-inclusion-policy");
@@ -451,12 +452,115 @@ fn signed_terminal_owner_freeze_authenticates_the_exact_complete_dataset_request
         )))
     ));
     collect(&mut owner, "signed-later", "read", 0);
+    assert_eq!(
+        fit_terminal_cell_from_owner_v1(&owner, frozen, 60).unwrap(),
+        trained,
+        "fitting rechecks the original attestation without substituting the new head"
+    );
     assert!(matches!(
         freeze_terminal_cell_from_signed_owner_v2(&owner, plan, &signed, profile(2), 50),
         Err(TerminalCellError::Ledger(ProductionLedgerError::Evidence(
             SignedEvidenceError::PayloadMismatch
         )))
     ));
+}
+
+#[test]
+fn signed_terminal_owner_freeze_rechecks_scheduled_revocation_and_evidence_expiry() {
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    for (revoked_at, fit_at, expected) in [
+        (Some(60), 70, SignedEvidenceError::Revoked),
+        (None, 95, SignedEvidenceError::ValidityWindow),
+    ] {
+        let fixture = Fixture::new();
+        let mut owner = fixture.writer();
+        collect(&mut owner, "validity-read", "read", FixedQ32::ONE.raw());
+        collect(&mut owner, "validity-abstain", "abstain", 0);
+        if revoked_at.is_some() {
+            let root_key = SigningKey::from_bytes(&[99; 32]);
+            let root = LearningTrustRootV1 {
+                root_id: id("learning-root"),
+                scope_digest: digest("scope"),
+                verifying_key: root_key.verifying_key().to_bytes(),
+                valid_from: 1,
+                expires_at: 200,
+                revoked_at: None,
+            };
+            let evaluator_key = SigningKey::from_bytes(&[4; 32]).verifying_key().to_bytes();
+            let mut signed_trust = SignedLearningTrustDistributionV1 {
+                distribution: LearningTrustDistributionV1 {
+                    distribution_id: id("trust-distribution.scheduled-revocation"),
+                    generation: 2,
+                    effective_at: 50,
+                    trust: LearningEvidenceTrustV1 {
+                        scope_digest: digest("scope"),
+                        objective_digest: digest("objective"),
+                        authority_epoch: 7,
+                        signers: vec![TrustedLearningSignerV1 {
+                            principal: AuthenticatedPrincipalV1 {
+                                principal_id: id("evaluator"),
+                                credential_chain_digest: digest("evaluator-credential"),
+                                signing_key_digest: Digest32::of_bytes(&evaluator_key),
+                                scope_digest: digest("scope"),
+                                authority_epoch: 7,
+                                authenticated_at: 10,
+                                expires_at: 100,
+                            },
+                            controller_id: id("evaluator-controller"),
+                            verifying_key: evaluator_key,
+                            roles: vec![LearningEvidenceRoleV1::Evaluator],
+                            revoked_at,
+                        }],
+                    },
+                },
+                root_id: root.root_id.clone(),
+                issued_at: 50,
+                expires_at: 90,
+                signature: [0; 64],
+            };
+            signed_trust.signature = root_key
+                .sign(&signed_trust.signing_bytes().unwrap())
+                .to_bytes();
+            owner.rotate_trust(&root, signed_trust, 50).unwrap();
+        }
+        let trust_digest = owner.verifier().trust_digest();
+        let plan = DatasetFreezePlanV2 {
+            snapshot_id: id("dataset.validity"),
+            objective_digest: digest("objective"),
+            inclusion_policy_digest: digest("all-active-owner-episodes"),
+        };
+        let payload = dataset_freeze_signing_payload_v2(&owner.snapshot().unwrap(), &plan).unwrap();
+        let signed = sign(
+            owner.verifier(),
+            "evaluator",
+            LearningEvidenceRoleV1::Evaluator,
+            &payload,
+        );
+        let frozen =
+            freeze_terminal_cell_from_signed_owner_v2(&owner, plan, &signed, profile(1), 50)
+                .unwrap();
+        assert!(fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), 50).is_ok());
+        assert_eq!(owner.verifier().trust_digest(), trust_digest);
+        owner
+            .revalidate_dataset_snapshot(frozen.dataset(), fit_at)
+            .unwrap();
+        assert!(matches!(
+            owner.verifier().verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &signed,
+                &payload,
+                fit_at,
+            ),
+            Err(error) if error == expected
+        ));
+        assert!(matches!(
+            fit_terminal_cell_from_owner_v1(&owner, frozen, fit_at),
+            Err(TerminalCellError::Ledger(ProductionLedgerError::Evidence(error)))
+                if error == expected
+        ));
+    }
 }
 
 #[test]
@@ -523,6 +627,8 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     use codex_hepta_memory::SharedExperiencePurposeV1;
     use codex_hepta_memory::SourceDraft;
     use codex_hepta_paths::HeptaFleetRoot;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
     use std::sync::Arc;
 
     let temp = tempfile::tempdir().unwrap();
@@ -720,10 +826,74 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     // Replay-only: no Recall grant, but a real learner consumes source-bound owner
     // records, writes through the artifact owner, and loads the resulting bytes.
     assert!(source.revalidate_shared_experience(&recall).await.is_err());
-    let candidate = host
+    let compatibility_candidate = host
         .train(replay.policy_id(), &ledger, &data, profile(1), 50)
         .await
         .unwrap();
+    let freeze_plan = DatasetFreezePlanV2 {
+        snapshot_id: id("shared.dataset"),
+        objective_digest: digest("objective"),
+        inclusion_policy_digest: digest("all-active-owner-episodes"),
+    };
+    let freeze_payload =
+        dataset_freeze_signing_payload_v2(&ledger.snapshot().unwrap(), &freeze_plan).unwrap();
+    let freeze_evidence = sign(
+        ledger.verifier(),
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &freeze_payload,
+    );
+    let mut wrong_plan = freeze_plan.clone();
+    wrong_plan.inclusion_policy_digest = digest("unattested-shared-policy");
+    assert!(matches!(
+        host.train_signed_owner_v2(
+            replay.policy_id(),
+            &ledger,
+            wrong_plan,
+            &freeze_evidence,
+            profile(1),
+            50,
+        )
+        .await,
+        Err(codex_hepta_agentd::SharedTerminalCellError::Cell(
+            TerminalCellError::Ledger(ProductionLedgerError::Evidence(
+                SignedEvidenceError::PayloadMismatch
+            ))
+        ))
+    ));
+    let mut expired_evidence = freeze_evidence.clone();
+    expired_evidence.expires_at = 49;
+    expired_evidence.signature = SigningKey::from_bytes(&[4; 32])
+        .sign(&expired_evidence.signing_bytes())
+        .to_bytes();
+    assert!(matches!(
+        host.train_signed_owner_v2(
+            replay.policy_id(),
+            &ledger,
+            freeze_plan.clone(),
+            &expired_evidence,
+            profile(1),
+            50,
+        )
+        .await,
+        Err(codex_hepta_agentd::SharedTerminalCellError::Cell(
+            TerminalCellError::Ledger(ProductionLedgerError::Evidence(
+                SignedEvidenceError::ValidityWindow
+            ))
+        ))
+    ));
+    let candidate = host
+        .train_signed_owner_v2(
+            replay.policy_id(),
+            &ledger,
+            freeze_plan,
+            &freeze_evidence,
+            profile(1),
+            50,
+        )
+        .await
+        .unwrap();
+    assert_eq!(candidate.artifact(), compatibility_candidate.artifact());
     let mut registry = artifacts::ArtifactRegistry::new();
     let _ = persist_reload(&fixture.root, &mut registry, candidate.artifact(), None);
     let payload = std::fs::read(fixture.root.join("payload-1")).unwrap();

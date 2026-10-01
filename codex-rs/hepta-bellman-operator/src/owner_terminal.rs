@@ -20,10 +20,12 @@ use std::fmt;
 use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;
 use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -55,6 +57,13 @@ pub struct FrozenTerminalCellV1 {
     dataset: DatasetSnapshotReceiptV3,
     trust_digest: Digest32,
     admitted_at: u64,
+    signed_freeze: Option<SignedTerminalFreezeV2>,
+}
+
+#[derive(Clone, Debug)]
+struct SignedTerminalFreezeV2 {
+    evidence: SignedLearningEvidenceV1,
+    payload: Vec<u8>,
 }
 
 impl FrozenTerminalCellV1 {
@@ -241,6 +250,7 @@ pub fn freeze_terminal_cell_from_owner_v1(
         dataset: dataset.clone(),
         trust_digest: verifier.trust_digest(),
         admitted_at: now,
+        signed_freeze: None,
     })
 }
 
@@ -255,8 +265,16 @@ pub fn freeze_terminal_cell_from_signed_owner_v2(
     profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
+    // Retain the exact canonical attested bytes. Re-deriving them from a later
+    // head during fitting would silently substitute a different frozen cut.
+    let payload = dataset_freeze_signing_payload_v2(&owner.snapshot()?, &plan)?;
     let dataset = owner.freeze_dataset(plan, evidence, now)?;
-    freeze_terminal_cell_from_owner_v1(owner, &dataset, profile, now)
+    let mut frozen = freeze_terminal_cell_from_owner_v1(owner, &dataset, profile, now)?;
+    frozen.signed_freeze = Some(SignedTerminalFreezeV2 {
+        evidence: evidence.clone(),
+        payload,
+    });
+    Ok(frozen)
 }
 
 pub fn fit_terminal_cell_from_owner_v1(
@@ -273,6 +291,20 @@ pub fn fit_terminal_cell_from_owner_v1(
     }
     if now < frozen.admitted_at {
         return Err(TerminalCellError::Unsupported("terminal dataset frontier"));
+    }
+    if let Some(attestation) = &frozen.signed_freeze {
+        // An immutable trust digest can contain a scheduled revocation, and
+        // evidence may expire before the producer credential. Recheck both at
+        // the final fit boundary even when no trust rotation has occurred.
+        owner
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &attestation.evidence,
+                &attestation.payload,
+                now,
+            )
+            .map_err(ProductionLedgerError::from)?;
     }
     owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;
     fit_tabular_operator_strict_v2(frozen.plan).map_err(TerminalCellError::Fit)

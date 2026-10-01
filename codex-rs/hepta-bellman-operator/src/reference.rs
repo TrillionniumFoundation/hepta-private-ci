@@ -535,7 +535,6 @@ pub fn admit_operator_regularity(
         return Err(OperatorClosureError::ShapeViolation);
     }
     let maximum_error = FixedQ32::ONE.raw() / 20;
-    let maximum_ood_false_acceptance = FixedQ32::ONE.raw() / 200;
     for value in [
         assessment.holder_residual_q32,
         assessment.action_lipschitz_residual_q32,
@@ -544,9 +543,8 @@ pub fn admit_operator_regularity(
             return Err(OperatorClosureError::RegularityResidual);
         }
     }
-    if assessment.ood_false_acceptance_q32.raw() < 0
-        || assessment.ood_false_acceptance_q32.raw() >= maximum_ood_false_acceptance
-    {
+    let ood_false_acceptance = i128::from(assessment.ood_false_acceptance_q32.raw());
+    if ood_false_acceptance < 0 || ood_false_acceptance * 200 >= SCALE {
         return Err(OperatorClosureError::OodFalseAcceptance);
     }
     if assessment.error_components.is_empty()

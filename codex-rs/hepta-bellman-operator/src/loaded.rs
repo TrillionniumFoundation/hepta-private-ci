@@ -93,7 +93,7 @@ impl LoadedTabularOperatorV1 {
         &self.artifact.producer_id
     }
 
-    /// The immutable loaded value validates O(n) once, then looks up in O(log n).
+    /// The immutable loaded value validates O(n log n) once, then looks up in O(log n).
     pub fn predict(
         &self,
         sensor: &StableId,

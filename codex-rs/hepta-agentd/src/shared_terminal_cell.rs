@@ -6,6 +6,7 @@
 //! This adapter owns no database, authority issuer, effect executor or live model
 //! selection. Laya and multi-source causal training are separate profiles.
 
+use codex_hepta_bellman_operator::FrozenTerminalCellV1;
 use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
 use codex_hepta_bellman_operator::TabularOperatorArtifactV1;
 use codex_hepta_bellman_operator::TabularOperatorPredictionV1;
@@ -15,14 +16,17 @@ use codex_hepta_bellman_operator::TerminalCellProfileV1;
 use codex_hepta_bellman_operator::encode_tabular_payload_v1;
 use codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1;
 use codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1;
+use codex_hepta_bellman_operator::freeze_terminal_cell_from_signed_owner_v2;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederationConsumerAccess;
@@ -111,14 +115,47 @@ impl AgentdSharedReplayHostV1 {
             .source
             .read_shared_experience(&self.consumer, policy_id, &self.purpose)
             .await?;
+        // Check the terminal profile's bounded dataset before materializing records.
+        let frozen = freeze_terminal_cell_from_owner_v1(ledger, dataset, profile, now)?;
+        self.fit_source_bound_candidate(ledger, frozen, source, now)
+            .await
+    }
+
+    /// Train from the evaluator's exact owner freeze request, retaining its
+    /// signed admission through the final fit boundary.
+    pub async fn train_signed_owner_v2(
+        &self,
+        policy_id: &Sha256Digest,
+        ledger: &LedgerWriter,
+        plan: DatasetFreezePlanV2,
+        evidence: &SignedLearningEvidenceV1,
+        profile: TerminalCellProfileV1,
+        now: u64,
+    ) -> Result<SharedTerminalCandidateV1, SharedTerminalCellError> {
+        let source = self
+            .source
+            .read_shared_experience(&self.consumer, policy_id, &self.purpose)
+            .await?;
+        let frozen =
+            freeze_terminal_cell_from_signed_owner_v2(ledger, plan, evidence, profile, now)?;
+        self.fit_source_bound_candidate(ledger, frozen, source, now)
+            .await
+    }
+
+    async fn fit_source_bound_candidate(
+        &self,
+        ledger: &LedgerWriter,
+        frozen: FrozenTerminalCellV1,
+        source: SharedExperienceUseV1,
+        now: u64,
+    ) -> Result<SharedTerminalCandidateV1, SharedTerminalCellError> {
         let support: Digest32 = source
             .source_support_digest()
             .as_str()
             .parse()
             .map_err(|_| SharedTerminalCellError::Binding("source digest"))?;
-        // Check the terminal profile's bounded dataset before materializing records.
-        let frozen = freeze_terminal_cell_from_owner_v1(ledger, dataset, profile, now)?;
-        let records = ledger.read_dataset_records(dataset, now)?;
+        let dataset = frozen.dataset().clone();
+        let records = ledger.read_dataset_records(&dataset, now)?;
         // This baseline admits one complete support root, not arbitrary mixed data
         // whose training permissions are hidden behind an aggregate digest.
         if records.iter().any(|record| {
@@ -134,7 +171,7 @@ impl AgentdSharedReplayHostV1 {
             .map_err(|_| SharedTerminalCellError::Binding("artifact encoding"))?;
         let candidate = SharedTerminalCandidateV1 {
             artifact,
-            dataset: dataset.clone(),
+            dataset,
             source,
             payload_digest: Digest32::of_bytes(&bytes),
             payload_bytes: bytes.len() as u64,

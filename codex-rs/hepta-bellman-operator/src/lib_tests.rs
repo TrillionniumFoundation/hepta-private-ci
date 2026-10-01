@@ -96,3 +96,31 @@ fn target_builder_rounds_positive_and_negative_half_ties_to_even() {
         assert_eq!(artifact.targets[0].target, FixedQ32::from_raw(expected));
     }
 }
+
+#[test]
+fn terminal_fraction_rounds_nearest_even_and_preserves_unit_interval() {
+    let mut input = request();
+    let mut third = input.dataset.transitions[0].clone();
+    third.sample_id = id("c");
+    third.support_digest = Digest32::of_bytes(b"support3");
+    input.dataset.transitions.push(third);
+    for (terminal_count, expected_raw) in [
+        (0, 0),
+        (1, 1_431_655_765),
+        (2, 2_863_311_531),
+        (3, FixedQ32::ONE.raw()),
+    ] {
+        let mut value = input.clone();
+        for (index, transition) in value.dataset.transitions.iter_mut().enumerate() {
+            transition.terminal = index < terminal_count;
+        }
+        let artifact = must(build_targets(value));
+        assert_eq!(
+            artifact.regularity.terminal_fraction,
+            FixedQ32::from_raw(expected_raw)
+        );
+    }
+
+    input.dataset.transitions.clear();
+    assert_eq!(build_targets(input), Err(Error::EmptyDataset));
+}
