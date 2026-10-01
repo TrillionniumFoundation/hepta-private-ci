@@ -368,3 +368,49 @@ not a default installed policy or permission to change existing tickets.
 No installed Fleet or signing policy was replaced. Actual Agentd integration,
 provider-native dynamic issue/renew/revoke and the remaining capability matrix
 remain closed/unqualified; module `productCallerState` stays `not_composed`.
+
+### Maintain the existing pinned provider leaf
+
+`scripts/hepta-renew-openbao-leaf` runs as the Root operator. Install it as
+`/usr/libexec/hepta/hepta-renew-openbao-leaf` with Root ownership and mode `0555`,
+and install the two `deployment/hepta-openbao-leaf-renewal.*` units. The timer
+runs daily. Its existing provider must already be initialized and unsealed.
+The Python runtime requires `cryptography` with `verify_directly_issued_by`
+support. The qualified Linux runtime uses the distribution's version 41.0.7.
+
+Enroll `/etc/hepta-openbao-private-ci/tls-renewal.json` as a Root-owned `0600`
+file with exactly these fields:
+
+| Field | Root policy |
+| --- | --- |
+| `schema` | `hepta.openbao.pinned-leaf-renewal.v1` |
+| `service`, `provider_uid`, `provider_gid`, `port` | Existing fixed local service, actual non-Root account and loopback TLS port. |
+| `provider_config`, `provider_config_sha256` | Existing Root-owned startup configuration and its SHA-256. |
+| `leaf_cert`, `leaf_key` | Exact existing startup TLS paths, owned by that provider UID/GID with mode `0600`. |
+| `ca_cert`, `ca_sha256` | Original Root-owned `0600` CA certificate and unchanged SHA-256 pin. |
+| `ca_signing_key` | Original Root-owned `0600` signing key in a private Root directory, inaccessible to the provider and workload accounts. |
+| `renew_before_days`, `valid_days` | Positive integer threshold below the new lifetime; supplied policy uses 30 and 90. The maximum new lifetime is 90 days. |
+
+All paths and ancestors must be protected and canonical. Symlinks, hardlinks,
+mutable ancestors, duplicate fields and an altered startup configuration or CA
+pin are rejected. Keep the original CA key in its operator custody location;
+the helper reads it in place only when issuing a leaf. It atomically replaces
+the public certificate at the original startup path and verifies the exact
+certificate through the actual TLS connection after SIGHUP. OpenBao reloads
+the [original startup TLS paths](https://openbao.org/docs/configuration/listener/tcp/)
+on SIGHUP. Existing keys, CA, tokens and provider data remain in place.
+
+An interrupted certificate replacement is reloaded without issuing another
+certificate. Failed renewal attempts restore the previous certificate before
+returning failure. A CA close to expiry requires explicit Root policy
+replacement; automatic maintenance cannot change the CA pin. The timer's
+90-second maintenance bound does not extend any workload request or grant.
+
+Qualification used an isolated actual OpenBao 2.7.0 Raft service: three-day to
+90-day renewal, unchanged PID and original KV v2 version/data, exact listener
+certificate, a subsequent no-op, interrupted replacement recovery and invalid
+CA/ownership/link rejection. Initial fixture failures were retained, including
+unknown initialization timeouts; those initialization operations were never
+reissued. Successful initialization custody enabled the later maintenance
+checks without repeating mount or KV writes. This maintenance qualification
+does not establish installed Agentd consumption or other provider capabilities.
