@@ -21,7 +21,7 @@ on:
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/actions/setup-ci/**"
   push:
-    branches: [main, codex/intuition-policy-production-closure-20260927]
+    branches: [main]
     paths:
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-intelligence/**"
