@@ -332,6 +332,7 @@ fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence recovery: {message}"))
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 #[path = "evidence_frontier_file_tests.rs"]
 mod file_tests;

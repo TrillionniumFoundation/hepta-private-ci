@@ -204,6 +204,7 @@ pub(crate) fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("AuthBus text: {message}"))
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 #[path = "authbus_trust_file_tests.rs"]
 mod file_tests;

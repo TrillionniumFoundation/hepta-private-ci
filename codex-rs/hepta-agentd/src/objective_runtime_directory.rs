@@ -88,6 +88,7 @@ fn prepare_inspected_directory(
     Ok(())
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 #[path = "objective_runtime_directory_tests.rs"]
 mod tests;

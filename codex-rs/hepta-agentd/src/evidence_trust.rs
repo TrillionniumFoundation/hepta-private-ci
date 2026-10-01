@@ -237,6 +237,7 @@ fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence: {message}"))
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 #[path = "evidence_trust_file_tests.rs"]
 mod file_tests;
