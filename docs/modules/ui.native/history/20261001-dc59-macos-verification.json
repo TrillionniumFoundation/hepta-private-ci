@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.ui.native.macos-ci-diagnostic.v1",
+  "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+  "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+  "candidateSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+  "candidateTree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "runId": 36836809639,
+  "runAttempt": 1,
+  "workflowShaObservedInJobEnvironment": "48f593a45dc4fe2e2e53632ce973195e5e6552c1",
+  "subjects": {
+    "head": {
+      "jobId": 110286304382,
+      "conclusion": "failure",
+      "failedStepNumber": 3,
+      "failedStep": "Construct exact head or fixed ordered-parent merge",
+      "actualCandidateCheckoutObserved": true,
+      "rawJobLogPath": "/tmp/hepta-native-dc59-macos-head-job.log",
+      "rawJobLogBytes": 691991,
+      "rawJobLogSha256": "6ccc97f1b3bbf4d37b26f8313cae4252f693af797115ce7e8542474684a1fdb4",
+      "errorExcerpt": [
+        "2026-10-01T08:32:32.9539290Z /Users/runner/work/_temp/9a204994-365e-4dff-bcb2-d4b01744b2d6.sh: line 36: unexpected EOF while looking for matching `''",
+        "2026-10-01T08:32:32.9631490Z ##[error]Process completed with exit code 2."
+      ],
+      "artifactId": null,
+      "artifactAbsenceObserved": true,
+      "generatedPlatformSourceReceipt": "not created",
+      "generatedOrderedParentMerge": "not applicable to head",
+      "identitiesPythonChecks": "not executed",
+      "strictFormattingClippy": "not executed",
+      "appFullTests": "not executed",
+      "ownerFullTests": "not executed",
+      "nativeAcl14": "not executed",
+      "contractsAcl12": "not executed",
+      "utilityAcl6": "not executed",
+      "contractsUnixFifo2": "not executed",
+      "releaseCompileNegativeRecoveryPackageSeal": "not executed"
+    },
+    "merge": {
+      "jobId": 110286304484,
+      "conclusion": "failure",
+      "failedStepNumber": 3,
+      "failedStep": "Construct exact head or fixed ordered-parent merge",
+      "actualCandidateCheckoutObserved": true,
+      "rawJobLogPath": "/tmp/hepta-native-dc59-macos-merge-job.log",
+      "rawJobLogBytes": 691252,
+      "rawJobLogSha256": "eea717b77eec9aa154347df469eeac59c75cca4e2d3e93c091fd3a196ddc6e5b",
+      "errorExcerpt": [
+        "2026-10-01T08:32:26.1231290Z /Users/runner/work/_temp/d3bd337c-3c51-475c-9760-81ee742bd637.sh: line 36: unexpected EOF while looking for matching `''",
+        "2026-10-01T08:32:26.1243400Z ##[error]Process completed with exit code 2."
+      ],
+      "artifactId": null,
+      "artifactAbsenceObserved": true,
+      "generatedPlatformSourceReceipt": "not created",
+      "generatedOrderedParentMerge": "not constructed",
+      "identitiesPythonChecks": "not executed",
+      "strictFormattingClippy": "not executed",
+      "appFullTests": "not executed",
+      "ownerFullTests": "not executed",
+      "nativeAcl14": "not executed",
+      "contractsAcl12": "not executed",
+      "utilityAcl6": "not executed",
+      "contractsUnixFifo2": "not executed",
+      "releaseCompileNegativeRecoveryPackageSeal": "not executed"
+    }
+  },
+  "diagnosis": {
+    "file": ".github/workflows/ui-native-qualification.yml",
+    "line": 179,
+    "newComment": "# Binary stdin keeps the commit message's UTF-8 LF bytes identical.",
+    "observed": "Both macOS jobs check out exact candidate, then /bin/bash reports unexpected EOF looking for matching apostrophe at generated-script line 36, exit2. No source.txt, check reports or platform artifacts were created.",
+    "inference": "The new unmatched apostrophe inside Python heredoc nested in double-quoted shell command substitution triggers legacy macOS Bash parsing; failed logs do not record bash --version.",
+    "minimumRepair": "Remove apostrophe from comment without changing binary stdin, ASCII decode, commit identity checks or budgets. New macOS run must verify repair.",
+    "linuxSyntaxObservation": "Modern local Bash accepted committed and apostrophe-free scripts under both normal and POSIX syntax-only modes; this is not a Mac reproduction."
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

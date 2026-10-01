@@ -164,11 +164,8 @@ jobs:
           set -euo pipefail
           export NATIVE_OUTPUT_ROOT="$RUNNER_TEMP/ui-native-platform"
           echo "NATIVE_OUTPUT_ROOT=$NATIVE_OUTPUT_ROOT" >> "$GITHUB_ENV"
-          git checkout --detach "$CANDIDATE"
-          test "$(git rev-parse HEAD)" = "$CANDIDATE"
-          if test "$KIND" = merge; then
-            tree="$(git merge-tree --write-tree "$BASE" "$CANDIDATE")"
-            merge="$(TREE="$tree" BASE="$BASE" CANDIDATE="$CANDIDATE" python3 - <<'PYTHON'
+          construct_native_merge() {
+            python3 - <<'PYTHON'
           import os
           import subprocess
           commit = subprocess.check_output(
@@ -190,7 +187,12 @@ jobs:
           ).decode("ascii").strip()
           print(commit)
           PYTHON
-            )"
+          }
+          git checkout --detach "$CANDIDATE"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          if test "$KIND" = merge; then
+            tree="$(git merge-tree --write-tree "$BASE" "$CANDIDATE")"
+            merge="$(TREE="$tree" BASE="$BASE" CANDIDATE="$CANDIDATE" construct_native_merge)"
             git checkout --detach "$merge"
             test "$(git show -s --format=%P HEAD)" = "$BASE $CANDIDATE"
           fi

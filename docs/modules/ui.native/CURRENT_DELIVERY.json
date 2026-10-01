@@ -164,19 +164,26 @@
     "pythonTests": {
       "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
       "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "executionHeadSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+      "scope": "Precommit execution of current qualification tooling; frozen native product unchanged; not accepted qualification",
       "acceptedQualification": false,
       "status": "passed-current-source-Linux-local-diagnostic",
-      "total": 239,
-      "passed": 238,
+      "total": 240,
+      "passed": 239,
       "failed": 0,
       "skipped": 1,
-      "seconds": 17.416,
+      "seconds": 14.811,
       "skipReason": "Windows-only actual NTFS junction fixture does not execute on Linux",
       "rawLog": {
-        "path": "/tmp/hepta-native-merge-lf-python.log",
-        "sha256": "6d0f27945584345fa71f7cd2f599cbda5ba92d919151d9abe88506c9af541a4d"
+        "path": "/tmp/hepta-native-portable-construct-python.log",
+        "sha256": "e7dfa957037a34c552856e67dd14a1090e2c9afc8dda1814b60ac01680d5157e",
+        "bytes": 40032
+      },
+      "currentQualificationToolingSha256": {
+        ".github/workflows/ui-native-qualification.yml": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
+        "scripts/hepta-implementation-maps.py": "5f5bb1650b0a279921dbe5e448f0db874e43544acf00a374f517875ef8b73424",
+        "scripts/test_hepta_ui_native_workflow.py": "7cb800559a03ca4828c4c19cee71705cd449cdd2337bda000cac94929c7359b4",
+        "scripts/test_hepta_ui_native_map_adapter.py": "d9f481c4407d7c7bf05771df1aa92b87452d80b45a5072a713b50fbae77ada27"
       }
     },
     "releaseMixedStorageDiagnostics": {
@@ -237,7 +244,7 @@
     "sourceStructuralVerification": {
       "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
       "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+      "executionHeadSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
       "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
       "status": "passed-current-source-precommit-metadata-check",
@@ -246,8 +253,8 @@
       "localCargoDependencies": 16,
       "inventorySha256": "8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d",
       "rawReceipt": {
-        "path": "/tmp/hepta-native-guard-precommit-structural.json",
-        "sha256": "d86e224fce03c0b2a56e5829ee8f7d64242064a2d959823593588f3e7919670b"
+        "path": "/tmp/hepta-native-portable-construct-precommit-structural.json",
+        "sha256": "fe5d12685552c1b18d08a7cf33689f4342a343c54ab0a036d2b62b9656ee7a39"
       }
     },
     "projectionVerification": {
@@ -286,8 +293,17 @@
       "acceptedQualification": false
     },
     "workflowEntryValidation": {
-      "status": "pending-final-review-head-workflow",
-      "remoteSevenSubjectQualificationPassed": false
+      "status": "passed-local-real-Git-head-merge-parser-regressions-awaiting-new-exact-candidate-workflow",
+      "remoteSevenSubjectQualificationPassed": false,
+      "localTargetedTests": 48,
+      "localTargetedTestsPassed": 48,
+      "rawLog": {
+        "path": "/tmp/hepta-native-heredoc-parser-targeted-tests.log",
+        "sha256": "cf20312e2d3d18058282a75bc025270fff0c8132d7c9e596a9647ca1815dbf8b",
+        "bytes": 7422
+      },
+      "nativeMacShellExecutionRequired": true,
+      "acceptedQualification": false
     },
     "ciQualificationPassed": false,
     "physicalPlatformAcceptanceComplete": false
@@ -833,6 +849,15 @@
       "implementationSourceSha": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
       "implementationSourceTree": "ca4eb87caf92a2b741a3b8818cf87a19a88bb0dd",
       "evidenceRole": "historical-only; does not qualify current implementation source"
+    }
+  ],
+  "historicalQualificationReviewRecords": [
+    {
+      "reviewHeadSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "path": "docs/modules/ui.native/history/20261001-dc59-verification.json",
+      "sha256": "fb738cf0c20435e583cf8bf0fd9b70ce6a14316f0322c9d620535ed4ec5b523a",
+      "role": "Exact historical pre-execution metadata plus failed CI and separate clean-review diagnostics; no result promotion"
     }
   ]
 }

@@ -1,0 +1,957 @@
+{
+  "schema": "hepta.ui-native.linux-ci-followup-summary.v1",
+  "classification": "historical-exact-source-ci-evidence",
+  "observedAt": "2026-10-01T08:43:53.019514+00:00",
+  "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+  "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+  "candidateSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+  "candidateTree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "runId": 36836809639,
+  "runAttempt": 1,
+  "currentSourceQualificationInherited": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "storage": {
+    "jobId": 110286304281,
+    "status": "completed",
+    "conclusion": "success",
+    "url": null,
+    "artifactId": 11150071551,
+    "artifactName": "ui-native-storage-dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6-attempt-1",
+    "artifactZip": {
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/46c3495b-0107-4eef-98ca-cd96dc558a10/github-actions-artifact-11150071551.zip",
+      "bytes": 438819,
+      "sha256": "25c4fc73974aa4b301a540c1e88b8ea9fc9a7087383473c90fc618df61cc592a"
+    },
+    "artifactPending": false,
+    "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+    "budgetCandidateBlobSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+    "budget": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36836809639/STORAGE_BUDGETS.json",
+      "bytes": 2346,
+      "sha256": "e3e0d9f78f0b8ecfdca42dcfea7521f61a7a472bcb8d764233f192e66b83e0f3"
+    },
+    "jobOutcomes": {
+      "active": "success",
+      "candidateSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+      "compile": "success",
+      "retired": "success",
+      "runAttempt": "1",
+      "runId": "36836809639",
+      "schema": "hepta.ui-native-storage-job-outcomes.v1",
+      "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "validate": "success",
+      "workflowSha": "48f593a45dc4fe2e2e53632ce973195e5e6552c1"
+    },
+    "originalQualification": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36836809639/qualification.json",
+      "bytes": 308331,
+      "sha256": "672f96ea66cab05ce8a577ad0a25c44c577ab29c1a264a50dd47c6c835e0e9c4"
+    },
+    "rawActive": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36836809639/active.json",
+      "bytes": 211950,
+      "sha256": "639b066ea9b6a8bf2cd583e07acb0a443a43bef2cee7bbd62e9a618fd97a8ab6"
+    },
+    "rawRetired": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36836809639/retired.json",
+      "bytes": 32051,
+      "sha256": "ae3d373f8b16607bbd83ec70a0a4a1baf994dd3af921d8befa0aa74b53acebb1"
+    },
+    "independentValidator": {
+      "exitCode": 0,
+      "status": "pass",
+      "storageQualified": true,
+      "exactSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "validatorSourceSha256": "5eff68ae1694a05ca5aff8e54a8102da7b249af2d3754569b2cb7c064e64a9d5",
+      "validatorMatchesCandidateGitBlob": true,
+      "allPercentilesAndProcessIdentityBindingsVerified": true,
+      "all48TraceFileHashesAndSizesVerified": true,
+      "allHardBudgetsVerified": true,
+      "originalAndIndependentReceiptObjectsEqual": true,
+      "command": [
+        "python3",
+        "/dev/shm/hepta-ui-native-ci-storage-36836809639/qualify_hepta_ui_native_storage.py",
+        "--budgets",
+        "/dev/shm/hepta-ui-native-ci-storage-36836809639/STORAGE_BUDGETS.json",
+        "--active",
+        "/dev/shm/hepta-ui-native-ci-storage-36836809639/active.json",
+        "--retired",
+        "/dev/shm/hepta-ui-native-ci-storage-36836809639/retired.json",
+        "--trace-prefix",
+        "/dev/shm/hepta-ui-native-ci-storage-36836809639/active.strace",
+        "--source-sha",
+        "d5445993e9ac96626bf9314053df77eeedb90e4d",
+        "--emit",
+        "/dev/shm/hepta-ui-native-ci-storage-36836809639/independent-qualification.json"
+      ],
+      "receipt": {
+        "path": "/dev/shm/hepta-ui-native-ci-storage-36836809639/independent-qualification.json",
+        "bytes": 308331,
+        "sha256": "672f96ea66cab05ce8a577ad0a25c44c577ab29c1a264a50dd47c6c835e0e9c4"
+      },
+      "log": {
+        "path": "/dev/shm/hepta-ui-native-ci-storage-36836809639/independent-qualification.log",
+        "bytes": 308331,
+        "sha256": "672f96ea66cab05ce8a577ad0a25c44c577ab29c1a264a50dd47c6c835e0e9c4"
+      }
+    },
+    "durabilitySyscalls": {
+      "fsyncOrFdatasyncCalls": 13245,
+      "stateTransitions": 12288,
+      "traceFiles": [
+        {
+          "bytes": 501,
+          "path": "active.strace.9683",
+          "sha256": "376a76416c1034b30a698b9ffc19f882292666b931a370cc3ac019e5b47b5b74"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9684",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9685",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9686",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9687",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 189,
+          "path": "active.strace.9688",
+          "sha256": "02dcc424bde4e3a777625548037b12d4d615a2997fbab38e6e0e85366211f5b9"
+        },
+        {
+          "bytes": 543,
+          "path": "active.strace.9689",
+          "sha256": "8174daedf2cc42183303ee426fe1cf59a5271558a6ba765ef12e04999cdf26b6"
+        },
+        {
+          "bytes": 10083555,
+          "path": "active.strace.9690",
+          "sha256": "847bbf8a536693c307c56acef2674d001146df9ab2f70ed2c3bd8895a7e9b0d7"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9697",
+          "sha256": "318a0722cf711a9c8a6de1f4732bdf5f20bd60e76f19d3a1742003c365384af6"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9698",
+          "sha256": "90778bcaf73cb269b6825d7f97dcdce65e9dd69a6c405e7fed38343c5ce30503"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9699",
+          "sha256": "40310654c7bd683e0055b2d559e2686490185e45b59c45b86ed37d8fc1fe0d71"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9700",
+          "sha256": "3671254d9891d59313f254343c4a50c9c75df4080941e674f8d2da1371b46548"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9701",
+          "sha256": "08fadfca9a8d60808d385aad3492de14a3513d69142b66352c18e764ec26b116"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9702",
+          "sha256": "ee39c555f7c7279e58e516355a499ccb1eba5fbf90730aa54c01d8d119985776"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9703",
+          "sha256": "bddfd731e73ec0707f47486b911e772efdb33ae87eb8325f6a409944176a4700"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9704",
+          "sha256": "e6f8bdb9456ee2027ed8156b61e3be42eb14fc9e71861bb13f808e633c32c97d"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9705",
+          "sha256": "d83e61152f90c0e780bd8a8ab91040a82cba0169a044700b8aa4ddd98cad1c50"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9706",
+          "sha256": "5dc017e8c319a4e989666ad3ac68feebd9b3a3b4158f729bb5a39ac4918f5b09"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9707",
+          "sha256": "c9727f5a5d281e3e127850f633e905ae4858ae559672137de8fcfbec39ee0ea1"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9708",
+          "sha256": "c96db18a336ec7bb765a0c525381b567f8e47958fabc9bd1969f65ceb6517e22"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9709",
+          "sha256": "52f7114cd94228e7613237ac356b91b6bb328f944b5dd1cfea6d4442c0b7d451"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9710",
+          "sha256": "6f1f5fcf3b669b3a0db06a743f82fd6d6ce63b4f5b8cc48d63c602ea1304d46a"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9711",
+          "sha256": "b7146c9adbb009cca9246c7deb85acce09291d2764d175e77d4cc5c28b3e8581"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9712",
+          "sha256": "d40894022fcedbe9577351e5bd14dda470541edd8d72a46cdb35b0cf236cce8f"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9713",
+          "sha256": "376a3c12bb63c25c7bba339d4d62a23de2698ed97efdfd343429401f10011324"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9714",
+          "sha256": "57e58d8b135f9dcf2bb816a63f5de52143b3cbe1b802f0da5062500cdda77f56"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9715",
+          "sha256": "c6fcd9685896389d9f556a48f746900885d947ae1a7166178f9ceea367ae6908"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9716",
+          "sha256": "327e4336b727643928255138c069ecfb6daf089118558c21952e37a537562a15"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9717",
+          "sha256": "be71b949b7f563eb0dd1a05a4c00df3c6aa4cdb17511e6135e9ea28f780b5cca"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9718",
+          "sha256": "f13fe23d6e3add9acdebbe033acd969bcb2f02cfbda4072c5c32813a16395c3d"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9719",
+          "sha256": "621d28c638ddb904829f340596cec459fc6a569d89c4afa4e92ea6196c221a22"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9720",
+          "sha256": "e786568c5995a349b97b9b27a25438976448f3eeabcdb9a1f769aacb50c7f28e"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9721",
+          "sha256": "5fff35144b203721163fbb273222636fa4ecb25044d712ccf779d7740f432717"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9722",
+          "sha256": "092bc277b8fb6517bf6f6fec84890e11d24c4fcb7ea767482dfcf09adbfa4f86"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9723",
+          "sha256": "b98d9a2830d106790db6e46a5be6b4102d3e99b5fcac732d8b203c630e18c3ef"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9724",
+          "sha256": "6774351cb35d29599c05eccb6e5d68441efcafd82645768c71dd2935f4a3fe37"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9725",
+          "sha256": "18d34e584c2b946cd5d900ee9f1a8d9ce07a796d2075ab9520eeed4ba102c85d"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9726",
+          "sha256": "fdadd2b00f7a9d3eb88d5bcc311c99cafb39b60ec26058d673e8cb9d407f6654"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9727",
+          "sha256": "2905b15a2102d01fff106cdde047e4796d45f4ac83fc303e0aa24ff403a6ef96"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9728",
+          "sha256": "5e5a9279e429dbf00ea38eeaf9075a2d3463e6da05bd049e4e6a05f9b0abc1ff"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9729",
+          "sha256": "57b1d978b2134aaf8911283e6e495a33a66fe6ee1ffc77b0442a4568528303f4"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9730",
+          "sha256": "20b6b04ba464ed1701a1d87b3ccae342446038126424130d9f14982590522f23"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9731",
+          "sha256": "64d2b7f7ffbbe6d2216875013337f7c17da69af95bdff00b44a76eb574702544"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9732",
+          "sha256": "6f38c267240f7b3fc836e93e7e4da30250d1fa38d68abf02d5696fe06f76330b"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9733",
+          "sha256": "271ae3eb4b06b4f521eba3e6684a619342a8286af8c0e4f9d262af7918381a46"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9734",
+          "sha256": "5dd533f1e01afe5e3f0ab40745e6a21882582fd4e89c690dae9458cac8923d98"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9735",
+          "sha256": "0c0812ea5c9b8b1c12d8fad53a28f49cae0740b3dd2989e7d155f14173334f8e"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9736",
+          "sha256": "7af445572f547c90faca6a3decd419c25e15e9b7cd85d78770629e588d4c15f0"
+        }
+      ],
+      "writeBytes": 392186552,
+      "writeBytesPerTransition": 31917
+    },
+    "activeMeasurements": {
+      "activeRecords": 4096,
+      "freshProcessOpenP95Milliseconds": 55.765251,
+      "historyPageMaxRetainedJsonBytes": 28417,
+      "historyPageP95Milliseconds": 0.354228,
+      "historyPageSize": 64,
+      "measurementScope": {
+        "buildProfile": "release",
+        "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+        "open": "fresh-process-os-page-cache-uncontrolled"
+      },
+      "mutationP50Milliseconds": 2.503327,
+      "mutationP95Milliseconds": 3.035198,
+      "mutationP99Milliseconds": 6.054535,
+      "peakRssMiB": 26,
+      "previousSnapshotBytes": 2599483,
+      "processSampleCount": 20,
+      "root": "/home/runner/work/_temp/ui-native-storage-roots/hepta-ui-native-active-9689-1790843812712420008",
+      "schema": "hepta.ui-native-storage-active-evidence.v1",
+      "snapshotBytes": 2608315,
+      "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "totalStorageBytes": 5207798,
+      "transitions": 12288,
+      "walBytes": 0
+    },
+    "retirementMeasurements": {
+      "authorityBatchSize": 1024,
+      "authorityFixtureBuildMilliseconds": 3274.104426,
+      "authorityMinimumPrefixesPerSegment": 228,
+      "authorityMixedPrefixSegments": 977,
+      "combinedJournal": {
+        "activeRecords": 4096,
+        "freshProcessOpenP95Milliseconds": 438.136552,
+        "historyPageMaxRetainedJsonBytes": 28417,
+        "historyPageP95Milliseconds": 0.044624,
+        "historyPageSize": 64,
+        "measurementScope": {
+          "buildProfile": "release",
+          "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+          "open": "fresh-process-os-page-cache-uncontrolled"
+        },
+        "peakRssMiB": 34,
+        "processSampleCount": 20,
+        "retiredIdentities": 1000000,
+        "schema": "hepta.ui-native-storage-combined-evidence.v1",
+        "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d"
+      },
+      "deterministicRebuild": true,
+      "expectedIndexedHeadSha256": "a437b567ef1c9757305487f41331d5beb33ad2c19155ff11d0e675ce3fd7e44a",
+      "freshProcessIndexRebuildP95Milliseconds": 1548.569635,
+      "freshProcessOpenP95Milliseconds": 0.390426,
+      "measurementScope": {
+        "authoritySegments": "mixed-prefix-chronological-legacy-identity-batches",
+        "buildProfile": "release",
+        "open": "fresh-process-os-page-cache-uncontrolled",
+        "rebuild": "fresh-process-mixed-prefix-authority-chain-with-no-derived-assets"
+      },
+      "peakRssMiB": 36,
+      "processSampleCount": 20,
+      "retiredIdentities": 1000000,
+      "retirementSegments": 977,
+      "root": "/home/runner/work/_temp/ui-native-storage-roots/hepta-ui-native-retired-9745-1790843848545536105",
+      "schema": "hepta.ui-native-storage-retirement-evidence.v1",
+      "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "totalStorageBytes": 144415688
+    },
+    "budgetCeilings": {
+      "path": "STORAGE_BUDGETS.json",
+      "performance": {
+        "activePeakRssMiB": 256,
+        "activeRecordsSubject": 4096,
+        "coldStartP95Milliseconds": 2000,
+        "freshProcessSamples": 20,
+        "historyPageP95Milliseconds": 25,
+        "historyPageRetainedSerializedBytes": 2097152,
+        "maximumWriteAmplificationBytesPerStateTransition": 262144,
+        "millionRetiredIndexRebuildP95Milliseconds": 30000,
+        "millionRetiredPeakRssMiB": 256,
+        "mutationP50Milliseconds": 25,
+        "mutationP95Milliseconds": 100,
+        "mutationP99Milliseconds": 250,
+        "retiredIdentitiesSubject": 1000000
+      },
+      "sha256": "e3e0d9f78f0b8ecfdca42dcfea7521f61a7a472bcb8d764233f192e66b83e0f3",
+      "structural": {
+        "checkpointWalEntries": 128,
+        "maxActiveRecords": 4096,
+        "maxSnapshotBytes": 8388608,
+        "maxWalBytes": 4194304,
+        "maxWalFrameBytes": 131072,
+        "maximumHistoryPageSize": 256,
+        "retirementIndexBucketEntries": 65536,
+        "retirementIndexBuckets": 256,
+        "retirementIndexCacheEntries": 65536,
+        "retirementRecordBytes": 32768,
+        "retirementSegmentBytes": 524288,
+        "retirementSegmentEntries": 1024,
+        "uiHistoryPageSize": 64
+      }
+    },
+    "limitations": [
+      "Linux hosted-runner evidence is not physical desktop acceptance",
+      "Fresh processes do not control or evict the operating-system page cache",
+      "Performance ceilings apply to optimized release-profile test harnesses",
+      "History retained JSON bytes measure receipt payload, not total allocator activity",
+      "storage qualification alone does not authorize production, deployment or release"
+    ],
+    "storageQualifiedAtHistoricalSource": true,
+    "currentSourceQualificationInherited": false,
+    "productionQualified": false,
+    "deploymentQualified": false,
+    "releaseAuthorized": false
+  },
+  "linuxPlatforms": {
+    "head": {
+      "jobId": 110286304564,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": null,
+      "artifactId": 11149352550,
+      "artifactName": "ui-native-qualification-ubuntu-24.04-head-dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6-attempt-1",
+      "artifactZip": {
+        "path": "/workspace/scratch/0643a11f4b6a/attachments/64d0f2f0-5a9f-4f2c-9381-b867f32ffec8/github-actions-artifact-11149352550.zip",
+        "bytes": 9413,
+        "sha256": "48637762d544e3d0b7b5442aa79324605cd5a171c5eebe978f449486d76a5f07"
+      },
+      "artifactPending": false,
+      "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+      "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+      "orderedParents": [
+        "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9"
+      ],
+      "sourceIdentity": {
+        "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+        "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+        "limitations": [
+          "structural evidence is not physical-platform acceptance",
+          "performance budgets remain unqualified until measured artifacts are attached",
+          "release flags remain false pending independent review"
+        ],
+        "localCargoDependencyPaths": [
+          "apps/hepta-native",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-control-plane",
+          "codex-rs/hepta-native-gateway",
+          "codex-rs/hepta-ndu",
+          "codex-rs/hepta-paths",
+          "codex-rs/hepta-plasticity",
+          "codex-rs/hepta-private-state",
+          "codex-rs/hepta-runtime",
+          "codex-rs/hepta-types",
+          "codex-rs/hepta-wire",
+          "codex-rs/keyring-store",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+          "codex-rs/utils/cargo-bin",
+          "codex-rs/utils/private-state"
+        ],
+        "orderedParents": [
+          "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9"
+        ],
+        "repositoryHead": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+        "repositoryTree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+        "retiredWorkflowCount": 16,
+        "schema": "hepta.ui-native-source-evidence.v1",
+        "sourceContracts": [
+          "active-index",
+          "journal-v7",
+          "retirement-bucket-v1",
+          "retirement-index-v1",
+          "retirement-v3",
+          "wal-magic",
+          "wal-v1"
+        ],
+        "status": "structural-pass",
+        "workflow": "ui-native-qualification.yml"
+      },
+      "partialChecks": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hepta_module_registry.py"
+          ],
+          "elapsedSeconds": 0.2287968210000031,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T08:33:02.987509+00:00",
+          "label": "registry",
+          "log": "registry.log",
+          "logSha256": "e6a3ea33f0b29ff1b78e5e76bc1d0e744e96cdfa5475f55bfa41893faaa7a3dd",
+          "runAttempt": "1",
+          "runId": "36836809639",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+          "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T08:33:02.758712+00:00",
+          "timedOut": false
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/check_hepta_ui_native_convergence.py"
+          ],
+          "elapsedSeconds": 0.5809119139999837,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T08:33:02.686549+00:00",
+          "label": "identity",
+          "log": "identity.log",
+          "logSha256": "fe5d12685552c1b18d08a7cf33689f4342a343c54ab0a036d2b62b9656ee7a39",
+          "runAttempt": "1",
+          "runId": "36836809639",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+          "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T08:33:02.105646+00:00",
+          "timedOut": false
+        },
+        {
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ui_native_*.py",
+            "-v"
+          ],
+          "elapsedSeconds": 16.31609853499998,
+          "exitCode": 1,
+          "finishedAt": "2026-10-01T08:33:19.375037+00:00",
+          "label": "python_tests",
+          "log": "python_tests.log",
+          "logSha256": "b3cd89ce251330031ea710cd74837c7be01832fbb381733f6d0cee80c0590216",
+          "runAttempt": "1",
+          "runId": "36836809639",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+          "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T08:33:03.058942+00:00",
+          "timedOut": false
+        }
+      ],
+      "retainedCheckCount": 3,
+      "retainedCheckLogHashesVerified": true,
+      "qualificationSealed": false,
+      "qualificationReceiptAbsent": true,
+      "subjectQualifiedAtHistoricalSource": false,
+      "currentSourceQualificationInherited": false,
+      "actualPythonTests": {
+        "ran": 239,
+        "passed": 237,
+        "failed": 1,
+        "skipped": 1,
+        "unittestStatus": "FAILED (failures=1, skipped=1)",
+        "failedTest": "test_hepta_ui_native_map_adapter.NativeMapAdapterTests.test_incomplete_and_execution_claims_cannot_be_promoted",
+        "failureLocation": "scripts/test_hepta_ui_native_map_adapter.py:322",
+        "expectedDiagnosticRegex": "values must be booleans",
+        "actualGuardDiagnostic": "FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean",
+        "diagnosticRegexMismatch": true,
+        "log": {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-head-36836809639/native-evidence/checks/python_tests.log",
+          "bytes": 40913,
+          "sha256": "b3cd89ce251330031ea710cd74837c7be01832fbb381733f6d0cee80c0590216"
+        }
+      },
+      "appTestsExecuted": false,
+      "ownerTestsExecuted": false,
+      "releaseBuilt": false,
+      "guiKeyringLifecycleExecuted": false,
+      "productionQualified": false,
+      "deploymentQualified": false,
+      "releaseAuthorized": false,
+      "sourceRecord": {
+        "path": "/dev/shm/hepta-ui-native-ci-linux-head-36836809639/native-evidence/source.txt",
+        "bytes": 228,
+        "sha256": "e0826aab160ad98268bebb7a636bb80e217c78e34716b3f7d180e2388c6b5149"
+      },
+      "runtimeWorkflowEnvironmentSha": "48f593a45dc4fe2e2e53632ce973195e5e6552c1",
+      "workflowJobLog": {
+        "path": "/dev/shm/hepta-ui-native-ci-linux-head-36836809639/workflow-job.log",
+        "bytes": 772779,
+        "sha256": "4ceeda79818bd28932dfa4f61fe55f400fc56d9ee3df4bdd2f630455ae62c71c"
+      },
+      "checkReceipts": [
+        {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-head-36836809639/native-evidence/checks/registry.json",
+          "bytes": 630,
+          "sha256": "85ebb0acdc45e448c9b9988dfad4d0c02eb72ebec7e572eb25f82fa12bf00001"
+        },
+        {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-head-36836809639/native-evidence/checks/identity.json",
+          "bytes": 637,
+          "sha256": "32ff7418340c9810f1e054043efc94ce788a537a1e6c2ebd0a1c2afc67138438"
+        },
+        {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-head-36836809639/native-evidence/checks/python_tests.json",
+          "bytes": 712,
+          "sha256": "977ffca9cd01e70a5c82b19d6269edee11591b4f07e20e1436e64a546689e07a"
+        }
+      ]
+    },
+    "merge": {
+      "jobId": 110286304522,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": null,
+      "artifactId": 11150005734,
+      "artifactName": "ui-native-qualification-ubuntu-24.04-merge-dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6-attempt-1",
+      "artifactZip": {
+        "path": "/workspace/scratch/0643a11f4b6a/attachments/ab5d08cc-c984-4341-b73f-b01187a5a1d5/github-actions-artifact-11150005734.zip",
+        "bytes": 9453,
+        "sha256": "7a1c898f6ee98d3d693f211d591232d99c872f91006769e5958004fa6d3cde00"
+      },
+      "artifactPending": false,
+      "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+      "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+      "orderedParents": [
+        "9be52d267d02a76f73e8a94fd086191c351d1c70",
+        "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6"
+      ],
+      "sourceIdentity": {
+        "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+        "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+        "limitations": [
+          "structural evidence is not physical-platform acceptance",
+          "performance budgets remain unqualified until measured artifacts are attached",
+          "release flags remain false pending independent review"
+        ],
+        "localCargoDependencyPaths": [
+          "apps/hepta-native",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-control-plane",
+          "codex-rs/hepta-native-gateway",
+          "codex-rs/hepta-ndu",
+          "codex-rs/hepta-paths",
+          "codex-rs/hepta-plasticity",
+          "codex-rs/hepta-private-state",
+          "codex-rs/hepta-runtime",
+          "codex-rs/hepta-types",
+          "codex-rs/hepta-wire",
+          "codex-rs/keyring-store",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+          "codex-rs/utils/cargo-bin",
+          "codex-rs/utils/private-state"
+        ],
+        "orderedParents": [
+          "9be52d267d02a76f73e8a94fd086191c351d1c70",
+          "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6"
+        ],
+        "repositoryHead": "658914a3e602337e707901a9f8d11388b6486799",
+        "repositoryTree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+        "retiredWorkflowCount": 16,
+        "schema": "hepta.ui-native-source-evidence.v1",
+        "sourceContracts": [
+          "active-index",
+          "journal-v7",
+          "retirement-bucket-v1",
+          "retirement-index-v1",
+          "retirement-v3",
+          "wal-magic",
+          "wal-v1"
+        ],
+        "status": "structural-pass",
+        "workflow": "ui-native-qualification.yml"
+      },
+      "partialChecks": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hepta_module_registry.py"
+          ],
+          "elapsedSeconds": 0.627547877000012,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T08:33:16.462585+00:00",
+          "label": "registry",
+          "log": "registry.log",
+          "logSha256": "a749dcb0b2c27364c1e60944702ef71ad9fce3f1f0367f1d793d9c947224d096",
+          "runAttempt": "1",
+          "runId": "36836809639",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+          "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T08:33:15.835045+00:00",
+          "timedOut": false
+        },
+        {
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ui_native_*.py",
+            "-v"
+          ],
+          "elapsedSeconds": 22.02115673899999,
+          "exitCode": 1,
+          "finishedAt": "2026-10-01T08:33:38.530561+00:00",
+          "label": "python_tests",
+          "log": "python_tests.log",
+          "logSha256": "0e8f7ee83311864a273ff96d3404ef81655ceb1e725b8d1b7ecec55d9a520e96",
+          "runAttempt": "1",
+          "runId": "36836809639",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+          "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T08:33:16.509405+00:00",
+          "timedOut": false
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/check_hepta_ui_native_convergence.py"
+          ],
+          "elapsedSeconds": 0.37438324400000056,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T08:33:15.787800+00:00",
+          "label": "identity",
+          "log": "identity.log",
+          "logSha256": "18cbaf740a5bc273e5fd9a377019646c2307d6d714f232d1733b3c81bf7dd6a6",
+          "runAttempt": "1",
+          "runId": "36836809639",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+          "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T08:33:15.413436+00:00",
+          "timedOut": false
+        }
+      ],
+      "retainedCheckCount": 3,
+      "retainedCheckLogHashesVerified": true,
+      "qualificationSealed": false,
+      "qualificationReceiptAbsent": true,
+      "subjectQualifiedAtHistoricalSource": false,
+      "currentSourceQualificationInherited": false,
+      "actualPythonTests": {
+        "ran": 239,
+        "passed": 237,
+        "failed": 1,
+        "skipped": 1,
+        "unittestStatus": "FAILED (failures=1, skipped=1)",
+        "failedTest": "test_hepta_ui_native_map_adapter.NativeMapAdapterTests.test_incomplete_and_execution_claims_cannot_be_promoted",
+        "failureLocation": "scripts/test_hepta_ui_native_map_adapter.py:322",
+        "expectedDiagnosticRegex": "values must be booleans",
+        "actualGuardDiagnostic": "FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean",
+        "diagnosticRegexMismatch": true,
+        "log": {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-merge-36836809639/native-evidence/checks/python_tests.log",
+          "bytes": 40913,
+          "sha256": "0e8f7ee83311864a273ff96d3404ef81655ceb1e725b8d1b7ecec55d9a520e96"
+        }
+      },
+      "appTestsExecuted": false,
+      "ownerTestsExecuted": false,
+      "releaseBuilt": false,
+      "guiKeyringLifecycleExecuted": false,
+      "productionQualified": false,
+      "deploymentQualified": false,
+      "releaseAuthorized": false,
+      "sourceRecord": {
+        "path": "/dev/shm/hepta-ui-native-ci-linux-merge-36836809639/native-evidence/source.txt",
+        "bytes": 236,
+        "sha256": "ad605a3a42c33e7662e18e9519d33ae0d4e4d8bfddb126cba9d7716fe63ecb96"
+      },
+      "runtimeWorkflowEnvironmentSha": "48f593a45dc4fe2e2e53632ce973195e5e6552c1",
+      "workflowJobLog": {
+        "path": "/dev/shm/hepta-ui-native-ci-linux-merge-36836809639/workflow-job.log",
+        "bytes": 771842,
+        "sha256": "18ec1b9236246e7cccedbba2a4b94f7b49c6dd0c53099fca3be889510588178c"
+      },
+      "checkReceipts": [
+        {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-merge-36836809639/native-evidence/checks/registry.json",
+          "bytes": 629,
+          "sha256": "b3869b6559af7c597772d6d5d2fe3cd545eec09ff2b60cfbe14774455ba714d9"
+        },
+        {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-merge-36836809639/native-evidence/checks/python_tests.json",
+          "bytes": 712,
+          "sha256": "47daaadc4ff5018f123c862704ff000bd3b60a5dca376e643fa59bed5e78de7a"
+        },
+        {
+          "path": "/dev/shm/hepta-ui-native-ci-linux-merge-36836809639/native-evidence/checks/identity.json",
+          "bytes": 638,
+          "sha256": "7ba445691e866b2e1c85093618d9e3603ea065a4da123ced64f6cf710c5f2957"
+        }
+      ]
+    }
+  },
+  "independentFrozenSourceSeal": {
+    "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+    "sourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+    "fileCount": 417,
+    "inventorySha256": "8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d",
+    "matchesCandidateDeclaredInventory": true,
+    "allSelectedGitBlobsRecomputed": true
+  },
+  "independentDeterministicMergeSubject": {
+    "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+    "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+    "orderedParents": [
+      "9be52d267d02a76f73e8a94fd086191c351d1c70",
+      "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6"
+    ],
+    "utf8LfCommitPayload": {
+      "path": "/dev/shm/hepta-d544-dc59-canonical-merge.commit",
+      "bytes": 374,
+      "sha256": "059784d7492abe23177d4de722704b55f8eb32a70afc84dabf76a046e7a55de5"
+    },
+    "gitObjectIdIndependentlyComputed": true,
+    "authorAndCommitter": "native-qualification <native-qualification@users.noreply.github.com>",
+    "unixTimestamp": 946684800,
+    "timezone": "+0000",
+    "baseIsCandidateAncestorVerified": true,
+    "message": "deterministic ui.native qualification merge\n"
+  },
+  "terminalJobSnapshot": [
+    {
+      "jobId": 110286078953,
+      "name": "ui.native / immutable source identity",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "jobId": 110286304281,
+      "name": "ui.native / Linux / exact implementation storage scale",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "jobId": 110286304382,
+      "name": "ui.native / macOS / head",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110286304455,
+      "name": "ui.native / Windows / merge",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110286304484,
+      "name": "ui.native / macOS / merge",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110286304522,
+      "name": "ui.native / Linux / merge",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110286304564,
+      "name": "ui.native / Linux / head",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110286304607,
+      "name": "ui.native / Windows / head",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110288635369,
+      "name": "ui.native / qualification result",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "allLinuxSubjectsTerminal": true,
+  "allLinuxSubjectsSucceededAtHistoricalSource": false,
+  "aggregateQualified": false,
+  "aggregateStatus": "completed",
+  "failureExplanation": "Shared guard correctly rejects nonboolean execution claim; one unchanged negative-test diagnostic regex rejects the more specific error. All later platform checks are unexecuted. macOS additionally fails shell parsing in quoted here-document construction.",
+  "workflowSha": "48f593a45dc4fe2e2e53632ce973195e5e6552c1",
+  "aggregateJobId": 110288635369,
+  "aggregateConclusion": "failure",
+  "aggregateFailureReason": "Linux Python negative-test diagnostic regex mismatches the more specific shared-guard rejection; Windows subjects fail the contracts step; macOS subjects fail shell parsing during construction. No later Rust/release/package/GUI checks were executed.",
+  "qualificationClaim": false,
+  "earlierImmutablePlatformFailureObservation": {
+    "path": "/tmp/hepta-native-d544-dc59-currentfailure-summary.json",
+    "bytes": 20188,
+    "sha256": "2328c4b7d5b750c25c5daf7ba2eec0d29f9c0e35cb3262498944aec16e613874"
+  },
+  "laterImmutableAggregateObservation": {
+    "path": "/tmp/hepta-native-d544-dc59-aggregate-terminal.json",
+    "bytes": 2638,
+    "sha256": "1baf16a9a9a0eb0cc7c8fe6368a438143de6ba9c703440d224f42217abf38962"
+  },
+  "actualGitHubApiSnapshot": {
+    "path": "/dev/shm/hepta-ui-native-ci-api-36836809639-terminal-jobs.json",
+    "bytes": 22330,
+    "sha256": "fe296d29c527ed8a9634a368883611923dd2cb1e44c346e4520d4c2712f1bc5a"
+  },
+  "workflowShaCrossVerifiedInBothLinuxJobEnvironments": true
+}

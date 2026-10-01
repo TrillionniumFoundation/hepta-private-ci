@@ -41,6 +41,11 @@ def bash_executable() -> str:
                 if candidate.is_file():
                     return str(candidate)
         raise RuntimeError("workflow tests require the installed Git for Windows Bash")
+    if sys.platform == "darwin":
+        bash = Path("/bin/bash")
+        if not bash.is_file():
+            raise RuntimeError("workflow tests require native macOS /bin/bash")
+        return str(bash)
     bash = shutil.which("bash")
     if bash is None:
         raise RuntimeError("workflow tests require Bash")
@@ -238,6 +243,29 @@ class PlatformConstructionTests(unittest.TestCase):
         result = self.construct("merge")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.git("rev-parse", "HEAD").strip(), merge)
+
+    def test_head_and_merge_parse_quoted_python_with_native_platform_bash(self):
+        script = shell_step("Construct exact head or fixed ordered-parent merge")
+        script = script.replace(
+            "import os\n",
+            "import os\n"
+            "# A comment's unmatched apostrophe must remain literal heredoc data.\n"
+            "_quote_fixture = {\"double's\": 'single\\\"quoted'}\n",
+            1,
+        )
+        expected = aggregate.deterministic_subjects(
+            self.root, self.candidate, self.base
+        )
+        for kind in ("head", "merge"):
+            with (
+                self.subTest(kind=kind),
+                patch(__name__ + ".shell_step", return_value=script),
+            ):
+                result = self.construct(kind)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(
+                self.git("rev-parse", "HEAD").strip(), expected[kind]["sourceSha"]
+            )
 
     def test_dirty_source_is_still_rejected(self):
         (self.root / "source.rs").write_text(

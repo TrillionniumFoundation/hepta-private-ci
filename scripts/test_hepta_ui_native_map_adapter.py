@@ -319,7 +319,7 @@ cancel-in-progress: false
         self.row = copy.deepcopy(original)
         self.row["claimBoundary"]["productExecutionComplete"] = 0
         self.save_row()
-        self.reject("values must be booleans")
+        self.reject("productExecutionComplete must be boolean")
 
     def test_operation_inventory_and_every_exact_entrypoint_reject_tampering(self):
         original = copy.deepcopy(self.row)

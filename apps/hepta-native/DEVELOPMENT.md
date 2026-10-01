@@ -24,7 +24,8 @@ and release flags remain false. Fifteen new Windows regression definitions
 
 Fresh frozen-source Linux just test/nextest passed 243/243 in 2.467 s (three
 independent scale entries ignored); strict all-target/all-feature Clippy passed
-in 4.59 s. Python ran 239 tests in 17.416 s: 238 passed and one Windows-only
+in 4.59 s. Current qualification tooling ran 240 tests in 14.811 s: 239 passed
+and one Windows-only
 real NTFS junction case was skipped. The locked/offline three-binary release
 build completed in 0.54 s and reuses unchanged Linux production artifacts; self-test and seven actual
 child-fault checks passed with effect, activation and release authority false.
@@ -35,6 +36,21 @@ The separately committed navigation guard and owner-guide precision repairs are
 `9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9`, tree
 `9fa335e95a577c642683252b00d7f6d23708f5d7`; these scripts and guides are outside
 the frozen native product closure. CI still binds the complete candidate commit.
+
+Historical candidate dc59/run36836809639 completed FAILURE: immutable identity
+and storage succeeded, both macOS subjects failed shell parsing before checks,
+and Linux/Windows correctly rejected productExecutionComplete=0 but failed the
+fixture's stale error-message expectation. Both Linux and Windows merge subjects
+actually matched
+658914a3e602337e707901a9f8d11388b6486799; no Mac merge or Rust/ACL pass was observed.
+The producer now defines its Python heredoc in a standalone shell function,
+outside quoted command substitution, preserving fixed binary LF and every
+identity check. The regression executes head and merge with Python single/double
+quotes and an apostrophe comment, using native /bin/bash on macOS. The malformed
+bool fixture now requires its precise rejection diagnostic; input0 and denial
+remain. Forty-eight targeted regressions passed locally. Actual new-platform
+execution is required. See [dc59 historical failure](../../docs/modules/ui.native/history/20261001-dc59-verification.json); its original 18
+localAudit fields and independently captured platform children remain unchanged.
 
 Historical source89/candidate8c/run36832001532 actually passed all seven producer
 subjects: both Linux/Windows/macOS head and merge suites plus 48 storage traces

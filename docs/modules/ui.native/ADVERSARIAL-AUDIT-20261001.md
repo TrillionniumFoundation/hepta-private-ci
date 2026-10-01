@@ -15,13 +15,24 @@
 
 冻结 inventory为417 Git blobs、32 selection paths、16 本地 Cargo依赖，SHA256
 `8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`。新源 Linux243/243通过（2.467s，三独立scale ignored），
-strict Clippy通过（4.59s）；Python239项238通过/一Windows NTFS skip（17.416s）。
+strict Clippy通过（4.59s）；当前资格工具Python240项239通过/一Windows NTFS skip（14.811s）。
 locked/offline三个release二进制及self-test、七actualchild-fault通过，复用未变化
 的Linux生产artifact；Windows生产路径修复仍须新源目标执行。production/deployment/
 release及effect/activation授权均false。15项新增Windows测试定义不是通过证据。
 此处为完整CI结束前的提交时元数据快照，最新精确run记录见[PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308)。
 导航guard和共享指南修正另在9ca0e42e/tree9fa335提交，位于冻结native产品闭包之外；
 CI仍严格绑定完整candidate提交，不转移历史结果。
+
+历史dc59/run36836809639整体FAILURE：identity/storage成功，Mac两项在shell解析
+阶段失败；Linux/Windows四项正确拒绝productExecutionComplete=0，但旧fixture
+期待的错误文字已过时。Linux/Windows两个merge主体实际LF SHA均为658914a；
+head主体仍为dc59。Mac未创建merge/证据，
+Rust/15Win新增用例/32Mac ACL均未执行。现将Python heredoc放在独立shell函数，
+quoted substitution只调用函数；回归用单双引号、apostrophe注释分别执行head/merge，
+Darwin明确采用原生/bin/bash，binary LF/固定Git元数据/全部身份检查保留。
+同步精确diagnostic断言，非法0和SystemExit拒绝要求继续保留。48项针对回归通过，
+新三平台仍须实际完整执行。旧18项localAudit及三个平台快照精确保存在
+[dc59历史失败记录](history/20261001-dc59-verification.json)。
 
 历史89/candidate8c/run36832001532的七个producer全部实际成功，Mac两个主体各执行
 32ACL+2FIFO，Linux storage48trace及原硬预算通过；aggregate整体仍失败。
@@ -201,6 +212,7 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 
 | 严重度 | 基线问题及触发 | 修订 |
 | --- | --- | --- |
+| P2 | Mac shell解析嵌套quoted substitution内Python heredoc的apostrophe注释时退出；新类型guard使旧fixture诊断匹配过时 | heredoc移到独立shell函数并用原生平台Bash实测head/merge引号场景；更新精确诊断，保留非法0和拒绝要求；不改变binary LF或放宽检查 |
 | P1 | map迁移只识别通用执行声明，漏掉requestLocalReadOnlyProductExecutionProved等实际模块专有资格，可跨源码迁移旧证明 | 明确执行/主机/发布字段集合并严格bool；旧证明源码漂移在任何写入前拒绝，false导航及源码事实保持可用；原执行记录不迁移 |
 | P1 | Windows atomic快照/私有copy只验证父root，旧child或temp DACL漂移可未经拒绝即写入/替换 | 提交前检查旧目标与同temp句柄，保留原bytes/ACL；source-root copy重验源，utility replace先验证再释放校验句柄；新增15 Windows回归定义 |
 | P2 | 持久取消后child先退出，迟到ACK pipe已关闭，测试错误unwrap BrokenPipe | 仅cancelled+BrokenPipe允许；成功ACK、退出状态、RollbackStarted/恢复/RolledBack及前驱字节继续严格断言 |
