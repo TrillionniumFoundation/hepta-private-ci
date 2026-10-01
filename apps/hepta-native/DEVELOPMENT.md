@@ -1,24 +1,47 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`ebd04a7ed458aa5feaba69525f48f3623c4db033`, tree
-`59c0fa2b20036d591e5438e91bd6d7257c7c12d0`. The source is an implementation
+`703e9bf2871b26d646f1c4d748e0b0061f70ad3c`, tree
+`d549e3e492093810b685c7d65d58d6983566a82b`. The source is an implementation
 candidate; production, deployment and release flags remain false.
 
-The current source fixes owner-lockfile checkout bytes, macOS cfg/FIFO
-compilation, Windows fixture command selection and the packaged PROPVARIANT ABI.
-Its frozen inventory contains 406 Git blobs, 32 selection paths and 16 local
-Cargo dependencies. Fresh Linux checks of ebd04 passed normal debug application
-243/243 (5.581 s), with three scale entries ignored; Python ran 238 tests,
-237 passed and one Windows-only junction case skipped (20.778 s). Combined
-native-adapter/global-map passed 104/104 (22.123 s), package/portal passed 36/36
-(0.167 s), and projection generation/verification/lint plus seven tests passed.
-Structural verification passed against this 406/32/16 inventory. Strict debug
-all-target/all-feature Clippy with `-D warnings` passed; its fresh dependency
-check included 315 dependencies and took 2 min 30 s. The fresh full-symbol ACK
-fixture passed 1/1 in 3.020 s while retaining the complete actual executable
-digest, update-owner fence and production deadlines. Current owner, release,
-storage/performance and complete same-run CI remain pending. Historical passes are not inherited; product flags stay false.
+The current ordinary source contains three fixture-only repairs: the Unix
+zero-exit executable fixture and environment-only picker Command use
+`/usr/bin/true`, and the Windows authority fixture propagates its five fallible
+helper operations through `Result`. Startup denial, rollback digest/mode
+assertions, owner lifetime, strict lints and all production flows remain intact.
+The source inventory selection remains 406 Git blobs, 32 selection paths and
+16 local Cargo dependencies, with inventory SHA256
+`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`. CURRENT_SOURCE.json binds this inventory.
+The re-anchored precommit structural checker passed for this exact 406/32/16
+inventory. This is a structural diagnostic, not platform or release acceptance.
+Current complete application/Python/owner suites, strict application/owner lint,
+full-symbol ACK, release, storage/performance and same-run CI are pending.
+
+A Linux focused run passed 2/2 tests in 0.163 s on the post-EBD worktree whose
+three repaired files match this source's Git blobs. It is a focused diagnostic,
+not a full current-source suite or macOS/Windows pass. A same-shape, standalone
+Rust 1.95 Clippy type probe exited 0 with `-D warnings` and
+`-D clippy::type_complexity`: the fixture return type scores 230 against the
+250 threshold. The probe does not compile the Windows authority fixture.
+
+Historical source `ebd04a7ed458aa5feaba69525f48f3623c4db033` repaired checkout
+bytes, macOS cfg/FIFO, Windows fixture PATH and the packaged PROPVARIANT ABI.
+Its Linux debug application 243/243 (5.581 s), Python 238 total (237 passed/one
+Windows junction skip, 20.778 s), combined map 104/104 (22.123 s), package/portal
+36/36 (0.167 s), projection seven tests, strict application Clippy (150 s) and
+full-symbol ACK 1/1 (3.020 s) are historical diagnostics. They and the subsequent
+CI failures are preserved in
+[`20261001-ebd04-verification.json`](../../docs/modules/ui.native/history/20261001-ebd04-verification.json).
+Run 36822033441 is terminal and failed overall: identity, Linux head/merge and
+storage succeeded, while macOS full tests, Windows owner lint and aggregate
+failed. Both Linux platform subjects completed 18 checks, including the virtual
+GUI lifecycle; storage retained 48 traces with all hard budgets passing.
+The Linux record is
+[`20261001-ebd04-linux-verification.json`](../../docs/modules/ui.native/history/20261001-ebd04-linux-verification.json).
+macOS application tests failed copying absent `/bin/true`; Windows owner lint
+rejected five helper `unwrap` calls. These executable failures motivated the
+three repairs above. No EBD pass qualifies the new source.
 
 Historical Linux checks of source `0c176c9d4df6055418529389bf0f749f74ac1a69`
 passed 243/243 normal debug-profile application

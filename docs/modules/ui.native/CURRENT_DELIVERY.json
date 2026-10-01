@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
-  "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-  "implementationSourceTree": "59c0fa2b20036d591e5438e91bd6d7257c7c12d0",
+  "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+  "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
@@ -16,7 +16,8 @@
     "boundaryHardening": "32310eefbef2a80164b669fe3bfcaef69b47b9da",
     "crossPlatformQualificationRepair": "85185bcb274682ece9da5086813fd60cc2a7214a",
     "testExecutableHashingRepair": "0c176c9d4df6055418529389bf0f749f74ac1a69",
-    "sourceCheckoutIdentityRepair": "ebd04a7ed458aa5feaba69525f48f3623c4db033"
+    "sourceCheckoutIdentityRepair": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
+    "platformQualificationRepair": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -111,45 +112,20 @@
   "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
   "localAuditVerification": {
     "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
-    "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-    "implementationSourceTree": "59c0fa2b20036d591e5438e91bd6d7257c7c12d0",
+    "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+    "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
     "applicationTests": {
-      "status": "passed",
-      "buildProfile": "debug",
-      "passed": 243,
-      "failed": 0,
-      "skipped": 3,
-      "elapsedSeconds": 5.581,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "implementationSourceTree": "59c0fa2b20036d591e5438e91bd6d7257c7c12d0",
-      "executionHeadSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "rawLogSha256": "c34793d74df092f2adcb8bc60de9b0b59d709dafd467347c529741849037cc59",
-      "scope": "normal application regression; separate ignored scale subjects are not current release qualification"
+      "status": "pending-current-source-execution",
+      "buildProfile": "debug"
     },
     "ownerTests": {
       "status": "pending-current-source-execution"
     },
     "strictClippy": {
-      "status": "passed",
-      "buildProfile": "debug",
-      "allTargets": true,
-      "allFeatures": true,
-      "denyWarnings": true,
-      "elapsedSeconds": 150,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "rawLogSha256": "6e31c3575c8e60ae7f1a29151fd99f2c0229802bd04e8811a92241685c46aa16"
+      "status": "pending-current-source-execution"
     },
     "pythonTests": {
-      "status": "passed",
-      "testsRun": 238,
-      "passed": 237,
-      "failed": 0,
-      "errors": 0,
-      "skipped": 1,
-      "elapsedSeconds": 20.778,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "rawLogSha256": "d009a0396b7b282129f229bf6201367dc283cd35fdb5d82f25084a3901350670",
-      "scope": "Linux; Windows NTFS junction regression OS-skipped, not a Windows pass"
+      "status": "pending-current-source-execution"
     },
     "releaseMixedStorageDiagnostics": {
       "status": "pending-current-source-and-syscall-evidence",
@@ -166,36 +142,19 @@
     "sourceStructuralVerification": {
       "status": "structural-pass",
       "passed": true,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "implementationSourceTree": "59c0fa2b20036d591e5438e91bd6d7257c7c12d0",
-      "rawLogSha256": "88ac62a12474834419b5528d78797972cf61c16c5b9e1c5b6a247699aaf792e7",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "rawLogSha256": "5e5875ce7edca319b3dd7221ed409bb28146ec1a8ef78fa4bc5e2e607d7f729d",
       "acceptedQualification": false
     },
     "projectionVerification": {
-      "status": "passed",
-      "testsPassed": 7,
-      "generatePassed": true,
-      "generatedVerificationPassed": true,
-      "lintPassed": true,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "rawLogSha256": "0fedf1d260169c53e577991f4a9ac3c09496399f53703a56c9a2782e343eb9f2"
+      "status": "pending-current-source-execution"
     },
     "packagePortalTests": {
-      "status": "passed",
-      "passed": 36,
-      "failed": 0,
-      "elapsedSeconds": 0.167,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "rawLogSha256": "4ebff9b170ebb32a7b5f6369cb0603b72182e5b11eae5c1e1bedf3680ef81749"
+      "status": "pending-current-source-execution"
     },
     "mapAdapterVerification": {
-      "status": "passed",
-      "passed": 104,
-      "failed": 0,
-      "elapsedSeconds": 22.123,
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "rawLogSha256": "c7f86137341b2fcf82fd84a2d077198561ac7f5ba1786f079d5024598543bc9a",
-      "scope": "global implementation-map and native adapter regression suites",
+      "status": "pending-current-source-execution",
       "acceptedQualification": false
     },
     "globalModuleDocsVerification": {
@@ -208,17 +167,19 @@
     },
     "ciQualificationPassed": false,
     "physicalPlatformAcceptanceComplete": false,
-    "testExecutableHashing": {
-      "status": "passed",
-      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
-      "buildProfile": "unoptimized application, full debuginfo; test-only sha2 opt-level 3",
-      "passed": 1,
-      "elapsedSeconds": 3.02,
-      "rawLogSha256": "fef6ded17ccc3a593dc256098875791d32f442891805ec9d52c81d2ff9063635",
-      "productionConfirmationTimeoutChanged": false,
-      "completeExecutedFileDigestRetained": true,
-      "ownerFenceRetained": true,
-      "scope": "real copied test executable, child processes and durable helper/confirmation/cancellation protocol"
+    "platformFixtureDiagnostics": {
+      "status": "focused-diagnostic-passed",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "passed": 2,
+      "expressionFilteredTests": 244,
+      "elapsedSeconds": 0.163,
+      "rawLogSha256": "0e0faa779853198b19fe632241e29bcab518bc99ebc7947d3c50b1684bfcff59",
+      "executionPlatform": "Linux",
+      "executionHeadSha": "ca661dff8806c922efe721786feaf4299850a32b",
+      "executionWorktreeClean": false,
+      "repairedImplementationFilesMatchFrozenSource": true,
+      "scope": "Post-EBD worktree focused regressions for actual exit-zero candidate rollback and picker environment; not macOS or complete current-source qualification",
+      "acceptedQualification": false
     }
   },
   "historicalLocalAuditVerification": [
@@ -712,6 +673,13 @@
       "sha256": "0511ee0bfbc88eb907ee828ab1a73ccb2a5e7a256af847dc3f308b189ebb2cf9",
       "implementationSourceSha": "0c176c9d4df6055418529389bf0f749f74ac1a69",
       "implementationSourceTree": "e5b86a2f883ee969aec87cd6bb011c1361ddbd71",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-ebd04-verification.json",
+      "sha256": "b766793214c45f4ef3746a572e7f37ec2bdd6c732826a2a151baa6efcb30b575",
+      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
+      "implementationSourceTree": "59c0fa2b20036d591e5438e91bd6d7257c7c12d0",
       "evidenceRole": "historical-only; does not qualify current implementation source"
     }
   ]

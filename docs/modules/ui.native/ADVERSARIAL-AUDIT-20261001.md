@@ -5,22 +5,41 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-当前已发布的普通源码为 `ebd04a7ed458aa5feaba69525f48f3623c4db033`，tree 为
-`59c0fa2b20036d591e5438e91bd6d7257c7c12d0`。该源仍是未完整验收的实现候选。
-本次普通提交修改 11 个源码文件，修复 checkout 字节身份、macOS strict 编译、
-Windows 夹具命令选择及打包 registrar 的 PROPVARIANT ABI。冻结清单包含
-406 个 Git blobs、32 个 selection paths 和 16 个 local Cargo dependencies。
-当前 ebd04 的 fresh Linux debug 常规应用实际 243/243 通过（5.581 s），
-三个规模条目 ignored；Python suite 238 项、237 通过，一个 Windows NTFS
-junction 场景在 Linux OS-skip（20.778 s）。联合 map 回归 104/104 通过
-（22.123 s），package/portal 36/36 通过（0.167 s），投影 generate/verify/lint
-和 7 项测试通过。结构检查为 pass，inventory SHA256 为
-`ec5658b2f11bc46010bb33e460fc8b287465c6a95fcd96c6248aebde8e083d36`。
-当前严格 debug all-target/all-feature Clippy `-D warnings` 实际通过，fresh
-检查含 315 个依赖、用时 2 min 30 s。完整 debug symbols ACK 真实 1/1 通过
-（3.020 s），完整实际可执行摘要、owner fence 与生产期限保留。当前 owner、
-release、存储/性能及完整同次 CI 仍待实际证据；production/deployment/release
-标志为 false。
+当前已发布的普通源码为 `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`，tree 为
+`d549e3e492093810b685c7d65d58d6983566a82b`。该源仍是未完整验收的实现候选。
+本次普通提交仅修改三个夹具文件：Unix 零退出候选与环境检查 Command 使用
+实际 `/usr/bin/true`，Windows authority helper 的五个 fallible 操作经 Result
+和 `?` 传播。启动拒绝、回滚摘要/0751 mode、owner 生命周期、严格 lint 和
+所有生产流程不变。清单选择仍为 406 Git blobs、32 paths、16 local Cargo
+依赖，inventory SHA256 为
+`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`，由 CURRENT_SOURCE.json 绑定。
+新锚点的 precommit 结构检查实际通过，精确绑定该 406/32/16 清单；这是结构诊断，
+不是平台、完整同次 CI 或发布资格。
+当前完整应用/Python/
+owner 套件、strict lint、完整符号 ACK、release、存储/性能及同次 CI 待执行，
+不得继承旧源通过结果。production/deployment/release 标志保持 false。
+
+唯一新的实际测试诊断是 Linux focused 2/2 通过（0.163 s）：执行于 post-EBD
+工作树，三个修复文件与 703e9bf 的 Git blobs 一致；不是新源完整套件或 macOS/
+Windows 通过。独立 Rust 1.95 同形返回类型 Clippy probe 在 `-D warnings`、
+`-D clippy::type_complexity` 下 exit 0，复杂度 230 < 默认阈值 250；该探针
+不编译 Windows authority 夹具，也不赋予 owner 或平台资格。
+
+历史 EBD 源 `ebd04a7ed458aa5feaba69525f48f3623c4db033` 修复 checkout 字节、
+macOS cfg/FIFO、Windows PATH/registrar ABI。其 Linux debug 应用 243/243
+（5.581 s；三项规模 ignored）、Python 238 项（237 pass/一个 Windows junction
+skip，20.778 s）、map 104/104（22.123 s）、package/portal 36/36（0.167 s）、
+投影 7 项、strict application Clippy（150 s）和完整符号 ACK 1/1（3.020 s）
+均属历史诊断，保存在
+[EBD 不可变历史记录](history/20261001-ebd04-verification.json)。该历史清单的
+SHA256 为 `ec5658b2f11bc46010bb33e460fc8b287465c6a95fcd96c6248aebde8e083d36`。
+run 36822033441 已终止且整体失败：identity、Linux head/merge 各 18 checks
+（含真实 virtual GUI lifecycle）、storage 48 traces 与硬预算通过；macOS 完整
+应用测试、Windows owner lint 和 aggregate 失败。见
+[Linux 子记录](history/20261001-ebd04-linux-verification.json)。macOS 实际完整
+应用测试在复制不存在的 `/bin/true` 时 ENOENT，Windows owner strict lint
+因 helper 五个 unwrap 失败；这些可执行问题驱动本次最小修复，不能归类为
+外部实体验收门槛，也不能用成功 Linux 主体替代完整资格。
 
 前一期历史源 `0c176c9d4df6055418529389bf0f749f74ac1a69` 的实际 Linux debug
 常规应用 243/243 通过（6.377 s），三个独立规模条目 ignored；严格 debug
@@ -106,6 +125,19 @@ system PowerShell 编译实际打包源码，检查 Marshal.SizeOf/OffsetOf，�
 最后 PropVariantClear 清理。该源码和测试已落地，Linux 不能算 Windows 执行
 成功，尚无当前源 Windows receipt 或实体 Start Menu/toast 验收。
 
+[run 36822033441](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36822033441)
+进一步执行 EBD 源：macOS 已通过前置编译/lint，却在
+`tests/update_product.rs:81` 复制 `/bin/true` 时 ENOENT；真实目标提供
+`/usr/bin/true`。703e9bf 继续复制并执行实际零退出二进制，保留“零退出不等于
+产品启动”的拒绝、摘要回滚和 0751 mode 断言。picker 的相同 Command 仅检查
+环境，原本未启动；一并修正路径而未改产品 dialog。
+Windows owner lint 在未标注 `#[test]` 的 helper 中发现五个 `unwrap_used`。
+703e9bf 将 helper 和两项测试返回值改为 Result，五处经 `?` 传播；不放宽
+lint、不跳过 owner。锁定 getrandom 0.4.2 Error 无条件实现 core::error::Error，
+与 std 的同一 trait 可转换到 Box Error。测试内剩余 unwrap 符合既有
+allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 RAII。
+新完整 Windows/macOS 执行尚待重验。
+
 ## 完成度结论
 
 模块有详细技术开发文档：TECHNICAL.md 覆盖所有权、持久化、最终使用授权、
@@ -117,7 +149,7 @@ system PowerShell 编译实际打包源码，检查 Marshal.SizeOf/OffsetOf，�
 | --- | --- | --- |
 | 产品实现 | 主调用链、MAC v2 网关、内核最终使用、WAL、历史分页及更新协调已经落地；基线仍有构建/协议缺陷 | 本轮修复与回归，不等同生产完成 |
 | 功能覆盖 | Linux Open/Reveal 使用验证 FD；macOS/Windows 等价能力适配器仍缺失并拒绝执行 | 各目标平台的真实资源能力适配与测试 |
-| 仓库验收 | 两轮真实工作流整体失败；后续 Python、ACK、macOS strict 编译、checkout LF、Windows mock/ABI 已修订并重新冻结，当前源未取得完整成功 receipt | 同一 head/base/workflow/run/attempt 的完整成功证据 |
+| 仓库验收 | 已执行跨平台工作流未取得完整成功；EBD 后续实际发现 macOS executable fixture 与 Windows helper lint 失败，703e9bf 最小修复后仍待新完整 receipt | 同一 head/base/workflow/run/attempt 的完整成功证据 |
 | 实体桌面 | 无完整 Windows/macOS/X11/Wayland、IME、DPI、无障碍及安装验收 | 对应实体主机执行记录 |
 | 发布资格 | 未完成独立签名、供应链接受、审批与保护规则 | 独立负责人提供并审核，授权标志保持 false |
 
@@ -171,10 +203,12 @@ system PowerShell 编译实际打包源码，检查 Marshal.SizeOf/OffsetOf，�
 | P2 | Python 元数据默认 CRLF 写入与 Git LF blob 不同，语义相同 JSON 也无法通过严格源码身份 | 显式 LF 写入和受控 fixture checkout；保留逐字节拒绝，新增 Windows 默认 newline 与 CRLF 篡改回归 |
 | P2 | Windows shell fixture 未绑定 Git for Windows Bash，失败时只记录不充分的 stderr | 明确选择 Git 安装旁的 Bash，拒绝其他 PATH Bash；同时保存 stdout/stderr。旧 shell 是否为 WSL 属于推断，未作为观测事实 |
 | P2 | ACK fixture 将 readiness 和退出共享一个 20 s deadline，完整符号 debug 可执行摘要耗时仍可超出 readiness | 分别计时并输出 child/pending-state；test profile 单独优化 sha2，继续摘要完整实际可执行文件，生产 5/35 s deadline 与 owner fence 不变 |
-| P2 | core.autocrlf=true 可将未固定 LF 的 owner Cargo.lock 转为 CRLF，producer 原始文件摘要与 aggregate Git blob 不同 | 真实 Git filters 复现 18697 个 CRLF；ebd04 固定 owner lock LF，冻结 root/app attributes 并纳入 workflow trigger，真实 checkout/supply-chain/Git inventory 回归保留逐字节拒绝，当前源 Linux Python suite 已通过；Windows checkout 仍待真实 CI |
+| P2 | core.autocrlf=true 可将未固定 LF 的 owner Cargo.lock 转为 CRLF，producer 原始文件摘要与 aggregate Git blob 不同 | 真实 Git filters 复现 18697 个 CRLF；ebd04 固定 owner lock LF，冻结 root/app attributes 并纳入 workflow trigger，真实 checkout/supply-chain/Git inventory 回归保留逐字节拒绝，EBD 源 Python 回归已通过；703 新源仍待完整同次 CI |
 | P2 | macOS strict 编译暴露 Linux-only import/policy storage 和 Unix fixture 误用 Apple 不支持的 rustix API | 按真实平台用途设置 cfg，并用实际 Unix FIFO 替代不可用 API；保留根参数检查、特殊文件拒绝和非 Linux 效果拒绝，最终冻结需真实 macOS 重验 |
 | P2 | Windows 实际 shell 内 Git 的 strace.exe 抢占 owned fixture，Python 一项失败 | Bash 内将夹具目录置于 PATH 最前并核对 command -v；不改产品执行命令或假报平台通过 |
 | P2 | Windows 打包 PROPVARIANT 指针 union 只有 x64 16/x86 12 bytes，少于 SDK 24/16 | CountedArray union 自适应布局；实际打包 C# 的 Windows-only SizeOf/OffsetOf 与 owned shortcut Set/Get AUMID roundtrip 回归，当前 Windows 执行待验 |
+| P2 | macOS 完整更新回归复制不存在的 `/bin/true`，实际 ENOENT | 703e9bf 使用真实 `/usr/bin/true`；保留零退出启动拒绝、回滚摘要和 0751 mode，环境-only picker Command 同步修正；Linux focused 2/2 不算 macOS 通过 |
+| P2 | Windows owner strict lint 拒绝 authority fixture helper 五处 unwrap | 703e9bf 经 Result/`?` 传播五个 fallible 操作，保留严格 lint、owner 生命周期与断言；同形类型 probe exit 0，不代替 Windows 编译/执行 |
 
 基线远端 run 36682622270 的六个平台在构造阶段就因输出污染失败；storage
 以 --locked 拒绝不一致依赖状态。此前 run 36670666771 亦同。因此基线
@@ -358,12 +392,11 @@ owner 与用户 SID 一致且无线程 impersonation。它保持安全拒绝，�
 接纳 owner group 或自动修改已有对象 owner 来消除此限制。
 
 所有 productionQualified/deploymentQualified/releaseAuthorized 保持 false。
-旧静态复审的收敛结论已被真实跨平台执行发现的新问题取代。本轮已将
-owner-lockfile LF、macOS strict 构建、Windows mock 与 ABI 修订发布为普通
-源 ebd04。fresh Linux 常规回归、strict Clippy、完整符号 ACK 与独立 integration
-复审完成后，当前这组修订未发现新的同范围可复现、可执行修复项，达到有界
-停点；这不证明未来没有缺陷，也不将历史失败或未执行平台当作通过。
-实际 CI、owner/release/perf 执行如发现新问题，应继续修复、重新冻结并复验。
+EBD 静态复审的有界停点已被真实 macOS/Windows 执行发现的新夹具问题取代。
+本轮将 Unix executable 与 Windows helper lint 三文件最小修复发布为普通源
+703e9bf。独立同范围复审未找到进一步可复现问题，但新源完整套件和 CI 待执行；
+不能宣称无未来优化意见、100% 完成或继承 EBD/0c/323 通过。新执行如发现问题，
+应继续修复、重新冻结并复验。
 未将可复现构建失败归类为外部实体验收缺口。明确保留以下验收工作：
 完整七主体执行、存储硬预算、源覆盖率与持续 soak、非 Linux 资源能力适配，
 实体平台/IME/DPI/无障碍、签名和独立供应链/发布审批。

@@ -6,20 +6,39 @@ The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 immutable implementation SHA/tree and ADVERSARIAL-AUDIT-20261001.md for findings.
 
 The current implementation source for this follow-up is
-`ebd04a7ed458aa5feaba69525f48f3623c4db033`, tree
-`59c0fa2b20036d591e5438e91bd6d7257c7c12d0`. The ordinary commit repairs 11 source files:
-checkout attributes/identity regressions, macOS strict compilation and Windows
-registrar ABI/owned-shortcut roundtrip coverage. Its frozen inventory contains
-406 Git blobs, 32 selection paths and 16 local Cargo dependencies. Fresh Linux
-verification passed normal debug application 243/243 (5.581 s), with three scale
-entries ignored, and Python 238 total (237 passed/one Windows junction skip,
-20.778 s). Combined map passed 104/104 (22.123 s), package/portal passed 36/36
-(0.167 s), projection generation/verification/lint plus seven tests passed, and
-structural verification passed. Strict debug all-target/all-feature Clippy with
-`-D warnings` passed (2 min 30 s including 315 dependency checks). The fresh
-full-symbol ACK fixture passed 1/1 (3.020 s), preserving the whole executed-file
-digest, update-owner fence and production deadlines. Current owner, release,
-storage/performance and same-run CI remain pending; product flags stay false.
+`703e9bf2871b26d646f1c4d748e0b0061f70ad3c`, tree
+`d549e3e492093810b685c7d65d58d6983566a82b`. This ordinary commit changes three
+fixture files: actual Unix zero-exit candidate copy, environment-only picker
+Command, and Windows authority helper error propagation. It retains startup
+rejection, rollback digest/mode assertions, owner lifetime and strict lints.
+The inventory selection remains 406 Git blobs, 32 paths and 16 local Cargo
+dependencies, inventory SHA256
+`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`.
+The re-anchored precommit structural checker passed for this exact 406/32/16
+inventory. This is a structural diagnostic, not platform or release acceptance.
+CURRENT_SOURCE.json binds this new inventory. Full current
+suites, strict lint, owner, full-symbol ACK, release, storage/performance and
+same-run CI are pending.
+
+The focused Linux 2/2 pass (0.163 s) was observed on the post-EBD worktree whose
+three repaired files match 703e9bf blobs; it is not a full suite or macOS/Windows
+execution. A standalone Rust 1.95 type-shape Clippy probe exited 0: complexity
+230 is below 250. It does not qualify the Windows fixture.
+
+Historical EBD source `ebd04a7ed458aa5feaba69525f48f3623c4db033` repaired 11
+source files covering checkout attributes/identity, macOS cfg/FIFO and Windows
+registrar ABI/PATH/owned-shortcut coverage. Its Linux debug 243/243, Python
+238 total (237 passed/one Windows junction skip), map 104/104, package/portal
+36/36, projection seven tests, strict application Clippy and full-symbol ACK
+1/1 are archived in
+[`history/20261001-ebd04-verification.json`](history/20261001-ebd04-verification.json).
+Run 36822033441 failed overall: identity, Linux head/merge (18 checks each,
+including virtual GUI lifecycle) and storage (48 traces/all hard budgets)
+succeeded; macOS full tests, Windows owner lint and aggregate failed. See its
+[Linux child record](history/20261001-ebd04-linux-verification.json).
+macOS full application tests failed on absent `/bin/true`; Windows owner lint
+failed on five helper `unwrap` calls. Those failures motivated 703e9bf and
+supersede the prior bounded-review stop. EBD passes do not qualify this freeze.
 
 Earlier source `0c176c9d4df6055418529389bf0f749f74ac1a69` passed local normal debug
 243/243, Python 236 total (235 pass/one Windows junction skip), combined map
@@ -70,6 +89,7 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | preserve fail-closed dependency identity under root aliases/reparse points, LF metadata and explicit Git for Windows Bash; separate ACK fixture phases | `85185bcb274682ece9da5086813fd60cc2a7214a` |
 | optimize SHA-256 only in the test profile while hashing full executable symbols and preserving production update fences | `0c176c9d4df6055418529389bf0f749f74ac1a69` |
 | freeze checkout attributes and owner-lock LF; regress real autocrlf checkout and owned fixture command selection; fix macOS cfg/Unix FIFO and Windows PROPVARIANT layout/owned-shortcut roundtrip | `ebd04a7ed458aa5feaba69525f48f3623c4db033` |
+| use the actual Unix zero-exit executable and propagate Windows authority fixture errors while preserving strict checks | `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;
@@ -103,9 +123,10 @@ Inspect Linux-only cfg while retaining all-platform root validation, real Unix
 FIFO rejection, and Windows PROPVARIANT native size/offsets plus owned `.lnk`
 property-store roundtrip; their source presence is not a real macOS/Windows pass.
 
-Fresh Linux regressions, strict Clippy, full-symbol ACK and independent
-integration review found no further reproducible repair in this change set;
-new CI or other execution failures require another ordinary source repair and
+Independent review of the three latest fixture repairs found no further
+reproducible issue within that scope; fresh full suites and CI remain pending.
+The earlier EBD static-review stop was superseded by executed macOS/Windows
+failures. New execution failures require another ordinary source repair and
 freeze. The result remains an incomplete implementation candidate. Non-Linux verified
 Open/Reveal adapters remain absent. Physical acceptance, coverage, soak,
 production signing, independent supply-chain acceptance and release authority

@@ -3,8 +3,8 @@
 Parent: `docs/modules/ui.native/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
 Canonical branch: `work/ui-native-qualified-integration-20260928`.
 Audit revision: `work/ui-native-adversarial-audit-20261001`.
-Immutable implementation source: `ebd04a7ed458aa5feaba69525f48f3623c4db033`.
-Implementation tree: `59c0fa2b20036d591e5438e91bd6d7257c7c12d0`.
+Immutable implementation source: `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`.
+Implementation tree: `d549e3e492093810b685c7d65d58d6983566a82b`.
 Status: implementation candidate; cross-platform execution, physical acceptance
 and release remain separate evidence gates.
 
@@ -150,22 +150,39 @@ Invoking, WAL corruption/partial tail/checkpoint recovery, root and file
 substitution, retirement rebuild, update-copy drift, helper acknowledgement loss,
 rollback failure, stale picker tickets and shutdown of every lane.
 
-Current ebd04 repairs checkout bytes, fixture PATH priority, macOS cfg/FIFO and
-Windows registrar ABI. Root and application checkout attributes are frozen,
-owner Cargo.lock is LF, and real autocrlf checkout-to-supply-chain-to-Git-inventory
-regression retains immutable byte comparison. Its frozen inventory contains
-406 Git blobs, 32 selection paths and 16 local Cargo dependencies. Fresh Linux
-verification of ebd04 passed normal debug application 243/243 (5.581 s), with
-three scale entries ignored. Python ran 238 tests: 237 passed and one Windows
-junction case skipped (20.778 s). Combined native-adapter/global-map passed
-104/104 (22.123 s), package/portal passed 36/36 (0.167 s), and projection
-generation/verification/lint plus seven tests passed. Structural verification
-passed against the frozen 406/32/16 inventory. Strict debug all-target/all-feature
-Clippy with `-D warnings` passed (2 min 30 s including 315 dependency checks).
-The fresh full-symbol ACK fixture passed 1/1 (3.020 s), retaining the complete
-executed-file digest, update-owner fence and production deadlines. Current owner,
-release, storage/performance and same-run CI remain pending; old passes cannot
-qualify the new source.
+Current source 703e9bf repairs three fixture files after real EBD CI failures:
+the actual Unix zero-exit candidate copy and environment-only picker Command use
+`/usr/bin/true`, while Windows authority helper errors propagate via Result.
+Strict lints, startup denial, rollback digest/0751 mode, owner lifetime and all
+production flows remain intact. The source selection remains 406 Git blobs,
+32 paths and 16 local Cargo dependencies, inventory SHA256
+`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`.
+The re-anchored precommit structural checker passed for this exact 406/32/16
+inventory. This is a structural diagnostic, not platform or release acceptance.
+CURRENT_SOURCE.json binds this new inventory. Current complete suites, strict
+lint, owner, full-symbol ACK,
+release, storage/performance and same-run CI are pending.
+
+The Linux focused 2/2 pass (0.163 s) ran on the post-EBD worktree with all three
+repaired files matching 703e9bf Git blobs. It is not a full current-source suite
+or macOS/Windows pass. The standalone same-shape Rust 1.95 Clippy probe exited 0,
+with type complexity 230 below 250; it does not compile the Windows fixture.
+
+Historical EBD source `ebd04a7ed458aa5feaba69525f48f3623c4db033` repaired checkout
+bytes, cfg/FIFO, fixture PATH and Windows registrar ABI. Its Linux debug
+application 243/243 (5.581 s, three scale entries ignored), Python 238 total
+(237 passed/one Windows junction skip, 20.778 s), map 104/104 (22.123 s),
+package/portal 36/36 (0.167 s), projection seven tests, strict application Clippy
+(150 s) and full-symbol ACK 1/1 (3.020 s) are preserved in
+[`20261001-ebd04-verification.json`](../../../docs/modules/ui.native/history/20261001-ebd04-verification.json).
+Run 36822033441 failed overall: identity, Linux head/merge (18 checks each,
+including virtual GUI lifecycle) and storage (48 traces/all hard budgets)
+succeeded; macOS full tests, Windows owner lint and aggregate failed. See its
+[Linux child record](../../../docs/modules/ui.native/history/20261001-ebd04-linux-verification.json).
+macOS full application tests failed copying absent `/bin/true`, and Windows
+owner lint rejected five helper `unwrap` calls. These executable fixture defects
+motivated 703e9bf and supersede the prior review stop. No historical subject
+qualifies this new freeze.
 
 Historical source `0c176c9d4df6055418529389bf0f749f74ac1a69` passed 243/243 normal
 debug application tests in 6.377 s, with three separate scale entries ignored,

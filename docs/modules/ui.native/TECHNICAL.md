@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `ebd04a7ed458aa5feaba69525f48f3623c4db033`
-**Implementation tree:** `59c0fa2b20036d591e5438e91bd6d7257c7c12d0`
+**Immutable implementation source:** `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`
+**Implementation tree:** `d549e3e492093810b685c7d65d58d6983566a82b`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -52,7 +52,8 @@ The convergence chain is a normal Git history:
 8. historical audited source `32310eefbef2a80164b669fe3bfcaef69b47b9da`;
 9. cross-platform source/ACK fixture repair `85185bcb274682ece9da5086813fd60cc2a7214a`;
 10. historical test-profile hashing repair `0c176c9d4df6055418529389bf0f749f74ac1a69`;
-11. current checkout/strict-platform/registrar ABI repair `ebd04a7ed458aa5feaba69525f48f3623c4db033`.
+11. historical checkout/strict-platform/registrar ABI repair `ebd04a7ed458aa5feaba69525f48f3623c4db033`;
+12. current Unix executable/Windows authority fixture repair `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -424,24 +425,47 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-Current source ebd04 fixes those compilation and fixture failures, pins owner
-Cargo.lock checkout to LF, freezes both relevant attributes files and repairs the
-packaged Windows PROPVARIANT ABI. A real autocrlf checkout regression compares
-producer supply-chain lock digests with immutable Git inventory without weakening
-byte checks. Its frozen inventory has 406 Git blobs, 32 selection paths and
-16 local Cargo dependencies, SHA256
+Current source 703e9bf contains three fixture-only repairs discovered in real
+EBD CI: `/usr/bin/true` replaces an absent macOS `/bin/true` in the actual
+zero-exit candidate copy and the environment-only picker Command, and the
+Windows contracts helper returns `Result` and propagates five fallible calls.
+The startup denial, digest rollback, 0751 mode, owner lifetime and strict lint
+assertions remain; production paths and authorization boundaries are unchanged.
+The source selection remains 406 Git blobs, 32 paths and 16 local Cargo
+dependencies, inventory SHA256
+`485b4790cdbb806fc51653d280ff4f7b690bff35e95ba4301ce653fd339f7091`.
+The re-anchored precommit structural checker passed for this exact 406/32/16
+inventory. This is a structural diagnostic, not platform or release acceptance.
+CURRENT_SOURCE.json binds this new inventory.
+Current full suites, owner execution, strict lint, full-symbol ACK, release,
+storage/performance and complete same-run CI are pending; historical passes
+cannot qualify this freeze.
+
+A Linux focused diagnostic passed 2/2 tests in 0.163 s on the post-EBD worktree
+whose three repaired files match 703e9bf Git blobs. It is not a full suite or a
+macOS/Windows pass. A standalone same-shape Rust 1.95 Clippy type probe exited 0
+under `-D warnings -D clippy::type_complexity`; its return type scores 230 below
+the default 250 threshold. This proves that type shape, not Windows compilation
+or owner execution.
+
+Historical EBD checkout/cfg/FIFO/PATH/registrar repairs retained exact byte
+checks, root validation and non-Linux Open/Reveal rejection. Its frozen inventory
+was 406/32/16 with SHA256
 `ec5658b2f11bc46010bb33e460fc8b287465c6a95fcd96c6248aebde8e083d36`.
-Fresh Linux verification of ebd04 passed normal debug application 243/243
-(5.581 s), with three scale entries ignored. Python ran 238 tests successfully:
-237 passed and one Windows-only junction case skipped (20.778 s). Combined
-native-adapter/global-map passed 104/104 (22.123 s), package/portal passed 36/36
-(0.167 s), and projection generation/verification/lint plus seven tests passed.
-Structural verification passed against the frozen 406/32/16 inventory. Strict
-debug all-target/all-feature application Clippy with `-D warnings` passed;
-its fresh check included 315 dependencies and took 2 min 30 s. The full-symbol
-ACK fixture passed 1/1 in 3.020 s, retaining the complete actual executable digest,
-owner fence and production deadlines. Current owner, release, storage/performance
-and same-run CI remain pending; historical passes are not inherited.
+Linux debug application 243/243 (5.581 s, three scale entries ignored), Python
+238 total (237 passed/one Windows junction skip, 20.778 s), map 104/104
+(22.123 s), package/portal 36/36 (0.167 s), projection seven tests, strict
+application Clippy (150 s) and full-symbol ACK 1/1 (3.020 s) belong to EBD.
+They and its actual CI follow-up are retained in
+[`history/20261001-ebd04-verification.json`](history/20261001-ebd04-verification.json).
+Run 36822033441 is terminal and failed overall. Identity, both Linux platform
+subjects (18 checks each, including virtual GUI lifecycle) and storage succeeded;
+storage retained 48 traces passing all hard budgets. macOS full tests, Windows
+owner lint and aggregate failed. See the
+[Linux child record](history/20261001-ebd04-linux-verification.json).
+macOS full application tests failed copying absent `/bin/true`, and Windows
+owner Clippy rejected five helper `unwrap` calls. These are executable fixture
+failures repaired in 703e9bf, not physical-acceptance evidence gaps.
 
 Historical verification of implementation `0c176c9d4df6055418529389bf0f749f74ac1a69`
 passed 243/243 normal debug application tests in 6.377 s; three scale entries
@@ -502,16 +526,19 @@ qualification receipts. The executed CI follow-up repaired cross-platform root
 coordinates, source metadata byte handling, shell selection and full-symbol ACK
 fixture performance while retaining fail-closed boundaries. Later real CI also
 exposed macOS-only cfg/API failures and a Windows fixture PATH collision; ebd04
-repairs those, checkout lock bytes and the registrar ABI. Binding, startup,
+repaired those, checkout lock bytes and the registrar ABI. Real EBD CI then
+found the macOS executable fixture and Windows helper lint failures; 703e9bf
+repairs only those fixtures and requires new exact-source evidence. Binding, startup,
 rooted update and child ACL regressions
 are in `ui/binding_prepare_tests.rs`,
 `startup_tests.rs`, `update_root_storage_tests.rs`, `journal_windows_tests.rs`
 and the shared utility's `windows_acl_tests.rs`. These cases validate local
 ownership and substitution boundaries without minting execution authority.
-Fresh Linux regressions, strict Clippy, full-symbol ACK and independent
-integration review found no further reproducible repair in this change set.
-This is a bounded review stop, not completed qualification or a claim about
-future defects; new execution failures require another ordinary repair/freeze.
+The earlier EBD bounded-review stop was superseded by these real CI failures.
+Independent review of the three fixture repairs found no further reproducible
+issue within that scope. Current full execution remains pending; this is not
+completed qualification or a claim about future defects. New executable
+failures require another ordinary repair, freeze and verification.
 Exact filenames, input caps, stable focus IDs and a 4 MiB worker-rendered
 diagnostic cache keep
 presentation bounded without changing final-use authority. Explicit staged
