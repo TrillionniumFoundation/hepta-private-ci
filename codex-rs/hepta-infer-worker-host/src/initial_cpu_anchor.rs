@@ -24,6 +24,9 @@ use profile::Source;
 mod current;
 #[path = "initial_cpu_goal.rs"]
 mod goal;
+#[path = "initial_cpu_installed_plan.rs"]
+mod installed_plan;
+pub use installed_plan::InstalledCpuSourceV1;
 #[path = "initial_cpu_publication.rs"]
 mod publication;
 #[path = "initial_cpu_renewal.rs"]

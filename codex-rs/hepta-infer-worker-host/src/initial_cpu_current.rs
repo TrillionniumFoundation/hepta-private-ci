@@ -224,3 +224,12 @@ pub(super) fn describe_current_operational(path: &Path, pin: Digest32) -> HostRe
         "actual_neuron_tick": false,
     }))
 }
+
+/// The installed factory reads the same verified input set before constructing
+/// its physical plan. Pointer bytes alone never supply admission authority.
+pub(super) fn read_installed_inputs(
+    pointer: &Path,
+    clock: Arc<dyn AuthorityClock>,
+) -> HostResult<Inputs> {
+    Ok(CurrentInputs::read(pointer, clock)?.inputs)
+}

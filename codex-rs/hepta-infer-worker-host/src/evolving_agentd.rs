@@ -436,7 +436,7 @@ fn parse_digest(value: &str) -> Result<Digest32, AgentdError> {
 fn invalid(message: impl Into<String>) -> AgentdError {
     AgentdError::Invalid(message.into())
 }
-fn private_parent(path: &Path) -> Result<(), AgentdError> {
+pub(crate) fn private_parent(path: &Path) -> Result<(), AgentdError> {
     let parent = path.parent().ok_or_else(|| invalid("owner state parent"))?;
     if parent.canonicalize()? != parent {
         return Err(invalid("owner state parent symlink"));

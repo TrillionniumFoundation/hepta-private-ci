@@ -11,7 +11,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::path::PathBuf;
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Source {
     pub path: PathBuf,
