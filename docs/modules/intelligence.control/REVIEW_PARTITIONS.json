@@ -237,6 +237,10 @@
         "codex-rs/ext/hepta-prompt/src/resolve_tests.rs"
       ],
       "reviewGlobs": [
+        "BUILD.bazel",
+        "defs.bzl",
+        "codex-rs/hepta-fleet/BUILD.bazel",
+        "codex-rs/hepta-fleet/src/module_catalog.rs",
         "CALLERS.toml",
         "codex-rs/core/src/client.rs",
         "codex-rs/hepta-authbus/**",
@@ -260,6 +264,7 @@
       ],
       "risks": [
         "unowned cross-module change",
+        "missing sandbox compile input",
         "workspace drift",
         "mutable owner output substitution",
         "public DTO construction and exhaustive error-match compatibility",

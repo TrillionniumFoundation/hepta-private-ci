@@ -746,3 +746,13 @@ delivery/pipeline fixture cases and Agentd signed/anchored-profile callers.
 The mixed Agentd prompt-runtime suite keeps its eight memory/portable-reopen
 cases cross-platform and gates only its actual registry pipeline case. The
 pure aborted-worker capacity assertion likewise remains cross-platform.
+
+### Fleet module-catalog compile input
+
+Agentd normally depends on Fleet, whose production library embeds the existing
+`docs/modules/MODULES.json` catalog. Bazel must declare that file as `compile_data`
+even if a specific runtime route never reads the catalog. The root filegroup
+contains only this file and is visible only to the Fleet package; Fleet's
+production and unit-test libraries inherit the same declaration. Cargo source
+behavior and catalog bytes are unchanged. This is a build prerequisite, not
+module-catalog authority, provider acceptance or target-host qualification.

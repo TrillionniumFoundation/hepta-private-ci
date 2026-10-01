@@ -759,3 +759,24 @@ edits. Baseline lint warnings remain visible; this is not a strict lint pass.
 Development-document verification passed for 40 module guides/205 contracts,
 and the status/review suites passed 21/14 assertions with all six formal review
 allocations still pending. Final-source CI must supply its own execution records.
+
+## Actual product build-input closing review
+
+The final 51db candidate's Linux umbrella release exposed another actionable
+integration defect: Fleet's unconditional production module catalog embeds
+`docs/modules/MODULES.json`, but its Bazel library did not declare that input.
+Agentd normally depends on Fleet. The source and BUILD omission match main, yet
+this is an actual product compile dependency rather than an independent shadow
+test blocker. A single-file root filegroup, visible only to Fleet, is added to
+Fleet `compile_data`. The existing crate macro carries it into both production
+and test libraries. No Rust, feature, dependency version, catalog byte or public
+API changes.
+
+Two independent static reviews checked the path/package/visibility and macro
+propagation, then inspected normal/build dependency assets (including 145 local
+crates) without a second confirmed missing input. The root no-fetch Bazel query
+actually returned `//:docs/modules/MODULES.json`. The Fleet-package query stopped
+before loading because the generated crates repository was not cached, so it
+supplies no Fleet analysis or build pass. Actual candidate CI must establish the
+sandbox compile result. Prior 51db package tests and host execution retain their
+original source identities and are not relabeled as the build-input candidate.
