@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `b5378e29d0fe191225abe853d848b498552f5850`
-**Implementation tree:** `ebcaf42f71715ed540cc04123bbeafd82abace48`
+**Immutable implementation source:** `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`
+**Implementation tree:** `304aeb469d13f24341052cf10fef89016aff90fb`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -55,7 +55,8 @@ The convergence chain is a normal Git history:
 11. historical checkout/strict-platform/registrar ABI repair `ebd04a7ed458aa5feaba69525f48f3623c4db033`;
 12. historical Unix executable/Windows authority fixture repair `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`;
 13. historical Darwin private-permissions, Unix authority FIFO and Windows typed registrar-probe repair `a1abe5b2a083213c095cdabaf4b3048144e3cad0`;
-14. current Darwin private-state fixture admission repair `b5378e29d0fe191225abe853d848b498552f5850`.
+14. historical Darwin private-state fixture admission repair `b5378e29d0fe191225abe853d848b498552f5850`;
+15. current private retirement-fixture baseline repair `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -116,6 +117,15 @@ boundary tests inject actual ACEs after open and file sync. External installer
 targets/downloads/backups do not acquire this private-state policy. All Unix
 shared authority-store opens additionally use `NONBLOCK` before type validation
 so an owner-only FIFO is rejected without waiting for a writer.
+
+Create private fixture baselines with the existing
+`tests/common/snapshot.rs::write_private_json` helper or create_new/mode0600;
+create private directories with mode0700. Assert those baseline modes before
+injecting a fault and assert the requested cut actually executes. Recovery
+fixtures need valid private predecessors; intentionally unsafe predecessors
+should test rejection. Public downloads, installed binaries and configuration
+inputs retain their own input policy. Fixture-only ACL removal is confined to
+fresh owned controls.
 
 Real macOS ACL fixtures require unchanged 0700/0600 modes and compare original
 bytes and ACLs. Fixture-only ACL removal establishes a control solely on newly
@@ -311,6 +321,25 @@ response is a submission observation, not proof that an external application
 completed the requested effect. Non-Linux Open/Reveal remains fail-closed until
 an equivalent verified resource-capability adapter is implemented and qualified.
 
+A safe non-Linux implementation requires an authenticated cooperating receiver
+that directly consumes the retained resource capability. Windows can use
+[DuplicateHandle](https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle)
+into a held, verified target process; macOS can use XPC descriptor transport.
+Versioned canonical resource identity must include the OS object and receiver
+identity/contract in the existing request.v2 resource_digest. Independent
+issuer owned by kernel.authority signs the proposal; hepta-contracts defines
+canonical binding and verification. ui.native owns transport, capability lifetime
+and receiver consumption.
+
+Retain the parent capability until an operation/session/grant/resource-bound
+admission ACK confirms the receiver holds its duplicate. Lost ACK, timeout or
+receiver death remains Indeterminate and consumes the nonce. ACK proves handoff;
+a queryable operation-bound effect receipt and reconciliation are needed for
+completion. Test rename/substitution, delayed reception, wrong receiver,
+revocation, lost ACK and process exit. Generic default-app and Finder/Explorer
+support needs an explicit cooperating receiver contract; this remains product
+implementation work before physical-host qualification.
+
 ## 8. Native file input
 
 Each grant, update manifest or package selection is armed with an exact target
@@ -468,26 +497,34 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The current ordinary implementation source is `b5378e29d0fe191225abe853d848b498552f5850`, tree
-`ebcaf42f71715ed540cc04123bbeafd82abace48`. It retains the Darwin same-descriptor ACL/ownership checks,
-nonblocking Unix authority-file admission and typed Windows registrar probe.
-Two macOS fixtures now match their actual admission contract: a root replaced
-after file sync preserves the old snapshot; the existing staging destination is
-created with 0600 permissions and every requested replacement cut must execute.
-All original error and original/replacement-byte assertions remain enforced.
+The current ordinary implementation source is `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`, tree
+`304aeb469d13f24341052cf10fef89016aff90fb`. It retains the Darwin same-descriptor ACL/ownership checks,
+nonblocking Unix authority-file admission, typed Windows registrar probe and
+the prior root-replacement fixture corrections. The retirement-failure fixture
+now creates its baseline head through the existing private JSON helper and
+asserts Unix mode 0600. Conflict-directory, compaction-error, owner fencing,
+active-record preservation and restart/retired-count assertions remain enforced.
 
 CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16 local Cargo
-dependencies, inventory SHA256 `60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3`. This fixture-only source
-repair requires fresh exact-source qualification; production, deployment and
-release flags remain false.
+dependencies, inventory SHA256 `d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f`. Production, deployment
+and release flags remain false; this fixture-only repair needs fresh qualification.
 
-Fresh Linux application just test/nextest passed 243/243 in 2.534 s (three
-separate scale entries ignored); strict all-target/all-feature Clippy passed in
-4.03 s. Python ran 238 tests in 13.695 s: 237 passed and one Windows-only real
-NTFS junction case was skipped on Linux. A locked/offline three-binary release build passed in 0.40 s, reusing
-unchanged production artifacts; self-test and seven actual child-fault checks
-passed. Effect, activation and release authorization remain false. These local
-diagnostics do not establish target-host or complete seven-subject acceptance.
+Fresh frozen-source Linux application just test/nextest passed 243/243 in 2.167 s
+(three separate scale entries ignored); strict all-target/all-feature Clippy
+passed in 4.65 s. A locked/offline three-binary release build passed in 0.71 s,
+reusing unchanged production artifacts; self-test and seven actual child-fault
+checks passed. Effect, activation and release authority remain false. Python
+ran 238 tests in 15.645 s: 237 passed and one Windows-only real NTFS junction was
+skipped on Linux. Complete target-host qualification still needs execution.
+
+Historical B537 source `b5378e29d0fe191225abe853d848b498552f5850` in candidate58/run36830035079
+passed both earlier corrected fixtures, library 145/145 and all 14 native ACL
+cases on macOS. Its full application suite then failed retirement recovery
+because a fixture newly created head.json with default 0644 mode; each subject
+had 208 passes/one failure/three ignored. Shared-owner ACL/FIFO, release and
+package stages were not reached. Exact old localAudit fields and separate
+actual raw failures are retained in [20261001-b5378-verification.json](history/20261001-b5378-verification.json); no
+historical pass or pending field is relabeled as current qualification.
 
 Historical A1 source `a1abe5b2a083213c095cdabaf4b3048144e3cad0` passed Linux application 243/243,
 Python 237/238 with one Windows-only junction skip and isolated owner 194/194.

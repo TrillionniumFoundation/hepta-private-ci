@@ -1,0 +1,965 @@
+{
+  "schema": "hepta.ui.native.macos-ci-diagnostic.v1",
+  "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+  "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+  "candidateSha": "58a2570b452136951dd734872c67366dd7262e73",
+  "candidateTree": "82f88de94d6664395710dff8982870ea6c752080",
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "runId": 36830035079,
+  "runAttempt": 1,
+  "subjects": {
+    "head": {
+      "jobId": 110264930105,
+      "conclusion": "failure",
+      "failedStep": "Full tests, release binaries and compiler-negative API boundary",
+      "artifactId": 11146773943,
+      "artifactZipSha256": "6ce98cb26e6cec60cfe45abe5f2fb89e7f276bca06881b7eb1114e97cdc48dde",
+      "artifactZipBytes": 49607,
+      "artifactLocalPath": "/workspace/scratch/0643a11f4b6a/attachments/85e717c8-35eb-4922-88d4-29aa4b581403/github-actions-artifact-11146773943.zip",
+      "source": {
+        "parents": "b5378e29d0fe191225abe853d848b498552f5850",
+        "commit": "58a2570b452136951dd734872c67366dd7262e73",
+        "tree": "82f88de94d6664395710dff8982870ea6c752080",
+        "subject": "Freeze macOS fixture repair with exact A1 history and current local diagnostics"
+      },
+      "checkLogSha256Verified": true,
+      "checks": {
+        "app_format": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "fmt",
+            "--manifest-path",
+            "apps/hepta-native/Cargo.toml",
+            "--check"
+          ],
+          "elapsedSeconds": 0.5495528750000176,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:27:31.340472+00:00",
+          "label": "app_format",
+          "log": "app_format.log",
+          "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:27:30.790759+00:00",
+          "timedOut": false
+        },
+        "app_lint": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--manifest-path",
+            "apps/hepta-native/Cargo.toml",
+            "--locked",
+            "--all-targets",
+            "--all-features",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "elapsedSeconds": 41.91174404200001,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:28:13.887304+00:00",
+          "label": "app_lint",
+          "log": "app_lint.log",
+          "logSha256": "fef4968a692602b6cfc2d4365aed2f0808992164cec1c600e7ccfe8a2e879bf8",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:27:31.975380+00:00",
+          "timedOut": false
+        },
+        "app_tests": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "test",
+            "--manifest-path",
+            "apps/hepta-native/Cargo.toml",
+            "--locked",
+            "--all-targets"
+          ],
+          "elapsedSeconds": 76.54176133300001,
+          "exitCode": 101,
+          "finishedAt": "2026-10-01T07:30:28.002723+00:00",
+          "label": "app_tests",
+          "log": "app_tests.log",
+          "logSha256": "88cc4c506f3829527a630d545124f38005a7448a9c67f5f5a488e3b55b014a05",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:29:11.460534+00:00",
+          "timedOut": false
+        },
+        "identity": {
+          "command": [
+            "python3",
+            "scripts/check_hepta_ui_native_convergence.py"
+          ],
+          "elapsedSeconds": 1.2266344580000066,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:26:41.749523+00:00",
+          "label": "identity",
+          "log": "identity.log",
+          "logSha256": "b92facfec201405ca7f26def56832b852d28eebbeadd5e0b5f80019182d4fdaa",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:26:40.522604+00:00",
+          "timedOut": false
+        },
+        "owner_format": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "fmt",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "-p",
+            "codex-hepta-native-gateway",
+            "-p",
+            "codex-hepta-contracts",
+            "-p",
+            "codex-hepta-private-state",
+            "-p",
+            "codex-utils-private-state",
+            "--",
+            "--check"
+          ],
+          "elapsedSeconds": 0.4265195829999868,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:27:31.858843+00:00",
+          "label": "owner_format",
+          "log": "owner_format.log",
+          "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:27:31.432138+00:00",
+          "timedOut": false
+        },
+        "owner_lint": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "-p",
+            "codex-hepta-contracts",
+            "-p",
+            "codex-hepta-private-state",
+            "-p",
+            "codex-utils-private-state",
+            "--all-targets",
+            "--all-features",
+            "--no-deps",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "elapsedSeconds": 57.23900808299999,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:29:11.242151+00:00",
+          "label": "owner_lint",
+          "log": "owner_lint.log",
+          "logSha256": "6da22b6b0c46dcb2be94e776edd6ab8bcf4aa8016a6ae3b0b310f7d64928fd3a",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:28:14.002995+00:00",
+          "timedOut": false
+        },
+        "python_tests": {
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ui_native_*.py",
+            "-v"
+          ],
+          "elapsedSeconds": 46.920984167,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:27:29.860217+00:00",
+          "label": "python_tests",
+          "log": "python_tests.log",
+          "logSha256": "02caffb4ccbf03fd8a8dbfa2e6ec755dd03955a2dcc93d51947529621c01d877",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:26:42.937702+00:00",
+          "timedOut": false
+        },
+        "registry": {
+          "command": [
+            "python3",
+            "scripts/test_hepta_module_registry.py"
+          ],
+          "elapsedSeconds": 0.7245209579999994,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:26:42.676312+00:00",
+          "label": "registry",
+          "log": "registry.log",
+          "logSha256": "7d3da46aae0667bb9b4bfe554a0da795843cb5a53495c19aa13bf37a333a3c9a",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "58a2570b452136951dd734872c67366dd7262e73",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:26:41.951349+00:00",
+          "timedOut": false
+        }
+      },
+      "pythonSuite": {
+        "ran": 238,
+        "passed": 237,
+        "skipped": 1,
+        "elapsedSeconds": 46.391,
+        "skipReason": "Windows NTFS junction fixture is OS-specific"
+      },
+      "applicationSuite": {
+        "topLevelObservedPassed": 208,
+        "topLevelObservedFailed": 1,
+        "ignored": 3,
+        "suiteSummaries": [
+          {
+            "status": "ok",
+            "passed": 145,
+            "failed": 0,
+            "ignored": 3,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 6.87
+          },
+          {
+            "status": "ok",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 3,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.07
+          },
+          {
+            "status": "ok",
+            "passed": 22,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 1.0
+          },
+          {
+            "status": "ok",
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 5,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 13,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.01
+          },
+          {
+            "status": "ok",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "FAILED",
+            "passed": 8,
+            "failed": 1,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 2.61
+          }
+        ],
+        "nestedAckSummariesExcludedFromTotals": [
+          {
+            "status": "ok",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 147,
+            "elapsedSeconds": 0.38
+          }
+        ],
+        "libraryPassed": 145,
+        "libraryFailed": 0,
+        "libraryIgnored": 3,
+        "integrationCompletion": "stopped at retirement_recovery; later integration targets not executed"
+      },
+      "priorTwoRepairedFixtures": {
+        "journal_storage::tests::snapshot_parent_replacement_cannot_redirect_committed_bytes": "passed",
+        "update_storage::root_tests::staged_destination_parent_replacement_never_publishes_to_either_directory": "passed"
+      },
+      "nativeAclFixtures": {
+        "private_state::macos_tests::mode_private_root_with_named_acl_is_rejected_without_changing_acl": true,
+        "private_state::macos_tests::held_root_rejects_acl_drift_before_creating_an_inheriting_child": true,
+        "private_state::macos_tests::owned_child_acl_is_rejected_before_permission_migration": true,
+        "journal_storage::macos_tests::private_file_acl_rejects_reads_mutation_and_locks_without_changing_evidence": true,
+        "journal_storage::macos_tests::snapshot_rejects_existing_destination_acl_without_replacing_evidence": true,
+        "journal_storage::macos_tests::snapshot_rejects_atomic_temp_acl_before_writing_and_before_commit": true,
+        "journal_storage::macos_tests::snapshot_rejects_held_parent_acl_drift_at_each_publish_cut": true,
+        "update_storage::macos_tests::staged_file_acl_rejects_digest_and_migration_without_changing_bytes": true,
+        "update_storage::macos_tests::private_copy_rejects_temp_acl_before_copying_and_before_publication": true,
+        "update_storage::macos_tests::private_copy_rejects_parent_acl_drift_before_writing_or_publishing": true,
+        "update_storage::macos_tests::private_copy_rejects_existing_destination_acl_without_replacing_evidence": true,
+        "update_storage::macos_tests::private_source_acl_drift_rejects_installer_copy_before_replacement": true,
+        "update_storage::macos_tests::updater_owner_locks_reject_mode_private_acl_without_clearing_it": true,
+        "update_storage::macos_tests::external_installer_copy_does_not_require_private_acl_policy": true
+      },
+      "nativeUnixFifoFixture": {
+        "name": "update_storage::tests::owner_locks_reject_links_and_special_files_without_mutating_targets",
+        "passed": true
+      },
+      "ownerChecksAfterApplicationFailure": {
+        "contractsAclFixtures": {
+          "expectedNames": [
+            "authority_lease::macos_tests::authority_lease_root_acl_rejects_without_creating_state",
+            "authority_lease::macos_tests::authority_lease_existing_acl_rejects_reopen_and_preserves_evidence",
+            "authority_lease::macos_tests::authority_lease_acl_staging_file_rejects_before_truncation",
+            "authority_lease::macos_tests::authority_lease_acl_destination_is_not_replaced_or_sanitized",
+            "authority_lease::macos_tests::authority_lease_held_root_acl_drift_rejects_access_and_publication",
+            "authority_lease::macos_tests::authority_lease_held_staging_handle_acl_drift_rejects_publication",
+            "final_use_store::macos_tests::final_use_root_acl_rejects_without_creating_authority_state",
+            "final_use_store::macos_tests::final_use_existing_acl_rejects_reopen_and_preserves_evidence",
+            "final_use_store::macos_tests::final_use_acl_staging_files_reject_before_truncation",
+            "final_use_store::macos_tests::final_use_acl_destination_is_not_replaced_or_sanitized",
+            "final_use_store::macos_tests::final_use_held_root_acl_drift_rejects_reads_and_mutations",
+            "final_use_store::macos_tests::final_use_held_staging_handle_acl_drift_rejects_publication"
+          ],
+          "status": "not executed"
+        },
+        "utilityAclFixtures": {
+          "expectedNames": [
+            "macos::tests::no_acl_regular_file_and_directory_are_admitted",
+            "macos::tests::file_acl_grant_is_rejected_without_changing_mode_acl_or_bytes",
+            "macos::tests::held_file_deny_only_acl_is_rejected_without_changing_permissions_or_bytes",
+            "macos::tests::directory_acl_grant_is_rejected_without_changing_mode_or_acl",
+            "macos::tests::held_file_acl_is_checked_after_its_path_is_replaced",
+            "macos::tests::held_directory_acl_is_checked_after_its_path_is_replaced"
+          ],
+          "status": "not executed"
+        },
+        "contractsUnixFifoFixtures": {
+          "expectedNames": [
+            "authority_lease::unix_tests::authority_lease_fifo_read_rejects_without_waiting_for_a_writer",
+            "final_use_store::unix_tests::final_use_fifo_read_rejects_without_waiting_for_a_writer"
+          ],
+          "status": "not executed"
+        },
+        "ownerFullTests": "not executed",
+        "releaseBuild": "not executed",
+        "compilerNegative": "not executed",
+        "processKillRecovery": "not executed",
+        "unsignedPackage": "not executed",
+        "qualificationSeal": "not executed"
+      },
+      "failures": [
+        {
+          "test": "retirement_failure_keeps_active_evidence_and_fences_the_owner",
+          "location": "apps/hepta-native/tests/retirement_recovery.rs:266:49",
+          "trace": [
+            "thread 'retirement_failure_keeps_active_evidence_and_fences_the_owner' (46213) panicked at tests/retirement_recovery.rs:266:49:",
+            "called `Result::unwrap()` on an `Err` value: Security(\"native journal WAL is group/world accessible: /var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpQSX0fy/operations.json.retirement/head.json\")",
+            "stack backtrace:"
+          ],
+          "cause": "fixture initially creates a private retirement head with std::fs::write mode 0644; hardened Darwin validation rejects rather than replacing that existing private destination",
+          "classification": "test fixture precondition; production rejection remains intact"
+        }
+      ]
+    },
+    "merge": {
+      "jobId": 110264930065,
+      "conclusion": "failure",
+      "failedStep": "Full tests, release binaries and compiler-negative API boundary",
+      "artifactId": 11146699143,
+      "artifactZipSha256": "13c1c1a31b8f994c64d60299943847505265eb2edb3f960613caf4bd6c47d0b2",
+      "artifactZipBytes": 49613,
+      "artifactLocalPath": "/workspace/scratch/0643a11f4b6a/attachments/b974e05c-c088-48f0-b3fb-8e892da2ca86/github-actions-artifact-11146699143.zip",
+      "source": {
+        "parents": "9be52d267d02a76f73e8a94fd086191c351d1c70 58a2570b452136951dd734872c67366dd7262e73",
+        "commit": "407403222970f5cbadf070f94a4f93955f45e058",
+        "tree": "82f88de94d6664395710dff8982870ea6c752080",
+        "subject": "deterministic ui.native qualification merge"
+      },
+      "checkLogSha256Verified": true,
+      "checks": {
+        "app_format": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "fmt",
+            "--manifest-path",
+            "apps/hepta-native/Cargo.toml",
+            "--check"
+          ],
+          "elapsedSeconds": 0.5811254160000203,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:27:28.049666+00:00",
+          "label": "app_format",
+          "log": "app_format.log",
+          "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:27:27.467936+00:00",
+          "timedOut": false
+        },
+        "app_lint": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--manifest-path",
+            "apps/hepta-native/Cargo.toml",
+            "--locked",
+            "--all-targets",
+            "--all-features",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "elapsedSeconds": 52.908869958000025,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:28:21.956646+00:00",
+          "label": "app_lint",
+          "log": "app_lint.log",
+          "logSha256": "23d96d51cc6df13ca148f1e218def6e0a870b856802fb8940edcfc6e4b51f996",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:27:29.021223+00:00",
+          "timedOut": false
+        },
+        "app_tests": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "test",
+            "--manifest-path",
+            "apps/hepta-native/Cargo.toml",
+            "--locked",
+            "--all-targets"
+          ],
+          "elapsedSeconds": 67.47367833300007,
+          "exitCode": 101,
+          "finishedAt": "2026-10-01T07:30:35.218283+00:00",
+          "label": "app_tests",
+          "log": "app_tests.log",
+          "logSha256": "bc1c4dfefcb9b90f838ca901459af01e1ca7ee51e5b9d99c40b51b40aa8226b9",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:29:27.710786+00:00",
+          "timedOut": false
+        },
+        "identity": {
+          "command": [
+            "python3",
+            "scripts/check_hepta_ui_native_convergence.py"
+          ],
+          "elapsedSeconds": 0.8258987919999754,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:26:28.309453+00:00",
+          "label": "identity",
+          "log": "identity.log",
+          "logSha256": "b52ae371d6cbb5eacc01e3f7887c5820b2bfe172e216606ddc0864a089136961",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:26:27.482933+00:00",
+          "timedOut": false
+        },
+        "owner_format": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "fmt",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "-p",
+            "codex-hepta-native-gateway",
+            "-p",
+            "codex-hepta-contracts",
+            "-p",
+            "codex-hepta-private-state",
+            "-p",
+            "codex-utils-private-state",
+            "--",
+            "--check"
+          ],
+          "elapsedSeconds": 0.6763703750000332,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:27:28.878250+00:00",
+          "label": "owner_format",
+          "log": "owner_format.log",
+          "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:27:28.201022+00:00",
+          "timedOut": false
+        },
+        "owner_lint": {
+          "command": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "-p",
+            "codex-hepta-contracts",
+            "-p",
+            "codex-hepta-private-state",
+            "-p",
+            "codex-utils-private-state",
+            "--all-targets",
+            "--all-features",
+            "--no-deps",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "elapsedSeconds": 65.31605487499996,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:29:27.503049+00:00",
+          "label": "owner_lint",
+          "log": "owner_lint.log",
+          "logSha256": "469f200fba2fe3c7d642283afa38c8011384c5e1f788fb35ed4705539a84040d",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:28:22.154143+00:00",
+          "timedOut": false
+        },
+        "python_tests": {
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ui_native_*.py",
+            "-v"
+          ],
+          "elapsedSeconds": 57.257849832999966,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:27:26.349653+00:00",
+          "label": "python_tests",
+          "log": "python_tests.log",
+          "logSha256": "6d823c04d05c68b686adeb6eb705c5979a88b7bfc693fe7a6c5176da4d82f5ac",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:26:29.062644+00:00",
+          "timedOut": false
+        },
+        "registry": {
+          "command": [
+            "python3",
+            "scripts/test_hepta_module_registry.py"
+          ],
+          "elapsedSeconds": 0.45440383300001486,
+          "exitCode": 0,
+          "finishedAt": "2026-10-01T07:26:28.910869+00:00",
+          "label": "registry",
+          "log": "registry.log",
+          "logSha256": "fdc3d3a7f729f1c2aedaf7fb292fab3af4177114d3d10ea2d74618d4b1c1474f",
+          "runAttempt": "1",
+          "runId": "36830035079",
+          "schema": "hepta.ui.native.check.v1",
+          "sourceSha": "407403222970f5cbadf070f94a4f93955f45e058",
+          "sourceTreeSha": "82f88de94d6664395710dff8982870ea6c752080",
+          "sourceUnchanged": true,
+          "startedAt": "2026-10-01T07:26:28.456028+00:00",
+          "timedOut": false
+        }
+      },
+      "pythonSuite": {
+        "ran": 238,
+        "passed": 237,
+        "skipped": 1,
+        "elapsedSeconds": 56.668,
+        "skipReason": "Windows NTFS junction fixture is OS-specific"
+      },
+      "applicationSuite": {
+        "topLevelObservedPassed": 208,
+        "topLevelObservedFailed": 1,
+        "ignored": 3,
+        "suiteSummaries": [
+          {
+            "status": "ok",
+            "passed": 145,
+            "failed": 0,
+            "ignored": 3,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 6.91
+          },
+          {
+            "status": "ok",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 0,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 3,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.1
+          },
+          {
+            "status": "ok",
+            "passed": 22,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.92
+          },
+          {
+            "status": "ok",
+            "passed": 2,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 5,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "ok",
+            "passed": 13,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.02
+          },
+          {
+            "status": "ok",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 0.0
+          },
+          {
+            "status": "FAILED",
+            "passed": 8,
+            "failed": 1,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0,
+            "elapsedSeconds": 1.94
+          }
+        ],
+        "nestedAckSummariesExcludedFromTotals": [
+          {
+            "status": "ok",
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 147,
+            "elapsedSeconds": 0.4
+          }
+        ],
+        "libraryPassed": 145,
+        "libraryFailed": 0,
+        "libraryIgnored": 3,
+        "integrationCompletion": "stopped at retirement_recovery; later integration targets not executed"
+      },
+      "priorTwoRepairedFixtures": {
+        "journal_storage::tests::snapshot_parent_replacement_cannot_redirect_committed_bytes": "passed",
+        "update_storage::root_tests::staged_destination_parent_replacement_never_publishes_to_either_directory": "passed"
+      },
+      "nativeAclFixtures": {
+        "private_state::macos_tests::mode_private_root_with_named_acl_is_rejected_without_changing_acl": true,
+        "private_state::macos_tests::held_root_rejects_acl_drift_before_creating_an_inheriting_child": true,
+        "private_state::macos_tests::owned_child_acl_is_rejected_before_permission_migration": true,
+        "journal_storage::macos_tests::private_file_acl_rejects_reads_mutation_and_locks_without_changing_evidence": true,
+        "journal_storage::macos_tests::snapshot_rejects_existing_destination_acl_without_replacing_evidence": true,
+        "journal_storage::macos_tests::snapshot_rejects_atomic_temp_acl_before_writing_and_before_commit": true,
+        "journal_storage::macos_tests::snapshot_rejects_held_parent_acl_drift_at_each_publish_cut": true,
+        "update_storage::macos_tests::staged_file_acl_rejects_digest_and_migration_without_changing_bytes": true,
+        "update_storage::macos_tests::private_copy_rejects_temp_acl_before_copying_and_before_publication": true,
+        "update_storage::macos_tests::private_copy_rejects_parent_acl_drift_before_writing_or_publishing": true,
+        "update_storage::macos_tests::private_copy_rejects_existing_destination_acl_without_replacing_evidence": true,
+        "update_storage::macos_tests::private_source_acl_drift_rejects_installer_copy_before_replacement": true,
+        "update_storage::macos_tests::updater_owner_locks_reject_mode_private_acl_without_clearing_it": true,
+        "update_storage::macos_tests::external_installer_copy_does_not_require_private_acl_policy": true
+      },
+      "nativeUnixFifoFixture": {
+        "name": "update_storage::tests::owner_locks_reject_links_and_special_files_without_mutating_targets",
+        "passed": true
+      },
+      "ownerChecksAfterApplicationFailure": {
+        "contractsAclFixtures": {
+          "expectedNames": [
+            "authority_lease::macos_tests::authority_lease_root_acl_rejects_without_creating_state",
+            "authority_lease::macos_tests::authority_lease_existing_acl_rejects_reopen_and_preserves_evidence",
+            "authority_lease::macos_tests::authority_lease_acl_staging_file_rejects_before_truncation",
+            "authority_lease::macos_tests::authority_lease_acl_destination_is_not_replaced_or_sanitized",
+            "authority_lease::macos_tests::authority_lease_held_root_acl_drift_rejects_access_and_publication",
+            "authority_lease::macos_tests::authority_lease_held_staging_handle_acl_drift_rejects_publication",
+            "final_use_store::macos_tests::final_use_root_acl_rejects_without_creating_authority_state",
+            "final_use_store::macos_tests::final_use_existing_acl_rejects_reopen_and_preserves_evidence",
+            "final_use_store::macos_tests::final_use_acl_staging_files_reject_before_truncation",
+            "final_use_store::macos_tests::final_use_acl_destination_is_not_replaced_or_sanitized",
+            "final_use_store::macos_tests::final_use_held_root_acl_drift_rejects_reads_and_mutations",
+            "final_use_store::macos_tests::final_use_held_staging_handle_acl_drift_rejects_publication"
+          ],
+          "status": "not executed"
+        },
+        "utilityAclFixtures": {
+          "expectedNames": [
+            "macos::tests::no_acl_regular_file_and_directory_are_admitted",
+            "macos::tests::file_acl_grant_is_rejected_without_changing_mode_acl_or_bytes",
+            "macos::tests::held_file_deny_only_acl_is_rejected_without_changing_permissions_or_bytes",
+            "macos::tests::directory_acl_grant_is_rejected_without_changing_mode_or_acl",
+            "macos::tests::held_file_acl_is_checked_after_its_path_is_replaced",
+            "macos::tests::held_directory_acl_is_checked_after_its_path_is_replaced"
+          ],
+          "status": "not executed"
+        },
+        "contractsUnixFifoFixtures": {
+          "expectedNames": [
+            "authority_lease::unix_tests::authority_lease_fifo_read_rejects_without_waiting_for_a_writer",
+            "final_use_store::unix_tests::final_use_fifo_read_rejects_without_waiting_for_a_writer"
+          ],
+          "status": "not executed"
+        },
+        "ownerFullTests": "not executed",
+        "releaseBuild": "not executed",
+        "compilerNegative": "not executed",
+        "processKillRecovery": "not executed",
+        "unsignedPackage": "not executed",
+        "qualificationSeal": "not executed"
+      },
+      "failures": [
+        {
+          "test": "retirement_failure_keeps_active_evidence_and_fences_the_owner",
+          "location": "apps/hepta-native/tests/retirement_recovery.rs:266:49",
+          "trace": [
+            "thread 'retirement_failure_keeps_active_evidence_and_fences_the_owner' (59740) panicked at tests/retirement_recovery.rs:266:49:",
+            "called `Result::unwrap()` on an `Err` value: Security(\"native journal WAL is group/world accessible: /var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpGF37Ke/operations.json.retirement/head.json\")",
+            "stack backtrace:"
+          ],
+          "cause": "fixture initially creates a private retirement head with std::fs::write mode 0644; hardened Darwin validation rejects rather than replacing that existing private destination",
+          "classification": "test fixture precondition; production rejection remains intact"
+        }
+      ]
+    }
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "repair": {
+    "files": [
+      "apps/hepta-native/tests/retirement_recovery.rs"
+    ],
+    "scope": "private baseline fixture only; no product policy or check-budget change",
+    "changes": [
+      "Use existing snapshot::write_private_json helper to establish Unix mode 0600 head baseline",
+      "Assert baseline Unix mode 0600 before injecting immutable record directory conflict",
+      "Preserve compaction failure, owner health fence, active-record recovery and retired-count assertions"
+    ],
+    "linuxVerification": "pending"
+  }
+}

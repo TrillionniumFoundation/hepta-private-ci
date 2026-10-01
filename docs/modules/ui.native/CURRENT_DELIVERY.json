@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
-  "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-  "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+  "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+  "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
@@ -19,7 +19,8 @@
     "sourceCheckoutIdentityRepair": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
     "platformQualificationRepair": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
     "darwinPrivatePermissionsRepair": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-    "macosPrivateAdmissionFixtureRepair": "b5378e29d0fe191225abe853d848b498552f5850"
+    "macosPrivateAdmissionFixtureRepair": "b5378e29d0fe191225abe853d848b498552f5850",
+    "macosRetirementFixtureRepair": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -118,12 +119,12 @@
   "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
   "localAuditVerification": {
     "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
-    "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-    "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+    "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+    "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
     "applicationTests": {
-      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
-      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+      "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
+      "executionHeadSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
       "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
       "status": "passed-current-source-Linux-local-diagnostic",
@@ -132,35 +133,35 @@
       "passed": 243,
       "failed": 0,
       "skippedIndependentScaleEntries": 3,
-      "testSeconds": 2.534,
+      "testSeconds": 2.167,
       "rawLog": {
-        "path": "/tmp/hepta-native-macos-fixture-frozen-nextest.log",
-        "sha256": "91afa8aa46b4a38ce16194549bb18a207b96ab12ab66351c040a4497e5a07fc6"
+        "path": "/tmp/hepta-native-retirement-fixture-frozen-nextest.log",
+        "sha256": "3722867c138d7f4d486161bd3ee6c5d0a60b7f17b54ff24751c55a49b6bdd631"
       }
     },
     "ownerTests": {
       "status": "pending-current-source-execution"
     },
     "strictClippy": {
-      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
-      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+      "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
+      "executionHeadSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
       "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
       "status": "passed-current-source-Linux-local-diagnostic",
       "allTargets": true,
       "allFeatures": true,
       "warningsDenied": true,
-      "seconds": 4.03,
+      "seconds": 4.65,
       "rawLog": {
-        "path": "/tmp/hepta-native-macos-fixture-frozen-clippy.log",
-        "sha256": "eb53d443f19690755d9bae2866068b30fcc64548ea35e0c422fb302dd813a9a4"
+        "path": "/tmp/hepta-native-retirement-fixture-frozen-clippy.log",
+        "sha256": "34aeb02bd0fc0e6043c2b9c64089c133aabc55c9f0af180f77e3105593ceff82"
       }
     },
     "pythonTests": {
-      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
-      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+      "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
+      "executionHeadSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
       "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
       "status": "passed-current-source-Linux-local-diagnostic",
@@ -169,10 +170,10 @@
       "failed": 0,
       "skipped": 1,
       "skipReason": "Windows-only actual NTFS junction fixture does not execute on Linux",
-      "seconds": 13.695,
+      "seconds": 15.645,
       "rawLog": {
-        "path": "/tmp/hepta-native-macos-fixture-python.log",
-        "sha256": "22cc502e5ab6f080fd561f69402224acec5268d126a231a2d059a56a49421f22"
+        "path": "/tmp/hepta-native-retirement-fixture-python.log",
+        "sha256": "aaf57b5c96312b38cd812fbc06825765760e663e84c50f017b35194843ffbb38"
       }
     },
     "releaseMixedStorageDiagnostics": {
@@ -180,18 +181,18 @@
       "acceptedQualification": false
     },
     "releaseBinaries": {
-      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
-      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+      "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
+      "executionHeadSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
       "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
       "status": "passed-current-source-Linux-local-diagnostic",
       "buildProfile": "release",
       "lockedOfflineBuild": true,
-      "buildSeconds": 0.4,
+      "buildSeconds": 0.71,
       "built": 3,
       "unchangedProductionArtifactsReused": true,
-      "ordinarySourceChangeScope": "Two test fixtures only; production source and dependency bytes unchanged",
+      "ordinarySourceChangeScope": "One retirement recovery fixture only; production source and dependency bytes unchanged",
       "binaries": {
         "hepta-native": {
           "sha256": "e4c4cedec53e1b994005ff53bc551cdd66897446f171ebec3532ddec10a130f0",
@@ -207,17 +208,17 @@
         }
       },
       "rawBuildLog": {
-        "path": "/tmp/hepta-native-macos-fixture-release-build.log",
-        "sha256": "8ccb246cfebe27f6575dfb59054f36f933b11f90996645020581c927a9e4ece4"
+        "path": "/tmp/hepta-native-retirement-fixture-release-build.log",
+        "sha256": "289e4bd8c825a0e63c75628e7b6b677fc2438edbc904e87d322f14ae889449b9"
       },
       "binarySelfTestPassed": true,
       "selfTestReceipt": {
-        "path": "/tmp/hepta-native-macos-fixture-self-test.json",
+        "path": "/tmp/hepta-native-retirement-fixture-self-test.json",
         "sha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13"
       },
       "realChildFaultChecksPassed": 7,
       "realChildFaultReceipt": {
-        "path": "/tmp/hepta-native-macos-fixture-crash-test.json",
+        "path": "/tmp/hepta-native-retirement-fixture-crash-test.json",
         "sha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7"
       },
       "physicalGuiAcceptance": false,
@@ -230,19 +231,19 @@
       "acceptedQualification": false
     },
     "sourceStructuralVerification": {
-      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
-      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
-      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+      "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
+      "executionHeadSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
       "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
       "status": "passed-current-source-precommit-metadata-check",
       "sourceFileCount": 415,
       "selectionPaths": 32,
       "localCargoDependencies": 16,
-      "inventorySha256": "60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3",
+      "inventorySha256": "d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f",
       "rawReceipt": {
-        "path": "/tmp/hepta-native-macos-fixture-precommit-structural.json",
-        "sha256": "1523f2a8a78ce88050d3a76458fe0e2d981253cc95e9c2f0dae211d4e8ac84f9"
+        "path": "/tmp/hepta-native-retirement-fixture-precommit-structural.json",
+        "sha256": "4117ccb3aaed1a4b6e45baa1b0cbd90fff015063f796d596a30c70c3fe06a38b"
       }
     },
     "projectionVerification": {
@@ -778,6 +779,13 @@
       "sha256": "98baa9fca3872bc7f08d7c2db255050144be7d7865e08ffbec490a42588dbc29",
       "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
       "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-b5378-verification.json",
+      "sha256": "f97cb48106acc0f36447aabae830dd450c32b3d8e0ca5ee3c532b1df59735354",
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
       "evidenceRole": "historical-only; does not qualify current implementation source"
     }
   ]

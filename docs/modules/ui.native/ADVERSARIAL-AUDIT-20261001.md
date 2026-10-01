@@ -5,22 +5,26 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-当前普通源码为 `b5378e29d0fe191225abe853d848b498552f5850`，tree 为
-`ebcaf42f71715ed540cc04123bbeafd82abace48`，仍是未完整验收的实现候选。本次仅修正两个 macOS
-夹具的前提与预期：FileSynced 后根替换会在权限复验时拒绝提交，保留旧快照；
-既有私有 staging 文件明确为 0600，并断言三个指定 replacement cut 确实执行。
-原 error、original/replacement bytes 断言保留。Darwin 同句柄 ACL/ownership、
-Unix NONBLOCK、Windows typed registrar、final-use 与 update fence 均保持。
+当前普通源码为 `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`，tree 为
+`304aeb469d13f24341052cf10fef89016aff90fb`，仍是未完整验收候选。本次只修 retirement-failure 夹具：
+用现有 private JSON helper 新建 head 并明确断言 Unix0600，保留 conflict-directory、
+compaction error、owner fence、active bytes 和 restart/retired_count。Darwin ACL/
+ownership、NONBLOCK、typed registrar 及前次 root-replacement 断言均保持。
 
-CURRENT_SOURCE.json 绑定 415 Git blobs、32 selection paths、16 本地 Cargo
-依赖，inventory SHA256 为 `60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3`。production、deployment、
-release 均为 false，必须重新取得完整同源资格。
+冻结 inventory 为415 Git blobs、32 selection paths、16 本地 Cargo依赖，
+SHA256 `d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f`。production/deployment/release保持false。
+冻结新源 Linux just test/nextest243/243通过（2.167s，三项独立scale ignored），
+strict all-target/all-feature Clippy通过（4.65s）。locked/offline三个release
+binary构建检查通过（0.71s，复用未改变的生产artifact），self-test与七项实际
+child-fault通过，effect/activation/release授权false。Python实际238项：237通过、
+一项Windows-only真实NTFS junction在Linux跳过（15.645s）；完整跨平台资格待执行。
 
-新源 Linux just test/nextest 243/243 通过（2.534 s，三项独立 scale ignored），
-strict app Clippy 通过（4.03 s）；Python 实际 238 项（237 通过，Windows-only
-真实 NTFS junction 在 Linux 跳过一项，13.695 s）。locked/offline 三个 release binary 的构建
-检查通过（0.40 s，复用未变化的生产 artifact）；self-test 与七项真实 child-fault
-检查通过。effect/activation/release 授权保持 false；这是本地诊断。
+历史B537源 `b5378e29d0fe191225abe853d848b498552f5850` 的candidate58/run36830035079两Mac
+实际通过前两个修正夹具、library 145/145和native14ACL。后续retirement恢复
+夹具以默认0644新建head，正确被私有目标准入拒绝；每个主体208pass/1fail/
+3ignored。shared-owner ACL/FIFO及release/package未达到。精确localAudit和
+新实际失败已保存在 [B537不可变记录](history/20261001-b5378-verification.json)
+及 [Mac子记录](history/20261001-b5378-macos-failure.json)，不继承给新源。
 
 历史 A1 源 `a1abe5b2a083213c095cdabaf4b3048144e3cad0` 的 F5 run 36827460737 两个 macOS
 主体实际通过 strict lint 和 14 项 native ACL，但应用套件均在上述两个旧夹具

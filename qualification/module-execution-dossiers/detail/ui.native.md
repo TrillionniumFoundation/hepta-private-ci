@@ -150,26 +150,34 @@ Invoking, WAL corruption/partial tail/checkpoint recovery, root and file
 substitution, retirement rebuild, update-copy drift, helper acknowledgement loss,
 rollback failure, stale picker tickets and shutdown of every lane.
 
-The current ordinary implementation source is `b5378e29d0fe191225abe853d848b498552f5850`, tree
-`ebcaf42f71715ed540cc04123bbeafd82abace48`. It retains the Darwin same-descriptor ACL/ownership checks,
-nonblocking Unix authority-file admission and typed Windows registrar probe.
-Two macOS fixtures now match their actual admission contract: a root replaced
-after file sync preserves the old snapshot; the existing staging destination is
-created with 0600 permissions and every requested replacement cut must execute.
-All original error and original/replacement-byte assertions remain enforced.
+The current ordinary implementation source is `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`, tree
+`304aeb469d13f24341052cf10fef89016aff90fb`. It retains the Darwin same-descriptor ACL/ownership checks,
+nonblocking Unix authority-file admission, typed Windows registrar probe and
+the prior root-replacement fixture corrections. The retirement-failure fixture
+now creates its baseline head through the existing private JSON helper and
+asserts Unix mode 0600. Conflict-directory, compaction-error, owner fencing,
+active-record preservation and restart/retired-count assertions remain enforced.
 
 CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16 local Cargo
-dependencies, inventory SHA256 `60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3`. This fixture-only source
-repair requires fresh exact-source qualification; production, deployment and
-release flags remain false.
+dependencies, inventory SHA256 `d4eee18485d01c84691013ec17ea29c3d6d7c28818088e947a3506f98190293f`. Production, deployment
+and release flags remain false; this fixture-only repair needs fresh qualification.
 
-Fresh Linux application just test/nextest passed 243/243 in 2.534 s (three
-separate scale entries ignored); strict all-target/all-feature Clippy passed in
-4.03 s. Python ran 238 tests in 13.695 s: 237 passed and one Windows-only real
-NTFS junction case was skipped on Linux. A locked/offline three-binary release build passed in 0.40 s, reusing
-unchanged production artifacts; self-test and seven actual child-fault checks
-passed. Effect, activation and release authorization remain false. These local
-diagnostics do not establish target-host or complete seven-subject acceptance.
+Fresh frozen-source Linux application just test/nextest passed 243/243 in 2.167 s
+(three separate scale entries ignored); strict all-target/all-feature Clippy
+passed in 4.65 s. A locked/offline three-binary release build passed in 0.71 s,
+reusing unchanged production artifacts; self-test and seven actual child-fault
+checks passed. Effect, activation and release authority remain false. Python
+ran 238 tests in 15.645 s: 237 passed and one Windows-only real NTFS junction was
+skipped on Linux. Complete target-host qualification still needs execution.
+
+Historical B537 source `b5378e29d0fe191225abe853d848b498552f5850` in candidate58/run36830035079
+passed both earlier corrected fixtures, library 145/145 and all 14 native ACL
+cases on macOS. Its full application suite then failed retirement recovery
+because a fixture newly created head.json with default 0644 mode; each subject
+had 208 passes/one failure/three ignored. Shared-owner ACL/FIFO, release and
+package stages were not reached. Exact old localAudit fields and separate
+actual raw failures are retained in [20261001-b5378-verification.json](../../../docs/modules/ui.native/history/20261001-b5378-verification.json); no
+historical pass or pending field is relabeled as current qualification.
 
 Historical A1 source `a1abe5b2a083213c095cdabaf4b3048144e3cad0` passed Linux application 243/243,
 Python 237/238 with one Windows-only junction skip and isolated owner 194/194.
