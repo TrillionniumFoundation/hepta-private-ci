@@ -5,6 +5,12 @@ name = "codex-hepta-supervisor"
 version.workspace = true
 publish = false
 
+[package.metadata.cargo-shear]
+# v1.11.2 does not normalize the absolute ../ reference in hepta-fleetctl's
+# #[path] module. The binary compiles this file; only the orphan diagnostic is
+# suppressed, while imports still participate in dependency checking.
+ignored-paths = ["src/fleet_cli.rs"]
+
 [lib]
 name = "codex_hepta_supervisor"
 path = "src/lib.rs"
