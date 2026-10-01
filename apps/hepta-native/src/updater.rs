@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -24,6 +23,7 @@ mod backup_policy;
 mod confirmation;
 #[path = "update_stage_policy.rs"]
 mod stage_policy;
+pub use crate::update_lock::UpdateLock;
 use crate::update_storage::MAX_PACKAGE_BYTES;
 use crate::update_storage::copy_and_sync;
 use crate::update_storage::copy_to_private_root;
@@ -466,8 +466,9 @@ impl UpdateManager {
     }
 
     /// Serialize helper orchestration and ordinary startup recovery. Short state
-    /// transactions still use the separate owner lock.
-    pub fn lock_runner(&self) -> Result<File, ShellError> {
+    /// transactions still use the separate owner lock. Retain the opaque guard
+    /// until orchestration completes; dropping it explicitly releases ownership.
+    pub fn lock_runner(&self) -> Result<UpdateLock, ShellError> {
         self.private_root.verify()?;
         lock_update_runner(&self.private_root)
     }

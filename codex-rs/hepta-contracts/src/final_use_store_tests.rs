@@ -80,10 +80,12 @@ fn legacy_journal_keeps_trust_binding_and_exact_head_checks() {
         serde_json::to_vec(&legacy).unwrap(),
     )
     .unwrap();
-    assert!(matches!(
-        Store::open(directory.path(), "owner", [48; 32], head.clone()),
-        Err(FinalUseError::InvalidTrust)
-    ));
+    let wrong_trust = Store::open(directory.path(), "owner", [48; 32], head.clone());
+    assert!(
+        matches!(&wrong_trust, Err(FinalUseError::InvalidTrust)),
+        "wrong-trust open returned {:?}",
+        wrong_trust.as_ref().err()
+    );
     let (owner, migrated) =
         Store::open_exact(directory.path(), "owner", [47; 32], head.clone()).unwrap();
     assert_eq!(migrated.used_nonces, BTreeSet::from([[5; 32]]));
@@ -92,8 +94,55 @@ fn legacy_journal_keeps_trust_binding_and_exact_head_checks() {
         revision: 2,
         ..head
     };
-    assert!(matches!(
-        Store::open_exact(directory.path(), "owner", [47; 32], newer),
-        Err(FinalUseError::InvalidTrust)
-    ));
+    let wrong_head = Store::open_exact(directory.path(), "owner", [47; 32], newer);
+    assert!(
+        matches!(&wrong_head, Err(FinalUseError::InvalidTrust)),
+        "wrong-head open returned {:?}",
+        wrong_head.as_ref().err()
+    );
+}
+
+#[test]
+fn owner_drop_releases_inherited_lock_and_preserves_successor()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = private_tempdir();
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let (owner, _) = Store::open_exact(directory.path(), "owner", [47; 32], head.clone())?;
+    owner.append_claim(9, [5; 32])?;
+    // A clone holds the same open-file description as a fork-inherited descriptor.
+    let inherited = owner._lock.try_clone()?;
+    let competing = Store::open_exact(directory.path(), "owner", [47; 32], head.clone());
+    assert!(
+        matches!(&competing, Err(FinalUseError::StateLocked)),
+        "live owner admission returned {:?}",
+        competing.as_ref().err()
+    );
+    drop(owner);
+
+    // The old alias remains open while this failed construction releases its lock.
+    let wrong_trust = Store::open_exact(directory.path(), "owner", [48; 32], head.clone());
+    assert!(
+        matches!(&wrong_trust, Err(FinalUseError::InvalidTrust)),
+        "post-drop wrong-trust admission returned {:?}",
+        wrong_trust.as_ref().err()
+    );
+    let (successor, state) = Store::open_exact(directory.path(), "owner", [47; 32], head.clone())?;
+    assert_eq!(state.used_nonces, BTreeSet::from([[5; 32]]));
+    assert_eq!(state.head, head);
+    drop(inherited);
+    let competing = Store::open_exact(directory.path(), "owner", [47; 32], head.clone());
+    assert!(
+        matches!(&competing, Err(FinalUseError::StateLocked)),
+        "closing an old alias released the successor: {:?}",
+        competing.as_ref().err()
+    );
+    drop(successor);
+    let (_, state) = Store::open_exact(directory.path(), "owner", [47; 32], head.clone())?;
+    assert_eq!(state.used_nonces, BTreeSet::from([[5; 32]]));
+    assert_eq!(state.head, head);
+    Ok(())
 }

@@ -1,5 +1,6 @@
 use crate::error::ShellError;
 use crate::private_state::PrivateStateRoot;
+use crate::update_lock::UpdateLock;
 use atomic_write_file::AtomicWriteFile;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -411,20 +412,20 @@ pub(crate) fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
 }
 
 // Shared by GUI transitions and the updater helper; never held across GUI life.
-pub(crate) fn lock_update_root(root: &PrivateStateRoot) -> Result<File, ShellError> {
+pub(crate) fn lock_update_root(root: &PrivateStateRoot) -> Result<UpdateLock, ShellError> {
     lock_named(root, "update-owner.lock", || Ok(()))
 }
 
 /// Readiness publication, C consumption, and cancellation contend on one pinned
 /// owner. Retry contention only; directory replacement remains an error.
-pub(crate) fn lock_update_handoff(root: &PrivateStateRoot) -> Result<File, ShellError> {
+pub(crate) fn lock_update_handoff(root: &PrivateStateRoot) -> Result<UpdateLock, ShellError> {
     lock_handoff_at_contention(root, || Ok(()))
 }
 
 fn lock_handoff_at_contention(
     root: &PrivateStateRoot,
     mut observe: impl FnMut() -> Result<(), ShellError>,
-) -> Result<File, ShellError> {
+) -> Result<UpdateLock, ShellError> {
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
     loop {
         match lock_update_root(root) {
@@ -437,7 +438,7 @@ fn lock_handoff_at_contention(
     }
 }
 
-pub(crate) fn lock_update_runner(root: &PrivateStateRoot) -> Result<File, ShellError> {
+pub(crate) fn lock_update_runner(root: &PrivateStateRoot) -> Result<UpdateLock, ShellError> {
     lock_named(root, "update-runner.lock", || Ok(()))
 }
 
@@ -445,7 +446,7 @@ fn lock_named(
     root: &PrivateStateRoot,
     name: &str,
     observe: impl FnOnce() -> Result<(), ShellError>,
-) -> Result<File, ShellError> {
+) -> Result<UpdateLock, ShellError> {
     root.verify()?;
     let path = root.path().join(name);
     let preexisting = !std::fs::symlink_metadata(&path)
@@ -457,14 +458,14 @@ fn lock_named(
         crate::journal_storage::FileAccess::Lock,
         preexisting,
     )?;
-    file.try_lock().map_err(|error| match error {
+    let lock = UpdateLock::try_acquire(file).map_err(|error| match error {
         std::fs::TryLockError::WouldBlock => {
             ShellError::Update("another native update transition is in progress".to_owned())
         }
         std::fs::TryLockError::Error(error) => error.into(),
     })?;
     root.verify()?;
-    Ok(file)
+    Ok(lock)
 }
 
 #[cfg(test)]

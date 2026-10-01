@@ -1,4 +1,4 @@
-//! Persistent nonce/revocation owner. OS locks are released on process death.
+//! Persistent nonce/revocation owner with a lifetime-bound OS lock.
 //!
 //! Revocation/trust state is a small atomic snapshot. Replay claims use a
 //! fixed-width append-only journal so the dispatch hot path does not rewrite an
@@ -85,6 +85,14 @@ pub(super) struct Store {
     signer_id: String,
     trust: StoreTrust,
     _lock: File,
+}
+
+impl Drop for Store {
+    fn drop(&mut self) {
+        // Closing one descriptor does not release a lock retained by a clone
+        // or fork. Release this owner's lock before its descriptor closes.
+        let _ = self._lock.unlock();
+    }
 }
 
 impl Store {

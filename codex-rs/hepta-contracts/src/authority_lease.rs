@@ -175,6 +175,13 @@ struct Store {
     _lock: File,
 }
 
+impl Drop for Store {
+    fn drop(&mut self) {
+        // Aliases of the open-file description may outlive this store owner.
+        let _ = self._lock.unlock();
+    }
+}
+
 struct Inner {
     owner_id: String,
     state: Mutex<State>,
@@ -1791,3 +1798,7 @@ mod macos_tests;
 #[cfg(all(test, unix))]
 #[path = "authority_lease_unix_tests.rs"]
 mod unix_tests;
+
+#[cfg(all(test, unix))]
+#[path = "authority_lease_lock_tests.rs"]
+mod lock_tests;
