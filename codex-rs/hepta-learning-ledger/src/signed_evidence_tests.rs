@@ -139,6 +139,84 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
 }
 
 #[test]
+fn admitted_evidence_is_rechecked_after_validity_and_scheduled_revocation() {
+    for revoked_at in [None, Some(80)] {
+        let mut configured = trust();
+        configured.signers[1].revoked_at = revoked_at;
+        let verifier = LearningEvidenceVerifierV1::new(configured).expect("trust");
+        let signed = sign(
+            &verifier,
+            "evaluator",
+            LearningEvidenceRoleV1::Evaluator,
+            2,
+            b"original observed metrics",
+        );
+        let admitted = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &signed,
+                b"original observed metrics",
+                50,
+            )
+            .expect("admission");
+        assert_eq!(verifier.revalidate(&admitted, 50), Ok(()));
+        assert_eq!(
+            verifier.revalidate(&admitted, 19),
+            Err(SignedEvidenceError::ValidityWindow)
+        );
+        assert_eq!(
+            verifier.revalidate(&admitted, 91),
+            Err(if revoked_at.is_some() {
+                SignedEvidenceError::Revoked
+            } else {
+                SignedEvidenceError::ValidityWindow
+            })
+        );
+        if revoked_at.is_some() {
+            assert_eq!(
+                verifier.revalidate(&admitted, 80),
+                Err(SignedEvidenceError::Revoked)
+            );
+        }
+    }
+}
+
+#[test]
+fn admitted_evidence_cannot_move_to_rotated_role_controller_or_objective_context() {
+    let original = LearningEvidenceVerifierV1::new(trust()).expect("original trust");
+    let signed = sign(
+        &original,
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        2,
+        b"original observed metrics",
+    );
+    let admitted = original
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &signed,
+            b"original observed metrics",
+            50,
+        )
+        .expect("admission");
+    for context in ["role", "controller", "objective"] {
+        let mut changed = trust();
+        match context {
+            "role" => changed.signers[1].roles = vec![LearningEvidenceRoleV1::Observer],
+            "controller" => changed.signers[1].controller_id = id("new-controller"),
+            "objective" => changed.objective_digest = digest("new-objective"),
+            _ => unreachable!(),
+        }
+        let replacement = LearningEvidenceVerifierV1::new(changed).expect("replacement trust");
+        assert_eq!(
+            replacement.revalidate(&admitted, 50),
+            Err(SignedEvidenceError::ContextMismatch),
+            "{context}"
+        );
+    }
+}
+
+#[test]
 fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
     let verifier = LearningEvidenceVerifierV1::new(trust()).expect("host trust");
     let signed = sign(

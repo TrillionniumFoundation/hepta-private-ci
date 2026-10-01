@@ -242,6 +242,41 @@ impl LearningEvidenceVerifierV1 {
         self.authority_epoch
     }
 
+    /// Recheck a previously authenticated opaque value under this exact trust
+    /// snapshot at final use. The caller supplies its owner-observed clock.
+    /// This does not authenticate new payloads or create a capability.
+    pub fn revalidate(
+        &self,
+        evidence: &VerifiedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<(), SignedEvidenceError> {
+        if evidence.trust_digest != self.trust_digest
+            || evidence.objective_digest != self.objective_digest
+            || evidence.principal.scope_digest != self.scope_digest
+            || evidence.principal.authority_epoch != self.authority_epoch
+        {
+            return Err(SignedEvidenceError::ContextMismatch);
+        }
+        let signer = self
+            .signers
+            .get(&evidence.principal.principal_id)
+            .ok_or(SignedEvidenceError::UnknownSigner)?;
+        if signer.principal != evidence.principal
+            || signer.controller_id != evidence.controller_id
+            || !signer.roles.contains(&evidence.role)
+        {
+            return Err(SignedEvidenceError::ContextMismatch);
+        }
+        signer.principal.validate(now)?;
+        if signer.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+        if now < evidence.issued_at || now > evidence.expires_at {
+            return Err(SignedEvidenceError::ValidityWindow);
+        }
+        Ok(())
+    }
+
     pub fn verify(
         &self,
         expected_role: LearningEvidenceRoleV1,
