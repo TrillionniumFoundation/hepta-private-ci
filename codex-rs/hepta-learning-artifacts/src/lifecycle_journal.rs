@@ -79,6 +79,8 @@ pub struct ArtifactLifecycleJournalReceiptV2 {
 pub struct ArtifactLifecycleJournalV2 {
     records: Vec<ArtifactLifecycleJournalRecordV2>,
     states: BTreeMap<StableId, ArtifactLifecycleStateV1>,
+    producers: BTreeMap<StableId, StableId>,
+    occurrence_times: BTreeMap<StableId, u64>,
     event_digests: BTreeMap<StableId, Digest32>,
     head_digest: Digest32,
 }
@@ -88,6 +90,8 @@ impl Default for ArtifactLifecycleJournalV2 {
         Self {
             records: Vec::new(),
             states: BTreeMap::new(),
+            producers: BTreeMap::new(),
+            occurrence_times: BTreeMap::new(),
             event_digests: BTreeMap::new(),
             head_digest: Digest32::ZERO,
         }
@@ -130,6 +134,16 @@ impl ArtifactLifecycleJournalV2 {
         {
             return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
         }
+        if event.occurred_at > now {
+            return Err(ArtifactLifecycleJournalError::EventTimeWindow);
+        }
+        if self
+            .producers
+            .get(&event.artifact_id)
+            .is_some_and(|producer| producer != producer_id)
+        {
+            return Err(ArtifactLifecycleJournalError::ProducerBindingMismatch);
+        }
         let event_digest = validate_artifact_lifecycle_transition(producer_id, &event)?;
         if let Some(existing_digest) = self.event_digests.get(&event.event_id) {
             if *existing_digest != event_digest {
@@ -140,6 +154,9 @@ impl ArtifactLifecycleJournalV2 {
                 .iter()
                 .find(|record| record.event.event_id == event.event_id)
                 .ok_or(ArtifactLifecycleJournalError::InternalInvariant)?;
+            if existing.producer_id != *producer_id || existing.actor != actor {
+                return Err(ArtifactLifecycleJournalError::EventIdentityConflict);
+            }
             return Ok(ArtifactLifecycleJournalReceiptV2 {
                 disposition: LifecycleAppendDispositionV2::IdempotentReplay,
                 sequence: existing.sequence,
@@ -151,6 +168,13 @@ impl ArtifactLifecycleJournalV2 {
         }
         if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactLifecycleJournalError::RecordLimit);
+        }
+        if self
+            .occurrence_times
+            .get(&event.artifact_id)
+            .is_some_and(|occurred_at| event.occurred_at < *occurred_at)
+        {
+            return Err(ArtifactLifecycleJournalError::EventTimeWindow);
         }
         let current = self
             .states
@@ -181,6 +205,10 @@ impl ArtifactLifecycleJournalV2 {
         };
         self.states
             .insert(event.artifact_id.clone(), event.next_state);
+        self.producers
+            .insert(event.artifact_id.clone(), producer_id.clone());
+        self.occurrence_times
+            .insert(event.artifact_id.clone(), event.occurred_at);
         self.event_digests
             .insert(event.event_id.clone(), event_digest);
         self.records.push(record);
@@ -205,12 +233,14 @@ impl ArtifactLifecycleJournalV2 {
 
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        _now: u64,
+        now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
         for expected in snapshot.records {
-            if expected.predecessor_head_digest != journal.head_digest {
+            if expected.predecessor_head_digest != journal.head_digest
+                || expected.event.occurred_at > now
+            {
                 return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
             }
             let receipt = journal.append(
@@ -315,6 +345,8 @@ pub enum ArtifactLifecycleJournalError {
     HeadMismatch,
     InvalidActorEvidence,
     ActorBindingMismatch,
+    ProducerBindingMismatch,
+    EventTimeWindow,
     ActorRoleDenied,
     StatePredecessorMismatch,
     EventIdentityConflict,
@@ -337,6 +369,8 @@ impl StdError for ArtifactLifecycleJournalError {
             Self::HeadMismatch
             | Self::InvalidActorEvidence
             | Self::ActorBindingMismatch
+            | Self::ProducerBindingMismatch
+            | Self::EventTimeWindow
             | Self::ActorRoleDenied
             | Self::StatePredecessorMismatch
             | Self::EventIdentityConflict
@@ -353,6 +387,10 @@ impl From<ArtifactClosureError> for ArtifactLifecycleJournalError {
         Self::Transition(value)
     }
 }
+
+#[cfg(test)]
+#[path = "lifecycle_journal_adversarial_tests.rs"]
+mod adversarial_tests;
 
 #[cfg(test)]
 mod tests {

@@ -69,7 +69,9 @@ pub fn verify_artifact_admission_v3(
     if admission.withdrawal_head_digest != current_withdrawal_head {
         return Err(ArtifactAdmissionError::WithdrawalHeadChanged);
     }
-    if admission.admitted_at > now {
+    if admission.admitted_at > now
+        || admission.admitted_at < admission.validated_manifest.manifest.created_at
+    {
         return Err(ArtifactAdmissionError::AdmissionTimeWindow);
     }
     let revalidated =
@@ -103,7 +105,11 @@ pub fn validate_artifact_publication_v3(
     if admission.withdrawal_scope_digest != scope_digest {
         return Err(ArtifactAdmissionError::WithdrawalScopeChanged);
     }
-    verify_artifact_admission_v3(admission, registry.head_digest(), now)
+    verify_artifact_admission_v3(admission, registry.head_digest(), now)?;
+    // This public receipt carries evidence digests, not an unforgeable admission
+    // capability. Recheck semantic eligibility against the supplied live owner.
+    registry.admit_manifest(admission.validated_manifest.manifest.clone(), now)?;
+    Ok(())
 }
 
 fn digest_admission(
@@ -160,6 +166,10 @@ impl From<ArtifactClosureError> for ArtifactAdmissionError {
 }
 
 #[cfg(test)]
+#[path = "admission_v3_adversarial_tests.rs"]
+mod adversarial_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::test_support::FixtureValue;
@@ -171,15 +181,15 @@ mod tests {
     use crate::DatasetWithdrawalScopeV1;
     use crate::ProvenanceModeV1;
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("valid test id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn scope(name: &str) -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope(name: &str) -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id(&format!("dataset-authority-{name}")),
             registry_id: id(&format!("withdrawal-registry-{name}")),
@@ -187,7 +197,7 @@ mod tests {
         }
     }
 
-    fn manifest(dataset: Digest32) -> LearningArtifactManifestV2 {
+    pub(super) fn manifest(dataset: Digest32) -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("artifact-v3"),
             kind: ArtifactKind::Model,

@@ -130,6 +130,8 @@ pub struct VerifiedArtifactSelectionV1 {
     authority_epoch: u64,
     issued_at: u64,
     expires_at: u64,
+    selector_expires_at: u64,
+    selector_revoked_at: Option<u64>,
     trust_digest: Digest32,
     authority: AuthorityPosture,
 }
@@ -341,6 +343,8 @@ impl ArtifactSelectionVerifierV1 {
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
             expires_at: signed.expires_at,
+            selector_expires_at: selector.expires_at,
+            selector_revoked_at: selector.revoked_at,
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -357,8 +361,17 @@ pub fn record_verified_selection(
     event_id: StableId,
     now: u64,
 ) -> Result<ArtifactLifecycleJournalReceiptV2, ArtifactSelectionError> {
-    if now < selection.issued_at || now > selection.expires_at {
+    if now < selection.issued_at
+        || now > selection.expires_at
+        || now > selection.selector_expires_at
+        || selection
+            .selector_revoked_at
+            .is_some_and(|revoked_at| now >= revoked_at)
+    {
         return Err(ArtifactSelectionError::SelectionContext);
+    }
+    if producer_id != &selection.pin.manifest.producer_id {
+        return Err(ArtifactSelectionError::ManifestMismatch);
     }
     let event = ArtifactLifecycleEventV1 {
         event_id,
@@ -377,7 +390,14 @@ pub fn record_verified_selection(
         role: LifecycleActorRoleV2::Selector,
         authority_epoch: selection.authority_epoch,
         verified_at: selection.issued_at,
-        expires_at: selection.expires_at,
+        expires_at: selection
+            .selector_revoked_at
+            .map_or(selection.selector_expires_at, |revoked_at| {
+                selection
+                    .selector_expires_at
+                    .min(revoked_at.saturating_sub(1))
+            })
+            .min(selection.expires_at),
     };
     journal
         .append(expected_head_digest, producer_id, actor, event, now)
@@ -469,6 +489,10 @@ impl StdError for ArtifactSelectionError {
 }
 
 #[cfg(test)]
+#[path = "selection_adversarial_tests.rs"]
+mod adversarial_tests;
+
+#[cfg(test)]
 mod tests {
     use std::fmt::Debug;
 
@@ -481,14 +505,14 @@ mod tests {
     use crate::RegistrySnapshotReceipt;
     use crate::TrustedArtifactSignerV1;
 
-    fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    pub(super) fn must<T, E: Debug>(result: Result<T, E>) -> T {
         match result {
             Ok(value) => value,
             Err(error) => panic!("fixture failed: {error:?}"),
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         must(StableId::new(value.to_owned()))
     }
 
@@ -496,7 +520,7 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn manifest(producer_id: StableId) -> ArtifactManifest {
+    pub(super) fn manifest(producer_id: StableId) -> ArtifactManifest {
         ArtifactManifest {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
@@ -511,7 +535,7 @@ mod tests {
         }
     }
 
-    fn owner_trust(key: &SigningKey) -> ArtifactOwnerTrustV1 {
+    pub(super) fn owner_trust(key: &SigningKey) -> ArtifactOwnerTrustV1 {
         let signer = TrustedArtifactSignerV1 {
             signer_id: id("artifact-owner"),
             verifying_key: key.verifying_key().to_bytes(),
@@ -532,7 +556,7 @@ mod tests {
         }
     }
 
-    fn current_view(
+    pub(super) fn current_view(
         manifest: &ArtifactManifest,
         owner_trust: &ArtifactOwnerTrustV1,
     ) -> VerifiedCurrentRegistryViewV1 {
@@ -559,7 +583,7 @@ mod tests {
         )
     }
 
-    fn trust(key: &SigningKey, selector_id: StableId) -> ArtifactSelectionTrustV1 {
+    pub(super) fn trust(key: &SigningKey, selector_id: StableId) -> ArtifactSelectionTrustV1 {
         ArtifactSelectionTrustV1 {
             registry_id: id("registry"),
             withdrawal_scope_digest: digest("scope"),
@@ -576,7 +600,7 @@ mod tests {
         }
     }
 
-    fn signed_selection(
+    pub(super) fn signed_selection(
         key: &SigningKey,
         selector_id: StableId,
         manifest: &ArtifactManifest,
