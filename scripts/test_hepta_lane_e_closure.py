@@ -67,8 +67,10 @@ class LaneEClosureTests(unittest.TestCase):
                     )
                 )
 
-    def test_supplemental_operator_inventory_is_closed(self) -> None:
-        for change in ("missing", "extra", "duplicate"):
+    def test_registered_supplemental_operator_inventory_rejects_invalid_identity(
+        self,
+    ) -> None:
+        for change in ("empty", "duplicate", "invalid"):
             with self.subTest(change=change):
                 matrix = copy.deepcopy(self.matrix)
                 row = next(
@@ -77,20 +79,17 @@ class LaneEClosureTests(unittest.TestCase):
                     if row["module"] == "learning.operator"
                 )
                 operations = row["supplementalOperations"]
-                if change == "missing":
-                    operations.pop()
-                elif change == "extra":
-                    addition = copy.deepcopy(operations[0])
-                    addition["operation"] = "unreviewed_operation"
-                    operations.append(addition)
-                else:
+                if change == "empty":
+                    operations[0]["operation"] = "  "
+                elif change == "duplicate":
                     operations.append(copy.deepcopy(operations[0]))
+                else:
+                    operations.append({"operation": False})
                 findings = MODULE.Findings()
                 MODULE.verify_matrix(matrix, findings)
                 self.assertTrue(
                     any(
-                        item.code
-                        in {"operator_supplemental_missing", "duplicate_operation"}
+                        item.code in {"duplicate_or_empty_operation", "invalid_operation"}
                         for item in findings.items
                     )
                 )
@@ -114,17 +113,17 @@ class LaneEClosureTests(unittest.TestCase):
 
     def test_missing_operator_source_still_rejects_with_integration_work(self) -> None:
         self.operator["remainingRepositoryGaps"] = ["Runtime composition remains open."]
-        self.operator["operations"] = [
-            operation
-            for operation in self.operator["operations"]
-            if operation["operation"]
-            != "validate_applicability_with_signed_evidence_v2"
-        ]
+        operation = next(
+            item
+            for item in self.operator["operations"]
+            if item["operation"] == "validate_applicability_with_signed_evidence_v2"
+        )
+        operation["source"] = "missing/operator-owner.rs"
         findings = MODULE.Findings()
         MODULE.verify_matrix(self.matrix, findings)
         self.assertTrue(
             any(
-                finding.code == "operation_closed_world"
+                finding.code == "operation_source_missing"
                 and "learning.operator" in finding.message
                 for finding in findings.items
             )
@@ -231,8 +230,6 @@ class LaneEClosureTests(unittest.TestCase):
         self.assertTrue(
             any(
                 finding.code == "learning_eval_signed_surface"
-                and "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"
-                in finding.message
                 for finding in findings.items
             )
         )

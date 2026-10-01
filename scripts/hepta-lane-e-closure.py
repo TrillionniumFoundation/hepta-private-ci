@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lane E entrypoint: preserved contract checks plus blob-bound writer audit.
 
-The closed-world verifier is retained as hepta_lane_e_contract.py, including
+The registered source verifier is retained as hepta_lane_e_contract.py, including
 operator supplemental inventory and truthful integration work. This entrypoint
 replaces only its writer audit; no contract finding is filtered or converted
 into a success.
@@ -33,7 +33,12 @@ FORBIDDEN = {
 # Preserve the established import surface for Lane E behavior regressions.
 Findings = contract.Findings
 MATRIX_PATH = contract.MATRIX_PATH
+EXPECTED_MODULES = contract.EXPECTED_MODULES
+EXPECTED_EXTERNAL_GATES = contract.EXPECTED_EXTERNAL_GATES
 verify_matrix = contract.verify_matrix
+verify_traceability = contract.verify_traceability
+unsigned_root_exports = contract.unsigned_root_exports
+signed_decision_root_exports = contract.signed_decision_root_exports
 
 
 def blob_sha(data: bytes) -> str:

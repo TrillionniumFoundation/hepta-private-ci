@@ -8,6 +8,7 @@ consumer's downstream production crates depend on its test-only dependencies.
 Unknown/shared inputs select the entire workspace. An absent or invalid base
 never means 'no tests'. The plan is execution input, not a qualification receipt.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,6 +17,7 @@ import json
 import posixpath
 import re
 import subprocess
+import sys
 import tomllib
 from dataclasses import dataclass
 from functools import lru_cache
@@ -24,14 +26,25 @@ from typing import Iterable
 
 OID = re.compile(r"[0-9a-f]{40}\Z")
 WORKSPACE = "codex-rs"
-SHARED = {"Cargo.toml", "Cargo.lock", "rust-toolchain", "rust-toolchain.toml",
-          "justfile", "build.rs", "MODULE.bazel", "MODULE.bazel.lock"}
+SHARED = {
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain",
+    "rust-toolchain.toml",
+    "justfile",
+    "build.rs",
+    "MODULE.bazel",
+    "MODULE.bazel.lock",
+}
 
 
 def git(root: Path, *args: str) -> bytes:
-    return subprocess.run(["git", "--no-replace-objects", "-C", str(root), *args],
-                          check=True, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE).stdout
+    return subprocess.run(
+        ["git", "--no-replace-objects", "-C", str(root), *args],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).stdout
 
 
 @dataclass(frozen=True)
@@ -60,17 +73,25 @@ def matches(path: str, pattern: str) -> bool:
             return i == len(parts)
         if patterns[j] == "**":
             return match(i, j + 1) or (i < len(parts) and match(i + 1, j))
-        return i < len(parts) and fnmatch.fnmatchcase(parts[i], patterns[j]) and match(i + 1, j + 1)
+        return (
+            i < len(parts)
+            and fnmatch.fnmatchcase(parts[i], patterns[j])
+            and match(i + 1, j + 1)
+        )
 
     return match(0, 0)
 
 
 # Match the same presentation-only paths used by the outer scope selector.
 # Embedded inputs are accounted for FIRST, even when their suffix is .md.
-PRESENTATION_INPUTS = frozenset({
-    "README.md", "CONTRIBUTING.md", "docs/modules/SOURCE_BINDINGS.json",
-    "docs/modules/MODULE_DOCS.json",
-})
+PRESENTATION_INPUTS = frozenset(
+    {
+        "README.md",
+        "CONTRIBUTING.md",
+        "docs/modules/SOURCE_BINDINGS.json",
+        "docs/modules/MODULE_DOCS.json",
+    }
+)
 INCLUDE = re.compile(r"\b(?P<macro>include(?:_str|_bytes)?)\s*!\s*[({\[]")
 INCLUDE_LITERAL = re.compile(
     r'(?:r(?P<hashes>#{0,16})"(?P<raw>.*?)"(?P=hashes)|"(?P<plain>(?:\\.|[^"\\])*)")',
@@ -102,17 +123,24 @@ def module_source_inputs(path: str, text: str, tracked: set[str]):
     for attribute in MODULE_PATH.finditer(text):
         start = re.compile(r"\s*").match(text, attribute.end()).end()
         literal = INCLUDE_LITERAL.match(text, start)
-        if literal is None or not re.match(r"\s*\]", text[literal.end():]):
+        if literal is None or not re.match(r"\s*\]", text[literal.end() :]):
             opaque = True
             continue
         try:
-            relative = (literal.group("raw") if literal.group("raw") is not None
-                        else json.loads('"' + literal.group("plain") + '"'))
+            relative = (
+                literal.group("raw")
+                if literal.group("raw") is not None
+                else json.loads('"' + literal.group("plain") + '"')
+            )
         except (ValueError, TypeError):
             opaque = True
             continue
-        if (not relative or "\\" in relative or posixpath.isabs(relative)
-                or any(ord(char) < 32 for char in relative)):
+        if (
+            not relative
+            or "\\" in relative
+            or posixpath.isabs(relative)
+            or any(ord(char) < 32 for char in relative)
+        ):
             opaque = True
             continue
         target = posixpath.normpath(posixpath.join(directory, relative))
@@ -135,9 +163,12 @@ def module_source_inputs(path: str, text: str, tracked: set[str]):
 
 
 def presentation_input(path: str) -> bool:
-    return path in PRESENTATION_INPUTS or (
-        path.startswith("docs/") and path.endswith(".md")
-    ) or path.startswith("qualification/module-execution-dossiers/detail/") and path.endswith(".md")
+    return (
+        path in PRESENTATION_INPUTS
+        or (path.startswith("docs/") and path.endswith(".md"))
+        or path.startswith("qualification/module-execution-dossiers/detail/")
+        and path.endswith(".md")
+    )
 
 
 def cargo_source_inputs(manifests: dict[str, dict], owners: dict[str, str]):
@@ -150,9 +181,13 @@ def cargo_source_inputs(manifests: dict[str, dict], owners: dict[str, str]):
     inputs: set[tuple[str, str]] = set()
 
     def add(folder: str, relative: object) -> None:
-        if (not isinstance(relative, str) or not relative or "\\" in relative
-                or any(ord(char) < 32 for char in relative)
-                or posixpath.isabs(relative)):
+        if (
+            not isinstance(relative, str)
+            or not relative
+            or "\\" in relative
+            or any(ord(char) < 32 for char in relative)
+            or posixpath.isabs(relative)
+        ):
             raise ValueError("invalid Cargo source path")
         target = posixpath.normpath(posixpath.join(folder, relative))
         if target in {".", ".."} or target.startswith("../"):
@@ -183,7 +218,9 @@ def cargo_source_inputs(manifests: dict[str, dict], owners: dict[str, str]):
 
 
 def embedded_inputs(
-    root: Path, revision: str, owners: dict[str, str],
+    root: Path,
+    revision: str,
+    owners: dict[str, str],
     source_inputs: frozenset[tuple[str, str]] = frozenset(),
 ):
     """Read exact-tree includes without executing candidate build scripts.
@@ -194,16 +231,33 @@ def embedded_inputs(
     and byte payloads are not parsed as Rust. Comments may over-select. Both old
     and new graphs retain removed edges. Cycles are bounded by (path, owner).
     """
-    tracked = set(git(root, "ls-tree", "-r", "--name-only", "-z", revision)
-                  .decode("utf-8").split("\0"))
+    tracked = set(
+        git(root, "ls-tree", "-r", "--name-only", "-z", revision)
+        .decode("utf-8")
+        .split("\0")
+    )
     result = subprocess.run(
-        ["git", "--no-replace-objects", "-C", str(root), "grep", "-l", "-z", "-E",
-         r"include(_str|_bytes)?|mod[[:space:]]|#[[:space:]]*\[", revision, "--", "*.rs"],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        [
+            "git",
+            "--no-replace-objects",
+            "-C",
+            str(root),
+            "grep",
+            "-l",
+            "-z",
+            "-E",
+            r"include(_str|_bytes)?|mod[[:space:]]|#[[:space:]]*\[",
+            revision,
+            "--",
+            "*.rs",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     if result.returncode not in (0, 1):
-        raise subprocess.CalledProcessError(result.returncode, result.args,
-                                            result.stdout, result.stderr)
+        raise subprocess.CalledProcessError(
+            result.returncode, result.args, result.stdout, result.stderr
+        )
     # Explicit target paths are source entrypoints even when git grep's .rs
     # filter cannot find them or they are outside a conventional Cargo root.
     pending = list(source_inputs)
@@ -214,7 +268,7 @@ def embedded_inputs(
         value = record.decode("utf-8")
         if not value.startswith(prefix):
             raise ValueError("unexpected exact-tree grep identity")
-        path = value[len(prefix):]
+        path = value[len(prefix) :]
         folder = posixpath.dirname(path)
         while folder and folder not in owners:
             folder = posixpath.dirname(folder)
@@ -239,15 +293,20 @@ def embedded_inputs(
                 opaque = True
                 continue
             try:
-                relative = (literal.group("raw") if literal.group("raw") is not None
-                            else json.loads('"' + literal.group("plain") + '"'))
+                relative = (
+                    literal.group("raw")
+                    if literal.group("raw") is not None
+                    else json.loads('"' + literal.group("plain") + '"')
+                )
             except (ValueError, TypeError):
                 opaque = True
                 continue
             if "\\" in relative or "\0" in relative or posixpath.isabs(relative):
                 opaque = True
                 continue
-            target = posixpath.normpath(posixpath.join(posixpath.dirname(path), relative))
+            target = posixpath.normpath(
+                posixpath.join(posixpath.dirname(path), relative)
+            )
             if target == ".." or target.startswith("../"):
                 opaque = True
             else:
@@ -278,7 +337,11 @@ def embedded_inputs(
 def graph(root: Path, revision: str) -> Graph:
     if not OID.fullmatch(revision):
         raise ValueError("revision must be an exact Git SHA")
-    paths = set(git(root, "ls-tree", "-r", "--name-only", "-z", revision).decode("utf-8").split("\0"))
+    paths = set(
+        git(root, "ls-tree", "-r", "--name-only", "-z", revision)
+        .decode("utf-8")
+        .split("\0")
+    )
 
     @lru_cache(maxsize=None)
     def load(path: str) -> dict:
@@ -287,7 +350,9 @@ def graph(root: Path, revision: str) -> Graph:
     root_manifest = load(f"{WORKSPACE}/Cargo.toml")
     workspace = root_manifest["workspace"]
     available = {posixpath.dirname(p) for p in paths if p.endswith("/Cargo.toml")}
-    excluded = [posixpath.normpath(f"{WORKSPACE}/{p}") for p in workspace.get("exclude", [])]
+    excluded = [
+        posixpath.normpath(f"{WORKSPACE}/{p}") for p in workspace.get("exclude", [])
+    ]
     members: set[str] = set()
     for member in workspace.get("members", []):
         pattern = posixpath.normpath(f"{WORKSPACE}/{member}")
@@ -333,8 +398,11 @@ def graph(root: Path, revision: str) -> Graph:
                             declaration = {"version": declaration}
                     name = declaration.get("package", alias)
                     direct = "path" in declaration
-                    targets = ({posixpath.normpath(f"{dependency_root}/{declaration['path']}")}
-                               if direct else patch_paths.get(name, set()))
+                    targets = (
+                        {posixpath.normpath(f"{dependency_root}/{declaration['path']}")}
+                        if direct
+                        else patch_paths.get(name, set())
+                    )
                     # Include every possible local patch, regardless of source
                     # or version eligibility. This may over-select, never omit
                     # a reverse consumer when the lock resolver chooses a patch.
@@ -346,9 +414,12 @@ def graph(root: Path, revision: str) -> Graph:
                             raise ValueError(f"local dependency name mismatch: {alias}")
                         local_edges.add((target, folder, kind == "dev-dependencies"))
                         pending.append(target)
-                        if (direct and target.startswith(WORKSPACE + "/")
-                                and not any(matches(target, e) for e in excluded)
-                                and "workspace" not in target_doc):
+                        if (
+                            direct
+                            and target.startswith(WORKSPACE + "/")
+                            and not any(matches(target, e) for e in excluded)
+                            and "workspace" not in target_doc
+                        ):
                             members.add(target)
     owners = {p: doc["package"]["name"] for p, doc in manifests.items()}
     if not owners or len(set(owners.values())) != len(owners):
@@ -371,11 +442,19 @@ def graph(root: Path, revision: str) -> Graph:
         owners[folder]
         for folder, document in manifests.items()
         if document["package"].get("build") is not False
-        and (document["package"].get("build") is not None
-             or f"{folder}/build.rs" in paths)
+        and (
+            document["package"].get("build") is not None
+            or f"{folder}/build.rs" in paths
+        )
     )
-    return Graph(owners, edges, frozenset(owners[p] for p in members), conservative,
-                 inputs, opaque)
+    return Graph(
+        owners,
+        edges,
+        frozenset(owners[p] for p in members),
+        conservative,
+        inputs,
+        opaque,
+    )
 
 
 def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
@@ -389,7 +468,13 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     # changes its parent's ownership even when the workspace manifest is unchanged.
     for path in paths:
         parts = path.split("/")
-        if not path or path.startswith("/") or ".." in parts or "\\" in path or "\0" in path:
+        if (
+            not path
+            or path.startswith("/")
+            or ".." in parts
+            or "\\" in path
+            or "\0" in path
+        ):
             raise ValueError(f"invalid repository path: {path!r}")
         has_changed_input = True
         if path in SHARED or path in {f"{WORKSPACE}/{p}" for p in SHARED}:
@@ -428,8 +513,12 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     if before.conservative or after.conservative:
         reasons.add("local registry override; full resolver fallback")
     if reasons:
-        return {"packages": sorted(current), "full_workspace": True,
-                "changed_packages": sorted(changed), "reasons": sorted(reasons)}
+        return {
+            "packages": sorted(current),
+            "full_workspace": True,
+            "changed_packages": sorted(changed),
+            "reasons": sorted(reasons),
+        }
     # Build reverse adjacency once. Re-scanning every edge for every reached
     # package makes a long dependency chain quadratic in workspace size.
     # Keep dev and production edges distinct, including across both revisions.
@@ -446,23 +535,98 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
             if not dev_only and consumer not in affected:
                 affected.add(consumer)
                 pending.append(consumer)
-    return {"packages": sorted((affected | tests) & current), "full_workspace": False,
-            "changed_packages": sorted(changed), "reasons": []}
+    return {
+        "packages": sorted((affected | tests) & current),
+        "full_workspace": False,
+        "changed_packages": sorted(changed),
+        "reasons": [],
+    }
 
 
-def plan(root: Path, base: str | None, tested: str) -> dict:
+def plan(
+    root: Path, base: str | None, tested: str, *, force_full: bool = False
+) -> dict:
     after = graph(root, tested)
+    if force_full:
+        return {
+            "packages": sorted(after.targets),
+            "full_workspace": True,
+            "changed_packages": [],
+            "reasons": ["explicit full qualification"],
+        }
     if not base or not OID.fullmatch(base) or base == "0" * 40:
-        return {"packages": sorted(after.targets), "full_workspace": True,
-                "changed_packages": [], "reasons": ["no exact base"]}
+        return {
+            "packages": sorted(after.targets),
+            "full_workspace": True,
+            "changed_packages": [],
+            "reasons": ["no exact base"],
+        }
     try:
         before = graph(root, base)
-        paths = git(root, "diff", "--no-ext-diff", "--no-textconv", "--name-only",
-                    "--no-renames", "-z", base, tested, "--")
-    except (subprocess.CalledProcessError, ValueError, KeyError, tomllib.TOMLDecodeError):
-        return {"packages": sorted(after.targets), "full_workspace": True,
-                "changed_packages": [], "reasons": ["base graph unavailable; full fallback"]}
-    return select_packages((p.decode("utf-8") for p in paths.split(b"\0") if p), before, after)
+        paths = git(
+            root,
+            "diff",
+            "--no-ext-diff",
+            "--no-textconv",
+            "--name-only",
+            "--no-renames",
+            "-z",
+            base,
+            tested,
+            "--",
+        )
+    except (
+        subprocess.CalledProcessError,
+        ValueError,
+        KeyError,
+        tomllib.TOMLDecodeError,
+    ):
+        return {
+            "packages": sorted(after.targets),
+            "full_workspace": True,
+            "changed_packages": [],
+            "reasons": ["base graph unavailable; full fallback"],
+        }
+    return select_packages(
+        (p.decode("utf-8") for p in paths.split(b"\0") if p), before, after
+    )
+
+
+def execution_command(selected: dict, action: str) -> list[str] | None:
+    """Apply one exact-revision impact plan to each native check."""
+    if action == "plan" or not selected["packages"]:
+        return None
+    packages = []
+    if not selected["full_workspace"]:
+        for package in selected["packages"]:
+            packages.extend(["-p", package])
+    if action == "test":
+        return [
+            "just",
+            "test",
+            "--locked",
+            *(["--workspace"] if selected["full_workspace"] else packages),
+        ]
+    if action == "fmt":
+        return [
+            "cargo",
+            "fmt",
+            *(["--all"] if selected["full_workspace"] else packages),
+            "--",
+            "--check",
+        ]
+    if action == "clippy":
+        return [
+            "cargo",
+            "clippy",
+            "--locked",
+            *(["--workspace"] if selected["full_workspace"] else packages),
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings",
+        ]
+    raise ValueError("unknown native check")
 
 
 def main() -> None:
@@ -471,29 +635,57 @@ def main() -> None:
     parser.add_argument("--base")
     parser.add_argument("--tested", required=True)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--run", action="store_true", help="execute the plan with just test --locked")
+    parser.add_argument(
+        "--run", action="store_true", help="execute the plan with just test --locked"
+    )
+    parser.add_argument(
+        "--action", choices=["plan", "test", "fmt", "clippy"], default="plan"
+    )
+    parser.add_argument(
+        "--full", action="store_true", help="explicitly qualify the entire workspace"
+    )
+    parser.add_argument("--github-output", type=Path)
+    parser.add_argument(
+        "--record-output",
+        type=Path,
+        help="record the selected native command with hepta_ci_exec",
+    )
     args = parser.parse_args()
+    if args.run and args.action != "plan":
+        parser.error("--run is the compatibility alias for --action test")
+    if args.record_output and not args.run and args.action == "plan":
+        parser.error("--record-output requires a native execution action")
     if not OID.fullmatch(args.tested):
         parser.error("--tested must be an exact 40-character SHA")
     if git(args.root, "rev-parse", "HEAD").decode().strip() != args.tested:
         parser.error("checkout differs from --tested")
     git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
-    selected = plan(args.root, args.base, args.tested)
+    selected = plan(args.root, args.base, args.tested, force_full=args.full)
     payload = {"tested_sha": args.tested, "base_sha": args.base, **selected}
     text = json.dumps(payload, sort_keys=True) + "\n"
     print(text, end="")
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(text, encoding="utf-8")
-    if args.run and selected["packages"]:
-        command = ["just", "test", "--locked"]
-        if selected["full_workspace"]:
-            command.append("--workspace")
-        if not selected["full_workspace"]:
-            for package in selected["packages"]:
-                command.extend(["-p", package])
-        subprocess.run(command, cwd=args.root / WORKSPACE, check=True)
+    if args.github_output:
+        with args.github_output.open("a", encoding="utf-8") as stream:
+            stream.write(f"has_packages={str(bool(selected['packages'])).lower()}\n")
+    command = execution_command(selected, "test" if args.run else args.action)
+    if command is not None:
+        if args.record_output:
+            command = [
+                sys.executable,
+                str(Path(__file__).with_name("hepta_ci_exec.py")),
+                "--output",
+                str(args.record_output.resolve()),
+                "--",
+                *command,
+            ]
+        result = subprocess.run(command, cwd=args.root / WORKSPACE, check=False)
         git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
+        raise SystemExit(
+            result.returncode if result.returncode >= 0 else 128 - result.returncode
+        )
 
 
 if __name__ == "__main__":

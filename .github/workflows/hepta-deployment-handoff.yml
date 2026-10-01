@@ -1,14 +1,10 @@
 name: Hepta deployment handoff (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "tools/hepta-engineering-control/**"
-      - "docs/modules/MODULES.json"
-      - "docs/modules/SOURCE_BINDINGS.json"
-      - "docs/cns/**"
-      - "docs/data/**"
-      - ".github/workflows/hepta-deployment-handoff.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 concurrency:
   group: hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}

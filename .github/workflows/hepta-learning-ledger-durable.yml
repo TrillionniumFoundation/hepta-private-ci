@@ -1,25 +1,16 @@
 name: Hepta durable causal ledger (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-bellman-operator/**"
-      - "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs"
-      - "codex-rs/hepta-agentd/src/lib.rs"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "docs/modules/learning.operator/**"
-      - "scripts/hepta-learning-operator-*"
-      - ".github/workflows/hepta-learning-ledger-durable.yml"
-      - ".github/workflows/learning-operator-authoritative.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number }}
+  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -30,10 +21,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [source-head, synthetic-merge]
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
       - name: Check out exact source without credentials
