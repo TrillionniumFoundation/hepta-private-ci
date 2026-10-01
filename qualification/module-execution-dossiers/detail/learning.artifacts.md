@@ -192,7 +192,20 @@ The canonical Lane E case IDs are:
   complete durable publication saga, returns stable terminal retries, reopens
   only from independently authenticated CURRENT, rejects restored old heads and
   stale signer epochs, and process-kill recovery never promotes an
-  uncheckpointed publication phase. Read consumers receive only opaque
+  uncheckpointed publication phase. The host rejects another new operation
+  before admission/Prepared durability while preserving exact same-operation
+  recovery. Unfinished resume or later effects reverify the declared payload's
+  actual length/digest. Stable historical acknowledgement proves original
+  publication; current payload loading and eligibility remain separate checks.
+  Same-host mutation serialization closes concurrent shared-reference races;
+  canonical signed witness bytes bind exact receipt digest/length. The admission
+  directory's 16,384-entry budget counts orphan/pending names and reserves the
+  simultaneous final/temporary peak while permitting reverified exact retained
+  sidecars at capacity. New operations preflight completion capacity across the
+  five checkpoints plus temporary name and every future publication domain
+  before admission/Prepared effects; existing exact operations retain their
+  phase-specific reconciliation path.
+  Read consumers receive only opaque
   `VerifiedCurrentRegistryViewV1` values issued after signed CURRENT + exact
   snapshot verification; a bare `File + RegistrySnapshotReceipt` is not a
   product currentness interface.
@@ -312,8 +325,23 @@ Repository-controlled source coverage is checked by
 synthetic-merge execution are defined in
 `.github/workflows/hepta-lane-e-gap-closure.yml`.
 
-The workflow compiles all targets, runs owner and cross-crate tests, strict
-Clippy and rustfmt. Push synthetic merge resolves its predecessor from
-`github.event.before`; PR synthetic merge uses the pull-request base.
+Ordinary development uses the affected package tests and
+`python3 scripts/hepta-docs.py verify --profile development`. This validates
+current working-tree ownership, schemas, source paths and references without
+renewing historical observations or qualification receipts. Aggregate CI selects
+affected native owners and reverse consumers from both candidate and base graphs.
+
+The dedicated artifact-storage and Lane E workflows are reusable/manual
+qualification entry points. Lane E compiles all targets, runs owner and
+cross-crate tests, strict Clippy and rustfmt. A synthetic-merge result proves only
+the explicit source/base Git objects actually recorded by that invocation;
+manual source execution is not an automatic pull-request merge receipt.
+The qualification profile retains committed exact-source and inventory checks.
+
+The newest CURRENT must remain unexpired; replace it before expiry. Online
+publication continuation after expiry is not covered. Named-service cold
+bootstrap uses an empty V1 registry and ZERO genesis; nonzero legacy-seed import
+still needs an authenticated migration path. These implementation limits remain
+open and do not change production or acceptance flags.
 
 External evidence intentionally remains open. The repository cannot self-provision a trusted production filesystem namespace, artifact-owner or selector private keys, prove parent-directory durability on every target, operate the external newest-head distribution service, prove external-cache/physical-erasure behavior, or issue live operator acceptance, canary, promotion or release. Repository tests can verify signed selection/load/revoke/rollback semantics but are not production selection or rollout receipts.

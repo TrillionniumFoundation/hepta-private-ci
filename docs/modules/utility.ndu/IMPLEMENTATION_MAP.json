@@ -583,7 +583,26 @@
     "stochasticConsumerSource": {
       "state": "candidate_implemented_in_intelligence_control_not_product_activated",
       "callSurface": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
-      "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
+      "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient",
+      "requirement": "The externally admitted complete V2 manifest must match the pinned current artifact through the owner canonical V1 projection, including objective class, complete manifest support commitment and every representable predecessor; multi-parent projections are rejected. The host separately authenticates the live withdrawal frontier; raw signed V1 CURRENT is not full owner-service provenance validation.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_authenticated_registry_objective_drift"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_authenticated_registry_support_drift"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_authenticated_registry_lineage_drift"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_rejects_lossy_multiple_predecessor_projection"
+        }
+      ]
     }
   },
   "selectedProductionWriterState": "not_established",

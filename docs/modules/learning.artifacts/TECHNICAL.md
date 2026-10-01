@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification checks are defined for this source; a particular candidate passes only when its actual check results prove that. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 The current source includes `LearningArtifactOwnerService` composed over the
 fenced `LearningArtifactOwnerHost`, independent selector verification, and an
@@ -275,6 +275,12 @@ route changes. These boundaries are detailed in
 [`OWNER_SERVICE.md`](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md);
 source durability ordering does not prove target-filesystem power-loss behavior.
 
+Public host publication mutations hold a same-host mutex across checks, quota
+reservation, durable effects and checkpoint completion. This prevents shared
+host references from racing new-operation or phase checks even while one OS
+writer lock is held; mutex poisoning is indeterminate. The locks serialize
+mutations and do not provide a multi-file atomic commit.
+
 Owner publication validates the next transaction state before writing final
 payload, snapshot or witness names. Those files, complete admissions, signed
 heads and checkpoints use synchronized temporary records and no-replace hard
@@ -293,8 +299,21 @@ stale or changed checkpoints fail before effects. Lease rotation may authorize
 present work for the same producer/scope while preserving the original durable
 lease commitment; an unrelated producer cannot adopt the old transaction.
 
+An unfinished operation that has declared payload durability must also prove the
+actual payload's exact length and digest before resume or its next durable
+effect. Missing/corrupt bytes reject without phase advancement or later record
+publication; the existing checkpoint remains available for reconciliation.
+
 New operations must extend the discovered signed CURRENT or trusted genesis
-before Prepared durability. Existing exact recovery keeps its original
+before Prepared durability. Before creating a new admission or Prepared
+checkpoint, the public host also rejects any other non-terminal durable
+operation with `RecoveryRequired`; the invariant does not depend only on the
+service's in-memory fence. Exact same-operation recovery remains permitted.
+New-operation entry also preflights all five checkpoints plus a temporary name
+and the payload/future registry/witness/head domains before admission or Prepared
+durability. Existing exact recovery uses phase-specific checks rather than this
+conservative new-operation completion reservation.
+Existing exact recovery keeps its original
 predecessor when CURRENT has already advanced at an uncertain boundary. The
 canonical registry registration event ID is
 `artifact-publication:<intent_digest>`; that signed-chain commitment binds the
@@ -306,15 +325,31 @@ Current reads verify the actual current snapshot receipt; requested operation
 recovery verifies its exact snapshot. Historical receipts retain checked shape
 and phase continuity, but every historical file is not reread to reauthenticate
 its file digest/byte count on each current view.
+Witness receipt metadata is rederived from the authenticated signed head's
+canonical witness bytes, including exact file digest and encoded length. CURRENT
+acquisition and terminal retry reject coherent receipt drift without assuming
+that every historical witness copy is still retained.
 In-memory phase advancement occurs only after the corresponding immutable
 record and checkpoint publication return successfully; indeterminate I/O still
 requires recovery from independently verified durable state.
+
+An exact historical Acknowledged retry returns the stable original receipt after
+checkpoint reconciliation. That receipt proves historical publication, not
+present readability of every payload/witness copy. Current load verifies the
+actual payload and snapshot, and final use still requires current eligibility
+and provenance checks.
 
 Global generation/authority-epoch floors govern the newest CURRENT. Historical
 links and retained restart anchors keep their enrolled per-key signature, epoch
 and time constraints; generations strictly increase and authority epochs and
 issue times never regress. Raising a live floor therefore follows publication
 of a replacement CURRENT and does not invalidate otherwise valid old history.
+
+The newest CURRENT must be unexpired; publish its authenticated replacement
+before expiry. Continuing live publication after that head expires remains an
+unimplemented recovery path. The covered named-service cold bootstrap uses an
+empty V1 registry and ZERO genesis; importing a nonzero legacy seed still needs
+a separately authenticated migration path.
 
 Generation exhaustion does not invalidate the final signed CURRENT. Discovery
 does not compute a nonexistent successor for a terminal generation `u64::MAX` head.
@@ -360,6 +395,9 @@ Source-enforced ceilings relevant to this module include:
 - candidate payload: 64 MiB;
 - canonical V1 registry snapshot: 8 MiB;
 - artifact-registry / withdrawal / lifecycle durable record ceiling: 4,096 records;
+- owner directory entries, including orphan/pending names: payloads 8,192;
+  registries/witnesses/admissions 16,384 each; heads 8,192 total and 4,096 final
+  `.head` records; transactions 24,576;
 - V2 source datasets per manifest: 64;
 - V2 lineage digests per manifest: 1,024;
 - V2 predecessor IDs per manifest: 64;
@@ -370,6 +408,16 @@ Source-enforced ceilings relevant to this module include:
 - iteration ledger events: 384.
 
 These bounds are safety/resource limits, not benchmark claims. Measure payload write + fsync, snapshot encode/write/reopen, withdrawal and lifecycle replay, current-head witness publication, pinned cold read/hash, current-view revalidation, crash recovery, parent-directory synchronization and orphan reconciliation on the selected target host.
+
+New atomic records reserve both their final and temporary names, covering the
+physical entry peak even if publication is killed before temporary cleanup.
+Admissions reserve the greater of missing final names and two slots when `.bin`
+is missing; index-only completion needs one and complete sidecar reuse needs zero.
+Every retained orphan/pending name counts on the next check. Exact existing
+atomic records are re-read and file/parent synchronized without temporary names,
+so capacity does not prevent their reconciliation.
+Reaching capacity does not authorize deletion; retention needs a separately
+authorized identity/reachability operation.
 
 Registry eligibility uses a private derived index rebuilt from immutable
 records during replay. A balanced-tree lookup replaces repeated predecessor
@@ -425,7 +473,31 @@ Focused native coverage includes:
 - exact pinned load/current-view revalidation and dataset revocation propagation;
 - bounded iteration and iteration-ledger transition/replay tests.
 
-The Lane E workflow executes locked all-target compilation, owner tests, cross-crate causal closure, the Rust↔Python wire-fault test, strict Clippy, rustfmt and an ordered-parent synthetic merge. The synthetic merge uses the pull-request base on PR events and `github.event.before` on normal pushes; initial pushes with a zero predecessor do not pretend to have a valid merge base.
+Ordinary authorized development runs the affected package tests and
+`python3 scripts/hepta-docs.py verify --profile development`. This profile checks
+current working-tree ownership, schemas, paths and references, including local
+edits. It does not renew historical source observations or execution evidence.
+The aggregate CI checks select native owners and reverse consumers from both
+the base and candidate dependency graphs; this guide does not require a full
+Lane E run for every source change.
+
+The dedicated artifact-storage and Lane E workflows are reusable/manual
+qualification entry points. Lane E executes locked all-target compilation,
+owner tests, cross-crate causal closure, the Rust↔Python wire-fault test, strict
+Clippy, rustfmt and an ordered-parent synthetic merge. Merge qualification binds
+the actual source and base Git objects recorded by that invocation; a source-only
+or manual run must not be described as proof of a pull-request merge candidate.
+`--profile qualification` additionally checks committed exact source identities
+and qualification inventories. It remains the default of the document and
+implementation-map verifiers for qualification callers; select the development
+profile explicitly for ordinary navigation checks.
+
+The artifact-storage entry point accepts `source_sha`/`base_sha`: explicit inputs
+take precedence over PR source/base context, with event SHA and push predecessor
+fallbacks respectively. Manual dispatch requires an explicit base. Both commits
+must be valid nonzero lowercase 40-character IDs, the checkout must equal source,
+and synthetic qualification records ordered `base, source` parents. Absent or
+invalid base context is rejected instead of substituting a historical parent.
 
 A green workflow is execution evidence for its exact commit only. It is not product activation, operator acceptance, selection, promotion or release. The repository cannot self-produce external filesystem trust, newest-head distribution, signing-key authentication or production route evidence.
 
@@ -678,4 +750,4 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 
 - `codex-rs/hepta-learning-artifacts`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate has checks defined in `.github/workflows/hepta-consolidated-source.yml`, including package tests, all-target compilation, strict Clippy and clean tracked state. Ordinary aggregate CI scopes native checks by dependency impact; full qualification additionally renews closed-world inventories and historical source evidence. The source-location record in this section is not an execution receipt. Only actual exact-candidate results prove source qualification, and they grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion or release authority.

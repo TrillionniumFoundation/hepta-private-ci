@@ -265,6 +265,23 @@ Focused coverage includes:
 - `src/owner_transaction_binding_tests.rs`, including detached/stale pure
   transactions, cross-producer/scope resume rejection before effects and a real
   checkpoint-write size fault that preserves the proven in-memory phase;
+- `src/owner_pending_fence_tests.rs`, including rejection of a new operation at
+  every unfinished phase before side effects while exact same-operation recovery
+  remains available;
+- `src/owner_pending_payload_tests.rs`, including missing and same-length corrupt
+  payload rejection before unfinished resume, later phase effects or service retry;
+- `src/owner_witness_receipt_tests.rs`, including coherent witness receipt
+  file-digest/length drift rejection at CURRENT acquisition and terminal retry;
+- `src/owner_admission_quota_tests.rs`, including orphan/pending admission entry
+  accounting, pre-effect capacity rejection, exact sidecar reuse at capacity and
+  temporary-peak reservation when only admission bytes are missing;
+- `src/owner_capacity_tests.rs`, covering orphan registry quota with exact snapshot
+  retry, orphan witness quota with exact witness retry, and payload/checkpoint/head
+  capacity rejection before effects;
+- `src/owner_begin_capacity_tests.rs`, covering complete future-domain reservation
+  before a new operation persists its admission or Prepared;
+- `src/owner_head_capacity_tests.rs`, covering the last legal CURRENT head and
+  rejection of an extra final head before effects;
 - `src/owner_generation_tests.rs`, including maximum-generation CURRENT
   publication/acknowledgement, read/reopen and extension rejection;
 - `src/owner_registry_replay_tests.rs`, including canonical registration intent
@@ -284,6 +301,13 @@ Cross-crate Lane E composition remains in
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. The exact
 candidate is qualified only by the corresponding GitHub workflow execution;
 source files and this mapping are not pass receipts.
+
+Ordinary aggregate CI selects the affected native owners and reverse consumers
+from both the base and candidate graphs. The dedicated artifact-storage and
+Lane E workflows are reusable/manual qualification entry points. Document and
+map checks use `--profile development` for working-tree navigation and
+`--profile qualification` for committed exact source evidence; a development
+pass does not renew a historical observation or prove a synthetic merge.
 Agentd's `../hepta-agentd/src/cognitive_ranker_owner_tests.rs` additionally loads
 a real owner-published ranker through full source membership, rejects a dataset
 outside that provenance and closes cached use after withdrawal.

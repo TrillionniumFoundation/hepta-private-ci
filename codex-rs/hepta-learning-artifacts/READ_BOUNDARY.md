@@ -76,8 +76,12 @@ either trust substitution or provenance downgrade.
 Required tests cover read-only loading, shared readers, writer lock contention,
 transient duplicates, existing empty and truncate-to-zero targets, symlinks,
 concurrent creators and post-create interference. Test source and CI submission
-are not passed execution evidence; source-head, actual-base merge, product-matrix
-and independent review gates remain mandatory. No capability or completion state
+are not passed execution evidence. Ordinary authorized development runs affected
+package tests, normal review and development-profile navigation checks. Changes
+or execution that exercise a runtime, independent-evaluation, external-effect or
+deployment boundary additionally require that boundary's exact-candidate
+qualification and applicable product or independent evidence. A source-only edit
+does not require unrelated deployment receipts. No capability or completion state
 is advanced by this document.
 
 

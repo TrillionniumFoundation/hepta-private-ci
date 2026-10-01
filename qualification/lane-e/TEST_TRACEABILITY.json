@@ -557,7 +557,7 @@
     {
       "id": "ART-11",
       "module": "learning.artifacts",
-      "requirement": "The named LearningArtifactOwnerService is the unique product caller of the fenced owner host, performs the complete durable publication saga, returns stable terminal retries, reopens from authenticated CURRENT, issues opaque VerifiedCurrentRegistryViewV1 values for final-use readers, rejects old-head/key-epoch rollback, and process-kill recovery never promotes an uncheckpointed phase.",
+      "requirement": "The named LearningArtifactOwnerService is the unique product caller of the fenced owner host, performs the complete durable publication saga, returns stable terminal retries, reopens from authenticated CURRENT, issues opaque VerifiedCurrentRegistryViewV1 values for final-use readers, rejects old-head/key-epoch rollback, and process-kill recovery never promotes an uncheckpointed phase. The public host admits at most one unfinished operation even under concurrent calls, rejects missing or corrupt declared payload effects, authenticates exact witness receipt metadata during current/retry/startup checks, and bounds admission sidecars including interrupted orphans while preserving exact reconciliation.",
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
@@ -670,6 +670,50 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs",
           "function": "stale_predecessor_for_a_new_operation_never_creates_an_irrecoverable_publication"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_pending_fence_tests.rs",
+          "function": "host_fences_new_operations_at_every_unfinished_phase_without_side_effects"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_pending_fence_tests.rs",
+          "function": "shared_host_concurrent_new_operations_create_exactly_one_pending_publication"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_pending_payload_tests.rs",
+          "function": "unfinished_recovery_and_effects_reject_missing_or_corrupt_declared_payloads"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_witness_receipt_tests.rs",
+          "function": "coherent_witness_receipt_metadata_drift_cannot_survive_current_or_terminal_retry"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_admission_quota_tests.rs",
+          "function": "admission_quota_bounds_orphans_and_preserves_exact_sidecar_reconciliation"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs",
+          "function": "registry_orphan_quota_rejects_binding_changes_and_preserves_exact_snapshot_retry"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs",
+          "function": "witness_orphan_quota_rejects_valid_signed_changes_and_preserves_exact_retry"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs",
+          "function": "publication_preflights_payload_checkpoint_and_head_capacity_before_effects"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_begin_capacity_tests.rs",
+          "function": "new_publication_rejects_insufficient_completion_capacity_before_admission_or_prepared"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_head_capacity_tests.rs",
+          "function": "last_legal_current_head_fits_while_an_extra_final_head_rejects_before_effects"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_admission_quota_tests.rs",
+          "function": "admission_quota_reserves_the_temporary_peak_when_only_admission_bytes_are_missing"
         }
       ],
       "status": "native_test_mapped"

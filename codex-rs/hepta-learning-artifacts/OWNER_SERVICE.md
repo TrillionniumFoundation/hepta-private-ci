@@ -25,6 +25,13 @@ verifies externally signed writer leases and CURRENT heads; it has no signing
 private key. The independent selector verifier admits exact load eligibility
 and returns `AuthorityPosture::DENY_ALL`.
 
+Each public host publication mutation also holds a same-host mutex from its
+precondition/inventory checks through durable effects and checkpoint completion.
+The OS lock excludes other cooperating hosts; the mutex serializes concurrent
+calls through shared references to this host, including new-operation admission
+quota checks. Mutex poisoning fails with an indeterminate outcome. These locks
+do not turn the five-phase protocol into one atomic filesystem transaction.
+
 The deployment supplies the protected root, authenticated public-key trust,
 signed lease/head/selection values, trustworthy time, independently retained
 restart anchors, and authenticated withdrawal snapshots. Dataset producers own
@@ -85,6 +92,12 @@ restoration of a pre-CURRENT namespace is not locally distinguishable from first
 bootstrap; the deployment must independently prevent treating that event as a
 new namespace.
 
+The covered named-service cold-bootstrap profile starts with an empty V1
+compatibility registry and ZERO genesis predecessor. A nonzero legacy registry
+seed requires an authenticated migration/bootstrap path that the named service
+does not currently supply; accepting a nonzero trust field alone does not prove
+that import or its source provenance.
+
 After a head has been published, retain its signed value outside the artifact
 namespace and restart with `required_current_head: Some(anchor)`. The service
 uses `open_with_required_current_head`, authenticates the anchor and requires
@@ -103,6 +116,12 @@ the newest head requires a currently admissible signer and unexpired witness.
 CURRENT is a verified chain over immutable `.head` records, not a mutable file
 whose basename establishes freshness.
 
+The newest CURRENT must remain unexpired. Provision and publish its authenticated
+replacement before expiry. After CURRENT expires, live discovery and dependent
+publication fail closed; online continuation from that expired head is not a
+solved recovery path. A valid historical ACK retry has separate receipt semantics
+and does not restore an expired CURRENT to live authority.
+
 A valid terminal CURRENT at generation `u64::MAX` remains discoverable and readable
 and can be acknowledged/reopened normally. A new operation requires a checked
 next CURRENT generation; overflow rejects before admission-sidecar or Prepared
@@ -113,6 +132,22 @@ publication checkpoints. One non-terminal operation becomes a recovery fence;
 unrelated publication is rejected until that operation is reconciled. Multiple
 non-terminal operations produce `RecoveryConflict`. An absent CURRENT view
 does not authorize a read consumer to invent one from local snapshots.
+
+The public host enforces this single-pending-operation invariant before a new
+operation creates its admission sidecar or Prepared checkpoint. If another
+operation has a non-terminal durable checkpoint, `begin_publication` returns
+`RecoveryRequired` with that operation's identity and creates no new publication
+record. Exact same-operation recovery remains admissible under the existing
+intent, writer, predecessor and checkpoint checks; it must not be blocked as
+unrelated work. This host check prevents bypassing the service fence to create
+multiple pending operations that its next startup could not reconcile.
+
+Before a new operation persists either admission or Prepared, the host also
+preflights completion capacity: all five checkpoint names plus one temporary
+name, and the known payload plus future registry, witness and head publications.
+An existing exact operation bypasses these conservative new-operation budgets
+and uses its phase-specific exact-file checks; capacity fencing must not prevent
+reconciliation solely because the namespace is now full.
 
 Upgrading an older owner namespace is not a transparent reopen when its
 checkpoints lack complete admission sidecars. Before restarting the service,
@@ -204,8 +239,8 @@ indeterminate failures still require orphan reconciliation.
 
 `publish` validates or recreates the exact operation's checkpoint sequence,
 rebuilds its transaction from the verified durable admission and predecessor registry,
-and continues from the last proven phase. Existing immutable files can satisfy
-retry only after exact expected-content verification. Preserve the operation's
+and continues from the last proven phase. Non-terminal continuation accepts an
+existing phase file only after exact expected-content verification. Preserve the operation's
 original lease commitment during recovery; a new valid lease authorizes present
 work but does not rewrite historical phase identity.
 
@@ -219,6 +254,14 @@ receipt drift, or a producer change rejects before filesystem effects. Pure
 transaction constructors and snapshots cannot substitute for this host-owned
 durable admission; a legitimate same-producer lease rotation preserves the
 original phase identity.
+
+Before resuming an unfinished `PayloadDurable`, `RegistryDurable` or
+`WitnessDurable` operation, or accepting its next durable effect, the host rereads
+the declared payload beneath the trusted root and verifies its exact byte count
+and digest against the full admission. A missing or corrupt payload rejects
+without advancing the transaction or publishing later records. The checkpoint
+remains inspectable for reconciliation, and the service retains its recovery
+fence; checkpoint commitments alone cannot establish that those bytes exist.
 
 For a new operation, `begin_publication` requires its predecessor to be the
 discovered signed CURRENT head, or the trusted genesis when no CURRENT exists,
@@ -236,7 +279,8 @@ by an earlier phase. Terminal acknowledgement is checked at its historical time,
 so subsequent source withdrawal blocks current use without destroying a valid
 historical acknowledgement. CURRENT reads and registry-by-head recovery validate
 the same complete checkpoint inventory; an acknowledged label cannot bypass
-semantic replay. Corrupt terminal retries close the service's recovery gate.
+semantic replay. Corrupt terminal checkpoint or intent evidence closes the
+service's recovery gate.
 
 Checkpoint hashes alone do not authenticate an operation name. Owner
 registration uses the canonical event ID
@@ -261,6 +305,13 @@ Every historical snapshot's file digest/byte count is not reauthenticated on
 every current read; the signed prefix association avoids quadratic historical
 snapshot I/O without claiming that additional verification.
 
+Witness receipt metadata is fully rederived from the authenticated signed head:
+canonical witness encoding determines its binding, witness digest, file digest
+and encoded length. CURRENT acquisition and terminal retry reject even coherent
+checkpoint rewrites that change those receipt fields. This verifies what the
+receipt must describe; it does not require every historical witness copy to
+remain present or turn local receipt hashes into signing authority.
+
 If a failed publication recovers an already durable Acknowledged checkpoint,
 the service reloads the authenticated live CURRENT registry before clearing its
 recovery fence. An indeterminate acknowledgement can precede the in-memory
@@ -274,6 +325,12 @@ parent directory on Unix. A visible no-replace link after a failed directory
 sync therefore cannot bypass the original acknowledgement durability boundary.
 This reconciliation changes no historical metadata or lease commitment and
 preserves valid exact retries after the original admission/head expires.
+
+A stable historical acknowledgement receipt proves the original publication;
+it does not re-read every retained payload/witness copy or promise that those
+files remain readable now. Present candidate loading verifies the actual payload
+bytes and snapshot receipts, and final use separately verifies current eligibility
+and provenance. Historical retry success is not current load or use authority.
 
 | Observation | Required behavior |
 |---|---|
@@ -412,13 +469,29 @@ integration tests remain repository work.
 ## 8. Bounded qualification and operating evidence
 
 Candidate bytes are capped at 64 MiB; V1 snapshots and auxiliary durable histories
-are bounded at 8 MiB/4,096 records. CURRENT discovery admits at most 4,096 head
-records and bounds all head-directory entries, including pending files, at 8,192.
-Transaction-directory scans count all entries against a 24,576-entry
-ceiling, host small records are capped at 16 KiB, and full admission sidecars are
-capped at 128 KiB. Capacity exhaustion is an
-explicit rejection, not a reason to truncate history or choose an older head.
-Retention/compaction requires a versioned format and independent rollback floor.
+are bounded at 8 MiB/4,096 records. Host small records are capped at 16 KiB and
+full admission sidecars at 128 KiB. Owner publication enforces these directory
+entry budgets, counting all orphan, pending and unrelated names:
+
+| Domain | Maximum entries |
+|---|---|
+| `payloads/` | 8,192 |
+| `registries/`, `witnesses/`, `admissions/` | 16,384 each |
+| `heads/` | 8,192 total, including at most 4,096 final `.head` records |
+| `transactions/` | 24,576 |
+
+Every new atomic record reserves two simultaneous names, final and temporary,
+before publication. A kill between final hard-link creation and temporary cleanup
+therefore fits within the entry budget; crash residue still counts on subsequent
+checks and is not deleted automatically. Admission publication reserves the
+larger of its missing final-name count and two names when `.bin` is missing.
+An existing `.bin` needing only its manifest index reserves one; complete retained
+sidecars reserve none. Exact existing atomic records are re-read and file/parent
+synchronized without allocating a temporary name, permitting reconciliation at
+capacity. Capacity exhaustion rejects before the affected effect; it does not
+authorize truncating history or choosing an older head.
+Orphan deletion/retention requires a separately authorized reachability operation;
+compaction also requires a versioned format and independent rollback floor.
 
 From the repository root, check caller and Lane E source closure:
 
@@ -434,11 +507,31 @@ cargo check --locked -p codex-hepta-learning-artifacts --all-targets
 just test --locked -p codex-hepta-learning-artifacts
 ```
 
-After committing and rebinding exact source identities, run
-`python3 scripts/hepta-implementation-maps.py verify` from the repository root.
-The Lane E workflow also qualifies the actual-base synthetic merge, cross-crate
-reload/rollback and strict lint/format. Source-navigation and caller proofs do
-not prove executable bootstrap, target-host behavior or operator acceptance.
+For ordinary development, run
+`python3 scripts/hepta-docs.py verify --profile development` or
+`python3 scripts/hepta-implementation-maps.py verify --profile development`
+from the repository root. These checks validate current navigation and allow
+uncommitted edits; they do not require rebinding a historical source observation
+or renew its execution evidence. Aggregate CI selects affected owners and reverse
+consumers from both exact dependency graphs.
+
+For explicit qualification, commit the inputs, bind the exact source observations
+and run `python3 scripts/hepta-implementation-maps.py verify --profile qualification`.
+Dedicated artifact-storage and Lane E workflows are reusable/manual entry points;
+their recorded source/base identities define any synthetic-merge evidence. Lane E
+also checks cross-crate reload/rollback and strict lint/format. Source-navigation
+and caller proofs do not prove executable bootstrap, target-host behavior or
+operator acceptance.
+
+`hepta-artifact-storage.yml` accepts `source_sha` and `base_sha` inputs. Source
+resolution is explicit input, then PR head, then the selected event's `github.sha`;
+base resolution is explicit input, then PR base, then the push predecessor.
+Manual dispatch requires `base_sha`; reusable invocation may obtain both values
+from its PR/push context or supply them explicitly. Both values must be nonzero
+lowercase 40-character IDs of actual commits, must differ, and checkout HEAD
+must equal the source. The synthetic commit records ordered parents `base, source`.
+A missing/invalid context is a rejected qualification invocation, not permission
+to infer a base from local history.
 
 Before claiming target-host execution, retain exact commit/configuration and
 trust digests, signed restart anchors, all phase/retry/kill-and-reopen results,

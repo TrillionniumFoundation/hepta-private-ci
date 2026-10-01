@@ -152,7 +152,14 @@
         "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::pure_phase_advancement_cannot_skip_owned_payload_and_registry_checkpoints",
         "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::different_producer_or_scope_cannot_resume_an_existing_owner_operation",
         "codex-rs/hepta-learning-artifacts/src/owner_registry_replay_tests.rs::owner_registry_phase_rejects_a_registration_for_another_intent_before_effects",
-        "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::checkpoint_write_failure_preserves_the_proven_phase_and_allows_exact_retry"
+        "codex-rs/hepta-learning-artifacts/src/owner_transaction_binding_tests.rs::checkpoint_write_failure_preserves_the_proven_phase_and_allows_exact_retry",
+        "codex-rs/hepta-learning-artifacts/src/owner_pending_payload_tests.rs::unfinished_recovery_and_effects_reject_missing_or_corrupt_declared_payloads",
+        "codex-rs/hepta-learning-artifacts/src/owner_admission_quota_tests.rs::admission_quota_bounds_orphans_and_preserves_exact_sidecar_reconciliation",
+        "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs::registry_orphan_quota_rejects_binding_changes_and_preserves_exact_snapshot_retry",
+        "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs::witness_orphan_quota_rejects_valid_signed_changes_and_preserves_exact_retry",
+        "codex-rs/hepta-learning-artifacts/src/owner_capacity_tests.rs::publication_preflights_payload_checkpoint_and_head_capacity_before_effects",
+        "codex-rs/hepta-learning-artifacts/src/owner_begin_capacity_tests.rs::new_publication_rejects_insufficient_completion_capacity_before_admission_or_prepared",
+        "codex-rs/hepta-learning-artifacts/src/owner_admission_quota_tests.rs::admission_quota_reserves_the_temporary_peak_when_only_admission_bytes_are_missing"
       ],
       "sourcePathExists": true,
       "designOperation": "publication_checkpoint",
@@ -167,7 +174,8 @@
       "state": "product_writer_service_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-learning-artifacts/src/owner_generation_tests.rs::terminal_maximum_generation_head_remains_readable_but_cannot_extend"
+        "codex-rs/hepta-learning-artifacts/src/owner_generation_tests.rs::terminal_maximum_generation_head_remains_readable_but_cannot_extend",
+        "codex-rs/hepta-learning-artifacts/src/owner_head_capacity_tests.rs::last_legal_current_head_fits_while_an_extra_final_head_rejects_before_effects"
       ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_head",
@@ -181,7 +189,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_witness_receipt_tests.rs::coherent_witness_receipt_metadata_drift_cannot_survive_current_or_terminal_retry"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
@@ -194,7 +204,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_pending_fence_tests.rs::host_fences_new_operations_at_every_unfinished_phase_without_side_effects",
+        "codex-rs/hepta-learning-artifacts/src/owner_pending_fence_tests.rs::shared_host_concurrent_new_operations_create_exactly_one_pending_publication"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
@@ -259,7 +272,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_pending_payload_tests.rs::unfinished_recovery_and_effects_reject_missing_or_corrupt_declared_payloads",
+        "codex-rs/hepta-learning-artifacts/src/owner_witness_receipt_tests.rs::coherent_witness_receipt_metadata_drift_cannot_survive_current_or_terminal_retry"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
@@ -273,7 +289,9 @@
       "state": "product_writer_service_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs::stale_predecessor_for_a_new_operation_never_creates_an_irrecoverable_publication"
+        "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs::stale_predecessor_for_a_new_operation_never_creates_an_irrecoverable_publication",
+        "codex-rs/hepta-learning-artifacts/src/owner_pending_payload_tests.rs::unfinished_recovery_and_effects_reject_missing_or_corrupt_declared_payloads",
+        "codex-rs/hepta-learning-artifacts/src/owner_witness_receipt_tests.rs::coherent_witness_receipt_metadata_drift_cannot_survive_current_or_terminal_retry"
       ],
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
