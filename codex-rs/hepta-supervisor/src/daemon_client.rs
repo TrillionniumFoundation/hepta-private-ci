@@ -20,7 +20,6 @@ use crate::ProductionRecoveryDecision;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_REQUEST_BYTES;
-use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 use crate::daemon_protocol::SupervisordAgentStatus;
 use crate::daemon_protocol::SupervisordControlFence;
 use crate::daemon_protocol::SupervisordHealth;
@@ -29,6 +28,9 @@ use crate::daemon_protocol::SupervisordMutationAccepted;
 use crate::daemon_protocol::SupervisordPayload;
 use crate::daemon_protocol::SupervisordRequest;
 use crate::daemon_protocol::SupervisordResponse;
+
+#[path = "daemon_client_validation.rs"]
+mod validation;
 
 pub struct SupervisordClient {
     socket_path: PathBuf,
@@ -231,9 +233,11 @@ impl SupervisordClient {
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| SupervisorError::Invalid("supervisord connect timed out".to_string()))??;
+        codex_uds::ensure_current_user_peer(&stream)?;
         let (reader, mut writer) = tokio::io::split(stream);
-        let mut bytes = serde_json::to_vec(&request)
-            .map_err(|error| SupervisorError::Invalid(format!("encode request: {error}")))?;
+        let mut bytes = serde_json::to_vec(&request).map_err(|_| {
+            SupervisorError::Invalid("could not encode supervisord request".to_string())
+        })?;
         bytes.push(b'\n');
         if bytes.len() as u64 > MAX_SUPERVISORD_CONTROL_REQUEST_BYTES {
             return Err(SupervisorError::Invalid(
@@ -243,7 +247,11 @@ impl SupervisordClient {
         timeout(self.timeout, writer.write_all(&bytes))
             .await
             .map_err(|_| SupervisorError::Invalid("supervisord write timed out".to_string()))??;
-        writer.shutdown().await?;
+        timeout(self.timeout, writer.shutdown())
+            .await
+            .map_err(|_| {
+                SupervisorError::Invalid("supervisord shutdown timed out".to_string())
+            })??;
         let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
         let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
@@ -257,15 +265,8 @@ impl SupervisordClient {
                 "supervisord returned an invalid bounded response".to_string(),
             ));
         }
-        let response: SupervisordResponse = serde_json::from_slice(&response_bytes)
-            .map_err(|error| SupervisorError::Invalid(format!("decode response: {error}")))?;
-        if response.schema_version != SUPERVISORD_CONTROL_SCHEMA_VERSION
-            || response.request_id != request_id
-        {
-            return Err(SupervisorError::Invalid(
-                "supervisord response identity does not match request".to_string(),
-            ));
-        }
+        let response = validation::decode_response(&response_bytes)?;
+        validation::validate_response(&request, &response)?;
         match response.payload {
             SupervisordPayload::Error {
                 code,
@@ -279,8 +280,8 @@ impl SupervisordClient {
     }
 }
 
-fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {
-    Err(SupervisorError::Invalid(format!(
-        "supervisord returned unexpected payload {payload:?}"
-    )))
+fn unexpected<T>(_payload: SupervisordPayload) -> Result<T, SupervisorError> {
+    Err(SupervisorError::Invalid(
+        "supervisord returned an unexpected payload type".to_string(),
+    ))
 }
