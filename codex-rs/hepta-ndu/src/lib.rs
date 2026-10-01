@@ -47,7 +47,6 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
-pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;
 pub use fixed::mul_q32_ties_even;
@@ -103,3 +102,17 @@ pub use z_conversion::ZCoordinateConventionV1;
 pub use z_conversion::ZQ24ConversionReceiptV1;
 pub use z_conversion::admit_z_conversion_profile;
 pub use z_conversion::convert_z_to_original_q24;
+
+/// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
+/// Pareto semantics are now materialized as a digestible policy.
+#[deprecated(
+    since = "0.0.0",
+    note = "new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2"
+)]
+pub fn evaluate_candidates(
+    set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+) -> Result<NduEvaluationReceipt, NduError> {
+    evaluator::evaluate_candidates(set, profile, scalarization)
+}

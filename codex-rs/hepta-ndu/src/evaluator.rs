@@ -62,13 +62,7 @@ struct ValidatedEvaluationPolicy {
     tolerances: BTreeMap<StableId, FixedQ32>,
 }
 
-/// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
-/// Pareto semantics are now materialized as a digestible policy.
-#[deprecated(
-    since = "0.0.0",
-    note = "new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2"
-)]
-pub fn evaluate_candidates(
+pub(crate) fn evaluate_candidates(
     set: ContributionSet,
     profile: UtilityProfile,
     scalarization: Option<ScalarizationProfile>,
