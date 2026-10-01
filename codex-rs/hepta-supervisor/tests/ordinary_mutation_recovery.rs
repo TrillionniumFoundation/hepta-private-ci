@@ -26,6 +26,9 @@ use codex_hepta_supervisor::run_supervisord;
 use pretty_assertions::assert_eq;
 use tokio_util::sync::CancellationToken;
 
+#[path = "common/socket_directory.rs"]
+mod socket_directory;
+
 struct Fleet {
     _directory: tempfile::TempDir,
     root: HeptaFleetRoot,
@@ -38,10 +41,8 @@ struct Fleet {
 
 impl Fleet {
     fn new(program: &str) -> Self {
-        let directory = tempfile::Builder::new()
-            .prefix("h7-mutation-")
-            .tempdir_in("/tmp")
-            .expect("short Unix socket directory");
+        let directory =
+            socket_directory::temporary_fleet("h7m-").expect("short Unix socket directory");
         let root = HeptaFleetRoot::parse(directory.path().join("fleet")).expect("fleet root");
         let registry = FleetRegistry::initialize(root.clone()).expect("initialize registry");
         let workspace = directory.path().join("workspace");
@@ -76,7 +77,7 @@ impl Fleet {
             root,
             agent,
             release,
-            run_root: record.layout.run_root().to_path_buf(),
+            run_root: record.layout.owner_run_root().to_path_buf(),
             client,
             cancellation: CancellationToken::new(),
         }

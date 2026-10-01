@@ -41,6 +41,9 @@ use codex_hepta_supervisor::Supervisor;
 use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::UnixProcessDriver;
 
+#[path = "common/socket_directory.rs"]
+mod socket_directory;
+
 const IDS: [&str; 5] = [
     "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
     "019153a4-3088-7e03-a56a-9b1964f75dd3",
@@ -213,13 +216,7 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
-        // The child fixtures bind the same compact control sockets as the
-        // product.  Keep the synthetic fleet under a short root so Darwin's
-        // SUN_LEN limit is exercised against production geometry, not the
-        // SSD harness's intentionally deep temporary directory.
-        let temp = tempfile::Builder::new()
-            .prefix("hsup-pairs-")
-            .tempdir_in("/tmp")?;
+        let temp = socket_directory::temporary_fleet("hsup-")?;
         let root = HeptaFleetRoot::parse(temp.path().join("fleet"))?;
         let registry = FleetRegistry::initialize(root.clone())?;
         let mut agents = Vec::new();
@@ -560,7 +557,7 @@ fn run_agent_child() -> Result<()> {
         let home_root =
             PathBuf::from(std::env::var_os("HEPTA_AGENT_HOME").context("HEPTA_AGENT_HOME")?);
         let workspace = std::env::current_dir()?;
-        let lifecycle = latest_lifecycle(&run_root)?;
+        let lifecycle = latest_lifecycle(layout.owner_run_root())?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
         let payload = match request.method {
             AgentdMethod::Drain => AgentdPayload::Drain(DrainSnapshot {

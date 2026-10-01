@@ -153,7 +153,7 @@ fn persisted_intent(
         status,
     )
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    write_intent_raw(record.layout.run_root(), &intent)?;
+    write_intent_raw(record.layout.owner_run_root(), &intent)?;
 
     Ok((fleet, record, intent))
 }
@@ -182,14 +182,14 @@ fn exact_digest_legacy_abort_cannot_terminalize_ambiguous_signed_intent()
     // A digest identifies a record; it is not an independent recovery decision.
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
+    write_signed_intent_recovery_directive(record.layout.owner_run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
     assert!(recovered.production_recovery_required(&fleet.agent_id)?);
     assert_eq!(
-        read_signed_intent(record.layout.run_root()).expect("read intent"),
+        read_signed_intent(record.layout.owner_run_root()).expect("read intent"),
         Some(intent)
     );
     assert!(
@@ -221,7 +221,7 @@ fn aborted_signed_intent_remains_terminal_across_recovery() -> Result<(), Superv
                 .active
         );
         assert_eq!(
-            read_signed_intent(record.layout.run_root()).expect("unchanged terminal intent"),
+            read_signed_intent(record.layout.owner_run_root()).expect("unchanged terminal intent"),
             Some(intent.clone())
         );
     }
@@ -236,7 +236,7 @@ fn legacy_abort_cli_fails_without_writing_a_recovery_directive() -> Result<(), S
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
     )
     .arg("abort")
-    .arg(record.layout.run_root())
+    .arg(record.layout.owner_run_root())
     .arg(intent.intent_sha256.as_str())
     .output()?;
     assert!(!output.status.success());
@@ -244,12 +244,12 @@ fn legacy_abort_cli_fails_without_writing_a_recovery_directive() -> Result<(), S
     assert!(
         !record
             .layout
-            .run_root()
+            .owner_run_root()
             .join(codex_hepta_supervisor::SIGNED_INTENT_RECOVERY_FILE)
             .exists()
     );
     assert_eq!(
-        read_signed_intent(record.layout.run_root()).expect("unchanged intent"),
+        read_signed_intent(record.layout.owner_run_root()).expect("unchanged intent"),
         Some(intent)
     );
     Ok(())
