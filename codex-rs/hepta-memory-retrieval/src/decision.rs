@@ -17,7 +17,10 @@ use codex_hepta_types::StableId;
 
 use crate::GeneratedCandidateInputV1;
 use crate::GeneratedRecallV1;
+use crate::MAX_GENERATION_BOUND_CANDIDATES;
+use crate::MAX_GENERATION_BOUND_RESULTS;
 use crate::MemoryCueV1;
+use crate::RecallDispositionV1;
 use crate::RetrievalPolicyV1;
 use crate::RetrievalSourceCompletenessV1;
 use crate::build_candidate_union_from_generated;
@@ -89,6 +92,21 @@ impl RetrievalAssignmentObservationV1 {
         }
         if self.assignment_propensity != ProbabilityQ32::ONE {
             return Err(AssignmentErrorV1::InvalidDeterministicPropensity);
+        }
+        if self.enumerated_candidates.len() > MAX_GENERATION_BOUND_CANDIDATES
+            || self.legal_candidates.len() > MAX_GENERATION_BOUND_CANDIDATES
+            || self.selected_candidates.len() > MAX_GENERATION_BOUND_RESULTS
+            || usize::try_from(self.omitted_by_policy_limits).unwrap_or(usize::MAX)
+                > MAX_GENERATION_BOUND_CANDIDATES
+        {
+            return Err(AssignmentErrorV1::CandidateLimitExceeded);
+        }
+        if self
+            .enumerated_candidates
+            .iter()
+            .any(|candidate| candidate.record_digest.is_zero())
+        {
+            return Err(AssignmentErrorV1::EmptyDigest("assignment_candidate"));
         }
         if !strictly_sorted_unique(&self.enumerated_candidates)
             || !strictly_sorted_unique(&self.legal_candidates)
@@ -166,6 +184,80 @@ pub fn observe_retrieval_assignment(
         return Err(AssignmentErrorV1::RecallUnionMismatch);
     }
 
+    if recall.packet.generation_vector_digest != union.union.generation_vector_digest
+        || recall.packet.distinct_channels != union.union.distinct_channels
+        || recall.packet.selections.len() > usize::try_from(policy.maximum_results).unwrap_or(0)
+        || (recall.packet.disposition == RecallDispositionV1::Recalled
+            && recall.packet.selections.len()
+                + usize::try_from(recall.packet.omitted_count).unwrap_or(usize::MAX)
+                != union.union.entries.len())
+    {
+        return Err(AssignmentErrorV1::RecallUnionMismatch);
+    }
+    if recall.packet.engram.is_none() {
+        let expected = crate::recall(
+            cue,
+            policy,
+            input
+                .flattened_candidates()
+                .map_err(|error| AssignmentErrorV1::InvalidGenerator(error.to_string()))?,
+        )
+        .map_err(|error| AssignmentErrorV1::InvalidRecall(error.to_string()))?;
+        if recall.packet != expected {
+            return Err(AssignmentErrorV1::RecallUnionMismatch);
+        }
+    }
+    for selection in &recall.packet.selections {
+        let entry = union
+            .union
+            .entries
+            .iter()
+            .find(|entry| {
+                entry.record.record_id == selection.record_id
+                    && entry.record.revision == selection.record_revision
+            })
+            .ok_or(AssignmentErrorV1::SelectedCandidateOutsideLegalSet)?;
+        if entry.record.record_digest() != selection.record_digest {
+            return Err(AssignmentErrorV1::SelectedDigestMismatch);
+        }
+        if entry.weighted_score != selection.weighted_score
+            || entry.maximum_ood != selection.maximum_ood
+            || entry.channels != selection.channels
+            || entry.support_digests != selection.support_digests
+            || entry.contradiction_group_digests != selection.contradiction_group_digests
+            || selection.weighted_score < policy.minimum_total_score
+        {
+            return Err(AssignmentErrorV1::SelectedEvidenceMismatch);
+        }
+    }
+
+    if let Some(engram) = &recall.packet.engram {
+        let (expected_support, expected_selection) =
+            crate::engram::select_engram_candidates(&union.union, policy, engram);
+        let disposition_allowed = [
+            crate::engram::EngramContradictionPolicy::ForceAbstention,
+            crate::engram::EngramContradictionPolicy::DeferToRetrieval,
+        ]
+        .into_iter()
+        .any(|posture| {
+            crate::engram::engram_disposition(
+                &union.union,
+                policy,
+                engram,
+                &expected_selection,
+                posture,
+            ) == recall.packet.disposition
+        });
+        if usize::try_from(engram.resources.candidate_records).unwrap_or(usize::MAX)
+            != union.union.entries.len()
+            || engram.selected_support != expected_support
+            || !disposition_allowed
+            || (recall.packet.disposition == RecallDispositionV1::Recalled
+                && recall.packet.selections != expected_selection)
+        {
+            return Err(AssignmentErrorV1::RecallUnionMismatch);
+        }
+    }
     let mut enumerated_candidates = input
         .flattened_candidates()
         .map_err(|error| AssignmentErrorV1::InvalidGenerator(error.to_string()))?
@@ -263,6 +355,8 @@ pub enum AssignmentErrorV1 {
     InvalidRecall(String),
     RecallUnionMismatch,
     NonCanonicalCandidateSet,
+    CandidateLimitExceeded,
+    SelectedEvidenceMismatch,
     LegalCandidateOutsideEnumeration,
     SelectedCandidateOutsideLegalSet,
     SelectedDigestMismatch,
