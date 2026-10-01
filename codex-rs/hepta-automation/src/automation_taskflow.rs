@@ -278,6 +278,9 @@ impl AutomationStore {
         let step_attempt = self
             .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
             .await?;
+        if step_attempt != occurrence.step_attempt {
+            return Err(TaskFlowError::StaleFence);
+        }
         let command_id = format!(
             "automation:run:requeue-absent:{}:{step_attempt}",
             occurrence.occurrence_id
@@ -557,6 +560,9 @@ impl AutomationStore {
         let step_attempt = self
             .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
             .await?;
+        if step_attempt != occurrence.step_attempt {
+            return Err(TaskFlowError::StaleFence);
+        }
         let command_id = format!(
             "automation:run:cancel-absent:{}:{step_attempt}",
             occurrence.occurrence_id
@@ -597,12 +603,20 @@ impl AutomationStore {
             }
             return Ok(());
         }
-        if run.state != TaskFlowRunState::Running {
-            return Err(TaskFlowError::Conflict(
-                "provider-absence cancellation requires a running TaskFlow".to_string(),
-            ));
-        }
-        let fence = automation_recovery_fence(&run, occurrence)?;
+        let fence = match run.state {
+            TaskFlowRunState::Running => automation_recovery_fence(&run, occurrence)?,
+            TaskFlowRunState::Queued => TaskFlowFence::new(
+                self.taskflow_owner_agent_id().clone(),
+                format!("automation.scheduler:{}", occurrence.task_id),
+                occurrence.claim_generation,
+                automation_occurrence_generation(occurrence)?,
+                occurrence.claim_token.clone(),
+            )?,
+            _ => return Err(TaskFlowError::Conflict(
+                "provider-absence cancellation requires a running or proven-absent queued TaskFlow"
+                    .to_string(),
+            )),
+        };
         if let Some(step) = self
             .read_taskflow_step(
                 &occurrence.taskflow_run_id,
@@ -614,6 +628,12 @@ impl AutomationStore {
         {
             match step.state {
                 TaskFlowStepState::Prepared | TaskFlowStepState::Claimed => {
+                    if run.state != TaskFlowRunState::Running {
+                        return Err(TaskFlowError::Conflict(
+                            "queued cancellation requires an already-settled absence receipt"
+                                .to_string(),
+                        ));
+                    }
                     self.cancel_taskflow_step_after_proven_absence(
                         &occurrence.taskflow_run_id,
                         AUTOMATION_STEP_ID,
@@ -839,26 +859,42 @@ fn automation_recovery_fence(
     run: &TaskFlowRun,
     occurrence: &AutomationOccurrence,
 ) -> Result<TaskFlowFence, TaskFlowError> {
+    let fence = TaskFlowFence {
+        owner_agent_id: run.owner_agent_id.clone(),
+        owner_id: run.owner_id.clone().ok_or(TaskFlowError::StaleFence)?,
+        owner_epoch: run.owner_epoch.ok_or(TaskFlowError::StaleFence)?,
+        generation: run.generation.ok_or(TaskFlowError::StaleFence)?,
+        fencing_token: run.fencing_token.clone().ok_or(TaskFlowError::StaleFence)?,
+    };
+    check_automation_occurrence_fence(&fence, occurrence)?;
+    Ok(fence)
+}
+
+fn check_automation_occurrence_fence(
+    fence: &TaskFlowFence,
+    occurrence: &AutomationOccurrence,
+) -> Result<(), TaskFlowError> {
     let expected_owner = format!("automation.scheduler:{}", occurrence.task_id);
-    if run.owner_id.as_deref() != Some(expected_owner.as_str()) {
+    let expected_generation = automation_occurrence_generation(occurrence)?;
+    if fence.owner_id != expected_owner
+        || fence.owner_epoch != occurrence.claim_generation
+        || fence.generation != expected_generation
+        || fence.fencing_token != occurrence.claim_token
+    {
         return Err(TaskFlowError::StaleFence);
     }
-    Ok(TaskFlowFence {
-        owner_agent_id: run.owner_agent_id.clone(),
-        owner_id: run
-            .owner_id
-            .clone()
-            .ok_or_else(|| TaskFlowError::Corrupt("automation run lost owner id".to_string()))?,
-        owner_epoch: run
-            .owner_epoch
-            .ok_or_else(|| TaskFlowError::Corrupt("automation run lost owner epoch".to_string()))?,
-        generation: run
-            .generation
-            .ok_or_else(|| TaskFlowError::Corrupt("automation run lost generation".to_string()))?,
-        fencing_token: run.fencing_token.clone().ok_or_else(|| {
-            TaskFlowError::Corrupt("automation run lost fencing token".to_string())
-        })?,
-    })
+    Ok(())
+}
+
+fn automation_occurrence_generation(
+    occurrence: &AutomationOccurrence,
+) -> Result<u64, TaskFlowError> {
+    occurrence
+        .claim_generation
+        .checked_sub(1)
+        .and_then(|base| base.checked_mul(TASKFLOW_ATTEMPT_GENERATION_STRIDE))
+        .and_then(|base| base.checked_add(u64::from(occurrence.step_attempt)))
+        .ok_or(TaskFlowError::StaleFence)
 }
 
 pub fn admission_receipt_digest(occurrence: &AutomationOccurrence) -> Sha256Digest {
@@ -872,7 +908,7 @@ pub fn admission_receipt_digest(occurrence: &AutomationOccurrence) -> Sha256Dige
     Sha256Digest::for_bytes(&bytes)
 }
 
-const TASKFLOW_ATTEMPT_GENERATION_STRIDE: u64 = 1_000_000;
+pub(crate) const TASKFLOW_ATTEMPT_GENERATION_STRIDE: u64 = 1_000_000;
 
 fn automation_fence(
     lease: &AutomationLease,

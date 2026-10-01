@@ -274,6 +274,47 @@ async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLeas
 }
 
 #[tokio::test]
+async fn scheduler_does_not_backdate_first_contact_after_waiting_for_the_writer() {
+    let fixture = FleetFixture::new(1);
+    let layout = &fixture.layouts[0];
+    let store = AutomationStore::open(layout).await.unwrap();
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75032",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.unwrap();
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root()).unwrap();
+    let blocker = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .unwrap();
+    let reservation = blocker.begin_with("BEGIN IMMEDIATE").await.unwrap();
+    let queue = Arc::new(RecordingQueue::default());
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::clone(&queue),
+        1,
+        Duration::from_millis(100),
+        Duration::from_millis(10),
+    )
+    .unwrap();
+    let tick = scheduler.tick(100);
+    tokio::pin!(tick);
+    tokio::select! {
+        biased;
+        result = &mut tick => panic!("writer reservation should block tick: {result:?}"),
+        () = tokio::time::sleep(Duration::from_millis(200)) => {}
+    }
+    reservation.commit().await.unwrap();
+    assert_eq!(tick.await, Err(AutomationError::Conflict));
+    assert_eq!(queue.admissions().await, Vec::new());
+    assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
+    blocker.close().await;
+    store.close().await;
+}
+
+#[tokio::test]
 async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
     let fixture = FleetFixture::new(1);
     let store = AutomationStore::open(&fixture.layouts[0])
@@ -1034,6 +1075,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TRIGGER IF EXISTS automation_task_default_policy",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_reconciliations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
+        "DROP TABLE IF EXISTS taskflow_effect_provider_acceptances",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
         "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
         "DROP TABLE IF EXISTS automation_occurrence_events",

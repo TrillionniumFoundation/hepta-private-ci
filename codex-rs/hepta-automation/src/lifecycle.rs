@@ -241,6 +241,8 @@ impl AutomationStore {
         let next_revision = expected_revision
             .checked_add(1)
             .ok_or(AutomationError::Invalid)?;
+        self.finalize_cancelled_occurrence_intents(task_id, now_ms)
+            .await?;
         let (mut transaction, phase) = self.begin_timer_write().await?;
         if phase != crate::TimerPhase::Active {
             return Err(AutomationError::Conflict);
@@ -321,36 +323,7 @@ impl AutomationStore {
         // A caller-supplied lease is not authority. Check the immutable run
         // identity and the current claim inside the same writer transaction
         // before inserting an occurrence or replacing its claim fence.
-        let exact_claim: i64 = sqlx::query_scalar(
-            "SELECT EXISTS(
-                SELECT 1 FROM automation_runs r
-                JOIN automation_tasks t ON t.task_id = r.task_id
-                WHERE r.task_id = ? AND r.occurrence = ?
-                  AND t.owner_agent_id = ? AND r.state = 'leased'
-                  AND r.schedule_revision = ? AND r.scheduled_for_ms = ?
-                  AND r.client_user_message_id = ?
-                  AND r.lease_generation = ? AND r.lease_token = ?
-                  AND r.lease_expires_at_ms = ?
-                  AND t.thread_id = ? AND t.prompt = ?
-            )",
-        )
-        .bind(lease.task.task_id.to_string())
-        .bind(to_i64(lease.occurrence)?)
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(to_i64(lease.schedule_revision)?)
-        .bind(to_i64(lease.scheduled_for_ms)?)
-        .bind(&lease.client_user_message_id)
-        .bind(to_i64(lease.lease_generation)?)
-        .bind(&lease.lease_token)
-        .bind(to_i64(lease.lease_expires_at_ms)?)
-        .bind(&lease.task.thread_id)
-        .bind(&lease.task.prompt)
-        .fetch_one(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if exact_claim != 1 {
-            return Err(AutomationError::Conflict);
-        }
+        crate::store::verify_automation_lease_tx(&mut transaction, self, lease).await?;
         ensure_schedule_metadata(&mut transaction, self, lease.task.task_id).await?;
         if let Some(current) =
             load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
@@ -369,6 +342,69 @@ impl AutomationStore {
             if current.claim_generation != lease.lease_generation
                 || current.claim_token != lease.lease_token
             {
+                let run_state: Option<String> = sqlx::query_scalar(
+                    "SELECT state FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?",
+                )
+                .bind(self.taskflow_owner_agent_id().as_str())
+                .bind(&current.taskflow_run_id)
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if run_state.as_deref() == Some("running") {
+                    let contacted: bool = sqlx::query_scalar(
+                        "SELECT EXISTS(SELECT 1 FROM taskflow_effect_dispatch_attempts
+                         WHERE owner_agent_id = ? AND run_id = ?
+                           AND step_id = 'codex_turn' AND attempt = ?)",
+                    )
+                    .bind(self.taskflow_owner_agent_id().as_str())
+                    .bind(&current.taskflow_run_id)
+                    .bind(i64::from(current.step_attempt))
+                    .fetch_one(&mut *transaction)
+                    .await
+                    .map_err(unavailable)?;
+                    if contacted {
+                        return Err(AutomationError::Conflict);
+                    }
+                    // claim_due atomically revoked the old compatibility
+                    // token with no queue intent. Settle that exact historical
+                    // local step before rolling the lifecycle to a new attempt.
+                    // A provider-ledger contact cannot be inferred absent.
+                    transaction.commit().await.map_err(unavailable)?;
+                    let mut bytes = b"hepta.automation.stale-before-provider.v1\0".to_vec();
+                    bytes.extend_from_slice(current.occurrence_id.as_bytes());
+                    bytes.push(0);
+                    bytes.extend_from_slice(&current.claim_generation.to_be_bytes());
+                    bytes.extend_from_slice(current.claim_token.as_bytes());
+                    self.requeue_occurrence_taskflow_after_proven_absence(
+                        &current,
+                        &Sha256Digest::for_bytes(&bytes),
+                        now_ms,
+                    )
+                    .await
+                    .map_err(crate::store::map_taskflow_mutation_error)?;
+                    transaction = self.begin_timer_write().await?.0;
+                    crate::store::verify_automation_lease_tx(&mut transaction, self, lease).await?;
+                    let observed = load_occurrence_row(
+                        &mut transaction,
+                        self,
+                        lease.task.task_id,
+                        lease.occurrence,
+                    )
+                    .await?
+                    .ok_or(AutomationError::Corrupt)?;
+                    if observed != current {
+                        if observed.state == AutomationOccurrenceState::Claimed
+                            && observed.claim_generation == lease.lease_generation
+                            && observed.claim_token == lease.lease_token
+                        {
+                            transaction.commit().await.map_err(unavailable)?;
+                            return Ok(observed);
+                        }
+                        return Err(AutomationError::Conflict);
+                    }
+                } else if run_state.as_deref().is_some_and(|state| state != "queued") {
+                    return Err(AutomationError::Conflict);
+                }
                 let has_step_history: i64 = sqlx::query_scalar(
                     "SELECT EXISTS(
                         SELECT 1 FROM taskflow_step_outbox
@@ -877,6 +913,30 @@ impl AutomationStore {
         let claimed_absence_cancel = current.state == AutomationOccurrenceState::Claimed
             && terminal == AutomationOccurrenceTerminalState::Cancelled;
         if claimed_absence_cancel {
+            let compatible: Option<bool> = sqlx::query_scalar(
+                "SELECT state = 'leased' OR (state = 'cancelled'
+                    AND NOT EXISTS(SELECT 1 FROM automation_dispatch_outcomes d
+                        WHERE d.task_id = r.task_id AND d.occurrence = r.occurrence)
+                    AND NOT EXISTS(SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                        WHERE a.owner_agent_id = ? AND a.run_id = ?
+                          AND a.step_id = 'codex_turn' AND a.attempt = ?))
+                 FROM automation_runs r WHERE task_id = ? AND occurrence = ?
+                   AND client_user_message_id = ? AND schedule_revision = ? AND scheduled_for_ms = ?",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(&current.taskflow_run_id)
+            .bind(i64::from(current.step_attempt))
+            .bind(task_id.to_string())
+            .bind(to_i64(occurrence)?)
+            .bind(&current.client_user_message_id)
+            .bind(to_i64(current.schedule_revision)?)
+            .bind(to_i64(current.scheduled_for_ms)?)
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            if compatible != Some(true) {
+                return Err(AutomationError::Conflict);
+            }
             let command_id = format!(
                 "automation:run:cancel-absent:{}:{}",
                 current.occurrence_id, current.step_attempt
@@ -1000,7 +1060,9 @@ impl AutomationStore {
             completed_at_ms,
         )
         .await?;
-        if current.overlap == AutomationOverlapPolicy::Forbid {
+        if current.overlap == AutomationOverlapPolicy::Forbid
+            && current.state != AutomationOccurrenceState::Claimed
+        {
             advance_schedule(
                 &mut transaction,
                 self,

@@ -1270,7 +1270,83 @@ impl AutomationStore {
                 &command.transition,
                 TaskFlowTransition::Indeterminate { .. }
             );
-        if explicit_reconcile || proven_absence_recovery || effect_observation_quarantine {
+        let unowned_absence_cancel = proven_absence_recovery
+            && run.state == TaskFlowRunState::Queued
+            && run.owner_id.is_none()
+            && run.owner_epoch.is_none()
+            && run.generation.is_none()
+            && run.fencing_token.is_none()
+            && run.lease_expires_at_ms.is_none()
+            && matches!(
+                &command.transition,
+                TaskFlowTransition::CancelProvenAbsent { .. }
+            );
+        if unowned_absence_cancel {
+            let TaskFlowTransition::CancelProvenAbsent { proof_digest } = &command.transition
+            else {
+                unreachable!("checked cancellation above");
+            };
+            let payload: String = sqlx::query_scalar(
+                "SELECT payload_json FROM taskflow_events
+                 WHERE owner_agent_id = ? AND run_id = ? ORDER BY event_seq DESC LIMIT 1",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(&command.run_id)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+            let previous: TaskFlowTransition = serde_json::from_str(&payload)
+                .map_err(|_| corrupt("queued absence transition payload"))?;
+            let encoded = command
+                .fence
+                .generation
+                .checked_sub(1)
+                .ok_or(TaskFlowError::StaleFence)?;
+            let stride = crate::automation_taskflow::TASKFLOW_ATTEMPT_GENERATION_STRIDE;
+            if encoded / stride + 1 != command.fence.owner_epoch {
+                return Err(TaskFlowError::StaleFence);
+            }
+            let settled: bool = sqlx::query_scalar(
+                "SELECT EXISTS(SELECT 1 FROM automation_occurrence_lifecycle l
+                 JOIN automation_runs c ON c.task_id = l.task_id AND c.occurrence = l.occurrence
+                 WHERE l.owner_agent_id = ? AND l.taskflow_run_id = ? AND l.state = 'claimed'
+                   AND c.state = 'cancelled' AND l.claim_generation = ? AND l.claim_token = ?
+                   AND l.step_attempt = ? AND 'automation.scheduler:' || l.task_id = ?
+                   AND NOT EXISTS(SELECT 1 FROM automation_dispatch_outcomes d
+                     WHERE d.task_id = l.task_id AND d.occurrence = l.occurrence)
+                   AND NOT EXISTS(SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                     WHERE a.owner_agent_id = l.owner_agent_id AND a.run_id = l.taskflow_run_id
+                       AND a.step_id = 'codex_turn' AND a.attempt = l.step_attempt)
+                   AND (NOT EXISTS(SELECT 1 FROM taskflow_step_outbox s
+                     WHERE s.owner_agent_id = l.owner_agent_id AND s.run_id = l.taskflow_run_id
+                       AND s.step_id = 'codex_turn' AND s.attempt = l.step_attempt)
+                   OR EXISTS(SELECT 1 FROM taskflow_step_outbox s
+                     WHERE s.owner_agent_id = l.owner_agent_id AND s.run_id = l.taskflow_run_id
+                       AND s.step_id = 'codex_turn' AND s.attempt = l.step_attempt
+                       AND s.event_kind = 'reconciled' AND s.final_outcome = 'cancelled'
+                       AND s.observation IS NULL
+                       AND s.receipt_digest = ? AND s.owner_id = ? AND s.owner_epoch = ?
+                       AND s.generation = ? AND s.fencing_token = ?
+                       AND NOT EXISTS(SELECT 1 FROM taskflow_step_outbox n
+                         WHERE n.owner_agent_id = s.owner_agent_id AND n.run_id = s.run_id
+                           AND n.step_id = s.step_id
+                           AND (n.attempt > s.attempt OR (n.attempt = s.attempt AND n.event_seq > s.event_seq))))))",
+            ).bind(self.taskflow_owner_agent_id().as_str()).bind(&command.run_id)
+                .bind(to_i64(command.fence.owner_epoch)?).bind(&command.fence.fencing_token)
+                .bind(to_i64(encoded % stride + 1)?).bind(&command.fence.owner_id)
+                .bind(proof_digest.as_str()).bind(&command.fence.owner_id)
+                .bind(to_i64(command.fence.owner_epoch)?).bind(to_i64(command.fence.generation)?)
+                .bind(&command.fence.fencing_token).fetch_one(&mut *tx).await
+                .map_err(|_| TaskFlowError::Unavailable)?;
+            if !settled
+                || !matches!(previous,
+                TaskFlowTransition::RequeueProvenAbsent { proof_digest: stored } if stored == *proof_digest)
+            {
+                return Err(TaskFlowError::Conflict(
+                    "queued cancellation lacks exact settled absence evidence".to_string(),
+                ));
+            }
+        } else if explicit_reconcile || proven_absence_recovery || effect_observation_quarantine {
             // Recovery evidence may arrive after the lease deadline. These
             // transitions still require the exact historical owner tuple and
             // are reachable only through their crate-private durable-evidence
@@ -1293,6 +1369,8 @@ impl AutomationStore {
                 | TaskFlowTransition::Succeed { .. }
                 | TaskFlowTransition::Fail { .. }
                 | TaskFlowTransition::Reconcile { .. }
+                | TaskFlowTransition::RequeueProvenAbsent { .. }
+                | TaskFlowTransition::CancelProvenAbsent { .. }
         ) {
             reject_unresolved_steps(
                 &mut tx,
@@ -1310,7 +1388,15 @@ impl AutomationStore {
             .ok_or_else(|| corrupt("run revision overflow"))?;
         run.updated_at_ms = command.now_ms;
         run.state_digest = run.compute_state_digest()?;
-        update_taskflow_run(&mut tx, &run, Some(&command.fence)).await?;
+        // The proof gate above checked the live unowned queued tuple. Its
+        // historical claim fence is evidence identity, not the cleared lease
+        // tuple to compare when updating this projection.
+        let update_fence = if unowned_absence_cancel {
+            None
+        } else {
+            Some(&command.fence)
+        };
+        update_taskflow_run(&mut tx, &run, update_fence).await?;
         let previous = previous_event_digest(&mut tx, &run).await?;
         let payload = serde_json::to_string(&command.transition).map_err(|error| {
             TaskFlowError::Corrupt(format!("transition serialization: {error}"))
@@ -1690,7 +1776,7 @@ async fn update_taskflow_run(
             "UPDATE taskflow_runs SET state = ?, revision = ?, current_node = ?, state_digest = ?,
              owner_id = ?, owner_epoch = ?, generation = ?, fencing_token = ?, lease_expires_at_ms = ?,
              cancel_requested = ?, wait_token = ?, retry_at_ms = ?, terminal_reason = ?, updated_at_ms = ?
-             WHERE owner_agent_id = ? AND run_id = ?",
+             WHERE owner_agent_id = ? AND run_id = ? AND revision = ?",
         )
         .bind(run.state.as_str())
         .bind(revision)
@@ -1708,6 +1794,11 @@ async fn update_taskflow_run(
         .bind(updated_at_ms)
         .bind(run.owner_agent_id.as_str())
         .bind(&run.run_id)
+        .bind(
+            revision
+                .checked_sub(1)
+                .ok_or_else(|| corrupt("run update lacks prior revision"))?,
+        )
         .execute(&mut **tx)
         .await
         .map_err(|_| TaskFlowError::Unavailable)?

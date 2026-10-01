@@ -33,6 +33,7 @@ use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 
+
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const THREAD_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75ddd";
 
@@ -460,8 +461,8 @@ async fn disabling_and_resuming_cannot_bypass_forbidden_overlap() {
     assert_eq!(store.task(task.task_id).await.unwrap(), Some(disabled));
     assert_eq!(scheduler.tick(102).await.unwrap(), AutomationTick::Idle);
 
-    // Provider-proven absence leaves only a pre-admission queued intent. That
-    // retained Claimed lifecycle is safe to resume after disabling the task.
+    // Disabling a provider-proven-absent queued intent must settle its old
+    // local lifecycle so it cannot freeze future schedule policy revisions.
     let absent = draft(
         "019153a4-3088-7000-a56a-9b1964f75116",
         AutomationSchedule::FixedInterval { interval_ms: 1_000 },
@@ -506,6 +507,24 @@ async fn disabling_and_resuming_cannot_bypass_forbidden_overlap() {
         .set_enabled(absent.task_id, false, None, 105)
         .await
         .unwrap();
+    assert_eq!(
+        store
+            .automation_occurrence(absent.task_id, 1)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        AutomationOccurrenceState::Cancelled
+    );
+    assert_eq!(
+        store
+            .taskflow_run(&claimed.taskflow_run_id)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        TaskFlowRunState::Cancelled
+    );
     let resumed = store
         .set_enabled(absent.task_id, true, Some(107), 106)
         .await
@@ -513,6 +532,80 @@ async fn disabling_and_resuming_cannot_bypass_forbidden_overlap() {
     assert_eq!(resumed.next_run_at_ms, Some(107));
     assert!(
         matches!(scheduler.tick(107).await.unwrap(), AutomationTick::Submitted { task_id, occurrence: 2, .. } if task_id == absent.task_id)
+    );
+    let work = store
+        .pending_occurrence_work(1_024)
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|work| work.occurrence.task_id == absent.task_id && work.occurrence.occurrence == 2)
+        .unwrap();
+    let terminal = Sha256Digest::for_bytes(b"resumed occurrence terminal success");
+    store
+        .reconcile_occurrence_taskflow_terminal(
+            &work,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            108,
+        )
+        .await
+        .unwrap();
+    store
+        .complete_occurrence(
+            absent.task_id,
+            2,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            108,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .set_schedule_policy(
+                absent.task_id,
+                2,
+                AutomationMissedRunPolicy::Coalesce,
+                AutomationOverlapPolicy::Allow,
+                109,
+            )
+            .await
+            .unwrap()
+            .revision,
+        3
+    );
+
+    let unresolved = draft(
+        "019153a4-3088-7000-a56a-9b1964f75127",
+        AutomationSchedule::Once,
+        200,
+    );
+    store.create_task(&unresolved).await.unwrap();
+    unknown.tick(200).await.unwrap();
+    store
+        .set_enabled(unresolved.task_id, false, None, 201)
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .set_schedule_policy(
+                unresolved.task_id,
+                1,
+                AutomationMissedRunPolicy::Coalesce,
+                AutomationOverlapPolicy::Allow,
+                202,
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    );
+    assert_eq!(
+        store
+            .automation_occurrence(unresolved.task_id, 1)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        AutomationOccurrenceState::Claimed
     );
     store.close().await;
 }

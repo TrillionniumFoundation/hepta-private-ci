@@ -2,6 +2,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::Instant;
 
 use tokio::time::timeout;
 
@@ -75,6 +76,7 @@ where
     /// non-terminal: the owning runtime must later bind the persisted turn and
     /// terminal observation through the durable occurrence lifecycle.
     pub async fn tick(&self, now_ms: u64) -> Result<AutomationTick, AutomationError> {
+        let started_at = Instant::now();
         let Some(lease) = self
             .store
             .claim_due(now_ms, self.generation, self.lease_duration_ms)
@@ -97,7 +99,9 @@ where
         // Persist the dispatch intent before crossing the App Server seam. If
         // this process dies after possible admission, recovery retains the same
         // client id and must reconcile instead of blindly creating a duplicate.
-        self.store.record_dispatch_uncertain(&lease, now_ms).await?;
+        self.store
+            .record_dispatch_uncertain_from_tick(&lease, now_ms, started_at)
+            .await?;
         let admission = lease.admission();
         let result = timeout(self.dispatch_timeout, self.queue.enqueue(admission)).await;
         let receipt = match result {
@@ -156,5 +160,86 @@ where
             occurrence: lease.occurrence,
             queued_submission_id: receipt.queued_submission_id,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::AutomationSchedule;
+    use crate::AutomationTaskDraft;
+    use codex_hepta_contracts::AgentId;
+    use codex_state::SqliteConfig;
+    use codex_utils_absolute_path::AbsolutePathBuf;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+
+    #[derive(Default)]
+    struct CountingQueue(AtomicUsize);
+
+    impl AutomationTurnQueue for CountingQueue {
+        fn enqueue(
+            &self,
+            admission: AutomationAdmission,
+        ) -> AutomationFuture<'_, AutomationQueueReceipt> {
+            Box::pin(async move {
+                self.0.fetch_add(1, Ordering::SeqCst);
+                Ok(AutomationQueueReceipt {
+                    queued_submission_id: "unexpected-expired-contact".to_string(),
+                    client_user_message_id: admission.client_user_message_id,
+                })
+            })
+        }
+    }
+
+    #[tokio::test]
+    async fn prepared_first_intent_samples_time_after_its_writer_wait() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().join("automation");
+        let store = AutomationStore::open_root(
+            root.clone(),
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap(),
+        )
+        .await
+        .unwrap();
+        let task = AutomationTaskDraft::new(
+            "019153a4-3088-7e03-a56a-9b1964f75ddd",
+            "writer wait",
+            AutomationSchedule::Once,
+            100,
+            1,
+        );
+        store.create_task(&task).await.unwrap();
+        let lease = store.claim_due(100, 1, 10).await.unwrap().unwrap();
+        let occurrence = store.materialize_occurrence(&lease, 100).await.unwrap();
+        store
+            .prepare_occurrence_taskflow(&occurrence, &lease, 100, 10)
+            .await
+            .unwrap();
+        let blocker = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(root).unwrap())
+            .open_durable_evidence_pool(store.path())
+            .await
+            .unwrap();
+        let reservation = blocker.begin_with("BEGIN IMMEDIATE").await.unwrap();
+        let queue = CountingQueue::default();
+        let started_at = Instant::now();
+        let contact = async {
+            store
+                .record_dispatch_uncertain_from_tick(&lease, 100, started_at)
+                .await?;
+            queue.enqueue(lease.admission()).await
+        };
+        tokio::pin!(contact);
+        tokio::select! {
+            biased;
+            result = &mut contact => panic!("writer must block first intent: {result:?}"),
+            () = tokio::time::sleep(Duration::from_millis(25)) => {}
+        }
+        reservation.commit().await.unwrap();
+        assert_eq!(contact.await, Err(AutomationError::Conflict));
+        assert_eq!(queue.0.load(Ordering::SeqCst), 0);
+        assert_eq!(store.uncertain_dispatches(1).await.unwrap(), Vec::new());
+        blocker.close().await;
+        store.close().await;
     }
 }

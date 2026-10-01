@@ -483,6 +483,38 @@ impl AutomationStore {
                 "provider-absence cancellation requires prepared or claimed state",
             ));
         }
+        // Queue absence cannot erase an independently started provider effect.
+        // Keep this check in the append transaction so dispatch admission and
+        // cancellation cannot both commit over the same claimed step.
+        let incompatible_contact: bool = sqlx::query_scalar(
+            "SELECT EXISTS (
+                SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                LEFT JOIN taskflow_effect_dispatch_observations o
+                  ON o.owner_agent_id = a.owner_agent_id AND o.run_id = a.run_id
+                    AND o.step_id = a.step_id AND o.attempt = a.attempt
+                LEFT JOIN taskflow_effect_dispatch_reconciliations r
+                  ON r.owner_agent_id = a.owner_agent_id AND r.run_id = a.run_id
+                    AND r.step_id = a.step_id AND r.attempt = a.attempt
+                WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
+                  AND a.attempt = ? AND (
+                    COALESCE(r.observation, o.observation, '') != 'proven_absent'
+                    OR COALESCE(r.evidence_digest, o.evidence_digest, '') != ?
+                  )
+            )",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .bind(proof_digest.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if incompatible_contact {
+            return Err(TaskFlowError::Conflict(
+                "step has provider-contact evidence without matching absence proof".to_string(),
+            ));
+        }
         let event = append_step_event(
             &mut tx,
             self,
@@ -795,6 +827,48 @@ impl AutomationStore {
                 }
             }
             _ => unreachable!("operation validated above"),
+        }
+        let terminal_kind = match (observation, final_outcome) {
+            (Some(TaskFlowStepObservation::Succeeded), _)
+            | (_, Some(TaskFlowReconcileOutcome::Succeeded)) => Some("succeeded"),
+            (Some(TaskFlowStepObservation::Failed), _)
+            | (_, Some(TaskFlowReconcileOutcome::Failed)) => Some("failed"),
+            (_, Some(TaskFlowReconcileOutcome::Cancelled)) => Some("proven_absent"),
+            _ => None,
+        };
+        if let Some(terminal_kind) = terminal_kind {
+            // Provider evidence may commit before its step projection. Check
+            // the reverse crash cut in this append transaction, complementing
+            // the ledger's guard against contradicting an already settled step.
+            let incompatible_provider_terminal: bool = sqlx::query_scalar(
+                "SELECT EXISTS (
+                    SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                    LEFT JOIN taskflow_effect_dispatch_observations o
+                      USING (owner_agent_id, run_id, step_id, attempt)
+                    LEFT JOIN taskflow_effect_dispatch_reconciliations r
+                      USING (owner_agent_id, run_id, step_id, attempt)
+                    WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
+                      AND a.attempt = ?
+                      AND COALESCE(r.observation, o.observation) IN
+                        ('succeeded', 'failed', 'proven_absent')
+                      AND (COALESCE(r.observation, o.observation) != ?
+                        OR COALESCE(r.evidence_digest, o.evidence_digest) != ?)
+                )",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .bind(step_id)
+            .bind(i64::from(attempt))
+            .bind(terminal_kind)
+            .bind(receipt_digest.map(Sha256Digest::as_str))
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+            if incompatible_provider_terminal {
+                return Err(TaskFlowError::Conflict(
+                    "terminal step contradicts durable provider evidence".to_string(),
+                ));
+            }
         }
         let state = match operation {
             "claim" => TaskFlowStepState::Claimed,
