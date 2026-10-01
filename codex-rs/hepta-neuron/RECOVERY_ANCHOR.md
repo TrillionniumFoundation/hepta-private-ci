@@ -1,8 +1,8 @@
 # Acknowledged-history recovery anchor
 
-This bounded NEU-2 hardening extends `SparseJournal`; it is not a new journal,
-wire protocol, model, or production caller. The on-disk HPTNSJ01 format and the
-existing successful-commit byte vectors are unchanged.
+This bounded NEU-2 hardening extends `SparseJournal` and its owner integration.
+The on-disk HPTNSJ01 format and the existing successful-commit byte vectors are
+unchanged. Successor segments use the separately versioned HPTNSJ02 header.
 
 ## Failure being closed
 
@@ -20,8 +20,11 @@ or accepting an arbitrary model-supplied digest supplies no rollback protection.
 ## Algorithm and transaction ordering
 
 The existing open path and the anchored path share one parser and replay engine.
-An anchor is valid only for sequence 1 through the declared segment quota and a
-nonzero checkpoint digest. Before any file initialization or repair, anchored
+For a root segment, an anchor is valid only for sequence 1 through the declared
+segment quota and a nonzero checkpoint digest. For a successor, its global
+sequence must lie between the seed sequence and seed plus the segment quota;
+an anchor at the seed must match the exact seed digest. Before any file
+initialization or repair, anchored
 recovery requires the acknowledged sequence to be present. It then validates
 all complete frames and reconstructs their checkpoint/receipt chain. The exact
 checkpoint at the anchor sequence must match the external witness.
@@ -47,9 +50,60 @@ anchored open through the unanchored method. The closure line now provides `File
 The host transaction order is: durably commit the journal, durably retain its
 acknowledgement witness, then acknowledge externally. If witness publication is
 uncertain, reconcile the already committed tick before retrying. An anchor cannot
-protect acknowledgements that the host failed to retain. Concurrent witness
-updates, segment rotation, deletion/unlearning, backup erasure, physical power
-loss, and target latency require separate implementation and qualification.
+protect acknowledgements that the host failed to retain. The file-backed witness
+fences cooperating writers and records consecutive compare-and-swap updates;
+bounded segment rotation and deletion-generation rebuild have native owner
+surfaces. Their target-host qualification, backup erasure, physical power loss
+and target latency remain separate evidence work.
+
+## File-backed witness recovery
+
+`FileAnchorWitnessStore` requires a fresh read/write handle in an independent
+rollback domain. The legacy low-level `open` API uses HPTNWA01: its 112-byte
+header binds scope, objective and generation. Canonical `NeuronRuntime` owners
+require `open_bound` and HPTNWA02: the 144-byte header additionally binds the
+complete runtime configuration semantic digest before its checksum. Both
+versions use the same 112-byte records binding the previous and next anchor plus
+a checksum. The quota is 1..4096 records. Recovery checks the full-width file
+record count against that quota before converting it to the platform's index
+width, validates every record and syncs complete recovered history.
+
+The native journal config identifies the Q24 mechanism but does not cover every
+owner setting, such as the encoder/head/runtime binding, calibration or resource
+envelope. The canonical owner compares its complete configuration digest with
+the independently retained witness binding before initializing or recovering a
+journal. It also calls `verify_context` against the witness's enrolled scope,
+objective and generation; the correct configuration digest cannot authorize a
+witness enrolled for another context. Recovery cannot therefore attach changed
+owner semantics to an already acknowledged native checkpoint. Legacy HPTNWA01 witnesses return
+`UnboundRuntimeConfig` to canonical owners, and `open_bound` does not upgrade or
+rewrite them. A trusted host must authenticate any migration from prior owner
+evidence or start an explicitly fresh generation; supplying a configuration at
+recovery time alone cannot authenticate the old configuration.
+
+The owner calls `check_capacity` before executing a new model tick or appending
+its journal frame. The file-backed store rejects a known full or poisoned
+witness there, so a known quota exhaustion cannot strand another journal tick.
+This precheck is not a reservation or durability guarantee; the subsequent
+compare-and-swap still decides whether publication succeeds. Custom stores may
+have unknown capacity, and publication failures still require reconciliation.
+The witness retains at most 4096 acknowledgements over its lifetime; journal
+rollover does not reset or extend that budget. Authenticated witness rotation or
+compaction requires a separately specified migration, never an empty-file reset.
+
+An empty file enrolls a new witness. The host must distinguish enrollment from
+recovery and must never replace a missing, damaged or rejected existing witness
+with an empty file. Directory synchronization and authentication of the owner,
+scope, generation and current witness identity remain host obligations.
+
+Unlike an incomplete journal suffix protected by an external anchor, an
+incomplete witness record is rejected without truncation. The witness is the
+minimum retained history, so it has no independent lower bound here from which
+to prove repair safe. Preserve damaged bytes and use authenticated recovery of
+the independent witness store; do not fabricate its frontier from the journal.
+Uncertain writes poison the live store. Dropping it releases its acquired lock,
+including constructor/recovery failures; reopen reconciles a complete valid
+record, while corruption remains fail-closed.
 
 ## Regression coverage
 

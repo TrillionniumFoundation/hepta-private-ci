@@ -23,8 +23,16 @@ use crate::WitnessStoreError;
 
 const MAGIC: &[u8; 8] = b"HPTNWA01";
 const HEADER: usize = 112;
+const BOUND_MAGIC: &[u8; 8] = b"HPTNWA02";
+const BOUND_HEADER: usize = 144;
 const RECORD: usize = 112;
 const MAX_RECORDS: usize = 4096;
+
+#[derive(Clone, Copy)]
+enum WitnessBinding {
+    Legacy,
+    RuntimeConfig(Digest32),
+}
 
 struct WitnessLockedFile(File);
 
@@ -61,8 +69,19 @@ impl Drop for WitnessLockedFile {
     }
 }
 
+/// Locked acknowledgement history in an independently retained host store.
+///
+/// The host must supply a fresh read/write handle and protect the file, directory
+/// and backups from replacement or rollback independently of the journal. An
+/// empty file enrolls a new witness; recovery of an existing owner must never
+/// silently substitute an empty file after loss of its witness history. File
+/// creation and directory synchronization remain the host's responsibility.
 pub struct FileAnchorWitnessStore {
     file: WitnessLockedFile,
+    scope: JournalScope,
+    generation: Generation,
+    header_size: usize,
+    runtime_config_digest: Option<Digest32>,
     max_records: usize,
     records: usize,
     current: Option<JournalAnchor>,
@@ -70,11 +89,47 @@ pub struct FileAnchorWitnessStore {
 }
 
 impl FileAnchorWitnessStore {
+    /// Open the legacy low-level HPTNWA01 witness. This format has no complete
+    /// runtime-config binding and cannot enroll or recover a canonical owner.
     pub fn open(
         file: File,
         scope: JournalScope,
         generation: Generation,
         max_records: usize,
+    ) -> Result<Self, WitnessStoreError> {
+        Self::open_with_binding(file, scope, generation, max_records, WitnessBinding::Legacy)
+    }
+
+    /// Enroll or recover HPTNWA02 acknowledgement history for one exact complete
+    /// runtime configuration. A legacy witness is rejected without rewriting it;
+    /// migration requires independently authenticated host evidence or a fresh
+    /// generation, never caller-supplied configuration retroactively attached to
+    /// existing acknowledgement history.
+    pub fn open_bound(
+        file: File,
+        scope: JournalScope,
+        generation: Generation,
+        max_records: usize,
+        runtime_config_digest: Digest32,
+    ) -> Result<Self, WitnessStoreError> {
+        if runtime_config_digest.is_zero() {
+            return Err(WitnessStoreError::ContextMismatch);
+        }
+        Self::open_with_binding(
+            file,
+            scope,
+            generation,
+            max_records,
+            WitnessBinding::RuntimeConfig(runtime_config_digest),
+        )
+    }
+
+    fn open_with_binding(
+        file: File,
+        scope: JournalScope,
+        generation: Generation,
+        max_records: usize,
+        binding: WitnessBinding,
     ) -> Result<Self, WitnessStoreError> {
         if !(1..=MAX_RECORDS).contains(&max_records) {
             return Err(WitnessStoreError::InvalidLimit);
@@ -83,30 +138,54 @@ impl FileAnchorWitnessStore {
             return Err(WitnessStoreError::ContextMismatch);
         }
         let mut file = WitnessLockedFile::acquire(file)?;
-        let header = encode_header(scope, generation);
+        let header = encode_header(scope, generation, binding);
+        let header_size = header.len();
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
-        if length == 0 {
+        let records = if length == 0 {
             file.write_all(&header)
                 .map_err(|_| WitnessStoreError::Indeterminate)?;
             file.sync_all()
                 .map_err(|_| WitnessStoreError::Indeterminate)?;
+            0
         } else {
-            if length < HEADER as u64 || !(length - HEADER as u64).is_multiple_of(RECORD as u64) {
+            if length < 8 {
                 return Err(WitnessStoreError::Corrupt);
             }
-            let records = ((length - HEADER as u64) / RECORD as u64) as usize;
-            if records > max_records {
+            let mut magic = [0_u8; 8];
+            file.read_exact(&mut magic)?;
+            let actual_header_size = match &magic {
+                MAGIC => HEADER,
+                BOUND_MAGIC => BOUND_HEADER,
+                _ => return Err(WitnessStoreError::Corrupt),
+            };
+            if length < actual_header_size as u64
+                || !(length - actual_header_size as u64).is_multiple_of(RECORD as u64)
+            {
+                return Err(WitnessStoreError::Corrupt);
+            }
+            let records = (length - actual_header_size as u64) / RECORD as u64;
+            if records > max_records as u64 {
                 return Err(WitnessStoreError::Capacity);
             }
-            let mut actual = [0_u8; HEADER];
+            let mut actual = vec![0_u8; actual_header_size];
+            file.seek(SeekFrom::Start(0))?;
             file.read_exact(&mut actual)?;
-            if actual.as_slice() != header {
-                return Err(WitnessStoreError::ContextMismatch);
+            if Digest32::of_bytes(&actual[..actual_header_size - 32]).as_array()
+                != &actual[actual_header_size - 32..]
+            {
+                return Err(WitnessStoreError::Corrupt);
             }
-        }
+            if actual != header {
+                return Err(if magic == *MAGIC && header_size == BOUND_HEADER {
+                    WitnessStoreError::UnboundRuntimeConfig
+                } else {
+                    WitnessStoreError::ContextMismatch
+                });
+            }
+            usize::try_from(records).map_err(|_| WitnessStoreError::Capacity)?
+        };
 
-        let records = ((file.metadata()?.len() - HEADER as u64) / RECORD as u64) as usize;
         let mut current = None;
         let mut buffer = [0_u8; RECORD];
         for _ in 0..records {
@@ -121,6 +200,13 @@ impl FileAnchorWitnessStore {
             .map_err(|_| WitnessStoreError::Indeterminate)?;
         Ok(Self {
             file,
+            scope,
+            generation,
+            header_size,
+            runtime_config_digest: match binding {
+                WitnessBinding::Legacy => None,
+                WitnessBinding::RuntimeConfig(digest) => Some(digest),
+            },
             max_records,
             records,
             current,
@@ -130,6 +216,39 @@ impl FileAnchorWitnessStore {
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
+    fn verify_context(
+        &self,
+        scope: JournalScope,
+        generation: Generation,
+    ) -> Result<(), WitnessStoreError> {
+        if self.poisoned {
+            Err(WitnessStoreError::Poisoned)
+        } else if self.scope != scope || self.generation != generation {
+            Err(WitnessStoreError::ContextMismatch)
+        } else {
+            Ok(())
+        }
+    }
+
+    fn runtime_config_digest(&self) -> Result<Digest32, WitnessStoreError> {
+        if self.poisoned {
+            Err(WitnessStoreError::Poisoned)
+        } else {
+            self.runtime_config_digest
+                .ok_or(WitnessStoreError::UnboundRuntimeConfig)
+        }
+    }
+
+    fn check_capacity(&self) -> Result<(), WitnessStoreError> {
+        if self.poisoned {
+            Err(WitnessStoreError::Poisoned)
+        } else if self.records >= self.max_records {
+            Err(WitnessStoreError::Capacity)
+        } else {
+            Ok(())
+        }
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.poisoned {
             Err(WitnessStoreError::Poisoned)
@@ -156,7 +275,7 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
             return Err(WitnessStoreError::Capacity);
         }
         let record = encode_record(expected, next);
-        let expected_length = (HEADER + self.records * RECORD) as u64;
+        let expected_length = (self.header_size + self.records * RECORD) as u64;
         self.poisoned = true;
         if self.file.seek(SeekFrom::End(0))? != expected_length {
             return Err(WitnessStoreError::Corrupt);
@@ -174,17 +293,22 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
     }
 }
 
-fn encode_header(scope: JournalScope, generation: Generation) -> [u8; HEADER] {
-    let mut bytes = Vec::with_capacity(HEADER);
-    bytes.extend_from_slice(MAGIC);
+fn encode_header(scope: JournalScope, generation: Generation, binding: WitnessBinding) -> Vec<u8> {
+    let (magic, header_size) = match binding {
+        WitnessBinding::Legacy => (MAGIC, HEADER),
+        WitnessBinding::RuntimeConfig(_) => (BOUND_MAGIC, BOUND_HEADER),
+    };
+    let mut bytes = Vec::with_capacity(header_size);
+    bytes.extend_from_slice(magic);
     bytes.extend_from_slice(scope.scope_digest.as_array());
     bytes.extend_from_slice(scope.objective_digest.as_array());
     bytes.extend_from_slice(&generation.get().to_be_bytes());
+    if let WitnessBinding::RuntimeConfig(digest) = binding {
+        bytes.extend_from_slice(digest.as_array());
+    }
     let checksum = Digest32::of_bytes(&bytes);
     bytes.extend_from_slice(checksum.as_array());
-    let mut output = [0_u8; HEADER];
-    output.copy_from_slice(&bytes);
-    output
+    bytes
 }
 
 fn encode_record(expected: Option<JournalAnchor>, next: JournalAnchor) -> [u8; RECORD] {
