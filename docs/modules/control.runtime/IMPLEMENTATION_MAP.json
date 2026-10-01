@@ -106,6 +106,14 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "tampered_ndu_binding_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "ndu_result_cardinality_is_bounded_before_sorting_or_indexing"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "ndu_evaluated_and_rejected_sets_share_one_candidate_budget"
         }
       ],
       "designOperation": "bind_ndu_plan_evaluation_v1",
@@ -418,6 +426,14 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
           "symbol": "reconciliation_without_a_durable_claim_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "conclusive_reconciliation_still_requires_the_original_grant"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_reconciliation_controller_tests.rs",
+          "symbol": "pending_controller_recovers_a_bare_claim_and_later_converges"
         }
       ],
       "designOperation": "reconcile_planner_request_v1",

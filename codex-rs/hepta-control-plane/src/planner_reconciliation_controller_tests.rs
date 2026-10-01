@@ -1,4 +1,6 @@
+use crate::PlannerDispatchClaimSinkV1;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 use tempfile::tempdir;
 
 use super::*;
@@ -213,4 +215,80 @@ fn pending_reconciliation_controller_rejects_resolver_identity_drift_before_effe
             .len(),
         1
     );
+}
+
+#[test]
+fn pending_controller_recovers_a_bare_claim_and_later_converges() {
+    let directory = tempdir().expect("temporary planner store");
+    let mut store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+        .expect("open planner store");
+    let request = request("interrupted");
+    store
+        .claim_dispatch(
+            planner_operation_identity_digest_v1(&request),
+            planner_request_digest_v1(&request),
+            digest("grant"),
+            request.final_payload_digest,
+            /*claimed_at_micros*/ 100,
+        )
+        .expect("claim persisted before interrupted dispatch");
+    let mut resolver = FixtureResolver { request, calls: 0 };
+    let mut executor = FixtureExecutor {
+        execute_calls: 0,
+        reconcile_calls: 0,
+        reconcile_disposition: PlannerEffectDispositionV1::Indeterminate,
+    };
+    let first = reconcile_pending_dispatches_v1(
+        &mut store,
+        /*after_sequence*/ None,
+        /*limit*/ 1,
+        &mut resolver,
+        &mut executor,
+    )
+    .expect("first observation after interruption");
+    assert!(!first.authority.grants_any());
+    assert_eq!(
+        store.records()[1].kind,
+        crate::PlannerStoreRecordKindV1::TerminalReceipt
+    );
+    drop(store);
+
+    let mut store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+        .expect("reopen first indeterminate observation");
+    assert_eq!(
+        store
+            .pending_dispatches_page(/*after_sequence*/ None, /*limit*/ 1)
+            .expect("claim remains pending")
+            .items
+            .len(),
+        1
+    );
+    executor.reconcile_disposition = PlannerEffectDispositionV1::Succeeded;
+    let second = reconcile_pending_dispatches_v1(
+        &mut store,
+        first.next_after_sequence,
+        /*limit*/ 1,
+        &mut resolver,
+        &mut executor,
+    )
+    .expect("conclusive later observation");
+    assert!(!second.authority.grants_any());
+    assert_eq!(
+        store.records()[2].kind,
+        crate::PlannerStoreRecordKindV1::Reconciliation
+    );
+    drop(store);
+
+    let store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+        .expect("reopen conclusive recovery");
+    assert!(
+        store
+            .pending_dispatches_page(/*after_sequence*/ None, /*limit*/ 1)
+            .expect("recovery converged")
+            .items
+            .is_empty()
+    );
+    assert_eq!(resolver.calls, 2);
+    assert_eq!(executor.execute_calls, 0);
+    assert_eq!(executor.reconcile_calls, 2);
 }

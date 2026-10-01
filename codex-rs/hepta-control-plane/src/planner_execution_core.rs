@@ -234,6 +234,21 @@ impl PlannerTerminalReceiptSinkV1 for PlannerStoreV1 {
         if admit_store_receipt(self, receipt)? {
             return Ok(());
         }
+        // A crash or transport error can leave a durable claim with no initial
+        // observation. Reconciliation supplies that first observation; only a
+        // later observation of an indeterminate result is a reconciliation frame.
+        let has_initial_observation = self.records().iter().any(|record| {
+            record.kind == PlannerStoreRecordKindV1::TerminalReceipt
+                && record.operation_identity_digest == receipt.operation_identity_digest
+        });
+        if !has_initial_observation {
+            return append_store_receipt(
+                self,
+                PlannerStoreRecordKindV1::TerminalReceipt,
+                receipt.operation_identity_digest,
+                receipt,
+            );
+        }
         let mut bytes = b"hepta.control.reconciliation-identity.v1".to_vec();
         bytes.extend_from_slice(receipt.operation_identity_digest.as_array());
         bytes.extend_from_slice(receipt.receipt_digest.as_array());

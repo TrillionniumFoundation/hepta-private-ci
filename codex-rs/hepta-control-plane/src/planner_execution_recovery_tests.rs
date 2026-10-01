@@ -1,6 +1,7 @@
 //! Durable dispatch and recovery regressions.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn current_authority_claims_before_execution_and_records_terminal_receipt() {
@@ -191,6 +192,28 @@ fn durable_v2_claim_reopens_after_unknown_executor_without_timestamp_conflict() 
     assert_eq!(authority.authorizations, 1);
     assert_eq!(authority.revalidations, 1);
     assert_eq!(reopened.records().len(), 2);
+
+    // Successful reconciliation must remain usable across another crash/reopen.
+    drop(reopened);
+    let mut recovered = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    assert!(
+        must(recovered.pending_dispatches_page(/*after_sequence*/ None, /*limit*/ 1))
+            .items
+            .is_empty()
+    );
+    let replay = must(execute_planner_request_v1(
+        &request,
+        /*now_micros*/ 1_600,
+        &mut authority,
+        &mut executor,
+        &mut recovered,
+    ));
+    assert_eq!(replay, reconciled);
+    assert_eq!(executor.executions, 1);
+    assert_eq!(executor.reconciliations, 1);
 }
 
 #[test]
@@ -246,6 +269,26 @@ fn legacy_v1_claim_reopens_into_reconciliation_without_redispatch() {
     assert_eq!(executor.reconciliations, 1);
     assert_eq!(authority.authorizations, 0);
     assert_eq!(authority.revalidations, 0);
+    drop(reopened);
+    let mut recovered = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    assert!(
+        must(recovered.pending_dispatches_page(/*after_sequence*/ None, /*limit*/ 1))
+            .items
+            .is_empty()
+    );
+    let replay = must(execute_planner_request_v1(
+        &request,
+        /*now_micros*/ 1_001,
+        &mut authority,
+        &mut executor,
+        &mut recovered,
+    ));
+    assert_eq!(replay, receipt);
+    assert_eq!(executor.executions, 0);
+    assert_eq!(executor.reconciliations, 1);
 }
 
 #[test]
@@ -543,4 +586,40 @@ fn reopened_terminal_must_match_the_original_claim_grant() {
     assert_eq!(authority.revalidations, 0);
     assert_eq!(executor.executions, 0);
     assert_eq!(executor.reconciliations, 0);
+}
+
+#[test]
+fn conclusive_reconciliation_still_requires_the_original_grant() {
+    let directory = must(tempdir());
+    let request = request();
+    let mut authority = authority(&request);
+    let mut executor = executor(PlannerEffectDispositionV1::Succeeded);
+    let mut store = must(PlannerStoreV1::open(
+        directory.path(),
+        PlannerStoreConfigV1::default(),
+    ));
+    let terminal = must(execute_planner_request_v1(
+        &request,
+        /*now_micros*/ 1_000,
+        &mut authority,
+        &mut executor,
+        &mut store,
+    ));
+    let before = store.records().to_vec();
+    assert!(matches!(
+        reconcile_planner_request_v1(&request, digest("wrong-grant"), &mut executor, &mut store,),
+        Err(PlannerExecutionError::Store(_))
+    ));
+    assert_eq!(store.records(), before);
+    assert_eq!(executor.executions, 1);
+    assert_eq!(executor.reconciliations, 0);
+    assert_eq!(
+        must(reconcile_planner_request_v1(
+            &request,
+            terminal.grant_digest,
+            &mut executor,
+            &mut store,
+        )),
+        terminal
+    );
 }

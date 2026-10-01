@@ -1,3 +1,10 @@
+// Compatibility fixtures intentionally exercise the deprecated evaluator alongside
+// the policy-bound API. Production callers retain the deprecation warning.
+#![expect(
+    deprecated,
+    reason = "Retain evaluator compatibility regression coverage"
+)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;

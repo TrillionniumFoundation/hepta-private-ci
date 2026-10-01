@@ -109,7 +109,8 @@
         "PlannerStore terminal sinks verify the canonical receipt digest, exact durable claim and original grant, and reject replacement of a conclusive terminal result.",
         "Reopen reconstructs the same claim-to-observation state machine rather than trusting structurally valid execution records in isolation.",
         "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state.",
-        "A bounded DENY_ALL pending-dispatch page exposes unresolved claims in round-robin claim-sequence order without granting redispatch; the product recovery controller and exact request resolver remain external composition work."
+        "A bounded DENY_ALL pending-dispatch page exposes unresolved claims in round-robin claim-sequence order without granting redispatch; the product recovery controller and exact request resolver remain external composition work.",
+        "Observation-only recovery of a claim with no earlier observation persists an initial terminal frame; later reconciliation frames require an indeterminate predecessor. Conclusive reconciliation retries still verify the original grant."
       ]
     },
     "organHost": {

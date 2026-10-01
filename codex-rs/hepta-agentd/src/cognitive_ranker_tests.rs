@@ -60,7 +60,7 @@ struct Fixture {
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = crate::test_paths::socket_test_dir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
     let actions: Vec<_> = items
         .iter()
@@ -315,7 +315,7 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
     use codex_hepta_memory::SourceDraft;
     use codex_hepta_paths::HeptaFleetRoot;
 
-    let directory = tempfile::tempdir().unwrap();
+    let directory = crate::test_paths::socket_test_dir().unwrap();
     let fleet = directory.path().join("fleet");
     std::fs::create_dir(&fleet).unwrap();
     let fleet = std::fs::canonicalize(&fleet).unwrap();
@@ -420,7 +420,7 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     use codex_hepta_paths::HeptaFleetRoot;
     use tokio_util::sync::CancellationToken;
 
-    let directory = tempfile::tempdir().unwrap();
+    let directory = crate::test_paths::socket_test_dir().unwrap();
     let root = directory.path().canonicalize().unwrap();
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap();

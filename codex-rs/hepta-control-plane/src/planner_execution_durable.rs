@@ -104,7 +104,14 @@ where
         request.final_payload_digest,
     )?;
     match state {
-        Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal { receipt }) => Ok(*receipt),
+        Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal { receipt }) => {
+            if receipt.grant_digest != grant_digest {
+                return Err(store_error(
+                    "reconciliation grant does not match durable claim",
+                ));
+            }
+            Ok(*receipt)
+        }
         Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
             original_grant_digest,
         }) => {

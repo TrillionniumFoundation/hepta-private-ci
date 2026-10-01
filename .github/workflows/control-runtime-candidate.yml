@@ -199,7 +199,10 @@ jobs:
           cargo check --locked --all-targets
           -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
           --features codex-hepta-control-plane/qualification-failpoints
-      - name: Strict lint
+      # Lint the declared runtime packages; all-target compilation above still
+      # checks their complete dependency graph. Other workspace owners retain
+      # their repository-wide lint gates.
+      - name: Strict lint for runtime packages
         id: lint
         if: '!cancelled()'
         continue-on-error: true
@@ -207,7 +210,7 @@ jobs:
         run: >-
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/control-runtime-records/clippy.json" --
-          cargo clippy --locked --all-targets
+          cargo clippy --locked --all-targets --no-deps
           -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
           --features codex-hepta-control-plane/qualification-failpoints -- -D warnings
       - name: Require every independent check and unchanged tracked source

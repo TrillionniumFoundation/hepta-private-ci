@@ -48,6 +48,8 @@ pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
 pub use shared_terminal_cell::SharedTerminalCellError;
 pub use shared_terminal_cell::SharedTerminalModelV1;
+#[cfg(test)]
+mod test_paths;
 #[doc(hidden)]
 pub mod test_support;
 mod topology_plasticity_host;
