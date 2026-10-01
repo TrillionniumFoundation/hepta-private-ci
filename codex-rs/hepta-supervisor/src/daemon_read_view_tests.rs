@@ -50,7 +50,7 @@ fn observation(captured_at: Instant, count: u16) -> Observation {
                     last_error: None,
                 },
             };
-            (agent_id, agent)
+            (agent_id, Arc::new(agent))
         })
         .collect();
     Observation {
@@ -58,6 +58,7 @@ fn observation(captured_at: Instant, count: u16) -> Observation {
         epoch,
         ready: true,
         agents,
+        inputs: BTreeMap::new(),
     }
 }
 
@@ -78,7 +79,7 @@ fn all_256_observations_are_addressable_and_roster_limits_remain_exact() {
                 now,
                 /*observed_faults*/ 0,
             ),
-            Some(SupervisordPayload::Agent(expected.clone()))
+            Some(SupervisordPayload::Agent(expected.as_ref().clone()))
         );
     }
     assert_eq!(
@@ -88,7 +89,12 @@ fn all_256_observations_are_addressable_and_roster_limits_remain_exact() {
             /*observed_faults*/ 0,
         ),
         Some(SupervisordPayload::Roster {
-            agents: view.agents.values().take(8).cloned().collect(),
+            agents: view
+                .agents
+                .values()
+                .take(8)
+                .map(|status| status.as_ref().clone())
+                .collect(),
         })
     );
 }
@@ -98,6 +104,7 @@ fn complete_roster_with_maximum_diagnostics_fits_the_response_ceiling() {
     let now = Instant::now();
     let mut view = observation(now, /*count*/ 256);
     for status in view.agents.values_mut() {
+        let status = Arc::make_mut(status);
         status.lifecycle = AgentLifecycle::Running;
         status.lifecycle_generation = u64::MAX;
         status.active = true;

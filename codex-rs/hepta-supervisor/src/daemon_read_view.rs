@@ -16,11 +16,14 @@ use super::SupervisordHealth;
 use super::SupervisordMethod;
 use super::SupervisordPayload;
 use super::error_payload;
-use super::status_from;
 use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_ROSTER;
+
+#[path = "daemon_read_projection.rs"]
+mod projection;
+use projection::ProjectionInput;
 
 const MAX_AGE: Duration = Duration::from_secs(2);
 
@@ -28,7 +31,8 @@ struct Observation {
     captured_at: Instant,
     epoch: SupervisorEpoch,
     ready: bool,
-    agents: BTreeMap<AgentId, SupervisordAgentStatus>,
+    agents: BTreeMap<AgentId, Arc<SupervisordAgentStatus>>,
+    inputs: BTreeMap<AgentId, ProjectionInput>,
 }
 
 #[derive(Default)]
@@ -46,6 +50,13 @@ impl ReadView {
         epoch: &SupervisorEpoch,
     ) -> Result<(), SupervisorError> {
         let captured_at = Instant::now();
+        let previous = self
+            .current
+            .read()
+            .map_err(|_| {
+                SupervisorError::Invalid("supervisord read view is unavailable".to_string())
+            })?
+            .clone();
         let snapshot = registry.load()?;
         if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
             return Err(SupervisorError::Invalid(
@@ -53,11 +64,18 @@ impl ReadView {
             ));
         }
         let mut agents = BTreeMap::new();
+        let mut inputs = BTreeMap::new();
         let mut ownership_ready = true;
         for (agent_id, record) in snapshot.agents {
             let runtime = supervisor.metadata_snapshot(&agent_id);
+            // A lease may appear without changing either projection input.
+            // Readiness is never memoized with the immutable per-Agent status.
             ownership_ready &= crate::recovery::process_ownership_ready(&record, runtime.as_ref())?;
-            let status = status_from(epoch, &record, runtime)?;
+            let prior = previous
+                .as_ref()
+                .and_then(|view| Some((view.inputs.get(&agent_id)?, view.agents.get(&agent_id)?)));
+            let (input, status) = ProjectionInput::capture(epoch, record, runtime, prior)?;
+            inputs.insert(agent_id.clone(), input);
             agents.insert(agent_id, status);
         }
         let observation = Arc::new(Observation {
@@ -65,6 +83,7 @@ impl ReadView {
             epoch: epoch.clone(),
             ready: ownership_ready && !supervisor.any_production_recovery_required(),
             agents,
+            inputs,
         });
         let mut current = self.current.write().map_err(|_| {
             SupervisorError::Invalid("supervisord read view is unavailable".to_string())
@@ -125,11 +144,11 @@ impl ReadView {
                     .agents
                     .values()
                     .take(usize::from(*limit))
-                    .cloned()
+                    .map(|agent| agent.as_ref().clone())
                     .collect(),
             },
             SupervisordMethod::Snapshot { agent_id } => match view.agents.get(agent_id) {
-                Some(agent) => SupervisordPayload::Agent(agent.clone()),
+                Some(agent) => SupervisordPayload::Agent(agent.as_ref().clone()),
                 None => error_payload(
                     "unknown_agent",
                     "selected Agent is not registered",
@@ -164,3 +183,7 @@ pub(super) fn unavailable() -> SupervisordPayload {
 #[cfg(test)]
 #[path = "daemon_read_view_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "daemon_read_projection_tests.rs"]
+mod projection_tests;
