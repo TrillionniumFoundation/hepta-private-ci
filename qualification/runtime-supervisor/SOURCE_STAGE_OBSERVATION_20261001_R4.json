@@ -1,0 +1,140 @@
+{
+  "schema": "hepta.runtime.supervisor.reviewable-source-stages.v1",
+  "source_base_preserved": {
+    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
+    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b"
+  },
+  "final_source_pin": {
+    "commit": "5489fb84cee5a51e4baa30ecfc665302e68742e7",
+    "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2"
+  },
+  "stages": [
+    {
+      "local_commit": "2b1e924a67a920022aeabe76e18871181bb8fee3",
+      "commit": "5d162e7fa10ed90df9e3d72f2a9e24b197fc4bdd",
+      "tree": "5e613bcbf115c12bdb8a74f85b3c4f2c9130e46b",
+      "title": "fix(fleet): seal catalog release roots after directory publication",
+      "changed_lines": 158,
+      "paths": [
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-fleet/src/release.rs",
+        "codex-rs/hepta-fleet/src/release_copy_tests.rs",
+        "codex-rs/hepta-fleet/src/release_publish_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "b01b1e6572fefa33253c33d6ae94b9ce7b64c9a8",
+      "commit": "a067e4725e8a2290d6d5130342f8a69a15d07e8c",
+      "tree": "04616c57f4e494198540f39bd0e76e4546a239f2",
+      "title": "fix(supervisor): signal the main process before emergency companion cleanup",
+      "changed_lines": 189,
+      "paths": [
+        "codex-rs/hepta-supervisor/src/control.rs",
+        "codex-rs/hepta-supervisor/src/matrix_control_order_tests.rs",
+        "codex-rs/hepta-supervisor/src/matrix_tick_tests.rs",
+        "codex-rs/hepta-supervisor/src/supervisor_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "b8d12b7cc53b08929336fbf8f0309f23968489f3",
+      "commit": "a9aee7d51fe7d924c9f62b04008cf3a2291f27c3",
+      "tree": "b2fe110677233d8346b1a4c2d59108fb904bd635",
+      "title": "fix(supervisor): own Fleet startup before registry migration",
+      "changed_lines": 197,
+      "paths": [
+        "codex-rs/hepta-supervisor/src/daemon.rs",
+        "codex-rs/hepta-supervisor/src/daemon_owner.rs",
+        "codex-rs/hepta-supervisor/src/daemon_startup_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "07c8c665ebf4bb84d5cf24c5dec7e69a67855153",
+      "commit": "87be1ae1fa08e276c536621241b57d3429f80f22",
+      "tree": "872f68e8914170ca5eaad3b35823eef2bc00b16d",
+      "title": "perf(supervisor): omit recovery passes only for absent durable witnesses",
+      "changed_lines": 305,
+      "paths": [
+        "codex-rs/hepta-supervisor/src/constructor_absence_recovery_tests.rs",
+        "codex-rs/hepta-supervisor/src/constructor_recovery_probe.rs",
+        "codex-rs/hepta-supervisor/src/constructor_recovery_probe_tests.rs",
+        "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "codex-rs/hepta-supervisor/src/supervisor_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "bfb5eff3c81d81e2d7bbd4abefae9b00fb1f835b",
+      "commit": "2776b924a4460e66544dba823eceacc59bd7ce0a",
+      "tree": "ac264353abe23a12f611028f92831e6b086886c3",
+      "title": "fix(supervisor): verify kernel socket peer identity before control frames",
+      "changed_lines": 391,
+      "paths": [
+        "codex-rs/hepta-supervisor/src/unix.rs",
+        "codex-rs/hepta-supervisor/src/unix_peer_identity.rs",
+        "codex-rs/hepta-supervisor/src/unix_peer_identity_tests.rs",
+        "codex-rs/hepta-supervisor/src/unix_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "ef67aedfae5908f7f415ac0cb3445c3a268ede6e",
+      "commit": "2426fa4c4105b1684230f522aee486447b5123e6",
+      "tree": "779c68323eface3c0f7f824561f818991d68eaad",
+      "title": "fix(supervisor): clean control intent staging on publication failure",
+      "changed_lines": 132,
+      "paths": [
+        "codex-rs/hepta-supervisor/src/control_intent.rs",
+        "codex-rs/hepta-supervisor/src/control_intent_write_tests.rs",
+        "codex-rs/hepta-supervisor/src/durable_publish.rs",
+        "codex-rs/hepta-supervisor/src/mutation_journal.rs",
+        "codex-rs/hepta-supervisor/src/process_exit_witness.rs",
+        "codex-rs/hepta-supervisor/src/recovery_observation.rs"
+      ]
+    },
+    {
+      "local_commit": "40d0cfc6fd87e85b0e3eeb998c2cefc2188e8fde",
+      "commit": "64bc808e57e69005e2dce1abd9b3a1c0f8bd454c",
+      "tree": "82105df3912889e036b636b4e79db1e0fdd5bf00",
+      "title": "test(supervisor): validate paired child drain and unsupported methods",
+      "changed_lines": 224,
+      "paths": [
+        "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+        "codex-rs/hepta-supervisor/tests/paired_process_product/protocol_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "7dc161fb5b3a52027c9071839905ba30869c0f59",
+      "commit": "3a4631d5adeab31170af849b9ae1327ad4519177",
+      "tree": "f5e238e22f2f0bff51fe5d768be08b63b529e22f",
+      "title": "ci(supervisor): require zero retry repairs and cross platform Fleet receipts",
+      "changed_lines": 228,
+      "paths": [
+        ".github/workflows/hepta-supervisor-qualification.yml",
+        ".github/workflows/hepta-supervisor-recovery-check.yml",
+        ".github/workflows/runtime-supervisor-deep-qualification.yml",
+        "codex-rs/.config/nextest.toml",
+        "scripts/hepta_supervisor_ci.py",
+        "scripts/hepta_supervisor_ci_v3.py",
+        "scripts/test_hepta_supervisor_ci.py",
+        "scripts/test_hepta_supervisor_ci_v3.py",
+        "scripts/test_hepta_supervisor_workflow.py"
+      ]
+    },
+    {
+      "local_commit": "4825dd2ebdba4bd0b65ac619bf943f3644e4666d",
+      "commit": "5489fb84cee5a51e4baa30ecfc665302e68742e7",
+      "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2",
+      "title": "docs(supervisor): align current recovery and qualification contracts",
+      "changed_lines": 389,
+      "paths": [
+        "codex-rs/hepta-supervisor/src/restart_journal.rs",
+        "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
+        "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
+        "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
+        "docs/modules/runtime.supervisor/PRODUCTION_CONTROL_RUNBOOK.md",
+        "docs/modules/runtime.supervisor/QUALIFICATION_EVIDENCE_V2.md",
+        "docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md",
+        "docs/modules/runtime.supervisor/RESTART_CANCELLATION.md",
+        "docs/modules/runtime.supervisor/TECHNICAL.md"
+      ]
+    }
+  ]
+}
