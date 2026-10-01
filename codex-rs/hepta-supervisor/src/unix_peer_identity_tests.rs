@@ -1,9 +1,6 @@
 //! Actual sockets and a live unrelated child exercise the real driver boundary.
 
 use std::io;
-use std::io::BufRead;
-use std::io::BufReader;
-use std::io::Write;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
@@ -19,6 +16,9 @@ use crate::ProcessIdentity;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use pretty_assertions::assert_eq;
 
+use super::socket_fixture_io::FixtureIo;
+use super::socket_fixture_io::FrameEnd;
+use super::socket_fixture_io::context;
 use super::*;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -57,38 +57,44 @@ impl ForgedServer {
                 format!("bind forged peer listener {}: {error}", path.display()),
             )
         })?;
-        listener.set_nonblocking(true)?;
+        listener
+            .set_nonblocking(/*nonblocking*/ true)
+            .map_err(|error| context("set forged listener nonblocking", error))?;
         let stop = Arc::new(AtomicBool::new(false));
         let worker_stop = Arc::clone(&stop);
         let worker = std::thread::spawn(move || {
             let mut connections = 0;
             let mut request_bytes = 0;
             loop {
-                let (mut stream, _) = match listener.accept() {
+                let (stream, _) = match listener.accept() {
                     Ok(connection) => connection,
-                    Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                    Err(error)
+                        if matches!(
+                            error.kind(),
+                            io::ErrorKind::WouldBlock | io::ErrorKind::Interrupted
+                        ) =>
+                    {
                         if worker_stop.load(Ordering::Acquire) {
                             return Ok((connections, request_bytes));
                         }
                         std::thread::sleep(Duration::from_millis(1));
                         continue;
                     }
-                    Err(error) => return Err(error),
+                    Err(error) => return Err(context("accept forged peer", error)),
                 };
                 connections += 1;
-                stream.set_read_timeout(Some(Duration::from_millis(200)))?;
-                stream.set_write_timeout(Some(Duration::from_millis(200)))?;
-                let mut request = Vec::new();
-                let count = BufReader::new(&mut stream).read_until(b'\n', &mut request)?;
-                request_bytes += count;
-                if count == 0 {
+                let mut stream = FixtureIo::new(stream, Duration::from_millis(200))?;
+                let request = stream.read_frame(FrameEnd::Newline)?;
+                request_bytes += request.len();
+                if request.is_empty() {
                     continue;
                 }
                 let request: serde_json::Value = serde_json::from_slice(&request)?;
                 let mut reply = response.clone();
                 reply["request_id"] = request["request_id"].clone();
-                let _ = serde_json::to_writer(&mut stream, &reply);
-                let _ = stream.write_all(b"\n");
+                let mut reply = serde_json::to_vec(&reply)?;
+                reply.push(b'\n');
+                stream.write_frame(&reply)?;
             }
         });
         Ok(Self {

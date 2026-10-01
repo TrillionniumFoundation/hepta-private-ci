@@ -1,8 +1,5 @@
 use std::io;
-use std::io::Read;
-use std::io::Write;
 use std::os::unix::net::UnixListener;
-use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
@@ -10,6 +7,9 @@ use std::time::Instant;
 
 use pretty_assertions::assert_eq;
 
+use super::super::socket_fixture_io::FixtureIo;
+use super::super::socket_fixture_io::FrameEnd;
+use super::super::socket_fixture_io::context;
 use super::exchange_frame;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
@@ -23,31 +23,37 @@ fn fixture() -> io::Result<tempfile::TempDir> {
 
 fn server(
     path: &Path,
-    response: impl FnOnce(&mut UnixStream) -> io::Result<()> + Send + 'static,
+    response: impl FnOnce(&mut FixtureIo) -> io::Result<()> + Send + 'static,
 ) -> io::Result<thread::JoinHandle<io::Result<Vec<u8>>>> {
-    let listener = UnixListener::bind(path)?;
-    listener.set_nonblocking(/*nonblocking*/ true)?;
+    let listener =
+        UnixListener::bind(path).map_err(|error| context("bind control listener", error))?;
+    listener
+        .set_nonblocking(/*nonblocking*/ true)
+        .map_err(|error| context("set control listener nonblocking", error))?;
     Ok(thread::spawn(move || {
         let deadline = Instant::now() + Duration::from_secs(2);
-        let mut stream = loop {
+        let stream = loop {
+            if Instant::now() >= deadline {
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "socket fixture accept control peer: absolute deadline expired",
+                ));
+            }
             match listener.accept() {
                 Ok((stream, _)) => break stream,
-                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
-                    if Instant::now() >= deadline {
-                        return Err(io::Error::new(
-                            io::ErrorKind::TimedOut,
-                            "test accept timed out",
-                        ));
-                    }
+                Err(error)
+                    if matches!(
+                        error.kind(),
+                        io::ErrorKind::WouldBlock | io::ErrorKind::Interrupted
+                    ) =>
+                {
                     thread::sleep(Duration::from_millis(5));
                 }
-                Err(error) => return Err(error),
+                Err(error) => return Err(context("accept control peer", error)),
             }
         };
-        stream.set_read_timeout(Some(Duration::from_secs(1)))?;
-        stream.set_write_timeout(Some(Duration::from_secs(1)))?;
-        let mut request = Vec::new();
-        stream.read_to_end(&mut request)?;
+        let mut stream = FixtureIo::new(stream, Duration::from_secs(1))?;
+        let request = stream.read_frame(FrameEnd::Eof)?;
         response(&mut stream)?;
         Ok(request)
     }))
@@ -57,7 +63,7 @@ fn server(
 fn same_peer_complete_frame_preserves_first_newline_and_request() -> TestResult {
     let temp = fixture()?;
     let path = temp.path().join("control.sock");
-    let worker = server(&path, |stream| stream.write_all(b"reply\nignored\n"))?;
+    let worker = server(&path, |stream| stream.write_frame(b"reply\nignored\n"))?;
     let reply = exchange_frame(
         &path,
         std::process::id(),
@@ -77,7 +83,7 @@ fn successful_partial_reads_cannot_renew_the_whole_exchange_deadline() -> TestRe
     let path = temp.path().join("drip.sock");
     let worker = server(&path, |stream| {
         for _ in 0..8 {
-            if let Err(error) = stream.write_all(b"x") {
+            if let Err(error) = stream.write_frame(b"x") {
                 return if matches!(
                     error.kind(),
                     io::ErrorKind::BrokenPipe | io::ErrorKind::ConnectionReset
@@ -89,7 +95,7 @@ fn successful_partial_reads_cannot_renew_the_whole_exchange_deadline() -> TestRe
             }
             thread::sleep(Duration::from_millis(50));
         }
-        match stream.write_all(b"\n") {
+        match stream.write_frame(b"\n") {
             Ok(()) => Ok(()),
             Err(error)
                 if matches!(
@@ -155,7 +161,7 @@ fn reply_byte_bound_and_incomplete_eof_preserve_caller_validation() -> TestResul
     ] {
         let temp = fixture()?;
         let path = temp.path().join("bounded.sock");
-        let worker = server(&path, move |stream| stream.write_all(wire))?;
+        let worker = server(&path, move |stream| stream.write_frame(wire))?;
         let reply = exchange_frame(
             &path,
             std::process::id(),

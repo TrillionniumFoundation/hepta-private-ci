@@ -53,6 +53,10 @@ mod peer_identity;
 #[path = "unix_control_io.rs"]
 mod control_io;
 
+#[cfg(test)]
+#[path = "unix_socket_fixture_io.rs"]
+mod socket_fixture_io;
+
 #[path = "unix_initialization.rs"]
 mod initialization;
 
