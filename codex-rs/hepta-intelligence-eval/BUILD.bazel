@@ -6,6 +6,9 @@ codex_rust_crate(
     integration_compile_data_extra = [
         "fixtures/trusted-inprocess/tests/operator_claim.rs",
     ],
+    # Whole cold-process matrices and the 256-attempt synced restart soak
+    # retain every cut; their harness timeout is not a product latency gate.
+    integration_test_timeout = "long",
     test_data_extra = ["src/lib.rs"],
 )
 
