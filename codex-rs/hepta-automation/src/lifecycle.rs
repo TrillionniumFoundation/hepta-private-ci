@@ -689,7 +689,12 @@ impl AutomationStore {
         if current.client_user_message_id != client_user_message_id {
             return Err(AutomationError::Conflict);
         }
-        if current.state == AutomationOccurrenceState::Running {
+        if current.turn_id.is_some()
+            && matches!(
+                current.state,
+                AutomationOccurrenceState::Running | AutomationOccurrenceState::Indeterminate
+            )
+        {
             if current.turn_id.as_deref() != Some(turn_id)
                 || current.provider_payload_sha256.as_deref() != Some(provider_payload_sha256)
             {
@@ -698,21 +703,64 @@ impl AutomationStore {
             transaction.commit().await.map_err(unavailable)?;
             return Ok(current);
         }
-        if current.state != AutomationOccurrenceState::Admitted {
+        if current.turn_id.is_some()
+            || !matches!(
+                current.state,
+                AutomationOccurrenceState::Admitted | AutomationOccurrenceState::Indeterminate
+            )
+        {
             return Err(AutomationError::Conflict);
         }
+        if current.state == AutomationOccurrenceState::Indeterminate {
+            // A later trusted lookup may discover the same admitted request's
+            // turn. Claimed uncertainty alone is not proof of Core admission.
+            let admitted: bool = sqlx::query_scalar(
+                "SELECT EXISTS(SELECT 1 FROM automation_runs r
+                 JOIN automation_dispatch_outcomes d
+                   ON d.task_id = r.task_id AND d.occurrence = r.occurrence
+                 WHERE r.task_id = ? AND r.occurrence = ? AND r.state = 'submitted'
+                   AND d.outcome = 'submitted' AND r.client_user_message_id = ?
+                   AND d.client_user_message_id = r.client_user_message_id
+                   AND r.queued_submission_id = ? AND d.queued_submission_id = r.queued_submission_id)",
+            )
+            .bind(task_id.to_string())
+            .bind(to_i64(occurrence)?)
+            .bind(client_user_message_id)
+            .bind(current.queued_submission_id.as_deref())
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            if !admitted {
+                return Err(AutomationError::Conflict);
+            }
+        }
+        // Learning a turn identity does not settle an unknown execution result.
+        // Keep quarantine and its receipt until exact terminal reconciliation.
+        let next_state = if current.state == AutomationOccurrenceState::Indeterminate {
+            AutomationOccurrenceState::Indeterminate
+        } else {
+            AutomationOccurrenceState::Running
+        };
+        let recovery_phase = if next_state == AutomationOccurrenceState::Indeterminate {
+            "reconciliation_required"
+        } else {
+            "awaiting_terminal"
+        };
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
-             SET state = 'running', turn_id = ?, provider_payload_sha256 = ?,
+             SET state = ?, turn_id = ?, provider_payload_sha256 = ?,
                  terminal_scan_cursor = NULL,
-                 recovery_phase = 'awaiting_terminal', updated_at_ms = ?
-             WHERE task_id = ? AND occurrence = ? AND state = 'admitted'",
+                 recovery_phase = ?, updated_at_ms = ?
+             WHERE task_id = ? AND occurrence = ? AND state = ? AND turn_id IS NULL",
         )
+        .bind(next_state.as_str())
         .bind(turn_id)
         .bind(provider_payload_sha256)
+        .bind(recovery_phase)
         .bind(to_i64(observed_at_ms)?)
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
+        .bind(current.state.as_str())
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
@@ -725,7 +773,7 @@ impl AutomationStore {
             occurrence,
             &current.occurrence_id,
             "turn_persisted",
-            AutomationOccurrenceState::Running,
+            next_state,
             current.claim_generation,
             &current.claim_token,
             current.queued_submission_id.as_deref(),
@@ -767,8 +815,10 @@ impl AutomationStore {
         let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
-        if current.state != AutomationOccurrenceState::Running
-            || current.turn_id.as_deref() != Some(turn_id)
+        if !matches!(
+            current.state,
+            AutomationOccurrenceState::Running | AutomationOccurrenceState::Indeterminate
+        ) || current.turn_id.as_deref() != Some(turn_id)
             || current.terminal_scan_cursor.as_deref() != expected_cursor
         {
             return Err(AutomationError::Conflict);
@@ -776,7 +826,7 @@ impl AutomationStore {
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET terminal_scan_cursor = ?, updated_at_ms = ?
-             WHERE task_id = ? AND occurrence = ? AND state = 'running'
+             WHERE task_id = ? AND occurrence = ? AND state = ?
                AND turn_id = ?
                AND ((terminal_scan_cursor IS NULL AND ? IS NULL)
                     OR terminal_scan_cursor = ?)",
@@ -785,6 +835,7 @@ impl AutomationStore {
         .bind(to_i64(observed_at_ms)?)
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
+        .bind(current.state.as_str())
         .bind(turn_id)
         .bind(expected_cursor)
         .bind(expected_cursor)
