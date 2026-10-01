@@ -89,6 +89,13 @@ rank. Source facts, grants, predecessor comparisons and terminality remain exact
 
 ## 4. Deterministic reference algorithm
 
+This section specifies the model-backed reference target. The current native
+`evaluate_bellman_reference` validates a complete sensor/action table and computes
+`reward + discount * continuation_value` from caller-supplied values. It does not
+simulate a diffusion, integrate a model or interpolate coordinates. Those adapters
+and their independent model evidence remain integration work; the analytic golden
+below tests the arithmetic on explicitly supplied targets.
+
 Before any neural operator exists, Hepta implements a tabulated monotone reference on the fixed sensor core:
 
 ```text
@@ -108,7 +115,7 @@ Golden vector `HBO-GV-001` uses one state dimension, sensors `[0,0.5,1]`, action
 
 ## 5. Trainable or estimated algorithm
 
-The pilot operator is a tensor-product DeepONet-style model:
+For a neural candidate, the pilot profile is a tensor-product DeepONet-style model:
 
 \[
 \widehat T(V)(x,a)=c+\sum_{r=1}^{R}B_r(V(S))\,T_r^x(x)\,T_r^a(a).
@@ -175,7 +182,14 @@ q_S=\frac12\min_{i\ne j}\|x_i-x_j\|,\qquad
 \rho_S=h_S/q_S.
 \]
 
-The pilot sensor construction uses deterministic farthest-point insertion over a fixed candidate design. It stops at the smaller of the error target or `4096` points. Accepted cores require `rho_S <= 4`, no duplicate points, positive `q_S` and held-out OOD margin coverage.
+The native sensor constructor uses deterministic farthest-point insertion over a
+fixed candidate design and selects the requested `2..4096` points. Its reported
+fill distance is the maximum nearest-sensor distance over that finite design;
+it is not a proof of the continuous-domain supremum above. Q32 fill distance and
+mesh ratio round upward, while separation rounds downward. `hull_digest` binds
+the selected coordinates; it does not implement a convex-hull membership or OOD
+oracle. Continuous-domain coverage and held-out OOD evidence remain required for
+the qualified profile, whose mesh ratio is at most four.
 
 The complete operator error budget is explicit:
 
@@ -230,6 +244,11 @@ Property tests enforce legal-action closure, monotonicity under ordered continua
 
 The simplest sufficient learner wins: a tabular, linear or deterministic reference that meets the same bound is preferred over the neural operator.
 
+These are qualification-profile gates, not a claim that every native reference
+input enforces every threshold. In particular the native constructor accepts
+`2..4096` sensors, including the three-point arithmetic golden. Target-host
+latency, continuous coverage and future calibration require separate evidence.
+
 ## 12. Paper traceability and Hepta extensions
 
 `PAPER-HOLDER-Q-2026` is used only for six publisher-abstract statements: continuous state/action stochastic control, the uniformly elliptic diffusion setting, Hölder-regular coefficients, state-smoothing/action-Lipschitz anisotropy, tensor-product neural-operator motivation and the stiffness/resource tradeoff. Each statement is bound in `PAPER_TRACEABILITY.json` to the immutable PMLR PDF bytes, the publisher Git commit/blob, publication page, abstract sentence and normalized sentence SHA-256. The paper does not establish convergence for a practical sampled DQN stack or any Hepta runtime claim.
@@ -238,6 +257,13 @@ Quasi-uniform sensor geometry, bounded monotone/positive reconstruction, the nea
 
 ## 13. Implementation sequence and completion rule
 
-Implementation order is axis registry and applicability schema → deterministic sensor construction and geometry tests → deterministic Bellman reference → direct tensor-product model → monotone reconstruction and gain tests → OOD and error-budget accounting → action-gap head → near-greedy residual shadow → causal evaluation → immutable artifact and rollback → independent selection.
+Implementation starts with axis registry and applicability schema, deterministic
+sensor construction, geometry tests and the deterministic Bellman reference.
+The simplest sufficient candidate then undergoes OOD/error-budget accounting,
+causal evaluation, immutable artifact loading, rollback and independent selection.
+A neural profile additionally requires the direct tensor-product model, monotone
+reconstruction and gain tests, action-gap head and justified near-greedy residual
+shadow before those common gates. The full neural architecture remains a target;
+source completion of the tabular baseline does not imply it is implemented.
 
 Documentation closure means this file, the algorithm registry, paper traceability and exact CI agree. Source completion and operator efficacy remain separate. This specification does not by itself advance `O0_NONE`.

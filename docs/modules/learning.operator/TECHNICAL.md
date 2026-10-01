@@ -133,7 +133,6 @@ Bellman solver, causal policy-improvement proof or deployment selection.
 Produced contracts:
 
 - `BellmanOperatorArtifactV1`
-- `RegularityProfileV1`
 
 Consumed contracts:
 
@@ -549,3 +548,72 @@ The bootstrap source-location obligation for `learning.operator` is implemented 
 - `codex-rs/hepta-bellman-operator`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Concrete native development and audit boundaries
+
+The current native profile is an offline/reference library. The complete neural
+architecture remains in [the algorithm specification](../../learning/HOLDER_BELLMAN_SPEC.md).
+The following are implementation facts, distinct from its qualification targets:
+
+| Component | Actual input and computation | Native bound |
+|---|---|---|
+| Target builder | Caller-supplied transitions; terminal bootstrap is zero; Q32 nearest-even discount multiplication | 16,384 rows |
+| Sensor construction | Canonical farthest-point selection; finite-design coverage and selected-coordinate digest | 16,384 design points, 32 dimensions, 2–4,096 sensors |
+| Bellman reference | Complete caller-supplied reward/continuation grid; arithmetic, canonical greedy actions and gaps | 4,096 sensors, 128 actions, 262,144 cells |
+| Tabular fitting | Complete supported grid, evidence-unique rows, nearest-even means and attainable extrema | 1,000,000 rows, 262,144 cells |
+| World model | Action-conditioned empirical branches, exact count-derived Q32 probabilities and synthetic outcomes | 65,536 rows, 16,384 pairs, 1,024 branches per pair |
+| Persisted loading | Independent payload pin, complete grid, deny-all authority and attainable statistics | 64 MiB payload; immutable repeated lookup |
+| Terminal Cell | Owner-derived action labels and real terminal targets under one constant-state profile | 4,096 frozen source records, 128 actions |
+
+The reference arithmetic does not simulate/integrate a model or interpolate
+coordinates. Finite-design fill distance is not continuous-domain coverage, and
+`hull_digest` is not a convex-hull OOD oracle. Fill distance and mesh ratio round
+upward; separation rounds downward. Coordinate deduplication uses an ordered set,
+and nearest distances from farthest-point insertion also supply minimum separation.
+No extra quadratic selected-pair scan is needed.
+
+`validate_applicability_with_signed_evidence_v2` and
+`admit_operator_regularity_with_signed_evidence_v2` authenticate exact signed
+claims through the ledger-owned verifier. Qualification regularity requires all
+seven error components: model, sensor, reconstruction, network, optimization,
+statistical and rollout. A non-applicable component is an explicit zero with
+evidence, not an omitted measurement. Signatures do not prove scientific truth.
+
+Generic dataset-bound V2 APIs verify receipt self-consistency and exact row
+membership, including cardinality. They do not authenticate freeze issuance,
+derive caller-supplied targets or inspect current revocations. Hosts must enforce
+these owner obligations. `freeze_terminal_cell_from_signed_owner_v2` instead asks
+the actual `LedgerWriter` to verify the evaluator's exact freeze signature and
+derive the complete current source set, head, corrections and revocations, before
+creating an opaque bounded terminal input. The compatible V1 freezer accepts an
+already trusted receipt and additionally checks owner context, frontier, outcome
+watermark and active records. Arbitrary historical freeze attestation is not
+recoverable from the unsigned V3 receipt alone. Fitting rechecks active records,
+trust identity and forward time; it produces a candidate with deny-all authority.
+
+Both public mutable tabular predictors enforce the same structural validator as
+encoding/loading. This does not reconstruct their sample-bound training digest;
+independent pins and immutable loaded state supply payload integrity. World-model
+prediction also recomputes its complete retained model digest. Candidate digests
+bind canonical row semantics and training admission thresholds. Numerical/profile
+changes require refitting candidates and new pins; an already independently
+admitted compatible predecessor payload remains loadable for rollback.
+
+Two explicit Agentd consumers exist:
+
+- `PinnedCognitiveRanker` at the cognitive read boundary binds artifact identity,
+  producer and host selection, and revalidates signed CURRENT on every read.
+  Exact query/revision support is required; any unsupported candidate abstains
+  from the whole ranking. Larger read input bounds do not widen the 128-action table.
+- `AgentdSharedReplayHostV1` trains, loads and predicts the narrow terminal profile,
+  with current shared-source permission, exact Memory support and ledger checks.
+  Its registry reference is host supplied; this adapter does not independently
+  establish signed CURRENT or live selection.
+
+The default dataset-freeze → training → independent evaluation → selection →
+new-process load loop remains repository composition work. Model/simulator
+adapters and an optional tensor backend are distinct implementation profiles.
+Independent scientific review, target-host measurements, future-window efficacy,
+acceptance, canary, promotion and release remain externally evidenced gates.
+The [audit record](../../../codex-rs/hepta-bellman-operator/AUDIT_2026-10-01.md)
+records this revision's adversarial cases and executed checks.

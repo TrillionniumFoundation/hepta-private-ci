@@ -28,11 +28,15 @@ interpreted as the Hölder/operator qualification profile.
 | fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented; evidence uniqueness canonical |
 | bind frozen dataset to tabular training | `verify_tabular_operator_plan_v2` / `fit_tabular_operator_verified_v2` | `src/dataset_bound.rs` | implemented |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
+| indexed structurally validated tabular prediction | `predict_tabular_operator_indexed_v2` | `src/learned_strict.rs` | implemented |
 | validate rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | compatibility implemented |
 | authenticate regularity for qualification | `admit_operator_regularity_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; evidence uniqueness canonical |
 | bind frozen dataset to world-model training | `verify_world_model_dataset_v2` / `fit_transition_model_verified_v2` | `src/dataset_bound.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| freeze owner-derived terminal-value rows | `freeze_terminal_cell_from_owner_v1` | `src/owner_terminal.rs` | implemented; bounded constant-state profile |
+| authenticate the exact owner freeze request | `freeze_terminal_cell_from_signed_owner_v2` | `src/owner_terminal.rs` | implemented; owner verifies signature and derives the complete current cut |
+| revalidate and fit owner-derived terminal-value rows | `fit_terminal_cell_from_owner_v1` | `src/owner_terminal.rs` | implemented; candidate only |
 
 ## Applicability and sensor core
 
@@ -45,8 +49,12 @@ operator evaluation.
 `build_sensor_core` uses deterministic farthest-point insertion over a bounded,
 canonical candidate design. It rejects duplicate identities, duplicate
 coordinates, mixed dimensions and coordinates outside normalized `[0,1]`.
-The manifest records selected points, fill distance, separation radius, mesh
-ratio and a hull digest. A zero separation radius or mesh ratio above the pilot
+The V2 manifest binds every canonical candidate's identity, dimension and
+coordinates, as well as selected points, fill distance, separation radius, mesh
+ratio and a selected-coordinate hull digest. Coverage is measured over the finite
+candidate design, not every point in a continuous domain, and the hull digest is
+not a membership oracle. Fill distance and mesh ratio round conservatively upward;
+separation rounds downward. A zero separation radius or mesh ratio above the pilot
 bound fails.
 
 ## Bellman reference, learned baseline and regularity
@@ -55,12 +63,23 @@ bound fails.
 registered sensor and action identities. Missing or duplicate cells fail. It
 computes Q32 targets, deterministic greedy actions and action gaps; ties break by
 canonical action ID. This reference is the oracle for any later learned model.
+The reward and continuation values are supplied by the caller; this function
+does not integrate a stochastic model or interpolate state coordinates. Its
+receipt binds the canonical cells' reward, continuation, evidence and outputs.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile. Duplicate underlying `evidence_digest` values are rejected by the canonical fit itself, so relabelling one observation cannot increase a cell count. `fit_tabular_operator_strict_v2` remains an additive compatibility/error surface rather than a stronger hidden trust boundary.
 
-`verify_tabular_operator_plan_v2` is the qualification ingress: it independently verifies a `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and requires the sorted training evidence set to equal the frozen dataset's canonical `source_record_digests` exactly. Only its opaque `VerifiedTabularOperatorPlanV2` can enter `fit_tabular_operator_verified_v2`.
+`verify_tabular_operator_plan_v2` verifies a self-consistent
+`DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and
+requires training evidence to match the frozen `source_record_digests` exactly,
+including cardinality. Duplicate evidence cannot acquire an opaque verified
+token. Receipt hashing and membership do not authenticate a freeze issuer,
+derive caller-supplied targets or observe current revocations. General
+qualification hosts must supply those owner checks and target derivation;
+the terminal profile below derives its targets from current owner records.
+Only the opaque `VerifiedTabularOperatorPlanV2` enters
+`fit_tabular_operator_verified_v2`.
 
-`fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
@@ -150,8 +169,13 @@ A host-selected `TabularPayloadPinV1` binds payload, original training-artifact,
 objective, dataset, sensor, training-profile and generation identities.
 `LoadedTabularOperatorV1::from_pinned_payload` checks that independent pin and
 validates once; its private immutable state permits O(log n) repeated prediction.
-The original indexed V2 function validates the public mutable artifact in O(n)
-on every call, before its binary search. These are different cost profiles.
+Both public mutable-artifact predictors validate bounds, deny-all authority,
+nonzero identities, complete canonical grids and attainable statistics on every
+call before lookup. Validation uses bounded ordered collections and costs
+`O(c log(s+a))` for `c` cells, `s` sensors and `a` actions. It cannot reconstruct
+sample-bound digests from sufficient statistics or authenticate a mutable
+artifact. Independent payload pins and immutable loaded state supply that
+different trust boundary and the repeated `O(log c)` prediction cost.
 
 The original training digest includes samples not retained in these sufficient
 statistics; it is retained rather than falsely reconstructed. The artifact owner
@@ -172,3 +196,27 @@ holds expected payload/manifest/registry pins outside the files being inspected;
 no extra artifact store or production selection is introduced. This is executable
 cross-owner engineering qualification, not an authenticated external operator
 acceptance, future-window efficacy result or live C1 deployment.
+
+## Actual owner and product consumers
+
+The compatible `freeze_terminal_cell_from_owner_v1` path requires trusted
+receipt provenance. Its self-consistent V3 receipt cannot prove a historical
+freeze issuer or inclusion policy. `freeze_terminal_cell_from_signed_owner_v2`
+calls the real LedgerWriter owner to authenticate the exact signed freeze
+request and derive its complete current source cut before terminal target
+derivation. Both paths revalidate records at fit, including correction,
+withdrawal, owner trust identity and time monotonicity.
+
+`../hepta-agentd/src/cognitive_ranker.rs` composes a host-selected operator at the
+cognitive read boundary, checks registry/payload identity and producer, and
+revalidates authenticated CURRENT lineage before each read. An unsupported query
+or any unsupported candidate causes whole-ranking abstention. The table has at
+most 128 actions; the read API's larger input ceiling is not learned support.
+
+`../hepta-agentd/src/shared_terminal_cell.rs` exposes
+`AgentdSharedReplayHostV1::train/load/predict` for the narrow owner-derived terminal
+profile. It revalidates shared-source grants, exact Memory identity/revision/content
+support, ledger corrections/revocations and registry lineage at its boundaries.
+Neither explicit consumer composes the default freeze/train/independent-evaluate/
+select/new-process-load learning loop. The generic simulator, continuous-domain
+coverage and optional neural/tensor backend remain separate implementation work.

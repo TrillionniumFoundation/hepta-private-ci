@@ -463,6 +463,30 @@
           "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model_verified_v2",
           "source": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "predict_tabular_operator_indexed_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "freeze_terminal_cell_from_signed_owner_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::freeze_terminal_cell_from_signed_owner_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "freeze_terminal_cell_from_owner_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_terminal_cell_from_owner_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented"
         }
       ],
       "supplementalOperations": [
@@ -519,7 +543,12 @@
         "independent scientific and semantic review of applicability and measured claims",
         "target-host runtime device and resource measurements",
         "real future calibration retention and live-world model validation",
-        "independent operator acceptance selection default-loop composition and promotion"
+        "independent operator acceptance selection and promotion"
+      ],
+      "remainingRepositoryGapsScope": "bounded_native_source_tranche_not_default_product_composition",
+      "remainingCompositionWork": [
+        "Compose the default dataset freeze -> verified training -> independent evaluation -> selection -> new-process load shadow loop through existing owners.",
+        "Implement a model-backed simulator/interpolator and continuous-domain coverage evidence for the corresponding qualified profile; the optional neural profile requires its own backend."
       ]
     },
     {
