@@ -172,8 +172,11 @@ fn native(context: Option<Digest32>) -> NativeRunRecord {
         turn_id: None,
         cancel_requested: false,
         pre_dispatch_stop: None,
+        pre_effect_abort: None,
         dispatch_rejection: None,
         observation: None,
+        terminal_owner: None,
+        terminal_publication: None,
     }
 }
 
