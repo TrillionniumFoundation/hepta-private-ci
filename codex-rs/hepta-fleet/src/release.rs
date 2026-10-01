@@ -1,6 +1,5 @@
 use std::collections::BTreeSet;
 use std::fmt;
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
 use std::io::Read;
@@ -793,7 +792,10 @@ fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistr
                 "release admission marker exceeds its byte bound".to_string(),
             ));
         }
-        markers.push((name, std::fs::read(entry.path())?));
+        markers.push((
+            name,
+            crate::regular_file::read(&entry.path(), Some(MAX_RELEASE_MANIFEST_BYTES))?,
+        ));
     }
     markers.sort_by(|left, right| left.0.cmp(&right.0));
     let mut hasher = Sha256::new();
@@ -920,17 +922,25 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
             path.display()
         )));
     }
-    serde_json::from_slice(&std::fs::read(path)?)
+    serde_json::from_slice(&crate::regular_file::read(path, Some(max_bytes))?)
         .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
-    let mut input = File::open(source)?;
+    let (input, bound) = crate::regular_file::open(source, /*maximum*/ None)?;
     let mut output = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(destination)?;
-    std::io::copy(&mut input, &mut output)?;
+    let count = std::io::copy(
+        &mut input.take(crate::regular_file::read_limit(bound)?),
+        &mut output,
+    )?;
+    if count != bound {
+        return Err(FleetRegistryError::Corrupt(
+            "release source changed size while copying".to_string(),
+        ));
+    }
     set_mode(destination, /*mode*/ 0o555)?;
     // Flush through the writing handle retained across the mode change.
     // Windows cannot FlushFileBuffers on a separately opened read-only handle.
@@ -939,15 +949,23 @@ fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), Fleet
 }
 
 fn sha256_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let mut file = File::open(path)?;
+    let (file, bound) = crate::regular_file::open(path, /*maximum*/ None)?;
+    let mut file = file.take(crate::regular_file::read_limit(bound)?);
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
+    let mut total = 0_u64;
     loop {
         let count = file.read(&mut buffer)?;
         if count == 0 {
             break;
         }
+        total += count as u64;
         hasher.update(&buffer[..count]);
+    }
+    if total != bound {
+        return Err(FleetRegistryError::Corrupt(
+            "release file changed size while hashing".to_string(),
+        ));
     }
     Ok(hasher
         .finalize()
@@ -1058,8 +1076,7 @@ fn make_tree_removable(path: &Path) {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
-    Ok(())
+    crate::regular_file::sync_directory(path)
 }
 
 #[cfg(not(unix))]

@@ -1,6 +1,4 @@
 use std::collections::BTreeMap;
-#[cfg(unix)]
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
 use std::io::Write;
@@ -478,7 +476,8 @@ fn read_regular_file(path: &Path) -> Result<String, FleetRegistryError> {
             path.display()
         )));
     }
-    std::fs::read_to_string(path).map_err(Into::into)
+    String::from_utf8(crate::regular_file::read(path, /*maximum*/ None)?)
+        .map_err(|error| std::io::Error::new(ErrorKind::InvalidData, error).into())
 }
 
 fn validate_physical_directory(path: &Path) -> Result<(), FleetRegistryError> {
@@ -568,8 +567,7 @@ fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
-    Ok(())
+    crate::regular_file::sync_directory(path)
 }
 
 #[cfg(not(unix))]
