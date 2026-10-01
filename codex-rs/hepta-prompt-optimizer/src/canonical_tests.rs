@@ -1044,3 +1044,6 @@ fn revoke_registry(
 
 #[path = "canonical_temporal_tests.rs"]
 mod temporal;
+
+#[path = "canonical_source_tests.rs"]
+mod source;

@@ -1,6 +1,6 @@
 use super::*;
 
-fn sign_temporal_evidence(
+pub(super) fn sign_temporal_evidence(
     verifier: &LearningEvidenceVerifierV1,
     name: &str,
     role: LearningEvidenceRoleV1,
@@ -26,7 +26,7 @@ fn sign_temporal_evidence(
     evidence
 }
 
-fn authentic_temporal_prices(
+pub(super) fn authentic_temporal_prices(
     registry: &DurablePromptRegistry,
 ) -> (PricedPromptCandidatesV1, LearningEvidenceVerifierV1) {
     let signers = [
