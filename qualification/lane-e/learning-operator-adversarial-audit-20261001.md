@@ -1,5 +1,7 @@
 # learning.operator 对抗审计与完成度报告
 
+后续源码、真实宿主验证与新问题修复见[第三轮报告](learning-operator-adversarial-audit-20261001-round3.md)；本文执行结果保留为对应历史源码的证据。
+
 审计日期：2026-09-30（执行环境日期）；文件与分支的 `20261001` 命名保留。
 范围：`learning.operator`、关联开发文档、Agentd 只读消费边界及资格证据链。
 

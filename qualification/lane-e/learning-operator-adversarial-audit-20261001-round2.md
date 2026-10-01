@@ -1,5 +1,7 @@
 # learning.operator 第二轮对抗审计与优化收敛
 
+后续源码、真实宿主验证与新问题修复见[第三轮报告](learning-operator-adversarial-audit-20261001-round3.md)；本文执行结果保留为对应历史源码的证据。
+
 日期：2026-10-01。基线 PR #1305 的源码提交为 `831be9ed2ac480039eb0f229dd423effff3315a7`；本轮最终工程源码为 `84c633367fa5452f241d4ff5254e0c12ee19d939`，其 GitHub tree 与本地源码 tree `5b7f191b91800ecf9e108151eff510edbf7e2c2f` 一致。本轮同时复核 main 的最新提交 `a126987b84737dbc2ee2592442a314117bddb4a2`，以及独立 learning.eval 开发分支 `3714b7e1c2513e0e79ad8560a80fda480aca9471`。未把后者的认证 facade 当作真实测量资格，也未盲目合并整个分支。
 
 本文接续[第一轮报告](learning-operator-adversarial-audit-20261001.md)。第一轮的测试、性能、变异和 CI 结果保留为历史证据；下列第二轮结果仅覆盖对应实际源码与命令，不继承完整候选资格。新源码先完成检查，再进行格式与导航固化；各 at-run source-hash 清单保留其真实字节，不替换成事后提交身份。
