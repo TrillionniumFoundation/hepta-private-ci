@@ -179,10 +179,12 @@ transitions leave both file and cache unchanged. Recovery also syncs the file
 before exposing its authoritative state.
 
 For `N` plan records, `F` fence events and `B` file bytes, recovery has worst-case
-source cost `O(B + N² + F(N + 1))` and memory `O(B + N)` under the backend's hard
-ceilings. It no longer reconstructs every earlier semantic prefix per frame.
+source cost `O(B + N² + F)` and memory `O(B + N)` under the backend's hard
+ceilings. Cold replay moves its existing canonical snapshot between frames and
+copies only each newly consumed record; fence events retain its allocation.
 The wire-compatible v2 registry still hashes its complete sorted binding table
-for each new plan, and snapshots still copy retained records.
+for each new plan. Live CAS continues cloning candidate state and comparing the
+complete canonical result before synchronization and publication.
 
 The optional `FinalHoldoutCasStoreV1::canonical_journal_cache` preserves a native
 journal already produced by canonical replay. Owner recovery uses it only after

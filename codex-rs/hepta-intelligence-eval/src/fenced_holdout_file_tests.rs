@@ -19,6 +19,9 @@ use crate::HoldoutFenceIssuerV1;
 use crate::MetricContractV1;
 use crate::freeze_cross_fold_plan;
 
+#[path = "fenced_holdout_replay_tests.rs"]
+mod replay_tests;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn id(value: &str) -> StableId {

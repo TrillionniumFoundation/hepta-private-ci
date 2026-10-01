@@ -38,6 +38,7 @@ const EVENT_PLAN: u8 = 1;
 #[path = "fenced_holdout_replay.rs"]
 mod replay;
 use replay::replay_event;
+use replay::replay_event_owned;
 use replay::transition_payload;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -189,9 +190,9 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             if checksum != Digest32::of_bytes(payload).as_array() {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
-            state = Some(replay_event(
+            state = Some(replay_event_owned(
                 binding,
-                state.as_ref(),
+                state.take(),
                 &mut journal,
                 payload,
             )?);

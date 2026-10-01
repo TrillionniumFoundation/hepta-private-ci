@@ -210,9 +210,11 @@ The concrete backend accepts a live CAS transition only when its complete
 canonical replay equals the supplied record. Recovery retains one semantic
 journal and syncs the recovered file before returning. For `N` plan records,
 `F` fence events and `B` file bytes, its current worst-case source cost is
-`O(B + N² + F(N + 1))`, with `O(B + N)` memory under fixed backend ceilings.
-The v2 registry's full sorted-table digest and snapshot copying still contribute
-quadratic cost as plan history grows.
+`O(B + N² + F)`, with `O(B + N)` memory under fixed backend ceilings.
+Cold replay moves the existing canonical snapshot and copies only each new
+record, preserving its allocation across fences. The v2 registry's full
+sorted-table digest still contributes quadratic cost as plan history grows;
+live CAS retains candidate cloning and complete canonical-state comparison.
 
 The optional native canonical-journal cache is an optimization capability, not
 an unchecked snapshot constructor. Owner recovery still validates the loaded

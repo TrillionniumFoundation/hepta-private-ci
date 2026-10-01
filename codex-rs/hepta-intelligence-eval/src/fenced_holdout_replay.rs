@@ -50,18 +50,37 @@ pub(super) fn replay_event(
     journal: &mut FinalHoldoutJournalV1,
     payload: &[u8],
 ) -> Result<FinalHoldoutCasRecordV1, LockedFileCasErrorV1> {
+    // Live CAS keeps its previous public state and native journal until the
+    // candidate has passed complete canonical equality and durable append.
+    replay_event_owned(binding, current.cloned(), journal, payload)
+}
+
+/// Advance a previously canonical state that corresponds to `journal`.
+/// Cold recovery owns both values and discards them on any failed frame. Live
+/// admission supplies clones, preserving the backend until commit succeeds.
+pub(super) fn replay_event_owned(
+    binding: Digest32,
+    current: Option<FinalHoldoutCasRecordV1>,
+    journal: &mut FinalHoldoutJournalV1,
+    payload: &[u8],
+) -> Result<FinalHoldoutCasRecordV1, LockedFileCasErrorV1> {
     let tag = *payload.first().ok_or(LockedFileCasErrorV1::Corrupt)?;
-    match tag {
+    let (fence, snapshot) = match tag {
         EVENT_FENCE => {
             let fence = decode_fence(payload)?;
-            if current.is_some_and(|record| fence.generation <= record.fence.generation) {
+            if current
+                .as_ref()
+                .is_some_and(|record| fence.generation <= record.fence.generation)
+            {
                 return Err(LockedFileCasErrorV1::Rollback);
             }
-            FinalHoldoutCasRecordV1::new(binding, fence, journal.snapshot())
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)
+            let snapshot = current
+                .map(|record| record.journal)
+                .unwrap_or_else(|| journal.snapshot());
+            (fence, snapshot)
         }
         EVENT_PLAN => {
-            let current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
+            let mut current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
             let plan =
                 decode_holdout_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
             let receipt = journal
@@ -70,11 +89,20 @@ pub(super) fn replay_event(
             if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
-            FinalHoldoutCasRecordV1::new(binding, current.fence.clone(), journal.snapshot())
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)
+            // Every prior record is already canonical. Preserve its allocation
+            // and append only the new record produced by the semantic core.
+            let record = journal
+                .records()
+                .last()
+                .ok_or(LockedFileCasErrorV1::Corrupt)?;
+            current.journal.records.push(record.clone());
+            current.journal.head_digest = journal.head_digest();
+            (current.fence, current.journal)
         }
-        _ => Err(LockedFileCasErrorV1::Corrupt),
-    }
+        _ => return Err(LockedFileCasErrorV1::Corrupt),
+    };
+    FinalHoldoutCasRecordV1::new(binding, fence, snapshot)
+        .map_err(|_| LockedFileCasErrorV1::Corrupt)
 }
 
 fn encode_fence(fence: &HoldoutWriterFenceV1) -> Result<Vec<u8>, LockedFileCasErrorV1> {
