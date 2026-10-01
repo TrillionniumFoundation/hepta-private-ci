@@ -1933,9 +1933,13 @@ mod tests {
             match client.health().await {
                 Ok(health) => break health,
                 Err(error) => {
+                    if daemon.is_finished() {
+                        let startup = daemon.await.expect("join failed recovery startup");
+                        panic!("recovery daemon exited before binding: {startup:?}");
+                    }
                     assert!(
                         Instant::now() < deadline,
-                        "recovery daemon did not bind a reachable socket: {error}"
+                        "recovery daemon did not bind a reachable socket while startup remained pending: {error}"
                     );
                     tokio::time::sleep(Duration::from_millis(10)).await;
                 }
