@@ -1,8 +1,6 @@
 //! One explicitly installed owner key and bounded thread allowlist.
 
 #[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
 
@@ -14,6 +12,8 @@ use serde::Deserialize;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+#[cfg(unix)]
+use crate::operator_namespace::OperatorNamespace;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -111,7 +111,8 @@ pub(crate) fn read_private_owner_file(
             "trust file must be a private owner-controlled regular file",
         ));
     }
-    let mut file = File::open(path)?;
+    let namespace = OperatorNamespace::capture(path, &before)?;
+    let mut file = namespace.open_regular(path, &before)?;
     let opened = file.metadata()?;
     let identity = |m: &std::fs::Metadata| {
         (
@@ -132,6 +133,7 @@ pub(crate) fn read_private_owner_file(
         .take(maximum_bytes.saturating_add(1))
         .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;
+    namespace.verify(path, &after)?;
     if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > maximum_bytes
         || !after.is_file()
         || identity(&after) != identity(&before)

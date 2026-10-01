@@ -5,9 +5,12 @@
 //! This does not isolate a malicious equivalent-UID operator or root and does
 //! not lock the namespace after verification.
 
+use std::fs::File;
 use std::fs::Metadata;
+use std::fs::OpenOptions;
 use std::io;
 use std::os::unix::fs::MetadataExt;
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -44,6 +47,24 @@ impl OperatorNamespace {
         Ok(Self { directories })
     }
 
+    pub(crate) fn open_regular(&self, path: &Path, before: &Metadata) -> io::Result<File> {
+        if !before.is_file() || before.file_type().is_symlink() || before.nlink() != 1 {
+            return Err(io::Error::other("operator read requires a regular file"));
+        }
+        // A replaced FIFO must not wait for a writer before FD validation,
+        // and a substituted symlink must never redirect this inspected read.
+        let file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+            .open(path)?;
+        let opened = file.metadata()?;
+        if !opened.is_file() || file_version(before) != file_version(&opened) {
+            return Err(io::Error::other("operator file changed while opening"));
+        }
+        self.verify(path, &opened)?;
+        Ok(file)
+    }
+
     pub(crate) fn verify(&self, path: &Path, file: &Metadata) -> io::Result<()> {
         let after = Self::capture(path, file)?;
         let identity = |metadata: &Metadata| {
@@ -68,3 +89,22 @@ impl OperatorNamespace {
         Ok(())
     }
 }
+
+fn file_version(metadata: &Metadata) -> (u64, u64, u32, u32, u64, u64, i64, i64, i64, i64) {
+    (
+        metadata.dev(),
+        metadata.ino(),
+        metadata.uid(),
+        metadata.mode(),
+        metadata.nlink(),
+        metadata.len(),
+        metadata.mtime(),
+        metadata.mtime_nsec(),
+        metadata.ctime(),
+        metadata.ctime_nsec(),
+    )
+}
+
+#[cfg(test)]
+#[path = "operator_namespace_open_tests.rs"]
+mod tests;

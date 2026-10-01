@@ -17,6 +17,8 @@ use serde::Serialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::authbus_trust::invalid;
+#[cfg(unix)]
+use crate::operator_namespace::OperatorNamespace;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
 #[cfg(unix)]
@@ -169,7 +171,8 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
     use std::os::unix::fs::MetadataExt;
 
     let before = std::fs::symlink_metadata(path)?;
-    let mut file = File::open(path)?;
+    let namespace = OperatorNamespace::capture(path, &before)?;
+    let mut file = namespace.open_regular(path, &before)?;
     let opened = file.metadata()?;
     let identity = |m: &std::fs::Metadata| {
         (
@@ -190,6 +193,7 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
         .take(MAX_CHECKPOINT_BYTES + 1)
         .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;
+    namespace.verify(path, &after)?;
     if bytes.len() as u64 > MAX_CHECKPOINT_BYTES
         || identity(&after) != identity(&before)
         || identity(&file.metadata()?) != identity(&before)

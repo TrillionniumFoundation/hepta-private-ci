@@ -2,8 +2,6 @@
 
 use std::collections::BTreeSet;
 #[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
 
@@ -18,6 +16,8 @@ use serde::Deserialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::authbus_trust::hex_bytes;
+#[cfg(unix)]
+use crate::operator_namespace::OperatorNamespace;
 
 const MAX_EVIDENCE_ISSUERS: usize = 32;
 const MAX_EVIDENCE_ROLES_PER_ISSUER: usize = 16;
@@ -156,7 +156,8 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
             "evidence trust file must be a private owner-controlled regular file",
         ));
     }
-    let mut file = File::open(path)?;
+    let namespace = OperatorNamespace::capture(path, &before)?;
+    let mut file = namespace.open_regular(path, &before)?;
     let opened = file.metadata()?;
     let identity_tuple = |metadata: &std::fs::Metadata| {
         (
@@ -177,6 +178,7 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         .take(MAX_EVIDENCE_TRUST_FILE_BYTES + 1)
         .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;
+    namespace.verify(path, &after)?;
     if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_EVIDENCE_TRUST_FILE_BYTES
         || !after.is_file()
         || identity_tuple(&after) != identity_tuple(&before)
