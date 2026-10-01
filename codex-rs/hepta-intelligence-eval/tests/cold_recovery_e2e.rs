@@ -23,6 +23,9 @@ mod host;
 mod outcome_model;
 #[path = "selected_host_recovery_support/qualification_receipt_tests.rs"]
 mod qualification_receipt_tests;
+#[cfg(target_os = "linux")]
+#[path = "selected_host_recovery_support/recovery_sync_eio_tests.rs"]
+mod recovery_sync_eio_tests;
 #[path = "selected_host_recovery_support/cold_storage.rs"]
 mod storage;
 #[allow(dead_code)]
