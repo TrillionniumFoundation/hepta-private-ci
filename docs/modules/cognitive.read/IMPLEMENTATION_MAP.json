@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
-    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
+    "commit": "e35fedcdcef4e45353499aa3e234461479c4b925",
+    "tree": "46cb554c4fdd56162fd7653718e63b4850b6cb54"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -177,11 +177,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "object": "92a479ee8dfaf2f61486c7acc13b6a11f91d0fb9"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
-      "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
+      "object": "374886f1a45e1e5e8e964318730b2c4242266c33"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
@@ -193,11 +193,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
-      "object": "714d653b5c7efe29b51e0cbedf96ffdd04e15cb1"
+      "object": "4fbd8b1ab5cdcf09c5fe74b9283f15d95bb729da"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "822296cb9a11c1cb6adfb58fcea911152fdbba6d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -269,7 +269,7 @@
     },
     {
       "path": "docs/modules/cognitive.read/TECHNICAL.md",
-      "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
+      "object": "8d2c6d317d30cba72aef6a5e3ead454e8b4ceda7"
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
@@ -279,13 +279,13 @@
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "blobSha": "92a479ee8dfaf2f61486c7acc13b6a11f91d0fb9",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn read("
     },
     {
       "role": "owner_final_use_revalidation",
-      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "blobSha": "92a479ee8dfaf2f61486c7acc13b6a11f91d0fb9",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn revalidate("
     },
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "ff78846f1311b2c8ea96994f04d747d3b8a20434",
-    "tree": "b7afd598a8bb0cc6ce314a6e4ecec1d926b1f448"
+    "commit": "e35fedcdcef4e45353499aa3e234461479c4b925",
+    "tree": "46cb554c4fdd56162fd7653718e63b4850b6cb54"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
