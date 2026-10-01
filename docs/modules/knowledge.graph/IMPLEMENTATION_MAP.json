@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "43c489fd7e1fde17881b62cefcee668a71d8406b",
-    "tree": "4556a4b6a83aa2e70e8638847cfedca6a053e0f8"
+    "commit": "a62aeb47e9edd3de2c02a7ac2f33fff0b94dab8c",
+    "tree": "c4302d891ca9a156f2a73bd721d626f5e94bdc2e"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -204,8 +204,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "43c489fd7e1fde17881b62cefcee668a71d8406b",
-    "tree": "4556a4b6a83aa2e70e8638847cfedca6a053e0f8"
+    "commit": "a62aeb47e9edd3de2c02a7ac2f33fff0b94dab8c",
+    "tree": "c4302d891ca9a156f2a73bd721d626f5e94bdc2e"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -279,12 +279,20 @@
       "object": "017fe5d9983a0e7a984948d66ac2c91a16b26279"
     },
     {
+      "path": "codex-rs/hepta-memory/migrations/0019_source_ledger_scope_frontier.sql",
+      "object": "ad6b6c1d2e7c97c30931df7517b0822d5a46e693"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
       "object": "cfb84c235e1c98a5b968db12009ef5d5e5e6d24c"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
-      "object": "655b78a8d41c816882368b5bab4df99defcee9b3"
+      "object": "adf3980ed1be7f78c74ef07acd54dad0f924fe4f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_source_frontier_tests.rs",
+      "object": "76fb444f66f5edc9417fa90837ad4c5c022ac23e"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
