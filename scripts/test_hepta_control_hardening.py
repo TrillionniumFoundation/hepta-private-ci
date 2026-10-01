@@ -79,7 +79,10 @@ class CheckSourceTests(unittest.TestCase):
 
     def test_owner_and_conversation_controls_cannot_be_inferred_from_fixture(self):
         for field in ("owner", "conversation"):
-            for value in (None, False, 1, "true"):
+            invalid = (
+                (None, 1, "true") if field == "owner" else (None, False, 1, "true")
+            )
+            for value in invalid:
                 self.branch, self.protection, self.checks = fixture()
                 if field == "owner":
                     self.protection["required_pull_request_reviews"][
@@ -94,6 +97,15 @@ class CheckSourceTests(unittest.TestCase):
                     self.assertRaises(controls.ControlError),
                 ):
                     self.validate()
+
+    def test_owner_can_disable_review_without_substituting_check_source(self):
+        self.protection["required_pull_request_reviews"][
+            "require_code_owner_reviews"
+        ] = False
+        self.assertEqual(self.validate(), [100, 200])
+        self.checks[1]["app"]["id"] += 1
+        with self.assertRaises(controls.ControlError):
+            self.validate()
 
     def test_unpinned_blocking_context_rejected(self):
         for value in (None, -1):
