@@ -1,4 +1,4 @@
-# runtime.supervisor adversarial audit — 2026-09-30 (UTC)
+# runtime.supervisor adversarial audit — 2026-09-30 to 2026-10-01 (UTC)
 
 ## Candidate and scope
 
@@ -15,8 +15,8 @@ durable writes, retry after filesystem failure, blocking-pool exhaustion, a full
 256-Agent response and substitution of historical evidence for a current build.
 
 The repaired native source is pinned to
-`f8f8d7dfc6cac59215323b14bb3df765ac3496c2`, tree
-`af5ec8b5930768fefb577f9b3f4ecf79cd4a85b2`. Subsequent audit/map metadata
+`69d2dba57f70fe5d1e095cee0bf69970b251ce56`, tree
+`74356ef5b8411cd70c94982376a684f712e5e1a4`. Subsequent audit/map metadata
 commits preserve those observed source blobs.
 
 This is a repository audit and repair record. It does not provide independent
@@ -72,6 +72,50 @@ Fleet/CAS ordering; source-level throughput speculation is insufficient.
 | P2 | Product qualification still requires CLI test names removed by the pinned-bundle interface; suite enumeration omits `hol-256`. | Use current test identities in every lane and recognize numeric suite names. |
 | P2 | Status validation accepts an overall implemented claim with unfinished capability rows or dormant source modules. | Reject contradictory claims and require the relevant implementation to be connected to the crate graph. |
 
+## Second adversarial pass
+
+The published first-pass head `6ac309b73e8a196d7f4905e8e336b4cf5f682627`
+was rechecked against the current branch and PR inventory. Its default native
+library suite independently passed the same 287 selected cases before this
+pass changed source. The first-pass exact-head and merge workflows still had
+queued/pending jobs with no execution result at the next remote observation.
+
+PR #1303 at `3491447b9856763514998360c077d71368a5498f` is a separate integration
+alternative based on older `main`, rather than a descendant replacement for
+this candidate. It adds hosting, module-selection and authority work but omits
+existing constructor/retry repairs and cautious status documents. It was
+compared read-only and was not merged. Its local model-authority private-key
+reader/signer also needs an explicit separate ownership contract: the registered
+supervisor still denies `secret_read`, model/tool authority and self-issued
+grants. More source files do not resolve that role mismatch or supply acceptance.
+
+| Priority | Additional failure trace | Repair |
+| --- | --- | --- |
+| P1 | A catalog-admitted release is revoked while Running; automatic restart dispatches its cached command without current admission. An absent catalog entry also lets a cached registered descriptor fall back to a local fixture. | Re-admit before every main launch; privately retain catalog origin and restrict catalog-free fallback to explicit nonproduction plant descriptors whose entry is physically absent. |
+| P1 | A failed explicit rollback restores its source, but signed recovery recognizes only the rollback target. Constructor terminal reconciliation can also ignore external CAS generation drift. | Bind intent and transaction exactly, select the exact source or target generation/predecessor frontier, and share that classification with constructor reconciliation. |
+| P1 | Recovery publishes its terminal transaction, then terminal intent publication fails. A same-owner retry rejects the already-terminal transaction and cannot finish acknowledgement without a restart. | Resume only the exact signed decision's terminal pair, reconstruct and verify its original journal bindings, retry acknowledgements without process effects, and avoid charging control revision twice. |
+| P2 | A historical signed-intent status includes the digest of a later unrelated unsigned transaction. | Omit unrelated transaction digests instead of presenting mixed journals as one observation. |
+| P1 | Lease/restart readers check a path then open/read it unbounded; a substituted link or FIFO can bypass the check or stall the owner. A successful lease publication can leave a staging hard link across a crash. | Use one bounded, nonblocking, nofollow descriptor reader with stable identity/owner/link/permission checks; publish 0600 leases and unlink staging before directory acknowledgement. |
+| P1 | The client accepts an Agent-B snapshot for an Agent-A request or a mutation response with the wrong operation, prestate or signed receipt. Unexpected payload diagnostics can echo large authority-bearing data. | Validate each response against its request, verify the kernel peer before writing, cap canonical diagnostics and emit fixed payload-kind errors. |
+| P2 | Robrix permits duplicate roster identities or health counts beyond the fleet limit; serving eligibility is confused with retained main/Matrix ownership during containment. | Enforce bounds/uniqueness and validate real unhealthy retained-owner states without granting readiness. |
+| P2 | Periodic projection obtains a full snapshot, cloning log/event rings it never consumes. | Share a metadata-only snapshot builder; retain the complete public diagnostic snapshot and prove status/CAS parity with populated rings. The maximum avoided log-payload copy is a capacity bound, not a benchmark. |
+| P1 | The validator plan runs real Python tests but has a zero-test minimum and no Python runner grammar, so receipt assembly rejects its truthful passing record. | Declare a positive source-bound unittest inventory and require a complete, ordered, all-pass verbose transcript; preserve separate nextest binary requirements. |
+| P2 | A concurrent source edit after global preflight is overwritten by materialization; one rollback failure stops restoration of all remaining files and can obscure the original publication error. | Recheck file identity before each atomic leaf replacement, preserve externally substituted paths, attempt every restoration and report original error plus all incomplete rollback paths. |
+
+Cross-review caught and repaired an invalid predecessor/terminal digest equality
+in the new client validator: successful recovery changes journal digests. It
+also caught serving-only assumptions that rejected real retained process owners.
+The unchanged reply shape cannot authenticate a predecessor-to-terminal hash
+transition by itself; exact signature/journal/frontier validation remains with
+the daemon owner. This does not close the atomic recovery-observation capability.
+
+Materialization remains an authoring transaction under trusted parent directories
+and exclusive editing. Last identity checks detect observed conflicts; they are
+not a filesystem-wide concurrency lock or a crash-durable multi-file commit.
+The descriptor reader similarly protects the final Unix path component, not
+untrusted ancestor directories. Target-host deployment must enforce those
+ownership boundaries.
+
 ## Completion assessment
 
 The baseline capability inventory has 16 rows: 12 marked implemented, one
@@ -83,8 +127,8 @@ block production irrespective of the number of implemented rows.
 | --- | --- |
 | Technical development documentation | Detailed; current claim matrix is substantially more cautious than some historical amendment documents. |
 | Native lifecycle implementation | Substantial, with concrete retry, recovery and daemon-boundary defects addressed by this audit. |
-| Newly added journal/witness/observation code | Files exist but baseline `lib.rs` does not compile or call them; presence cannot close runtime composition. |
-| Repository qualification | Must execute against the repaired final candidate; older run success or source references are insufficient. |
+| Dormant exit/witness/atomic-observation prototypes | Files exist but current `lib.rs` does not compile or call those prototypes; presence cannot close runtime composition. |
+| Repository qualification | Selected local library execution and strict compilation passed; unfiltered product and exact-head/merge CI remain unestablished. Older run success or source references are insufficient. |
 | Target-host qualification | Not established by this audit; requires the frozen real-process, filesystem, fault and latency matrix. |
 | Independent acceptance | Not obtained; code, security and operations acceptance must remain distinct evidence. |
 | Activation and release | False. |
@@ -105,40 +149,63 @@ production acceptance must bind the digest of each host artifact.
 
 ## Verification
 
-Local verification completed:
+Latest local verification completed. The unsigned
+[`LOCAL_EXECUTION_OBSERVATION_20261001.json`](LOCAL_EXECUTION_OBSERVATION_20261001.json)
+preserves the 131-file executed manifest, named passing inventory, exclusions and
+final source comparison. It is a local observation, not a qualification receipt.
 
-- Mandatory `just fmt`: passed; unrelated formatting was excluded from the audit commits.
-- `just fix -p codex-hepta-supervisor --locked`: passed at the final cleanup
-  checkpoint; the qualification/offline feature variant also passed. These
-  auto-fix commands are distinct from the strict results below.
-- Final strict Clippy: default and `qualification,offline-authority-tools`
-  configurations both passed with `--locked --all-targets --no-deps -- -D warnings`.
-  This includes compilation of the configured library, daemon, recovery CLIs and
-  integration-test targets. An existing dependency deprecation warning in
-  `hepta-ndu` remains outside the scoped lint result.
-- Default and `qualification,offline-authority-tools` all-target checks passed
-  at earlier repair checkpoints. These checks do not qualify later changes.
-- Last executed default native library regression at source
-  `348b24673c3f2f7e5d3e8d3bd5229620e170b0f5`: **287/287 selected tests passed**
-  from a 295-test inventory. Eight Unix-socket tests were externally excluded
-  by the nextest expression after this environment returned `EPERM` for socket
-  creation. The tests themselves were not disabled or rewritten to skip.
-  Subsequent equivalent lifecycle/CLI lint cleanup, fixture expectations and
-  qualification read-guard cleanup were validated by both strict all-target
-  checks; they do not create new native execution evidence.
-- Seven Python suites (receipt, evidence, status, workflow, CI and transactional
-  materializer): **84 tests passed**. `hepta_supervisor_status.py check` passed.
-- Isolated materialization from the immutable base and repeat execution:
-  passed; marker/publication failure tests preserve original source bytes.
+- Mandatory `just fmt`: passed; 46 unrelated formatter edits were excluded.
+- Scoped `just fix -p codex-hepta-supervisor --locked --offline`: passed for
+  default and `qualification,offline-authority-tools` configurations.
+- Final strict Clippy: both configurations passed with
+  `--locked --offline --all-targets --no-deps -- -D warnings`. This compiles
+  the configured library, daemon, recovery CLIs and integration-test targets;
+  it does not execute those integration targets. An existing `hepta-ndu`
+  dependency deprecation warning remains outside the scoped result.
+- Default native library: **323/323 selected tests passed**, total inventory
+  331. `qualification,offline-authority-tools` library: **328/328 selected
+  tests passed**, total inventory 336, including five additional durability
+  qualification cases. Both ran through `just test`/nextest on the same frozen
+  131-file native manifest; no source drift occurred between the two executions.
+- Exactly eight Unix-socket cases were externally excluded after this environment
+  had returned `EPERM` for socket creation. Their source was not disabled or
+  rewritten to skip. This is not an unfiltered package or Linux/macOS product pass.
+- Subsequent native changes were limited to three test fixture files: two
+  automatic test-lint fixes, removal of an unfulfilled lint expectation, and
+  formatting. All production native blobs still match the executed checkpoint.
+  The final strict checks compiled that cleanup; native tests were not rerun
+  after final `fix`/`fmt`, following `AGENTS.md`.
+- Seven Python suites: **95 tests passed**. The actual six-module hosted
+  validator command executed **65/65 named cases** and its complete transcript
+  and truthful receipt were accepted. Ruff formatting preserved the ASTs of all
+  six changed Python files. `hepta_supervisor_status.py check` passed.
+- Isolated materialization from immutable base
+  `e8f8f2d0ca399b0a68abba4da90a3be5114d0735` and identical repeat execution:
+  passed, checking 420 files. Nine materializer regressions exercise marker,
+  late conflict, substituted leaf, publication and incomplete rollback handling.
+- The generated Robrix corpus has 72 cases; native parser/schema/fixture parity
+  and independent manifest length/digest checks passed.
 - `git diff --check`: passed.
 
-The native regression includes exact-identity restart completion, predecessor
-retirement recovery, repeated failed-spawn cancellation and directory-sync
-acknowledgement, damaged-journal owner retention, transient control retry,
-canonical signed source admission, release-frontier drift, revoked predecessor
-identity, explicit-rollback source restoration, Matrix exit cleanup and failed
-budget-clear retry. The no-Matrix test executes 40 ticks, verifies unchanged
-budget bytes/mtime/inode, and proves an armed budget-write fault was not consumed.
+The second pass's first native execution had 319 passes and four failures.
+These exposed incorrect fixture assumptions: constructor rejection publishes
+Failed, a terminal journal must bind the prepared CAS generation, a sealed
+catalog removal must preserve directory permissions, and successfully contained
+stale Matrix ownership returns no recovery fault. Fixtures now prove the actual
+states, exact ownership/events, absent catalog entry and no extra dispatch.
+Runtime checks and the eight environmental exclusions were not weakened.
+
+Native coverage includes exact restart lineage/claim acknowledgement, constructor
+owner retention, transient control retries, catalog re-admission before every
+main launch, explicit rollback source restoration, exact prepared CAS generation
+and predecessor, real signed recovery through eight writer fault cuts, expired/
+changed/tampered decision denial, once-only revision, bounded descriptor reads
+with deterministic file substitution, one-link lease durability, retained-owner
+observations and metadata/CAS parity. The no-Matrix fixture still executes 40
+idle ticks without consuming a budget write fault.
+
+The earlier first-pass 287 selected default tests and 84 Python tests remain
+historical checkpoints; they do not replace these newer results.
 
 The eight environmental exclusions are:
 
@@ -161,10 +228,14 @@ attempts are not pass evidence.
 
 The complete unfiltered Linux/macOS product suite and exact source/merge
 qualification still require the published candidate's CI. At the last remote
-observation, the PR jobs were queued and had no execution result. Source-head execution does not substitute for the frozen
-real-process target-host matrix or independent acceptance. A pending, skipped
+observation before publication, the first-pass PR jobs were queued and had no
+execution result. The newly published source requires its own head/merge runs.
+Source-head execution does not substitute for the frozen real-process target-host
+matrix or independent acceptance. A pending, skipped
 or failed CI step is not qualified execution.
 
-After the repairs, separate audit agents recheck the changed recovery, release,
-daemon, evidence and materialization paths for new failure traces. A clean
-review of that bounded diff is not a proof that no future optimization exists.
+After the repairs, separate audit agents rechecked the changed recovery, release,
+daemon, evidence and materialization paths. The final cross-review found no new
+reproducible failure in the repaired scope. This bounded result does not close
+the explicitly listed implementation obligations or prove that no future
+optimization exists.
