@@ -60,7 +60,7 @@ impl AutomationStore {
             occurrence
                 .terminal_receipt_digest
                 .as_ref()
-                .map(|digest| digest.as_str()),
+                .map(codex_hepta_contracts::Sha256Digest::as_str),
         )
         .execute(&mut *transaction)
         .await

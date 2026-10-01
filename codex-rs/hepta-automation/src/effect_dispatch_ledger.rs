@@ -56,6 +56,7 @@ pub(crate) struct EffectDispatchObservation {
 pub(crate) struct EffectDispatchAttempt {
     pub(crate) owner_agent_id: AgentId,
     pub(crate) provider_key_version: u32,
+    pub(crate) provider_contract_binding: Option<Sha256Digest>,
     pub(crate) run_id: String,
     pub(crate) step_id: String,
     pub(crate) attempt: u32,
@@ -94,6 +95,7 @@ impl AutomationStore {
         record_command_id: &str,
         started_at_ms: u64,
         fence: &TaskFlowFence,
+        provider_contract_binding: Option<&Sha256Digest>,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
         if fence.owner_agent_id != *self.taskflow_owner_agent_id() {
             return Err(TaskFlowError::StaleFence);
@@ -103,8 +105,8 @@ impl AutomationStore {
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, binding_digest, destination_id, authority_epoch,
                 grant_id, grant_nonce_digest, record_command_id, started_at_ms,
-                provider_key_version
-             ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 2
+                provider_key_version, provider_contract_binding
+             ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 2, ?
                WHERE EXISTS (
                  SELECT 1 FROM taskflow_runs
                  WHERE owner_agent_id = ? AND run_id = ? AND state = 'running'
@@ -136,6 +138,7 @@ impl AutomationStore {
         .bind(grant_nonce_digest.as_str())
         .bind(record_command_id)
         .bind(to_i64(started_at_ms)?)
+        .bind(provider_contract_binding.map(Sha256Digest::as_str))
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
         .bind(&fence.owner_id)
@@ -181,6 +184,7 @@ impl AutomationStore {
                     || existing.binding_digest != *binding_digest
                     || existing.destination_id != destination_id
                     || existing.record_command_id != record_command_id
+                    || existing.provider_contract_binding.as_ref() != provider_contract_binding
                 {
                     return Err(TaskFlowError::Conflict(
                         "effect dispatch attempt is bound to different bytes".to_string(),
@@ -388,6 +392,19 @@ impl AutomationStore {
 fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,
 ) -> Result<EffectDispatchAttempt, TaskFlowError> {
+    let provider_contract_binding = row
+        .try_get::<Option<String>, _>("provider_contract_binding")
+        .map_err(|_| TaskFlowError::Corrupt("effect provider contract binding".to_string()))?
+        .map(Sha256Digest::parse)
+        .transpose()
+        .map_err(|_| TaskFlowError::Corrupt("effect provider contract binding".to_string()))?;
+    if provider_contract_binding.as_ref().is_some_and(|digest| {
+        digest.as_str() == "0000000000000000000000000000000000000000000000000000000000000000"
+    }) {
+        return Err(TaskFlowError::Corrupt(
+            "zero effect provider contract binding".to_string(),
+        ));
+    }
     let observation_kind: Option<String> = row
         .try_get("observation")
         .map_err(|_| TaskFlowError::Corrupt("effect observation column".to_string()))?;
@@ -422,6 +439,7 @@ fn effect_attempt_from_row(
                 .map_err(|_| TaskFlowError::Corrupt("effect provider key version".to_string()))?,
         )
         .map_err(|_| TaskFlowError::Corrupt("effect provider key version".to_string()))?,
+        provider_contract_binding,
         run_id: row
             .try_get("run_id")
             .map_err(|_| TaskFlowError::Corrupt("effect run id".to_string()))?,
@@ -626,6 +644,7 @@ mod tests {
         let intent = Sha256Digest::for_bytes(b"effect-intent");
         let payload = Sha256Digest::for_bytes(b"effect-payload");
         let binding = Sha256Digest::for_bytes(b"effect-binding");
+        let provider_contract_binding = Sha256Digest::for_bytes(b"provider-contract-binding");
         let nonce = Sha256Digest::for_bytes(b"effect-nonce");
         let started = store
             .begin_effect_dispatch_attempt(
@@ -642,6 +661,7 @@ mod tests {
                 "record-effect",
                 21,
                 &fence,
+                Some(&provider_contract_binding),
             )
             .await
             .expect("begin attempt");
@@ -680,6 +700,19 @@ mod tests {
             .expect("pending after reopen");
         assert_eq!(pending.len(), 1);
         assert_eq!(pending[0].grant_id, "grant-1");
+        assert_eq!(
+            pending[0].provider_contract_binding,
+            Some(provider_contract_binding)
+        );
+        assert!(
+            sqlx::query(
+                "UPDATE taskflow_effect_dispatch_attempts SET provider_contract_binding = ?"
+            )
+            .bind(Sha256Digest::for_bytes(b"substituted-contract").as_str())
+            .execute(reopened.taskflow_pool())
+            .await
+            .is_err()
+        );
 
         let terminal = Sha256Digest::for_bytes(b"provider-terminal");
         let settled = reopened

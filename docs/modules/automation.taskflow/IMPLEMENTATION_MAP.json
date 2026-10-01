@@ -85,6 +85,11 @@
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_due_materialization",
           "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
+          "kind": "bounded_runtime_observation_deadline_source_regression",
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
       "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives canonical UTC occurrence identity from the authoritative schedule profile, and commits TaskFlow step intent before App Server or external-provider contact.",
@@ -176,9 +181,14 @@
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "kind": "configured_http_exact_wire_restart_expiry_configuration_drift_local_terminal_source_regression",
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate. New configured HTTP attempts persist an immutable optional provider contract binding before physical dispatch; mismatched remote recovery rejects after local known terminal evidence is settled. Legacy/generic unbound attempts retain their continuity limitations.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -286,6 +296,7 @@
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_effect_host.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
     "codex-rs/hepta-agentd/src/automation_service.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
@@ -302,7 +313,7 @@
   ],
   "repositoryControlledProductCompositionGaps": [
     "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
-    "Automatic safe provider contract/scope/endpoint rotation lacks per-attempt original host-contract binding; pending effects require original lookup continuity."
+    "New configured HTTP attempts pin an immutable provider scope/contract digest before contact, and mismatched remote recovery rejects. Legacy/generic unbound attempts still need original lookup continuity; original configuration bytes and a safe automatic provider rotation protocol are not supplied."
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",

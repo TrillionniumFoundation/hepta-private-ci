@@ -3,9 +3,9 @@
 //! The normal Responses/Bedrock model transports are request/response APIs;
 //! neither currently exposes a provider-visible occurrence key, durable
 //! status lookup, and key+payload-bound effect acknowledgement.  This module
-//! therefore provides only two safe pieces today: a canonical header builder
-//! for a future qualified adapter, and a fail-closed adapter that refuses to
-//! dispatch when the provider contract is not qualified.
+//! provides canonical wire binding, an explicitly attested HTTP effect adapter,
+//! and a fail-closed adapter for unqualified provider contracts. The normal
+//! model-provider factory does not create the attested effect adapter.
 
 use std::fmt;
 use std::net::IpAddr;

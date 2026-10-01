@@ -13,7 +13,8 @@ impl Drop for ObservationGuard {
 }
 
 #[tokio::test]
-async fn stalled_observation_times_out_and_releases_inflight_future() {
+async fn stalled_observation_times_out_and_releases_inflight_future()
+-> Result<(), Box<dyn std::error::Error>> {
     let released = Arc::new(AtomicBool::new(false));
     let guard = ObservationGuard(Arc::clone(&released));
     let result = tokio::time::timeout(
@@ -23,9 +24,9 @@ async fn stalled_observation_times_out_and_releases_inflight_future() {
             std::future::pending::<Result<(), AgentdError>>().await
         }),
     )
-    .await
-    .expect("recovery must have its own finite deadline");
+    .await?;
     assert!(matches!(result, Err(AgentdError::Protocol(_))));
     assert!(released.load(Ordering::Acquire));
-    assert_eq!(bounded_observation(async { Ok(42) }).await.unwrap(), 42);
+    assert_eq!(bounded_observation(async { Ok(42) }).await?, 42);
+    Ok(())
 }

@@ -299,7 +299,7 @@ The synchronous seam remains available. The additive async seam uses `FinalUseAu
 
 Agentd's optional effect host loads the attested HTTP provider configuration and final-use verifier/revocation state from `--automation-effect-host-file`. It advertises `automation.external_effect@1.0` only when configured; typed clients negotiate the capability before `AutomationExecuteEffect` or `AutomationReconcileEffect`. The host binds the Agent subject, destination and scope, rejects substituted wire bytes and derives the current TaskFlow fence from the durable run. Control callers cannot select trust, endpoints or fences. This source composition does not prove independent provisioning or product activation.
 
-The host uses native async HTTP dispatch under the final-use active fence; it does not block an Agentd runtime thread with a worker join. HTTP status recovery preserves the configured provider scope and stored key version, repairs an already durable terminal observation before lookup, and is reached through explicit effect-reconcile control. The scheduled observer handles Codex queue/turn occurrences, not arbitrary external-effect backlogs.
+The host uses native async HTTP dispatch under the final-use active fence; it does not block an Agentd runtime thread with a worker join. New configured HTTP attempts persist an immutable `provider_contract_binding` before contact: a domain-separated SHA256 over the length-framed provider scope and exact attested HTTP contract digest, covering endpoints, lookup template, headers, timeout and contract ID. Recovery first settles an already durable terminal/proven-absence observation; before any remote lookup, a stored binding that differs from the configured host rejects. Explicit effect-reconcile control preserves stored key version. The scheduled observer handles Codex queue/turn occurrences, not arbitrary external-effect backlogs.
 
 Retiring/detaching the wake-up service does not drain the independent direct-effect ledger. Agentd retains its originally attached store for exact-attempt effect reconciliation; new execute still requires the live scheduler store, and readiness/generation checks remain in force. This recovery-only route consumes no fresh grant and cannot dispatch a new effect.
 
@@ -309,13 +309,13 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v21 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v22 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, bounded terminal-observer continuation cursor, recovery phase and terminal receipt.
 - `automation_occurrence_events`: append-only hash-chained occurrence history.
 - `taskflow_step_outbox`: normal-schema durable `prepared -> claimed -> recorded -> reconciled` per-step receipt chain.
-- `taskflow_effect_dispatch_attempts`: immutable pre-provider attempt identity including intent/payload/binding/destination/grant lineage.
+- `taskflow_effect_dispatch_attempts`: immutable pre-provider intent/payload/final-use/destination/grant identity, provider-key version and nullable provider-contract binding.
 - `taskflow_effect_dispatch_observations`: immutable first provider observation.
 - `taskflow_effect_dispatch_reconciliations`: immutable terminal reconciliation after a first `indeterminate` observation.
 - `automation_calendar_schedule_versions`: append-only Calendar V2 bytes and digest per schedule revision.
@@ -325,7 +325,7 @@ Schema v21 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations retain v12 Calendar V2, v13 append-only effect reconciliation, v14 frozen legacy claim revisions, v15 proven-absence legacy recovery and v16 terminal-observer cursors. V17 adds kernel operation dedupe; v18 adds timer lifecycle; v19 converges the two known historical migration branches by exact version/checksum identity without rewriting their SQL/checksums. Unknown, dirty or conflicting histories reject transactionally. V20 prevents permanent retirement with unsettled occurrences; v21 records provider-key version so recovery preserves historical external identity. A binary that does not understand schema v21 must not replace the owner against an upgraded store. Legacy dispatch ambiguity still requires exact provider-proven absence before a fresh claim; retired occurrence/client identities are never reused.
+Migrations retain v12 Calendar V2, v13 append-only effect reconciliation, v14 frozen legacy claim revisions, v15 proven-absence legacy recovery and v16 terminal-observer cursors. V17 adds kernel operation dedupe; v18 adds timer lifecycle; v19 converges the two known historical migration branches by exact version/checksum identity without rewriting their SQL/checksums. Unknown, dirty or conflicting histories reject transactionally. V20 prevents permanent retirement with unsettled occurrences; v21 records provider-key version; v22 adds an immutable nullable provider-contract digest, with new configured HTTP attempts binding scope and exact attested transport contract before contact. Legacy/generic adapters retain `None`. A binary that does not understand schema v22 must not replace the owner against an upgraded store. Legacy dispatch ambiguity still requires exact provider-proven absence before a fresh claim; retired occurrence/client identities are never reused.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -521,7 +521,7 @@ Completion has separate observable layers:
 
 The adversarial audit identified stale schema/host documentation, blocking host dispatch, retirement that could strand admitted work, unresolved-step progression/retry, lease/terminal-receipt substitution, calendar recovery boundaries, forged definition digests and saturated successor versions. Their source fixes and regression locations must be read alongside exact candidate test output; this guide supplies no test-success or deployment claim. Repository status remains `production_implementation=false` until its registered evidence requirements pass.
 
-The [2026-10-01 adversarial audit](AUDIT_2026-10-01.md) records fixed findings, repeat-review scope and remaining integration/evidence work. Provider scope/contract/endpoints are not persisted per attempt: configuration rotation must preserve original key/status-lookup continuity for pending effects or leave them unresolved. A safe automatic rotation protocol remains unfinished; historical v1 key ambiguity cannot be retroactively removed.
+The [2026-10-01 adversarial audit](AUDIT_2026-10-01.md) records fixed findings, repeat-review scope and remaining integration/evidence work. New configured HTTP attempts pin provider scope/contract identity, and remote recovery rejects changed configuration. The store retains the digest, not a recoverable copy of credentials/configuration. Legacy/generic `None` attempts still require original key/status-lookup continuity or remain unresolved. Restore the original configured contract for remote lookup of bound pending work; a safe automatic rotation protocol remains unfinished, and historical v1 key ambiguity cannot be retroactively removed.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 

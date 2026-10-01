@@ -16,9 +16,11 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_automation::AsyncAuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;
+use codex_hepta_automation::AuthorizedEffectFuture;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectProviderReceipt;
@@ -26,6 +28,7 @@ use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedEffectRequest;
 use codex_hepta_automation::AuthorizedProviderEffectLookup;
+use codex_hepta_automation::AuthorizedProviderEffectRequest;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::ProviderEffectTaskFlowDriver;
 use codex_hepta_automation::TaskFlowCommand;
@@ -507,6 +510,45 @@ impl RevocationRaceDriver {
 
 struct CrashAfterProviderContactDriver;
 
+struct ContractBoundDriver {
+    store: AutomationStore,
+    binding: Sha256Digest,
+    calls: usize,
+}
+
+impl AsyncAuthorizedEffectDriver for ContractBoundDriver {
+    fn provider_contract_binding(&self) -> Option<Sha256Digest> {
+        Some(self.binding.clone())
+    }
+
+    fn dispatch<'a>(
+        &'a mut self,
+        request: AuthorizedProviderEffectRequest<'a>,
+    ) -> AuthorizedEffectFuture<'a> {
+        Box::pin(async move {
+            self.calls += 1;
+            let pending = self
+                .store
+                .authorized_taskflow_effect_attempt(
+                    &request.intent.run_id,
+                    &request.intent.step_id,
+                    request.intent.attempt,
+                )
+                .await
+                .expect("durable attempt")
+                .expect("attempt");
+            assert_eq!(
+                pending.provider_contract_binding,
+                Some(self.binding.clone())
+            );
+            Ok(AuthorizedEffectProviderReceipt {
+                outcome: AuthorizedEffectOutcome::Indeterminate,
+                receipt_digest: Sha256Digest::for_bytes(b"contract-bound unknown"),
+            })
+        })
+    }
+}
+
 impl AuthorizedEffectDriver for CrashAfterProviderContactDriver {
     fn dispatch(
         &mut self,
@@ -900,6 +942,45 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
     authority
         .claim(&signed, &expected)
         .expect("local expiry rejection did not burn grant");
+}
+
+#[tokio::test]
+async fn provider_contract_binding_is_durable_before_dispatch_and_survives_reopen() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) =
+        final_use(expected.clone(), "provider-contract-binding");
+    let binding = Sha256Digest::for_bytes(b"exact provider scope and HTTP contract");
+    let mut driver = ContractBoundDriver {
+        store: store.clone(),
+        binding: binding.clone(),
+        calls: 0,
+    };
+    store
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "provider-contract-dispatch",
+            30,
+        )
+        .await
+        .expect("dispatch");
+    assert_eq!(driver.calls, 1);
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    let pending = reopened
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, effect.attempt)
+        .await
+        .expect("read")
+        .expect("attempt");
+    assert_eq!(pending.provider_contract_binding, Some(binding));
 }
 
 #[tokio::test]

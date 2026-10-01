@@ -207,6 +207,9 @@ pub struct AuthorizedEffectPending {
     /// Version 1 preserves historical provider keys during recovery; new
     /// attempts use owner-scoped, unambiguously framed version 2 identities.
     pub provider_key_version: u32,
+    /// Immutable optional adapter configuration identity, recorded before
+    /// contact. Legacy and configuration-independent drivers leave it absent.
+    pub provider_contract_binding: Option<Sha256Digest>,
     pub run_id: String,
     pub step_id: String,
     pub attempt: u32,
@@ -224,6 +227,7 @@ impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
         Self {
             owner_agent_id: value.owner_agent_id,
             provider_key_version: value.provider_key_version,
+            provider_contract_binding: value.provider_contract_binding,
             run_id: value.run_id,
             step_id: value.step_id,
             attempt: value.attempt,
@@ -325,6 +329,12 @@ pub type AuthorizedEffectFuture<'a> = Pin<
 /// boundary synchronously. The caller supplies no provider key: automation
 /// derives the key and payload binding from the durable TaskFlow intent.
 pub trait AsyncAuthorizedEffectDriver {
+    /// Bind recovery to the exact registered provider configuration used for
+    /// dispatch. The digest supplies identity, not trust or effect authority.
+    fn provider_contract_binding(&self) -> Option<Sha256Digest> {
+        None
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
@@ -601,7 +611,7 @@ impl AutomationStore {
     /// boundary. Exact intent, payload, binding, command and terminal evidence
     /// must match. No lease is renewed, grant consumed or provider contacted.
     /// In-flight/indeterminate observations return None and still require the
-    /// ordinary current-fence reconciliation path.
+    /// exact historical-owner reconciliation path.
     pub async fn read_authorized_taskflow_effect_receipt(
         &self,
         intent: &AuthorizedEffectIntent,
@@ -771,6 +781,7 @@ impl AutomationStore {
                 command_id,
                 now_ms,
                 fence,
+                /*provider_contract_binding*/ None,
             )
             .await?;
         let durable = match start {
@@ -971,6 +982,10 @@ impl AutomationStore {
             };
         }
 
+        let provider_contract_binding = driver.provider_contract_binding();
+        if let Some(digest) = &provider_contract_binding {
+            validate_nonzero_digest(digest, "provider_contract_binding")?;
+        }
         self.check_effect_admission(&intent.run_id, fence, command_id, now_ms)
             .await?;
         let token = authority
@@ -992,6 +1007,7 @@ impl AutomationStore {
                 command_id,
                 now_ms,
                 fence,
+                provider_contract_binding.as_ref(),
             )
             .await?;
         let durable = match start {

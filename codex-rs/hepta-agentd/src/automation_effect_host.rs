@@ -26,6 +26,7 @@ use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedProviderEffectRequest;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::TaskFlowFence;
+use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_contracts::FinalUseAuthority;
@@ -67,6 +68,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     agent_id: codex_hepta_contracts::AgentId,
     provider_scope: String,
     destination_id: String,
+    provider_contract_binding: Sha256Digest,
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
@@ -134,6 +136,12 @@ impl AgentdAutomationEffectHost {
             .map_err(AgentdError::Invalid)?;
         let declared_contract_digest =
             Sha256Digest::parse(config.contract_sha256.clone()).map_err(AgentdError::Invalid)?;
+        let mut contract_binding =
+            b"hepta.agentd.automation-effect.provider-contract.v1\0".to_vec();
+        contract_binding.extend_from_slice(&(config.provider_scope.len() as u64).to_be_bytes());
+        contract_binding.extend_from_slice(config.provider_scope.as_bytes());
+        contract_binding.extend_from_slice(declared_contract_digest.as_str().as_bytes());
+        let provider_contract_binding = Sha256Digest::for_bytes(&contract_binding);
         let contract_signature =
             decode_hex_array::<64>(&config.contract_signature_hex, "contract_signature_hex")?;
         let contract_verifying_key = decode_hex_array::<32>(
@@ -205,6 +213,7 @@ impl AgentdAutomationEffectHost {
             agent_id: identity.agent_id.clone(),
             provider_scope: config.provider_scope,
             destination_id: config.destination_id,
+            provider_contract_binding,
             final_use_scope_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
@@ -248,6 +257,7 @@ impl AgentdAutomationEffectHost {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            provider_contract_binding: self.provider_contract_binding.clone(),
         };
         store
             .execute_authorized_taskflow_effect_async(
@@ -309,7 +319,14 @@ impl AgentdAutomationEffectHost {
         {
             match local {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
-                    if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
+                    if receipt.observation != Some(TaskFlowStepObservation::Indeterminate)
+                        || matches!(
+                            receipt.final_outcome,
+                            Some(
+                                TaskFlowReconcileOutcome::Succeeded
+                                    | TaskFlowReconcileOutcome::Failed
+                            )
+                        ) =>
                 {
                     return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }
@@ -318,6 +335,15 @@ impl AgentdAutomationEffectHost {
                 }
                 AuthorizedEffectRecoveryResult::Observed(_) => {}
             }
+        }
+        if pending
+            .provider_contract_binding
+            .as_ref()
+            .is_some_and(|binding| binding != &self.provider_contract_binding)
+        {
+            return Err(AgentdError::GenerationFenced(
+                "pending effect provider contract differs from the configured host".to_string(),
+            ));
         }
         let provider_intent = self.provider_intent(&pending)?;
         match self.adapter.lookup_for_intent(&provider_intent).await {
@@ -493,9 +519,14 @@ struct HttpAuthorizedEffectDriver {
     adapter: HttpProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
+    provider_contract_binding: Sha256Digest,
 }
 
 impl AsyncAuthorizedEffectDriver for HttpAuthorizedEffectDriver {
+    fn provider_contract_binding(&self) -> Option<Sha256Digest> {
+        Some(self.provider_contract_binding.clone())
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
@@ -715,7 +746,6 @@ mod tests {
     use codex_hepta_automation::TaskFlowEdgeSpec;
     use codex_hepta_automation::TaskFlowNodeKind;
     use codex_hepta_automation::TaskFlowNodeSpec;
-    use codex_hepta_automation::TaskFlowReconcileOutcome;
     use codex_hepta_automation::TaskFlowStepObservation;
     use codex_hepta_automation::TaskFlowTransition;
     use codex_hepta_contracts::FinalUseGrant;
@@ -1133,9 +1163,51 @@ mod tests {
             .await
             .expect("reopen effect owner");
         drop(host);
+        let expired_at = now_ms + 60_002;
+        let mut changed = [host_json.clone(), host_json.clone()];
+        changed[0]["provider_scope"] = serde_json::json!("provider/fixture-v2");
+        let mut rotated_contract = unsigned_provider_config.clone();
+        rotated_contract.dispatch_url.push_str("/rotated");
+        let rotated_digest = rotated_contract
+            .contract_sha256()
+            .expect("rotated contract digest");
+        let statement = HttpProviderEffectContractAttestation::statement_for(
+            "agentd-product-effect-contract",
+            &rotated_digest,
+            1,
+        );
+        changed[1]["dispatch_url"] = serde_json::json!(rotated_contract.dispatch_url);
+        changed[1]["contract_sha256"] = serde_json::json!(rotated_digest.as_str());
+        changed[1]["contract_signature_hex"] =
+            serde_json::json!(hex(&contract_signer.sign(&statement).to_bytes()));
+        for config in changed {
+            fs::write(
+                &host_file,
+                serde_json::to_vec(&config).expect("changed host config"),
+            )
+            .expect("write changed host");
+            let rotated = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+                .expect("rotated host");
+            assert!(matches!(
+                rotated
+                    .reconcile(
+                        &fixture.store,
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        expired_at
+                    )
+                    .await,
+                Err(AgentdError::GenerationFenced(_))
+            ));
+        }
+        fs::write(
+            &host_file,
+            serde_json::to_vec(&host_json).expect("original host config"),
+        )
+        .expect("restore original host");
         let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
             .expect("reopen effect host");
-        let expired_at = now_ms + 60_002;
         let run = fixture
             .store
             .taskflow_run(&intent.run_id)
@@ -1166,6 +1238,10 @@ mod tests {
             .await
             .expect("durable provider identity")
             .expect("effect attempt");
+        assert_eq!(
+            pending.provider_contract_binding,
+            Some(host.provider_contract_binding.clone())
+        );
         assert_eq!(
             host.provider_intent(&pending).expect("provider intent").key,
             expected_provider_key
@@ -1268,6 +1344,23 @@ mod tests {
             .is_err()
         );
         server_task.await.expect("provider server");
+        let mut rotated_after_settlement = host.clone();
+        rotated_after_settlement.provider_contract_binding =
+            Sha256Digest::for_bytes(b"changed contract after settlement");
+        let AgentdAutomationEffectReconcileOutcome::Observed(local) = rotated_after_settlement
+            .reconcile(
+                &fixture.store,
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                expired_at + 1,
+            )
+            .await
+            .expect("terminal local evidence survives contract rotation without lookup")
+        else {
+            panic!("local terminal observation expected")
+        };
+        assert_eq!(local, receipt);
 
         // Unpublishing the scheduler keeps exact-attempt reconciliation live,
         // while another physical dispatch still requires the live attachment.
