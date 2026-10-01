@@ -9,6 +9,23 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 
 class ScopeTests(unittest.TestCase):
+    def test_repository_policy_regressions_keep_their_python_scope(self):
+        paths = [
+            "scripts/hepta_repository_controls.py",
+            "scripts/hepta_main_protection.py",
+            "scripts/test_hepta_control_hardening.py",
+            "scripts/tests/test_hepta_repository_controls.py",
+        ]
+        scope = select(paths)
+        self.assertTrue(scope["derived"])
+        self.assertFalse(scope["native"] or scope["full_repo"])
+        mixed = select(paths + ["codex-rs/hepta-infer-core/src/lib.rs"])
+        self.assertTrue(mixed["inference"])
+        self.assertFalse(mixed["full_repo"] or mixed["effects"] or mixed["learning"])
+        for unknown in ["scripts/tests/other.py", "scripts/tests/test_hepta.rs"]:
+            with self.subTest(path=unknown):
+                self.assertTrue(select([unknown])["full_repo"])
+
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
         self.assertFalse(
             select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])[

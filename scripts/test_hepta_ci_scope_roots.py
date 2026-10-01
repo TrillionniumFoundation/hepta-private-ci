@@ -98,6 +98,13 @@ class ScopeOwnerRootsTests(unittest.TestCase):
         self.assertFalse(scope["native"] or scope["full_repo"])
         self.assertTrue(scope["derived"])
 
+    def test_python_policy_test_does_not_select_unrelated_native_owners(self):
+        base = self.workspace("hepta-plasticity", "codex-hepta-plasticity")
+        self.write("scripts/tests/test_hepta_repository_controls.py", "assert True\n")
+        scope = self.scope(base, self.changed())
+        self.assertTrue(scope["derived"])
+        self.assertFalse(scope["native"] or scope["full_repo"])
+
     def test_source_plus_unembedded_guide_preserves_local_scope(self):
         base = self.workspace("hepta-plasticity", "codex-hepta-plasticity")
         self.write("codex-rs/hepta-plasticity/src/lib.rs", "pub fn example() {}\n")
