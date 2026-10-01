@@ -12,6 +12,7 @@ use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_types::IdentityError;
 
 use crate::AuthenticatedCompactionError;
+use crate::CompactionPublicationContextV1;
 use crate::CompactionPublicationError;
 use crate::CompactionPublicationProposalV1;
 use crate::QualifiedCompactionError;
@@ -38,6 +39,44 @@ impl CompactionPublicationProposalV1 {
         body.extend_from_slice(SUFFIX);
         Ok(body)
     }
+}
+
+/// Restores a complete body under independently obtained current host state.
+/// This reconstructs and validates a new proposal; it never deserializes admission.
+/// It grants no persistence, selected-pointer, transaction or final-use authority.
+pub fn restore_compaction_publication_body_v1(
+    body: &[u8],
+    context: &CompactionPublicationContextV1<'_>,
+) -> Result<CompactionPublicationProposalV1, CompactionPublicationBodyError> {
+    if body.len() > MAX_COMPACTION_PUBLICATION_BODY_BYTES_V1 {
+        return Err(CompactionPublicationBodyError::BodyLimitExceeded);
+    }
+    let hex = body
+        .strip_prefix(PREFIX)
+        .and_then(|bytes| bytes.strip_suffix(SUFFIX))
+        .ok_or(CompactionPublicationBodyError::NonCanonicalEnvelope)?;
+    if hex.len() % 2 != 0 || hex.len() / 2 > MAX_BINARY_BYTES {
+        return Err(CompactionPublicationBodyError::NonCanonicalEnvelope);
+    }
+    // Reject the entire alphabet before allocating or decoding any binary body.
+    if !hex
+        .iter()
+        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(byte))
+    {
+        return Err(CompactionPublicationBodyError::NonCanonicalEnvelope);
+    }
+    let nibble = |byte: u8| {
+        if byte <= b'9' {
+            byte - b'0'
+        } else {
+            byte - b'a' + 10
+        }
+    };
+    let binary = hex
+        .chunks_exact(2)
+        .map(|pair| (nibble(pair[0]) << 4) | nibble(pair[1]))
+        .collect::<Vec<_>>();
+    restore_codec::restore(&binary, context)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

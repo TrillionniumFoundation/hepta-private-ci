@@ -33,6 +33,7 @@ pub use publication::CompactionPublicationRequestV1;
 pub use publication::CompactionSelectedStateV1;
 pub use publication_body::CompactionPublicationBodyError;
 pub use publication_body::MAX_COMPACTION_PUBLICATION_BODY_BYTES_V1;
+pub use publication_body::restore_compaction_publication_body_v1;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;
