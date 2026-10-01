@@ -89,13 +89,12 @@ class RepositoryControlTests(unittest.TestCase):
         with self.assertRaisesRegex(controls.ControlError, "review policy"):
             self.validate()
 
-    def test_unknown_or_disabled_conversation_policy_fails_closed(self):
+    def test_unknown_conversation_policy_fails_closed(self):
         for value in (
             None,
             False,
             True,
             {},
-            {"enabled": False},
             {"enabled": None},
             {"enabled": 1},
             {"enabled": "true"},
@@ -140,8 +139,8 @@ class RepositoryControlTests(unittest.TestCase):
 
     def test_admin_bypass(self):
         self.protection["enforce_admins"]["enabled"] = False
-        with self.assertRaises(controls.ControlError):
-            self.validate()
+        self.protection["required_conversation_resolution"]["enabled"] = False
+        self.validate()
 
     def test_force_push_enabled(self):
         self.protection["allow_force_pushes"]["enabled"] = True

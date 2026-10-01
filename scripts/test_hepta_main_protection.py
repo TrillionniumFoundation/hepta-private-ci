@@ -104,7 +104,16 @@ class ProtectionTests(unittest.TestCase):
     def test_install_preserves_checks_without_reintroducing_required_review(self):
         value = desired_ruleset(APP)
         verify_ruleset(value, APP)
-        self.assertEqual(value["bypass_actors"], [])
+        self.assertEqual(
+            value["bypass_actors"],
+            [
+                {
+                    "actor_id": 5,
+                    "actor_type": "RepositoryRole",
+                    "bypass_mode": "pull_request",
+                }
+            ],
+        )
         self.assertEqual(review(value)["required_approving_review_count"], 0)
         self.assertFalse(review(value)["require_code_owner_review"])
         self.assertFalse(review(value)["require_last_push_approval"])
@@ -124,6 +133,16 @@ class ProtectionTests(unittest.TestCase):
                     with self.assertRaises(ProtectionError):
                         verify_ruleset(value, APP)
 
+    def test_admin_merge_bypass_cannot_widen_to_writer_or_direct_push(self):
+        for change in ({"actor_id": 4}, {"bypass_mode": "always"}, {"actor_id": 5.0}):
+            value = desired_ruleset(APP)
+            value["bypass_actors"][0].update(change)
+            with self.subTest(change=change), self.assertRaises(ProtectionError):
+                verify_ruleset(value, APP)
+        value = desired_ruleset(APP)
+        value["bypass_actors"] = []
+        verify_ruleset(value, APP)
+
     def test_owner_selected_review_values_are_accepted_without_weakening_checks(self):
         for count in (0, 1, 2):
             value = desired_ruleset(APP)
@@ -131,7 +150,11 @@ class ProtectionTests(unittest.TestCase):
             review(value)["require_code_owner_review"] = bool(count)
             review(value)["require_last_push_approval"] = bool(count)
             verify_ruleset(value, APP)
-        for replacement in (False, None, 1):
+        for replacement in (False, True):
+            value = desired_ruleset(APP)
+            review(value)["required_review_thread_resolution"] = replacement
+            verify_ruleset(value, APP)
+        for replacement in (None, 1):
             value = desired_ruleset(APP)
             review(value)["required_review_thread_resolution"] = replacement
             with (

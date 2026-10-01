@@ -39,6 +39,12 @@ test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
 
+Reviewer approval, administrator enforcement and comment resolution are selected
+by the repository owner. The supplied main ruleset permits administrators to
+merge PRs without granting a direct-push bypass; ordinary required checks remain
+bound to their real publisher. These repository settings do not authorize a
+workload effect or replace independent runtime evaluation.
+
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
 review checks and merge through the normal protected branch. The qualification

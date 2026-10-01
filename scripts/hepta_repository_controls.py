@@ -50,8 +50,8 @@ def required_checks(
         "An independently provisioned evaluator App ID is required",
     )
     require(
-        protection.get("enforce_admins", {}).get("enabled") is True,
-        "Branch protection does not enforce administrators",
+        type(protection.get("enforce_admins", {}).get("enabled")) is bool,
+        "Administrator enforcement policy is unknown",
     )
     for key in ("allow_force_pushes", "allow_deletions"):
         require(
@@ -78,8 +78,8 @@ def required_checks(
             require(bypass.get(kind, []) == [], f"Review bypass {kind} are permitted")
     resolution = protection.get("required_conversation_resolution")
     require(
-        isinstance(resolution, dict) and resolution.get("enabled") is True,
-        "Unresolved review conversations do not block merging",
+        isinstance(resolution, dict) and type(resolution.get("enabled")) is bool,
+        "Unknown review conversations policy",
     )
     status = protection.get("required_status_checks")
     require(
