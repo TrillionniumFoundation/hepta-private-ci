@@ -542,6 +542,7 @@ fn push_like_filters(builder: &mut QueryBuilder<Sqlite>, column: &str, filters: 
 mod tests {
     use super::StateRuntime;
     use super::format_feedback_log_line;
+    use super::test_support::create_private_test_directory;
     use super::test_support::unique_temp_dir;
     use crate::LogEntry;
     use crate::LogQuery;
@@ -610,9 +611,7 @@ mod tests {
     #[tokio::test]
     async fn init_migrates_message_only_logs_db_to_feedback_log_body_schema() {
         let codex_home = unique_temp_dir();
-        tokio::fs::create_dir_all(&codex_home)
-            .await
-            .expect("create codex home");
+        create_private_test_directory(&codex_home).expect("create private codex home");
         let logs_path =
             crate::SqliteConfig::new_for_testing(codex_home.as_path().abs()).logs_db_path();
         let old_logs_migrator = Migrator {
