@@ -7,6 +7,44 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use super::*;
 
+fn make_fifo(path: &Path) {
+    assert!(
+        std::process::Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(path)
+            .status()
+            .expect("POSIX mkfifo")
+            .success()
+    );
+}
+
+fn expect_bounded_fifo_rejection(fifo: &Path, operation: impl FnOnce() -> bool + Send + 'static) {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    let (sender, receiver) = mpsc::channel();
+    let worker =
+        std::thread::spawn(move || sender.send(operation()).expect("open result receiver"));
+    let observed = receiver.recv_timeout(Duration::from_secs(/*secs*/ 2));
+    // Rescue a regressed blocking read-open before joining, so the failing
+    // test remains finite and leaves no blocked worker behind.
+    if observed.is_err() {
+        let rescue = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+            .open(fifo)
+            .expect("release blocking FIFO open");
+        receiver
+            .recv_timeout(Duration::from_secs(/*secs*/ 2))
+            .expect("FIFO opener finishes after cleanup");
+        drop(rescue);
+    }
+    worker.join().expect("open worker");
+    assert!(observed.expect("checkpoint open must not wait for a FIFO writer"));
+}
+
 struct Fixture {
     _temp: tempfile::TempDir,
     path: PathBuf,
@@ -74,6 +112,56 @@ impl Fixture {
             digest: Digest32::of_bytes(b"advanced replay frontier"),
         }
     }
+}
+
+#[test]
+fn inspected_checkpoint_fifo_replacement_is_rejected_without_waiting_for_a_writer() {
+    let fixture = Fixture::new();
+    let inspected = InspectedCheckpointFile::inspect(&fixture.path, fixture.witness.owner_uid)
+        .expect("regular checkpoint preflight");
+    let retained = fixture.path.with_extension("retained");
+    fs::rename(&fixture.path, &retained).expect("retain preflight inode");
+    let original = fs::read(&retained).expect("original witness bytes");
+    make_fifo(&fixture.path);
+    expect_bounded_fifo_rejection(&fixture.path, move || inspected.read().is_err());
+    assert_eq!(
+        fs::read(retained).expect("unchanged original witness"),
+        original
+    );
+}
+
+#[test]
+fn inspected_checkpoint_symlink_to_fifo_is_rejected_at_open_without_following_it() {
+    let fixture = Fixture::new();
+    let inspected = InspectedCheckpointFile::inspect(&fixture.path, fixture.witness.owner_uid)
+        .expect("regular checkpoint preflight");
+    let retained = fixture.path.with_extension("retained");
+    fs::rename(&fixture.path, &retained).expect("retain preflight inode");
+    let original = fs::read(&retained).expect("original witness bytes");
+    let fifo = fixture.path.with_extension("fifo");
+    make_fifo(&fifo);
+    std::os::unix::fs::symlink(&fifo, &fixture.path).expect("replacement final-component symlink");
+    expect_bounded_fifo_rejection(
+        &fifo,
+        move || matches!(inspected.read(), Err(AgentdError::Io(error)) if error.raw_os_error() == Some(libc::ELOOP)),
+    );
+    assert_eq!(
+        fs::read(retained).expect("unchanged original witness"),
+        original
+    );
+}
+
+#[test]
+fn checkpoint_directory_sync_rejects_fifo_parent_without_waiting_for_a_writer() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let parent = temp.path().join("parent");
+    fs::create_dir(&parent).expect("directory before replacement");
+    fs::rename(&parent, temp.path().join("retained-parent")).expect("retain parent inode");
+    make_fifo(&parent);
+    let replaced_parent = parent.clone();
+    expect_bounded_fifo_rejection(&parent, move || {
+        sync_parent_directory(&replaced_parent).is_err()
+    });
 }
 
 #[test]

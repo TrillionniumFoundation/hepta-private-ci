@@ -8,6 +8,88 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::rc::Rc;
 
+#[cfg(unix)]
+fn make_fifo(path: &Path) {
+    assert!(
+        std::process::Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(path)
+            .status()
+            .expect("POSIX mkfifo")
+            .success()
+    );
+}
+
+#[cfg(unix)]
+fn expect_bounded_fifo_rejection(fifo: &Path, operation: impl FnOnce() -> bool + Send + 'static) {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    let (sender, receiver) = mpsc::channel();
+    let worker =
+        std::thread::spawn(move || sender.send(operation()).expect("open result receiver"));
+    let observed = receiver.recv_timeout(Duration::from_secs(/*secs*/ 2));
+    // Release a regressed blocking read-open before joining and failing the
+    // test, so even the failure path leaves no blocked test worker behind.
+    if observed.is_err() {
+        let rescue = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+            .open(fifo)
+            .expect("release blocking FIFO open");
+        receiver
+            .recv_timeout(Duration::from_secs(/*secs*/ 2))
+            .expect("FIFO opener finishes after cleanup");
+        drop(rescue);
+    }
+    worker.join().expect("open worker");
+    assert!(observed.expect("authority open must not wait for a FIFO writer"));
+}
+
+#[cfg(unix)]
+#[test]
+fn inspected_authority_fifo_replacement_is_rejected_without_waiting_for_a_writer() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let path = temp.path().join("authority.json");
+    let retained = temp.path().join("retained.json");
+    write_file(&path, b"trusted");
+    let inspected = InspectedAuthorityFile::inspect(&path).expect("regular authority preflight");
+    std::fs::rename(&path, &retained).expect("retain preflight inode");
+    make_fifo(&path);
+    expect_bounded_fifo_rejection(&path, move || inspected.open().is_err());
+    assert_eq!(
+        std::fs::read(retained).expect("unchanged original bytes"),
+        b"trusted"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn inspected_authority_symlink_to_fifo_is_rejected_at_open_without_following_it() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let path = temp.path().join("authority.json");
+    let retained = temp.path().join("retained.json");
+    let fifo = temp.path().join("replacement.fifo");
+    write_file(&path, b"trusted");
+    let inspected = InspectedAuthorityFile::inspect(&path).expect("regular authority preflight");
+    std::fs::rename(&path, &retained).expect("retain preflight inode");
+    make_fifo(&fifo);
+    std::os::unix::fs::symlink(&fifo, &path).expect("replacement final-component symlink");
+    expect_bounded_fifo_rejection(&fifo, move || {
+        inspected
+            .open()
+            .err()
+            .and_then(|error| error.raw_os_error())
+            == Some(libc::ELOOP)
+    });
+    assert_eq!(
+        std::fs::read(retained).expect("unchanged original bytes"),
+        b"trusted"
+    );
+}
+
 fn write_file(path: &Path, bytes: &[u8]) {
     std::fs::write(path, bytes).expect("write authority fixture");
     #[cfg(unix)]

@@ -1,6 +1,4 @@
 #[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
 use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::io::Read;
@@ -19,6 +17,8 @@ use crate::AgentdIdentity;
 use crate::authbus_trust::invalid;
 #[cfg(unix)]
 use crate::operator_namespace::OperatorNamespace;
+#[cfg(unix)]
+use crate::operator_namespace::configure_protected_open;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
@@ -183,47 +183,80 @@ fn validate_file_metadata(metadata: &std::fs::Metadata, owner_uid: u32) -> Resul
 
 #[cfg(unix)]
 fn read_private_file(path: &Path, owner_uid: u32) -> Result<Vec<u8>, AgentdError> {
-    use std::os::unix::fs::MetadataExt;
+    InspectedCheckpointFile::inspect(path, owner_uid)?.read()
+}
 
-    let before = std::fs::symlink_metadata(path)?;
-    validate_file_metadata(&before, owner_uid)?;
-    let namespace = OperatorNamespace::capture(path, &before)?;
-    let mut file = File::open(path)?;
-    let opened = file.metadata()?;
-    validate_file_metadata(&opened, owner_uid)?;
-    let identity = |m: &std::fs::Metadata| {
-        (
-            m.dev(),
-            m.ino(),
-            m.len(),
-            m.mtime(),
-            m.mtime_nsec(),
-            m.ctime(),
-            m.ctime_nsec(),
-            m.uid(),
-            m.mode(),
-            m.nlink(),
-        )
-    };
-    if identity(&opened) != identity(&before) {
-        return Err(invalid("external replay checkpoint changed while opening"));
+#[cfg(unix)]
+struct InspectedCheckpointFile {
+    path: PathBuf,
+    owner_uid: u32,
+    before: std::fs::Metadata,
+    namespace: OperatorNamespace,
+}
+
+#[cfg(unix)]
+impl InspectedCheckpointFile {
+    fn inspect(path: &Path, owner_uid: u32) -> Result<Self, AgentdError> {
+        let before = std::fs::symlink_metadata(path)?;
+        validate_file_metadata(&before, owner_uid)?;
+        let namespace = OperatorNamespace::capture(path, &before)?;
+        Ok(Self {
+            path: path.to_path_buf(),
+            owner_uid,
+            before,
+            namespace,
+        })
     }
-    let mut bytes = Vec::new();
-    std::io::Read::by_ref(&mut file)
-        .take(MAX_CHECKPOINT_BYTES + 1)
-        .read_to_end(&mut bytes)?;
-    let after = std::fs::symlink_metadata(path)?;
-    validate_file_metadata(&after, owner_uid)?;
-    namespace.verify(path, &after)?;
-    let opened_after = file.metadata()?;
-    validate_file_metadata(&opened_after, owner_uid)?;
-    if bytes.len() as u64 > MAX_CHECKPOINT_BYTES
-        || identity(&after) != identity(&before)
-        || identity(&opened_after) != identity(&before)
-    {
-        return Err(invalid("external replay checkpoint changed while reading"));
+
+    fn read(self) -> Result<Vec<u8>, AgentdError> {
+        use std::os::unix::fs::MetadataExt;
+
+        let Self {
+            path,
+            owner_uid,
+            before,
+            namespace,
+        } = self;
+        let mut options = OpenOptions::new();
+        options.read(true);
+        configure_protected_open(&mut options);
+        let mut file = options.open(&path)?;
+        let opened = file.metadata()?;
+        validate_file_metadata(&opened, owner_uid)?;
+        let identity = |m: &std::fs::Metadata| {
+            (
+                m.dev(),
+                m.ino(),
+                m.len(),
+                m.mtime(),
+                m.mtime_nsec(),
+                m.ctime(),
+                m.ctime_nsec(),
+                m.uid(),
+                m.mode(),
+                m.nlink(),
+            )
+        };
+        if identity(&opened) != identity(&before) {
+            return Err(invalid("external replay checkpoint changed while opening"));
+        }
+        let mut bytes = Vec::new();
+        std::io::Read::by_ref(&mut file)
+            .take(MAX_CHECKPOINT_BYTES + 1)
+            .read_to_end(&mut bytes)?;
+        let after = std::fs::symlink_metadata(&path)?;
+        validate_file_metadata(&after, owner_uid)?;
+        namespace.verify(&path, &after)?;
+        let opened_after = file.metadata()?;
+        validate_file_metadata(&opened_after, owner_uid)?;
+        if bytes.len() as u64 > MAX_CHECKPOINT_BYTES
+            || identity(&after) != identity(&before)
+            || identity(&opened_after) != identity(&before)
+        {
+            return Err(invalid("external replay checkpoint changed while reading"));
+        }
+        Ok(bytes)
     }
-    Ok(bytes)
 }
 
 #[cfg(not(unix))]
@@ -285,13 +318,25 @@ fn write_private_atomic(
         namespace.verify(path, &std::fs::symlink_metadata(path)?)?;
         std::fs::rename(&temporary, path)?;
         namespace.verify(path, &std::fs::symlink_metadata(path)?)?;
-        File::open(parent)?.sync_all()?;
+        sync_parent_directory(parent)?;
         Ok(())
     })();
     if result.is_err() {
         let _ = std::fs::remove_file(&temporary);
     }
     result
+}
+
+#[cfg(unix)]
+fn sync_parent_directory(parent: &Path) -> Result<(), AgentdError> {
+    use std::os::unix::fs::OpenOptionsExt;
+
+    OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK)
+        .open(parent)?
+        .sync_all()?;
+    Ok(())
 }
 
 #[cfg(not(unix))]

@@ -12,6 +12,7 @@
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::fs::Metadata;
+use std::fs::OpenOptions;
 use std::io;
 use std::io::Read;
 use std::path::Path;
@@ -30,6 +31,8 @@ use super::IntelligenceAuthorityVerifierV1;
 use super::verify_authority_file;
 #[cfg(unix)]
 use crate::operator_namespace::OperatorNamespace;
+#[cfg(unix)]
+use crate::operator_namespace::configure_protected_open;
 
 const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 
@@ -119,28 +122,57 @@ struct ValidatedAuthorityFile {
     file: File,
 }
 
-impl ValidatedAuthorityFile {
-    fn open(path: &Path) -> io::Result<Self> {
+struct InspectedAuthorityFile {
+    path: PathBuf,
+    canonical_path: PathBuf,
+    metadata: Metadata,
+    #[cfg(unix)]
+    namespace: OperatorNamespace,
+}
+
+impl InspectedAuthorityFile {
+    fn inspect(path: &Path) -> io::Result<Self> {
         let canonical_path = path.canonicalize()?;
         let metadata = validate_authority_file_path(path)?;
         #[cfg(unix)]
         let namespace = OperatorNamespace::capture(&canonical_path, &metadata)?;
-        // Open the captured canonical destination so a redirecting alias cannot
-        // choose a different entry between the checks and the open.
-        let file = File::open(&canonical_path)?;
-        let opened = file.metadata()?;
-        validate_authority_file_metadata(&opened)?;
-        if !same_authority_file_version(&metadata, &opened) {
-            return Err(io::Error::other("authority file changed while opening"));
-        }
         Ok(Self {
             path: path.to_path_buf(),
             canonical_path,
             metadata,
             #[cfg(unix)]
             namespace,
+        })
+    }
+
+    fn open(self) -> io::Result<ValidatedAuthorityFile> {
+        // Open the captured canonical destination. A trusted publisher can
+        // still replace its entry, so the open must not follow a new symlink
+        // or wait for a FIFO writer before descriptor validation can run.
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        configure_protected_open(&mut options);
+        let file = options.open(&self.canonical_path)?;
+        let opened = file.metadata()?;
+        validate_authority_file_metadata(&opened)?;
+        if !same_authority_file_version(&self.metadata, &opened) {
+            return Err(io::Error::other("authority file changed while opening"));
+        }
+        Ok(ValidatedAuthorityFile {
+            path: self.path,
+            canonical_path: self.canonical_path,
+            metadata: self.metadata,
+            #[cfg(unix)]
+            namespace: self.namespace,
             file,
         })
+    }
+}
+
+impl ValidatedAuthorityFile {
+    fn open(path: &Path) -> io::Result<Self> {
+        InspectedAuthorityFile::inspect(path)?.open()
     }
 
     fn read(mut self) -> io::Result<Vec<u8>> {
