@@ -86,19 +86,21 @@ fn dummy_snapshot(
     tuple: &PromptModelTupleV2,
     generation_vector: Digest32,
 ) -> PromptRegistrySnapshotV2 {
-    PromptRegistrySnapshotV2 {
+    let mut snapshot = PromptRegistrySnapshotV2 {
         revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         registry_digest: digest("registry"),
         lifecycle_frontier: 1,
         revocation_frontier: 0,
         generation_vector_digest: generation_vector,
         model_tuple_digest: tuple.digest(),
-        snapshot_digest: digest("snapshot"),
+        snapshot_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
-    }
+    };
+    snapshot.snapshot_digest = snapshot.compute_snapshot_digest();
+    snapshot
 }
 
-fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
+pub(super) fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
     let tuple = model_tuple();
     let generation_vector = digest("generation-vector");
     let state = digest("state");
@@ -128,6 +130,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             authority: AuthorityPosture::DENY_ALL,
         },
         candidates: candidates.clone(),
+        verified_enumeration_digest: Digest32::ZERO,
     };
     let priced_rows = rows
         .into_iter()
@@ -156,14 +159,60 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             },
         )
         .collect();
-    PricedPromptCandidatesV1 {
+    let mut priced = PricedPromptCandidatesV1 {
         candidates: enumerated,
         completeness_digest: digest("completeness"),
         pricing_policy_digest: digest("pricing-policy"),
         rows: priced_rows,
         pricing_set_digest: digest("pricing-set"),
         authority: AuthorityPosture::DENY_ALL,
+        verified_pricing_digest: Digest32::ZERO,
+        verified_trust_digest: verifier().trust_digest(),
+        verified_at_unix_ms: 100,
+        verified_valid_until_unix_ms: 10_000,
+    };
+    seal_priced_fixture(&mut priced);
+    priced
+}
+
+// Algorithm unit fixtures deliberately mint trusted input inside this private
+// test module. Cross-crate delivery fixtures use real signed pricing instead.
+pub(super) fn seal_priced_fixture(priced: &mut PricedPromptCandidatesV1) {
+    let candidates = &mut priced.candidates;
+    candidates.candidates_digest = digest_candidates(&candidates.candidates);
+    candidates.canonical_order_digest = digest_candidate_order(&candidates.candidates);
+    candidates.receipt.receipt_digest = digest_candidate_receipt(
+        &candidates.receipt.set_id,
+        candidates.receipt.objective_digest,
+        candidates.receipt.state_digest,
+        candidates.receipt.registry_digest,
+        candidates.registry_snapshot.snapshot_digest,
+        candidates.model_tuple.digest(),
+        candidates.receipt.selection_grammar_digest,
+        &candidates.receipt.candidate_factor_ids,
+        candidates.candidates_digest,
+        candidates.canonical_order_digest,
+        candidates.omitted_count,
+    );
+    candidates.verified_enumeration_digest = integrity::enumeration_digest(candidates);
+    for row in &mut priced.rows {
+        let pricing = &mut row.pricing;
+        pricing.receipt_digest = digest_pricing_receipt(
+            &pricing.factor_id,
+            pricing.state_digest,
+            pricing.expected_utility_q32,
+            pricing.downside_q32,
+            pricing.token_cost,
+            pricing.latency_cost_micros,
+            pricing.interference_ppm,
+            &pricing.confidence_interval,
+            priced.pricing_policy_digest,
+            row.binding.binding_digest,
+        );
     }
+    priced.pricing_set_digest = digest_pricing_set(&priced.rows, priced.pricing_policy_digest);
+    priced.verified_pricing_digest = integrity::priced_digest(priced);
+    priced.validate().expect("valid algorithm fixture");
 }
 
 fn support(label: &str) -> KnowledgeSupportV2 {
@@ -178,7 +227,7 @@ fn support(label: &str) -> KnowledgeSupportV2 {
     }
 }
 
-fn graph(
+pub(super) fn graph(
     factors: &[&str],
     relations: Vec<(&str, KnowledgeRelationKindV2, &str)>,
 ) -> KnowledgeGenerationV2 {
@@ -218,20 +267,27 @@ fn graph(
     .unwrap_or_else(|error| panic!("graph: {error}"))
 }
 
-fn verifier() -> LearningEvidenceVerifierV1 {
+pub(super) fn verifier() -> LearningEvidenceVerifierV1 {
+    verifier_for(digest("objective"), /*authority_epoch*/ 1)
+}
+
+pub(super) fn verifier_for(
+    objective_digest: Digest32,
+    authority_epoch: u64,
+) -> LearningEvidenceVerifierV1 {
     let signing = SigningKey::from_bytes(&[7; 32]);
     let public = signing.verifying_key().to_bytes();
     LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
         scope_digest: digest("scope"),
-        objective_digest: digest("objective"),
-        authority_epoch: 1,
+        objective_digest,
+        authority_epoch,
         signers: vec![TrustedLearningSignerV1 {
             principal: AuthenticatedPrincipalV1 {
                 principal_id: id("evaluator"),
                 credential_chain_digest: digest("credential"),
                 signing_key_digest: Digest32::of_bytes(&public),
                 scope_digest: digest("scope"),
-                authority_epoch: 1,
+                authority_epoch,
                 authenticated_at: 1,
                 expires_at: 10_000,
             },
@@ -373,48 +429,40 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     let temp = tempfile::tempdir().expect("tempdir");
     let (mut registry, _tuple, authority, signing_key, now) =
         registry_fixture(&temp.path().join("registry"), &[1, 2]);
-    let snapshot = registry
-        .snapshot_v2(digest("generation-vector"), &model_tuple())
-        .expect("snapshot");
-    let realization = registry
-        .read_compatible_v2(
-            &snapshot,
-            digest("generation-vector"),
-            &model_tuple(),
-            100,
-            vec![id("factor:a")],
-            8,
-        )
-        .expect("bindings")
-        .bindings[0]
-        .clone();
-    let selected = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:1"),
-            candidate_set_digest: digest("candidate-set"),
-            factor_ids: vec![id("factor:a")],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::from_raw(10),
-            total_token_upper_bound: 1,
-            valid_until_unix_ms: 5_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
+    let candidates = enumerate_factors_v1(
+        registry.registry().expect("registry"),
+        PromptEnumerationRequestV1 {
+            set_id: id("set:revocation"),
+            objective_digest: digest("objective"),
+            state_digest: digest("state"),
+            generation_vector_digest: digest("generation-vector"),
+            model_tuple: model_tuple(),
+            now_unix_ms: 100,
+            required_factor_ids: vec![id("factor:a")],
+            maximum_candidates: 8,
+            selection_grammar_digest: digest("grammar"),
         },
-        selected: vec![PromptCandidateBindingV1 {
-            factor_id: id("factor:a"),
-            binding_digest: realization.digest(),
-            realization,
-        }],
-        objective_digest: digest("objective"),
-        state_digest: digest("state"),
-        model_tuple: model_tuple(),
-        model_tuple_digest: model_tuple().digest(),
-        generation_vector_digest: digest("generation-vector"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
+    )
+    .expect("enumeration");
+    let mut priced = priced(vec![("factor:a", "realization:0", 1, 10)]);
+    priced.rows[0].binding = candidates.candidates[0].clone();
+    priced.candidates = candidates;
+    seal_priced_fixture(&mut priced);
+    let selected = select_portfolio_v1(
+        &priced,
+        &graph(&["factor:a"], Vec::new()),
+        Vec::new(),
+        &verifier(),
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:revocation"),
+            graph_query_id: id("query:revocation"),
+            token_budget: 8,
+            maximum_selected_factors: 1,
+            requested_valid_until_unix_ms: 5_000,
+        },
+        100,
+    )
+    .expect("canonical selection");
     let live = exercise_v1(
         registry.registry().expect("registry"),
         &selected,
@@ -449,7 +497,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     assert!(!exercise.authority.grants_any());
 }
 
-fn registry_fixture(
+pub(super) fn registry_fixture(
     root: &std::path::Path,
     costs: &[u32],
 ) -> (

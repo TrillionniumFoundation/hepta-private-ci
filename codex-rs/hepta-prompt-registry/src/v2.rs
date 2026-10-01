@@ -113,6 +113,21 @@ impl PromptRealizationBindingV2 {
         }
         Digest32::of_bytes(&bytes)
     }
+
+    pub(crate) fn model_tuple_digest(&self) -> Digest32 {
+        compute_model_tuple_digest(
+            &self.model_id,
+            &self.model_version,
+            [
+                self.model_digest,
+                self.tokenizer_digest,
+                self.template_digest,
+                self.tool_schema_digest,
+                self.context_profile_digest,
+            ],
+            &self.locale_id,
+        )
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -146,20 +161,18 @@ impl PromptModelTupleV2 {
 
     #[must_use]
     pub fn digest(&self) -> Digest32 {
-        let mut bytes = b"hepta.prompt-model-tuple.v2".to_vec();
-        push_id(&mut bytes, &self.model_id);
-        push_text(&mut bytes, &self.model_version);
-        for digest in [
-            self.model_digest,
-            self.tokenizer_digest,
-            self.template_digest,
-            self.tool_schema_digest,
-            self.context_profile_digest,
-        ] {
-            push_digest(&mut bytes, digest);
-        }
-        push_id(&mut bytes, &self.locale_id);
-        Digest32::of_bytes(&bytes)
+        compute_model_tuple_digest(
+            &self.model_id,
+            &self.model_version,
+            [
+                self.model_digest,
+                self.tokenizer_digest,
+                self.template_digest,
+                self.tool_schema_digest,
+                self.context_profile_digest,
+            ],
+            &self.locale_id,
+        )
     }
 }
 
@@ -233,7 +246,9 @@ impl CompatibleRealizationSetV2 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.bindings.len() > MAX_COMPATIBLE_REALIZATIONS_V2 {
+        if self.bindings.len() > MAX_COMPATIBLE_REALIZATIONS_V2
+            || self.required_factor_ids.len() > MAX_COMPATIBLE_REALIZATIONS_V2
+        {
             return Err(PromptRegistryV2Error::ReadLimitExceeded);
         }
         if self
@@ -253,6 +268,28 @@ impl CompatibleRealizationSetV2 {
             )
         }) {
             return Err(PromptRegistryV2Error::NonCanonicalBindings);
+        }
+        let mut realization_ids = BTreeSet::new();
+        let mut profiles = BTreeSet::new();
+        let mut factor_ids = BTreeSet::new();
+        for binding in &self.bindings {
+            binding.validate()?;
+            if binding.model_tuple_digest() != self.model_tuple_digest {
+                return Err(PromptRegistryV2Error::DigestMismatch("model_tuple"));
+            }
+            if !realization_ids.insert(&binding.realization_id)
+                || !profiles.insert((&binding.factor_id, binding.role))
+            {
+                return Err(PromptRegistryV2Error::NonCanonicalBindings);
+            }
+            factor_ids.insert(&binding.factor_id);
+        }
+        if self
+            .required_factor_ids
+            .iter()
+            .any(|factor_id| !factor_ids.contains(factor_id))
+        {
+            return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
         }
         if self.authority.grants_any() {
             return Err(PromptRegistryV2Error::AuthorityGranted);
@@ -292,6 +329,11 @@ impl PromptRegistry {
             PromptRegistryV2Error::EmptyDigest(name) => Error::EmptyDigest(name),
             _ => Error::InvalidTransition,
         })?;
+        if binding.model_id.as_str() == crate::protocol::LEGACY_UNRESOLVED_MODEL_ID
+            && binding.model_version == crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION
+        {
+            return Err(Error::InvalidTransition);
+        }
         let Some(factor) = self.factors.get(&binding.factor_id) else {
             return Err(Error::FactorNotFound(binding.factor_id.to_string()));
         };
@@ -376,14 +418,17 @@ impl PromptRegistry {
         required_factor_ids: Vec<StableId>,
         maximum_results: u32,
     ) -> Result<CompatibleRealizationSetV2, PromptRegistryV2Error> {
+        let maximum_results = usize::try_from(maximum_results).unwrap_or(usize::MAX);
+        if maximum_results == 0
+            || maximum_results > MAX_COMPATIBLE_REALIZATIONS_V2
+            || required_factor_ids.len() > maximum_results
+        {
+            return Err(PromptRegistryV2Error::ReadLimitExceeded);
+        }
         expected_snapshot.validate()?;
         let current_snapshot = self.snapshot_v2(generation_vector_digest, model_tuple)?;
         if current_snapshot != *expected_snapshot {
             return Err(PromptRegistryV2Error::SnapshotStale);
-        }
-        let maximum_results = usize::try_from(maximum_results).unwrap_or(usize::MAX);
-        if maximum_results == 0 || maximum_results > MAX_COMPATIBLE_REALIZATIONS_V2 {
-            return Err(PromptRegistryV2Error::ReadLimitExceeded);
         }
         let mut factor_filter = BTreeSet::new();
         for factor_id in &required_factor_ids {
@@ -394,17 +439,14 @@ impl PromptRegistry {
             }
         }
         let canonical_required_factor_ids = factor_filter.iter().cloned().collect::<Vec<_>>();
-        if canonical_required_factor_ids.len() > maximum_results {
-            return Err(PromptRegistryV2Error::ReadLimitExceeded);
-        }
         let mut eligible = self
             .realization_bindings
             .values()
             .filter(|binding| {
-                let factor_valid = self
-                    .factors
-                    .get(&binding.factor_id)
-                    .is_some_and(|factor| factor.lifecycle == Lifecycle::Admitted);
+                let factor_valid = self.factors.get(&binding.factor_id).is_some_and(|factor| {
+                    factor.source == crate::FactorSource::GovernedInternal
+                        && factor.lifecycle == Lifecycle::Admitted
+                });
                 let realization_active = self
                     .realizations
                     .get(&binding.realization_id)
@@ -519,6 +561,22 @@ pub(crate) fn same_profile(
         && left.context_profile_digest == right.context_profile_digest
         && left.locale_id == right.locale_id
         && left.role == right.role
+}
+
+fn compute_model_tuple_digest(
+    model_id: &StableId,
+    model_version: &str,
+    digests: [Digest32; 5],
+    locale_id: &StableId,
+) -> Digest32 {
+    let mut bytes = b"hepta.prompt-model-tuple.v2".to_vec();
+    push_id(&mut bytes, model_id);
+    push_text(&mut bytes, model_version);
+    for digest in digests {
+        push_digest(&mut bytes, digest);
+    }
+    push_id(&mut bytes, locale_id);
+    Digest32::of_bytes(&bytes)
 }
 
 fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), PromptRegistryV2Error> {

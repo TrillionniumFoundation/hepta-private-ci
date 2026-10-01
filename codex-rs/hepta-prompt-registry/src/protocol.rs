@@ -8,6 +8,7 @@ use std::fmt;
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::IdProfileV1;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
@@ -258,18 +259,22 @@ fn validate_factor_fields(
     {
         return Err(ProtocolCodecError::InvalidField);
     }
+    // Stable IDs contain only unescaped ASCII. Count the canonical JSON array
+    // directly so oversized caller-owned vectors do not trigger a second full
+    // allocation before the bound is enforced.
+    let mut encoded_dimensions_bytes = 2_usize;
+    for (index, dimension) in eligible_objective_dimensions.iter().enumerate() {
+        encoded_dimensions_bytes = encoded_dimensions_bytes
+            .checked_add(dimension.as_str().len() + 2 + usize::from(index > 0))
+            .ok_or(ProtocolCodecError::InvalidField)?;
+        if encoded_dimensions_bytes > MAX_ELIGIBLE_DIMENSIONS_BYTES {
+            return Err(ProtocolCodecError::InvalidField);
+        }
+    }
     if eligible_objective_dimensions
         .windows(2)
         .any(|window| window[0] >= window[1])
     {
-        return Err(ProtocolCodecError::InvalidField);
-    }
-    let dimensions = eligible_objective_dimensions
-        .iter()
-        .map(ToString::to_string)
-        .collect::<Vec<_>>();
-    let encoded = serde_json::to_vec(&dimensions).map_err(|_| ProtocolCodecError::InvalidJson)?;
-    if encoded.len() > MAX_ELIGIBLE_DIMENSIONS_BYTES {
         return Err(ProtocolCodecError::InvalidField);
     }
     Ok(())
@@ -283,7 +288,7 @@ fn ensure_protocol_size(bytes: &[u8]) -> Result<(), ProtocolCodecError> {
 }
 
 fn parse_id(value: &str) -> Result<StableId, ProtocolCodecError> {
-    StableId::new(value.to_owned()).map_err(|_| ProtocolCodecError::InvalidField)
+    StableId::with_profile(value, IdProfileV1::Stable).map_err(|_| ProtocolCodecError::InvalidField)
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, ProtocolCodecError> {
@@ -344,6 +349,10 @@ impl fmt::Display for ProtocolCodecError {
 }
 
 impl std::error::Error for ProtocolCodecError {}
+
+#[cfg(test)]
+#[path = "protocol_bounds_tests.rs"]
+mod bounds_tests;
 
 #[cfg(test)]
 mod tests {

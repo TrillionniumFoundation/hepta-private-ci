@@ -42,7 +42,9 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots above are materialized. Executed checks belong to an exact source candidate and are recorded in the [2026-10-01 audit](ADVERSARIAL_AUDIT_2026-10-01.md). Focused tests, all-target compilation, strict lint and source/merge qualification remain distinct observations; a successful focused test does not imply that a later blocked lint step executed. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+
+Follow [the global development policy](../../DEVELOPMENT.md#2-canonical-document-system-and-historical-cleanup): ordinary authorized source work runs affected package tests and applicable review checks. `hepta-docs.py`, `hepta-module-docs.py` and `hepta-implementation-maps.py` use `--profile development` to validate current ownership, schemas, paths and references, including local edits. Their default qualification profile additionally checks historical source identities and inventories. Qualification receipts require committed inputs and apply when the relevant runtime, independent-evaluation, candidate-execution or release boundary is exercised. A development-profile pass neither renews those receipts nor proves production completion. Automatic native CI selects affected owners and reverse consumers from both Git revisions; deeper qualification workflows remain reusable or manually runnable.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -81,6 +83,74 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Native API and mutation sequence
+
+The native store is `DurablePromptRegistry`; `PromptRegistry` is its deterministic
+in-memory state image. Use the durable API for owner publication. The internal
+`register_realization_v2` metadata helper is not a production payload writer.
+
+| Component | Implemented surface | Invariant |
+| --- | --- | --- |
+| `lib.rs` | Factor identity, lifecycle, relations, graph-source image | Immutable factor semantics; terminal retirement/revocation; one revision per change |
+| `admission.rs` | Reviewer signature verification and final-use binding | Exact factor/scope/evidence; separately configured trust; expiring single-use mutation grants |
+| `v2.rs` | Model tuple, snapshot, compatible set | Exact model ID/version and all profile digests; canonical bounded set; required factor coverage |
+| `delivery.rs` | Payload registration, supersession, dereference | Exact stored bytes/digest; one active realization per complete profile; current snapshot/lifecycle |
+| `durable.rs` / `durable_payloads.rs` | V1/V2 migration, V3 publication and reopen | Single owner lock; semantic replay validation; immutable committed extents |
+| `durable_recovery.rs` | Exact-cut recovery anchor and anchored reopen | Independently supplied current cut must match before migration or payload-tail cleanup |
+| `protocol.rs` | `PromptFactorV1` / `PromptRealizationV1` JSON codecs | Bounded input, canonical dimensions, unknown/duplicate critical member rejection |
+
+1. Register an immutable draft factor. Validate bounded semantics before insertion;
+   registration alone grants no instruction or selection authority.
+2. Call `admit_factor_final_use` with an independently provisioned
+   `FinalUseAuthority`, a matching signed grant, factor ID, reviewed scope and
+   evidence digest. The reviewer identity is bound by the signed grant;
+   `FinalUseAdmissionAuthority` verifies the operation inside this call. A reused
+   admission identity with changed semantics conflicts.
+3. Call `register_realization_payload_final_use_v2` with the complete binding and
+   bytes. An existing active profile requires an explicit predecessor; registration
+   atomically deactivates that predecessor without deleting its history.
+4. Freeze `snapshot_v2` using the host generation-vector digest and exact model
+   tuple. `read_compatible_v2` canonicalizes required factor IDs and checks current
+   snapshot, lifecycle, expiry, profile and result capacity. Rehashed containers
+   must still satisfy every semantic invariant.
+5. Dereference selected IDs with `dereference_realization_v2` against that same
+   current snapshot immediately before compiling bytes. Digest equality alone is
+   neither an authenticated source nor selection authority.
+6. Retire/revoke through the final-use durable APIs. Cascaded realization
+   deactivation and lifecycle publication share one owner revision. Optimizers
+   cannot mutate these records.
+
+Native ceilings are 16,384 total records, 128 compatible realizations and required
+factor IDs, and 64 KiB per payload. V3 metadata and payload extent files each have
+a 32 MiB ceiling. A smaller configured record ceiling is persisted and cannot
+silently change on reopen. These bounds are enforcement, not latency measurements.
+
+`migrate_v1` rejects an oversized total factor/realization count with
+`CapacityExceeded`, or more bindings than realizations with `Corrupt`, before
+decoding records, building indexes or synthesizing imported lifecycle events.
+This preflight follows the storage schema/configuration checks; it does not remove
+the existing bounded storage-file decode. Final-use payload registration rejects
+empty or over-64-KiB input with `Core(PayloadTooLarge)` after owner availability
+checking and before factor cloning, payload hashing or `FinalUseAuthority::claim`.
+The registry image, selected files and grant claimability are unchanged by this
+shape rejection. It does not refund a nonce after a final-use effect has begun.
+
+For V3 reopen, ordinary and anchored constructors pass the configured record
+limit into `PayloadState::hydrate`. Shared `validate_stored_metadata_bounds`
+checks header/revision, configuration and collection counts before reference
+sorting or payload-file open/read/hash. Reference count cannot exceed realization
+count; reference IDs are validated on borrowed strings before indexing clones.
+Invalid configuration, aggregate capacity and other shape failures retain
+`ConfigurationMismatch`, `CapacityExceeded` and `Corrupt` respectively. This
+preflight follows bounded metadata JSON decoding; full semantic restore and
+anchor comparison still precede migration or unselected-tail cleanup. Rejected
+input preserves the selected metadata, committed payload and orphan trailing bytes.
+
+`register_factor_relation` and `factor_graph_source_v1` belong to the in-memory
+image. The current durable schema has no relation records or governed relation
+write port. Durable publication rejects a relation-bearing image before changing
+selected files; a graph-source export does not establish persistent KG integration.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -108,6 +178,32 @@ Critical protocol schemas:
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+
+Native factor semantics bound purpose to 4,096 bytes, authority class to 64 bytes
+and the canonical JSON eligible-dimension array to 8,192 bytes. Stable identifiers
+use the ASCII grammar and a 128-byte ceiling. Dimension validation accounts for
+the exact array brackets, commas and quoted identifiers with checked arithmetic,
+rejects excess before serialization, and scans canonical order without cloning
+the full dimension vector. Complete canonical protocol input is capped at
+262,144 bytes. Admission identifier validation likewise checks borrowed input
+before creating owned IDs; signed-grant shapes and public wire versions remain
+unchanged. Shape failures retain `InvalidField` / `InvalidGrant` semantics.
+
+All four public `final_use_*_binding` helpers apply the same borrowed factor
+semantic bounds before allocating or hashing their signing request. Existing
+source, self-review, scope, realization-binding and revoke-cutoff errors retain
+their priority; invalid factor fields return `AdmissionError::InvalidGrant`.
+Valid boundary inputs retain exactly the same request and payload digests.
+
+The migration purpose `legacy imported factor; semantic purpose unavailable`
+and the combined model tuple `model:legacy-imported` / `legacy-imported` are
+reserved unresolved-lineage markers. Native factor registration rejects that
+purpose with `InvalidFactorMetadata`; native realization registration rejects
+that tuple with `InvalidTransition`, and its public final-use binding helper
+rejects it with `InvalidGrant` before grant claim. The individual model ID or
+version remains valid when paired with another value. Legacy restore continues
+to accept the markers as historical data; protocol export still reports
+`MissingAuthoritativeLineage`, and retirement/revocation remain available.
 
 ## 6. Data authority, persistence and migrations
 
@@ -148,6 +244,20 @@ while delivery still returns owned bounded bytes. Metadata serialization, semant
 hashing and the full in-memory registry remain size-dependent; this change reduces
 payload copy/write amplification, not unlimited-history recovery or retention cost.
 
+The owner locks its Unix directory descriptor before creating `registry.lock`,
+then retains both locks for its lifetime. Every successful open synchronizes the
+parent directory entry, including retries after a failed initial parent sync.
+It obtains the actual parent with descriptor-relative `openat("..")` from the
+validated owner directory, so `.` or `owner/child/..` aliases cannot redirect the
+durability fence to a lexical parent of the input path.
+Invalid zero capacity fails before creating owner state. If the
+first metadata publication fails before rename, only the newly created marker
+belonging to that opener is removed and the owner directory is synchronized,
+allowing a fresh retry. Existing-owner and migration markers are retained;
+uncertain post-rename durability also retains the marker. This cleanup addresses
+observed pre-publication failures, not automatic repair after an arbitrary crash.
+Missing committed metadata behind an existing owner marker remains corrupt.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).
@@ -159,6 +269,44 @@ The [current native implementation](../../../qualification/module-execution-doss
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+
+For native recovery, `Corrupt` rejects malformed/duplicate JSON members, invalid
+lifecycle replay, missing payload extents and digest/profile inconsistencies.
+`StateLocked` rejects a concurrent owner. A failure before metadata rename preserves
+the predecessor; `IndeterminateDurability` after rename makes `requires_reopen()`
+true and all subsequent reads/writes fail with `ReopenRequired`. Reopen reconciles
+the selected manifest before discarding an unselected extent tail. Do not retry a
+consumed final-use grant as if an uncertain commit had failed.
+
+Native Unix file opening rejects symlinks and non-regular files without blocking
+on a FIFO. Non-Unix durable owner opening currently fails closed. Backup integrity
+checks prove the copied image's internal consistency; they do not prove freshness
+against an independently pinned current revision. Restoring a valid older complete
+owner image through ordinary `open_state_dir` can roll back revocation.
+
+For anchored recovery, call `recovery_anchor()` on an available committed owner
+and independently retain and authenticate the returned
+`PromptRegistryRecoveryAnchor`. It binds the exact `revision`,
+`lifecycle_frontier`, `revocation_frontier` and semantic `registry_digest`.
+`open_state_dir_with_recovery_anchor(directory, maximum_records, expected)`
+requires an existing selected state, validates it under the owner lock and rejects
+any different cut before metadata migration or payload-tail cleanup. An invalid
+anchor returns `InvalidRecoveryAnchor`; missing selected state returns
+`RecoveryStateMissing`; a valid but different cut returns
+`RecoveryAnchorMismatch`. Anchor shape and capacity validation precede filesystem
+access. A matching V1/V2 image may migrate; a matching V3 image may discard its
+unselected payload tail only after comparison. A missing owner directory or
+selected metadata cannot create an owner directory or marker. Opening an existing
+legacy image can create its missing owner-lock marker before cut comparison;
+cut rejection still leaves metadata and payload bytes unchanged.
+
+This is exact equality, not a minimum-prefix proof: every newly acknowledged
+mutation requires a newly independently retained cut. The host must establish
+the anchor's authentication and currentness in a separate rollback domain;
+deriving it from the suspect backup proves neither. The ordinary constructor
+remains available for bootstrap and unanchored local reopening, and Agentd does
+not yet supply a trusted recovery anchor. Production restore still requires that
+host composition and an approved acknowledgement/recovery procedure.
 
 ## 9. Security, privacy and threat controls
 
@@ -191,10 +339,27 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-prompt-registry/src/admission_binding_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/admission_binding_bounds_tests.rs) covers public signing-helper bounds, exact-boundary digest compatibility and existing error priority.
+- [codex-rs/hepta-prompt-registry/src/protocol_reserved_values_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_reserved_values_tests.rs) covers native rejection of migration markers, preserved state/grant claimability and legacy recovery compatibility.
+- [codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs) covers first-match prefix fallback, nonoverlapping cursor advancement and missing semantics; these new cases await candidate execution.
+- [codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs) covers the public lower-level compiler/delivery 10,000-token guard and serialized-payload byte rejection using admitted and signed-selection fixtures; these new cases await candidate execution.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs) covers future and expired prompt-edge/endpoint supports, overlapping-support cut transitions and exact millisecond boundaries; the audit records their execution on source candidate `666b20e73926325b7b4bcf763f03a15c7c76ccf5` separately from later edits.
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named case: `external_material_cannot_admit_itself`.
 - [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named case: `every_state_change_allocates_one_revision_and_identical_retry_does_not`.
+- [codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs) covers adversarial storage restore and bootstrap recovery.
+- [codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs) covers missing state, old backups, equal-revision forks, mismatch-before-trim/migration and parent-sync retry.
+- [codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs) covers exact 8,191/8,192/8,193-byte dimension-array boundaries and canonical ordering.
+- [codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs) covers V1 capacity before record decode, orphan bindings, exact-capacity migration, V3 metadata/ref preflight before payload access and payload rejection before grant claim; these new fixtures await candidate execution.
+- [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs) and [prompt_delivery_multirole_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_multirole_tests.rs) cover sealed compilation and exact selected realization identity.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs) covers rehashed pricing/portfolio tampering and candidate semantic integrity.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs) follows actual durable enumeration and independent signed completeness/pricing through expiry and known-revocation selection boundaries.
+- [codex-rs/hepta-learning-ledger/src/signed_evidence_horizon_tests.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence_horizon_tests.rs) covers the optimizer dependency's exclusive evidence horizon, known revocation and saturating boundary.
+- [codex-rs/hepta-agentd/src/prompt_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_tests.rs) covers exact model and deadline checks at the Agentd staging seam.
+- [codex-rs/hepta-agentd/src/prompt_runtime_integrity_tests.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_integrity_tests.rs) covers dispatch deadline and terminal-order rejection at commit and reopen.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-registry`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) separately labels target acceptance designs.
+
+The integration checks use `just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'` and `just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_)'`. The audit records source/merge identities, suite counts and remaining gate failures; changing this guide does not refresh execution evidence.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -208,11 +373,129 @@ Applicable work packages:
 
 The bootstrap package is `PIM-0-PROMPT-INTERVENTION-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation requires the declared target root, matching registered public surfaces and applicable tests and review checks. Exact-head and merge-candidate qualification evidence is additionally required at the boundary that consumes it; it is not a separately handwritten permission to perform ordinary authorized source work. Later planned packages may remain without invalidating documentation closure, but their missing product capabilities must remain explicit.
 
 ## 14. Activation, compatibility and retirement
 
 Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+
+Current Agentd bootstrap opens the durable owner in `state.rs` and installs the
+prompt runtime host in `app_runtime.rs`. `enumerate_candidates` and
+`compile_and_stage` currently have no live turn-ingress caller. Governed durable
+mutation APIs likewise have no authenticated product ingress or configured trust.
+The compiler now seals its verified delivery set, exact stored bytes, portfolio
+validity and profile; Agentd accepts only the same model identifier and caps the
+staged deadline by portfolio and realization expiry. Model aliases require an
+explicit validated adapter rather than implicit prefix conversion. Already-staged
+attachments still need current registry/revocation revalidation at physical send
+before activating a live mutation pipeline. Source safety repairs do not close
+that integration gate.
+
+Canonical optimizer enumeration, pricing and selected portfolios also carry
+private process provenance. Build them through `enumerate_factors_v1`,
+`price_factors_v1` and `select_portfolio_v1`;
+`PricedPromptCandidatesV1::validate()` and
+`SelectedPromptPortfolioV1::validate()` reject changed public fields even when
+their public receipt hashes are recomputed. Candidate validation binds the
+complete registry snapshot, model tuple, factor/realization identities, ordering
+and receipt semantics. The enumeration seal binds its recorded omission count and
+snapshot, so rehashing public receipts cannot hide omissions or invent a new
+enumeration source. Pricing also requires the verifier's objective to match.
+The pricing seal retains the original verifier trust digest; selection requires
+the same objective and trust snapshot, so another objective or trust epoch cannot
+be mixed into pair evidence for an already priced set.
+The optimizer consumes
+[`VerifiedLearningEvidenceV1::valid_until_unix_ms`](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs)
+as an exclusive evidence deadline. Signed-envelope and authenticated-principal
+expiries are inclusive at verification, so the deadline is one millisecond after
+their minimum, capped by any revocation time already known to that trust snapshot.
+Saturation conservatively excludes `u64::MAX` if an exclusive successor cannot be
+represented. Pricing seals its verification time and the earliest completeness/
+pricing evidence deadline. Selection rejects time before verification with
+`InvalidTime`, and time at or beyond the evidence deadline with `PortfolioExpired`,
+even without pair evidence. Portfolio validity is capped by requested validity,
+pricing/completeness evidence, every verified pair-evidence horizon and selected
+realization expiry. Selection time is privately sealed; exercise before that time
+returns `RejectStale`. These are bounded dependency facts from learning.ledger,
+not a registry-owned evidence authority.
+
+An empty sealed portfolio follows the same exercise time and scope checks.
+`exercise_v1` returns `RejectStale` for time before selection, at/after its
+exclusive deadline, or changed state digest, generation vector or exact model
+tuple/digest. Only a current, in-window empty portfolio yields `NoIntervention`;
+that branch cannot bypass freshness checks. Nonempty portfolios then undergo
+the current registry/lifecycle read and exercise-versus-wait comparison.
+
+Selection also bounds the frozen KG projection by its next relevant support
+transition, using the optimizer's private `canonical_temporal.rs` helper.
+Relevant prompt edges connect candidate factors or require a missing target from
+a known candidate; their endpoint-node supports count too. Future invisible
+supports can change applicability and therefore bound the portfolio before they
+become visible. `valid_from` is inclusive and `valid_to` exclusive in KG seconds;
+conversion to milliseconds saturates rather than wrapping. A portfolio expires
+at the earliest later boundary, even where overlapping supports keep a relation
+visible but change the support-cut digest. Unrelated nodes/edges and non-prompt
+relations do not shorten it. This graph deadline joins the existing requested,
+pricing, pair-evidence and realization ceilings and propagates through the
+sealed portfolio to compiler and Agentd staging. Selection at the boundary must
+query the updated projection; later graph generations still require current
+host revalidation.
+
+Selection, exercise and registry compilation validate the corresponding sealed
+inputs before use. Integrity failures are `CandidateIntegrity`,
+`PricingIntegrity` or `PortfolioIntegrity`. These objects have no serialized
+reconstruction path for their private seals; the seals grant no final-use or
+provider authority.
+
+The seal records verified construction under that trust snapshot; it does not
+refresh producer trust at exercise or physical send. Live host composition still
+needs current trust/revocation checks at the corresponding effect boundary.
+
+Registry compilation and compiled-output validation reject any selected fragment
+whose declared `token_cost` exceeds 10,000, returning
+`PromptRegistryCompilationErrorV2::PromptFragmentTokenLimit`. The boundary applies
+to each individual fragment, even when the total budget would allow more. The
+signed fixture covers 10,000 accepted and 10,001 rejected. This enforces a declared
+cost only; the registry/compiler does not independently run the exact tokenizer.
+Fragments declared above 1,000 tokens fall under the repository's P0 manual
+review rule. Actual tokenizer attestation and the applicable manual-review receipt
+remain qualification work; a passing declared-bound test establishes neither.
+
+The public lower-level `compile_exercised_prompt_context_v1` and
+`prepare_prompt_delivery_v1` also validate the sealed portfolio and apply that
+individual-item bound before fragment construction or delivery-receipt work.
+They report `PromptPipelineErrorV1::PromptFragmentTokenLimit`. These APIs and
+the registry-backed V2 compiler share `MAX_PROMPT_FRAGMENT_TOKENS = 10_000`,
+so the generic path cannot bypass the V2 declared-cost ceiling. The bound still
+does not attest actual tokenizer cost or supply the P0 review receipt.
+
+`prepare_prompt_delivery_v1` additionally applies the context compiler's existing
+16-MiB `MAX_SERIALIZED_PAYLOAD_BYTES_V2` ceiling after portfolio/compiled-receipt
+binding checks and request destructuring. Oversized caller bytes fail before
+exercise, source materialization, occurrence scanning, hashing or serialization
+copies, using the existing `ContextCompiler(SerializedPayloadTooLarge)` error
+classification. This preflight does not change the wire format or grant authority.
+
+Source-byte occurrence proof uses the private
+[`prompt_serialization_search.rs`](../../../codex-rs/hepta-intelligence/src/prompt_serialization_search.rs)
+KMP helper rather than repeated slice-window equality. Each search is
+`O(haystack length + needle length)` and retains first-match, nonoverlapping
+cursor and missing-occurrence semantics. The needle is explicitly capped at
+64 KiB, bounding its `usize` prefix table to 512 KiB on a 64-bit target.
+This algorithmic bound comes from the source structure; the new Rust candidate
+has neither execution nor benchmark evidence yet. The signed maximal-pattern
+fixture uses declared token cost and does not attest tokenizer cost.
+
+Agentd's runtime journal rejects a dispatch whose `dispatched_unix_ms` is equal
+to or after the staged deadline. A terminal observation must be at or after its
+dispatch timestamp; equality is allowed. Commit validation and recovery checks
+use the same time-order rules. Recovery can recheck a dispatch deadline where
+the corresponding staged record remains; terminal-versus-dispatch ordering is
+also checked after the stage has been cleared.
+Completion after a valid dispatch is not inferred to be a new dispatch. These
+timestamp checks enforce recorded deadline/order semantics and do not refresh
+current registry revocation or authenticate a journal timestamp as wall-clock
+evidence.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -344,8 +627,26 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `prompt.registry` is implemented by work package `PIM-0-PROMPT-INTERVENTION-CONTRACTS` in:
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-- `codex-rs/hepta-prompt-registry`
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `durablepromptregistry` | `DurablePromptRegistry` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `register_factor` | `register_factor` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `admit_factor_final_use` | `admit_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `register_realization_payload_final_use_v2` | `register_realization_payload_final_use_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `retire_factor_final_use` | `retire_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `revoke_factor_final_use` | `revoke_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `snapshot_v2` | `snapshot_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/v2_tests.rs` |
+| `read_compatible_v2` | `read_compatible_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/v2_tests.rs` |
+| `dereference_realization_v2` | `dereference_realization_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `promptfactorv1` | `PromptFactorV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `promptrealizationv1` | `PromptRealizationV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `factor_graph_source_v1` | `factor_graph_source_v1` | `codex-rs/hepta-prompt-registry/src/lib.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `promptregistryrecoveryanchor` | `PromptRegistryRecoveryAnchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| `recovery_anchor` | `recovery_anchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| `open_state_dir_with_recovery_anchor` | `open_state_dir_with_recovery_anchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

@@ -1075,7 +1075,7 @@
       "guide": "docs/modules/cognitive.store/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.store.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "Canonical module fa\u00e7ade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
+      "apiContract": "Canonical module façade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
       "stateAndEncoding": "The semantic V1/V2 ledgers are bounded in-memory models. The physical authoritative owner is hepta-memory::CognitiveStore over cognitive_1.sqlite3. memory_ledger owns Memory/source/tombstone lineage; knowledge_fact_ledger is the memory-revision-bound authoritative fact-set subledger in kg_revision_fact_sets/entities/relations, committed with the owning Memory revision and never given an independent fact writer/head. WAL+FULL writer fencing, exact-cut recovery anchors and the active-generation pointer protect the physical owner.",
       "linearizationAndRecovery": "BEGIN IMMEDIATE/CAS mutations remain single-owner. Production semantic mutation revalidates the retained external verifier immediately before the owner mutation. Writable recovery fences ordinary store handles, copies identity-bound database/WAL/journal descriptors into a private generation, checks exact current-cut equality, schema/integrity and production authority/fence, checkpoints, then publishes the active generation; post-rename publication uncertainty is Indeterminate. Ordinary open is not a production-writer recovery fallback.",
       "algorithmAndBounds": "V2 accepts only Verified admission, reserves hard revision capacity for tombstones, bounds the intent journal and binds image receipts/frontiers to retained history. Semantic pages bind exact generation-vector+sequence. Durable pages keyset-page <=512 heads and reconstruct complete selected ancestry under 16384-revision/65536-citation page budgets while binding global deletion/source/fact/KG state.",
@@ -1106,7 +1106,7 @@
             "symbol": "AgentdProductionWriterHost"
           }
         ],
-        "stateAndRecovery": "The canonical cognitive-store fa\u00e7ade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
+        "stateAndRecovery": "The canonical cognitive-store façade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
         "testFiles": [
           "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
           "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
@@ -1426,28 +1426,98 @@
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
-            "symbol": "PromptRegistry"
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "DurablePromptRegistry"
           },
           {
-            "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
-            "symbol": "register_realization_v2"
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "register_factor"
           },
           {
-            "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "admit_factor_final_use"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "register_realization_payload_final_use_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "retire_factor_final_use"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "revoke_factor_final_use"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "snapshot_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
             "symbol": "read_compatible_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "dereference_realization_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+            "symbol": "PromptFactorV1"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+            "symbol": "PromptRealizationV1"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
+            "symbol": "factor_graph_source_v1"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable_recovery.rs",
+            "symbol": "PromptRegistryRecoveryAnchor"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable_recovery.rs",
+            "symbol": "recovery_anchor"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable_recovery.rs",
+            "symbol": "open_state_dir_with_recovery_anchor"
           }
         ],
-        "stateAndRecovery": "The registry uses bounded in-memory factor/realization maps with revision and terminal revocation cascade. V2 lookup checks the exact model tuple, active realization, expiry and required factors; snapshots bind content but do not add durable storage.",
+        "stateAndRecovery": "DurablePromptRegistry locks the Unix owner directory before creating and retaining registry.lock, and retains a bounded in-memory image. Initial owner-directory creation synchronizes its parent. A proven pre-rename first-publication failure removes only the opener's newly created marker and synchronizes cleanup; existing/migration and indeterminate-publication markers remain. Storage V3 selects immutable digest-checked registry.payloads extents through atomic registry.json metadata publication. Typed V1/V2/V3 decoding rejects duplicate members, and restore verifies semantic lineage, actor/evidence shape, source trust, reviewer separation, unique grants/revisions and complete active model profiles before discarding unselected tails. Uncertain post-rename durability poisons reads and writes until reopen. Internal integrity does not establish an independently current head against restoration of an older valid backup. Exact-cut recovery_anchor exports revision, lifecycle/revocation frontiers and semantic digest; open_state_dir_with_recovery_anchor requires existing state and equality before migration or tail cleanup. Missing state never bootstraps. Anchor custody/authentication and acknowledgement ordering remain independently supplied host responsibilities. Parent-directory synchronization repeats on open, including retry after an initial sync failure. Canonical pricing and selected portfolios retain private process provenance validated before selection, exercise and registry compilation; public receipt rehashing cannot replace verified construction. Runtime dispatch precedes the staged deadline and terminal observation cannot precede dispatch; current registry revocation remains a separate physical-send integration requirement. The parent is opened descriptor-relative from the verified owner FD so lexical path aliases cannot synchronize the wrong directory. Pricing provenance includes the original verifier trust digest; selection requires the same objective and trust snapshot. Live trust refresh remains a separate exercise/physical-send host requirement. The optimizer consumes learning.ledger VerifiedLearningEvidenceV1::valid_until_unix_ms as an exclusive deadline capped by signed/principal expiry and known revocation. Pricing seals verification time and the earliest evidence horizon; selection is bounded by that window and portfolio horizons include pair evidence. Exercise before privately sealed selection time is RejectStale. These are dependency checks, not registry-owned evidence authority or global production closure. Enumeration metadata is privately sealed against rehashed omission/snapshot substitution. Registry compilation and sealed-output validation cap each declared prompt fragment at 10000 tokens with PromptFragmentTokenLimit; actual tokenizer attestation and P0 manual review above 1000 remain qualification evidence. Actual signed durable-enumeration/pricing/selection regression covers expiry and known-revocation boundaries. Source-only follow-up implementation adds V1 count/binding preflight and V3 metadata/configuration/count/reference checks before payload I/O; final-use payload shape rejection precedes factor cloning, hashing and grant claim. The optimizer bounds portfolios by relevant KG edge/endpoint support transitions and checks empty-portfolio time/scope currentness before NoIntervention. Public lower-level compiler/delivery paths share the 10000 declared-token guard; delivery applies the existing 16-MiB serialized-payload ceiling before source scanning or copies. Serialization occurrence proof uses KMP with an explicit 64-KiB needle bound. These source facts and compiled fixtures do not establish new-candidate runtime execution or benchmark evidence, which remain pending. Fourth-pass source guards validate borrowed factor semantics before all public final-use request allocations and reserve the exact migration purpose and combined model tuple at native registration and realization grant binding (individual model components remain valid), while preserving legacy restore and terminal lifecycle operations. Exact-source CI for 666b20 executed all 52 optimizer tests including ten temporal/currentness regressions; it does not execute later edits or supply registry/intelligence test or production evidence.",
         "testFiles": [
           "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
-          "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+          "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/protocol.rs",
+          "codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs",
+          "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+          "codex-rs/hepta-intelligence/src/prompt_delivery_multirole_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs",
+          "codex-rs/hepta-learning-ledger/src/signed_evidence_horizon_tests.rs",
+          "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/prompt_runtime_integrity_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/canonical_temporal_tests.rs",
+          "codex-rs/hepta-intelligence/src/prompt_pipeline_fragment_bounds_tests.rs",
+          "codex-rs/hepta-intelligence/src/prompt_serialization_search_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/admission_binding_bounds_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/protocol_reserved_values_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/prompt.registry/TECHNICAL.md"
         ],
         "remainingWork": [
-          "Connect authenticated admission/current revocation and durable owner publication/reopen; digest-only realizations do not prove that a model received their actual instructions."
+          "Agentd opens the named durable registry owner and attaches its runtime host, but no product caller invokes enumerate_candidates or compile_and_stage. Compose authenticated product draft/admission/realization/lifecycle ingress with independently provisioned trust and scope, and a registered selection/compilation/staging caller.",
+          "Revalidate current registry and revocation at the physical provider boundary; actual payload materialization is not proof of provider delivery or causal uplift. Compose independently authenticated exact-cut anchor custody, acknowledgement ordering and the anchored native reopen path before claiming non-resurrection across arbitrary backup replacement.",
+          "Registry token cost is a declared nonzero bound, not an independent exact-tokenizer measurement. Metadata hashing and owner images remain size-dependent; governed retention/compaction and PIM-3 evolution require separate implementation. Factor relations export only from the in-memory image: no durable relation schema or governed relation write port exists, and durable publication rejects relation-bearing images before selecting bytes.",
+          "Obtain current exact-candidate execution, target-host measurements, independent review, acceptance, canary, promotion and release evidence at their corresponding boundaries."
         ]
       }
     },

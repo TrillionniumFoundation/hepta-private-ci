@@ -27,6 +27,7 @@ use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::ContextSerializerV2;
 use codex_hepta_context_compiler::ExactTokenizerV2;
+use codex_hepta_context_compiler::MAX_SERIALIZED_PAYLOAD_BYTES_V2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_context_compiler::TokenizationReceiptV2;
@@ -48,6 +49,14 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+// Declared-cost guard shared by the public compiler and the sealed V2 bridge.
+// Actual tokenizer attestation remains a separate qualification requirement.
+pub(crate) const MAX_PROMPT_FRAGMENT_TOKENS: u32 = 10_000;
+
+#[path = "prompt_serialization_search.rs"]
+mod serialization_search;
+use serialization_search::find_subslice;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptContextCompileRequestV1 {
@@ -159,6 +168,7 @@ pub struct PreparedPromptDeliveryV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PromptPipelineErrorV1 {
     ModelTupleMismatch,
+    PromptFragmentTokenLimit,
     ExerciseRejected(PromptExerciseActionV1),
     Optimizer(String),
     ContextCompiler(String),
@@ -280,6 +290,7 @@ pub fn compile_exercised_prompt_context_v1(
     request: PromptContextCompileRequestV1,
 ) -> Result<PreparedPromptContextV1, PromptPipelineErrorV1> {
     ensure_model_tuple_matches(portfolio, &request.model_profile)?;
+    ensure_prompt_fragment_bounds(portfolio)?;
     if !request.base_candidates.is_empty() {
         return Err(PromptPipelineErrorV1::PortfolioContextBindingMismatch);
     }
@@ -418,6 +429,7 @@ pub fn prepare_prompt_delivery_v1(
     prepared: &PreparedPromptContextV1,
     request: PromptDeliveryPrepareRequestV1,
 ) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
+    ensure_prompt_fragment_bounds(portfolio)?;
     let receipt = prepared.compiled.receipt();
     if receipt.objective_digest() != portfolio.objective_digest
         || receipt.prompt_portfolio_digest() != portfolio.receipt.receipt_digest
@@ -431,6 +443,11 @@ pub fn prepare_prompt_delivery_v1(
         serialized_payload,
         attachment_id,
     } = request;
+    if serialized_payload.len() > MAX_SERIALIZED_PAYLOAD_BYTES_V2 {
+        return Err(PromptPipelineErrorV1::ContextCompiler(
+            ContextCompilerV2Error::SerializedPayloadTooLarge.to_string(),
+        ));
+    }
     let now_unix_ms = exercise_request.now_unix_ms;
     let current_registry = registry
         .registry()
@@ -643,15 +660,6 @@ fn prompt_serialization_proof_digest(proof: &PromptSerializationProofV1) -> Dige
     Digest32::of_bytes(&bytes)
 }
 
-fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-    if needle.is_empty() {
-        return None;
-    }
-    haystack
-        .windows(needle.len())
-        .position(|window| window == needle)
-}
-
 fn prompt_payload_bundle_digest(payloads: &[RealizationDeliveryV2]) -> Digest32 {
     let mut bytes = b"hepta.prompt-pipeline.payload-materialization.v1".to_vec();
     push_len(&mut bytes, payloads.len());
@@ -690,6 +698,22 @@ fn ensure_model_tuple_matches(
     Ok(())
 }
 
+fn ensure_prompt_fragment_bounds(
+    portfolio: &SelectedPromptPortfolioV1,
+) -> Result<(), PromptPipelineErrorV1> {
+    portfolio
+        .validate()
+        .map_err(|error| PromptPipelineErrorV1::Optimizer(format!("{error:?}")))?;
+    if portfolio
+        .selected
+        .iter()
+        .any(|selected| selected.realization.token_cost > MAX_PROMPT_FRAGMENT_TOKENS)
+    {
+        return Err(PromptPipelineErrorV1::PromptFragmentTokenLimit);
+    }
+    Ok(())
+}
+
 fn ensure_exercisable(decision: PromptExerciseActionV1) -> Result<(), PromptPipelineErrorV1> {
     match decision {
         PromptExerciseActionV1::Exercise | PromptExerciseActionV1::NoIntervention => Ok(()),
@@ -702,3 +726,7 @@ fn ensure_exercisable(decision: PromptExerciseActionV1) -> Result<(), PromptPipe
 #[cfg(test)]
 #[path = "prompt_pipeline_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "prompt_pipeline_fragment_bounds_tests.rs"]
+mod fragment_bounds_tests;

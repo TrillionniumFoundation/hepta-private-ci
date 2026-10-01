@@ -34,6 +34,12 @@ pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
 pub const MAX_CANONICAL_INTERACTION_EDGES: u32 = 512;
 pub const MAX_CANONICAL_TOKEN_BUDGET: u64 = 1_000_000;
 
+#[path = "canonical_integrity.rs"]
+mod integrity;
+
+#[path = "canonical_temporal.rs"]
+mod temporal;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptCandidateSetReceiptV1 {
     pub set_id: StableId,
@@ -63,6 +69,8 @@ pub struct EnumeratedPromptCandidatesV1 {
     pub omitted_count: u32,
     pub candidates: Vec<PromptCandidateBindingV1>,
     pub receipt: PromptCandidateSetReceiptV1,
+    // This metadata was produced from the named registry snapshot in process.
+    verified_enumeration_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -177,7 +185,7 @@ pub fn enumerate_factors_v1(
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     };
-    Ok(EnumeratedPromptCandidatesV1 {
+    let mut enumerated = EnumeratedPromptCandidatesV1 {
         registry_snapshot: snapshot,
         model_tuple: request.model_tuple,
         generation_vector_digest: request.generation_vector_digest,
@@ -186,7 +194,11 @@ pub fn enumerate_factors_v1(
         omitted_count: u32::try_from(omitted).unwrap_or(u32::MAX),
         candidates,
         receipt,
-    })
+        verified_enumeration_digest: Digest32::ZERO,
+    };
+    enumerated.verified_enumeration_digest = integrity::enumeration_digest(&enumerated);
+    integrity::validate_candidates(&enumerated)?;
+    Ok(enumerated)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -288,6 +300,11 @@ pub struct PricedPromptCandidatesV1 {
     pub rows: Vec<PricedPromptCandidateV1>,
     pub pricing_set_digest: Digest32,
     pub authority: AuthorityPosture,
+    // Minted only after signed completeness and pricing evidence verification.
+    verified_pricing_digest: Digest32,
+    verified_trust_digest: Digest32,
+    verified_at_unix_ms: u64,
+    verified_valid_until_unix_ms: u64,
 }
 
 pub fn candidate_completeness_signing_payload_v1(
@@ -340,9 +357,13 @@ pub fn price_factors_v1(
     if now_unix_ms == 0 {
         return Err(CanonicalPromptError::InvalidTime);
     }
+    integrity::validate_candidates(&candidates)?;
+    if candidates.receipt.objective_digest != verifier.objective_digest() {
+        return Err(CanonicalPromptError::CandidateCompletenessBinding);
+    }
     validate_candidate_binding(&candidates, completeness)?;
     let completeness_payload = candidate_completeness_signing_payload_v1(completeness)?;
-    verifier
+    let verified_completeness = verifier
         .verify(
             LearningEvidenceRoleV1::Generator,
             completeness_evidence,
@@ -350,6 +371,7 @@ pub fn price_factors_v1(
             now_unix_ms,
         )
         .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+    let mut verified_valid_until_unix_ms = verified_completeness.valid_until_unix_ms();
 
     let pricing_policy_digest = policy.digest()?;
     let by_factor = candidates
@@ -379,7 +401,7 @@ pub fn price_factors_v1(
         })?;
         validate_pricing_evidence(&candidates, &evidence, policy)?;
         let payload = pricing_evidence_signing_payload_v1(&evidence);
-        verifier
+        let verified_pricing = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
                 &evidence.evidence,
@@ -387,6 +409,8 @@ pub fn price_factors_v1(
                 now_unix_ms,
             )
             .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
+        verified_valid_until_unix_ms =
+            verified_valid_until_unix_ms.min(verified_pricing.valid_until_unix_ms());
 
         let token_cost = candidate.realization.token_cost;
         let mut net = evidence.expected_incremental_utility_q32;
@@ -457,14 +481,21 @@ pub fn price_factors_v1(
     let pricing_set_digest = digest_pricing_set(&rows, pricing_policy_digest);
     let completeness_digest = validate_candidate_set_completeness(completeness)
         .map_err(|e| CanonicalPromptError::CandidateCompleteness(format!("{e:?}")))?;
-    Ok(PricedPromptCandidatesV1 {
+    let mut priced = PricedPromptCandidatesV1 {
         candidates,
         completeness_digest,
         pricing_policy_digest,
         rows,
         pricing_set_digest,
         authority: AuthorityPosture::DENY_ALL,
-    })
+        verified_pricing_digest: Digest32::ZERO,
+        verified_trust_digest: verifier.trust_digest(),
+        verified_at_unix_ms: now_unix_ms,
+        verified_valid_until_unix_ms,
+    };
+    priced.verified_pricing_digest = integrity::priced_digest(&priced);
+    priced.validate()?;
+    Ok(priced)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -539,6 +570,9 @@ pub struct SelectedPromptPortfolioV1 {
     pub graph_generation_digest: Digest32,
     pub selection_method: PromptSelectionMethodV1,
     pub optimality: PromptOptimalityDisclosureV1,
+    // Content hashes alone cannot prove that the canonical selector ran.
+    verified_portfolio_digest: Digest32,
+    selected_at_unix_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -558,6 +592,12 @@ pub fn select_portfolio_v1(
     request: PromptPortfolioRequestV1,
     now_unix_ms: u64,
 ) -> Result<SelectedPromptPortfolioV1, CanonicalPromptError> {
+    priced.validate()?;
+    if priced.candidates.receipt.objective_digest != verifier.objective_digest()
+        || priced.verified_trust_digest != verifier.trust_digest()
+    {
+        return Err(CanonicalPromptError::PricingIntegrity);
+    }
     if request.maximum_selected_factors == 0
         || request.maximum_selected_factors > MAX_CANONICAL_SELECTED_FACTORS
     {
@@ -568,6 +608,12 @@ pub fn select_portfolio_v1(
     }
     if now_unix_ms == 0 || request.requested_valid_until_unix_ms <= now_unix_ms {
         return Err(CanonicalPromptError::InvalidTime);
+    }
+    if now_unix_ms < priced.verified_at_unix_ms {
+        return Err(CanonicalPromptError::InvalidTime);
+    }
+    if now_unix_ms >= priced.verified_valid_until_unix_ms {
+        return Err(CanonicalPromptError::PortfolioExpired);
     }
     graph
         .validate()
@@ -660,6 +706,14 @@ pub fn select_portfolio_v1(
 
     let mut pair_rows = BTreeMap::<(StableId, StableId), FixedQ32>::new();
     let mut pair_evidence_digests = Vec::new();
+    let mut evidence_valid_until_unix_ms =
+        priced
+            .verified_valid_until_unix_ms
+            .min(temporal::graph_valid_until_unix_ms(
+                graph,
+                &known,
+                now_unix_ms,
+            ));
     for evidence in pair_evidence {
         let key = pair_key(&evidence.left_factor_id, &evidence.right_factor_id);
         let Some((validity_digest, _)) = numeric_edges.get(&key) else {
@@ -685,6 +739,8 @@ pub fn select_portfolio_v1(
             )
             .map_err(|e| CanonicalPromptError::LearningEvidence(format!("{e:?}")))?;
         pair_evidence_digests.push(verified.payload_digest());
+        evidence_valid_until_unix_ms =
+            evidence_valid_until_unix_ms.min(verified.valid_until_unix_ms());
         if pair_rows
             .insert(key, evidence.marginal_utility_q32)
             .is_some()
@@ -775,7 +831,9 @@ pub fn select_portfolio_v1(
         .iter()
         .map(|row| row.factor_id.clone())
         .collect::<Vec<_>>();
-    let mut valid_until = request.requested_valid_until_unix_ms;
+    let mut valid_until = request
+        .requested_valid_until_unix_ms
+        .min(evidence_valid_until_unix_ms);
     for binding in &selected_bindings {
         if let Some(expires) = binding.realization.expires_unix_ms {
             valid_until = valid_until.min(expires);
@@ -802,7 +860,7 @@ pub fn select_portfolio_v1(
         priced.pricing_set_digest,
         graph.generation_digest,
     );
-    Ok(SelectedPromptPortfolioV1 {
+    let mut portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
             candidate_set_digest: priced.candidates.candidates_digest,
@@ -824,7 +882,12 @@ pub fn select_portfolio_v1(
         graph_generation_digest: graph.generation_digest,
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    })
+        verified_portfolio_digest: Digest32::ZERO,
+        selected_at_unix_ms: now_unix_ms,
+    };
+    portfolio.verified_portfolio_digest = integrity::portfolio_digest(&portfolio);
+    portfolio.validate()?;
+    Ok(portfolio)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -878,6 +941,7 @@ pub fn exercise_v1(
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptExerciseRequestV1,
 ) -> Result<PromptExerciseDecisionV1, CanonicalPromptError> {
+    portfolio.validate()?;
     for (name, digest) in [
         ("current_state", request.current_state_digest),
         ("generation_vector", request.generation_vector_digest),
@@ -889,15 +953,16 @@ pub fn exercise_v1(
         return Err(CanonicalPromptError::InvalidTime);
     }
 
-    let mut decision = if portfolio.selected.is_empty() {
-        PromptExerciseActionV1::NoIntervention
-    } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
+    let decision = if request.now_unix_ms < portfolio.selected_at_unix_ms
+        || request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
         || request.current_state_digest != portfolio.state_digest
         || request.generation_vector_digest != portfolio.generation_vector_digest
         || request.model_tuple != portfolio.model_tuple
         || request.model_tuple.digest() != portfolio.model_tuple_digest
     {
         PromptExerciseActionV1::RejectStale
+    } else if portfolio.selected.is_empty() {
+        PromptExerciseActionV1::NoIntervention
     } else {
         let current_snapshot = registry
             .snapshot_v2(request.generation_vector_digest, &request.model_tuple)
@@ -941,9 +1006,6 @@ pub fn exercise_v1(
             }
         }
     };
-    if portfolio.selected.is_empty() {
-        decision = PromptExerciseActionV1::NoIntervention;
-    }
     let receipt_digest = digest_exercise_receipt(
         &portfolio.receipt.portfolio_id,
         request.decision_boundary,
@@ -1357,6 +1419,9 @@ pub enum CanonicalPromptError {
     CandidateCompletenessBinding,
     LearningEvidence(String),
     InvalidPricingPolicy,
+    CandidateIntegrity,
+    PricingIntegrity,
+    PortfolioIntegrity,
     MissingPricingEvidence(String),
     DuplicatePricingEvidence,
     InvalidPricingEvidence(String),
@@ -1386,3 +1451,15 @@ impl StdError for CanonicalPromptError {}
 #[cfg(test)]
 #[path = "canonical_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "canonical_integrity_tests.rs"]
+mod integrity_tests;
+
+#[cfg(test)]
+#[path = "canonical_signed_pricing_tests.rs"]
+mod signed_pricing_tests;
+
+#[cfg(test)]
+#[path = "canonical_temporal_tests.rs"]
+mod temporal_tests;

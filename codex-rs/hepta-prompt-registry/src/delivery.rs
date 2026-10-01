@@ -82,6 +82,13 @@ impl PromptRegistry {
             PromptRegistryV2Error::EmptyDigest(name) => Error::EmptyDigest(name),
             _ => Error::InvalidTransition,
         })?;
+        // Preserve the migration-only unresolved tuple without admitting new
+        // native records that the authoritative protocol cannot export.
+        if binding.model_id.as_str() == crate::protocol::LEGACY_UNRESOLVED_MODEL_ID
+            && binding.model_version == crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION
+        {
+            return Err(Error::InvalidTransition);
+        }
         if payload.is_empty() || payload.len() > MAX_REALIZATION_PAYLOAD_BYTES {
             return Err(Error::PayloadTooLarge);
         }

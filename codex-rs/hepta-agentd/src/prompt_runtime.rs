@@ -190,9 +190,12 @@ impl AgentdPromptRuntimeOwner {
             return Err(AgentdPromptRuntimeError::EmptySelection);
         }
 
-        let mut effective_deadline_ms = requested_deadline_ms;
+        let mut effective_deadline_ms = requested_deadline_ms.min(compiled.valid_until_unix_ms);
         let mut fragments = Vec::with_capacity(compiled.selected_deliveries.len());
         for delivery in &compiled.selected_deliveries {
+            if delivery.binding.model_id.as_str() != model {
+                return Err(AgentdPromptRuntimeError::InvalidModel);
+            }
             if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
                 return Err(AgentdPromptRuntimeError::UnsupportedPromptRole);
             }
@@ -623,6 +626,7 @@ fn dispatch_matches_attachment(
         && dispatch.context_attachment_digest == attachment.context_attachment_digest
         && dispatch.context_payload_digest == attachment.context_payload_digest
         && dispatch.source_binding_digest == attachment.source_binding_digest
+        && dispatch.dispatched_unix_ms < attachment.deadline_ms
 }
 
 fn terminal_matches_dispatch(
@@ -638,6 +642,7 @@ fn terminal_matches_dispatch(
         && terminal.attempt_id == dispatch.attempt_id
         && terminal.request_binding_id == dispatch.request_binding_id
         && terminal.provider_request_digest == dispatch.provider_request_digest
+        && terminal.observed_unix_ms >= dispatch.dispatched_unix_ms
 }
 
 fn has_unresolved_dispatch(state: &PromptRuntimeState, key: &PromptRuntimeKey) -> bool {
@@ -1243,3 +1248,7 @@ fn host_error(error: AgentdPromptRuntimeError) -> PromptRuntimeHostError {
 #[cfg(test)]
 #[path = "prompt_runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "prompt_runtime_integrity_tests.rs"]
+mod integrity_tests;

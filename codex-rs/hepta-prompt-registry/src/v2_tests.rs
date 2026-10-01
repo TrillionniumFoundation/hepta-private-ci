@@ -75,6 +75,26 @@ fn admitted_registry() -> PromptRegistry {
     registry
 }
 
+fn compatible_set() -> CompatibleRealizationSetV2 {
+    let mut registry = admitted_registry();
+    registry
+        .register_realization_v2(binding())
+        .must("register realization");
+    let tuple = model_tuple();
+    let vector = digest("generation-vector");
+    let snapshot = registry.snapshot_v2(vector, &tuple).must("snapshot");
+    registry
+        .read_compatible_v2(
+            &snapshot,
+            vector,
+            &tuple,
+            /*now_unix_ms*/ 10,
+            vec![id("factor:1")],
+            /*maximum_results*/ 8,
+        )
+        .must("compatible set")
+}
+
 #[test]
 fn every_state_change_allocates_one_revision_and_identical_retry_does_not() {
     let mut registry = registry();
@@ -390,4 +410,114 @@ fn payload_ceiling_rejects_atomically() {
         Err(Error::PayloadTooLarge)
     );
     assert_eq!(registry, before);
+}
+
+#[test]
+fn compatible_set_rejects_invalid_bindings_even_with_recomputed_digest() {
+    let original = compatible_set();
+    let mut cases = Vec::new();
+    let mut zero_tokens = original.clone();
+    zero_tokens.bindings[0].token_cost = 0;
+    cases.push((zero_tokens, PromptRegistryV2Error::ZeroTokenCost));
+    let mut zero_payload = original.clone();
+    zero_payload.bindings[0].payload_digest = Digest32::ZERO;
+    cases.push((zero_payload, PromptRegistryV2Error::EmptyDigest("payload")));
+    let mut oversized_version = original.clone();
+    oversized_version.bindings[0].model_version = "x".repeat(257);
+    cases.push((
+        oversized_version,
+        PromptRegistryV2Error::InvalidModelVersion,
+    ));
+    let mut invalid_expiry = original;
+    invalid_expiry.bindings[0].expires_unix_ms = Some(0);
+    cases.push((invalid_expiry, PromptRegistryV2Error::InvalidExpiry));
+
+    for (mut set, expected_error) in cases {
+        set.set_digest = set.compute_set_digest();
+        assert_eq!(set.validate(), Err(expected_error));
+    }
+}
+
+#[test]
+fn compatible_set_binds_every_model_tuple_field() {
+    let original = compatible_set();
+    let mut alternatives = vec![binding(); 8];
+    alternatives[0].model_id = id("model:other");
+    alternatives[1].model_version = "other-version".to_owned();
+    alternatives[2].model_digest = digest("other-model");
+    alternatives[3].tokenizer_digest = digest("other-tokenizer");
+    alternatives[4].template_digest = digest("other-template");
+    alternatives[5].tool_schema_digest = digest("other-tools");
+    alternatives[6].context_profile_digest = digest("other-context");
+    alternatives[7].locale_id = id("locale:zh-CN");
+    for alternative in alternatives {
+        let mut set = original.clone();
+        set.bindings = vec![alternative];
+        set.set_digest = set.compute_set_digest();
+        assert_eq!(
+            set.validate(),
+            Err(PromptRegistryV2Error::DigestMismatch("model_tuple"))
+        );
+    }
+}
+
+#[test]
+fn compatible_set_cannot_omit_a_required_factor() {
+    let mut set = compatible_set();
+    set.bindings.clear();
+    set.set_digest = set.compute_set_digest();
+    assert_eq!(
+        set.validate(),
+        Err(PromptRegistryV2Error::RequiredFactorUnavailable)
+    );
+}
+
+#[test]
+fn compatible_set_rejects_duplicate_identity_and_active_profile() {
+    let original = compatible_set();
+    let mut duplicate_identity = original.clone();
+    let mut second_factor = binding();
+    second_factor.factor_id = id("factor:2");
+    duplicate_identity.bindings.push(second_factor);
+    duplicate_identity.set_digest = duplicate_identity.compute_set_digest();
+    assert_eq!(
+        duplicate_identity.validate(),
+        Err(PromptRegistryV2Error::NonCanonicalBindings)
+    );
+
+    let mut duplicate_profile = original;
+    let mut second_identity = binding();
+    second_identity.realization_id = id("realization:2");
+    duplicate_profile.bindings.push(second_identity);
+    duplicate_profile.set_digest = duplicate_profile.compute_set_digest();
+    assert_eq!(
+        duplicate_profile.validate(),
+        Err(PromptRegistryV2Error::NonCanonicalBindings)
+    );
+}
+
+#[test]
+fn required_factor_filters_are_bounded_before_selection() {
+    let mut set = compatible_set();
+    let required = (0..=MAX_COMPATIBLE_REALIZATIONS_V2)
+        .map(|index| id(&format!("factor:{index:03}")))
+        .collect::<Vec<_>>();
+    set.required_factor_ids = required.clone();
+    set.set_digest = set.compute_set_digest();
+    assert_eq!(
+        set.validate(),
+        Err(PromptRegistryV2Error::ReadLimitExceeded)
+    );
+
+    let registry = admitted_registry();
+    let tuple = model_tuple();
+    let vector = digest("generation-vector");
+    let snapshot = registry.snapshot_v2(vector, &tuple).must("snapshot");
+    assert_eq!(
+        registry.read_compatible_v2(
+            &snapshot, vector, &tuple, /*now_unix_ms*/ 10, required,
+            /*maximum_results*/ 128,
+        ),
+        Err(PromptRegistryV2Error::ReadLimitExceeded)
+    );
 }

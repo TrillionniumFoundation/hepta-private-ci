@@ -1,6 +1,5 @@
 use super::*;
 use codex_hepta_prompt_optimizer::canonical::*;
-use codex_hepta_types::AuthorityPosture;
 
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -26,6 +25,9 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[path = "prompt_selection_fixture_tests.rs"]
+mod selection_fixture;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -34,7 +36,7 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn attachment() -> PromptRuntimeAttachmentV1 {
+pub(super) fn attachment() -> PromptRuntimeAttachmentV1 {
     PromptRuntimeAttachmentV1::new(
         id("compilation:agentd-prompt"),
         digest("attachment"),
@@ -49,7 +51,7 @@ fn attachment() -> PromptRuntimeAttachmentV1 {
     .unwrap_or_else(|error| panic!("attachment: {error}"))
 }
 
-fn stage_raw(
+pub(super) fn stage_raw(
     owner: &AgentdPromptRuntimeOwner,
     thread_id: &str,
     turn_id: &str,
@@ -69,7 +71,7 @@ fn stage_raw(
         .unwrap_or_else(|error| panic!("stage raw: {error}"));
 }
 
-fn dispatch(
+pub(super) fn dispatch(
     value: &PromptRuntimeAttachmentV1,
     thread_id: &str,
     turn_id: &str,
@@ -91,7 +93,7 @@ fn dispatch(
     }
 }
 
-fn delivered_terminal(
+pub(super) fn delivered_terminal(
     value: &PromptRuntimeAttachmentV1,
     attempt_id: &str,
     request_binding_id: &str,
@@ -566,7 +568,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     };
 
     let tuple = PromptModelTupleV2 {
-        model_id: id("model:agentd-product"),
+        model_id: id("gpt-test"),
         model_version: "2026-09-20".to_owned(),
         model_digest: digest("model:agentd-product"),
         tokenizer_digest: digest("tokenizer:agentd-product"),
@@ -659,7 +661,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             .unwrap_or_else(|error| panic!("register realization: {error}"));
     }
 
-    let logical_now = 100_u64;
+    let logical_now = wall_now;
     let candidates = pipeline
         .enumerate_candidates(PromptEnumerationRequestV1 {
             set_id: id("enumeration:agentd-product"),
@@ -674,29 +676,8 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         })
         .unwrap_or_else(|error| panic!("enumerate: {error}"));
     assert_eq!(candidates.candidates[0].realization, realization);
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:agentd-product"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![factor.factor_id],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: logical_now + 10_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
-        objective_digest: digest("objective:agentd-product"),
-        state_digest: digest("state:agentd-product"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
-        generation_vector_digest: digest("generation:agentd-product"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
+    let portfolio =
+        selection_fixture::select_candidates(candidates, logical_now, logical_now + 10_000);
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: portfolio.state_digest,
@@ -706,6 +687,63 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         wait_value_q32: FixedQ32::ZERO,
         policy_digest: digest("exercise-policy"),
     };
+
+    let compiled = {
+        let registry = pipeline
+            .registry
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        compile_prompt_registry_v2(
+            &registry,
+            &portfolio,
+            &exercise_request,
+            PromptRegistryCompilationRequestV2 {
+                compilation_id: id("compilation:wrong-model"),
+                serialization_id: id("serialization:wrong-model"),
+                attachment_id: id("attachment:wrong-model"),
+                registry_model_tuple: tuple.clone(),
+                context_model_profile: ContextModelProfileV2 {
+                    model_digest: tuple.model_digest,
+                    provider_id_digest: digest("provider:agentd-product"),
+                    provider_model_digest: tuple.model_digest,
+                    tokenizer_digest: tuple.tokenizer_digest,
+                    serializer_digest: digest("serializer:agentd-product"),
+                    template_digest: tuple.template_digest,
+                    tool_schema_digest: tuple.tool_schema_digest,
+                    maximum_context_tokens: 128,
+                },
+                now_unix_ms: logical_now,
+                token_budget: 128,
+                truncation_policy_digest: digest("truncation:agentd-product"),
+            },
+        )
+        .unwrap_or_else(|error| panic!("compile model-bound context: {error}"))
+    };
+    assert_eq!(
+        pipeline.runtime_owner().stage_compiled_prompt_context(
+            "thread:product",
+            "turn:wrong-model",
+            "other-model",
+            wall_now + 60_000,
+            &compiled,
+        ),
+        Err(AgentdPromptRuntimeError::InvalidModel)
+    );
+    assert_eq!(pipeline.runtime_owner().staged_count(), Ok(0));
+    let mut extended_expiry = compiled.clone();
+    extended_expiry.valid_until_unix_ms = wall_now + 120_000;
+    extended_expiry.delivery_set_digest = extended_expiry.compute_delivery_set_digest();
+    assert_eq!(
+        pipeline.runtime_owner().stage_compiled_prompt_context(
+            "thread:product",
+            "turn:extended-expiry",
+            "gpt-test",
+            wall_now + 120_000,
+            &extended_expiry,
+        ),
+        Err(AgentdPromptRuntimeError::SourceValidationFailed)
+    );
+    assert_eq!(pipeline.runtime_owner().staged_count(), Ok(0));
 
     let disposition = pipeline
         .compile_and_stage(
@@ -749,6 +787,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|| panic!("staged attachment missing"));
     assert_eq!(staged.developer_fragments.len(), 1);
     assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    assert_eq!(staged.deadline_ms, logical_now + 10_000);
 }
 
 #[test]

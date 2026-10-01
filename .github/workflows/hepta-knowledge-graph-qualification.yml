@@ -94,7 +94,13 @@ jobs:
           set -euo pipefail
           cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
             --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
-            --package codex-hepta-agentd -- --check
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
 
       - name: Prepare native test prerequisites
         shell: bash
@@ -113,16 +119,43 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test canonical KG kernel
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
-
       - name: Test prompt-factor owner, projection and real consumer
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+          just test --locked -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer -p codex-hepta-learning-ledger
+
+      - name: Test sealed prompt compilation and Agentd staging
+        working-directory: codex-rs
+        env:
+          CARGO_BUILD_JOBS: "1"
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'
+          just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_)'
+
+      - name: Strict prompt owner and evidence lint
+        working-directory: codex-rs
+        env:
+          CARGO_BUILD_JOBS: "1"
+        run: |
+          set -euo pipefail
+          just clippy --locked --no-deps --all-targets \
+            -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-learning-ledger -- -D warnings
+
+      - name: Strict prompt consumer lint
+        working-directory: codex-rs
+        env:
+          CARGO_BUILD_JOBS: "1"
+        run: |
+          set -euo pipefail
+          just clippy --locked --no-deps --all-targets \
+            -p codex-hepta-intelligence -p codex-hepta-agentd -- -D warnings
+
+      - name: Test canonical KG kernel
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-kg -- --nocapture
 
       - name: Test durable cognitive KG owner and recovery
         working-directory: codex-rs
@@ -167,6 +200,7 @@ jobs:
           cargo clippy --locked \
             -p codex-hepta-kg -p codex-hepta-prompt-registry \
             -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
             -- -D warnings
 

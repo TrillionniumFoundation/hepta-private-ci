@@ -1,8 +1,9 @@
 //! Governed prompt-factor and realization registry.
 //!
-//! The registry stores bounded identities and content digests, never executable
-//! instructions or ambient authority. External untrusted material cannot admit
-//! itself, and revocation is terminal and cascades to realizations.
+//! The registry stores bounded identities, content digests and realization bytes
+//! as data. Storage and delivery grant no selection or effect authority. External
+//! untrusted material cannot admit itself, and revocation is terminal and
+//! cascades to realizations.
 
 #![forbid(unsafe_code)]
 
@@ -37,6 +38,7 @@ pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
 pub use delivery::RealizationDeliveryV2;
 pub use durable::DurablePromptRegistry;
 pub use durable::DurableRegistryError;
+pub use durable::PromptRegistryRecoveryAnchor;
 pub use protocol::PromptFactorV1;
 pub use protocol::PromptRealizationV1;
 pub use protocol::ProtocolCodecError;
@@ -389,6 +391,11 @@ impl PromptRegistry {
         &mut self,
         factor: PromptFactor,
     ) -> Result<RegistryReceipt, Error> {
+        // This value denotes missing legacy metadata during recovery; native
+        // records must remain exportable through the authoritative protocol.
+        if factor.semantic_purpose == protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE {
+            return Err(Error::InvalidFactorMetadata);
+        }
         protocol::validate_factor_semantics(&factor).map_err(|_| Error::InvalidFactorMetadata)?;
         if factor.content_digest.is_zero() {
             return Err(Error::EmptyDigest("factor content"));
@@ -482,14 +489,21 @@ impl PromptRegistry {
         if factor.content_digest != admission.factor_content_digest() {
             return Err(Error::FactorConflict(admission.factor_id().to_string()));
         }
-        if factor.lifecycle == Lifecycle::Admitted
-            && self.lifecycle_events.iter().any(|event| {
-                event.kind == LifecycleEventKind::Admitted
-                    && event.factor_id == *admission.factor_id()
-                    && event.admission_grant_id.as_ref() == Some(admission.grant_id())
-            })
+        if let Some(event) = self
+            .lifecycle_events
+            .iter()
+            .find(|event| event.admission_grant_id.as_ref() == Some(admission.grant_id()))
         {
-            return Ok(self.receipt(MutationDisposition::Unchanged));
+            if factor.lifecycle == Lifecycle::Admitted
+                && event.kind == LifecycleEventKind::Admitted
+                && event.factor_id == *admission.factor_id()
+                && event.actor_id == *admission.reviewer_id()
+                && event.evidence_digest == admission.evidence_digest()
+                && event.scope_digest == Some(admission.reviewed_scope_digest())
+            {
+                return Ok(self.receipt(MutationDisposition::Unchanged));
+            }
+            return Err(Error::InvalidTransition);
         }
         if factor.source != FactorSource::GovernedInternal
             || factor.lifecycle != Lifecycle::Draft
@@ -1061,3 +1075,7 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "protocol_reserved_values_tests.rs"]
+mod protocol_reserved_values_tests;
