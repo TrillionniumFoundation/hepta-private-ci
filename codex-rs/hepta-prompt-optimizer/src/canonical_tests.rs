@@ -55,115 +55,81 @@ fn model_tuple() -> PromptModelTupleV2 {
     }
 }
 
-fn binding(factor: &str, realization: &str, tokens: u32) -> PromptRealizationBindingV2 {
-    let tuple = model_tuple();
-    PromptRealizationBindingV2 {
-        realization_id: id(realization),
-        factor_id: id(factor),
-        model_id: tuple.model_id,
-        model_version: tuple.model_version,
-        model_digest: tuple.model_digest,
-        tokenizer_digest: tuple.tokenizer_digest,
-        template_digest: tuple.template_digest,
-        tool_schema_digest: tuple.tool_schema_digest,
-        context_profile_digest: tuple.context_profile_digest,
-        locale_id: tuple.locale_id,
-        role: PromptRoleV2::DeveloperInstruction,
-        payload_digest: digest(&format!("payload:{realization}")),
-        token_cost: tokens,
-        expires_unix_ms: Some(10_000),
-    }
-}
-
-fn candidate(factor: &str, realization: &str, tokens: u32) -> PromptCandidateBindingV1 {
-    let realization = binding(factor, realization, tokens);
-    PromptCandidateBindingV1 {
-        factor_id: realization.factor_id.clone(),
-        binding_digest: realization.digest(),
-        realization,
-    }
-}
-
-fn dummy_snapshot(
-    tuple: &PromptModelTupleV2,
-    generation_vector: Digest32,
-) -> PromptRegistrySnapshotV2 {
-    PromptRegistrySnapshotV2 {
-        revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
-        registry_digest: digest("registry"),
-        lifecycle_frontier: 1,
-        revocation_frontier: 0,
-        generation_vector_digest: generation_vector,
-        model_tuple_digest: tuple.digest(),
-        snapshot_digest: digest("snapshot"),
-        authority: AuthorityPosture::DENY_ALL,
-    }
-}
-
 fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
-    let tuple = model_tuple();
-    let generation_vector = digest("generation-vector");
-    let state = digest("state");
-    let candidates = rows
-        .iter()
-        .map(|(factor, realization, tokens, _)| candidate(factor, realization, *tokens))
-        .collect::<Vec<_>>();
-    let factor_ids = candidates
-        .iter()
-        .map(|candidate| candidate.factor_id.clone())
-        .collect::<Vec<_>>();
-    let enumerated = EnumeratedPromptCandidatesV1 {
-        registry_snapshot: dummy_snapshot(&tuple, generation_vector),
-        model_tuple: tuple,
-        generation_vector_digest: generation_vector,
-        candidates_digest: digest("candidate-set"),
-        canonical_order_digest: digest("candidate-order"),
-        omitted_count: 0,
-        receipt: PromptCandidateSetReceiptV1 {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, signing_key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    if rows.iter().any(|(factor, _, _, _)| *factor == "factor:b") {
+        register_second_factor(&mut registry, &authority, &signing_key, now);
+    }
+    let enumerated = enumerate_factors_v1(
+        registry.registry().expect("registry"),
+        PromptEnumerationRequestV1 {
             set_id: id("set:1"),
             objective_digest: digest("objective"),
-            state_digest: state,
-            registry_digest: digest("registry"),
-            candidate_factor_ids: factor_ids,
+            state_digest: digest("state"),
+            generation_vector_digest: digest("generation-vector"),
+            model_tuple: model_tuple(),
+            now_unix_ms: 100,
+            required_factor_ids: rows.iter().map(|(factor, _, _, _)| id(factor)).collect(),
+            maximum_candidates: u32::try_from(rows.len()).expect("small arithmetic fixture"),
             selection_grammar_digest: digest("grammar"),
-            receipt_digest: digest("candidate-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
         },
-        candidates: candidates.clone(),
-    };
-    let priced_rows = rows
-        .into_iter()
-        .zip(candidates)
-        .map(
-            |((factor, _, tokens, utility), binding)| PricedPromptCandidateV1 {
-                binding,
-                pricing: PromptPricingReceiptV1 {
-                    factor_id: id(factor),
-                    state_digest: state,
-                    expected_utility_q32: FixedQ32::from_raw(utility),
-                    downside_q32: FixedQ32::ZERO,
-                    token_cost: tokens,
-                    latency_cost_micros: 0,
-                    interference_ppm: 0,
-                    confidence_interval: PromptConfidenceIntervalV1 {
-                        lower_q32: FixedQ32::from_raw(utility),
-                        upper_q32: FixedQ32::from_raw(utility),
-                        support_count: 10,
-                        support_audit_digest: digest("support-audit"),
-                    },
-                    receipt_digest: digest(&format!("pricing:{factor}")),
-                    authority: AuthorityPosture::DENY_ALL,
+    )
+    .expect("arithmetic fixture retains the real sealed owner source");
+    let pricing_policy_digest = digest("pricing-policy");
+    let priced_rows = enumerated
+        .candidates
+        .iter()
+        .map(|binding| {
+            let (_, _, tokens, utility) = rows
+                .iter()
+                .find(|(factor, _, _, _)| id(factor) == binding.factor_id)
+                .expect("fixture price");
+            assert_eq!(*tokens, binding.realization.token_cost);
+            let mut pricing = PromptPricingReceiptV1 {
+                factor_id: binding.factor_id.clone(),
+                state_digest: enumerated.receipt.state_digest,
+                expected_utility_q32: FixedQ32::from_raw(*utility),
+                downside_q32: FixedQ32::ZERO,
+                token_cost: *tokens,
+                latency_cost_micros: 0,
+                interference_ppm: 0,
+                confidence_interval: PromptConfidenceIntervalV1 {
+                    lower_q32: FixedQ32::from_raw(*utility),
+                    upper_q32: FixedQ32::from_raw(*utility),
+                    support_count: 10,
+                    support_audit_digest: digest("support-audit"),
                 },
-                net_utility_q32: FixedQ32::from_raw(utility),
-            },
-        )
-        .collect();
+                receipt_digest: Digest32::ZERO,
+                authority: AuthorityPosture::DENY_ALL,
+            };
+            pricing.receipt_digest = digest_pricing_receipt(
+                &pricing.factor_id,
+                pricing.state_digest,
+                pricing.expected_utility_q32,
+                pricing.downside_q32,
+                pricing.token_cost,
+                pricing.latency_cost_micros,
+                pricing.interference_ppm,
+                &pricing.confidence_interval,
+                pricing_policy_digest,
+                binding.binding_digest,
+            );
+            PricedPromptCandidateV1 {
+                binding: binding.clone(),
+                net_utility_q32: pricing.expected_utility_q32,
+                pricing,
+            }
+        })
+        .collect::<Vec<_>>();
+    let pricing_set_digest = digest_pricing_set(&priced_rows, pricing_policy_digest);
     PricedPromptCandidatesV1 {
         candidates: enumerated,
         completeness_digest: digest("completeness"),
-        pricing_policy_digest: digest("pricing-policy"),
+        pricing_policy_digest,
         rows: priced_rows,
-        pricing_set_digest: digest("pricing-set"),
+        pricing_set_digest,
         authority: AuthorityPosture::DENY_ALL,
     }
 }
@@ -1047,3 +1013,6 @@ mod temporal;
 
 #[path = "canonical_source_tests.rs"]
 mod source;
+
+#[path = "canonical_candidate_source_tests.rs"]
+mod candidate_source;
