@@ -1080,3 +1080,6 @@ fn failed_restart_dispatch_retries_cancellation_without_redispatch() -> Result<(
 
 #[path = "release_admission_tests.rs"]
 mod admission;
+
+#[path = "release_signed_recovery_tests.rs"]
+mod signed_recovery;
