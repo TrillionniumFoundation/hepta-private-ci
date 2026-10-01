@@ -634,6 +634,17 @@ impl AgentdState {
         // canonical body separately identifies this process launch; Running
         // advances the lifecycle beyond that spawn generation.
         self.require_current_run_start(record)?;
+        if self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .run(record.snapshot.run_id.as_str())
+            .is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "agentd.intuition.service.run_admission_replay_requires_reconciliation".to_string(),
+            ));
+        }
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
         let crate::AgentdIntelligenceInvocationV1 {

@@ -134,8 +134,9 @@ impl ObjectiveRuntimeHost {
                 {
                     // A RunStart publication predates the seven-owner handoff.
                     // Until that exact handoff is durably recovered, startup
-                    // must wait for the authenticated ObjectiveStart retry
-                    // rather than silently entering the compatibility path.
+                    // leaves this publication quarantined. An authenticated
+                    // retry requires reconciliation, never a compatibility
+                    // projection or a newly generated policy Decision.
                     continue;
                 }
                 agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
@@ -287,6 +288,20 @@ impl ObjectiveRuntimeHost {
                 .or_insert(record.authentication.sequence);
             (published, record)
         };
+
+        if published.publication.disposition == RunStartAppendDisposition::IdempotentReplay
+            && (agentd.canonical_intelligence_enabled()
+                || agentd.intuition_policy.get().is_some()
+                || agentd.intelligence_product.get().is_some()
+                || agentd.intelligence_invocation.get().is_some())
+        {
+            // Publication deduplication serializes concurrent requests, but the
+            // seven-owner handoff is not yet durable. Rebuilding that handoff
+            // could mint another Decision or revive an already dispatched run.
+            return Err(AgentdError::Invalid(
+                "agentd.intuition.service.durable_handoff_reconciliation_required".to_string(),
+            ));
+        }
 
         authbus_ingress::require_ready(agentd)?;
         let current = authbus.trust(agentd)?;
