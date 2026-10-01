@@ -56,9 +56,10 @@ pub struct SparseCheckpoint {
     config: Digest32,
     scope: Digest32,
     objective: Digest32,
-    // Private replay context. The persisted tick and `input` digest already bind
-    // these bytes, so retaining them here does not change journal wire encoding.
+    // Private replay context. The persisted tick and `input` digest bind the
+    // body and deterministic projections, without changing journal wire bytes.
     body: Digest32,
+    projection_count: u32,
     sequence: u64,
     monotonic_micros: u64,
     predecessor: Digest32,
@@ -235,10 +236,42 @@ impl SparseCheckpoint {
         &self,
         config_digest: Digest32,
         predecessor_digest: Digest32,
+        projection_count: u32,
     ) -> bool {
         self.calculate_digest() == self.digest
             && self.config == config_digest
             && self.predecessor == predecessor_digest
+            && self.projection_count == projection_count
+    }
+
+    pub(crate) fn validate_successor_context(
+        &self,
+        config_digest: Digest32,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+        body_digest: Digest32,
+        sequence: u64,
+        monotonic_micros: u64,
+    ) -> Result<(), SparseError> {
+        if self.calculate_digest() != self.digest {
+            return Err(SparseError::InvalidCheckpoint);
+        }
+        if self.config != config_digest {
+            return Err(SparseError::ConfigDrift);
+        }
+        if self.scope != scope_digest
+            || self.objective != objective_digest
+            || self.body != body_digest
+        {
+            return Err(SparseError::ScopeDrift);
+        }
+        if self.sequence.checked_add(1) != Some(sequence) {
+            return Err(SparseError::Sequence);
+        }
+        if monotonic_micros <= self.monotonic_micros {
+            return Err(SparseError::Clock);
+        }
+        Ok(())
     }
 
     /// Diagonal local-head eligibility sufficient statistics, not model weights.
@@ -321,24 +354,14 @@ pub fn sparse_tick(
     }
     let before = previous.map_or(Digest32::ZERO, SparseCheckpoint::digest);
     if let Some(prior) = previous {
-        if prior.calculate_digest() != prior.digest {
-            return Err(SparseError::InvalidCheckpoint);
-        }
-        if prior.config != config_digest {
-            return Err(SparseError::ConfigDrift);
-        }
-        if prior.scope != input.scope_digest
-            || prior.objective != input.objective_digest
-            || prior.body != input.body_digest
-        {
-            return Err(SparseError::ScopeDrift);
-        }
-        if prior.sequence.checked_add(1) != Some(input.sequence) {
-            return Err(SparseError::Sequence);
-        }
-        if input.monotonic_micros <= prior.monotonic_micros {
-            return Err(SparseError::Clock);
-        }
+        prior.validate_successor_context(
+            config_digest,
+            input.scope_digest,
+            input.objective_digest,
+            input.body_digest,
+            input.sequence,
+            input.monotonic_micros,
+        )?;
     } else if input.sequence != 1 {
         return Err(SparseError::Sequence);
     } else if input.monotonic_micros == 0 {
@@ -349,6 +372,7 @@ pub fn sparse_tick(
         scope: input.scope_digest,
         objective: input.objective_digest,
         body: input.body_digest,
+        projection_count: 0,
         sequence: input.sequence,
         monotonic_micros: input.monotonic_micros,
         predecessor: before,
@@ -413,6 +437,7 @@ pub fn sparse_tick(
         }
         projections += 1;
     }
+    next.projection_count = projections;
     next.digest = next.calculate_digest();
     let active_count = next.activation.iter().filter(|&&v| v > 0).count();
     let receipt = SparseSignalReceipt {

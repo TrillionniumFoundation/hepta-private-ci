@@ -60,7 +60,7 @@ pub use protocol::NeuronCheckpointV1;
 pub use protocol::NeuronProtocolError;
 pub use protocol::NeuronRuntimeConfigProtocolV1;
 pub use protocol::NeuronTickReceiptProtocolV1;
-pub use protocol::canonical_checkpoint_v1;
+pub(crate) use protocol::canonical_checkpoint_v1;
 pub use protocol::canonical_runtime_config_v1;
 pub use protocol::canonical_tick_receipt_v1;
 pub use protocol::decode_neuron_checkpoint_v1;

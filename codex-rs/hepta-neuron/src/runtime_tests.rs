@@ -63,6 +63,9 @@ impl Drop for Fixture {
 struct MemoryWitness {
     current: Arc<Mutex<Option<JournalAnchor>>>,
     fail_next: Arc<AtomicBool>,
+    lose_next_response: Arc<AtomicBool>,
+    fail_current: Arc<AtomicBool>,
+    compare_and_swap_calls: Arc<AtomicU64>,
 }
 
 impl MemoryWitness {
@@ -73,6 +76,9 @@ impl MemoryWitness {
 
 impl AnchorWitnessStore for MemoryWitness {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+        if self.fail_current.load(Ordering::SeqCst) {
+            return Err(WitnessStoreError::Unavailable);
+        }
         self.current
             .lock()
             .map(|value| *value)
@@ -84,6 +90,7 @@ impl AnchorWitnessStore for MemoryWitness {
         expected: Option<JournalAnchor>,
         next: JournalAnchor,
     ) -> Result<(), WitnessStoreError> {
+        self.compare_and_swap_calls.fetch_add(1, Ordering::SeqCst);
         if self.fail_next.swap(false, Ordering::SeqCst) {
             return Err(WitnessStoreError::Unavailable);
         }
@@ -95,6 +102,9 @@ impl AnchorWitnessStore for MemoryWitness {
             return Err(WitnessStoreError::Conflict);
         }
         *current = Some(next);
+        if self.lose_next_response.swap(false, Ordering::SeqCst) {
+            return Err(WitnessStoreError::Indeterminate);
+        }
         Ok(())
     }
 }
@@ -709,3 +719,6 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         predecessor.checkpoint_digest
     );
 }
+
+#[path = "runtime_admission_tests.rs"]
+mod admission_tests;

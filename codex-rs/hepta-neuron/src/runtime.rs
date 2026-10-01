@@ -269,6 +269,23 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             if pending.input_digest != input_digest {
                 return Err(NeuronRuntimeError::PendingReconciliation);
             }
+            let current =
+                self.witness
+                    .current()
+                    .map_err(|error| NeuronRuntimeError::WitnessAfterCommit {
+                        anchor: pending.next,
+                        error,
+                    })?;
+            if current == Some(pending.next) {
+                self.pending = None;
+                return Ok(pending.output);
+            }
+            if current != pending.expected {
+                return Err(NeuronRuntimeError::WitnessAfterCommit {
+                    anchor: pending.next,
+                    error: WitnessStoreError::Conflict,
+                });
+            }
             match self
                 .witness
                 .compare_and_swap(pending.expected, pending.next)
@@ -299,6 +316,19 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .validate_advance(expected_anchor, input.logical_sequence)?;
         if self.journal.remaining_capacity()? == 0 {
             return Err(NeuronRuntimeError::Journal(JournalError::Capacity));
+        }
+
+        if let Some(checkpoint) = current {
+            checkpoint
+                .validate_successor_context(
+                    self.config.native_config_digest,
+                    self.scope.scope_digest,
+                    self.scope.objective_digest,
+                    body_digest(&self.config, &input),
+                    input.logical_sequence,
+                    input.monotonic_time_micros,
+                )
+                .map_err(JournalError::Mechanism)?;
         }
 
         let started = Instant::now();

@@ -449,13 +449,17 @@ pub fn decode_neuron_runtime_config_v1(
     Ok(value)
 }
 
-pub fn canonical_checkpoint_v1(
+pub(crate) fn canonical_checkpoint_v1(
     config: &NeuronRuntimeConfigV1,
     checkpoint: &SparseCheckpoint,
     tick: &NeuronTickReceiptV1,
     expires_unix_ms: u64,
 ) -> Result<NeuronCheckpointV1, NeuronProtocolError> {
-    if !checkpoint.matches_publication(config.native_config_digest, tick.checkpoint_before) {
+    if !checkpoint.matches_publication(
+        config.native_config_digest,
+        tick.checkpoint_before,
+        tick.resource_receipt.saturation_count,
+    ) {
         return Err(NeuronProtocolError::BindingMismatch("checkpoint lineage"));
     }
     if tick.checkpoint_after != checkpoint.digest()
