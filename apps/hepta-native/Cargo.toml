@@ -47,3 +47,8 @@ tempfile = "3.23"
 
 [build-dependencies]
 embed-manifest = "1.5.0"
+
+# Restart fixtures hash their actual executable, including full debug symbols.
+# Keep production deadlines meaningful without changing the bytes under test.
+[profile.test.package.sha2]
+opt-level = 3
