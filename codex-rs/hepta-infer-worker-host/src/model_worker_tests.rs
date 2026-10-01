@@ -1,9 +1,17 @@
 use super::*;
 
+fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("fixture failed: {error:?}"),
+    }
+}
+
 #[derive(Debug, Default)]
 struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
+    partial_neuron_output: bool,
     corrupt_neuron_head: bool,
     loaded: usize,
 }
@@ -58,8 +66,16 @@ impl NeuronFeatureDriver for Driver {
                 succeeded: false,
                 encoder_digest: request.encoder_digest.clone(),
                 head_digest: request.head_digest.clone(),
-                drive_q24: Vec::new(),
-                prediction_q24: Vec::new(),
+                drive_q24: if self.partial_neuron_output {
+                    vec![1 << 24; request.expected_output_width]
+                } else {
+                    Vec::new()
+                },
+                prediction_q24: if self.partial_neuron_output {
+                    vec![0; request.expected_output_width]
+                } else {
+                    Vec::new()
+                },
                 observed_memory_bytes: 1_024,
                 transient_allocation_bytes: 2_048,
                 queue_age_micros: 11,
@@ -130,28 +146,31 @@ fn request() -> WorkerRequest {
 
 #[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
-    let loaded = worker.load_model(100, manifest()).expect("load");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    ));
+    let loaded = checked(worker.load_model(100, manifest()));
     assert!(loaded.terminal_observed);
-    let observed = worker.run(100, "model.1", request()).expect("run");
+    let observed = checked(worker.run(100, "model.1", request()));
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert!(observed.terminal_observed);
-    assert!(
-        worker
-            .unload_model(100, "model.1")
-            .expect("unload")
-            .terminal_observed
-    );
+    assert!(checked(worker.unload_model(100, "model.1")).terminal_observed);
 }
 
 #[test]
 fn rejects_changed_tokenizer_model_or_payload_tuple() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    ));
+    checked(worker.load_model(100, manifest()));
     let mut changed = request();
     changed.lease_payload_digest = "4".repeat(64);
     assert_eq!(
@@ -172,10 +191,15 @@ fn lost_driver_terminality_is_indeterminate() {
         indeterminate: true,
         ..Driver::default()
     };
-    let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
-    worker.load_model(100, manifest()).expect("load");
-    let observed = worker.run(100, "model.1", request()).expect("run");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    checked(worker.load_model(100, manifest()));
+    let observed = checked(worker.run(100, "model.1", request()));
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
@@ -199,16 +223,16 @@ fn neuron_feature_request() -> NeuronFeatureRequest {
 
 #[test]
 fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    ));
     let expected_manifest = manifest();
-    worker
-        .load_model(100, expected_manifest.clone())
-        .expect("load");
-    let observed = worker
-        .run_neuron_features(100, "model.1", neuron_feature_request())
-        .expect("neuron features");
+    checked(worker.load_model(100, expected_manifest.clone()));
+    let observed = checked(worker.run_neuron_features(100, "model.1", neuron_feature_request()));
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert_eq!(observed.manifest, expected_manifest);
     assert_eq!(observed.encoder_digest, "a".repeat(64));
@@ -221,10 +245,14 @@ fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
 
 #[test]
 fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    ));
+    checked(worker.load_model(100, manifest()));
     let mut changed = neuron_feature_request();
     changed.feature_vector_q24[0] += 1;
     assert_eq!(
@@ -236,9 +264,14 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         corrupt_neuron_head: true,
         ..Driver::default()
     };
-    let mut worker =
-        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.2".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    checked(worker.load_model(100, manifest()));
     assert_eq!(
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
@@ -247,14 +280,17 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
 
 #[test]
 fn neuron_feature_worker_projects_exact_inference_control_receipt() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.3".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    ));
     let selected = manifest();
-    worker.load_model(100, selected.clone()).expect("load");
-    let receipt = worker
-        .run_neuron_features_receipt(100, "model.1", neuron_feature_request())
-        .expect("typed feature receipt");
+    checked(worker.load_model(100, selected.clone()));
+    let receipt =
+        checked(worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()));
     assert_eq!(
         receipt.runtime_tuple.weights_digest.to_string(),
         selected.weights_digest
@@ -270,4 +306,107 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn failed_neuron_feature_receipt_preserves_status_without_outputs() {
+    let driver = Driver {
+        fail_terminal: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.failed".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    checked(worker.load_model(100, manifest()));
+    let receipt =
+        checked(worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()));
+    assert_eq!(
+        (
+            receipt.observed_memory_bytes,
+            receipt.transient_allocation_bytes,
+            receipt.queue_age_micros,
+            receipt.latency_micros
+        ),
+        (1_024, 2_048, 11, 17),
+    );
+    assert_eq!(
+        (receipt.status, receipt.drive_q24, receipt.prediction_q24),
+        (
+            NeuronFeatureTerminalStatusV1::Failed,
+            Vec::new(),
+            Vec::new()
+        ),
+    );
+}
+
+#[test]
+fn indeterminate_neuron_feature_receipt_discards_partial_outputs() {
+    let driver = Driver {
+        indeterminate: true,
+        partial_neuron_output: true,
+        ..Driver::default()
+    };
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.partial".to_string(),
+        3,
+        grant(),
+        driver,
+    ));
+    checked(worker.load_model(100, manifest()));
+    let receipt =
+        checked(worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()));
+    assert_eq!(
+        (
+            receipt.observed_memory_bytes,
+            receipt.transient_allocation_bytes,
+            receipt.queue_age_micros,
+            receipt.latency_micros
+        ),
+        (1_024, 2_048, 11, 17),
+    );
+    assert_eq!(
+        (receipt.status, receipt.drive_q24, receipt.prediction_q24),
+        (
+            NeuronFeatureTerminalStatusV1::Indeterminate,
+            Vec::new(),
+            Vec::new()
+        ),
+    );
+}
+
+#[test]
+fn cancelled_neuron_feature_receipt_preserves_empty_outputs() {
+    let mut worker = checked(InferenceWorker::new(
+        100,
+        "worker.cancelled".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    ));
+    checked(worker.load_model(100, manifest()));
+    let mut request = neuron_feature_request();
+    request.authorization.cancelled = true;
+    let receipt = checked(worker.run_neuron_features_receipt(100, "model.1", request));
+    assert_eq!(
+        (
+            receipt.observed_memory_bytes,
+            receipt.transient_allocation_bytes,
+            receipt.queue_age_micros,
+            receipt.latency_micros
+        ),
+        (1_024, 0, 0, 0),
+    );
+    assert_eq!(
+        (receipt.status, receipt.drive_q24, receipt.prediction_q24),
+        (
+            NeuronFeatureTerminalStatusV1::Cancelled,
+            Vec::new(),
+            Vec::new()
+        ),
+    );
 }
