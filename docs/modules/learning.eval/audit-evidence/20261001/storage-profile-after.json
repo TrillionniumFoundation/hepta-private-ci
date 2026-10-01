@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.learning-eval.storage-profile.v1",
+  "attempts": {
+    "attemptCount": 1024,
+    "eventCount": 7168,
+    "bytes": 1103342,
+    "writeMicros": 421595,
+    "recoveryMicros": 341267
+  },
+  "holdout": {
+    "fenceTransitions": 512,
+    "planRecords": 512,
+    "beforeBytes": 234756,
+    "afterBytes": 185808,
+    "bytesLimit": 33554432,
+    "recordLimit": 1000000,
+    "writeMicros": 3897516,
+    "sourceRecoveryMicros": 1232507,
+    "compactionMicros": 3000911,
+    "recoveryMicros": 1223553,
+    "retryPreserved": true,
+    "anchorPreserved": true
+  },
+  "profileDigest": "c6c367ad3e1adf61cbbfc9094045ecfc6a06a432199309c67ea449afaa86fae1"
+}
