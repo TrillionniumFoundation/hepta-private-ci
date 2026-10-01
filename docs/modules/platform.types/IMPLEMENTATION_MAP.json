@@ -434,7 +434,7 @@
     "activation": false,
     "release": false
   },
-  "sourceIdentityPolicy": "historical_committed_provenance_plus_runtime_exact_git_candidate_v1",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
     "commit": "56db98219c75491aeb5ce93a660b9b23109a045d",
     "tree": "c03d4cb5724095e06fa22ad85cf94ea650196bce"
@@ -506,5 +506,7 @@
       "synthetic-merge"
     ],
     "interchangeability": "forbidden"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceObjects": []
 }

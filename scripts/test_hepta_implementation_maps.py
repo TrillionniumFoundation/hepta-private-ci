@@ -204,6 +204,50 @@ class SourceIdentityTests(unittest.TestCase):
             (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
         )
 
+    def test_source_rebind_requires_revoking_stale_ndu_execution_claims(self):
+        for index, claim in enumerate(
+            (
+                "requestLocalReadOnlyProductExecutionProved",
+                "authenticatedProductionProductExecutionProved",
+                "productionWriterActivated",
+                "independentDecisionEvidenceProved",
+                "namedHostQualificationReceiptProved",
+                "registeredNumericAdmissionProductExecutionProved",
+            )
+        ):
+            with self.subTest(claim=claim):
+                self.rows["alpha"]["claimBoundary"][claim] = True
+                self.change_maps()
+                self.write(
+                    "src/alpha/lib.rs",
+                    f"pub fn calculate() {{ let _changed = {index + 1}; }}\n",
+                )
+                self.commit("change mapped source after claimed execution")
+                before = {
+                    path: path.read_bytes()
+                    for path in self.root.glob("docs/modules/*/IMPLEMENTATION_MAP.json")
+                }
+                with (
+                    self.assertRaisesRegex(
+                        maps.SourceDrift, "changed after source observation"
+                    ),
+                    contextlib.redirect_stdout(io.StringIO()),
+                ):
+                    maps.migrate(["alpha", "beta"])
+                self.assertEqual(before, {path: path.read_bytes() for path in before})
+
+                self.rows["alpha"]["claimBoundary"][claim] = False
+                self.change_maps()
+                candidate = maps.current_source_base()
+                self.migrate(["alpha"])
+                rebound = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+                self.assertFalse(rebound["claimBoundary"][claim])
+                self.assertFalse(rebound["claimBoundary"]["productExecutionProved"])
+                self.assertFalse(rebound["productionImplementation"])
+                self.assertEqual(rebound["sourceBase"], candidate)
+                self.commit("persist source navigation without execution qualification")
+                self.verify()
+
     def test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses(self):
         row = self.rows["alpha"]
         row["operations"][0]["tests"] = ["tests/native.rs"]
@@ -389,9 +433,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
         current = self.commit("change exact blob implementation")
         result = self.migrate(["alpha"])
-        self.assertEqual(
-            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
-        )
+        self.assertEqual(result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
         migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(migrated["sourceBase"], provenance)
         self.assertEqual(migrated["observedAtHead"], current)
@@ -403,9 +445,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         result = self.verify()
         self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
 
-        before = (
-            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
-        ).read_bytes()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         self.write("README.md", "later prose must not rewrite provenance\n")
         self.commit("prose after exact blob observation")
         self.assertEqual(self.migrate(["alpha"])["migrated"], 0)

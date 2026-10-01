@@ -598,7 +598,7 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "requestLocalReadOnlyProductExecutionProved": true,
+    "requestLocalReadOnlyProductExecutionProved": false,
     "authenticatedOwnerSourceImplemented": true,
     "authenticatedProductionProductExecutionProved": false,
     "productionWriterSourceImplemented": true,
@@ -776,5 +776,14 @@
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "989bdea5c73fd9f7f15d45cc66e996e8424a53fe"
     }
-  ]
+  ],
+  "historicalRequestLocalReadOnlyExecutionEvidence": {
+    "sourceBase": {
+      "commit": "bcdbf90328aa2d9fe4881561ea8f73c5e8072147",
+      "tree": "9abe815ed7ed20a3676556a8425b216eb22de1f8"
+    },
+    "claimAtHistoricalSource": true,
+    "currentCandidateExecutionProved": false,
+    "role": "Historical request-local read-only execution claim only; source navigation rebinding does not transfer it to the current candidate."
+  }
 }
