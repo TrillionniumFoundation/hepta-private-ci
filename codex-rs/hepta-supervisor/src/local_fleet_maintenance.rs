@@ -2,6 +2,13 @@
 
 use super::*;
 
+// Retire the admitted host reference before releasing its original flock,
+// including a panic or a detached async waiter dropping a completed job.
+struct AdmittedMaintenance {
+    host: Arc<LocalFleetHost>,
+    _instance: Arc<crate::daemon::owner::SingleInstanceLock>,
+}
+
 impl LocalFleetHost {
     pub(crate) async fn maintain(&self) -> Result<(), ProcessDriverError> {
         let _launch = self.launch_gate.lock().await;
@@ -84,16 +91,34 @@ impl LocalFleetHost {
     pub(crate) async fn run_maintenance(
         self: Arc<Self>,
         cancellation: CancellationToken,
+        instance: Arc<crate::daemon::owner::SingleInstanceLock>,
     ) -> Result<(), ProcessDriverError> {
         let mut interval = tokio::time::interval(Duration::from_secs(10));
         interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
         loop {
             tokio::select! { _ = cancellation.cancelled() => return Ok(()), _ = interval.tick() => {} }
             // An admitted durable owner operation retires before cancellation.
-            let host = Arc::clone(&self);
-            tokio::task::spawn_blocking(move || host.runtime.block_on(host.maintain()))
-                .await
-                .map_err(host_error)??;
+            let owner = AdmittedMaintenance {
+                host: Arc::clone(&self),
+                _instance: Arc::clone(&instance),
+            };
+            let outcome = tokio::task::spawn_blocking(move || {
+                // A detached/aborted async waiter cannot release the fleet
+                // while this original admitted durable operation is running.
+                let outcome = owner.host.runtime.block_on(owner.host.maintain());
+                drop(owner);
+                outcome
+            })
+            .await
+            .map_err(host_error)
+            .and_then(|outcome| outcome);
+            if let Err(error) = outcome {
+                // Startup recovery may still be waiting for its original
+                // blocking worker. It must never publish readiness after this
+                // sole resource owner has stopped maintaining live grants.
+                cancellation.cancel();
+                return Err(error);
+            }
         }
     }
 

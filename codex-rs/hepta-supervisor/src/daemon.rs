@@ -154,6 +154,10 @@ mod selection;
 #[cfg(unix)]
 use mutex::MeasuredMutex as Mutex;
 #[cfg(unix)]
+#[path = "daemon_startup.rs"]
+pub(crate) mod startup;
+
+#[cfg(unix)]
 use owner::SingleInstanceLock;
 
 #[cfg(unix)]
@@ -187,7 +191,7 @@ struct DaemonState<D: ProcessDriver> {
     execution: execution::Execution,
     // Drop after the writer. Detached or cancelling tasks retain the same guard
     // through their Arc<DaemonState>; returning from run_supervisord is not a fence.
-    _instance: SingleInstanceLock,
+    _instance: Arc<SingleInstanceLock>,
 }
 
 #[cfg(unix)]
@@ -272,7 +276,7 @@ async fn run_supervisord_inner(
     // Cancelling/dropping the outer future must also stop the ticker and server.
     let _shutdown = cancellation.clone().drop_guard();
     let layout = fleet_root.layout();
-    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let instance = Arc::new(SingleInstanceLock::acquire(layout.supervisor_lock())?);
     let registry = FleetRegistry::initialize(fleet_root.clone())?;
     registry.migrate_owner_journals()?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
@@ -299,9 +303,15 @@ async fn run_supervisord_inner(
     let mut installed_host = None;
     #[cfg(all(target_os = "linux", feature = "local-host"))]
     if let Some(policy_path) = local_host_policy {
-        let host = crate::LocalFleetHost::open(&policy_path, registry.clone())
-            .await
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let host_registry = registry.clone();
+        let runtime = tokio::runtime::Handle::current();
+        let opened = startup::run_owned(Arc::clone(&instance), move || {
+            runtime
+                .block_on(crate::LocalFleetHost::open(&policy_path, host_registry))
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        })
+        .await?;
+        let host = opened.outcome?;
         selection_uid = host.policy.workload_uid;
         selection_gid = host.policy.workload_gid;
         driver = driver.with_local_host(Arc::clone(&host));
@@ -314,18 +324,42 @@ async fn run_supervisord_inner(
         ));
     }
     let recovery_registry = registry.clone();
-    let (supervisor, recovery) = tokio::task::spawn_blocking(move || {
+    let recover = move || {
         Supervisor::recover(
             recovery_registry,
             driver,
             SupervisorConfig::local_default(),
             Instant::now(),
         )
-    })
-    .await
-    .map_err(|error| {
-        SupervisorError::Invalid(format!("process recovery worker failed: {error}"))
-    })??;
+    };
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    let recovered = if let Some(host) = installed_host {
+        let (recovered, maintenance) = startup::recover_with_local_host(
+            host,
+            Arc::clone(&instance),
+            cancellation.clone(),
+            recover,
+        )
+        .await?;
+        local_maintenance = Some(maintenance);
+        recovered
+    } else {
+        startup::run_owned(Arc::clone(&instance), recover).await?
+    };
+    #[cfg(not(all(target_os = "linux", feature = "local-host")))]
+    let recovered = startup::run_owned(Arc::clone(&instance), recover).await?;
+    let startup::OwnedStartup { outcome, instance } = recovered;
+    let (supervisor, recovery) = outcome?;
+    if cancellation.is_cancelled() {
+        // A failed resource owner can cancel while cold recovery is still
+        // blocked. Never publish a ready projection or serve that outcome.
+        if let Some(maintenance) = local_maintenance.take() {
+            maintenance.await.map_err(|error| {
+                SupervisorError::Invalid(format!("local resource owner failed: {error}"))
+            })??;
+        }
+        return Ok(());
+    }
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
@@ -337,19 +371,6 @@ async fn run_supervisord_inner(
         execution: execution::Execution::new(cancellation.clone()),
         _instance: instance,
     });
-    #[cfg(all(target_os = "linux", feature = "local-host"))]
-    if let Some(host) = installed_host {
-        let host_cancellation = cancellation.clone();
-        let owner = Arc::clone(&state);
-        local_maintenance = Some(tokio::spawn(async move {
-            // Keep the same single-instance kernel lock through admitted upkeep,
-            // including when the outer daemon future is dropped or cancelled.
-            let _owner = owner;
-            host.run_maintenance(host_cancellation)
-                .await
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
-        }));
-    }
     {
         let supervisor = state.supervisor.lock().await;
         publish_recovery_observations(&state, &supervisor)?;

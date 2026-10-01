@@ -28,3 +28,7 @@ impl LocalFleetHost {
 #[cfg(test)]
 #[path = "local_fleet_runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "local_fleet_startup_tests.rs"]
+mod startup_tests;

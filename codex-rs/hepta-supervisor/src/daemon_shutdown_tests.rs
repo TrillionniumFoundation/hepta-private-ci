@@ -64,7 +64,7 @@ impl Fixture {
             recovery_observation_blocked: std::sync::RwLock::new(Default::default()),
             runtime_modules: MeasuredMutex::new(runtime_modules),
             execution,
-            _instance: instance,
+            _instance: Arc::new(instance),
         });
         Ok(Self {
             temp,
