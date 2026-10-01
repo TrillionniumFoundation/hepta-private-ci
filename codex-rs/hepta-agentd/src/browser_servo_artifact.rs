@@ -150,3 +150,7 @@ pub(super) fn snapshot_service(
         })
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "browser_servo_artifact_fs_tests.rs"]
+mod fs_tests;
