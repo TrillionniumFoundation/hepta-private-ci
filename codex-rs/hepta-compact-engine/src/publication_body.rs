@@ -142,3 +142,6 @@ impl From<CompactionPublicationError> for CompactionPublicationBodyError {
     }
 }
 
+#[cfg(test)]
+#[path = "publication_body_tests.rs"]
+mod tests;
