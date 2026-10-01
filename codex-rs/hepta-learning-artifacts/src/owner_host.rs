@@ -2453,3 +2453,7 @@ mod pending_payload_tests;
 #[cfg(test)]
 #[path = "owner_witness_receipt_tests.rs"]
 mod witness_receipt_tests;
+
+#[cfg(test)]
+#[path = "owner_admission_quota_tests.rs"]
+mod admission_quota_tests;

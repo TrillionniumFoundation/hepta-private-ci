@@ -11,6 +11,11 @@ use crate::read_artifact_admission_by_manifest_digest;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
+// Two immutable admission/index names per possible publication, with the same
+// bounded allowance for orphan and interrupted temporary records. Every entry
+// consumes capacity; ownership alone does not authorize deleting an orphan.
+const MAX_ADMISSION_RECORDS: usize = MAX_HEAD_RECORDS * 4;
+
 pub(crate) struct CurrentArtifactProvenance {
     pub(crate) ineligible: BTreeSet<StableId>,
     pub(crate) source_datasets: BTreeMap<StableId, BTreeSet<Digest32>>,
@@ -22,13 +27,33 @@ impl LearningArtifactOwnerHost {
         admission: &WithdrawalBoundArtifactAdmissionV3,
     ) -> Result<(), ArtifactOwnerHostError> {
         let bytes = encode_artifact_admission(admission)?;
+        let directory = self.root.join("admissions");
         let path = self
             .root
             .join("admissions")
             .join(format!("{}.bin", admission.admission_digest));
-        records::write_record_with_limit(&path, &bytes, MAX_ARTIFACT_ADMISSION_BYTES)?;
         let manifest_path =
             self.manifest_admission_path(admission.validated_manifest.manifest_digest);
+        let admission_exists = path.try_exists()?;
+        let manifest_exists = manifest_path.try_exists()?;
+        let new_records = usize::from(!admission_exists) + usize::from(!manifest_exists);
+        if new_records > 0 {
+            // A missing admission temporarily needs both pending and final
+            // names. That pending is removed before the index hard link, so
+            // reserve the larger of the two publication peaks.
+            let peak_new_records = new_records.max(if admission_exists { 0 } else { 2 });
+            let maximum_existing = MAX_ADMISSION_RECORDS - peak_new_records;
+            for (index, entry) in fs::read_dir(directory)?.enumerate() {
+                entry?;
+                if index >= maximum_existing {
+                    return Err(ArtifactOwnerHostError::Capacity);
+                }
+            }
+        }
+        // begin_publication holds the same-host mutation fence across this
+        // capacity check and both create-only effects. Complete existing
+        // sidecars remain reusable when Prepared failed at the quota boundary.
+        records::write_record_with_limit(&path, &bytes, MAX_ARTIFACT_ADMISSION_BYTES)?;
         match fs::hard_link(&path, &manifest_path) {
             Ok(()) => {}
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {

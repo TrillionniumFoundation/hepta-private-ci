@@ -159,6 +159,11 @@ pub(super) fn write_record_with_limit(
     if bytes.len() > limit {
         return Err(ArtifactOwnerHostError::Capacity);
     }
+    if path.try_exists()? {
+        sync_exact_existing_record(path, bytes, limit)?;
+        sync_parent(path)?;
+        return Ok(());
+    }
     let parent = path.parent().ok_or(ArtifactOwnerHostError::PathBoundary)?;
     let (pending, mut file) = loop {
         let sequence = NEXT_RECORD.fetch_add(1, Ordering::Relaxed);
@@ -180,13 +185,28 @@ pub(super) fn write_record_with_limit(
     match fs::hard_link(&pending.0, path) {
         Ok(()) => {}
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-            if read_small_record(path, limit)? != bytes {
-                return Err(ArtifactOwnerHostError::IdentityConflict);
-            }
+            sync_exact_existing_record(path, bytes, limit)?;
         }
         Err(error) => return Err(error.into()),
     }
     sync_parent(path)?;
+    Ok(())
+}
+
+fn sync_exact_existing_record(
+    path: &Path,
+    bytes: &[u8],
+    limit: usize,
+) -> Result<(), ArtifactOwnerHostError> {
+    if read_small_record(path, limit)? != bytes {
+        return Err(ArtifactOwnerHostError::IdentityConflict);
+    }
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)?
+        .sync_all()
+        .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
     Ok(())
 }
 
