@@ -174,7 +174,9 @@ jobs:
         with:
           tool: cargo-shear@1.11.2
       - name: cargo shear
-        run: cargo shear --deny-warnings
+        # Unused dependencies still fail. Source-link and empty-doctest hints
+        # stay visible without blocking unrelated, correctly compiled changes.
+        run: cargo shear --locked
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
