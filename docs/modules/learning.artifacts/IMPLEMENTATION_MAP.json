@@ -415,15 +415,182 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourceBlob": "8e70924e720833f170f2ab8ae183f9d0be9bc2cd"
+    },
+    {
+      "operation": "admission_sidecar_receipt",
+      "nativeSymbol": "admission_snapshot_receipt_v3",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::complete_multi_source_admission_round_trips_and_survives_historical_expiry"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admission_sidecar_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "write_admission_sidecar",
+      "nativeSymbol": "write_artifact_admission_snapshot_beneath",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::rejected_admission_never_creates_a_validation_orphan"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "write_admission_sidecar",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "read_admission_sidecar",
+      "nativeSymbol": "read_artifact_admission_snapshot",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::complete_multi_source_admission_round_trips_and_survives_historical_expiry"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_admission_sidecar",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "read_admission_sidecar_bound",
+      "nativeSymbol": "read_artifact_admission_snapshot_bound",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::sidecar_recovery_rejects_identity_drift_wrong_pins_and_noncanonical_bytes"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_admission_sidecar_bound",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_admission_projection",
+      "nativeSymbol": "validate_admission_registry_projection_v3",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::compatibility_projection_checks_objective_support_identity_and_all_representable_fields"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_admission_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "strict_current_admission_closure",
+      "nativeSymbol": "ArtifactOwnerVerifierV1::verify_current_registry_view_with_admission_closure",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/verified_admissions.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_closure_tests.rs::quarantining_the_unprojected_parent_denies_descendants",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_v2_tests.rs::v2_owner_published_policy_reaches_the_ranker_using_real_dataset_provenance",
+        "codex-rs/hepta-agentd/tests/shared_terminal_current.rs::cached_current_cannot_hide_parent_expiry_or_revive_failed_model"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "strict_current_admission_closure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decode_signed_current_head",
+      "nativeSymbol": "read_signed_current_artifact_head_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_artifact_io.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::withdrawal_publishes_current_retries_and_recovers_frontier"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_signed_current_head",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "owner_admission_backfill",
+      "nativeSymbol": "LearningArtifactOwnerService::backfill_artifact_admission",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::backfill_restores_only_original_exact_published_admission"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_admission_backfill",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_state_publication",
+      "nativeSymbol": "LearningArtifactOwnerService::prepare_state_registry",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::withdrawing_the_second_parent_source_revokes_multi_parent_descendants"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_state_publication",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "publish_state",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_state",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::interrupted_state_publication_recovers_exactly_and_fences_other_operations"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_state",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "owner_withdrawal_restart_floor",
+      "nativeSymbol": "LearningArtifactOwnerService::open_v2",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::withdrawal_publishes_current_retries_and_recovers_frontier"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_withdrawal_restart_floor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "owner_signed_withdrawal_bootstrap",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_withdrawal_bootstrap",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::signed_bootstrap_persists_before_first_current_and_blocks_withdrawn_admission",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_rejects_forged_and_stale_authorizations_without_rolling_back",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_acknowledgement_cannot_recover_without_exact_snapshot"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_signed_withdrawal_bootstrap",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
-  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
-  "repositoryControlledGaps": [
-    "Persist complete V2/V3 admission sidecars and source/descendant closure for final-use withdrawal, expiry and multiple-predecessor validation.",
-    "Compose fenced crash-recoverable revoke/quarantine registry-state publication and withdrawal-to-existing-artifact CURRENT updates through the same owner writer.",
-    "Authenticate CURRENT before each long-lived Agentd plasticity admission and bind resolver evidence to that same frozen generation/view.",
-    "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
-  ],
+  "currentNativeState": "Immutable V1 compatibility storage plus full canonical V3 admission sidecars, all-source/all-parent/expiry CURRENT joins, fenced authenticated publish and withdrawal/revoke/quarantine recovery, exact backfill and independent restart floors are implemented. Agentd plasticity checks independent CURRENT before each admission; cognitive and shared-terminal V2 readers reject trust substitution, forks, expiry, withdrawal and compatibility downgrade. Target-host execution, independent selection and release remain external evidence gates.",
+  "repositoryControlledGaps": [],
   "hostIntegrationRequirements": [
     "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
     "Authenticate withdrawal actors and registry-head signatures before constructing typed source evidence.",
@@ -477,6 +644,20 @@
       "callerPath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
       "mustContain": "candidate.with_current",
       "productPath": "admit_ndu_stochastic_candidate_v1 -> RevalidatingCandidate::with_current"
+    },
+    {
+      "operation": "publish_state",
+      "mode": "single_fenced_authoritative_store_service",
+      "callerPath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "mustContain": "publish_state_snapshots",
+      "productPath": "LearningArtifactOwnerService::publish_state -> signed owner state saga"
+    },
+    {
+      "operation": "strict_current_admission_closure",
+      "mode": "opaque_verified_current_view_only",
+      "callerPath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mustContain": "full_admission",
+      "productPath": "SharedTerminalCellHostV1::load_from_current -> predict_from_current"
     }
   ],
   "productionWriterBindings": [
@@ -512,6 +693,22 @@
     {
       "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
       "nativeSymbol": "admit_ndu_stochastic_candidate_v1"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_state"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "nativeSymbol": "SharedTerminalCellHostV1::predict_from_current"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_artifact_current.rs",
+      "nativeSymbol": "PlasticityCurrentArtifactFilesV1::current"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_withdrawal_bootstrap"
     }
   ],
   "sourceObjects": [
