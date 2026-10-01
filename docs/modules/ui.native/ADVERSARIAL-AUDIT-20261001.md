@@ -5,23 +5,38 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-当前普通源码为 `d5445993e9ac96626bf9314053df77eeedb90e4d`，tree为
-`4f56b2375ff2a24a07a9edff0fee4135b785581d`，仍是未完整验收候选。新增 Windows 私有原子写入检查覆盖旧目标、
+当前普通源码为 `0a129b41c2a2d42ca907ea8257bf780108bc664f`，tree为
+`f90313f067446c629b8da50058ee1bd2101e76e7`，仍是未完整验收候选。新增 Windows 私有原子写入检查覆盖旧目标、
 暂存句柄首字节前/提交前，以及私有更新源；utility replace 先检查源/旧目标再
 释放禁止删除共享的校验句柄并提交，保持严格 owner/DACL/身份与适用的单链接要求。
 不修改不可信文件 ACL、不覆盖原证据，外部安装输入/目标仍按自己的策略处理。
 取消后的迟到 ACK 仅允许 BrokenPipe 调度分支，其他发送错误继续失败，原回滚
 断言保留。资格 merge 构造/重建统一固定 LF 字节，不放宽 SHA/父提交/workflow/run。
 
-冻结 inventory为417 Git blobs、32 selection paths、16 本地 Cargo依赖，SHA256
-`8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`。新源 Linux243/243通过（2.467s，三独立scale ignored），
-strict Clippy通过（4.59s）；当前资格工具Python240项239通过/一Windows NTFS skip（14.811s）。
-locked/offline三个release二进制及self-test、七actualchild-fault通过，复用未变化
-的Linux生产artifact；Windows生产路径修复仍须新源目标执行。production/deployment/
-release及effect/activation授权均false。15项新增Windows测试定义不是通过证据。
+冻结 inventory为420 Git blobs、32 selection paths、16 本地 Cargo依赖，SHA256
+`8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6`。本轮新锁修复的提交前Linux应用245/245通过（2.460s，三独立scale ignored），
+strict Clippy通过（8.67s）；exact-copy缩减contracts工作区196/196通过（1.028s），
+两项新回归旧实现均StateLocked失败、显式unlock后通过。标准owner本地offline
+metadata因无关imbl缓存缺失停止；缩减工作区不等同完整源码资格。当前Python240项239通过/一Windows专用skip（15.191s），locked/offline三个release
+二进制构建23.09s及自检/七actual子进程故障检查通过。新源完整同次CI、真实打包
+产物、存储硬预算及十五项Windows回归仍待目标实际执行。
+production/deployment/release及effect/activation授权均false。
 此处为完整CI结束前的提交时元数据快照，最新精确run记录见[PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308)。
-导航guard和共享指南修正另在9ca0e42e/tree9fa335提交，位于冻结native产品闭包之外；
-CI仍严格绑定完整candidate提交，不转移历史结果。
+
+历史D544/candidate632d/run36838749224整体FAILURE。三个merge实际均为7d22e1fa，
+身份构造已一致；Linuxhead243/212、Machead254/230、Win双主体209/173及十五项
+新增ACL/atomic回归通过，本次48storage trace与全部原硬预算通过。
+Linuxmerge在更新事务锁争用失败，Macmerge在期望InvalidTrust断言失败、实际
+variant未打印；aggregate按失败主体正确拒绝，未执行后续deep验收。
+真实Rust flock/fork和UpdateManager公有API、actualStore别名红绿证明close-only
+锁会由继承descriptor延长寿命；显式unlock后保持后继owner竞争拒绝。
+这些实验确认可修复机制/API问题，不能倒推原CI具体调度因果，actualCiCauseProven=false。
+原十八项localAudit、平台原记录及独立终态保存在
+[632d历史记录](history/20261001-d544-632d-verification.json)，不继承到本新源码。
+Native owner/handoff/runner现在返回opaque UpdateLock，仅成功获锁后建立guard；
+正常/异常返回均显式unlock。共享final-use与authority-lease最后owner释放亦显式
+unlock，保留Arc/token所有权、nonce/撤销、失败拒绝及5/35s，不重试或串行化测试。
+本次只有四份受影响共享map更新导航；另外七份原观测完整闭包仍与源码一致。
 
 历史dc59/run36836809639整体FAILURE：identity/storage成功，Mac两项在shell解析
 阶段失败；Linux/Windows四项正确拒绝productExecutionComplete=0，但旧fixture
@@ -200,7 +215,7 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 | --- | --- | --- |
 | 产品实现 | 主调用链、MAC v2 网关、内核最终使用、WAL、历史分页及更新协调已经落地；基线仍有构建/协议缺陷 | 本轮修复与回归，不等同生产完成 |
 | 功能覆盖 | Linux Open/Reveal 使用验证 FD；macOS/Windows 等价能力适配器仍缺失并拒绝执行 | 各目标平台的真实资源能力适配与测试 |
-| 仓库验收 | 历史89七producer成功但aggregate因Windows CRLF身份失败；本轮Windows atomic/ACK/LF修复待新源完整同次CI | 同一 head/base/workflow/run/attempt 的完整成功证据 |
+| 仓库验收 | 历史632主体身份一致，但Linux/Mac merge实际测试失败；本轮显式锁释放修复待新源完整同次CI | 同一 head/base/workflow/run/attempt 的完整成功证据 |
 | 实体桌面 | 无完整 Windows/macOS/X11/Wayland、IME、DPI、无障碍及安装验收 | 对应实体主机执行记录 |
 | 发布资格 | 未完成独立签名、供应链接受、审批与保护规则 | 独立负责人提供并审核，授权标志保持 false |
 
@@ -212,6 +227,7 @@ allow-unwrap-in-tests 配置；TempDir 的成功与提前失败清理均保持 R
 
 | 严重度 | 基线问题及触发 | 修订 |
 | --- | --- | --- |
+| P2 | 更新/授权存储仅close释放锁，fork/dup继承description可在owner结束后仍阻止新owner；真实公有API及Store红绿确认 | opaque成功获锁guard与Store Drop显式unlock；失败acquire不unlock，旧别名关闭不解后继锁，保留nonce/撤销/超时及竞争拒绝；CI原调度因果不冒充已证 |
 | P2 | Mac shell解析嵌套quoted substitution内Python heredoc的apostrophe注释时退出；新类型guard使旧fixture诊断匹配过时 | heredoc移到独立shell函数并用原生平台Bash实测head/merge引号场景；更新精确诊断，保留非法0和拒绝要求；不改变binary LF或放宽检查 |
 | P1 | map迁移只识别通用执行声明，漏掉requestLocalReadOnlyProductExecutionProved等实际模块专有资格，可跨源码迁移旧证明 | 明确执行/主机/发布字段集合并严格bool；旧证明源码漂移在任何写入前拒绝，false导航及源码事实保持可用；原执行记录不迁移 |
 | P1 | Windows atomic快照/私有copy只验证父root，旧child或temp DACL漂移可未经拒绝即写入/替换 | 提交前检查旧目标与同temp句柄，保留原bytes/ACL；source-root copy重验源，utility replace先验证再释放校验句柄；新增15 Windows回归定义 |

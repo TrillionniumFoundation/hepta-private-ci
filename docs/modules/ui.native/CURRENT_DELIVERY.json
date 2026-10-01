@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
-  "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-  "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
@@ -23,7 +23,8 @@
     "macosRetirementFixtureRepair": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
     "windowsPrivateAtomicPublicationRepair": "403df62a7bf3ac065f2b0ad21661d08b66b32731",
     "cancelledAckPipeFixtureRepair": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
-    "deterministicMergeLfRepair": "d5445993e9ac96626bf9314053df77eeedb90e4d"
+    "deterministicMergeLfRepair": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+    "explicitUpdateAndAuthorityLockReleaseRepair": "0a129b41c2a2d42ca907ea8257bf780108bc664f"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -122,68 +123,96 @@
   "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
   "localAuditVerification": {
     "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
-    "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-    "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+    "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+    "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
     "applicationTests": {
-      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
       "acceptedQualification": false,
-      "status": "passed-current-source-Linux-local-diagnostic",
+      "executionHeadSha": "632d2a65e542480e617564eb423e3e76111cc8cd",
+      "scope": "Precommit execution of repair code, before ordinary source publication; diagnostic only",
+      "executionIncludedUncommittedRepairCode": true,
+      "formatOnlyChangeAfterExecution": "updater pub use ordering",
+      "status": "passed-precommit-Linux-local-diagnostic",
       "runner": "just test / cargo nextest",
       "buildProfile": "debug",
-      "passed": 243,
+      "passed": 245,
       "failed": 0,
       "skippedIndependentScaleEntries": 3,
-      "testSeconds": 2.467,
+      "testSeconds": 2.46,
       "rawLog": {
-        "path": "/tmp/hepta-native-merge-lf-frozen-nextest.log",
-        "sha256": "23a92de93bd56277c2277e4f12d8c03fc12070082dd2ce9d00411889dc29816d"
+        "path": "/tmp/hepta-native-lock-release-precommit-nextest.log",
+        "bytes": 32087,
+        "sha256": "b66bb67bec53bea7c8b63b2a3e34079928e26b1fc671ff06e547bd84f8c86c9f"
       }
     },
     "ownerTests": {
-      "status": "pending-current-source-execution"
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "632d2a65e542480e617564eb423e3e76111cc8cd",
+      "scope": "Precommit execution of repair code, before ordinary source publication; diagnostic only",
+      "executionIncludedUncommittedRepairCode": true,
+      "formatOnlyChangeAfterExecution": "updater pub use ordering",
+      "status": "passed-exact-copy-reduced-contracts-workspace-local-diagnostic",
+      "fullOwnerBundleExecuted": false,
+      "package": "codex-hepta-contracts",
+      "allFeatures": true,
+      "passed": 196,
+      "failed": 0,
+      "testSeconds": 1.028,
+      "focusedRedFailed": 2,
+      "focusedGreenPassed": 2,
+      "sourceFileCount": 63,
+      "copiedSourceMatchesCommittedProduct": true,
+      "normalWorkspaceOfflineMetadataBlockedBy": "uncached imbl from unrelated hepta-matrixd dependency",
+      "rawReceipt": {
+        "path": "/tmp/hepta-native-owner-lock-diagnostic/receipt.json",
+        "bytes": 4835,
+        "sha256": "5c2a5d6d36f94d567ce5f3a603358474a6143f3d52deb847e97534ca753f8aa9"
+      },
+      "fullLog": {
+        "path": "/tmp/hepta-native-owner-lock-green-full-contracts.log",
+        "bytes": 27039,
+        "sha256": "0bbdab36aaf9212d458d2a37f37a8ee62a3c9b6a2b305f56f38318efc2a34282"
+      }
     },
     "strictClippy": {
-      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
       "acceptedQualification": false,
-      "status": "passed-current-source-Linux-local-diagnostic",
+      "executionHeadSha": "632d2a65e542480e617564eb423e3e76111cc8cd",
+      "scope": "Precommit execution of repair code, before ordinary source publication; diagnostic only",
+      "executionIncludedUncommittedRepairCode": true,
+      "formatOnlyChangeAfterExecution": "updater pub use ordering",
+      "status": "passed-precommit-Linux-local-diagnostic",
       "allTargets": true,
       "allFeatures": true,
       "warningsDenied": true,
-      "seconds": 4.59,
+      "seconds": 8.67,
       "rawLog": {
-        "path": "/tmp/hepta-native-merge-lf-frozen-clippy.log",
-        "sha256": "3210bf3db68509d0ea5d462d66c5bd0b655d7634ad7393950c301e85e1bcf82a"
+        "path": "/tmp/hepta-native-lock-release-precommit-clippy.log",
+        "bytes": 436,
+        "sha256": "41c6366acbb013d5217c62aa94649316a23445f4eaf216b9da633ee37a3d9ded"
       }
     },
     "pythonTests": {
-      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
-      "scope": "Precommit execution of current qualification tooling; frozen native product unchanged; not accepted qualification",
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
       "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
       "status": "passed-current-source-Linux-local-diagnostic",
       "total": 240,
       "passed": 239,
       "failed": 0,
       "skipped": 1,
-      "seconds": 14.811,
-      "skipReason": "Windows-only actual NTFS junction fixture does not execute on Linux",
+      "seconds": 15.191,
+      "skipReason": "Windows-only actual NTFS junction case does not execute on Linux",
       "rawLog": {
-        "path": "/tmp/hepta-native-portable-construct-python.log",
-        "sha256": "e7dfa957037a34c552856e67dd14a1090e2c9afc8dda1814b60ac01680d5157e",
-        "bytes": 40032
-      },
-      "currentQualificationToolingSha256": {
-        ".github/workflows/ui-native-qualification.yml": "9cd234efdcbf8fa81cc39b140774d4070b1885fb4334796618009b2e2d1d4c2f",
-        "scripts/hepta-implementation-maps.py": "5f5bb1650b0a279921dbe5e448f0db874e43544acf00a374f517875ef8b73424",
-        "scripts/test_hepta_ui_native_workflow.py": "7cb800559a03ca4828c4c19cee71705cd449cdd2337bda000cac94929c7359b4",
-        "scripts/test_hepta_ui_native_map_adapter.py": "d9f481c4407d7c7bf05771df1aa92b87452d80b45a5072a713b50fbae77ada27"
+        "path": "/tmp/hepta-native-lock-release-precommit-python.log",
+        "bytes": 40032,
+        "sha256": "bd086ab017c5d1333e7b3a8e0916926d6706917e8e008d3fb15fc4a4165c90ca"
       }
     },
     "releaseMixedStorageDiagnostics": {
@@ -191,47 +220,49 @@
       "acceptedQualification": false
     },
     "releaseBinaries": {
-      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
       "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
       "status": "passed-current-source-Linux-local-diagnostic",
       "buildProfile": "release",
       "lockedOfflineBuild": true,
-      "buildSeconds": 0.54,
+      "buildSeconds": 23.09,
       "built": 3,
-      "unchangedLinuxProductionArtifactsReused": true,
-      "ordinarySourceChangeScope": "Windows production private atomic/copy/replace repair plus cancelled-ACK fixture and cross-OS qualification LF identity repair; new Windows target execution remains required",
-      "priorWindowsProductionRepairLinuxRebuildSeconds": 13.17,
+      "unchangedLinuxProductionArtifactsReused": false,
       "binaries": {
         "hepta-native": {
-          "sha256": "e4c4cedec53e1b994005ff53bc551cdd66897446f171ebec3532ddec10a130f0",
-          "bytes": 24693368
+          "sha256": "eee420d50a04738b0f762cf0a43798cad411e3b0c63d3b5a72ab852bdc8cd57d",
+          "bytes": 24691400
         },
         "hepta-native-updater": {
-          "sha256": "7d323a3ef3410ad9cf65b82b6d1350f11e7a17842c5fc3c9731b5b11a03ad671",
-          "bytes": 3099128
+          "sha256": "dd37b22ea27edbf762bc7459730128bd0e6c57964aa8ebade9cc89aac3f0b561",
+          "bytes": 3102096
         },
         "hepta-native-credential": {
-          "sha256": "491580f2597e9a7cac56d58ec8368f0fc9b3f99a5f5e0c167043b326a5268c4f",
-          "bytes": 6392504
+          "sha256": "e952b067c0d32a24a9eca726f6b9ddb44ab21632548da3b1d88160506cb8e2a9",
+          "bytes": 6393376
         }
       },
       "rawBuildLog": {
-        "path": "/tmp/hepta-native-merge-lf-release-build.log",
-        "sha256": "802338ffbeb86143ebd68dfca793bdd6ab761da92285bcb9c5466df19a78e8dc"
+        "path": "/tmp/hepta-native-lock-release-binaries-build.log",
+        "bytes": 283,
+        "sha256": "f3452d674ef0b1f7c30eb8076619cce783fbe0dafb4d9f6f709389c2c85b70da"
       },
       "binarySelfTestPassed": true,
       "selfTestReceipt": {
-        "path": "/tmp/hepta-native-merge-lf-self-test.json",
+        "path": "/tmp/hepta-native-lock-release-self-test.json",
+        "bytes": 132,
         "sha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13"
       },
       "realChildFaultChecksPassed": 7,
       "realChildFaultReceipt": {
-        "path": "/tmp/hepta-native-merge-lf-crash-test.json",
+        "path": "/tmp/hepta-native-lock-release-crash-test.json",
+        "bytes": 452,
         "sha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7"
       },
+      "unsignedPackageProduced": false,
       "physicalGuiAcceptance": false,
       "effectAuthorityGranted": false,
       "activationAuthorityGranted": false,
@@ -242,68 +273,55 @@
       "acceptedQualification": false
     },
     "sourceStructuralVerification": {
-      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
-      "executionHeadSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
-      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
       "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
       "status": "passed-current-source-precommit-metadata-check",
-      "sourceFileCount": 417,
+      "sourceFileCount": 420,
       "selectionPaths": 32,
       "localCargoDependencies": 16,
-      "inventorySha256": "8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d",
+      "inventorySha256": "8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6",
       "rawReceipt": {
-        "path": "/tmp/hepta-native-portable-construct-precommit-structural.json",
-        "sha256": "fe5d12685552c1b18d08a7cf33689f4342a343c54ab0a036d2b62b9656ee7a39"
+        "path": "/tmp/hepta-native-lock-release-precommit-structural.json",
+        "bytes": 1464,
+        "sha256": "b690b68eff9c882e921f846f056d7ac0b035075aceb33a115e06ce4c77a8c5c8"
       }
     },
     "projectionVerification": {
-      "status": "pending-current-source-execution"
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
+      "status": "passed-current-source-local-diagnostic",
+      "generatePassed": true,
+      "verifyPassed": true,
+      "testsPassed": 7,
+      "rawLog": {
+        "path": "/tmp/hepta-native-lock-release-projection-tests.log",
+        "bytes": 736,
+        "sha256": "d1649e52f1cd3dfb557b75c83894f3c1fd8570e792d52a9858589a5c3c0e9b18"
+      }
     },
     "packagePortalTests": {
       "status": "pending-current-source-execution"
     },
     "mapAdapterVerification": {
-      "status": "passed-navigation-migration-guard-regressions-not-global-qualification",
-      "acceptedQualification": false,
-      "nativeImplementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "guardCommittedSourceSha": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
-      "guardCommittedSourceTree": "9fa335e95a577c642683252b00d7f6d23708f5d7",
-      "executionHeadSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
-      "executionScope": "Precommit real-Git behavioral tests of the guard subsequently committed at guardCommittedSourceSha; native product bytes unchanged; local diagnostic only",
-      "total": 90,
-      "passed": 90,
-      "failed": 0,
-      "seconds": 11.608,
-      "supportedExecutionClaimFields": 17,
-      "rawLog": {
-        "path": "/tmp/hepta-implementation-maps-execution-claims.log",
-        "sha256": "57643c8493f6e628ab090e50cd6ff61d07f3997dd83cfc3a99f97ce4cfe3ee34"
-      },
-      "oldCodeBehavioralRegression": {
-        "path": "docs/modules/ui.native/history/20261001-navigation-guard-regression.json",
-        "sha256": "576ba55a9ca69ae4961ec2f302df4a65c0d5664cf8efa6442bc1f0908d881732"
-      },
-      "oldCodeActuallyReboundStaleExecutionClaim": true,
-      "fixedCodeRejectedBeforeAnyMapWrite": true,
-      "globalMapsPassed": false
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
     },
     "globalModuleDocsVerification": {
       "status": "pending-final-clean-check",
       "acceptedQualification": false
     },
     "workflowEntryValidation": {
-      "status": "passed-local-real-Git-head-merge-parser-regressions-awaiting-new-exact-candidate-workflow",
+      "status": "pending-final-review-head-workflow",
       "remoteSevenSubjectQualificationPassed": false,
-      "localTargetedTests": 48,
-      "localTargetedTestsPassed": 48,
-      "rawLog": {
-        "path": "/tmp/hepta-native-heredoc-parser-targeted-tests.log",
-        "sha256": "cf20312e2d3d18058282a75bc025270fff0c8132d7c9e596a9647ca1815dbf8b",
-        "bytes": 7422
-      },
-      "nativeMacShellExecutionRequired": true,
-      "acceptedQualification": false
+      "acceptedQualification": false,
+      "historicalFailedRunId": 36838749224,
+      "historicalResultsInherited": false
     },
     "ciQualificationPassed": false,
     "physicalPlatformAcceptanceComplete": false
@@ -848,6 +866,13 @@
       "sha256": "22c43b425c90adf149504ea558d81bda6edd92a7eb0f061bf7d4f8e2a18b8ac3",
       "implementationSourceSha": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
       "implementationSourceTree": "ca4eb87caf92a2b741a3b8818cf87a19a88bb0dd",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-d544-632d-verification.json",
+      "sha256": "95af54b594c3bdccaec12b00470048d8e360730ac41004baab8e1ea0760f7bfb",
+      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
       "evidenceRole": "historical-only; does not qualify current implementation source"
     }
   ],

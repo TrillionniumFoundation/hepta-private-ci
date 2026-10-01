@@ -10,12 +10,17 @@
       "codex-rs/hepta-private-state/src",
       "codex-rs/utils/private-state/src"
     ],
-    "fileCount": 84,
-    "manifestDigest": "dcc8040a5cd3683ee17f552e4f97f3ea5c4568c7cacb1ffeda98a6dc67ede42f"
+    "fileCount": 96,
+    "manifestDigest": "c732d9329fdd5b1283847edce1bd470506185eb337c70a46761e16621a778d8e"
   },
   "files": [
     {
       "path": "apps/hepta-native/src/file_input.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/journal_macos_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -56,6 +61,11 @@
     },
     {
       "path": "apps/hepta-native/src/private_state_child_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/private_state_macos_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -165,6 +175,11 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/update_lock_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/update_root_storage_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
@@ -175,7 +190,17 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/update_storage_macos_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/update_storage_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_windows_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -325,6 +350,21 @@
       "ownerPackage": "codex-hepta-contracts"
     },
     {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_lock_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_macos_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_unix_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
       "path": "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
       "role": "unit_test",
       "ownerPackage": "codex-hepta-contracts"
@@ -345,7 +385,17 @@
       "ownerPackage": "codex-hepta-contracts"
     },
     {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_macos_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
       "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_unix_tests.rs",
       "role": "unit_test",
       "ownerPackage": "codex-hepta-contracts"
     },
@@ -425,12 +475,22 @@
       "ownerPackage": "codex-hepta-native-gateway"
     },
     {
+      "path": "codex-rs/utils/private-state/src/macos_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-utils-private-state"
+    },
+    {
       "path": "codex-rs/utils/private-state/src/windows.rs",
       "role": "unit_test",
       "ownerPackage": "codex-utils-private-state"
     },
     {
       "path": "codex-rs/utils/private-state/src/windows_acl_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-utils-private-state"
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
       "role": "unit_test",
       "ownerPackage": "codex-utils-private-state"
     }

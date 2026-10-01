@@ -5,8 +5,19 @@ The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 `work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the
 immutable implementation SHA/tree and ADVERSARIAL-AUDIT-20261001.md for findings.
 
-The current ordinary implementation source is `d5445993e9ac96626bf9314053df77eeedb90e4d`, tree
-`4f56b2375ff2a24a07a9edff0fee4135b785581d`. Windows private atomic snapshot/copy publication now validates
+The current ordinary implementation source is `0a129b41c2a2d42ca907ea8257bf780108bc664f`, tree
+`f90313f067446c629b8da50058ee1bd2101e76e7`.
+
+Native update owner, handoff and runner locks now return an opaque
+`updater::UpdateLock` instead of exposing a File. Successful acquisition builds
+one lifetime guard; dropping it explicitly unlocks before closing the handle,
+including a failed post-acquisition root check. Failed acquisition never
+unlocks another owner. Retain the runner guard for the existing orchestration
+scope. Final-use and authority-lease stores also unlock on their last owner
+Drop, including failed trust construction; Arc/token ownership remains intact.
+No retry, test serialization, deadline change or new authority was introduced.
+
+Windows private atomic snapshot/copy publication now validates
 the existing destination and same temporary descriptor before private bytes and
 before commit. Private-source copies recheck their retained source descriptor;
 external installer inputs/targets keep their own policy. The shared Windows
@@ -22,25 +33,47 @@ OS. The strict source/tree/parent/workflow/run/attempt checks remain unchanged.
 Darwin same-descriptor ACL/ownership, Unix NONBLOCK admission, typed Windows
 registrar and the three macOS baseline fixture corrections are retained.
 
-CURRENT_SOURCE.json binds 417 Git blobs, 32 selection paths and 16 local Cargo
-dependencies, inventory SHA256 `8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`. Production, deployment
-and release flags remain false. Fifteen new Windows regression definitions
-(nine native and six utility) need actual execution on this current source.
+CURRENT_SOURCE.json binds 420 Git blobs, 32 selection paths and 16 local Cargo
+dependencies, inventory SHA256 `8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6`. Production, deployment
+and release flags remain false. Fifteen Windows atomic/ACL regressions remain in the new-source target suite;
+passing D544 executions are historical evidence only.
 
-Fresh frozen-source Linux just test/nextest passed 243/243 in 2.467 s (three
-independent scale entries ignored); strict all-target/all-feature Clippy passed
-in 4.59 s. Current qualification tooling ran 240 tests in 14.811 s: 239 passed
-and one Windows-only
-real NTFS junction case was skipped. The locked/offline three-binary release
-build completed in 0.54 s and reuses unchanged Linux production artifacts; self-test and seven actual
-child-fault checks passed with effect, activation and release authority false.
-Complete same-run current-source platform/storage qualification remains pending.
+Precommit Linux diagnostics for the lock repair passed application 245/245
+(2.460 s; three independent scale entries ignored) and strict all-target/all-feature
+Clippy (8.67 s). The exact-copy reduced contracts workspace passed focused 2/2
+and full all-feature 196/196 (1.028 s), scoped fix and strict Clippy. These are
+local diagnostics, not immutable-candidate qualification; the standard owner
+workspace's offline metadata attempt stopped on an unrelated uncached imbl
+package. The public UpdateManager runner API also passed a controlled fork
+red/green with the same harness. Current qualification-tooling Python passed 239/240 in 15.191 s (one Windows
+NTFS-only skip). Three locked/offline release binaries built in 23.09 s; binary
+self-test and seven actual child-fault checks passed locally, with all effect,
+activation and release authority false. A new complete same-run current-source
+platform/storage run and packaged-artifact evidence remain required.
 This is the publication-time metadata capture, before the final workflow completes.
 The current exact-run receipts are attached to [draft PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308).
 The separately committed navigation guard and owner-guide precision repairs are
 `9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9`, tree
 `9fa335e95a577c642683252b00d7f6d23708f5d7`; these scripts and guides are outside
 the frozen native product closure. CI still binds the complete candidate commit.
+
+Historical D544 candidate632d/run36838749224 completed FAILURE. All three
+actual merge subjects matched canonical LF SHA7d22e1fa3576681ae721fe3effb4a30f6806ec2a.
+Linux head (243 application/212 owner), macOS head (254/230), both Windows
+subjects (209/173, including all fifteen named atomic/ACL regressions) and all
+48 storage traces/hard budgets passed. Linux merge failed on update-lock
+contention; macOS merge failed the legacy fixture's precise InvalidTrust
+assertion, without printing its actual variant. Aggregate correctly stopped at
+the failed-subject gate; deep aggregation and acceptance did not run.
+
+Controlled same-Rust flock/fork, public UpdateManager API and actual Store
+alias experiments reproduce the close-only lock lifetime defect. Explicit
+unlock passes while inherited descriptors remain open and preserves the
+successor's lock. These experiments prove a fixable mechanism and API defect;
+the precise original CI scheduling cause remains unproved
+(actualCiCauseProven=false). The original eighteen metadata fields, exact
+platform children and later terminal observation are retained in
+[632d historical record](history/20261001-d544-632d-verification.json); no pass is inherited by this new source.
 
 Historical candidate dc59/run36836809639 completed FAILURE: immutable identity
 and storage succeeded, both macOS subjects failed shell parsing before checks,
@@ -189,6 +222,7 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | validate Windows private atomic temporaries, old destinations and held copy sources; preserve unsafe evidence | `403df62a7bf3ac065f2b0ad21661d08b66b32731` |
 | admit a closed late-ACK pipe only after durable cancellation; preserve every rollback assertion | `ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4` |
 | use fixed LF bytes for cross-OS deterministic merge identity; retain strict validation and refresh shared-owner guide precision | `d5445993e9ac96626bf9314053df77eeedb90e4d` |
+| Explicitly release scoped update and authority-store locks; preserve successor and trust rejection | `0a129b41c2a2d42ca907ea8257bf780108bc664f` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;

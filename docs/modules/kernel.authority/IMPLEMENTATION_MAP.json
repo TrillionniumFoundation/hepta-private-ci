@@ -57,7 +57,7 @@
         "codex-rs/utils/private-state/src/windows.rs"
       ],
       "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback. Current Windows contracts delegate directly to codex-rs/utils/private-state/src/windows.rs, which owns the OS implementation and inline handle/path/confinement tests. codex-rs/hepta-private-state/src/windows.rs is a compatibility reexport of that utility for existing consumers. sourceBase retains historical provenance; sourceObjects/observedAtHead bind current navigation; old values/receipts remain original Git commits; no qualification migration.",
-      "sourceBlob": "fbd86b2ebceacd3a9595718cf06a56df6d564142"
+      "sourceBlob": "e61f1f9e8a5d335e466cbf9a552bdaccdaad298d"
     },
     {
       "operation": "authority_lease_registry",
@@ -72,7 +72,7 @@
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "75fc6549ac04b74ff3ddc0d29e238698b362fb47"
+      "sourceBlob": "af53ba2467ee0da59cce42b4bf15d134ce44efa6"
     },
     {
       "operation": "final_use_approval_verifier",
@@ -287,11 +287,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "d2e4897a4803b2f7a20d3441e9f595934bc04c30"
+      "object": "f7494360ff19c98f835d30d98665fe2df27475e5"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "75fc6549ac04b74ff3ddc0d29e238698b362fb47"
+      "object": "af53ba2467ee0da59cce42b4bf15d134ce44efa6"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -307,7 +307,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "fbd86b2ebceacd3a9595718cf06a56df6d564142"
+      "object": "e61f1f9e8a5d335e466cbf9a552bdaccdaad298d"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
@@ -357,8 +357,8 @@
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "mappingSourceIdentityMode": "exact_blob",
   "observedAtHead": {
-    "commit": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
-    "tree": "9fa335e95a577c642683252b00d7f6d23708f5d7"
+    "commit": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+    "tree": "f90313f067446c629b8da50058ee1bd2101e76e7"
   },
   "observedSourcePaths": [
     "apps/hepta-browser/src/runtime-host.js",

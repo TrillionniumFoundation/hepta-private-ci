@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `d5445993e9ac96626bf9314053df77eeedb90e4d`
-**Implementation tree:** `4f56b2375ff2a24a07a9edff0fee4135b785581d`
+**Immutable implementation source:** `0a129b41c2a2d42ca907ea8257bf780108bc664f`
+**Implementation tree:** `f90313f067446c629b8da50058ee1bd2101e76e7`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -59,7 +59,8 @@ The convergence chain is a normal Git history:
 15. historical private retirement-fixture baseline repair `89c64152c9b971fcaabe98aeb0d24452e1c6e30d`;
 16. Windows private atomic-publication repair `403df62a7bf3ac065f2b0ad21661d08b66b32731`;
 17. cancelled late-ACK fixture repair `ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4`;
-18. current deterministic merge LF identity repair `d5445993e9ac96626bf9314053df77eeedb90e4d`.
+18. historical deterministic merge LF identity repair `d5445993e9ac96626bf9314053df77eeedb90e4d`;
+19. current scoped update and shared-authority lock release repair `0a129b41c2a2d42ca907ea8257bf780108bc664f`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -77,6 +78,13 @@ durable replacement and Darwin private-permission primitives. Shared contracts d
 utility; `hepta-private-state` remains a compatibility export for the native
 application. Domain authority stays with the calling owner. This avoids a
 shared-contract dependency on a product module while preserving OS behavior.
+
+Lock lifetime is independent of descriptor lifetime. Native update guards and
+both persistent authority stores explicitly unlock on owner Drop; a fork-inherited
+or duplicate descriptor must not postpone normal owner release. The production
+contract covers normal std::process::Command fork-to-exec. Arbitrary raw fork
+followed by using or dropping a copied Rust owner is unsupported: flock aliases
+share one lock. The guard is opaque and provides no handle-copy interface.
 
 Windows file validation checks regular-file identity, owner and DACL on the
 same opened handle, including child ACL drift beneath a still-private root.
@@ -508,8 +516,19 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The current ordinary implementation source is `d5445993e9ac96626bf9314053df77eeedb90e4d`, tree
-`4f56b2375ff2a24a07a9edff0fee4135b785581d`. Windows private atomic snapshot/copy publication now validates
+The current ordinary implementation source is `0a129b41c2a2d42ca907ea8257bf780108bc664f`, tree
+`f90313f067446c629b8da50058ee1bd2101e76e7`.
+
+Native update owner, handoff and runner locks now return an opaque
+`updater::UpdateLock` instead of exposing a File. Successful acquisition builds
+one lifetime guard; dropping it explicitly unlocks before closing the handle,
+including a failed post-acquisition root check. Failed acquisition never
+unlocks another owner. Retain the runner guard for the existing orchestration
+scope. Final-use and authority-lease stores also unlock on their last owner
+Drop, including failed trust construction; Arc/token ownership remains intact.
+No retry, test serialization, deadline change or new authority was introduced.
+
+Windows private atomic snapshot/copy publication now validates
 the existing destination and same temporary descriptor before private bytes and
 before commit. Private-source copies recheck their retained source descriptor;
 external installer inputs/targets keep their own policy. The shared Windows
@@ -525,25 +544,47 @@ OS. The strict source/tree/parent/workflow/run/attempt checks remain unchanged.
 Darwin same-descriptor ACL/ownership, Unix NONBLOCK admission, typed Windows
 registrar and the three macOS baseline fixture corrections are retained.
 
-CURRENT_SOURCE.json binds 417 Git blobs, 32 selection paths and 16 local Cargo
-dependencies, inventory SHA256 `8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d`. Production, deployment
-and release flags remain false. Fifteen new Windows regression definitions
-(nine native and six utility) need actual execution on this current source.
+CURRENT_SOURCE.json binds 420 Git blobs, 32 selection paths and 16 local Cargo
+dependencies, inventory SHA256 `8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6`. Production, deployment
+and release flags remain false. Fifteen Windows atomic/ACL regressions remain in the new-source target suite;
+passing D544 executions are historical evidence only.
 
-Fresh frozen-source Linux just test/nextest passed 243/243 in 2.467 s (three
-independent scale entries ignored); strict all-target/all-feature Clippy passed
-in 4.59 s. Current qualification tooling ran 240 tests in 14.811 s: 239 passed
-and one Windows-only
-real NTFS junction case was skipped. The locked/offline three-binary release
-build completed in 0.54 s and reuses unchanged Linux production artifacts; self-test and seven actual
-child-fault checks passed with effect, activation and release authority false.
-Complete same-run current-source platform/storage qualification remains pending.
+Precommit Linux diagnostics for the lock repair passed application 245/245
+(2.460 s; three independent scale entries ignored) and strict all-target/all-feature
+Clippy (8.67 s). The exact-copy reduced contracts workspace passed focused 2/2
+and full all-feature 196/196 (1.028 s), scoped fix and strict Clippy. These are
+local diagnostics, not immutable-candidate qualification; the standard owner
+workspace's offline metadata attempt stopped on an unrelated uncached imbl
+package. The public UpdateManager runner API also passed a controlled fork
+red/green with the same harness. Current qualification-tooling Python passed 239/240 in 15.191 s (one Windows
+NTFS-only skip). Three locked/offline release binaries built in 23.09 s; binary
+self-test and seven actual child-fault checks passed locally, with all effect,
+activation and release authority false. A new complete same-run current-source
+platform/storage run and packaged-artifact evidence remain required.
 This is the publication-time metadata capture, before the final workflow completes.
 The current exact-run receipts are attached to [draft PR #1308](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1308).
 The separately committed navigation guard and owner-guide precision repairs are
 `9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9`, tree
 `9fa335e95a577c642683252b00d7f6d23708f5d7`; these scripts and guides are outside
 the frozen native product closure. CI still binds the complete candidate commit.
+
+Historical D544 candidate632d/run36838749224 completed FAILURE. All three
+actual merge subjects matched canonical LF SHA7d22e1fa3576681ae721fe3effb4a30f6806ec2a.
+Linux head (243 application/212 owner), macOS head (254/230), both Windows
+subjects (209/173, including all fifteen named atomic/ACL regressions) and all
+48 storage traces/hard budgets passed. Linux merge failed on update-lock
+contention; macOS merge failed the legacy fixture's precise InvalidTrust
+assertion, without printing its actual variant. Aggregate correctly stopped at
+the failed-subject gate; deep aggregation and acceptance did not run.
+
+Controlled same-Rust flock/fork, public UpdateManager API and actual Store
+alias experiments reproduce the close-only lock lifetime defect. Explicit
+unlock passes while inherited descriptors remain open and preserves the
+successor's lock. These experiments prove a fixable mechanism and API defect;
+the precise original CI scheduling cause remains unproved
+(actualCiCauseProven=false). The original eighteen metadata fields, exact
+platform children and later terminal observation are retained in
+[632d historical record](history/20261001-d544-632d-verification.json); no pass is inherited by this new source.
 
 Historical candidate dc59/run36836809639 completed FAILURE: immutable identity
 and storage succeeded, both macOS subjects failed shell parsing before checks,
