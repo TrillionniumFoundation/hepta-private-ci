@@ -88,8 +88,8 @@ impl AgentdState {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
                         crate::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2,
-                        1,
-                        0,
+                        /*major*/ 1,
+                        /*minor*/ 0,
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
@@ -97,23 +97,27 @@ impl AgentdState {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
-                            1,
-                            0,
+                            /*major*/ 1,
+                            /*minor*/ 0,
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.evidence.get().is_some() {
                     capabilities.push(
-                        crate::AgentdCapability::new("kernel.evidence", 1, 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "kernel.evidence",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 capabilities.push(
                     crate::AgentdCapability::new(
                         crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY,
-                        1,
-                        0,
+                        /*major*/ 1,
+                        /*minor*/ 0,
                     )
                     .map_err(AgentdError::Protocol)?,
                 );
@@ -127,16 +131,20 @@ impl AgentdState {
                 );
                 if self.objective_runtime.get().is_some() {
                     capabilities.push(
-                        crate::AgentdCapability::new("objective.start", 1, 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "objective.start",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.canonical_intelligence_enabled() {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1,
-                            1,
-                            0,
+                            /*major*/ 1,
+                            /*minor*/ 0,
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
@@ -468,6 +476,7 @@ impl AgentdState {
                         internal_context_attachment(attachment),
                     )
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, /*initialize*/ false);
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunMarkDispatched {
@@ -481,6 +490,7 @@ impl AgentdState {
                     .map_err(poisoned_state)?
                     .mark_dispatched(now_ms()?, &run_id, expected_revision)
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, /*initialize*/ false);
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunCancel {
@@ -495,6 +505,7 @@ impl AgentdState {
                     .map_err(poisoned_state)?
                     .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, /*initialize*/ false);
                 AgentdPayload::RunCancellation(crate::AgentRunCancellation {
                     disposition: wire_cancellation_disposition(disposition),
                     receipt: wire_run_receipt(receipt),
@@ -518,6 +529,7 @@ impl AgentdState {
                         terminal_observed,
                     )
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, /*initialize*/ false);
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunStatus { run_id } => {

@@ -265,6 +265,11 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs](../../../codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs); content-addressed index verification and bounded lookup.
 - [codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs](../../../codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs); pure V2 validation compatibility.
 
+The `exact_destination_recovery_requires_event_predecessor_and_witness` case in
+`production_tests.rs` requires Unix: its fixture opens real ledger/witness
+directory handles and syncs them during prefix catch-up. This test registration
+does not establish Windows durable witness-directory qualification.
+
 In `codex-rs`, run `just test -p codex-hepta-learning-ledger`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.

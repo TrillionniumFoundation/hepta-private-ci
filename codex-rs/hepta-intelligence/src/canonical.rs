@@ -13,12 +13,16 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::time::Instant;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+
+use crate::canonical_budget::CanonicalBudgetClock;
+use crate::canonical_invariants::advisory_decision_digest_v1;
 
 const MAX_CANDIDATES: usize = 128;
 const MAX_SUPPORT_FLOOR_PPM: u32 = 1_000_000;
@@ -209,6 +213,14 @@ pub struct CurrentOwnerStateV1 {
 }
 
 pub trait CanonicalFreshnessOracleV1 {
+    /// Begin one currentness fence. Implementations backed by a signed aggregate
+    /// manifest may read, parse and verify the complete owner universe once and
+    /// serve all `current` calls in this fence from that immutable snapshot.
+    /// The default preserves compatibility for per-owner oracles.
+    fn refresh_snapshot(&mut self, _owner_id: &StableId) -> Result<(), CanonicalIntelligenceError> {
+        Ok(())
+    }
+
     fn current(
         &mut self,
         owner_id: &StableId,
@@ -460,6 +472,9 @@ pub struct CanonicalTerminalReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+// Keep the v1 by-value API stable. This bounded, ephemeral receipt does not
+// justify allocating the ready outcome or breaking existing pattern matches.
+#[allow(clippy::large_enum_variant)]
 pub enum CanonicalRunOutcomeV1 {
     Ready(IntelligenceHostEnvelopeV1),
     Abstained(CanonicalTerminalReceiptV1),
@@ -560,9 +575,28 @@ pub fn build_legal_candidates(
 
 pub fn decide_boundary(
     run_id: &StableId,
-    candidate_set_digest: Digest32,
+    legal: &LegalActionCandidateSetV1,
     intuition: &CanonicalPortReceiptV1,
 ) -> Result<AdvisoryDecisionReceiptV1, CanonicalIntelligenceError> {
+    // The DTO is public and mutable. Recompute its canonical digest before use;
+    // possession of a digest alone is not proof of candidate membership.
+    let rebuilt = build_legal_candidates(LegalActionCandidateSetRequestV1 {
+        candidate_set_id: legal.candidate_set_id.clone(),
+        state_digest: legal.state_digest,
+        generator_id: legal.generator_id.clone(),
+        grammar_digest: legal.grammar_digest,
+        candidates: legal.candidates.clone(),
+        support_floor_ppm: legal.support_floor_ppm,
+    })?;
+    if legal.authority.grants_any() {
+        return Err(CanonicalIntelligenceError::AuthorityWidening);
+    }
+    if rebuilt.candidate_set_digest != legal.candidate_set_digest {
+        return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "digest mismatch",
+        ));
+    }
+    let candidate_set_digest = rebuilt.candidate_set_digest;
     if intuition.stage != CanonicalStageV1::IntuitionDecided {
         return Err(CanonicalIntelligenceError::StageMismatch);
     }
@@ -579,40 +613,42 @@ pub fn decide_boundary(
         CanonicalPortDecisionV1::Selected {
             candidate_id,
             propensity,
-        } => AdvisoryDecisionV1::Selected {
-            candidate_id: candidate_id.clone(),
-            propensity: *propensity,
-        },
+        } => {
+            if !rebuilt
+                .candidates
+                .iter()
+                .any(|candidate| &candidate.candidate_id == candidate_id)
+            {
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "selected candidate absent",
+                ));
+            }
+            if propensity.raw() == 0 {
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "selected propensity is zero",
+                ));
+            }
+            AdvisoryDecisionV1::Selected {
+                candidate_id: candidate_id.clone(),
+                propensity: *propensity,
+            }
+        }
         CanonicalPortDecisionV1::Abstained => AdvisoryDecisionV1::Abstained,
         CanonicalPortDecisionV1::SlowPath => AdvisoryDecisionV1::SlowPath,
         CanonicalPortDecisionV1::Continue => {
             return Err(CanonicalIntelligenceError::UnexpectedDecision);
         }
     };
-    let mut bytes = b"hepta.intelligence.advisory-decision.v1\0".to_vec();
-    push_id(&mut bytes, run_id)?;
-    bytes.extend_from_slice(candidate_set_digest.as_array());
-    bytes.extend_from_slice(intuition.output_digest.as_array());
-    match &decision {
-        AdvisoryDecisionV1::Selected {
-            candidate_id,
-            propensity,
-        } => {
-            bytes.push(0);
-            push_id(&mut bytes, candidate_id)?;
-            bytes.extend_from_slice(&propensity.raw().to_be_bytes());
-        }
-        AdvisoryDecisionV1::Abstained => bytes.push(1),
-        AdvisoryDecisionV1::SlowPath => bytes.push(2),
-    }
-    Ok(AdvisoryDecisionReceiptV1 {
+    let mut receipt = AdvisoryDecisionReceiptV1 {
         run_id: run_id.clone(),
         candidate_set_digest,
         intuition_receipt_digest: intuition.output_digest,
         decision,
-        decision_digest: Digest32::of_bytes(&bytes),
+        decision_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
-    })
+    };
+    receipt.decision_digest = advisory_decision_digest_v1(&receipt)?;
+    Ok(receipt)
 }
 
 pub fn assemble_context(
@@ -628,8 +664,19 @@ pub fn assemble_context(
     if context.output_digest.is_zero() || decision.decision_digest.is_zero() {
         return Err(CanonicalIntelligenceError::EmptyDigest("context"));
     }
-    if context.authority.grants_any() {
+    if context.predecessor_digest != decision.intuition_receipt_digest {
+        return Err(CanonicalIntelligenceError::PredecessorMismatch);
+    }
+    if context.authority.grants_any() || decision.authority.grants_any() {
         return Err(CanonicalIntelligenceError::AuthorityWidening);
+    }
+    if advisory_decision_digest_v1(decision)? != decision.decision_digest {
+        return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "decision digest",
+        ));
+    }
+    if !matches!(context.decision, CanonicalPortDecisionV1::Continue) {
+        return Err(CanonicalIntelligenceError::UnexpectedDecision);
     }
     if !matches!(decision.decision, AdvisoryDecisionV1::Selected { .. }) {
         return Err(CanonicalIntelligenceError::UnexpectedDecision);
@@ -651,8 +698,12 @@ pub fn validate_current_snapshot<O: CanonicalFreshnessOracleV1>(
     snapshot: &CanonicalIntelligenceSnapshotV1,
     oracle: &mut O,
 ) -> Result<(), CanonicalIntelligenceError> {
+    let first = snapshot.binding(REQUIRED_OWNERS[0])?;
+    oracle
+        .refresh_snapshot(&first.owner_id)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(first.owner_id.clone()))?;
     for owner in REQUIRED_OWNERS {
-        require_current(snapshot, oracle, owner)?;
+        require_current_from_snapshot(snapshot, oracle, owner)?;
     }
     Ok(())
 }
@@ -662,6 +713,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
     ports: &mut P,
     oracle: &mut O,
 ) -> Result<CanonicalRunOutcomeV1, CanonicalIntelligenceError> {
+    let clock = CanonicalBudgetClock::start(request.budget.total_micros, request.run_id.as_str());
     request.budget.validate()?;
     if request.snapshot.objective_digest() != request.legal_candidates.state_digest {
         return Err(CanonicalIntelligenceError::InvalidCandidateSet(
@@ -676,7 +728,16 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
 
     macro_rules! stage {
         ($stage:expr, $call:expr) => {{
-            let receipt = run_stage(&request, &legal, predecessor, $stage, ports, oracle, $call)?;
+            let input = CanonicalPortInputV1 {
+                run_id: request.run_id.clone(),
+                snapshot_digest,
+                objective_digest: request.snapshot.objective_digest(),
+                candidate_set_digest: legal.candidate_set_digest,
+                predecessor_digest: predecessor,
+                budget_micros: request.budget.for_stage($stage),
+                stage: $stage,
+            };
+            let receipt = run_stage(&request.snapshot, &input, &clock, ports, oracle, $call)?;
             predecessor = receipt.output_digest;
             output.insert($stage, receipt.output_digest);
             traces.push(CanonicalStageTraceV1 {
@@ -709,10 +770,12 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         CanonicalStageV1::IntuitionDecided,
         |ports: &mut P, input| ports.decide_intuition(input)
     );
-    let decision = decide_boundary(&request.run_id, legal.candidate_set_digest, &intuition)?;
+    let decision = decide_boundary(&request.run_id, &legal, &intuition)?;
 
     match decision.decision {
         AdvisoryDecisionV1::Abstained | AdvisoryDecisionV1::SlowPath => {
+            validate_current_snapshot(&request.snapshot, oracle)?;
+            clock.check_total(CanonicalStageV1::IntuitionDecided)?;
             let trace_digest = digest_trace(
                 &request.run_id,
                 snapshot_digest,
@@ -727,6 +790,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
                 trace_digest,
                 authority: AuthorityPosture::DENY_ALL,
             };
+            clock.check_total(CanonicalStageV1::IntuitionDecided)?;
             return Ok(match decision.decision {
                 AdvisoryDecisionV1::Abstained => CanonicalRunOutcomeV1::Abstained(terminal),
                 AdvisoryDecisionV1::SlowPath => CanonicalRunOutcomeV1::SlowPath(terminal),
@@ -747,10 +811,10 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
 
     // Revalidate every owner once more at the product handoff boundary. A
     // revocation, key rotation or owner generation change after its own stage
-    // but before Agentd use must fail closed.
-    for owner in REQUIRED_OWNERS {
-        require_current(&request.snapshot, oracle, owner)?;
-    }
+    // but before Agentd use must fail closed. The aggregate oracle refreshes
+    // once for this fence and serves all seven reads from one signed snapshot.
+    validate_current_snapshot(&request.snapshot, oracle)?;
+    clock.check_total(CanonicalStageV1::EvaluationAdmitted)?;
 
     let trace_digest = digest_trace(
         &request.run_id,
@@ -783,7 +847,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         bytes.extend_from_slice(digest.as_array());
     }
 
-    Ok(CanonicalRunOutcomeV1::Ready(IntelligenceHostEnvelopeV1 {
+    let envelope = IntelligenceHostEnvelopeV1 {
         run_id: request.run_id,
         snapshot_digest,
         objective_digest: request.snapshot.objective_digest(),
@@ -798,14 +862,15 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         trace_digest,
         envelope_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    }))
+    };
+    clock.check_total(CanonicalStageV1::EvaluationAdmitted)?;
+    Ok(CanonicalRunOutcomeV1::Ready(envelope))
 }
 
 fn run_stage<P, O, F>(
-    request: &CanonicalIntelligenceRunRequestV1,
-    legal: &LegalActionCandidateSetV1,
-    predecessor: Digest32,
-    stage: CanonicalStageV1,
+    snapshot: &CanonicalIntelligenceSnapshotV1,
+    input: &CanonicalPortInputV1,
+    clock: &CanonicalBudgetClock,
     ports: &mut P,
     oracle: &mut O,
     call: F,
@@ -818,24 +883,21 @@ where
         &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1>,
 {
+    let stage = input.stage;
     let owner = stage.owner();
-    require_current(&request.snapshot, oracle, owner)?;
-    let input = CanonicalPortInputV1 {
-        run_id: request.run_id.clone(),
-        snapshot_digest: request.snapshot.digest(),
-        objective_digest: request.snapshot.objective_digest(),
-        candidate_set_digest: legal.candidate_set_digest,
-        predecessor_digest: predecessor,
-        budget_micros: request.budget.for_stage(stage),
+    clock.check_total(stage)?;
+    require_current(snapshot, oracle, owner)?;
+    clock.check_total(stage)?;
+    let started = Instant::now();
+    let result = call(ports, input);
+    // Check elapsed time before propagating either owner success or failure.
+    clock.check_stage(input, started)?;
+    let receipt = result.map_err(|failure| CanonicalIntelligenceError::PortFailure {
         stage,
-    };
-    let receipt =
-        call(ports, &input).map_err(|failure| CanonicalIntelligenceError::PortFailure {
-            stage,
-            class: failure.class,
-            evidence_digest: failure.evidence_digest,
-        })?;
-    validate_port_receipt(&input, owner, &receipt)?;
+        class: failure.class,
+        evidence_digest: failure.evidence_digest,
+    })?;
+    validate_port_receipt(input, owner, &receipt)?;
     match stage {
         CanonicalStageV1::IntuitionDecided => {
             if matches!(receipt.decision, CanonicalPortDecisionV1::Continue) {
@@ -848,7 +910,8 @@ where
             }
         }
     }
-    require_current(&request.snapshot, oracle, owner)?;
+    require_current(snapshot, oracle, owner)?;
+    clock.check_total(stage)?;
     Ok(receipt)
 }
 
@@ -879,6 +942,18 @@ fn validate_port_receipt(
 }
 
 fn require_current<O: CanonicalFreshnessOracleV1>(
+    snapshot: &CanonicalIntelligenceSnapshotV1,
+    oracle: &mut O,
+    owner: &'static str,
+) -> Result<(), CanonicalIntelligenceError> {
+    let expected = snapshot.binding(owner)?;
+    oracle
+        .refresh_snapshot(&expected.owner_id)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(expected.owner_id.clone()))?;
+    require_current_from_snapshot(snapshot, oracle, owner)
+}
+
+fn require_current_from_snapshot<O: CanonicalFreshnessOracleV1>(
     snapshot: &CanonicalIntelligenceSnapshotV1,
     oracle: &mut O,
     owner: &'static str,

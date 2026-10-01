@@ -19,6 +19,8 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
+mod pre_dispatch_defer;
+mod reconciliation_cursor;
 mod sqlite;
 
 pub use destination_dedupe::DestinationApplyStart;
@@ -30,6 +32,7 @@ pub use durable_model::DestinationApplyReceipt;
 pub use durable_model::DestinationOperationIdentity;
 pub use durable_model::DispatchClaim;
 pub use durable_model::DispatchEffect;
+pub use durable_model::DurableFailureClass;
 pub use durable_model::DurableOperationError;
 pub use durable_model::DurableOperationRecord;
 pub use durable_model::DurableOperationState;
@@ -44,8 +47,11 @@ pub use durable_model::OutboxStatusV1;
 pub use durable_model::PrepareDisposition;
 pub use durable_model::PreparedIntent;
 pub use durable_model::ReconciliationReceiptV1;
+pub use durable_model::RecoveryDisposition;
 pub use durable_store::AuthorizedDispatch;
+pub use durable_store::DurableOperationClock;
 pub use durable_store::DurableOperationStore;
+pub use durable_store::SystemDurableOperationClock;
 pub use error::OperationError;
 pub use ledger::MAX_MODEL_OPERATION_RECORDS;
 pub use ledger::OperationLedger;
@@ -61,6 +67,8 @@ pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
+pub use reconciliation_cursor::UnsettledOperationCursorV1;
+pub use reconciliation_cursor::UnsettledOperationPageV1;
 
 #[cfg(test)]
 mod exact_claim_tests;

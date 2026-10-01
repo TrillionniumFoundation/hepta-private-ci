@@ -35,6 +35,10 @@ class SourceIdentityTests(unittest.TestCase):
         self.git("config", "user.name", "Source identity test")
         self.git("config", "user.email", "source-test@example.invalid")
         self.git("config", "commit.gpgsign", "false")
+        # Disposable repos must not leave background maintenance writing pack
+        # files after a command returns and TemporaryDirectory cleanup starts.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.modules = [self.module("alpha"), self.module("beta")]
         self.write("docs/modules/MODULES.json", {"modules": self.modules})
         self.write(
@@ -133,10 +137,10 @@ class SourceIdentityTests(unittest.TestCase):
         self.save_maps()
         self.commit("update map")
 
-    def verify(self):
+    def verify(self, **kwargs):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            maps.verify()
+            maps.verify(**kwargs)
         return json.loads(output.getvalue())
 
     def reject(self):
@@ -389,9 +393,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
         current = self.commit("change exact blob implementation")
         result = self.migrate(["alpha"])
-        self.assertEqual(
-            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
-        )
+        self.assertEqual(result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
         migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(migrated["sourceBase"], provenance)
         self.assertEqual(migrated["observedAtHead"], current)
@@ -403,9 +405,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         result = self.verify()
         self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
 
-        before = (
-            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
-        ).read_bytes()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         self.write("README.md", "later prose must not rewrite provenance\n")
         self.commit("prose after exact blob observation")
         self.assertEqual(self.migrate(["alpha"])["migrated"], 0)

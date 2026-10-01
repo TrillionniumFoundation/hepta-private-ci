@@ -5,10 +5,22 @@ use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_kg::KnowledgeNodeV2;
+use codex_hepta_kg::KnowledgeProjectionInputV2;
+use codex_hepta_kg::KnowledgeSupportV2;
+use codex_hepta_kg::build_complete_generation;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_prompt_registry::FactorSource;
 use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
@@ -18,6 +30,8 @@ use codex_hepta_prompt_registry::final_use_admission_binding;
 use codex_hepta_prompt_registry::final_use_realization_binding;
 use codex_hepta_prompt_registry::final_use_revoke_binding;
 use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -27,6 +41,18 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+pub(crate) struct ByteTokenizer(pub(crate) Digest32);
+
+impl ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        self.0
+    }
+
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        u64::try_from(bytes.len()).map_err(|_| ContextCompilerV2Error::InvalidSerializedTokenCount)
+    }
 }
 
 pub(crate) fn admitted_registry(
@@ -184,6 +210,31 @@ pub(crate) struct CanonicalSelection {
     pub(crate) exercise_request: PromptExerciseRequestV1,
 }
 
+fn signed_prompt_evidence(
+    verifier: &LearningEvidenceVerifierV1,
+    signing_key: &SigningKey,
+    evidence_id: &str,
+    role: LearningEvidenceRoleV1,
+    payload: &[u8],
+    now: u64,
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id(evidence_id),
+        principal_id: id("prompt:test-pricing"),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: verifier.scope_digest(),
+        objective_digest: verifier.objective_digest(),
+        authority_epoch: 1,
+        issued_at: now,
+        expires_at: 9_000,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = signing_key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
+}
+
 pub(crate) fn canonical_selection(
     registry: &DurablePromptRegistry,
     tuple: &PromptModelTupleV2,
@@ -204,29 +255,139 @@ pub(crate) fn canonical_selection(
         },
     )
     .expect("enumerate current registry");
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:1"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![id("factor:verify")],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: 9_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
-        objective_digest: digest("objective"),
-        state_digest: digest("state"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
-        generation_vector_digest: digest("generation-vector"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
+    let signing_key = SigningKey::from_bytes(&[26; 32]);
+    let public_key = signing_key.verifying_key().to_bytes();
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: digest("scope:prompt-pricing"),
+        objective_digest: candidates.receipt.objective_digest,
+        authority_epoch: 1,
+        signers: vec![TrustedLearningSignerV1 {
+            principal: AuthenticatedPrincipalV1 {
+                principal_id: id("prompt:test-pricing"),
+                credential_chain_digest: digest("credential:prompt-pricing"),
+                signing_key_digest: Digest32::of_bytes(&public_key),
+                scope_digest: digest("scope:prompt-pricing"),
+                authority_epoch: 1,
+                authenticated_at: 1,
+                expires_at: 9_000,
+            },
+            controller_id: id("controller:prompt-pricing"),
+            verifying_key: public_key,
+            roles: vec![
+                LearningEvidenceRoleV1::Generator,
+                LearningEvidenceRoleV1::Evaluator,
+            ],
+            revoked_at: None,
+        }],
+    })
+    .expect("prompt pricing verifier");
+    let completeness = CandidateSetCompletenessReceiptV1 {
+        set_id: candidates.receipt.set_id.clone(),
+        state_digest: candidates.receipt.state_digest,
+        generator_id: id("prompt.optimizer"),
+        generator_code_digest: digest("prompt-generator-code"),
+        grammar_digest: candidates.receipt.selection_grammar_digest,
+        hard_filter_digest: digest("prompt-hard-filter"),
+        truncation_digest: digest("prompt-truncation"),
+        candidates_digest: candidates.candidates_digest,
+        candidate_count: u32::try_from(candidates.candidates.len()).expect("candidate count"),
+        omitted_count_bound: candidates.omitted_count,
+        canonical_order_digest: candidates.canonical_order_digest,
+        complete_for_generator: true,
     };
+    let completeness_evidence = signed_prompt_evidence(
+        &verifier,
+        &signing_key,
+        "evidence:prompt-completeness",
+        LearningEvidenceRoleV1::Generator,
+        &candidate_completeness_signing_payload_v1(&completeness).expect("completeness payload"),
+        now,
+    );
+    let mut pricing_evidence = PromptPricingEvidenceV1 {
+        factor_id: id("factor:verify"),
+        state_digest: candidates.receipt.state_digest,
+        model_tuple_digest: tuple.digest(),
+        expected_incremental_utility_q32: FixedQ32::ONE,
+        downside_q32: FixedQ32::ZERO,
+        confidence_lower_q32: FixedQ32::ONE,
+        confidence_upper_q32: FixedQ32::ONE,
+        support_count: 1,
+        latency_cost_micros: 0,
+        interference_ppm: 0,
+        context_crowding_cost_q32: FixedQ32::ZERO,
+        privacy_cost_q32: FixedQ32::ZERO,
+        instability_cost_q32: FixedQ32::ZERO,
+        future_context_option_cost_q32: FixedQ32::ZERO,
+        support_audit_digest: digest("support:prompt-pricing"),
+        evidence: completeness_evidence.clone(),
+    };
+    pricing_evidence.evidence = signed_prompt_evidence(
+        &verifier,
+        &signing_key,
+        "evidence:prompt-pricing",
+        LearningEvidenceRoleV1::Evaluator,
+        &pricing_evidence_signing_payload_v1(&pricing_evidence),
+        now,
+    );
+    let priced = price_factors_v1(
+        candidates,
+        &completeness,
+        &completeness_evidence,
+        vec![pricing_evidence],
+        &verifier,
+        &PromptPricingPolicyV1 {
+            policy_id: id("pricing-policy:prompt"),
+            token_cost_per_token_q32: FixedQ32::ZERO,
+            latency_cost_per_micro_q32: FixedQ32::ZERO,
+            interference_cost_per_ppm_q32: FixedQ32::ZERO,
+            downside_weight_q32: FixedQ32::ZERO,
+            minimum_support_count: 1,
+            maximum_interference_ppm: 0,
+        },
+        now,
+    )
+    .expect("price authenticated prompt evidence");
+    let graph = build_complete_generation(
+        Generation::new(/*value*/ 1).expect("knowledge generation"),
+        KnowledgeProjectionInputV2 {
+            source_snapshot_digest: digest("prompt-knowledge-source"),
+            generation_vector_digest: priced.candidates.generation_vector_digest,
+            graph_profile_digest: digest("prompt-knowledge-profile"),
+            complete_source_cut: true,
+            nodes: vec![KnowledgeNodeV2 {
+                node_id: id("factor:verify"),
+                node_kind_id: id("kind:prompt-factor"),
+                payload_digest: digest("node:factor:verify"),
+                supports: vec![KnowledgeSupportV2 {
+                    source_id: id("source:prompt-knowledge"),
+                    source_revision: Revision::new(/*value*/ 1)
+                        .expect("knowledge support revision"),
+                    source_fact_digest: digest("fact:factor:verify"),
+                    validity_digest: digest("validity:factor:verify"),
+                    valid_from_unix_seconds: None,
+                    valid_to_unix_seconds: None,
+                    tombstoned: false,
+                }],
+            }],
+            edges: Vec::new(),
+        },
+    )
+    .expect("complete prompt interaction generation");
+    let portfolio = select_portfolio_v1(
+        &priced,
+        &graph,
+        Vec::new(),
+        &verifier,
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:1"),
+            graph_query_id: id("query:prompt-interactions"),
+            token_budget: 4,
+            maximum_selected_factors: 1,
+            requested_valid_until_unix_ms: 9_000,
+        },
+        now,
+    )
+    .expect("select authenticated prompt portfolio");
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: digest("state"),
@@ -250,7 +411,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
     let selected = canonical_selection(&registry, &tuple, 100);
 
-    let output = compile_prompt_registry_v2(
+    let output = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -267,12 +428,13 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 512,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 512,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer(tuple.tokenizer_digest),
     )
     .expect("compile exercised prompt registry context");
 
@@ -314,6 +476,80 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
             .windows(payload.len())
             .any(|window| window == payload)
     );
+
+    let mut substituted = output.clone();
+    let delivery = &mut substituted.selected_deliveries[0];
+    delivery.payload = b"Unadmitted replacement instruction.".to_vec();
+    delivery.binding.payload_digest = Digest32::of_bytes(&delivery.payload);
+    delivery.delivery_digest = delivery.compute_digest();
+    delivery
+        .validate()
+        .expect("self-consistent compatibility DTO");
+    substituted.delivery_set_digest = substituted.compute_delivery_set_digest();
+    assert!(matches!(
+        substituted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
+
+    let mut substituted = output.clone();
+    substituted.exercise_receipt_digest = digest("foreign-exercise-receipt");
+    substituted.delivery_set_digest = substituted.compute_delivery_set_digest();
+    assert!(matches!(
+        substituted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
+
+    let mut substituted = output.clone();
+    substituted.compatible.snapshot_digest = digest("foreign-registry-snapshot");
+    substituted.compatible.set_digest = substituted.compatible.compute_set_digest();
+    substituted
+        .compatible
+        .validate()
+        .expect("self-consistent foreign snapshot");
+    substituted.delivery_set_digest = substituted.compute_delivery_set_digest();
+    assert!(matches!(
+        substituted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
+
+    let other = compile_prompt_registry_with_tokenizer_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        PromptRegistryCompilationRequestV2 {
+            compilation_id: id("compilation:prompt:other"),
+            serialization_id: id("serialization:prompt:other"),
+            attachment_id: id("attachment:prompt:other"),
+            registry_model_tuple: tuple.clone(),
+            context_model_profile: output.model_profile.clone(),
+            now_unix_ms: 100,
+            token_budget: 256,
+            truncation_policy_digest: digest("truncation"),
+        },
+        &ByteTokenizer(tuple.tokenizer_digest),
+    )
+    .expect("independently valid compilation from the same registry source");
+    other.validate().expect("other compilation validates");
+    assert_eq!(other.compatible, output.compatible);
+    assert_eq!(
+        other.exercise_receipt_digest,
+        output.exercise_receipt_digest
+    );
+    let mut grafted = output.clone();
+    grafted.portfolio_receipt_digest = other.portfolio_receipt_digest;
+    grafted.compiled = other.compiled;
+    grafted.model_profile = other.model_profile;
+    grafted.selected_deliveries = other.selected_deliveries;
+    grafted.serialized_payload = other.serialized_payload;
+    grafted.serialization = other.serialization;
+    grafted.serialized_context = other.serialized_context;
+    grafted.attachment = other.attachment;
+    grafted.delivery_set_digest = grafted.compute_delivery_set_digest();
+    assert_ne!(grafted.delivery_set_digest, output.delivery_set_digest);
+    assert!(matches!(
+        grafted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
 
     let factor_v1 = registry
         .registry()
@@ -385,7 +621,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
         )
         .expect("final-use revocation");
 
-    let error = compile_prompt_registry_v2(
+    let error = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -408,6 +644,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
             token_budget: 128,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer(tuple.tokenizer_digest),
     )
     .expect_err("stale exercised selection must not deliver");
     assert!(matches!(
@@ -424,7 +661,7 @@ fn compiler_rejects_registry_and_context_model_drift() {
         admitted_registry(&root, b"Bound instruction");
     let selected = canonical_selection(&registry, &tuple, 100);
 
-    let error = compile_prompt_registry_v2(
+    let error = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -447,6 +684,7 @@ fn compiler_rejects_registry_and_context_model_drift() {
             token_budget: 128,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer(tuple.tokenizer_digest),
     )
     .expect_err("model drift must fail");
     assert!(matches!(

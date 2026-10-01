@@ -28,6 +28,10 @@ pub struct AuthBusAuthorityStore {
 }
 
 impl AuthBusAuthorityStore {
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "the AuthBus owner migration to codex-state is tracked separately"
+    )]
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
         let options = SqliteConnectOptions::new()
             .filename(path)
@@ -521,7 +525,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
 fn is_unique_violation(error: &sqlx::Error) -> bool {
     error
         .as_database_error()
-        .is_some_and(|database| database.is_unique_violation())
+        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
 }
 
 pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {

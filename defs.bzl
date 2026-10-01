@@ -178,6 +178,64 @@ workspace_root_test = rule(
     },
 )
 
+def _unit_test_crate_deps(replacements, normal_dev = False):
+    if not replacements:
+        return all_crate_deps(normal = True, normal_dev = normal_dev)
+
+    # all_crate_deps can return a select, which cannot be filtered. Preserve
+    # the generated common/platform buckets before replacing test-only edges.
+    replacements = {str(Label(source)): target for source, target in replacements.items()}
+    dep_data = DEP_DATA.get(native.package_name())
+    kinds = ["deps", "dev_deps"] if normal_dev else ["deps"]
+    common = {}
+    platforms = {}
+    seen = {}
+    for kind in kinds:
+        for dep in dep_data.get(kind, []):
+            label = str(Label(dep))
+            seen[label] = True
+            common[replacements.get(label, dep)] = True
+        for platform, deps in dep_data.get(kind + "_by_platform", {}).items():
+            branch = platforms.setdefault(platform, {})
+            for dep in deps:
+                label = str(Label(dep))
+                seen[label] = True
+                branch[replacements.get(label, dep)] = True
+    for source in replacements:
+        if source not in seen:
+            fail("unit-test dependency replacement is not declared: {}".format(source))
+    common = sorted(common)
+    if not platforms:
+        return common
+    branches = {
+        platform: sorted([dep for dep in deps if dep not in common])
+        for platform, deps in platforms.items()
+    }
+    branches["//conditions:default"] = []
+    return common + select(branches)
+
+def _unit_test_crate_aliases(replacements, normal_dev = False):
+    replacements = {str(Label(source)): target for source, target in replacements.items()}
+    dep_data = DEP_DATA.get(native.package_name())
+    kinds = ["deps", "dev_deps"] if normal_dev else ["deps"]
+    declared = {}
+    for kind in kinds:
+        for dep in dep_data.get(kind, []):
+            declared[str(Label(dep))] = True
+        for deps in dep_data.get(kind + "_by_platform", {}).values():
+            for dep in deps:
+                declared[str(Label(dep))] = True
+    aliases = {}
+    for source, alias in dep_data.get("aliases", {}).items():
+        label = str(Label(source))
+        if label not in declared:
+            continue
+        target = replacements.get(label, source)
+        if target in aliases and aliases[target] != alias:
+            fail("unit-test dependency replacement has conflicting aliases: {}".format(target))
+        aliases[target] = alias
+    return aliases
+
 def codex_rust_crate(
         name,
         crate_name,
@@ -198,6 +256,9 @@ def codex_rust_crate(
         integration_compile_data_extra = [],
         integration_test_args = [],
         unit_test_args = [],
+        unit_test_library_features = None,
+        unit_test_deps_replacements = {},
+        unit_test_library_visibility = ["//visibility:private"],
         binary_test_target_compatible_with = [],
         integration_test_timeout = None,
         test_data_extra = [],
@@ -220,10 +281,10 @@ def codex_rust_crate(
             Example: `app-server`.
         crate_name: Cargo crate name from Cargo.toml
             Example: `codex_app_server`.
-        crate_features: Cargo features to enable for this crate.
-            Crates are only compiled in a single configuration across the workspace, i.e.
-            with all features in this list enabled. So use sparingly, and prefer to refactor
-            optional functionality to a separate crate.
+        crate_features: Cargo features for the production crate configuration.
+            Use sparingly, and prefer to refactor optional functionality to a
+            separate crate. Fixture features can instead opt into the separate
+            testonly unit-test library below.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
@@ -242,6 +303,16 @@ def codex_rust_crate(
         integration_compile_data_extra: Extra compile_data for integration tests.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
+        unit_test_library_features: Optional additional features for a separate
+            testonly library used by this crate's library unit tests. None keeps
+            the default library. Production binaries and integration tests do
+            not use this variant.
+        unit_test_deps_replacements: Generated dependency label replacements
+            for that testonly library and its unit test, including platform
+            and dev buckets. Shared Rust types require the same variants along
+            every affected edge; production dependencies remain unchanged.
+        unit_test_library_visibility: Narrow consumer visibility for the
+            generated <name>-unit-test-lib; the library is always testonly.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
         integration_test_timeout: Optional Bazel timeout for integration test
             targets generated from `tests/*.rs`.
@@ -336,15 +407,43 @@ def codex_rust_crate(
         unit_test_name = name + "-unit-tests"
         unit_test_binary = name + "-unit-tests-bin"
         unit_test_shard_count = _test_shard_count(test_shard_counts, unit_test_name)
+        unit_test_crate = name
+        unit_test_features = crate_features
+        unit_test_deps = all_crate_deps(normal = True, normal_dev = True)
+        unit_test_rule_kwargs = {}
+        if unit_test_library_features != None or unit_test_deps_replacements:
+            unit_test_crate = ":" + name + "-unit-test-lib"
+            unit_test_features = crate_features + (unit_test_library_features or [])
+            unit_test_deps = _unit_test_crate_deps(unit_test_deps_replacements, normal_dev = True)
+            unit_test_rule_kwargs["aliases"] = _unit_test_crate_aliases(unit_test_deps_replacements, normal_dev = True)
+
+            # rust_test(crate=...) inherits its library's deps. Replacing only
+            # the test rule's deps would retain the production crate identity.
+            lib_rule(
+                name = name + "-unit-test-lib",
+                testonly = True,
+                crate_name = crate_name,
+                crate_features = unit_test_features,
+                deps = _unit_test_crate_deps(unit_test_deps_replacements) + maybe_deps + deps_extra,
+                aliases = _unit_test_crate_aliases(unit_test_deps_replacements),
+                compile_data = compile_data,
+                data = lib_data_extra,
+                srcs = lib_srcs,
+                edition = crate_edition,
+                rustc_flags = rustc_flags_extra,
+                rustc_env = rustc_env,
+                rustc_env_files = rustc_env_files,
+                visibility = unit_test_library_visibility,
+            )
 
         # Shard at the workspace_root_test layer. rules_rust's sharding wrapper
         # expects to run from its own runfiles cwd, while workspace_root_test
         # deliberately changes cwd so Insta sees Cargo-like snapshot paths.
         rust_test(
             name = unit_test_binary,
-            crate = name,
-            crate_features = crate_features,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            crate = unit_test_crate,
+            crate_features = unit_test_features,
+            deps = unit_test_deps + maybe_deps + deps_extra,
             # Unit tests also compile to standalone Windows executables, so
             # keep their stack reserve aligned with binaries and integration
             # tests under gnullvm.
@@ -359,6 +458,7 @@ def codex_rust_crate(
             rustc_env = rustc_env,
             data = test_data_extra,
             tags = test_tags + ["manual"],
+            **unit_test_rule_kwargs
         )
 
         unit_test_kwargs = {}

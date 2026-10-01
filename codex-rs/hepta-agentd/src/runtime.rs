@@ -40,6 +40,7 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let intelligence_learning = config.take_intelligence_learning_runtime();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -77,8 +78,15 @@ pub async fn run(
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let intuition_policy_host = config.intuition_policy_host();
+    let intelligence_execution = config.intelligence_execution_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    crate::intelligence_profile::validate_runtime_profile_shape(
+        intelligence_product.is_some(),
+        intelligence_invocation.is_some(),
+        intelligence_learning.is_some(),
+        intelligence_execution.is_some(),
+    )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -106,6 +114,11 @@ pub async fn run(
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
     }
+    if let Some(host) = intelligence_execution {
+        state.intelligence_execution.set(host).map_err(|_| {
+            AgentdError::Invalid("intelligence execution host already attached".to_string())
+        })?;
+    }
     if let Some(runner) = intelligence_product {
         state.intelligence_product.set(runner).map_err(|_| {
             AgentdError::Invalid("intelligence product runner already attached".to_string())
@@ -115,6 +128,11 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+        if let Some(runner) = state.intelligence_product.get() {
+            runner
+                .telemetry()
+                .set_provider_configured(/*configured*/ true);
+        }
     }
     if let Some(current) = retrieval_context {
         state
@@ -167,12 +185,6 @@ pub async fn run(
         let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
             &identity, &path,
         )?);
-        let current_generation = state.current_generation()?;
-        host.reconcile(
-            &state,
-            current_generation,
-            crate::authbus_ingress::now_ms()?,
-        )?;
         state
             .objective_runtime
             .set(host)
@@ -249,6 +261,20 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(runtime) = intelligence_learning {
+            let (host, interval, max_batch, metrics) = runtime.into_parts();
+            tasks.spawn_required(
+                "intelligence-learning-reconciler",
+                crate::intelligence_learning_runtime::run_intelligence_learning_runtime_v1(
+                    host,
+                    Arc::clone(&state),
+                    interval,
+                    max_batch,
+                    metrics,
+                    cancellation.clone(),
+                ),
+            )?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",
@@ -411,7 +437,7 @@ async fn run_production_operation_reconciler(
     loop {
         // Reconcile immediately after startup/restart, then at a bounded
         // cadence. Agentd never dispatches from this recovery loop.
-        host.reconcile(256).await?;
+        host.reconcile(/*limit*/ 256).await?;
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}
@@ -448,7 +474,8 @@ async fn monitor_runtime(
                             &state,
                             state.current_generation()?,
                             crate::authbus_ingress::now_ms()?,
-                        )?;
+                        )
+                        .await?;
                     }
                     app_server_ready = true;
                 }

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use codex_state::SqliteConfig;
+use codex_state::open_durable_evidence_pool_with_limit;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::SqlitePool;
 
@@ -15,14 +15,15 @@ pub(crate) async fn open_durable_pool(path: &Path) -> Result<SqlitePool, Durable
         .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
     let canonical_parent = std::fs::canonicalize(parent)
         .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
-    let sqlite_home = AbsolutePathBuf::try_from(canonical_parent.clone())
+    let sqlite_home = AbsolutePathBuf::try_from(canonical_parent)
         .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
     let file_name = path
         .file_name()
         .ok_or(DurableOperationError::Invalid("database file name"))?;
-    let absolute_path = canonical_parent.join(file_name);
-    SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&absolute_path)
+    let absolute_path = sqlite_home.as_path().join(file_name);
+    // Keep the operations owner's four-connection capacity/fault contract while
+    // retaining the shared SQLite durability and foreign-key policy.
+    open_durable_evidence_pool_with_limit(&absolute_path, /*max_connections*/ 4)
         .await
         .map_err(|error| DurableOperationError::Unavailable(error.to_string()))
 }

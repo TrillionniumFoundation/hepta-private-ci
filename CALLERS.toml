@@ -158,7 +158,7 @@ id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-agentd/src/intelligence_learning.rs"]
 caller_markers = ["claim_final_use"]
 
 [[boundary]]
@@ -200,8 +200,8 @@ id = "final_use_dispatch"
 symbol = "dispatch_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
-product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
-caller_markers = ["dispatch_final_use", "authority_enter", "dispatch_boundary"]
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-agentd/src/intelligence_learning.rs"]
+caller_markers = ["dispatch_final_use"]
 
 [[boundary]]
 id = "final_use_dispatch_witness"
@@ -403,6 +403,16 @@ definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
 product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
 caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/browser_servo.rs"
+required = ["dispatch_final_use", "authority_enter", "dispatch_boundary"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/intelligence_learning.rs"
+required = ["record.intent.final_use_binding()", "validate_claim_payload(&record.intent, &payload)?", "observe_applied_payload(&mut writer, &payload)", "grants.signed_grant(&binding)", "claim_final_use(&authority, &signed, &binding)", "dispatch_final_use(", "|| apply_payload(&mut writer, &payload)"]
+forbidden = ["SigningKey::from_bytes", "permit_all", "AllowVerifier"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"

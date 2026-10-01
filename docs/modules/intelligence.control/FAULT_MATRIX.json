@@ -1,0 +1,329 @@
+{
+  "schema": "hepta.intelligence-control-fault-matrix.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "executionStatus": "pending",
+  "invariants": [
+    "no_duplicate_physical_effect",
+    "unknown_never_becomes_not_started",
+    "same_operation_identity",
+    "old_generation_cannot_commit",
+    "destination_first_reconciliation",
+    "already_applied_requires_no_new_write_grant",
+    "expired_first_application_rejected",
+    "witness_lag_not_applied",
+    "corruption_and_clock_rollback_not_retry"
+  ],
+  "cuts": [
+    {
+      "id": "before_sidecar_temp_write",
+      "phase": "learning-sidecar",
+      "requiredDisposition": "NotDispatched",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_sidecar_write_before_fsync",
+      "phase": "learning-sidecar",
+      "requiredDisposition": "Indeterminate",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_file_fsync_before_rename",
+      "phase": "learning-sidecar",
+      "requiredDisposition": "Indeterminate",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_rename_before_directory_fsync",
+      "phase": "learning-sidecar",
+      "requiredDisposition": "Indeterminate",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "before_intent_commit",
+      "phase": "operation-intent",
+      "requiredDisposition": "NotDispatched",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_intent_commit",
+      "phase": "operation-intent",
+      "requiredDisposition": "Prepared",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_claim",
+      "phase": "operation-claim",
+      "requiredDisposition": "Prepared",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "before_provider_entry",
+      "phase": "physical-provider",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_provider_entry_before_terminal",
+      "phase": "physical-provider",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_terminal_before_learning_ack",
+      "phase": "physical-terminal",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_ledger_append_before_witness",
+      "phase": "learning-ledger",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "after_witness_before_operation_ack",
+      "phase": "learning-ledger",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "hard_timeout_exit_70",
+      "phase": "process-fence",
+      "requiredDisposition": "ReplaceOwner",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "supervisor_successor_generation_adoption",
+      "phase": "process-fence",
+      "requiredDisposition": "ReplaceOwner",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "lost_provider_ack",
+      "phase": "physical-provider",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    },
+    {
+      "id": "lost_ledger_ack",
+      "phase": "learning-ledger",
+      "requiredDisposition": "ReconcileOnly",
+      "executionStatus": "pending",
+      "evidenceBoundary": "exact candidate qualification-host artifact",
+      "requiredInvariants": [
+        "no_duplicate_physical_effect",
+        "unknown_never_becomes_not_started",
+        "same_operation_identity",
+        "old_generation_cannot_commit",
+        "destination_first_reconciliation",
+        "already_applied_requires_no_new_write_grant",
+        "expired_first_application_rejected",
+        "witness_lag_not_applied",
+        "corruption_and_clock_rollback_not_retry"
+      ],
+      "evidenceBindings": []
+    }
+  ],
+  "sourceIdentity": {
+    "commit": "CI_EXACT_HEAD",
+    "lane": "tracked",
+    "executionStatus": "pending"
+  },
+  "coverageBoundary": "Required qualification cuts, not execution receipts. No exact process-cut evidence or harness is mapped here; source and package tests cannot establish product or target-host completion."
+}

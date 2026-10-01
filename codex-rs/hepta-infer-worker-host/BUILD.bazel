@@ -3,4 +3,10 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-infer-worker-host",
     crate_name = "codex_hepta_infer_worker_host",
+    # All observed-client type consumers must use the same fixture identity.
+    unit_test_deps_replacements = {
+        "//codex-rs/app-server-client:app-server-client": "//codex-rs/app-server-client:app-server-client-unit-test-lib",
+        "//codex-rs/hepta-agentd:hepta-agentd": "//codex-rs/hepta-agentd:hepta-agentd-unit-test-lib",
+        "//codex-rs/hepta-codex-adapter:hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-test-lib",
+    },
 )

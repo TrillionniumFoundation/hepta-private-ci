@@ -1172,10 +1172,6 @@ impl ModelClient {
         }
     }
 
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "request construction keeps model, prompt, auth and provider inputs explicit"
-    )]
     fn build_responses_request(
         &self,
         prompt: &Prompt,
@@ -2139,7 +2135,10 @@ impl ModelClientSession {
             {
                 if let Some(attempt) = admitted_provider_attempt.take()
                     && let Err(terminal_error) = attempt
-                        .finish_immediate(None, "ephemeral_final_use_revalidation")
+                        .finish_immediate(
+                            /*http_status*/ None,
+                            "ephemeral_final_use_revalidation",
+                        )
                         .await
                 {
                     return Err(terminal_error);
@@ -3086,8 +3085,10 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
-        api_stream,
+        UpstreamResponseEvents {
+            request_id: upstream_request_id,
+            stream: api_stream,
+        },
         session_telemetry,
         inference_trace_attempt,
         provider,
@@ -3097,9 +3098,13 @@ fn map_response_stream(
     )
 }
 
+struct UpstreamResponseEvents<S> {
+    request_id: Option<String>,
+    stream: S,
+}
+
 fn map_response_events<S>(
-    upstream_request_id: Option<String>,
-    api_stream: S,
+    upstream: UpstreamResponseEvents<S>,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
@@ -3113,6 +3118,10 @@ where
         + Send
         + 'static,
 {
+    let UpstreamResponseEvents {
+        request_id: upstream_request_id,
+        stream: api_stream,
+    } = upstream;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

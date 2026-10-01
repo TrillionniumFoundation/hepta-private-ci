@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 use codex_hepta_bellman_operator::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;

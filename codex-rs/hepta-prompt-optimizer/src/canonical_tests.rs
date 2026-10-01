@@ -1,15 +1,31 @@
 use super::*;
+
+#[cfg(unix)]
+#[path = "canonical_integrity_tests.rs"]
+mod provenance;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::DurablePromptRegistry;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_admission_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_realization_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_revoke_binding;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
+#[cfg(unix)]
 use std::collections::BTreeSet;
+#[cfg(unix)]
 use std::time::SystemTime;
+#[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_kg::KnowledgeEdgeIdentityV2;
@@ -22,8 +38,11 @@ use codex_hepta_kg::build_complete_generation;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::FactorSource;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::Lifecycle;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
@@ -110,7 +129,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         .iter()
         .map(|candidate| candidate.factor_id.clone())
         .collect::<Vec<_>>();
-    let enumerated = EnumeratedPromptCandidatesV1 {
+    let enumerated = integrity::EnumeratedOriginalV1 {
         registry_snapshot: dummy_snapshot(&tuple, generation_vector),
         model_tuple: tuple,
         generation_vector_digest: generation_vector,
@@ -128,7 +147,8 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             authority: AuthorityPosture::DENY_ALL,
         },
         candidates: candidates.clone(),
-    };
+    }
+    .admit();
     let priced_rows = rows
         .into_iter()
         .zip(candidates)
@@ -156,7 +176,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
             },
         )
         .collect();
-    PricedPromptCandidatesV1 {
+    integrity::PricedOriginalV1 {
         candidates: enumerated,
         completeness_digest: digest("completeness"),
         pricing_policy_digest: digest("pricing-policy"),
@@ -164,6 +184,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         pricing_set_digest: digest("pricing-set"),
         authority: AuthorityPosture::DENY_ALL,
     }
+    .admit()
 }
 
 fn support(label: &str) -> KnowledgeSupportV2 {
@@ -339,6 +360,7 @@ fn incomplete_candidate_completeness_cannot_be_authenticated_for_pricing() {
     assert!(candidate_completeness_signing_payload_v1(&receipt).is_err());
 }
 
+#[cfg(unix)]
 #[test]
 fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -368,6 +390,7 @@ fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
     assert!(!enumerated.receipt.authority.grants_any());
 }
 
+#[cfg(unix)]
 #[test]
 fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -388,7 +411,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         .expect("bindings")
         .bindings[0]
         .clone();
-    let selected = SelectedPromptPortfolioV1 {
+    let selected = integrity::SelectedOriginalV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
             candidate_set_digest: digest("candidate-set"),
@@ -414,7 +437,8 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         graph_generation_digest: digest("graph"),
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    };
+    }
+    .admit();
     let live = exercise_v1(
         registry.registry().expect("registry"),
         &selected,
@@ -449,6 +473,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     assert!(!exercise.authority.grants_any());
 }
 
+#[cfg(unix)]
 fn registry_fixture(
     root: &std::path::Path,
     costs: &[u32],
@@ -600,6 +625,7 @@ fn registry_fixture(
     (registry, tuple, authority, signing_key, now)
 }
 
+#[cfg(unix)]
 fn revoke_registry(
     registry: &mut DurablePromptRegistry,
     authority: &FinalUseAuthority,

@@ -38,7 +38,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
-use tokio::sync::Mutex;
+use tokio::sync::OnceCell;
 
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.runtime-codex.prompt-attachment.v1";
 const MAX_DEVELOPER_FRAGMENTS: usize = 128;
@@ -479,7 +479,7 @@ enum ResolvedAttachment {
 
 #[derive(Default)]
 struct PromptRuntimeTurnState {
-    resolved: Mutex<Option<ResolvedAttachment>>,
+    resolved: OnceCell<ResolvedAttachment>,
     injected: AtomicBool,
 }
 
@@ -497,31 +497,31 @@ impl PromptRuntimeExtension {
         turn_store: &ExtensionData,
     ) -> ResolvedAttachment {
         let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
-        let mut resolved = state.resolved.lock().await;
-        if let Some(value) = resolved.as_ref() {
-            return value.clone();
-        }
-        let value = match self
-            .host
-            .prepare(PromptRuntimePrepareRequest {
-                thread_id,
-                turn_id,
-                model_context_window,
+        state
+            .resolved
+            .get_or_init(|| async {
+                match self
+                    .host
+                    .prepare(PromptRuntimePrepareRequest {
+                        thread_id,
+                        turn_id,
+                        model_context_window,
+                    })
+                    .await
+                {
+                    Ok(Some(attachment)) => match attachment.validate() {
+                        Ok(()) => ResolvedAttachment::Ready(attachment),
+                        Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                            "prompt_runtime_attachment_invalid",
+                            error.to_string(),
+                        )),
+                    },
+                    Ok(None) => ResolvedAttachment::None,
+                    Err(error) => ResolvedAttachment::Failed(error),
+                }
             })
             .await
-        {
-            Ok(Some(attachment)) => match attachment.validate() {
-                Ok(()) => ResolvedAttachment::Ready(attachment),
-                Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
-                    "prompt_runtime_attachment_invalid",
-                    error.to_string(),
-                )),
-            },
-            Ok(None) => ResolvedAttachment::None,
-            Err(error) => ResolvedAttachment::Failed(error),
-        };
-        *resolved = Some(value.clone());
-        value
+            .clone()
     }
 }
 
@@ -728,6 +728,13 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
     }
 }
 
+type PromptRuntimeTerminalMapping = (
+    PromptRuntimeTerminalOutcomeV1,
+    Option<String>,
+    Option<bool>,
+    Option<PromptDeliveryObservationV1>,
+);
+
 impl PromptRuntimeAttemptLease {
     // This lease is created by the physical ModelProviderPolicyContributor,
     // not by an App Server client DTO. The sealed terminal callback supplies
@@ -757,18 +764,11 @@ impl PromptRuntimeAttemptLease {
     fn map_terminal(
         &self,
         terminal: ModelProviderTerminal,
-    ) -> Result<
-        (
-            PromptRuntimeTerminalOutcomeV1,
-            Option<String>,
-            Option<bool>,
-            Option<PromptDeliveryObservationV1>,
-        ),
-        PromptRuntimeError,
-    > {
+    ) -> Result<PromptRuntimeTerminalMapping, PromptRuntimeError> {
         match terminal {
             ModelProviderTerminal::Completed { end_turn, .. } => {
-                let observation = self.delivery_observation(true, None)?;
+                let observation = self
+                    .delivery_observation(/*delivered*/ true, /*rejected_reason*/ None)?;
                 Ok((
                     PromptRuntimeTerminalOutcomeV1::Delivered,
                     None,
@@ -778,7 +778,8 @@ impl PromptRuntimeAttemptLease {
             }
             ModelProviderTerminal::Rejected { reason_code } => {
                 let rejection_reason = rejection_reason(&reason_code)?;
-                let observation = self.delivery_observation(false, Some(rejection_reason))?;
+                let observation =
+                    self.delivery_observation(/*delivered*/ false, Some(rejection_reason))?;
                 Ok((
                     PromptRuntimeTerminalOutcomeV1::Rejected,
                     Some(reason_code),
@@ -859,3 +860,6 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod resolve_tests;

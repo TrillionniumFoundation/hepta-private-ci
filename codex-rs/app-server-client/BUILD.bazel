@@ -3,4 +3,11 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "app-server-client",
     crate_name = "codex_app_server_client",
+    # Fabricated observation constructors belong only to fixture libraries.
+    unit_test_library_features = ["test-support"],
+    unit_test_library_visibility = [
+        "//codex-rs/hepta-agentd:__pkg__",
+        "//codex-rs/hepta-codex-adapter:__pkg__",
+        "//codex-rs/hepta-infer-worker-host:__pkg__",
+    ],
 )

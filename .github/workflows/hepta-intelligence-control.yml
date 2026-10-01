@@ -1,0 +1,386 @@
+name: intelligence.control independent qualification
+
+on:
+  push:
+    paths:
+      - "defs.bzl"
+      - "codex-rs/app-server-client/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "scripts/test_bazel_unit_test_variants.py"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-objective/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/ext/hepta-prompt/**"
+      - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/intelligence.control/**"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
+      - "scripts/hepta-intelligence-*.py"
+      - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta_ci_exec.py"
+      - ".github/workflows/hepta-intelligence-*.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  pull_request:
+    paths:
+      - "defs.bzl"
+      - "codex-rs/app-server-client/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "scripts/test_bazel_unit_test_variants.py"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-objective/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/ext/hepta-prompt/**"
+      - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/intelligence.control/**"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
+      - "scripts/hepta-intelligence-*.py"
+      - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta_ci_exec.py"
+      - ".github/workflows/hepta-intelligence-*.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualification:
+    name: intelligence.control (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          test -n "$EVENT_BASE_SHA"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Intelligence CI
+          author-email: hepta-intelligence-ci@users.noreply.github.com
+          message: intelligence.control synthetic merge
+
+      - name: Bind exact candidate identity
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          MERGE_SHA: ${{ steps.synthetic.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.lane }}" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$TESTED_SHA" = "$MERGE_SHA"
+          else
+            test -z "$MERGE_SHA"
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+
+      - name: Validate explicit source, test and A-D acceptance mappings
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+          python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/test_bazel_unit_test_variants.py
+          python3 scripts/hepta-intelligence-readiness-tests.py
+          python3 scripts/hepta-intelligence-fault-matrix.py --check-tracked
+          python3 scripts/hepta-intelligence-fault-matrix-tests.py
+          python3 scripts/hepta-intelligence-review-partitions.py --check-tracked
+          python3 scripts/hepta-intelligence-review-partitions-tests.py
+          python3 scripts/hepta-intelligence-acceptance.py --check
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Check formatting
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/fmt.json"
+          -- cargo fmt --all -- --check
+
+      - name: Test canonical intelligence package including integration tests
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/intelligence-tests.json"
+          -- cargo test --locked -p codex-hepta-intelligence
+
+      - name: Test canonical prompt-optimizer owner provenance
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/prompt-optimizer-tests.json"
+          -- cargo test --locked -p codex-hepta-prompt-optimizer
+
+      - name: Test physical prompt-runtime single initialization and cancellation
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/prompt-extension-tests.json"
+          -- cargo test --locked -p codex-hepta-prompt-extension
+
+      - name: Test operation-owner recovery and claim boundaries
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/operations-tests.json"
+          -- cargo test --locked -p codex-hepta-operations
+
+      - name: Test authenticated ledger and witness recovery
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/ledger-tests.json"
+          -- cargo test --locked -p codex-hepta-learning-ledger
+
+      - name: Test actual native execution owner
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/native-tests.json"
+          -- cargo test --locked -p codex-hepta-infer-worker-host --lib
+
+      - name: Test Agentd default product profile
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/agentd-default-tests.json"
+          -- cargo test --locked -p codex-hepta-agentd --lib
+
+      - name: Test explicitly classified qualification-only learning surface
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/agentd-qualification-tests.json"
+          -- cargo test --locked -p codex-hepta-agentd --lib
+          --features qualification-legacy-learning-write
+
+      - name: Compile all Agentd targets
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/agentd-all-targets.json"
+          -- cargo check --locked -p codex-hepta-agentd --all-targets
+
+      - name: Strict lint intelligence and prompt/operation-owner packages
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/clippy.json"
+          -- cargo clippy --locked -p codex-hepta-intelligence
+          -p codex-hepta-agentd -p codex-hepta-operations
+          -p codex-hepta-prompt-optimizer -p codex-hepta-prompt-extension
+          --all-targets -- -D warnings
+
+      - name: Project only observed exact execution evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intelligence-exact-status/${{ matrix.lane }}"
+          python3 scripts/hepta-intelligence-control-status.py \
+            --source-head "$TESTED_SHA" \
+            --execution-status passed \
+            --lane "${{ matrix.lane }}" \
+            --command-records "$RUNNER_TEMP/intelligence-command-records" \
+            --output-dir "$output"
+          python3 scripts/hepta-intelligence-acceptance.py \
+            --source-head "$TESTED_SHA" \
+            --execution-status passed \
+            --lane "${{ matrix.lane }}" \
+            --command-records "$RUNNER_TEMP/intelligence-command-records" \
+            --output "$output/ACCEPTANCE_RECEIPT.json"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+
+      - name: Retain exact status, acceptance and command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/intelligence-command-records/*
+            ${{ runner.temp }}/intelligence-exact-status/${{ matrix.lane }}/*
+          if-no-files-found: error
+          retention-days: 30
+
+  readiness-manifest:
+    name: intelligence.control readiness manifest
+    if: ${{ always() }}
+    needs: qualification
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download source-head evidence
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: intelligence-control-${{ github.run_id }}-${{ github.run_attempt }}-source-head
+          path: ${{ runner.temp }}/readiness/source-head
+
+      - name: Download base-merge evidence
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: intelligence-control-${{ github.run_id }}-${{ github.run_attempt }}-base-merge
+          path: ${{ runner.temp }}/readiness/base-merge
+
+      - name: Emit fail-closed exact readiness manifest
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GITHUB_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          READINESS_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          readiness_base="$EVENT_BASE_SHA"
+          if [ -n "${READINESS_BASE_REF:-}" ]; then
+            readiness_base="$(git rev-parse "refs/remotes/origin/${READINESS_BASE_REF}^{commit}")"
+          fi
+          base_dir="$RUNNER_TEMP/readiness/base-merge"
+          deterministic_merge_sha=""
+          if [ -d "$base_dir" ]; then
+            deterministic_merge_sha="$(python3 -c 'import json,pathlib,sys; values=(json.loads(p.read_text()) for p in pathlib.Path(sys.argv[1]).rglob("*.json")); print(next((v["tested_sha"] for v in values if v.get("lane")=="base-merge" and v.get("tested_sha")), ""))' "$base_dir")"
+          fi
+          target_triple="$(rustc -vV | sed -n 's/^host: //p')"
+          rustc_version="$(rustc -Vv | tr '\n' ';')"
+          runner_fingerprint="${ImageOS:-unknown}/${ImageVersion:-unknown}/${RUNNER_ARCH:-unknown}"
+          python3 scripts/hepta-intelligence-readiness.py \
+            --source-head-sha "$SOURCE_SHA" \
+            --base-sha "$readiness_base" \
+            --deterministic-merge-sha "$deterministic_merge_sha" \
+            --github-merge-sha "${GITHUB_MERGE_SHA:-}" \
+            --pull-request-number "${PULL_REQUEST_NUMBER:-}" \
+            --workflow-sha "$(git rev-parse HEAD:.github/workflows/hepta-intelligence-control.yml)" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --workflow-attempt "$GITHUB_RUN_ATTEMPT" \
+            --runner-fingerprint "$runner_fingerprint" \
+            --target-triple "$target_triple" \
+            --rustc-version "$rustc_version" \
+            --source-tree-hash "$(git rev-parse HEAD^{tree})" \
+            --source-head-evidence "$RUNNER_TEMP/readiness/source-head" \
+            --base-merge-evidence "$base_dir" \
+            --output "$RUNNER_TEMP/readiness/READINESS_MANIFEST.json"
+
+      - name: Retain readiness manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-readiness-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readiness/READINESS_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 30

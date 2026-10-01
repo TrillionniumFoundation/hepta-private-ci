@@ -93,6 +93,13 @@ alias(
     actual = "@rbe_platform",
 )
 
+# Fleet embeds the reviewed module registry in its runtime catalog.
+filegroup(
+    name = "hepta_module_registry",
+    srcs = ["docs/modules/MODULES.json"],
+    visibility = ["//codex-rs/hepta-fleet:__pkg__"],
+)
+
 exports_files([
     "AGENTS.md",
     "workspace_root_test_launcher.bat.tpl",

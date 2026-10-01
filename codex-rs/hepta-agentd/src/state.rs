@@ -31,6 +31,9 @@ use crate::RuntimeComposition;
 mod control;
 
 pub(crate) struct AgentdState {
+    pub(crate) intelligence_execution:
+        std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceExecutionHostV1>>,
+
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -129,6 +132,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
+            intelligence_execution: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
@@ -566,8 +570,73 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+    pub(crate) async fn complete_canonical_intelligence(
+        &self,
+        admitted: crate::AgentdIntelligenceAdmittedOutcomeV1,
+    ) -> Result<&'static str, AgentdError> {
+        let Some(host) = self.intelligence_execution.get() else {
+            return Ok(
+                if matches!(
+                    admitted,
+                    crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired { .. }
+                ) {
+                    "canonical_reconciliation_required"
+                } else {
+                    "canonical_ready"
+                },
+            );
+        };
+        let (crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { prepared, .. }
+        | crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired {
+            prepared, ..
+        }) = &admitted
+        else {
+            return Err(AgentdError::Invalid("non-selected execution".to_string()));
+        };
+        let run_id = prepared.run_snapshot().run_id;
+        if host.owner_generation() != self.current_generation()? {
+            return Err(AgentdError::GenerationFenced(
+                "execution host generation".to_string(),
+            ));
+        }
+        let completed = host.execute(admitted).await?;
+        if completed.run_id != run_id
+            || completed.observation_digest.is_zero()
+            || (completed.outcome_acknowledged && !completed.terminal_observed)
+        {
+            return Err(AgentdError::Protocol(
+                "execution summary binding".to_string(),
+            ));
+        }
+        Ok(if completed.outcome_acknowledged {
+            "canonical_executed"
+        } else {
+            "canonical_reconciliation_required"
+        })
+    }
+
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
-        self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+        self.intelligence_product
+            .get()
+            .is_some_and(|runner| runner.canonical_profile_ready())
+            && self.intelligence_invocation.get().is_some()
+    }
+
+    pub(crate) fn record_intelligence_run_receipt(
+        &self,
+        receipt: &crate::RunReceipt,
+        initialize: bool,
+    ) {
+        let Some(runner) = self.intelligence_product.get() else {
+            return;
+        };
+        let telemetry = runner.telemetry();
+        if !initialize && !telemetry.tracks_run(&receipt.run_id) {
+            return;
+        }
+        if let Ok(now_ms) = unix_now_ms() {
+            telemetry.observe_run_receipt(receipt, now_ms);
+        }
     }
 
     /// Prepare the exact durable Objective through the configured canonical
@@ -586,7 +655,16 @@ impl AgentdState {
             return Ok(None);
         };
 
-        let invocation = provider.build(&self.identity, record)?;
+        if !runner.canonical_profile_ready() {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence runner has no independent authority rollback witness"
+                    .to_string(),
+            ));
+        }
+
+        let invocation = runner
+            .build_host_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
+            .await?;
         invocation.validate(&self.identity, record)?;
 
         // Freeze only the small immutable composition while holding the run
@@ -619,7 +697,7 @@ impl AgentdState {
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
                 let admitted = runs
-                    .start_run(
+                    .start_bound_run(
                         now_ms,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
@@ -634,25 +712,38 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
-                let run_receipt = runs
-                    .attach_context(
-                        now_ms,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
+                runner.telemetry().observe_run_receipt(&admitted, now_ms);
+                let attachment = crate::ContextAttachment {
+                    run_id: attachment.run_id,
+                    request_digest: attachment.request_digest,
+                    objective_digest: attachment.objective_digest,
+                    body_digest: attachment.body_digest,
+                    artifact_set_digest: attachment.artifact_set_digest,
+                    authority_epoch: attachment.authority_epoch,
+                    generation: attachment.generation,
+                    fence_digest: attachment.fence_digest,
+                    deadline_ms: attachment.deadline_ms,
+                    context_digest: attachment.context_digest,
+                    compilation_receipt_digest: attachment.compilation_receipt_digest,
+                };
+                if !matches!(
+                    admitted.phase,
+                    crate::RunPhase::Admitted | crate::RunPhase::ContextAttached
+                ) {
+                    let run_receipt = runs
+                        .original_context_attachment(&attachment)
+                        .map_err(run_error)?;
+                    return Ok(Some(
+                        crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired {
+                            prepared,
+                            run_receipt,
                         },
-                    )
+                    ));
+                }
+                let run_receipt = runs
+                    .attach_context(now_ms, admitted.revision, attachment)
                     .map_err(run_error)?;
+                runner.telemetry().observe_run_receipt(&run_receipt, now_ms);
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
                     run_receipt,
@@ -798,11 +889,12 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::objective_run_fence_digest_v1(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
+    .to_string()
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {

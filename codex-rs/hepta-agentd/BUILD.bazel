@@ -6,6 +6,11 @@ codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
+    unit_test_deps_replacements = {
+        "//codex-rs/app-server-client:app-server-client": "//codex-rs/app-server-client:app-server-client-unit-test-lib",
+        "//codex-rs/hepta-codex-adapter:hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-test-lib",
+    },
+    unit_test_library_visibility = ["//codex-rs/hepta-infer-worker-host:__pkg__"],
 )
 
 # Compile the local writer qualification separately from the default product

@@ -2,6 +2,13 @@
 
 This directory contains exactly one stable implementation guide for every module registered in `MODULES.json`. Machine-readable coverage is in `MODULE_DOCS.json`; source reality is in `SOURCE_BINDINGS.json`. Retained guide hashes and word/byte counts are optional generated presentation metadata, not acceptance evidence. Ordinary prose edits need no metadata-only commit. Machine ownership, source reality, authority constraints and local links are still verified. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
 
+The [intelligence.control implementation declaration](intelligence.control/IMPLEMENTATION_MAP.json)
+uses the registered `hepta.intelligence-control-source-declaration.v1` schema.
+Its exact-head source/test declarations remain pending and are validated by the
+module-owned status verifier. This format carries no fabricated historical
+`sourceBase`; it is counted separately from generic V3 navigation maps and grants
+no build, product-execution or independent-acceptance result.
+
 ## DecisionCell, Neural Circuit and Nervous System placement
 
 These are architectural responsibilities, not extra top-level module identities.

@@ -2,7 +2,7 @@ fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.product".to_string(),
         supervisor_generation: 1,
-        agentd_generation: 1,
+        agentd_generation: 2,
         configuration_digest: digest("runtime-config").to_string(),
         ports_digest: digest("runtime-ports").to_string(),
         max_active_runs: 8,
@@ -11,10 +11,10 @@ fn product_test_coordinator() -> AgentRunCoordinator {
 }
 
 use crate::AgentRunCoordinator;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use crate::RunPhase;
 use crate::RuntimeComposition;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use std::fs::OpenOptions;
 
 use super::*;
@@ -35,15 +35,15 @@ use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::AppendDisposition;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::DurableLedger;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::LedgerAnchor;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::LedgerEvent;
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
@@ -84,6 +84,7 @@ use codex_hepta_prompt_optimizer::PromptCandidate;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -335,6 +336,7 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     }
 }
 
+#[cfg(unix)]
 fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
@@ -372,6 +374,7 @@ fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], front
 struct Fixture {
     request: CanonicalIntelligenceRunRequestV1,
     inputs: AgentdIntelligenceOwnerInputsV1,
+    #[cfg(unix)]
     owners: Vec<OwnerBindingV1>,
 }
 
@@ -419,6 +422,10 @@ fn fixture() -> Fixture {
         }],
     };
     let mut abstain = utility_contributions.contributions[0].clone();
+    let mut noop = abstain.clone();
+    noop.candidate_id = id("action.noop");
+    noop.utility[0].value = FixedQ32::ZERO;
+    utility_contributions.contributions.push(noop);
     abstain.candidate_id = id("abstain");
     abstain.utility[0].value = FixedQ32::ZERO;
     utility_contributions.contributions.push(abstain);
@@ -504,7 +511,7 @@ fn fixture() -> Fixture {
         }],
     };
 
-    let intuition_candidates = vec![CalibratedActionCandidateV1 {
+    let mut intuition_candidates = vec![CalibratedActionCandidateV1 {
         candidate_id: id("action.read"),
         legal: true,
         hard_veto: false,
@@ -514,6 +521,12 @@ fn fixture() -> Fixture {
         assignment_probability: ProbabilityQ32::ZERO,
         support_digest: digest("action-support"),
     }];
+    let mut noop = intuition_candidates[0].clone();
+    noop.candidate_id = id("action.noop");
+    noop.utility = FixedQ32::ZERO;
+    noop.support_digest = digest("noop-support");
+    intuition_candidates.push(noop);
+    intuition_candidates.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
     let intuition_candidate_digest =
         canonical_candidate_set_digest_v1(&intuition_candidates).expect("candidate digest");
     let intuition_order_digest =
@@ -540,7 +553,7 @@ fn fixture() -> Fixture {
             truncation_digest: digest("truncation"),
             candidate_set_digest: intuition_candidate_digest,
             canonical_order_digest: intuition_order_digest,
-            candidate_count: 1,
+            candidate_count: 2,
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -572,7 +585,7 @@ fn fixture() -> Fixture {
     let snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
         objective_digest,
         authority_epoch: 11,
-        body_generation: generation(7),
+        body_generation: generation(2),
         configuration_digest: digest("agentd-intelligence-config"),
         revocation_frontier_digest: digest("revocation-frontier"),
         owner_bindings: owners.clone(),
@@ -612,6 +625,18 @@ fn fixture() -> Fixture {
         }],
     };
 
+    let run_identity = crate::AgentdIntelligenceRunIdentityV1 {
+        run_id: id("run:agentd-intelligence"),
+        request_digest: digest("durable-run-start-identity"),
+        objective_digest,
+        body_digest: digest("body"),
+        artifact_set_digest: digest("artifact-set"),
+        authority_epoch: 11,
+        generation: 2,
+        fence_digest: crate::objective_run_fence_digest_v1("agent.product", 1, 2),
+        deadline_ms: u64::MAX - 1,
+    };
+
     Fixture {
         request: CanonicalIntelligenceRunRequestV1 {
             run_id: id("run:agentd-intelligence"),
@@ -621,10 +646,16 @@ fn fixture() -> Fixture {
                 state_digest: objective_digest,
                 generator_id: id("intelligence.control"),
                 grammar_digest: digest("legal-grammar"),
-                candidates: vec![LegalActionCandidateV1 {
-                    candidate_id: id("action.read"),
-                    support_digest: digest("action-support"),
-                }],
+                candidates: vec![
+                    LegalActionCandidateV1 {
+                        candidate_id: id("action.read"),
+                        support_digest: digest("action-support"),
+                    },
+                    LegalActionCandidateV1 {
+                        candidate_id: id("action.noop"),
+                        support_digest: digest("noop-support"),
+                    },
+                ],
                 support_floor_ppm: 1,
             },
             budget: CanonicalBudgetV1 {
@@ -639,6 +670,7 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
+            run_identity: Some(run_identity),
             objective_envelope: envelope,
             objective_profile: profile,
             objective_context,
@@ -650,19 +682,21 @@ fn fixture() -> Fixture {
             neural_tick,
             neural_previous: None,
             prompt_request,
+            prompt_delivery: None,
             intuition_request,
             context_request,
             evaluation_request,
             signed_evaluation: None,
         },
+        #[cfg(unix)]
         owners,
     }
 }
 
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -670,8 +704,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -693,7 +729,11 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     let dispatched = coordinator
-        .mark_dispatched(&attached.run_id, attached.revision)
+        .mark_dispatched(
+            wall_clock_ms().expect("dispatch clock"),
+            &attached.run_id,
+            attached.revision,
+        )
         .expect("commit dispatch before physical effect");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 
@@ -791,6 +831,7 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn unsigned_currentness_substitution_fails_before_owner_use() {
     let fixture = fixture();
@@ -822,10 +863,10 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
     ));
 }
 
-#[cfg(feature = "qualification-legacy-learning-write")]
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -834,7 +875,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
@@ -872,6 +915,7 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
     assert!(ledger.records().expect("records").is_empty());
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn missing_current_owner_fails_before_product_use() {
     let fixture = fixture();
@@ -896,6 +940,7 @@ async fn missing_current_owner_fails_before_product_use() {
     ));
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
     let mut fixture = fixture();
@@ -988,5 +1033,18 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
     assert_eq!(ready.await.expect("new work completes"), 7);
 }
 
+#[cfg(unix)]
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[cfg(unix)]
+#[path = "intelligence_product_learning_tests.rs"]
+mod learning;
+
+#[cfg(unix)]
+#[path = "config_factory_containment_tests.rs"]
+mod factory_containment;
+
+#[cfg(all(unix, feature = "qualification-legacy-learning-write"))]
+#[path = "intelligence_product_qualification_integrity_tests.rs"]
+mod qualification_integrity;

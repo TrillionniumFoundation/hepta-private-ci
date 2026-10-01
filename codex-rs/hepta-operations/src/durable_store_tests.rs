@@ -1,6 +1,9 @@
 use super::*;
 
 use std::collections::BTreeSet;
+use std::sync::Arc;
+use std::sync::atomic::AtomicI64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseGrant;
@@ -9,6 +12,9 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+use crate::DurableFailureClass;
+use crate::RecoveryDisposition;
 
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
@@ -27,6 +33,113 @@ fn intent(payload: &[u8]) -> OperationIntentV1 {
         payload_digest: Digest32::of_bytes(payload),
         owner_generation: generation(1),
     }
+}
+
+#[derive(Clone)]
+struct ManualClock {
+    now: Arc<AtomicI64>,
+}
+
+impl ManualClock {
+    fn new(now: i64) -> Self {
+        Self {
+            now: Arc::new(AtomicI64::new(now)),
+        }
+    }
+
+    fn set(&self, now: i64) {
+        self.now.store(now, Ordering::SeqCst);
+    }
+}
+
+impl DurableOperationClock for ManualClock {
+    fn now_unix_millis(&self) -> Result<i64, DurableOperationError> {
+        Ok(self.now.load(Ordering::SeqCst))
+    }
+}
+
+#[test]
+fn recovery_disposition_is_effect_boundary_aware() {
+    assert_eq!(
+        DurableOperationError::Conflict(stable_id("operation:conflict")).recovery_disposition(),
+        RecoveryDisposition::Reject
+    );
+    assert_eq!(
+        DurableOperationError::Unavailable("commit acknowledgement lost".to_owned())
+            .failure_class(),
+        DurableFailureClass::OutcomeUnknown
+    );
+    assert_eq!(
+        DurableOperationError::Unavailable("commit acknowledgement lost".to_owned())
+            .recovery_disposition(),
+        RecoveryDisposition::ReconcileOnly
+    );
+    assert_eq!(
+        DurableOperationState::Prepared.recovery_disposition(),
+        RecoveryDisposition::RetrySameIdentity
+    );
+    assert_eq!(
+        DurableOperationState::Indeterminate.recovery_disposition(),
+        RecoveryDisposition::ReconcileOnly
+    );
+    let not_dispatched = DispatchEffect::NotDispatched {
+        value: (),
+        reason_digest: Digest32::of_bytes(b"provider-not-entered"),
+        retry_after: Duration::from_millis(1),
+    };
+    let unknown = DispatchEffect::Indeterminate {
+        value: (),
+        reason_digest: Digest32::of_bytes(b"provider-outcome-unknown"),
+    };
+    assert_eq!(
+        not_dispatched.recovery_disposition(),
+        RecoveryDisposition::RetrySameIdentity
+    );
+    assert_eq!(
+        unknown.recovery_disposition(),
+        RecoveryDisposition::ReconcileOnly
+    );
+}
+
+#[tokio::test]
+async fn writer_samples_clock_after_immediate_transaction_admission() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let clock = ManualClock::new(2_000);
+    let store = DurableOperationStore::open_with_clock(&path, Arc::new(clock.clone()))
+        .await
+        .expect("open");
+    store
+        .prepare_intent(&intent(b"seed"))
+        .await
+        .expect("seed durable timestamp");
+
+    let mut blocker = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("hold writer admission");
+    sqlx::query("SELECT 1")
+        .execute(&mut *blocker)
+        .await
+        .expect("activate writer transaction");
+
+    clock.set(1_000);
+    let mut blocked_intent = intent(b"blocked");
+    blocked_intent.operation_id = stable_id("operation:test:blocked-writer");
+    let blocked_store = store.clone();
+    let task = tokio::spawn(async move { blocked_store.prepare_intent(&blocked_intent).await });
+    tokio::time::sleep(Duration::from_millis(50)).await;
+    clock.set(3_000);
+    blocker.commit().await.expect("release writer admission");
+
+    let prepared = tokio::time::timeout(Duration::from_secs(2), task)
+        .await
+        .expect("blocked writer completed")
+        .expect("writer task")
+        .expect("prepare after admission");
+    assert_eq!(prepared.record.created_at_unix_ms, 3_000);
+    assert_eq!(prepared.record.updated_at_unix_ms, 3_000);
 }
 
 #[tokio::test]

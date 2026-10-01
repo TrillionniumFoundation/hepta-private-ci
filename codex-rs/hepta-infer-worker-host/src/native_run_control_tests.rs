@@ -7,6 +7,12 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+#[path = "native_intelligence_recovery_boundary_tests.rs"]
+mod intelligence_recovery_boundary_tests;
+#[cfg(unix)]
+#[path = "native_intelligence_recovery_tests.rs"]
+mod intelligence_recovery_tests;
+
 fn fixture(label: &str) -> (AppServerModelDriver, PathBuf) {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -48,6 +54,14 @@ fn admission() -> NativeAdmission {
         request_id: "r1".to_string(),
         maximum_in_flight: 1,
     }
+}
+
+#[test]
+fn worker_spawn_without_a_running_successor_is_rejected() {
+    let (driver, _) = fixture("generation-overflow");
+    let mut config = driver.config;
+    config.generation = u64::MAX;
+    assert!(AppServerModelDriver::new(config).is_err());
 }
 
 #[tokio::test]
@@ -280,17 +294,19 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
         expected_revision: 2,
         context_digest: "a".repeat(64),
         envelope_digest: "b".repeat(64),
+        prompt_digest: digest(b"prompt"),
     };
     let bound =
         native_source_payload_digest("prompt", &None, socket, 5000, Some(&original)).unwrap();
     assert_ne!(none, bound);
-    for field in 0..4 {
+    for field in 0..5 {
         let mut changed = original.clone();
         match field {
             0 => changed.run_id.push_str("-other"),
             1 => changed.expected_revision += 1,
             2 => changed.context_digest = "c".repeat(64),
-            _ => changed.envelope_digest = "d".repeat(64),
+            3 => changed.envelope_digest = "d".repeat(64),
+            _ => changed.prompt_digest = digest(b"other prompt"),
         }
         assert_ne!(
             bound,
@@ -310,4 +326,72 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
             .unwrap()
         )
     );
+}
+
+#[tokio::test]
+async fn intelligence_prompt_substitution_fails_before_provider_contact() {
+    let (driver, path) = fixture("prompt-substitution");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let binding = NativeIntelligenceRunBinding {
+        run_id: "intelligence-run".to_string(),
+        expected_revision: 2,
+        context_digest: "a".repeat(64),
+        envelope_digest: "b".repeat(64),
+        prompt_digest: digest(b"authorized prompt"),
+    };
+    let error = driver
+        .run_intelligence(
+            &mut control,
+            admission(),
+            "substituted prompt".to_string(),
+            None,
+            binding,
+            &CancellationToken::new(),
+        )
+        .await
+        .expect_err("substituted physical prompt must fail before provider contact");
+    assert!(error.to_string().contains("physical prompt bytes"));
+    assert!(control.native_record("r1").is_none());
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn intelligence_admission_cannot_name_a_different_canonical_run() {
+    let (driver, path) = fixture("run-substitution");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let binding = NativeIntelligenceRunBinding {
+        run_id: "other-run".to_string(),
+        expected_revision: 2,
+        context_digest: "a".repeat(64),
+        envelope_digest: "b".repeat(64),
+        prompt_digest: digest(b"prompt"),
+    };
+    let error = driver
+        .run_intelligence(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            None,
+            binding.clone(),
+            &CancellationToken::new(),
+        )
+        .await
+        .expect_err("a different canonical run cannot authorize execution");
+    assert!(error.to_string().contains("admission identity"));
+    assert_eq!(control.native_record("r1"), None);
+    let error = driver
+        .reconcile_intelligence(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            binding,
+            &CancellationToken::new(),
+        )
+        .await
+        .expect_err("a different canonical run cannot authorize reconciliation");
+    assert!(error.to_string().contains("admission identity"));
+    assert_eq!(control.native_record("r1"), None);
+    drop(control);
+    std::fs::remove_file(path).unwrap();
 }

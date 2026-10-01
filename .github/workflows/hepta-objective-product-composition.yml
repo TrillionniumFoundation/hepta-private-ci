@@ -81,14 +81,30 @@ jobs:
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
-      - name: Test product objective chain
+      - name: Enumerate and test full product objective chain
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
+        shell: bash
         run: |
-          cargo test --locked -p codex-hepta-objective
-          cargo test --locked -p codex-hepta-learning-ledger
-          cargo test --locked -p codex-hepta-intelligence product_objective -- --nocapture
-          cargo test --locked -p codex-hepta-agentd objective -- --nocapture
+          set -euo pipefail
+          require_package_tests() {
+            local package="$1"
+            local minimum="$2"
+            local listing="$RUNNER_TEMP/${package}-tests.list"
+            cargo test --locked -p "$package" -- --list | tee "$listing"
+            local observed
+            observed="$(grep -Ec ': test$' "$listing" || true)"
+            if [ "$observed" -lt "$minimum" ]; then
+              printf 'package %s exposed %s tests; minimum is %s\n' \
+                "$package" "$observed" "$minimum" >&2
+              exit 1
+            fi
+            cargo test --locked -p "$package"
+          }
+          require_package_tests codex-hepta-objective 1
+          require_package_tests codex-hepta-learning-ledger 1
+          require_package_tests codex-hepta-intelligence 1
+          require_package_tests codex-hepta-agentd 1
       - name: Strict lint
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

@@ -15,6 +15,7 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+use crate::prompt_delivery::tests::ByteTokenizer;
 use crate::prompt_delivery::tests::admitted_registry;
 use crate::prompt_delivery::tests::canonical_selection;
 use crate::prompt_delivery::tests::revoke_registry;
@@ -81,7 +82,7 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
 
     let serialized_payload = b"provider-prefix|payload:a|provider-suffix".to_vec();
     let payload_digest = Digest32::of_bytes(&serialized_payload);
-    let delivery = prepare_prompt_delivery_v1(
+    let delivery = prepare_prompt_delivery_with_tokenizer_v1(
         &registry,
         &portfolio,
         &prepared,
@@ -91,11 +92,32 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
             serialized_payload: serialized_payload.clone(),
             attachment_id: id("attachment:1"),
         },
+        &ByteTokenizer(prepared.model_profile.tokenizer_digest),
     )
     .expect("prepare delivery");
+    delivery.validate().expect("complete owner lineage");
+    let mut changed = delivery.clone();
+    changed.exercise.policy_digest = digest("substituted-policy");
+    assert!(changed.validate().is_err());
+    let mut changed = delivery.clone();
+    changed.serialized_payload[0] ^= 1;
+    assert!(changed.validate().is_err());
+    let mut changed = delivery.clone();
+    changed.serialization_proof.occurrences[0].start_offset += 1;
+    changed.serialization_proof.proof_digest =
+        prompt_serialization_proof_digest(&changed.serialization_proof);
+    changed
+        .serialization_proof
+        .validate()
+        .expect("internally consistent forged proof");
+    assert!(changed.validate().is_err());
     assert_eq!(delivery.serialized_payload, serialized_payload);
     assert_eq!(delivery.materialization, prepared.materialization);
     assert_eq!(delivery.serialization.payload_digest(), payload_digest);
+    assert_eq!(
+        delivery.serialization.serialized_token_count(),
+        u64::try_from(serialized_payload.len()).expect("payload length"),
+    );
     assert_eq!(delivery.serialization_proof.occurrences.len(), 1);
     assert_eq!(
         delivery.serialization_proof.occurrences[0].realization_id,
@@ -119,6 +141,57 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
 }
 
 #[test]
+fn same_source_delivery_cannot_be_grafted_with_another_valid_serialization() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile");
+    let prepare = |serialization_id: &str, attachment_id: &str, payload: &[u8]| {
+        prepare_prompt_delivery_with_tokenizer_v1(
+            &registry,
+            &portfolio,
+            &prepared,
+            PromptDeliveryPrepareRequestV1 {
+                exercise: exercise.clone(),
+                serialization_id: id(serialization_id),
+                serialized_payload: payload.to_vec(),
+                attachment_id: id(attachment_id),
+            },
+            &ByteTokenizer(prepared.model_profile.tokenizer_digest),
+        )
+        .expect("prepare valid serialization")
+    };
+    let original = prepare(
+        "serialization:original",
+        "attachment:original",
+        b"prefix:a|payload:a|suffix:a",
+    );
+    let other = prepare(
+        "serialization:other",
+        "attachment:other",
+        b"prefix:b|payload:a|suffix:b",
+    );
+    original.validate().expect("original delivery validates");
+    other.validate().expect("other delivery validates");
+    assert_eq!(original.source, other.source);
+    assert_eq!(original.exercise, other.exercise);
+    assert_eq!(original.materialization, other.materialization);
+    let mut grafted = original;
+    grafted.serialization = other.serialization;
+    grafted.serialized_context = other.serialized_context;
+    grafted.attachment = other.attachment;
+    grafted.serialization_proof = other.serialization_proof;
+    grafted.serialized_payload = other.serialized_payload;
+    assert_eq!(
+        grafted.validate(),
+        Err(PromptPipelineErrorV1::PayloadMaterializationDrift)
+    );
+}
+
+#[test]
 fn materialization_drift_after_compilation_blocks_attachment_preparation() {
     let (_temp, registry, portfolio, exercise) = fixture();
     let mut prepared = compile_exercised_prompt_context_v1(
@@ -128,7 +201,7 @@ fn materialization_drift_after_compilation_blocks_attachment_preparation() {
     )
     .expect("compile");
     prepared.materialization.payloads[0].payload = b"tampered".to_vec();
-    let error = prepare_prompt_delivery_v1(
+    let error = prepare_prompt_delivery_with_tokenizer_v1(
         &registry,
         &portfolio,
         &prepared,
@@ -138,6 +211,7 @@ fn materialization_drift_after_compilation_blocks_attachment_preparation() {
             serialized_payload: b"payload:a".to_vec(),
             attachment_id: id("attachment:drift"),
         },
+        &ByteTokenizer(prepared.model_profile.tokenizer_digest),
     )
     .expect_err("materialization drift");
     assert_eq!(error, PromptPipelineErrorV1::PayloadMaterializationDrift);
@@ -153,7 +227,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
     )
     .expect("compile exercised portfolio");
 
-    let error = prepare_prompt_delivery_v1(
+    let error = prepare_prompt_delivery_with_tokenizer_v1(
         &registry,
         &portfolio,
         &prepared,
@@ -163,6 +237,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
             serialized_payload: b"provider-request-without-selected-realization".to_vec(),
             attachment_id: id("attachment:missing-prompt"),
         },
+        &ByteTokenizer(prepared.model_profile.tokenizer_digest),
     )
     .expect_err("missing selected prompt bytes must fail");
     assert_eq!(
@@ -184,7 +259,7 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
     )
     .expect("compile");
     revoke_registry(&mut registry, &authority, &signing_key, now);
-    let error = prepare_prompt_delivery_v1(
+    let error = prepare_prompt_delivery_with_tokenizer_v1(
         &registry,
         &selected.portfolio,
         &prepared,
@@ -194,6 +269,7 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
             serialized_payload: b"payload:a".to_vec(),
             attachment_id: id("attachment:revoked"),
         },
+        &ByteTokenizer(prepared.model_profile.tokenizer_digest),
     )
     .expect_err("revocation must block attachment");
     assert_eq!(
@@ -202,4 +278,109 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
             codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1::RejectStale
         )
     );
+}
+
+#[test]
+fn legacy_delivery_and_registry_compilation_require_an_exact_tokenizer() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let context_request = compile_request(exercise.clone());
+    let prepared =
+        compile_exercised_prompt_context_v1(&registry, &portfolio, context_request.clone())
+            .expect("compile");
+    let error = prepare_prompt_delivery_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        PromptDeliveryPrepareRequestV1 {
+            exercise: exercise.clone(),
+            serialization_id: id("serialization:legacy"),
+            serialized_payload: b"provider-prefix|payload:a|provider-suffix".to_vec(),
+            attachment_id: id("attachment:legacy"),
+        },
+    )
+    .expect_err("registry costs cannot attest serialized token count");
+    assert_eq!(error, PromptPipelineErrorV1::MissingExactTokenizer);
+
+    let error = crate::compile_prompt_registry_v2(
+        &registry,
+        &portfolio,
+        &exercise,
+        crate::PromptRegistryCompilationRequestV2 {
+            compilation_id: id("compilation:legacy"),
+            serialization_id: id("serialization:legacy"),
+            attachment_id: id("attachment:legacy"),
+            registry_model_tuple: portfolio.model_tuple.clone(),
+            context_model_profile: context_request.model_profile,
+            now_unix_ms: exercise.now_unix_ms,
+            token_budget: context_request.token_budget,
+            truncation_policy_digest: context_request.truncation_policy_digest,
+        },
+    )
+    .expect_err("legacy registry compilation cannot attest serialized count");
+    assert!(matches!(
+        error,
+        crate::PromptRegistryCompilationErrorV2::Pipeline(
+            PromptPipelineErrorV1::MissingExactTokenizer
+        )
+    ));
+}
+
+#[test]
+fn exact_delivery_tokenizer_counts_framing_against_the_budget() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile");
+    let mut serialized_payload = vec![b'x'; 200];
+    serialized_payload.extend_from_slice(b"payload:a");
+    let error = prepare_prompt_delivery_with_tokenizer_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        PromptDeliveryPrepareRequestV1 {
+            exercise,
+            serialization_id: id("serialization:over-budget"),
+            serialized_payload,
+            attachment_id: id("attachment:over-budget"),
+        },
+        &ByteTokenizer(prepared.model_profile.tokenizer_digest),
+    )
+    .expect_err("physical framing exceeds the 128-token budget");
+    assert!(matches!(
+        error,
+        PromptPipelineErrorV1::ContextCompiler(ref message)
+            if message.contains("SerializedTokenBudgetExceeded")
+    ));
+}
+
+#[test]
+fn exact_delivery_rejects_tokenizer_profile_substitution() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile");
+    let error = prepare_prompt_delivery_with_tokenizer_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        PromptDeliveryPrepareRequestV1 {
+            exercise,
+            serialization_id: id("serialization:wrong-tokenizer"),
+            serialized_payload: b"payload:a".to_vec(),
+            attachment_id: id("attachment:wrong-tokenizer"),
+        },
+        &ByteTokenizer(digest("unrelated-tokenizer")),
+    )
+    .expect_err("an unrelated tokenizer cannot attest this model profile");
+    assert!(matches!(
+        error,
+        PromptPipelineErrorV1::ContextCompiler(ref message)
+            if message.contains("TokenizerProfileMismatch")
+    ));
 }

@@ -137,6 +137,7 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    context_attachment_revision: Option<u64>,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
 }
@@ -211,6 +212,7 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            context_attachment_revision: None,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
         };
@@ -247,7 +249,7 @@ impl AgentRunCoordinator {
             .checked_add(999)
             .map(|value| value / 1_000)
             .ok_or(AgentRunError::ArithmeticOverflow)?;
-        self.start_run(
+        self.start_bound_run(
             now_ms,
             RunSnapshot {
                 run_id: record.snapshot.run_id.to_string(),
@@ -301,7 +303,44 @@ impl AgentRunCoordinator {
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
         record.phase = RunPhase::ContextAttached;
         advance_revision(record)?;
+        record.context_attachment_revision = Some(record.revision);
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Return the original attachment identity solely for durable reconciliation.
+    /// This historical receipt is never a live permission to dispatch again.
+    pub(crate) fn original_context_attachment(
+        &self,
+        attachment: &ContextAttachment,
+    ) -> Result<RunReceipt, AgentRunError> {
+        let record = self
+            .runs
+            .get(&attachment.run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        if attachment.request_digest != record.snapshot.request_digest
+            || attachment.objective_digest != record.snapshot.objective_digest
+            || attachment.body_digest != record.snapshot.body_digest
+            || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
+            || attachment.authority_epoch != record.snapshot.authority_epoch
+            || attachment.generation != record.snapshot.generation
+            || attachment.fence_digest != record.snapshot.fence_digest
+            || attachment.deadline_ms != record.snapshot.deadline_ms
+            || record.context_digest.as_deref() != Some(attachment.context_digest.as_str())
+            || record.compilation_receipt_digest.as_deref()
+                != Some(attachment.compilation_receipt_digest.as_str())
+        {
+            return Err(AgentRunError::MixedSnapshot);
+        }
+        let revision = record
+            .context_attachment_revision
+            .ok_or(AgentRunError::ContextRequired)?;
+        let mut original = receipt(record, /*idempotent*/ true);
+        original.revision = revision;
+        original.phase = RunPhase::ContextAttached;
+        original.terminal_observed = false;
+        original.cancel_reason = None;
+        original.cancel_ack_deadline_ms = None;
+        Ok(original)
     }
 
     pub fn mark_dispatched(
@@ -455,6 +494,7 @@ impl AgentRunCoordinator {
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
+            context_attachment_revision: None,
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
         };

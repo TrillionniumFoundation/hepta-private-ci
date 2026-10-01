@@ -2175,10 +2175,6 @@ impl Session {
         .await
     }
 
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "task admission keeps every recovery and origin control explicit"
-    )]
     async fn start_task_with_options<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,

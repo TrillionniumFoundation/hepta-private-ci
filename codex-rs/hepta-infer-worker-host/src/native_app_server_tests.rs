@@ -6,6 +6,17 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
+#[cfg(unix)]
+#[path = "native_intelligence_observation_tests.rs"]
+mod intelligence_observation;
+#[cfg(unix)]
+#[path = "native_intelligence_terminal_cancel_tests.rs"]
+mod intelligence_terminal_cancel;
+#[path = "native_output_observation_tests.rs"]
+mod output_observation;
+#[path = "native_output_recovery_tests.rs"]
+mod output_recovery;
+
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
     CodexTurnBinding {
@@ -29,6 +40,7 @@ fn binding() -> CodexTurnBinding {
             }),
         },
         turn_id: StableId::new("turn-a").unwrap(),
+        intelligence: None,
     }
 }
 
@@ -45,8 +57,27 @@ fn observe_for_test(
     output: &mut NativeRunOutput,
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
+    observe_collected_for_test(
+        output,
+        &mut NativeOutputCollectorV1::default(),
+        notification,
+    )
+}
+
+fn observe_collected_for_test(
+    output: &mut NativeRunOutput,
+    messages: &mut NativeOutputCollectorV1,
+    notification: ServerNotification,
+) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        NativeObservedOutputV1 {
+            run: output,
+            messages,
+        },
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -407,7 +438,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
@@ -432,6 +463,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
     const MODEL: &str = "mock-model";
     const ACCEPT_REQUEST_ID: &str = "cognitive-final-use-accept";
+    const DONE_ONLY_REQUEST_ID: &str = "cognitive-final-use-done-only";
     const RACE_REQUEST_ID: &str = "cognitive-final-use-race";
     const CORRECTION_REQUEST_ID: &str = "cognitive-final-use-correction-race";
     const ACCEPT_MEMORY: &str = "verified lemon orchard worker positive marker";
@@ -442,6 +474,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
@@ -459,7 +493,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let authority_directory = tempfile::tempdir()?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
-        3,
+        /*expected_claims*/ 4,
     )
     .await?;
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
@@ -490,6 +524,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         "fresh context must reach a successful real TurnStart"
     );
     assert!(accepted.output.contains("fresh context accepted"));
+    assert_eq!(
+        accepted.output, "fresh context accepted",
+        "delta, item completion and terminal summary must project one message once",
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -635,6 +673,43 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         "tombstone/correction races must not add a physical Responses API request",
     );
 
+    let done_only_mock = responses::mount_sse_once(
+        &server,
+        responses::sse(vec![
+            responses::ev_response_created("resp-cognitive-done-only"),
+            responses::ev_assistant_message(
+                "msg-cognitive-done-only",
+                "done-only context accepted",
+            ),
+            responses::ev_completed("resp-cognitive-done-only"),
+        ]),
+    )
+    .await;
+    let done_only = driver
+        .run(
+            &mut durable,
+            NativeAdmission {
+                request_id: DONE_ONLY_REQUEST_ID.to_string(),
+                maximum_in_flight: 1,
+            },
+            "answer from the verified memory without streaming deltas".to_string(),
+            Some("lemon".to_string()),
+            &CancellationToken::new(),
+        )
+        .await?;
+    assert!(
+        done_only.succeeded(),
+        "done-only output must retain the real terminal witness"
+    );
+    assert_eq!(done_only.output, "done-only context accepted");
+    assert_eq!(done_only_mock.requests().len(), 1);
+    let done_only_record = durable
+        .native_record(DONE_ONLY_REQUEST_ID)
+        .cloned()
+        .ok_or("missing durable done-only native record")?;
+    assert_eq!(done_only_record.state, NativeReservationState::Released);
+    assert_eq!(done_only_record.observation.as_ref(), Some(&done_only));
+
     drop(durable);
     let reopened = DurableInferenceControl::open(&journal, 8)?;
     assert_eq!(
@@ -645,6 +720,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     assert_eq!(
         reopened.native_record(CORRECTION_REQUEST_ID),
         Some(&correction_stopped)
+    );
+    assert_eq!(
+        reopened.native_record(DONE_ONLY_REQUEST_ID),
+        Some(&done_only_record)
     );
     drop(reopened);
     let _ = std::fs::remove_file(&journal);

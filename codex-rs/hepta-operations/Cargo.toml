@@ -1,8 +1,8 @@
 [package]
-edition.workspace = true
-license.workspace = true
 name = "codex-hepta-operations"
 version.workspace = true
+edition.workspace = true
+license.workspace = true
 publish = false
 
 [lib]
@@ -10,17 +10,18 @@ name = "codex_hepta_operations"
 path = "src/lib.rs"
 doctest = false
 
-[lints]
-workspace = true
-
 [dependencies]
 codex-hepta-contracts = { workspace = true }
 codex-hepta-types = { workspace = true }
 codex-state = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 sqlx = { workspace = true }
+tokio = { workspace = true, features = ["fs", "rt", "sync", "time"] }
 
 [dev-dependencies]
 ed25519-dalek = { workspace = true }
 tempfile = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

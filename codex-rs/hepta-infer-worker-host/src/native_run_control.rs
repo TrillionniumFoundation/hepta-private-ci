@@ -13,6 +13,18 @@ use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
 
+#[path = "native_intelligence_recovery.rs"]
+mod intelligence_recovery;
+#[path = "native_intelligence_recovery_boundary.rs"]
+mod intelligence_recovery_boundary;
+#[cfg(test)]
+use intelligence_recovery_boundary::retain_intelligence_recovery_boundary_v1;
+
+enum NativeExecutionMode {
+    ExecuteOrReconcile,
+    ReconcileOnly,
+}
+
 /// Explicit local capacity policy; the first request pins the journal's limit.
 /// This limits admitted runs, not provider tokens, billing or device memory.
 pub struct NativeAdmission {
@@ -28,6 +40,17 @@ pub struct NativeIntelligenceRunBinding {
     pub expected_revision: u64,
     pub context_digest: String,
     pub envelope_digest: String,
+    /// SHA-256 of the exact UTF-8 prompt bytes authorized by the host.
+    pub prompt_digest: String,
+}
+
+/// Physical observation and a separate owner-control closure diagnostic.
+/// Diagnostics never alter the durable provider observation or its digest.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeIntelligenceReconciliationReceiptV1 {
+    pub execution: NativeRunOutput,
+    pub reconciliation_required: bool,
+    pub reconciliation_reason: Option<&'static str>,
 }
 
 impl AppServerModelDriver {
@@ -48,6 +71,7 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             /*intelligence*/ None,
+            NativeExecutionMode::ExecuteOrReconcile,
             cancellation,
         )
         .await
@@ -55,6 +79,8 @@ impl AppServerModelDriver {
 
     /// Execute the physical turn only after the exact Agentd intelligence
     /// envelope has reached ContextAttached. The worker cannot mint this binding.
+    /// The returned physical observation alone does not prove Agentd or learning
+    /// closure; product callers must separately require their terminal receipts.
     pub async fn run_intelligence(
         &self,
         control: &mut DurableInferenceControl,
@@ -64,15 +90,58 @@ impl AppServerModelDriver {
         intelligence: NativeIntelligenceRunBinding,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
-        self.run_bound(
-            control,
-            admission,
-            prompt,
-            context_query,
-            Some(&intelligence),
-            cancellation,
-        )
-        .await
+        let recovering = control
+            .native_record(&admission.request_id)
+            .is_some_and(|record| record.dispatch.is_some());
+        let output = self
+            .run_bound(
+                control,
+                admission,
+                prompt,
+                context_query,
+                Some(&intelligence),
+                NativeExecutionMode::ExecuteOrReconcile,
+                cancellation,
+            )
+            .await?;
+        if recovering {
+            let _ = self
+                .reconcile_intelligence_terminal(Some(&intelligence), &output)
+                .await;
+        }
+        Ok(output)
+    }
+
+    /// Reconcile only an exact request already dispatched in this journal.
+    /// An absent or merely reserved request never becomes a new physical turn.
+    pub async fn reconcile_intelligence(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        intelligence: NativeIntelligenceRunBinding,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeIntelligenceReconciliationReceiptV1> {
+        let execution = self
+            .run_bound(
+                control,
+                admission,
+                prompt,
+                /*context_query*/ None,
+                Some(&intelligence),
+                NativeExecutionMode::ReconcileOnly,
+                cancellation,
+            )
+            .await?;
+        let reconciliation_reason = self
+            .reconcile_intelligence_terminal(Some(&intelligence), &execution)
+            .await
+            .err();
+        Ok(NativeIntelligenceReconciliationReceiptV1 {
+            execution,
+            reconciliation_required: reconciliation_reason.is_some(),
+            reconciliation_reason,
+        })
     }
 
     async fn run_bound(
@@ -82,6 +151,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         intelligence: Option<&NativeIntelligenceRunBinding>,
+        mode: NativeExecutionMode,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -92,6 +162,19 @@ impl AppServerModelDriver {
             .is_some_and(|query| query.is_empty() || query.len() > 2048)
         {
             return Err("context query must contain 1..2048 bytes".into());
+        }
+        if let Some(binding) = intelligence {
+            let expected: codex_hepta_types::Digest32 = binding.prompt_digest.parse()?;
+            if expected.is_zero()
+                || expected != codex_hepta_types::Digest32::of_bytes(prompt.as_bytes())
+            {
+                return Err("physical prompt bytes do not match the intelligence handoff".into());
+            }
+            if admission.request_id != binding.run_id {
+                return Err(
+                    "native admission identity differs from the canonical intelligence run".into(),
+                );
+            }
         }
         let request = NativeRequest {
             request_id: admission.request_id,
@@ -106,6 +189,13 @@ impl AppServerModelDriver {
                 intelligence,
             )?,
         };
+        if matches!(mode, NativeExecutionMode::ReconcileOnly)
+            && !control
+                .native_record(&request.request_id)
+                .is_some_and(|record| record.request == request && record.dispatch.is_some())
+        {
+            return Err("intelligence reconciliation requires the exact durable dispatch".into());
+        }
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
@@ -123,13 +213,19 @@ impl AppServerModelDriver {
                 .as_ref()
                 .filter(|output| output.terminal_observed)
             {
-                return Ok(output.clone());
+                let output = output.clone();
+                return Ok(output);
             }
-            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
+            if let Some(mut reconciled) = self.reconcile_existing(&record, &prompt).await? {
+                if let Some(binding) = intelligence {
+                    self.revalidate_intelligence_recovery_v1(&record, binding, &mut reconciled)
+                        .await;
+                }
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
-                return settled.observation.ok_or_else(|| {
-                    "durable reconciliation omitted its normalized observation".into()
-                });
+                let output = settled
+                    .observation
+                    .ok_or("durable reconciliation omitted its normalized observation")?;
+                return Ok(output);
             }
             if let Some(output) = record.observation {
                 return Ok(output);
@@ -157,6 +253,9 @@ impl AppServerModelDriver {
             };
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
+        }
+        if matches!(mode, NativeExecutionMode::ReconcileOnly) {
+            return Err("intelligence reconciliation cannot dispatch a reserved request".into());
         }
         let request_id = record.request.request_id;
         match self
@@ -219,6 +318,7 @@ fn native_source_payload_digest(
             binding.expected_revision,
             &binding.context_digest,
             &binding.envelope_digest,
+            &binding.prompt_digest,
         ))?,
     };
     Ok(digest(&bytes))

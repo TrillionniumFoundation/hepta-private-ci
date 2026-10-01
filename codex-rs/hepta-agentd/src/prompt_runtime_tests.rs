@@ -1,29 +1,76 @@
 use super::*;
+#[cfg(unix)]
 use codex_hepta_prompt_optimizer::canonical::*;
-use codex_hepta_types::AuthorityPosture;
 
+#[cfg(unix)]
 use std::collections::BTreeSet;
+#[cfg(unix)]
 use std::time::SystemTime;
+#[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
+#[cfg(unix)]
+use codex_hepta_context_compiler::ContextCompilerV2Error;
+#[cfg(unix)]
 use codex_hepta_context_compiler::ContextModelProfileV2;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(unix)]
+use codex_hepta_kg::KnowledgeNodeV2;
+#[cfg(unix)]
+use codex_hepta_kg::KnowledgeProjectionInputV2;
+#[cfg(unix)]
+use codex_hepta_kg::KnowledgeSupportV2;
+#[cfg(unix)]
+use codex_hepta_kg::build_complete_generation;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+#[cfg(unix)]
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::FactorSource;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::Lifecycle;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptFactor;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptModelTupleV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptRoleV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_admission_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_realization_binding;
 use codex_hepta_types::Digest32;
+#[cfg(unix)]
 use codex_hepta_types::FixedQ32;
+#[cfg(unix)]
+use codex_hepta_types::Generation;
 use codex_hepta_types::PromptDeliveryObservationV1;
+#[cfg(unix)]
+use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
+#[cfg(unix)]
 use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
@@ -32,6 +79,20 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+#[cfg(unix)]
+struct ByteTokenizer(Digest32);
+
+#[cfg(unix)]
+impl ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        self.0
+    }
+
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        u64::try_from(bytes.len()).map_err(|_| ContextCompilerV2Error::InvalidSerializedTokenCount)
+    }
 }
 
 fn attachment() -> PromptRuntimeAttachmentV1 {
@@ -501,6 +562,7 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
     );
 }
 
+#[cfg(unix)]
 #[test]
 fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
@@ -674,29 +736,154 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         })
         .unwrap_or_else(|error| panic!("enumerate: {error}"));
     assert_eq!(candidates.candidates[0].realization, realization);
-    let portfolio = SelectedPromptPortfolioV1 {
-        receipt: PromptPortfolioReceiptV1 {
-            portfolio_id: id("portfolio:agentd-product"),
-            candidate_set_digest: candidates.receipt.receipt_digest,
-            factor_ids: vec![factor.factor_id],
-            interaction_digest: digest("interaction"),
-            expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
-            valid_until_unix_ms: logical_now + 10_000,
-            receipt_digest: digest("portfolio-receipt"),
-            authority: AuthorityPosture::DENY_ALL,
-        },
-        selected: candidates.candidates,
-        objective_digest: digest("objective:agentd-product"),
-        state_digest: digest("state:agentd-product"),
-        model_tuple: tuple.clone(),
-        model_tuple_digest: tuple.digest(),
-        generation_vector_digest: digest("generation:agentd-product"),
-        pricing_set_digest: digest("pricing-set"),
-        graph_generation_digest: digest("graph-generation"),
-        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
-        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
+    let expected_selected = candidates.candidates.clone();
+    let evidence_key = SigningKey::from_bytes(&[64; 32]);
+    let evidence_public = evidence_key.verifying_key().to_bytes();
+    let evidence_scope = digest("scope:agentd-prompt-pricing");
+    let evidence_expires = logical_now + 10_000;
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: evidence_scope,
+        objective_digest: candidates.receipt.objective_digest,
+        authority_epoch: 1,
+        signers: vec![TrustedLearningSignerV1 {
+            principal: AuthenticatedPrincipalV1 {
+                principal_id: id("prompt.optimizer"),
+                credential_chain_digest: digest("credential:agentd-prompt-pricing"),
+                signing_key_digest: Digest32::of_bytes(&evidence_public),
+                scope_digest: evidence_scope,
+                authority_epoch: 1,
+                authenticated_at: 1,
+                expires_at: evidence_expires,
+            },
+            controller_id: id("controller:agentd-prompt-pricing"),
+            verifying_key: evidence_public,
+            roles: vec![
+                LearningEvidenceRoleV1::Generator,
+                LearningEvidenceRoleV1::Evaluator,
+            ],
+            revoked_at: None,
+        }],
+    })
+    .unwrap_or_else(|error| panic!("pricing verifier: {error}"));
+    let sign_evidence = |name: &str, role: LearningEvidenceRoleV1, payload: &[u8]| {
+        let mut evidence = SignedLearningEvidenceV1 {
+            evidence_id: id(name),
+            principal_id: id("prompt.optimizer"),
+            role,
+            trust_digest: verifier.trust_digest(),
+            scope_digest: evidence_scope,
+            objective_digest: verifier.objective_digest(),
+            authority_epoch: 1,
+            issued_at: logical_now,
+            expires_at: evidence_expires,
+            payload_digest: Digest32::of_bytes(payload),
+            signature: [0; 64],
+        };
+        evidence.signature = evidence_key.sign(&evidence.signing_bytes()).to_bytes();
+        evidence
     };
+    let completeness = CandidateSetCompletenessReceiptV1 {
+        set_id: candidates.receipt.set_id.clone(),
+        state_digest: candidates.receipt.state_digest,
+        generator_id: id("prompt.optimizer"),
+        generator_code_digest: digest("generator:agentd-prompt-pricing"),
+        grammar_digest: candidates.receipt.selection_grammar_digest,
+        hard_filter_digest: digest("hard-filter:agentd-prompt-pricing"),
+        truncation_digest: digest("truncation:agentd-prompt-pricing"),
+        candidates_digest: candidates.candidates_digest,
+        candidate_count: u32::try_from(candidates.candidates.len()).expect("candidate count"),
+        omitted_count_bound: candidates.omitted_count,
+        canonical_order_digest: candidates.canonical_order_digest,
+        complete_for_generator: true,
+    };
+    let completeness_evidence = sign_evidence(
+        "evidence:agentd-prompt-completeness",
+        LearningEvidenceRoleV1::Generator,
+        &candidate_completeness_signing_payload_v1(&completeness)
+            .unwrap_or_else(|error| panic!("completeness signing payload: {error}")),
+    );
+    let mut pricing_evidence = PromptPricingEvidenceV1 {
+        factor_id: factor.factor_id.clone(),
+        state_digest: candidates.receipt.state_digest,
+        model_tuple_digest: tuple.digest(),
+        expected_incremental_utility_q32: FixedQ32::ONE,
+        downside_q32: FixedQ32::ZERO,
+        confidence_lower_q32: FixedQ32::ONE,
+        confidence_upper_q32: FixedQ32::ONE,
+        support_count: 1,
+        latency_cost_micros: 0,
+        interference_ppm: 0,
+        context_crowding_cost_q32: FixedQ32::ZERO,
+        privacy_cost_q32: FixedQ32::ZERO,
+        instability_cost_q32: FixedQ32::ZERO,
+        future_context_option_cost_q32: FixedQ32::ZERO,
+        support_audit_digest: digest("support:agentd-prompt-pricing"),
+        evidence: completeness_evidence.clone(),
+    };
+    pricing_evidence.evidence = sign_evidence(
+        "evidence:agentd-prompt-pricing",
+        LearningEvidenceRoleV1::Evaluator,
+        &pricing_evidence_signing_payload_v1(&pricing_evidence),
+    );
+    let graph = build_complete_generation(
+        Generation::new(/*value*/ 1).expect("graph generation"),
+        KnowledgeProjectionInputV2 {
+            source_snapshot_digest: digest("graph-source:agentd-product"),
+            generation_vector_digest: candidates.generation_vector_digest,
+            graph_profile_digest: digest("graph-profile:agentd-product"),
+            complete_source_cut: true,
+            nodes: vec![KnowledgeNodeV2 {
+                node_id: factor.factor_id.clone(),
+                node_kind_id: id("kind:prompt-factor"),
+                payload_digest: factor.content_digest,
+                supports: vec![KnowledgeSupportV2 {
+                    source_id: id("support:agentd-product"),
+                    source_revision: Revision::new(/*value*/ 1).expect("support revision"),
+                    source_fact_digest: realization.payload_digest,
+                    validity_digest: digest("graph-validity:agentd-product"),
+                    valid_from_unix_seconds: None,
+                    valid_to_unix_seconds: None,
+                    tombstoned: false,
+                }],
+            }],
+            edges: Vec::new(),
+        },
+    )
+    .unwrap_or_else(|error| panic!("interaction graph: {error}"));
+    let priced = price_factors_v1(
+        candidates,
+        &completeness,
+        &completeness_evidence,
+        vec![pricing_evidence],
+        &verifier,
+        &PromptPricingPolicyV1 {
+            policy_id: id("pricing-policy:agentd-product"),
+            token_cost_per_token_q32: FixedQ32::ZERO,
+            latency_cost_per_micro_q32: FixedQ32::ZERO,
+            interference_cost_per_ppm_q32: FixedQ32::ZERO,
+            downside_weight_q32: FixedQ32::ZERO,
+            minimum_support_count: 1,
+            maximum_interference_ppm: 0,
+        },
+        logical_now,
+    )
+    .unwrap_or_else(|error| panic!("price registered factor: {error}"));
+    let portfolio = select_portfolio_v1(
+        &priced,
+        &graph,
+        Vec::new(),
+        &verifier,
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:agentd-product"),
+            graph_query_id: id("graph-query:agentd-product"),
+            token_budget: 4,
+            maximum_selected_factors: 1,
+            requested_valid_until_unix_ms: evidence_expires,
+        },
+        logical_now,
+    )
+    .unwrap_or_else(|error| panic!("select registered factor: {error}"));
+    assert_eq!(portfolio.selected, expected_selected);
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: portfolio.state_digest,
@@ -707,7 +894,26 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         policy_digest: digest("exercise-policy"),
     };
 
-    let disposition = pipeline
+    let compilation_request = codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:agentd-product"),
+        serialization_id: id("serialization:agentd-product"),
+        attachment_id: id("attachment:agentd-product"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider:agentd-product"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer:agentd-product"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 512,
+        },
+        now_unix_ms: logical_now,
+        token_budget: 512,
+        truncation_policy_digest: digest("truncation:agentd-product"),
+    };
+    let legacy = pipeline
         .compile_and_stage(
             "thread:product",
             "turn:product",
@@ -715,25 +921,33 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             wall_now + 60_000,
             &portfolio,
             &exercise_request,
-            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
-                compilation_id: id("compilation:agentd-product"),
-                serialization_id: id("serialization:agentd-product"),
-                attachment_id: id("attachment:agentd-product"),
-                registry_model_tuple: tuple.clone(),
-                context_model_profile: ContextModelProfileV2 {
-                    model_digest: tuple.model_digest,
-                    provider_id_digest: digest("provider:agentd-product"),
-                    provider_model_digest: tuple.model_digest,
-                    tokenizer_digest: tuple.tokenizer_digest,
-                    serializer_digest: digest("serializer:agentd-product"),
-                    template_digest: tuple.template_digest,
-                    tool_schema_digest: tuple.tool_schema_digest,
-                    maximum_context_tokens: 128,
-                },
-                now_unix_ms: logical_now,
-                token_budget: 128,
-                truncation_policy_digest: digest("truncation:agentd-product"),
-            },
+            compilation_request.clone(),
+        )
+        .expect_err("legacy owner cannot stage an uncounted physical payload");
+    assert!(matches!(
+        legacy,
+        AgentdPromptPipelineError::Compilation(ref message)
+            if message.contains("MissingExactTokenizer")
+    ));
+    assert!(
+        pipeline
+            .runtime_owner()
+            .state
+            .lock()
+            .expect("runtime state")
+            .staged
+            .is_empty()
+    );
+    let disposition = pipeline
+        .compile_and_stage_with_tokenizer(
+            "thread:product",
+            "turn:product",
+            "gpt-test",
+            wall_now + 60_000,
+            &portfolio,
+            &exercise_request,
+            compilation_request,
+            &ByteTokenizer(tuple.tokenizer_digest),
         )
         .unwrap_or_else(|error| panic!("compile and stage: {error}"));
     assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);

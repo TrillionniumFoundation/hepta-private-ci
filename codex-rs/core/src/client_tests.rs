@@ -871,8 +871,10 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
     let api_stream = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item))])
         .chain(futures::stream::pending());
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
-        api_stream,
+        super::UpstreamResponseEvents {
+            request_id: None,
+            stream: api_stream,
+        },
         test_session_telemetry(),
         attempt,
         test_model_provider(),
@@ -924,8 +926,10 @@ async fn response_stream_records_last_model_feedback_ids() {
         }),
     ]);
     let (mut stream, _) = super::map_response_events(
-        Some("req-123".to_string()),
-        api_stream,
+        super::UpstreamResponseEvents {
+            request_id: Some("req-123".to_string()),
+            stream: api_stream,
+        },
         test_session_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_model_provider(),
@@ -1060,8 +1064,10 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         message: SENTINEL.to_string(),
     })]);
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
-        api_stream,
+        super::UpstreamResponseEvents {
+            request_id: None,
+            stream: api_stream,
+        },
         test_session_telemetry(),
         attempt,
         provider,
@@ -1244,8 +1250,10 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
     };
 
     let (stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
-        api_stream,
+        super::UpstreamResponseEvents {
+            request_id: None,
+            stream: api_stream,
+        },
         test_session_telemetry(),
         attempt,
         test_model_provider(),

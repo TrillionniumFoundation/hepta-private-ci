@@ -228,11 +228,11 @@ pub fn adapt_request(
     Ok(receipt(
         &intent,
         request_digest,
-        None,
-        None,
+        /*turn_id*/ None,
+        /*correlation_digest*/ None,
         AdapterStatus::Indeterminate,
         RetryPosture::ReconcileSameOperation,
-        None,
+        /*response_digest*/ None,
     ))
 }
 
@@ -289,8 +289,8 @@ pub fn adapt_observed_server_rejection(
     Ok(receipt(
         intent,
         request_digest,
-        None,
-        None,
+        /*turn_id*/ None,
+        /*correlation_digest*/ None,
         status,
         retry_posture,
         Some(response_digest),

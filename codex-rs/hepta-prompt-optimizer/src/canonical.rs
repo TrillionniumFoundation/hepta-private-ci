@@ -10,6 +10,7 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_kg::KnowledgeGenerationV2;
 use codex_hepta_kg::KnowledgeRelationKindV2;
@@ -28,6 +29,9 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+#[path = "canonical_integrity.rs"]
+mod integrity;
 
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
@@ -55,6 +59,7 @@ pub struct PromptCandidateBindingV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EnumeratedPromptCandidatesV1 {
+    original: Arc<integrity::EnumeratedOriginalV1>,
     pub registry_snapshot: PromptRegistrySnapshotV2,
     pub model_tuple: PromptModelTupleV2,
     pub generation_vector_digest: Digest32,
@@ -177,7 +182,7 @@ pub fn enumerate_factors_v1(
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     };
-    Ok(EnumeratedPromptCandidatesV1 {
+    Ok(integrity::EnumeratedOriginalV1 {
         registry_snapshot: snapshot,
         model_tuple: request.model_tuple,
         generation_vector_digest: request.generation_vector_digest,
@@ -186,7 +191,8 @@ pub fn enumerate_factors_v1(
         omitted_count: u32::try_from(omitted).unwrap_or(u32::MAX),
         candidates,
         receipt,
-    })
+    }
+    .admit())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -282,6 +288,7 @@ pub struct PricedPromptCandidateV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PricedPromptCandidatesV1 {
+    original: Arc<integrity::PricedOriginalV1>,
     pub candidates: EnumeratedPromptCandidatesV1,
     pub completeness_digest: Digest32,
     pub pricing_policy_digest: Digest32,
@@ -337,6 +344,7 @@ pub fn price_factors_v1(
     policy: &PromptPricingPolicyV1,
     now_unix_ms: u64,
 ) -> Result<PricedPromptCandidatesV1, CanonicalPromptError> {
+    candidates.validate_original()?;
     if now_unix_ms == 0 {
         return Err(CanonicalPromptError::InvalidTime);
     }
@@ -457,14 +465,15 @@ pub fn price_factors_v1(
     let pricing_set_digest = digest_pricing_set(&rows, pricing_policy_digest);
     let completeness_digest = validate_candidate_set_completeness(completeness)
         .map_err(|e| CanonicalPromptError::CandidateCompleteness(format!("{e:?}")))?;
-    Ok(PricedPromptCandidatesV1 {
+    Ok(integrity::PricedOriginalV1 {
         candidates,
         completeness_digest,
         pricing_policy_digest,
         rows,
         pricing_set_digest,
         authority: AuthorityPosture::DENY_ALL,
-    })
+    }
+    .admit())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -528,6 +537,7 @@ pub struct PromptPortfolioReceiptV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SelectedPromptPortfolioV1 {
+    original: Arc<integrity::SelectedOriginalV1>,
     pub receipt: PromptPortfolioReceiptV1,
     pub selected: Vec<PromptCandidateBindingV1>,
     pub objective_digest: Digest32,
@@ -558,6 +568,7 @@ pub fn select_portfolio_v1(
     request: PromptPortfolioRequestV1,
     now_unix_ms: u64,
 ) -> Result<SelectedPromptPortfolioV1, CanonicalPromptError> {
+    priced.validate_original()?;
     if request.maximum_selected_factors == 0
         || request.maximum_selected_factors > MAX_CANONICAL_SELECTED_FACTORS
     {
@@ -802,7 +813,7 @@ pub fn select_portfolio_v1(
         priced.pricing_set_digest,
         graph.generation_digest,
     );
-    Ok(SelectedPromptPortfolioV1 {
+    Ok(integrity::SelectedOriginalV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
             candidate_set_digest: priced.candidates.candidates_digest,
@@ -824,7 +835,8 @@ pub fn select_portfolio_v1(
         graph_generation_digest: graph.generation_digest,
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    })
+    }
+    .admit())
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -878,6 +890,7 @@ pub fn exercise_v1(
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptExerciseRequestV1,
 ) -> Result<PromptExerciseDecisionV1, CanonicalPromptError> {
+    portfolio.validate_original()?;
     for (name, digest) in [
         ("current_state", request.current_state_digest),
         ("generation_vector", request.generation_vector_digest),
@@ -1346,6 +1359,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalPromptError {
+    OwnerOutputDrift(&'static str),
     EmptyDigest(&'static str),
     InvalidTime,
     CandidateLimit,

@@ -7,6 +7,8 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod canonical_budget;
+mod canonical_invariants;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
@@ -38,6 +40,9 @@ pub use canonical::build_legal_candidates;
 pub use canonical::decide_boundary;
 pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
+pub use canonical_invariants::canonical_candidate_ids_v1;
+pub use canonical_invariants::validate_canonical_outcome_v1;
+pub use canonical_invariants::validate_selected_candidate_v1;
 
 mod evaluated_shadow;
 mod ndu_stochastic_admission;
@@ -140,6 +145,7 @@ pub use prompt_pipeline::PromptSerializationProofV1;
 pub use prompt_pipeline::compile_exercised_prompt_context_v1;
 pub use prompt_pipeline::observe_prompt_delivery_v1;
 pub use prompt_pipeline::prepare_prompt_delivery_v1;
+pub use prompt_pipeline::prepare_prompt_delivery_with_tokenizer_v1;
 
 mod pipeline_v2;
 mod prompt_delivery;
@@ -152,6 +158,7 @@ pub use prompt_delivery::PromptRegistryCompilationErrorV2;
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
 pub use prompt_delivery::compile_prompt_registry_v2;
+pub use prompt_delivery::compile_prompt_registry_with_tokenizer_v2;
 
 mod pipeline;
 

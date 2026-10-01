@@ -1,0 +1,341 @@
+//! Worker supervision independent of the request future and Tokio scheduler.
+//!
+//! A bounded worker owns this completion guard. Dropping the request merely
+//! detaches its result; it cannot disarm the watchdog. Completion joins the
+//! observer before the worker permit is released, so observers are bounded too.
+
+use std::sync::Arc;
+use std::sync::Condvar;
+use std::sync::Mutex;
+use std::thread::JoinHandle;
+use std::time::Duration;
+use std::time::Instant;
+
+use super::super::AgentdIntelligenceProductRunnerV1;
+use crate::AgentdIntelligenceTelemetryV1;
+use crate::intelligence_observability::AgentdIntelligenceWorkerStateV1;
+
+struct WorkerTimeoutObservationV1 {
+    state: Arc<AgentdIntelligenceWorkerStateV1>,
+    telemetry: Arc<AgentdIntelligenceTelemetryV1>,
+}
+
+pub(super) struct WorkerCompletionV1 {
+    completed: Arc<(Mutex<Option<Instant>>, Condvar)>,
+    observer: Option<JoinHandle<()>>,
+}
+
+impl WorkerCompletionV1 {
+    pub(super) fn supervise(
+        budget: Duration,
+        hard_grace: Option<Duration>,
+        state: Arc<AgentdIntelligenceWorkerStateV1>,
+        telemetry: Arc<AgentdIntelligenceTelemetryV1>,
+    ) -> std::io::Result<Self> {
+        Self::supervise_inner(
+            budget,
+            hard_grace,
+            Some(WorkerTimeoutObservationV1 { state, telemetry }),
+        )
+    }
+
+    fn supervise_unobserved(budget: Duration, hard_grace: Duration) -> std::io::Result<Self> {
+        Self::supervise_inner(budget, Some(hard_grace), /*observation*/ None)
+    }
+
+    fn supervise_inner(
+        budget: Duration,
+        hard_grace: Option<Duration>,
+        observation: Option<WorkerTimeoutObservationV1>,
+    ) -> std::io::Result<Self> {
+        if budget.is_zero() || hard_grace.is_some_and(|grace| grace.is_zero()) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "worker supervision budget and grace must be nonzero",
+            ));
+        }
+        let deadline = Instant::now().checked_add(budget).ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::InvalidInput, "worker deadline overflow")
+        })?;
+        let completed = Arc::new((Mutex::new(None), Condvar::new()));
+        let observer_state = Arc::clone(&completed);
+        let observer = std::thread::Builder::new()
+            .name("hepta-intelligence-watchdog".to_string())
+            .spawn(move || {
+                if wait_until_complete(&observer_state, deadline) {
+                    return;
+                }
+                if let Some(observation) = observation.as_ref() {
+                    observation.state.mark_timed_out();
+                }
+                let Some(grace) = hard_grace else {
+                    return;
+                };
+                let Some(exit_deadline) = deadline.checked_add(grace) else {
+                    if let Some(observation) = observation.as_ref() {
+                        observation.telemetry.record_hard_timeout_trip();
+                    }
+                    std::process::exit(70);
+                };
+                if !wait_until_complete(&observer_state, exit_deadline) {
+                    if let Some(observation) = observation.as_ref() {
+                        observation.telemetry.record_hard_timeout_trip();
+                    }
+                    // The supervisor must recover a new process generation and
+                    // reconcile any durable unknown operation.
+                    std::process::exit(70);
+                }
+            })?;
+        Ok(Self {
+            completed,
+            observer: Some(observer),
+        })
+    }
+}
+
+impl Drop for WorkerCompletionV1 {
+    fn drop(&mut self) {
+        let (state, ready) = &*self.completed;
+        let mut state = state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        *state = Some(Instant::now());
+        ready.notify_all();
+        drop(state);
+        if let Some(observer) = self.observer.take() {
+            let _ = observer.join();
+        }
+    }
+}
+
+impl AgentdIntelligenceProductRunnerV1 {
+    pub(crate) fn spawn_unobserved_blocking<F, T>(
+        permit: tokio::sync::OwnedSemaphorePermit,
+        budget: Duration,
+        hard_grace: Duration,
+        work: F,
+    ) -> std::io::Result<tokio::task::JoinHandle<T>>
+    where
+        F: FnOnce() -> T + Send + 'static,
+        T: Send + 'static,
+    {
+        let completion = WorkerCompletionV1::supervise_unobserved(budget, hard_grace)?;
+        Ok(tokio::task::spawn_blocking(move || {
+            // The actual worker owns supervision and capacity. Detaching the
+            // request future releases neither one.
+            let _permit = permit;
+            let _completion = completion;
+            work()
+        }))
+    }
+}
+
+fn wait_until_complete(completed: &(Mutex<Option<Instant>>, Condvar), deadline: Instant) -> bool {
+    let (state, ready) = completed;
+    let mut state = state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    loop {
+        if let Some(completed_at) = *state {
+            // A late observer cannot treat work that finished after its
+            // deadline as on-time completion merely because it sees a signal.
+            return completed_at < deadline;
+        }
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            return false;
+        }
+        let result = ready
+            .wait_timeout(state, remaining)
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        state = result.0;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn delayed_observer_uses_completion_time_instead_of_wakeup_time() {
+        let deadline = Instant::now();
+        let just_before = deadline - Duration::from_nanos(1);
+        let just_after = deadline + Duration::from_nanos(1);
+        let on_time = (Mutex::new(Some(just_before)), Condvar::new());
+        let at_deadline = (Mutex::new(Some(deadline)), Condvar::new());
+        let late = (Mutex::new(Some(just_after)), Condvar::new());
+        assert!(wait_until_complete(&on_time, deadline));
+        assert!(!wait_until_complete(&at_deadline, deadline));
+        assert!(!wait_until_complete(&late, deadline));
+        assert!(wait_until_complete(
+            &late,
+            deadline + Duration::from_nanos(2),
+        ));
+    }
+
+    #[test]
+    fn completion_disarms_and_joins_watchdog() {
+        let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
+        let guard = telemetry.worker_started();
+        let state = guard.state();
+        let completion = WorkerCompletionV1::supervise(
+            Duration::from_secs(2),
+            None,
+            Arc::clone(&state),
+            Arc::clone(&telemetry),
+        )
+        .expect("watchdog");
+        drop(completion);
+        drop(guard);
+        assert!(!state.timed_out());
+        assert_eq!(telemetry.snapshot().request_timeouts, 0);
+    }
+
+    #[test]
+    fn independent_watchdog_observes_detached_work() {
+        let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
+        let guard = telemetry.worker_started();
+        let state = guard.state();
+        let completion = WorkerCompletionV1::supervise(
+            Duration::from_millis(10),
+            None,
+            Arc::clone(&state),
+            Arc::clone(&telemetry),
+        )
+        .expect("watchdog");
+        let (release, wait) = std::sync::mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            let _guard = guard;
+            let _completion = completion;
+            let _ = wait.recv_timeout(Duration::from_secs(5));
+        });
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while !state.timed_out() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        let observed = state.timed_out();
+        let snapshot = telemetry.snapshot();
+        assert!(!state.mark_timed_out());
+        let _ = release.send(());
+        worker.join().expect("worker exited");
+        assert!(observed);
+        assert_eq!(snapshot.request_timeouts, 1);
+        assert_eq!(snapshot.timed_out_active_workers, 1);
+        let completed = telemetry.snapshot();
+        assert_eq!(completed.active_workers, 0);
+        assert_eq!(completed.timed_out_active_workers, 0);
+        assert_eq!(completed.late_worker_completions, 1);
+        assert_eq!(completed.request_timeouts, 1);
+    }
+
+    #[test]
+    fn request_timeout_before_watchdog_is_counted_once() {
+        let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
+        let guard = telemetry.worker_started();
+        let state = guard.state();
+        let completion = WorkerCompletionV1::supervise(
+            Duration::from_millis(10),
+            None,
+            Arc::clone(&state),
+            Arc::clone(&telemetry),
+        )
+        .expect("watchdog");
+        assert!(state.mark_timed_out());
+        let observer = completion.observer.as_ref().expect("observer");
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while !observer.is_finished() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        assert!(observer.is_finished());
+        let observed = telemetry.snapshot();
+        drop(completion);
+        drop(guard);
+        let completed = telemetry.snapshot();
+        assert_eq!(
+            (
+                observed.request_timeouts,
+                observed.timed_out_active_workers,
+                completed.request_timeouts,
+                completed.timed_out_active_workers,
+                completed.late_worker_completions,
+            ),
+            (1, 1, 1, 0, 1),
+        );
+    }
+
+    #[test]
+    fn explicit_hard_timeout_terminates_a_real_child_process() {
+        const CHILD: &str = "HEPTA_INTELLIGENCE_WATCHDOG_TEST_CHILD";
+        const SAMPLES: &str = "HEPTA_INTELLIGENCE_HARD_KILL_SAMPLES";
+        const OUTPUT: &str = "HEPTA_INTELLIGENCE_HARD_KILL_OUTPUT";
+        if std::env::var_os(CHILD).is_some() {
+            let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
+            let guard = telemetry.worker_started();
+            let completion = WorkerCompletionV1::supervise(
+                Duration::from_millis(20),
+                Some(Duration::from_millis(20)),
+                guard.state(),
+                telemetry,
+            )
+            .expect("watchdog");
+            let _detached = std::thread::spawn(move || {
+                let _guard = guard;
+                let _completion = completion;
+                loop {
+                    std::thread::park();
+                }
+            });
+            // No async runtime or live request future is needed to supervise.
+            std::thread::sleep(Duration::from_secs(10));
+            panic!("hard timeout did not terminate child");
+        }
+        let samples = std::env::var(SAMPLES)
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(1)
+            .clamp(1, 32);
+        let executable = std::env::current_exe().expect("test binary");
+        let test_name = format!(
+            "{}::explicit_hard_timeout_terminates_a_real_child_process",
+            module_path!().split_once("::").expect("crate prefix").1,
+        );
+        let mut samples_nanos = Vec::with_capacity(samples);
+        for _ in 0..samples {
+            let started = Instant::now();
+            let mut child = std::process::Command::new(&executable)
+                .args(["--exact", &test_name, "--nocapture"])
+                .env(CHILD, "1")
+                .spawn()
+                .expect("child process");
+            let deadline = Instant::now() + Duration::from_secs(15);
+            let status = loop {
+                if let Some(status) = child.try_wait().expect("observe child") {
+                    break status;
+                }
+                if Instant::now() >= deadline {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    panic!("child watchdog deadline exceeded");
+                }
+                std::thread::sleep(Duration::from_millis(5));
+            };
+            assert_eq!(status.code(), Some(70));
+            samples_nanos.push(
+                u64::try_from(started.elapsed().as_nanos())
+                    .expect("hard-timeout duration fits u64"),
+            );
+        }
+        if let Some(path) = std::env::var_os(OUTPUT) {
+            let record = serde_json::json!({
+                "schema": "hepta.intelligence-control.hard-kill-profile.v1",
+                "sampleCount": samples_nanos.len(),
+                "samplesNanos": samples_nanos,
+            });
+            std::fs::write(
+                path,
+                serde_json::to_vec_pretty(&record).expect("encode hard-kill profile"),
+            )
+            .expect("write hard-kill profile");
+        }
+    }
+}

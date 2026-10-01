@@ -33,9 +33,11 @@ use codex_hepta_codex_adapter::PromptRuntimePrepareRequest;
 use codex_hepta_codex_adapter::PromptRuntimeRecordFuture;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
+use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
 use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
 use codex_hepta_intelligence::compile_prompt_registry_v2;
+use codex_hepta_intelligence::compile_prompt_registry_with_tokenizer_v2;
 use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
@@ -167,8 +169,9 @@ impl AgentdPromptRuntimeOwner {
         self.poisoned.load(Ordering::Acquire)
     }
 
-    /// Stage one exact optimizer-exercised/registry-dereferenced context for a
-    /// real Codex turn. Only DeveloperInstruction is activated in this profile.
+    /// Stage optimizer-exercised, registry-dereferenced DeveloperFragments for
+    /// a real Codex turn. This adapter extracts fragments from the V3 source
+    /// envelope; its tokenizer receipt does not count final provider framing.
     pub fn stage_compiled_prompt_context(
         &self,
         thread_id: &str,
@@ -509,9 +512,11 @@ impl std::error::Error for AgentdPromptPipelineError {}
 ///
 /// This facade owns no alternate optimizer or model loop. It opens the
 /// authoritative durable registry, derives the optimizer candidate source from
-/// that exact owner, validates canonical optimizer receipts through
-/// \`compile_prompt_registry_v2\`, and stages the resulting exact realization
-/// bytes into the same PromptRuntimeHost consumed by the embedded App Server.
+/// that exact owner, validates canonical optimizer receipts and complete source
+/// token accounting through [`compile_prompt_registry_with_tokenizer_v2`], and
+/// stages the resulting exact realization bytes into the same PromptRuntimeHost
+/// consumed by the embedded App Server. The legacy no-tokenizer entrypoint
+/// remains available for source compatibility but rejects compilation.
 pub struct AgentdPromptPipelineOwner {
     registry: Mutex<DurablePromptRegistry>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
@@ -564,6 +569,8 @@ impl AgentdPromptPipelineOwner {
             .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
     }
 
+    /// Compatibility entrypoint without a registry source tokenizer. It
+    /// returns a compilation error and never stages an uncounted source bundle.
     #[allow(clippy::too_many_arguments)]
     pub fn compile_and_stage(
         &self,
@@ -582,6 +589,47 @@ impl AgentdPromptPipelineOwner {
                 .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
             compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
                 .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+        };
+        self.runtime
+            .stage_compiled_prompt_context(
+                thread_id,
+                turn_id,
+                model,
+                requested_deadline_ms,
+                &compiled,
+            )
+            .map_err(AgentdPromptPipelineError::Stage)
+    }
+
+    /// Compile and stage after counting the complete V3 registry source
+    /// envelope with the tokenizer bound to the context model profile. The
+    /// staged DeveloperFragments are subsequently framed by the host, which
+    /// must independently count its complete final provider serialization.
+    #[allow(clippy::too_many_arguments)]
+    pub fn compile_and_stage_with_tokenizer(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+        model: &str,
+        requested_deadline_ms: u64,
+        portfolio: &SelectedPromptPortfolioV1,
+        exercise_request: &PromptExerciseRequestV1,
+        compilation_request: PromptRegistryCompilationRequestV2,
+        tokenizer: &impl ExactTokenizerV2,
+    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
+        let compiled = {
+            let registry = self
+                .registry
+                .lock()
+                .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
+            compile_prompt_registry_with_tokenizer_v2(
+                &registry,
+                portfolio,
+                exercise_request,
+                compilation_request,
+                tokenizer,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
         };
         self.runtime
             .stage_compiled_prompt_context(
