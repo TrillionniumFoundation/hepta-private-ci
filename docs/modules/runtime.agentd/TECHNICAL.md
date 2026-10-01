@@ -386,8 +386,11 @@ exercise actual cold queue-binding and rollout-path SELECTs without changing the
 stored snapshot. These references do not establish native execution success.
 
 The historical scanner binds the owning thread, exact client ID and payload.
-Only matching `TurnComplete` / `TurnAborted` records prove a terminal outcome;
-recovery-unready and restart records clear an older terminal observation. Plain
+For a persisted turn, only matching `TurnComplete` / `TurnAborted` records prove
+a terminal outcome; recovery-unready and restart records clear an older terminal
+observation. Without a persisted turn join, an exact queue `Cancelled` tombstone
+can report pre-turn cancellation. A matching persisted join takes precedence,
+and incomplete history remains `Unknown`. Plain
 and compressed scans require a complete record stream and are bounded at 1 MiB
 per record, 32 MiB of scanned bytes and 65,536 lines. The four-second caller
 deadline bounds waiting; it cannot cancel arbitrary kernel or network-filesystem
