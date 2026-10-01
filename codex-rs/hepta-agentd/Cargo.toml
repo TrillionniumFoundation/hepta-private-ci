@@ -69,6 +69,11 @@ name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
 required-features = ["qualification-cognitive-write"]
 
+[[example]]
+name = "secrets_qualification_fleet"
+path = "examples/secrets_qualification_fleet.rs"
+required-features = ["server"]
+
 [lints]
 workspace = true
 

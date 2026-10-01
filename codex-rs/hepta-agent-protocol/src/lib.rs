@@ -649,6 +649,16 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    SecretsConsumeOriginal {
+        original_id: String,
+        budget_ms: u64,
+    },
+    SecretsOriginalStatus {
+        original_id: String,
+    },
+    SecretsRecoverOriginal {
+        original_id: String,
+    },
     Capabilities,
     Health,
     Lifecycle,
@@ -830,6 +840,7 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    SecretsOriginal(SecretsOriginalObservation),
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
@@ -1520,3 +1531,24 @@ mod tests {
 #[cfg(test)]
 #[path = "objective_tests.rs"]
 mod objective_tests;
+
+/// Metadata observed from the protected daemon's actual consumer ACK and settlement.
+/// An Unknown coordinate is retained for Status/Recover and never proves absence.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum SecretsOriginalObservation {
+    Completed {
+        original_operation_id: String,
+        reservation_id: String,
+        observed_cost: u64,
+        receipt_digest: String,
+    },
+    Unknown {
+        original_operation_id: String,
+    },
+    Rejected {},
+}
+
+#[cfg(test)]
+#[path = "secrets_protocol_tests.rs"]
+mod secrets_protocol_tests;
