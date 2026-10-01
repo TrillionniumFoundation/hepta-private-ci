@@ -6,8 +6,8 @@
 //! provider endpoint, destination, final-use scope, subject, or TaskFlow fence.
 
 use std::collections::BTreeMap;
+#[cfg(all(test, unix))]
 use std::fs;
-use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -16,6 +16,7 @@ use std::time::Duration;
 
 use codex_hepta_automation::AsyncAuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
+use codex_hepta_automation::AuthorizedEffectError;
 use codex_hepta_automation::AuthorizedEffectFuture;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
@@ -23,8 +24,10 @@ use codex_hepta_automation::AuthorizedEffectPending;
 use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
+use codex_hepta_automation::AuthorizedProviderDispatchStatus;
 use codex_hepta_automation::AuthorizedProviderEffectRequest;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::TaskFlowError;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowStepObservation;
@@ -258,6 +261,7 @@ impl AgentdAutomationEffectHost {
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
             provider_contract_binding: self.provider_contract_binding.clone(),
+            dispatch_status: None,
         };
         store
             .execute_authorized_taskflow_effect_async(
@@ -348,30 +352,41 @@ impl AgentdAutomationEffectHost {
         let provider_intent = self.provider_intent(&pending)?;
         match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
-                let Some(receipt) = terminal_receipt_from_ack(&ack) else {
+                if ack.validate_for(&provider_intent).is_err() {
                     return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
-                };
+                }
+                let receipt = receipt_from_ack(&ack);
                 match store
                     .recover_authorized_taskflow_effect(
                         run_id,
                         step_id,
                         attempt,
                         &fence,
-                        AuthorizedEffectRecovery::Observed(receipt),
+                        AuthorizedEffectRecovery::ProviderObserved {
+                            receipt,
+                            status: ack.status,
+                        },
                         now_ms,
                     )
                     .await
-                    .map_err(|error| {
-                        AgentdError::Protocol(format!(
-                            "reconcile authorized effect terminal observation: {error}"
-                        ))
-                    })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                {
+                    Ok(AuthorizedEffectRecoveryResult::Observed(_))
+                        if ack.status == ProviderEffectAckStatus::Accepted =>
+                    {
+                        Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
+                    }
+                    Ok(AuthorizedEffectRecoveryResult::Observed(receipt)) => {
                         Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
                     }
-                    AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
+                    Ok(AuthorizedEffectRecoveryResult::ProvenAbsent) => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),
+                    Err(AuthorizedEffectError::TaskFlow(TaskFlowError::Conflict(_))) => {
+                        Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
+                    }
+                    Err(error) => Err(AgentdError::Protocol(format!(
+                        "reconcile authorized effect provider observation: {error}"
+                    ))),
                 }
             }
             ProviderEffectLookup::Conflict { .. } => Err(AgentdError::Protocol(
@@ -520,6 +535,7 @@ struct HttpAuthorizedEffectDriver {
     provider_scope: String,
     destination_id: String,
     provider_contract_binding: Sha256Digest,
+    dispatch_status: Option<AuthorizedProviderDispatchStatus>,
 }
 
 impl AsyncAuthorizedEffectDriver for HttpAuthorizedEffectDriver {
@@ -527,11 +543,16 @@ impl AsyncAuthorizedEffectDriver for HttpAuthorizedEffectDriver {
         Some(self.provider_contract_binding.clone())
     }
 
+    fn take_provider_dispatch_status(&mut self) -> Option<AuthorizedProviderDispatchStatus> {
+        self.dispatch_status.take()
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
     ) -> AuthorizedEffectFuture<'a> {
         Box::pin(async move {
+            self.dispatch_status = None;
             if request.intent.destination_id != self.destination_id {
                 return Err(AuthorizedEffectDriverError::BeforeProviderContact);
             }
@@ -549,6 +570,17 @@ impl AsyncAuthorizedEffectDriver for HttpAuthorizedEffectDriver {
                 .adapter
                 .dispatch_with_payload(&provider_intent, request.wire_payload)
                 .await;
+            self.dispatch_status = match &dispatch {
+                ProviderEffectDispatch::Ack(ack) if ack.validate_for(&provider_intent).is_ok() => {
+                    Some(ack.status.into())
+                }
+                ProviderEffectDispatch::Unknown => Some(AuthorizedProviderDispatchStatus::Unknown),
+                _ => None,
+            };
+            if matches!(&dispatch, ProviderEffectDispatch::Ack(ack) if ack.validate_for(&provider_intent).is_err())
+            {
+                return Ok(receipt_from_dispatch(&ProviderEffectDispatch::Unknown));
+            }
             match dispatch {
                 ProviderEffectDispatch::NotDispatched { .. } => {
                     Err(AuthorizedEffectDriverError::BeforeProviderContact)
@@ -579,19 +611,19 @@ fn receipt_from_dispatch(dispatch: &ProviderEffectDispatch) -> AuthorizedEffectP
     }
 }
 
-fn terminal_receipt_from_ack(ack: &ProviderEffectAck) -> Option<AuthorizedEffectProviderReceipt> {
+fn receipt_from_ack(ack: &ProviderEffectAck) -> AuthorizedEffectProviderReceipt {
     let outcome = match ack.status {
         ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
         ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
-        ProviderEffectAckStatus::Accepted => return None,
+        ProviderEffectAckStatus::Accepted => AuthorizedEffectOutcome::Indeterminate,
     };
-    Some(AuthorizedEffectProviderReceipt {
+    AuthorizedEffectProviderReceipt {
         outcome,
         receipt_digest: serialized_observation_digest(
             b"hepta.agentd.provider-effect.lookup.v1\0",
             ack,
         ),
-    })
+    }
 }
 
 fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -> Sha256Digest {
@@ -623,73 +655,16 @@ fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError
 }
 
 fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
-    if !path.is_absolute() {
-        return Err(AgentdError::Invalid(format!("{label} must be absolute")));
-    }
-    let canonical = path.canonicalize()?;
-    if canonical != path {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be canonical and symlink-free"
-        )));
-    }
-    let metadata = fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be a regular non-symlink file"
-        )));
-    }
-    if metadata.len() == 0 || metadata.len() > max_bytes {
-        return Err(AgentdError::Invalid(format!(
-            "{label} is empty or too large"
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(AgentdError::Invalid(format!(
-                "{label} must not be group/world accessible"
-            )));
+    crate::automation_protected_file::read_protected_file(path, max_bytes, label).map_err(|error| {
+        match error {
+            crate::automation_protected_file::ProtectedFileError::Invalid(message) => {
+                AgentdError::Invalid(message)
+            }
+            crate::automation_protected_file::ProtectedFileError::Io(error) => {
+                AgentdError::Io(error)
+            }
         }
-    }
-    let mut file = fs::File::open(path)?;
-    let opened = file.metadata()?;
-    #[cfg(unix)]
-    let unchanged = |other: &fs::Metadata| {
-        use std::os::unix::fs::MetadataExt;
-        other.dev() == metadata.dev()
-            && other.ino() == metadata.ino()
-            && other.len() == metadata.len()
-            && other.mtime() == metadata.mtime()
-            && other.mtime_nsec() == metadata.mtime_nsec()
-            && other.ctime() == metadata.ctime()
-            && other.ctime_nsec() == metadata.ctime_nsec()
-    };
-    #[cfg(not(unix))]
-    let unchanged = |other: &fs::Metadata| {
-        other.len() == metadata.len() && other.modified().ok() == metadata.modified().ok()
-    };
-    if !unchanged(&opened) {
-        return Err(AgentdError::Invalid(format!(
-            "{label} changed while opening"
-        )));
-    }
-    let mut bytes = Vec::new();
-    file.by_ref()
-        .take(max_bytes.saturating_add(1))
-        .read_to_end(&mut bytes)?;
-    let after = fs::symlink_metadata(path)?;
-    if bytes.is_empty()
-        || u64::try_from(bytes.len()).unwrap_or(u64::MAX) > max_bytes
-        || !after.is_file()
-        || !unchanged(&after)
-        || !unchanged(&file.metadata()?)
-    {
-        return Err(AgentdError::Invalid(format!(
-            "{label} changed while reading"
-        )));
-    }
-    Ok(bytes)
+    })
 }
 
 fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError> {
@@ -1396,16 +1371,13 @@ mod tests {
         state
             .mark_automation_unavailable()
             .expect("unpublish scheduler");
+        let historical = crate::AgentdMethod::AutomationReconcileEffect {
+            run_id: intent.run_id.clone(),
+            step_id: intent.step_id.clone(),
+            attempt: intent.attempt,
+        };
         let recovered = state
-            .response(
-                20,
-                1,
-                crate::AgentdMethod::AutomationReconcileEffect {
-                    run_id: intent.run_id.clone(),
-                    step_id: intent.step_id.clone(),
-                    attempt: intent.attempt,
-                },
-            )
+            .response(20, 1, historical.clone())
             .await
             .expect("durable terminal recovery with scheduler detached");
         assert_eq!(
@@ -1429,9 +1401,9 @@ mod tests {
                 21,
                 1,
                 crate::AgentdMethod::AutomationExecuteEffect {
-                    intent,
+                    intent: intent.clone(),
                     wire_payload_hex: hex(WIRE),
-                    signed_grant: grant,
+                    signed_grant: grant.clone(),
                     command_id: "retired-execution".to_string(),
                 },
             )
@@ -1440,5 +1412,37 @@ mod tests {
         assert!(
             matches!(denied.payload, crate::AgentdPayload::Error { code, .. } if code == "automation_unavailable")
         );
+        fixture
+            .registry
+            .compare_and_transition(&fixture.identity.agent_id, 2, AgentLifecycle::Draining)
+            .expect("drain current generation");
+        state.refresh_generation().expect("draining generation");
+        state
+            .mark_draining()
+            .expect("close new admission and ports");
+        let during_drain = state
+            .response(22, 1, historical.clone())
+            .await
+            .expect("historical recovery during drain");
+        assert_eq!(during_drain.payload, recovered.payload);
+        assert!(matches!(
+            state.response(23, 2, historical).await,
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        assert!(matches!(
+            state
+                .response(
+                    24,
+                    1,
+                    crate::AgentdMethod::AutomationExecuteEffect {
+                        intent,
+                        wire_payload_hex: hex(WIRE),
+                        signed_grant: grant,
+                        command_id: "draining-execution".to_string(),
+                    }
+                )
+                .await,
+            Err(AgentdError::Protocol(_))
+        ));
     }
 }

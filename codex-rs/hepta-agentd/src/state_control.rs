@@ -635,15 +635,23 @@ impl AgentdState {
                 step_id,
                 attempt,
             } => {
-                require_automation_ready(
-                    lifecycle,
-                    app_server_ready,
-                    critical_stores_ready,
-                    revocation_ready,
-                    required_ports_ready,
-                    admission_open,
-                    fenced,
-                )?;
+                // Draining closes new admission and App Server ports; historical
+                // provider observation remains safe under the current generation.
+                let historical_drain = lifecycle == AgentLifecycle::Draining
+                    && critical_stores_ready
+                    && revocation_ready
+                    && !fenced;
+                if !historical_drain {
+                    require_automation_ready(
+                        lifecycle,
+                        app_server_ready,
+                        critical_stores_ready,
+                        revocation_ready,
+                        required_ports_ready,
+                        admission_open,
+                        fenced,
+                    )?;
+                }
                 let Some(store) = automation
                     .as_ref()
                     .or_else(|| self.automation_recovery_store())

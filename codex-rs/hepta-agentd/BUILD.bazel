@@ -8,6 +8,23 @@ codex_rust_crate(
     integration_test_timeout = "long",
 )
 
+# Compile the exact private production file reader without Agentd/App Server.
+rust_test(
+    name = "hepta-agentd-protected-config-tests",
+    srcs = [
+        "src/automation_protected_file.rs",
+        "src/automation_protected_file_tests.rs",
+    ],
+    crate_name = "hepta_agentd_protected_config_tests",
+    crate_root = "src/automation_protected_file.rs",
+    edition = "2024",
+    deps = [
+        "@crates//:rustix",
+        "@crates//:tempfile",
+        "@crates//:thiserror",
+    ],
+)
+
 # Compile the local writer qualification separately from the default product
 # library. These unit fixtures need only temporary registry and SQLite state;
 # they do not start Agentd, an App Server, or a provider process.
