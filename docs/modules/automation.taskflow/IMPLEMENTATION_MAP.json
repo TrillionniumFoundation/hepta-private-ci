@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "68e1de04c8ad2b4f933bcf8fbf66dcccc6e2b9dd",
+    "tree": "7da1738fac3b0891114e429689ef4dee3569a8bc"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -231,8 +231,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "68e1de04c8ad2b4f933bcf8fbf66dcccc6e2b9dd",
+    "tree": "7da1738fac3b0891114e429689ef4dee3569a8bc"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -362,5 +362,21 @@
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "preRebind20261001": {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "observedAtHead": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "sourceBaseRole": null,
+      "scope": "retained pre-rebind source provenance; not current-candidate execution evidence",
+      "currentCandidateQualificationTransferred": false
+    }
+  },
+  "sourceBaseRole": "current_source_navigation_anchor"
 }

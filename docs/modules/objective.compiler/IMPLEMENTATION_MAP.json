@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "68e1de04c8ad2b4f933bcf8fbf66dcccc6e2b9dd",
+    "tree": "7da1738fac3b0891114e429689ef4dee3569a8bc"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -361,7 +361,7 @@
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
-  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "sourceBaseRole": "current_source_navigation_anchor",
   "exactHeadQualificationPolicy": {
     "state": "external_exact_candidate_receipt_required",
     "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
@@ -498,5 +498,17 @@
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "preRebind20261001": {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "observedAtHead": null,
+      "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+      "scope": "retained pre-rebind source provenance; not current-candidate execution evidence",
+      "currentCandidateQualificationTransferred": false
+    }
+  }
 }

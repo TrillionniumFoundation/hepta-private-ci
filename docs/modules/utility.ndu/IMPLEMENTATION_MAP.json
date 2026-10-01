@@ -13,7 +13,7 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+  "productCallerState": "request_local_read_only_source_composed_authenticated_owner_source_candidate_not_product_composed",
   "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
   "operations": [
     {
@@ -506,7 +506,7 @@
     "productionWriter": "not_established",
     "exactHeadQualification": "pending_current_candidate_workflows",
     "namedHostQualification": "pending_current_candidate_receipts",
-    "requestLocalReadOnlyCaller": "established",
+    "requestLocalReadOnlyCaller": "source_composed_current_candidate_execution_pending",
     "authenticatedProductionCaller": "not_established",
     "activationState": "not_established",
     "releaseState": "not_established"
@@ -528,7 +528,7 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "requestLocalReadOnlyProductExecutionProved": true,
+    "requestLocalReadOnlyProductExecutionProved": false,
     "authenticatedOwnerSourceImplemented": true,
     "authenticatedProductionProductExecutionProved": false,
     "productionWriterSourceImplemented": true,
@@ -540,8 +540,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "68e1de04c8ad2b4f933bcf8fbf66dcccc6e2b9dd",
+    "tree": "7da1738fac3b0891114e429689ef4dee3569a8bc"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -560,7 +560,7 @@
   "productionProductCallerState": "not_established",
   "productCallerProfiles": {
     "requestLocalReadOnly": {
-      "state": "established",
+      "state": "source_composed_current_candidate_execution_pending",
       "callChain": [
         "codex-rs/hepta-agentd/src/cognitive_context.rs::read",
         "codex-rs/hepta-control-plane/src/planner_context.rs::plan_observed_context",
@@ -584,10 +584,12 @@
   },
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
-    "baselineMainCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "implementationCommit": "de5f600d5f644d6ce9030d04b350fc27239063ec",
-    "branch": "fix/ndu-current-main-convergence-20260920",
-    "scope": "current-main NDU correctness, bounded preference invariants, real persistence fault cuts, authenticated owner/frozen policy, stochastic provenance/current-artifact chain, signed independent learning.eval decisions and named-host qualification runner",
+    "sourceObservation": {
+      "commit": "68e1de04c8ad2b4f933bcf8fbf66dcccc6e2b9dd",
+      "tree": "7da1738fac3b0891114e429689ef4dee3569a8bc"
+    },
+    "scope": "static_source_navigation_refresh",
+    "implementationChangeClaim": false,
     "exactHeadQualification": "pending_current_candidate_workflows",
     "namedHostQualification": "pending_current_candidate_receipts"
   },
@@ -687,5 +689,43 @@
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "preRebind20261001": {
+      "sourceBase": {
+        "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+        "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+      },
+      "observedAtHead": null,
+      "sourceBaseRole": null,
+      "scope": "retained pre-rebind source provenance; not current-candidate execution evidence",
+      "currentCandidateQualificationTransferred": false,
+      "requestLocalReadOnly": {
+        "productExecutionProved": true,
+        "completion": "established",
+        "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+        "profile": {
+          "state": "established",
+          "callChain": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs::read",
+            "codex-rs/hepta-control-plane/src/planner_context.rs::plan_observed_context",
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs::evaluate_prepared_plan_with_ndu",
+            "codex_hepta_ndu::evaluate_candidates_with_policy"
+          ],
+          "authority": "deny_all",
+          "nonClaim": "request-local read-only/planning composition is not the authenticated production NDU owner/caller"
+        },
+        "scope": "historical DENY_ALL request-local read-only/planning route; no authenticated production owner or current-candidate qualification claim"
+      },
+      "sourceCandidateRecord": {
+        "baselineMainCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+        "implementationCommit": "de5f600d5f644d6ce9030d04b350fc27239063ec",
+        "branch": "fix/ndu-current-main-convergence-20260920",
+        "scope": "current-main NDU correctness, bounded preference invariants, real persistence fault cuts, authenticated owner/frozen policy, stochastic provenance/current-artifact chain, signed independent learning.eval decisions and named-host qualification runner",
+        "exactHeadQualification": "pending_current_candidate_workflows",
+        "namedHostQualification": "pending_current_candidate_receipts"
+      }
+    }
+  },
+  "sourceBaseRole": "current_source_navigation_anchor"
 }
