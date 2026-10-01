@@ -20031,6 +20031,18 @@
         "title": "ThreadDeletedNotification",
         "type": "object"
       },
+      "ThreadEphemeralDisposalParams": {
+        "description": "Disposal never archives or deletes persistent thread history. The expected session fences delayed cleanup against a replacement runtime.",
+        "properties": {
+          "expectedSessionId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedSessionId"
+        ],
+        "type": "object"
+      },
       "ThreadExtra": {
         "description": "Extra app-server data for a thread.",
         "type": "object"
@@ -23053,6 +23065,17 @@
       "ThreadUnsubscribeParams": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "properties": {
+          "ephemeralDisposal": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/ThreadEphemeralDisposalParams"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Explicit disposal of an idle ephemeral runtime. Omitted/null keeps the ordinary unsubscribe and idle-cache behavior."
+          },
           "threadId": {
             "type": "string"
           }
@@ -23077,12 +23100,23 @@
         "type": "object"
       },
       "ThreadUnsubscribeStatus": {
-        "enum": [
-          "notLoaded",
-          "notSubscribed",
-          "unsubscribed"
-        ],
-        "type": "string"
+        "oneOf": [
+          {
+            "enum": [
+              "notLoaded",
+              "notSubscribed",
+              "unsubscribed"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "The exact idle ephemeral session completed shutdown and was removed from the live registry. This does not promise allocator RSS reclamation.",
+            "enum": [
+              "ephemeralDisposed"
+            ],
+            "type": "string"
+          }
+        ]
       },
       "ThreadUsage": {
         "properties": {

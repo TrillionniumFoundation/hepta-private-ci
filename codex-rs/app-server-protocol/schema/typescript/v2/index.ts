@@ -465,6 +465,7 @@ export type { ThreadCompactStartResponse } from "./ThreadCompactStartResponse";
 export type { ThreadDeleteParams } from "./ThreadDeleteParams";
 export type { ThreadDeleteResponse } from "./ThreadDeleteResponse";
 export type { ThreadDeletedNotification } from "./ThreadDeletedNotification";
+export type { ThreadEphemeralDisposalParams } from "./ThreadEphemeralDisposalParams";
 export type { ThreadExtra } from "./ThreadExtra";
 export type { ThreadForkParams } from "./ThreadForkParams";
 export type { ThreadForkResponse } from "./ThreadForkResponse";
