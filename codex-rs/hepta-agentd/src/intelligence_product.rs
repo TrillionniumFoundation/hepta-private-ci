@@ -131,6 +131,9 @@ pub struct IntelligenceAuthorityVerifierV1 {
 
 const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 
+#[path = "intelligence_authority_read.rs"]
+mod authority_read;
+
 struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
     verifier: IntelligenceAuthorityVerifierV1,
@@ -145,16 +148,7 @@ impl FileBackedFreshnessOracleV1 {
         &self,
         requested: &StableId,
     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        validate_authority_file_path(&self.path, requested)?;
-        let metadata = std::fs::metadata(&self.path)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if metadata.len() == 0 || metadata.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let bytes = std::fs::read(&self.path)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+        let bytes = authority_read::read_file(&self.path, requested)?;
         let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
         verify_authority_file(&file, &self.verifier, requested)?;
@@ -708,41 +702,6 @@ fn verify_authority_file(
         .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))
 }
 
-#[cfg(unix)]
-fn validate_authority_file_path(
-    path: &std::path::Path,
-    requested: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
-    use std::os::unix::fs::PermissionsExt;
-
-    let metadata = std::fs::symlink_metadata(path)
-        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_file()
-        || metadata.permissions().mode() & 0o022 != 0
-    {
-        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-            requested.clone(),
-        ));
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn validate_authority_file_path(
-    path: &std::path::Path,
-    requested: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
-    let metadata = std::fs::metadata(path)
-        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-    if !metadata.is_file() {
-        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-            requested.clone(),
-        ));
-    }
-    Ok(())
-}
-
 fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -759,6 +718,10 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 }
 
 #[derive(Debug)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "The public V1 error retains the exact pending append for recovery without changing its payload type"
+)]
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),
