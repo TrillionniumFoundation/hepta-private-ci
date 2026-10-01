@@ -30,7 +30,7 @@ pub struct EligibilityTraceSampleV1 {
 
 impl EligibilityTraceSampleV1 {
     #[must_use]
-    pub fn from_checkpoint(checkpoint: &SparseCheckpoint) -> Self {
+    pub(crate) fn from_checkpoint(checkpoint: &SparseCheckpoint) -> Self {
         Self {
             checkpoint_digest: checkpoint.digest(),
             eligibility_q24: checkpoint.eligibility_q24().to_vec(),
@@ -147,10 +147,11 @@ pub fn accumulate_plasticity(
     let eligibility = aggregate_eligibility(signal_history)?;
     validate_modulator(independent_modulator)?;
     validate_trust_region(trust_region)?;
-    let mut groups = parameter_groups.to_vec();
-    if !(1..=MAX_GROUPS).contains(&groups.len()) {
+    if !(1..=MAX_GROUPS).contains(&parameter_groups.len()) {
         return Err(PlasticityError::GroupCountOutOfRange);
     }
+    // Sort bounded references; projection rows stay borrowed until validated.
+    let mut groups = parameter_groups.iter().collect::<Vec<_>>();
     groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut seen = BTreeSet::new();
     for group in &groups {
@@ -379,7 +380,7 @@ fn modulator_digest(modulator: &IndependentModulatorV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn group_map_digest(groups: &[ParameterGroupMapV1]) -> Digest32 {
+fn group_map_digest(groups: &[&ParameterGroupMapV1]) -> Digest32 {
     let mut bytes = b"hepta.neuron.parameter-group-map.v1".to_vec();
     for group in groups {
         push_id(&mut bytes, &group.group_id);

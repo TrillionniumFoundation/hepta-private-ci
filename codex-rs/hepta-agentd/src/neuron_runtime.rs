@@ -6,6 +6,8 @@
 //! supplying drive/prediction vectors directly.  Constructing this owner does
 //! not itself activate it in the daemon startup path.
 
+use std::fs::File;
+
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -47,8 +49,18 @@ where
         &self.runtime
     }
 
-    pub fn runtime_mut(&mut self) -> &mut NeuronRuntime<W> {
-        &mut self.runtime
+    /// Advance the owned journal without exposing a model execution bypass.
+    pub fn rollover(&mut self, file: File, max_records: usize) -> Result<(), NeuronRuntimeError> {
+        self.runtime.rollover(file, max_records)
+    }
+
+    /// Recover a successor journal while retaining the owned inference port.
+    pub fn recover_next_segment(
+        &mut self,
+        file: File,
+        max_records: usize,
+    ) -> Result<(), NeuronRuntimeError> {
+        self.runtime.recover_next_segment(file, max_records)
     }
 
     pub fn inference_control_mut(&mut self) -> &mut P {

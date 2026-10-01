@@ -10,6 +10,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from hepta_module_source_roots import resolve_source_roots
+
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
 
@@ -189,6 +191,20 @@ def verify(root: Path = ROOT) -> int:
         maps[module] = row
         roots[module] = resolved_roots
 
+    # Lane membership does not define ownership. Resolve only named delegates
+    # from the canonical registry, keeping their source-root boundary intact.
+    registered = load(root / "docs/modules/MODULES.json").get("modules")
+    need(isinstance(registered, list) and registered, "registered module owners")
+    need(
+        all(
+            isinstance(entry, dict) and isinstance(entry.get("id"), str) and entry["id"]
+            for entry in registered
+        ),
+        "registered module owner identity",
+    )
+    owner_modules = {entry["id"]: entry for entry in registered}
+    need(len(owner_modules) == len(registered), "duplicate module owner")
+
     operations = tests = delegates = 0
     for module, row in maps.items():
         items = row.get("operations")
@@ -205,6 +221,31 @@ def verify(root: Path = ROOT) -> int:
             verify_anchor(root, module, roots, anchor, owner=True)
             for delegate in item.get("delegatedCallees", []):
                 delegates += 1
+                need(isinstance(delegate, dict), f"{module}: delegate anchor")
+                delegated_owner = delegate.get("ownerModule")
+                need(
+                    isinstance(delegated_owner, str)
+                    and delegated_owner in owner_modules,
+                    f"{module}: unregistered delegated owner",
+                )
+                if delegated_owner not in roots:
+                    try:
+                        resolved_roots = resolve_source_roots(
+                            root, owner_modules[delegated_owner]
+                        )
+                    except (KeyError, TypeError, ValueError) as exc:
+                        raise Invalid(
+                            f"{module}: invalid delegated owner roots"
+                        ) from exc
+                    need(resolved_roots, f"{module}: missing delegated owner roots")
+                    for owner_root in resolved_roots:
+                        canonical_path(
+                            root,
+                            owner_root,
+                            f"{delegated_owner}: owner root",
+                            require_file=None,
+                        )
+                    roots[delegated_owner] = resolved_roots
                 verify_anchor(root, module, roots, delegate, owner=False)
             bound_tests = item.get("tests")
             need(isinstance(bound_tests, list) and bound_tests, f"{module}: tests")
@@ -288,6 +329,74 @@ def self_test() -> int:
                 pass
             else:
                 raise Invalid("accepted symlink binding")
+
+        modules = root / "docs/modules"
+        map_path = modules / "lane.owner/IMPLEMENTATION_MAP.json"
+        map_path.parent.mkdir(parents=True)
+        (modules / "MODULES.json").write_text(
+            json.dumps(
+                {
+                    "modules": [
+                        {"id": "lane.owner", "rootBindings": [{"path": "owned"}]},
+                        {"id": "cross.owner", "rootBindings": [{"path": "foreign"}]},
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        truth_path = root / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+        truth_path.parent.mkdir(parents=True)
+        truth_path.write_text(
+            json.dumps(
+                {
+                    "modules": [
+                        {
+                            "module": "lane.owner",
+                            "mapPath": "docs/modules/lane.owner/IMPLEMENTATION_MAP.json",
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        delegate = {
+            "role": "delegated_callee",
+            "ownerModule": "cross.owner",
+            "path": "foreign/source.rs",
+            "symbol": "pub fn run",
+            "buildTarget": "fixture-cross",
+        }
+        row = {
+            "module": "lane.owner",
+            "resolvedRoots": ["owned"],
+            "operations": [
+                {
+                    "ownerEntrypoint": {
+                        "role": "owner_entrypoint",
+                        "path": "owned/source.rs",
+                        "symbol": "pub fn run",
+                        "buildTarget": "fixture-lane",
+                    },
+                    "delegatedCallees": [delegate],
+                    "tests": [{"path": "owned/source.rs", "command": "fixture-test"}],
+                }
+            ],
+        }
+        map_path.write_text(json.dumps(row), encoding="utf-8")
+        need(verify(root) == 0, "registered cross-lane owner fixture")
+        for delegated_owner, delegated_path, error_message in (
+            ("unknown.owner", "foreign/source.rs", "unregistered delegated owner"),
+            ("cross.owner", "owned/source.rs", "delegate-root escape"),
+        ):
+            delegate["ownerModule"] = delegated_owner
+            delegate["path"] = delegated_path
+            map_path.write_text(json.dumps(row), encoding="utf-8")
+            try:
+                verify(root)
+            except Invalid as exc:
+                need(error_message in str(exc), f"wrong delegate failure: {exc}")
+            else:
+                raise Invalid(f"accepted unsafe delegate {delegate!r}")
     print(
         json.dumps(
             {"status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD_SELF_TEST"},

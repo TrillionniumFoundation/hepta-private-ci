@@ -1935,8 +1935,8 @@
       "design": "qualification/module-execution-dossiers/detail/neuron.runtime.md",
       "implementationState": "source_owner_implemented_not_product_evidence",
       "apiContract": "NeuronRuntime::tick over canonical owner-local NeuronRuntimeConfigV1/NeuronTickInputV1/NeuronTickReceiptV1/NeuronSignalReceiptV1, an inference.control NeuronFeatureReceiptV1 model port, SparseJournal and independent AnchorWitnessStore. Raw sparse_tick remains a compatibility mechanism; no owner receipt grants effect authority.",
-      "stateAndEncoding": "The owner binds exact model manifest/weights/tokenizer/preprocessor/quantization/runtime/device identity, scope/objective/NDU/body, logical sequence/time, recurrent state, sparse activation, moving activity, thresholds, committed eligibility history, calibration/OOD/resource evidence and predecessor/witness digests. Current selected weights/topology are immutable.",
-      "linearizationAndRecovery": "inference.control feature execution -> deterministic successor -> durable SparseJournal commit -> calibrated/resource disposition -> independent witness CAS -> owner output. Lost acknowledgement is reconciled from committed history; write/sync uncertainty poisons the handle. Successor segments preserve the exact checkpoint. Deletion rebuild requires an exact successor generation and no state reuse.",
+      "stateAndEncoding": "The running owner validates the exact model manifest/weights/tokenizer/preprocessor/quantization/runtime/device tuple and scope/objective/NDU/body input bindings. V1 SparseJournal persists numerical ticks and deterministic checkpoint/sparse-signal digests under SparseConfig, scope and objective; it does not persist the complete owner output or full owner model/calibration/resource config identity. Recurrent state, sparse activation, moving activity, thresholds, eligibility and predecessor context are reproduced from the journal. Current selected weights/topology are immutable.",
+      "linearizationAndRecovery": "inference.control feature execution -> deterministic successor -> durable SparseJournal commit -> calibrated/resource disposition -> independent witness CAS -> owner output. An identical pending retry on the same live handle may return its retained exact owner output after confirming or advancing the exact durable witness; a lost successful CAS response does not require another model call. Successful or reopened owner retries reject instead of manufacturing historical model/resource evidence. Native sparse receipts remain replayable. Write/sync uncertainty poisons the affected store handle. Successor segments preserve the exact checkpoint; deletion rebuild requires an exact successor generation and no state reuse.",
       "algorithmAndBounds": "Durable V1 profile: single-population same-width Q24 recurrence/inhibition/stable top-k/homeostasis/eligibility with width<=256, active1%-20%, state[-8,8], eligibility L1<=4. PopulationSparseConfigV2 is a separately versioned pure mechanism with temporal_width<=256, activation_width<=512, explicit temporal-to-activation projection, complete registered populations, population-first then global competition, and the same bounded Q24/homeostatic/eligibility posture. Independent modulator<=8 and explicit parameter-group projections produce next-snapshot sufficient statistics only.",
       "acceptanceOracle": "Exact model tuple drift rejects. Journal/witness one-winner and lost-ack recovery preserve committed identity. Missing/stale calibration, OOD, low confidence, unhealthy sparsity/projection or resource breach forces abstain/slow path. Deletion rebuild cannot reuse predecessor state. Ablation/resource bindings are evidence surfaces, not empirical acceptance.",
       "nativeMappingRequired": true,
@@ -1947,6 +1947,14 @@
           {
             "path": "codex-rs/hepta-neuron/src/runtime.rs",
             "symbol": "NeuronRuntime::tick"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/runtime.rs",
+            "symbol": "NeuronRuntime::canonical_checkpoint"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/runtime.rs",
+            "symbol": "NeuronRuntime::current_eligibility_sample"
           },
           {
             "path": "codex-rs/hepta-neuron/src/inference_control.rs",
@@ -1974,7 +1982,7 @@
           },
           {
             "path": "codex-rs/hepta-neuron/src/protocol.rs",
-            "symbol": "canonical_runtime_config_v1 / canonical_checkpoint_v1"
+            "symbol": "canonical_runtime_config_v1 / canonical_tick_receipt_v1"
           },
           {
             "path": "codex-rs/hepta-neuron/src/population_v2.rs",
@@ -1985,9 +1993,10 @@
             "symbol": "AgentdNeuronOwner"
           }
         ],
-        "stateAndRecovery": "NeuronRuntime is the durable V1 source owner composition. It accepts an exact inference-control feature receipt, commits deterministic state to the journal, derives calibrated/OOD/resource disposition, advances a separately synced acknowledgement witness, and can derive the registered canonical checkpoint only from committed owner state. Segment continuation, poison-on-uncertainty, committed eligibility history and fail-closed deletion rebuild are implemented. PopulationSparseConfigV2 is a pure versioned target mechanism and does not silently reuse the V1 journal encoding.",
+        "stateAndRecovery": "NeuronRuntime is the durable V1 source owner composition: it accepts an exact inference-control feature receipt, commits deterministic sparse state, derives calibrated/OOD/resource disposition and advances a separately synced witness before owner output. V1 does not persist the full owner output or full model/calibration/resource config identity. Only an identical pending retry on the same live handle retains the exact full output; successful or reopened owner retries reject. Public canonical_checkpoint and current_eligibility_sample require journal/witness frontier agreement and no pending reconciliation; their checkpoint converters are crate-private. Qualification ablations deliberately change supplied eligibility values and are not proof of unchanged committed eligibility; statistics bind supplied values and grant no authority. Segment continuation, poison-on-uncertainty and fail-closed deletion rebuild are implemented. PopulationSparseConfigV2 remains a pure mechanism with no V1 journal reinterpretation. Agentd and intelligence callers are instantiated only in source tests; production inference-control and daemon-lifecycle composition remain separate work.",
         "testFiles": [
           "codex-rs/hepta-neuron/src/runtime_tests.rs",
+          "codex-rs/hepta-neuron/src/runtime_admission_tests.rs",
           "codex-rs/hepta-neuron/src/inference_control_tests.rs",
           "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
           "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
@@ -2008,7 +2017,9 @@
         "remainingWork": [
           "Stack/rebase AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind the selected artifact/current inference.control/witness lifecycle there; source compilation is not activation.",
           "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration rather than changing V1 replay bytes in place.",
-          "Collect exact target-host product execution, resource, calibration/OOD, future-window, retention and deletion non-resurrection evidence; independent acceptance/activation/promotion/release remain external."
+          "Collect exact target-host product execution, resource, calibration/OOD, future-window, retention and deletion non-resurrection evidence; independent acceptance/activation/promotion/release remain external.",
+          "Implement an explicitly versioned owner journal transaction that binds the complete owner-config digest and persists the exact full owner output before witness acknowledgement, with migration and crash/retry/reopen tests; preserve the meaning of V1 journal bytes.",
+          "Provide an authenticated learning-owner observation adapter for IndependentModulatorV1; private fields and getters do not form a production construction port."
         ]
       }
     },

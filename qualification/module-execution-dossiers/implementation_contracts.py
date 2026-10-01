@@ -251,6 +251,8 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         allowed_implementation_states = {
             'specified_not_product_evidence',
             'source_implemented_product_composed_requires_candidate_evidence',
+            'durable_source_implemented_product_execution_pending',
+            'source_owner_implemented_not_product_evidence',
         }
         if row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
             raise Invalid(mid+': false source or deployment closure')

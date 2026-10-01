@@ -172,9 +172,21 @@ fn witness_capacity_and_independent_writer_are_bounded() {
         .err(),
         Some(WitnessStoreError::Busy)
     );
+    checked(store.validate_advance(None, /*next_sequence*/ 1));
     checked(store.compare_and_swap(None, anchor(1)));
+    let length = checked(store.file.metadata()).len();
+    assert_eq!(
+        store.validate_advance(Some(anchor(1)), /*next_sequence*/ 2),
+        Err(WitnessStoreError::Capacity)
+    );
+    assert_eq!(
+        store.validate_advance(None, /*next_sequence*/ 2),
+        Err(WitnessStoreError::Conflict)
+    );
     assert_eq!(
         store.compare_and_swap(Some(anchor(1)), anchor(2)),
         Err(WitnessStoreError::Capacity)
     );
+    assert_eq!(checked(store.file.metadata()).len(), length);
+    assert_eq!(checked(store.current()), Some(anchor(1)));
 }

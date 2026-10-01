@@ -10,11 +10,31 @@
 
 The runtime consumes `NeuronRuntimeConfigV1` and `NeuronTickInputV1`, emits `NeuronTickReceiptV1` plus canonical checkpoint and signal receipts, and may accumulate only next-snapshot plasticity sufficient statistics. Model output is advisory and cannot override the objective, authority kernel or reflex veto.
 
+This specification defines the integration and acceptance target. The current
+durable owner uses the single-population, same-width V1 Q24 profile; the pure
+`PopulationSparseConfigV2` mechanism implements distinct temporal/activation
+widths and population-first competition without a durable V2 migration. Current
+source, named callers and remaining repository/evidence work are recorded in
+`../modules/neuron.runtime/TECHNICAL.md` and
+`../../qualification/module-execution-dossiers/detail/neuron.runtime.md`.
+Target fixtures, fallback steps and capacity ceilings below are not claims of
+daemon activation, executed qualification or independently measured efficacy.
+
+The current V1 journal persists reproducible sparse mechanism receipts, not the
+complete owner output or full model/calibration/resource config identity. The
+same-handle pending-witness path preserves its exact owner output in memory;
+successful or reopened owner retries reject rather than re-infer the historical
+tick. The exact owner idempotency and transaction requirements in Section 4
+remain unmet until a versioned owner journal binds the complete config digest
+and stores the full output atomically before acknowledgement. This is a
+production integration blocker, not a qualification waiver.
+
 ### DecisionCell host integration
 
-The existing runtime also hosts logical DecisionCell slots defined by
+The DecisionCell integration target extends the existing owner with scoped
+logical cell slots defined by
 `../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the initial backend candidate,
-not a required public protocol. The host supplies exact effective base/organ/cell
+not a required public protocol. The target host supplies exact effective base/organ/cell
 parameters through existing inference admission; the cell does not call providers
 or install a model itself. Shared workers serve many logical cells; checkpoint
 ownership stays with the existing neuron owner and principal/subject scope.

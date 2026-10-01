@@ -226,6 +226,41 @@ fn missing_acknowledged_successor_frame_is_rejected_without_repair() {
 }
 
 #[test]
+fn intermediate_successor_recovery_preserves_every_incomplete_boundary() {
+    let fixture = Fixture::new();
+    let mut root = checked(SparseJournal::open(
+        fixture.file("root"),
+        config(),
+        scope(),
+        /*max_records*/ 2,
+    ));
+    let first = checked(root.commit(Digest32::ZERO, &tick(1)));
+    let second = checked(root.commit(first.checkpoint_after, &tick(2)));
+    let final_digest = {
+        let mut successor =
+            checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
+        let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
+        checked(successor.commit(third.checkpoint_after, &tick(4))).checkpoint_after
+    };
+    let full = fixture.bytes("successor");
+    for cut in 0..full.len() {
+        checked(fs::write(fixture.root.join("successor"), &full[..cut]));
+        assert!(
+            root.recover_complete_successor(fixture.file("successor"), /*max_records*/ 2)
+                .is_err()
+        );
+        assert_eq!(fixture.bytes("successor"), full[..cut]);
+    }
+    checked(fs::write(fixture.root.join("successor"), &full));
+    let recovered =
+        checked(root.recover_complete_successor(fixture.file("successor"), /*max_records*/ 2));
+    assert_eq!(
+        checked(recovered.current()).map(SparseCheckpoint::digest),
+        Some(final_digest)
+    );
+}
+
+#[test]
 fn plasticity_anchor_queries_preserve_global_sequence_across_rollover() {
     let fixture = Fixture::new();
     let mut root = checked(SparseJournal::open(

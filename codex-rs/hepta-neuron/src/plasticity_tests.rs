@@ -123,3 +123,36 @@ fn global_l1_trust_region_projects_without_changing_inputs() {
     );
     assert_eq!(history, original);
 }
+
+#[test]
+fn maximum_group_count_is_order_independent_and_excess_is_rejected() {
+    let history = history();
+    let modulator = IndependentModulatorV1 {
+        observation_receipt_digest: Digest32::of_bytes(b"independent-outcome"),
+        values_q24: vec![Q],
+    };
+    let mut groups = (0..=MAX_GROUPS)
+        .map(|index| group(&format!("group:{index:03}"), vec![Q, 0, 0], vec![Q]))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        accumulate_plasticity(&history, &modulator, &groups, trust_region()),
+        Err(PlasticityError::GroupCountOutOfRange)
+    );
+    groups.truncate(MAX_GROUPS);
+    let forward = checked(accumulate_plasticity(
+        &history,
+        &modulator,
+        &groups,
+        trust_region(),
+    ));
+    groups.reverse();
+    assert_eq!(
+        checked(accumulate_plasticity(
+            &history,
+            &modulator,
+            &groups,
+            trust_region(),
+        )),
+        forward
+    );
+}

@@ -2,8 +2,10 @@
 import json
 import re
 import unittest
+from copy import deepcopy
 from fractions import Fraction as F
 from pathlib import Path
+from unittest import mock
 import implementation_contracts as c
 
 BASE=Path(__file__).resolve().parent
@@ -55,6 +57,59 @@ class NumericTests(unittest.TestCase):
         self.assertEqual(c.sequential_dr([dict(v=0,q=0,reward=1,behavior=1,evaluation=1,discount=1)],F(0)),1)
     def test_duplicate_json_keys(self):
         with self.assertRaises(c.Invalid): json.loads('{"x":1,"x":2}',object_pairs_hook=c.pairs)
+
+class ModuleProfileValidationTests(unittest.TestCase):
+    def setUp(self):
+        self.profiles = c.read_json(BASE / 'IMPLEMENTATION_PROFILES.json')
+
+    def verify_profiles(self, profiles):
+        read_json = c.read_json
+        profile_path = BASE / 'IMPLEMENTATION_PROFILES.json'
+
+        def read_candidate(path):
+            if path.resolve() == profile_path.resolve():
+                return profiles
+            return read_json(path)
+
+        with mock.patch.object(c, 'read_json', side_effect=read_candidate):
+            return c.verify_bundle(c.ROOT)
+
+    def test_source_owner_profiles_do_not_claim_product_execution(self):
+        native = c.read_json(BASE / 'NATIVE_BINDINGS.json')
+        self.assertEqual(self.verify_profiles(self.profiles), {
+            'kind': 'documentation_bundle_conformance',
+            'modules': len(self.profiles['modules']),
+            'designRequirements': 16,
+            'sourceObservations': len(native['observations']),
+            'repositoryBindingsChecked': False,
+            'nativeProductTestsExecuted': False,
+            'independentReview': False,
+            'allGapsClosed': False,
+        })
+
+    def test_source_owner_states_cannot_bypass_false_evidence_fences(self):
+        for module in ('kernel.operations', 'neuron.runtime'):
+            for field in ('productTestsExecuted', 'deploymentQualified'):
+                with self.subTest(module=module, field=field):
+                    profiles = deepcopy(self.profiles)
+                    row = next(row for row in profiles['modules'] if row['module'] == module)
+                    row[field] = True
+                    with self.assertRaisesRegex(c.Invalid, module + ': false source or deployment closure'):
+                        self.verify_profiles(profiles)
+        for field in self.profiles['claimBoundary']:
+            with self.subTest(global_claim=field):
+                profiles = deepcopy(self.profiles)
+                profiles['claimBoundary'][field] = True
+                with self.assertRaisesRegex(c.Invalid, 'positive document capability claim'):
+                    self.verify_profiles(profiles)
+
+    def test_unregistered_owner_implementation_state_is_rejected(self):
+        profiles = deepcopy(self.profiles)
+        row = next(row for row in profiles['modules'] if row['module'] == 'neuron.runtime')
+        row['implementationState'] = 'source_owner_implemented_not_product_evidence_unregistered'
+        with self.assertRaisesRegex(c.Invalid, 'neuron.runtime: false source or deployment closure'):
+            self.verify_profiles(profiles)
+
 
 class NativeBindingCoverageTests(unittest.TestCase):
     def merged_native_observations(self):

@@ -135,6 +135,20 @@ pub struct NeuronResourceEnvelopeV1 {
     pub write_amplification_ppm: u32,
 }
 
+impl NeuronResourceEnvelopeV1 {
+    pub(crate) fn validate(&self) -> Result<(), NeuronRuntimeError> {
+        if self.p95_latency_micros == 0
+            || self.p99_latency_micros < self.p95_latency_micros
+            || self.transient_allocation_bytes == 0
+            || self.checkpoint_bytes == 0
+            || !(1_000_000..=4_000_000).contains(&self.write_amplification_ppm)
+        {
+            return Err(NeuronRuntimeError::InvalidConfig);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronRuntimeConfigV1 {
     pub config_id: StableId,
@@ -184,14 +198,10 @@ impl NeuronRuntimeConfigV1 {
             || self.state_width != native.width
             || !(1..=MAX_INPUT_FEATURES).contains(&self.input_feature_dimension)
             || !(1..=MAX_MODULATORS).contains(&self.modulator_dimension)
-            || self.resource_envelope.p95_latency_micros == 0
-            || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
-            || self.resource_envelope.transient_allocation_bytes == 0
-            || self.resource_envelope.checkpoint_bytes == 0
-            || !(1_000_000..=4_000_000).contains(&self.resource_envelope.write_amplification_ppm)
         {
             return Err(NeuronRuntimeError::InvalidConfig);
         }
+        self.resource_envelope.validate()?;
         self.calibration.validate(self.generation)
     }
 }
@@ -333,7 +343,28 @@ impl From<io::Error> for WitnessStoreError {
 /// must authenticate scope/generation and make compare-and-swap durable before
 /// returning success.
 pub trait AnchorWitnessStore {
+    /// Returns the verified durable anchor, including a successful advance whose
+    /// response was lost. Unconfirmed or poisoned observations must return an error.
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
+
+    /// Reject a known conflict or exhausted store before the journal commits.
+    /// Implementations with a bounded store must also validate their capacity.
+    /// This admission check does not replace the durable compare-and-swap.
+    fn validate_advance(
+        &self,
+        expected: Option<JournalAnchor>,
+        next_sequence: u64,
+    ) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        if expected.map_or(next_sequence != 1, |anchor| {
+            anchor.sequence.checked_add(1) != Some(next_sequence)
+        }) {
+            return Err(WitnessStoreError::InvalidAnchor);
+        }
+        Ok(())
+    }
 
     fn compare_and_swap(
         &mut self,
