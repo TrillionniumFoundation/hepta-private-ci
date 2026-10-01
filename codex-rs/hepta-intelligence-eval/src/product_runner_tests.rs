@@ -512,6 +512,35 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
 
+    for field in 0..4 {
+        let mut changed_decision = qualified.clone();
+        match field {
+            0 => {
+                changed_decision.decision.decision.disposition = match qualified
+                    .decision
+                    .decision
+                    .disposition
+                {
+                    crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                        crate::IndependentEvaluationDispositionV1::Ineligible
+                    }
+                    _ => crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+                }
+            }
+            1 => changed_decision.decision.decision.evaluation_id = id("substituted-evaluation"),
+            2 => changed_decision.decision.decision.baseline_id = id("substituted-baseline"),
+            _ => changed_decision
+                .decision
+                .decision
+                .failed_metrics
+                .push(id("substituted-failure")),
+        }
+        assert!(
+            changed_decision.validate_integrity().is_err(),
+            "unbound decision field {field}"
+        );
+    }
+
     let mut changed_generator = qualified;
     changed_generator.generator.principal_id = id("substituted-generator");
     assert!(changed_generator.validate_integrity().is_err());

@@ -556,7 +556,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -569,6 +569,16 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
         bytes.extend_from_slice(digest.as_array());
     }
     push_id(&mut bytes, &receipt.candidate_id);
+    let decision = &receipt.decision.decision;
+    push_id(&mut bytes, &decision.evaluation_id);
+    push_id(&mut bytes, &decision.candidate_id);
+    push_id(&mut bytes, &decision.baseline_id);
+    bytes.push(match decision.disposition {
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
+        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(&mut bytes, &decision.failed_metrics);
     push_principal(&mut bytes, &receipt.evaluator);
     push_principal(&mut bytes, &receipt.generator);
     bytes.push(match receipt.claim_scope {
