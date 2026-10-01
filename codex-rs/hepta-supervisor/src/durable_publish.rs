@@ -150,10 +150,6 @@ pub(crate) fn write_atomic(
 }
 
 /// Replace one already-synchronized staging file within the same directory.
-pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
-    publish_at(staging, destination, "durable_publish")
-}
-
 pub(crate) fn publish_at(staging: &Path, destination: &Path, component: &str) -> io::Result<()> {
     let parent = staging.parent().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")

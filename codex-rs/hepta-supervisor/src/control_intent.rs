@@ -5,8 +5,6 @@
 //! original wall-clock deadline across supervisor restarts. Signal success is
 //! represented separately from terminal exit observation.
 
-use std::fs::OpenOptions;
-use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -38,6 +36,11 @@ mod bounded_io;
 #[cfg(test)]
 #[path = "control_completion_tests.rs"]
 mod completion_tests;
+
+#[cfg(test)]
+#[path = "control_intent_write_tests.rs"]
+mod write_tests;
+
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -451,18 +454,11 @@ fn write_control_intent(
             "control intent exceeds the bounded file size".to_string(),
         ));
     }
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let mut file = options.open(&temp)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    drop(file);
-    crate::durable_publish::publish(&temp, &final_path)?;
+    // The shared writer retains private create-new staging, file sync and the
+    // same-parent publication receipt, and cleans our staging on failed writes
+    // or publication. A directory-sync failure remains an error even if the
+    // exact new destination was already published.
+    crate::durable_publish::write_atomic(&temp, &final_path, &bytes, "control_intent")?;
     Ok(())
 }
 
