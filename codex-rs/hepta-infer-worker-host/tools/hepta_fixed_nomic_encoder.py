@@ -47,8 +47,12 @@ def load_config(path, pin):
                 "model_directory", "model_sources", "gguf_source", "preprocessor_source",
                 "numpy_directory", "numpy_sources", "program_sources", "runtime_sources",
                 "pairs_source", "expires_at_ms", "timeout_ms", "max_requests", "principals"}
-    if set(config) != required or config["schema"] != "hepta.fixed-nomic-encoder.v1":
+    if config["schema"] == "hepta.fixed-nomic-encoder.v2":
+        required.add("resource_observer")
+    elif config["schema"] != "hepta.fixed-nomic-encoder.v1":
         raise ValueError("encoder configuration schema")
+    if set(config) != required:
+        raise ValueError("encoder configuration fields")
     if not now_ms() < config["expires_at_ms"] <= now_ms() + 24 * 60 * 60 * 1000:
         raise ValueError("encoder configuration expired")
     if not 1 <= config["timeout_ms"] <= 120_000 or not 1 <= config["max_requests"] <= 4096:
@@ -60,6 +64,9 @@ def load_config(path, pin):
     program_paths = {item["path"] for item in config["program_sources"]}
     if str(Path(__file__)) not in program_paths or str(program_dir / "fixed_encoder_sources.py") not in program_paths:
         raise ValueError("encoder source closure")
+    if config["schema"] == "hepta.fixed-nomic-encoder.v2":
+        if str(program_dir / "fixed_encoder_resources.py") not in program_paths:
+            raise ValueError("original resource reader outside protected source closure")
     protected_path(config["model_directory"], directory=True)
     paths = sorted(str(item) for item in Path(config["model_directory"]).rglob("*") if not item.is_dir())
     if paths != sorted(item["path"] for item in config["model_sources"]) or len(paths) != 5:
@@ -182,6 +189,8 @@ def encode(config, preprocessor, numpy, pair, pin):
 
 
 def authorize(connection, config, request):
+    if config["schema"] == "hepta.fixed-nomic-encoder.v2":
+        return authorize_current(connection, config, request)
     fields = {"pair_id", "source_row_sha256", "body_digest", "objective_digest", "generation",
               "run_id", "grant_id", "grant_epoch", "grant_generation", "grant_expires_at_ms"}
     if set(request) != fields:
@@ -196,6 +205,39 @@ def authorize(connection, config, request):
                 if now_ms() < request["grant_expires_at_ms"]:
                     return pid, identity
     raise ValueError("kernel peer/current grant/run tuple denied")
+
+
+
+def authorize_current(connection, config, request):
+    from fixed_encoder_resources import observe
+    fields = {"pair_id", "source_row_sha256", "body_digest", "objective_digest",
+              "model_generation", "run_id", "ndu_digest"}
+    if set(request) != fields or len(bytes.fromhex(request["ndu_digest"])) != 32 or request["ndu_digest"] == "0" * 64:
+        raise ValueError("actual canonical neural stage fields")
+    pid, uid, gid = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+    identity = process_identity(pid)
+    for principal in config["principals"]:
+        expected = fields - {"ndu_digest"} | {
+            "agent_id", "uid", "gid", "cgroup", "fleet_manifest_digest", "program_source", "body_sources"}
+        if set(principal) != expected:
+            raise ValueError("current principal configuration fields")
+        if (principal["uid"] != uid or principal["gid"] != gid or identity[1] != [uid] * 4
+                or identity[2] != [gid] * 4 or identity[3] != principal["cgroup"]):
+            continue
+        if not all(request[key] == principal[key] for key in fields - {"ndu_digest"}):
+            continue
+        verify_large_source(principal["program_source"], 512 * 1024 * 1024)
+        body_records = [decode_json(source_bytes(item, 64 * 1024)) for item in principal["body_sources"]]
+        compiled = [value for value in body_records if isinstance(value, dict) and "runtime_body_digest" in value]
+        if (len(compiled) != 1 or compiled[0]["runtime_body_digest"] != principal["body_digest"]
+                or compiled[0]["agent_id"] != principal["agent_id"]
+                or compiled[0]["body_generation"] != principal["model_generation"]):
+            raise ValueError("Root body closure does not bind this principal/model")
+        resource = observe(config, principal, pid, identity)
+        if process_identity(pid) != identity:
+            raise ValueError("peer changed during original resource observation")
+        return pid, (identity, resource)
+    raise ValueError("actual peer/body/goal/current allocation denied")
 
 
 def serve(config, preprocessor, numpy, pairs, pin):
