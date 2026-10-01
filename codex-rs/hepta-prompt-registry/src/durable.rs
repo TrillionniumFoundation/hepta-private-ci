@@ -3050,3 +3050,7 @@ mod payload_tests;
 #[cfg(all(test, unix))]
 #[path = "durable_restore_tests.rs"]
 mod restore_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_input_bounds_tests.rs"]
+mod input_bounds_tests;
