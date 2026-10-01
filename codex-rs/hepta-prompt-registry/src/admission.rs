@@ -297,6 +297,9 @@ pub fn final_use_admission_binding(
     if reviewed_scope_digest.is_zero() || evidence_digest.is_zero() {
         return Err(AdmissionError::ScopeMismatch);
     }
+    // Public binding helpers also accept caller-owned factors. Admit their
+    // borrowed fields before copying an otherwise unbounded signing request.
+    crate::protocol::validate_factor_semantics(factor).map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = FINAL_USE_REQUEST_DOMAIN.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
@@ -337,6 +340,12 @@ pub fn final_use_realization_binding(
     binding
         .validate()
         .map_err(|_| AdmissionError::InvalidGrant)?;
+    if binding.model_id.as_str() == crate::protocol::LEGACY_UNRESOLVED_MODEL_ID
+        && binding.model_version == crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION
+    {
+        return Err(AdmissionError::InvalidGrant);
+    }
+    crate::protocol::validate_factor_semantics(factor).map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = FINAL_USE_REALIZATION_REQUEST_DOMAIN.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
@@ -419,6 +428,7 @@ fn final_use_lifecycle_binding(
     if scope_digest.is_zero() || reason_digest.is_zero() {
         return Err(AdmissionError::ScopeMismatch);
     }
+    crate::protocol::validate_factor_semantics(factor).map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = domain.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
@@ -539,3 +549,7 @@ impl fmt::Display for AdmissionError {
 }
 
 impl std::error::Error for AdmissionError {}
+
+#[cfg(test)]
+#[path = "admission_binding_bounds_tests.rs"]
+mod binding_bounds_tests;
