@@ -65,6 +65,15 @@
       ]
     },
     {
+      "nativeSymbol": "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/qualification_artifacts.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs",
+        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs",
+        "scripts/hepta-learning-eval-api-surface.sh"
+      ]
+    },
+    {
       "nativeSymbol": "RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist",
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/outcome_runner.rs",
       "tests": [
