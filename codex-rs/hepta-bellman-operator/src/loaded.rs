@@ -12,6 +12,10 @@ use std::fmt;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorCellV1;
 use crate::TabularOperatorPredictionV1;
+use crate::learned::MAX_ACTIONS;
+use crate::learned::MAX_CELLS;
+use crate::learned::MAX_SAMPLES;
+use crate::learned::MAX_SENSORS;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -20,7 +24,6 @@ use codex_hepta_types::StableId;
 
 const MAGIC: &[u8; 8] = b"HEPTTB01";
 const MAX_BYTES: usize = 64 * 1024 * 1024;
-const MAX_CELLS: usize = 262_144;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TabularPayloadPinV1 {
@@ -195,18 +198,29 @@ pub(crate) fn validate_artifact(
     if artifact.cells.is_empty() || artifact.cells.len() > MAX_CELLS {
         return Err(TabularPayloadError::Bounds);
     }
-    if artifact.cells.windows(2).any(|pair| {
-        (&pair[0].sensor_id, &pair[0].action_id) >= (&pair[1].sensor_id, &pair[1].action_id)
-    }) {
-        return Err(TabularPayloadError::Grid);
-    }
     let mut sensors = BTreeMap::<&StableId, usize>::new();
     let mut actions = BTreeSet::new();
     let mut evidence = BTreeSet::new();
     let mut samples = 0_u64;
+    let mut previous_cell: Option<(&StableId, &StableId)> = None;
     for cell in &artifact.cells {
-        if cell.sample_count == 0
-            || cell.evidence_digest.is_zero()
+        let identity = (&cell.sensor_id, &cell.action_id);
+        if previous_cell.is_some_and(|previous| previous >= identity) {
+            return Err(TabularPayloadError::Grid);
+        }
+        previous_cell = Some(identity);
+        // Reject an impossible cumulative count before allocating evidence or
+        // validating statistics for this cell and the rest of the table.
+        samples += u64::from(cell.sample_count);
+        if cell.sample_count == 0 || samples > MAX_SAMPLES as u64 {
+            return Err(TabularPayloadError::Grid);
+        }
+        *sensors.entry(&cell.sensor_id).or_default() += 1;
+        actions.insert(&cell.action_id);
+        if sensors.len() > MAX_SENSORS || actions.len() > MAX_ACTIONS {
+            return Err(TabularPayloadError::Grid);
+        }
+        if cell.evidence_digest.is_zero()
             || !evidence.insert(cell.evidence_digest)
             || cell.minimum_target > cell.mean_target
             || cell.mean_target > cell.maximum_target
@@ -237,15 +251,8 @@ pub(crate) fn validate_artifact(
         if mean < minimum_mean || mean > maximum_mean {
             return Err(TabularPayloadError::Grid);
         }
-        *sensors.entry(&cell.sensor_id).or_default() += 1;
-        actions.insert(&cell.action_id);
-        samples += u64::from(cell.sample_count);
     }
-    if sensors.len() > 4096
-        || actions.len() > 128
-        || samples > 1_000_000
-        || sensors.values().any(|count| *count != actions.len())
-    {
+    if sensors.values().any(|count| *count != actions.len()) {
         return Err(TabularPayloadError::Grid);
     }
     Ok(())

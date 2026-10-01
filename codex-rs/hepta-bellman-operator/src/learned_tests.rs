@@ -58,6 +58,60 @@ fn complete_plan() -> TabularOperatorPlanV1 {
 }
 
 #[test]
+fn tabular_cardinality_bounds_preserve_inclusive_limits_and_errors() {
+    for (sensor_count, action_count, sample_count, minimum, expected) in [
+        (MAX_SENSORS, 1, MAX_SAMPLES, 1, Ok(MAX_SENSORS)),
+        (1, MAX_ACTIONS, MAX_SAMPLES, 1, Ok(MAX_ACTIONS)),
+        (MAX_SENSORS, 64, MAX_SAMPLES, 1, Ok(MAX_CELLS)),
+        (1, 1, MAX_SAMPLES, MAX_SAMPLES, Ok(1)),
+        (0, 1, 1, 1, Err(LearnedOperatorError::InvalidGrid)),
+        (
+            MAX_SENSORS + 1,
+            1,
+            1,
+            1,
+            Err(LearnedOperatorError::InvalidGrid),
+        ),
+        (1, 0, 1, 1, Err(LearnedOperatorError::InvalidGrid)),
+        (
+            1,
+            MAX_ACTIONS + 1,
+            1,
+            1,
+            Err(LearnedOperatorError::InvalidGrid),
+        ),
+        (
+            MAX_SENSORS,
+            MAX_ACTIONS,
+            MAX_SAMPLES,
+            1,
+            Err(LearnedOperatorError::InvalidGrid),
+        ),
+        (1, 1, 1, 0, Err(LearnedOperatorError::InvalidGrid)),
+        (
+            1,
+            1,
+            1,
+            MAX_SAMPLES + 1,
+            Err(LearnedOperatorError::InvalidGrid),
+        ),
+        (1, 1, 0, 1, Err(LearnedOperatorError::SampleLimit)),
+        (
+            1,
+            1,
+            MAX_SAMPLES + 1,
+            1,
+            Err(LearnedOperatorError::SampleLimit),
+        ),
+    ] {
+        assert_eq!(
+            validate_tabular_plan_bounds(sensor_count, action_count, sample_count, minimum),
+            expected
+        );
+    }
+}
+
+#[test]
 fn op_05_tabular_operator_fits_complete_grid_deterministically() {
     let samples = vec![
         sample("s8", "sensor-b", "action-b", 41),

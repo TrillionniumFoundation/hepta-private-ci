@@ -174,6 +174,37 @@ fn fixture_with_manifest_producer(
 }
 
 #[test]
+fn cognitive_action_identity_preserves_persisted_byte_encoding() {
+    assert_eq!(
+        cognitive_action_id(&item("alpha")).unwrap(),
+        id("memory-73a8cf6a8656096ba80dde02abb9187d095901c12850443a9fab22986687224b")
+    );
+}
+
+#[test]
+fn empty_ranking_abstains_without_skipping_current_registry_validation() {
+    let fixture = fixture(&[item("one"), item("two")], &[0, 10]);
+    let mut empty = Vec::new();
+    for query in ["lemon", "unseen"] {
+        assert_eq!(
+            fixture.ranker.rank(&owner(), 1, query, &mut empty).unwrap(),
+            CognitiveRankObservation {
+                policy_digest: fixture.ranker.policy_digest,
+                propensity: ProbabilityQ32::ONE,
+                applied: false,
+            }
+        );
+    }
+    *fixture.view.0.lock().unwrap() = None;
+    assert!(
+        fixture
+            .ranker
+            .rank(&owner(), 1, "lemon", &mut empty)
+            .is_err()
+    );
+}
+
+#[test]
 fn pinned_payload_requires_exact_registry_producer_identity() {
     let items = vec![item("one"), item("two")];
     let error = fixture_with_manifest_producer(&items, &[0, 10], id("different-trainer"))

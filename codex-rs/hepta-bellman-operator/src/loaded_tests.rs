@@ -126,6 +126,88 @@ fn invalid_statistics_grid_and_authority_cannot_be_encoded() {
 }
 
 #[test]
+fn inclusive_sensor_and_action_limits_preserve_pinned_artifacts() {
+    let source = fitted(2, 7);
+    for (sensor_count, action_count) in [(MAX_SENSORS, 1), (1, MAX_ACTIONS)] {
+        let mut artifact = source.clone();
+        artifact.cells.clear();
+        for sensor in 0..sensor_count {
+            for action in 0..action_count {
+                artifact.cells.push(TabularOperatorCellV1 {
+                    sensor_id: id(&format!("sensor-{sensor:04}")),
+                    action_id: id(&format!("action-{action:03}")),
+                    sample_count: 1,
+                    mean_target: FixedQ32::from_raw(7),
+                    minimum_target: FixedQ32::from_raw(7),
+                    maximum_target: FixedQ32::from_raw(7),
+                    evidence_digest: hash(&format!("evidence-{sensor}-{action}")),
+                });
+            }
+        }
+        let bytes = encode_tabular_payload_v1(&artifact).expect("inclusive grid limit");
+        let loaded = LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&artifact, &bytes))
+            .expect("inclusive pinned grid limit");
+        assert_eq!(loaded.artifact, artifact);
+
+        let mut extra = artifact.cells.last().expect("nonempty grid").clone();
+        if sensor_count == MAX_SENSORS {
+            extra.sensor_id = id(&format!("sensor-{sensor_count:04}"));
+        } else {
+            extra.action_id = id(&format!("action-{action_count:03}"));
+        }
+        extra.evidence_digest = hash("extra-cell");
+        artifact.cells.push(extra);
+        assert_eq!(validate_artifact(&artifact), Err(TabularPayloadError::Grid));
+        assert_eq!(
+            encode_tabular_payload_v1(&artifact),
+            Err(TabularPayloadError::Grid)
+        );
+        assert_eq!(
+            crate::predict_tabular_operator(
+                &artifact,
+                &artifact.cells[0].sensor_id,
+                &artifact.cells[0].action_id,
+            ),
+            Err(crate::LearnedOperatorError::InvalidArtifact)
+        );
+        assert_eq!(
+            crate::predict_tabular_operator_indexed_v2(
+                &artifact,
+                &artifact.cells[0].sensor_id,
+                &artifact.cells[0].action_id,
+            ),
+            Err(crate::StrictLearnedOperatorError::NonCanonicalArtifact)
+        );
+    }
+}
+
+#[test]
+fn cumulative_sample_limits_reject_otherwise_attainable_cell_statistics() {
+    let mut artifact = fitted(2, 7);
+    let cell = &mut artifact.cells[0];
+    cell.sample_count = 500_000;
+    cell.minimum_target = cell.mean_target;
+    cell.maximum_target = cell.mean_target;
+    let mut second = cell.clone();
+    second.action_id = id("write");
+    second.evidence_digest = hash("second-cell");
+    artifact.cells.push(second);
+    let bytes = encode_tabular_payload_v1(&artifact).expect("exactly one million samples");
+    let loaded = LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&artifact, &bytes))
+        .expect("pinned sample upper bound");
+    assert_eq!(loaded.artifact, artifact);
+
+    for overflow in [500_001, u32::MAX] {
+        artifact.cells[1].sample_count = overflow;
+        assert_eq!(validate_artifact(&artifact), Err(TabularPayloadError::Grid));
+        assert_eq!(
+            encode_tabular_payload_v1(&artifact),
+            Err(TabularPayloadError::Grid)
+        );
+    }
+}
+
+#[test]
 fn impossible_sample_statistics_reject_at_encoding_and_pinned_loading() {
     let artifact = fitted(2, 7);
     let original = encode_tabular_payload_v1(&artifact).expect("encode");

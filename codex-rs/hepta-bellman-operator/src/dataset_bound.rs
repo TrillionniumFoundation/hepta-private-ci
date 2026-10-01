@@ -53,6 +53,14 @@ pub fn verify_tabular_operator_plan_v2(
     receipt: &DatasetSnapshotReceiptV3,
     now: u64,
 ) -> Result<VerifiedTabularOperatorPlanV2, OperatorDatasetBindingError> {
+    crate::learned::validate_tabular_plan_bounds(
+        plan.sensor_ids.len(),
+        plan.action_ids.len(),
+        plan.samples.len(),
+        plan.minimum_samples_per_cell,
+    )
+    .map_err(StrictLearnedOperatorError::Learned)
+    .map_err(OperatorDatasetBindingError::Learned)?;
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
     if plan.dataset_digest != receipt.snapshot.dataset_digest {
         return Err(OperatorDatasetBindingError::DatasetDigestMismatch);

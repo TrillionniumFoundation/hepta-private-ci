@@ -17,10 +17,10 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-const MAX_ACTIONS: usize = 128;
-const MAX_CELLS: usize = 262_144;
-const MAX_SAMPLES: usize = 1_000_000;
-const MAX_SENSORS: usize = 4_096;
+pub(crate) const MAX_ACTIONS: usize = 128;
+pub(crate) const MAX_CELLS: usize = 262_144;
+pub(crate) const MAX_SAMPLES: usize = 1_000_000;
+pub(crate) const MAX_SENSORS: usize = 4_096;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TabularOperatorSampleV1 {
@@ -116,6 +116,33 @@ struct CellAccumulator {
     evidence: Vec<Digest32>,
 }
 
+/// Check cardinalities before receipt verification, sorting or row collection.
+/// Semantic grid and evidence checks remain with the fitter.
+pub(crate) fn validate_tabular_plan_bounds(
+    sensor_count: usize,
+    action_count: usize,
+    sample_count: usize,
+    minimum_samples_per_cell: usize,
+) -> Result<usize, LearnedOperatorError> {
+    if sensor_count == 0
+        || sensor_count > MAX_SENSORS
+        || action_count == 0
+        || action_count > MAX_ACTIONS
+        || minimum_samples_per_cell == 0
+        || minimum_samples_per_cell > MAX_SAMPLES
+    {
+        return Err(LearnedOperatorError::InvalidGrid);
+    }
+    let expected_cells = sensor_count
+        .checked_mul(action_count)
+        .filter(|count| *count <= MAX_CELLS)
+        .ok_or(LearnedOperatorError::InvalidGrid)?;
+    if sample_count == 0 || sample_count > MAX_SAMPLES {
+        return Err(LearnedOperatorError::SampleLimit);
+    }
+    Ok(expected_cells)
+}
+
 pub fn fit_tabular_operator(
     mut plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
@@ -127,24 +154,12 @@ pub fn fit_tabular_operator(
     ] {
         require_digest(digest, label)?;
     }
-    if plan.sensor_ids.is_empty()
-        || plan.sensor_ids.len() > MAX_SENSORS
-        || plan.action_ids.is_empty()
-        || plan.action_ids.len() > MAX_ACTIONS
-        || plan.minimum_samples_per_cell == 0
-        || plan.minimum_samples_per_cell > MAX_SAMPLES
-    {
-        return Err(LearnedOperatorError::InvalidGrid);
-    }
-    let expected_cells = plan
-        .sensor_ids
-        .len()
-        .checked_mul(plan.action_ids.len())
-        .filter(|count| *count <= MAX_CELLS)
-        .ok_or(LearnedOperatorError::InvalidGrid)?;
-    if plan.samples.is_empty() || plan.samples.len() > MAX_SAMPLES {
-        return Err(LearnedOperatorError::SampleLimit);
-    }
+    let expected_cells = validate_tabular_plan_bounds(
+        plan.sensor_ids.len(),
+        plan.action_ids.len(),
+        plan.samples.len(),
+        plan.minimum_samples_per_cell,
+    )?;
     normalize_ids(&mut plan.sensor_ids)?;
     normalize_ids(&mut plan.action_ids)?;
     plan.samples.sort_by_key(|sample| sample.sample_id.clone());

@@ -2,8 +2,9 @@
 //!
 //! The original V1 functions remain available. This additive surface rejects
 //! duplicate underlying evidence even when callers relabel samples, and uses
-//! the artifact's canonical cell ordering for binary lookup after an O(n)
-//! validation on every call. Use LoadedTabularOperatorV1 for once-validated
+//! the artifact's canonical cell ordering for binary lookup after an
+//! O(c log c + c log(s + a)) validation on every call, where c, s and a are
+//! cell, sensor and action counts. Use LoadedTabularOperatorV1 for once-validated
 //! persisted candidates and O(log n) repeated lookups.
 
 use std::error::Error as StdError;
