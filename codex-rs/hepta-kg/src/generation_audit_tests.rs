@@ -302,7 +302,7 @@ fn removing_and_reinserting_a_node_drops_old_incident_edges() {
     };
     let incremental = apply_incremental_delta(&predecessor, generation(2), delta)
         .unwrap_or_else(|error| panic!("valid node replacement: {error}"));
-    let mut full_input = input(predecessor.nodes.clone(), vec![replacement_edge]);
+    let mut full_input = input(predecessor.nodes, vec![replacement_edge]);
     full_input.source_snapshot_digest = digest("snapshot:2");
     full_input.generation_vector_digest = digest("vector:2");
     let full = build_complete_generation(generation(2), full_input)
