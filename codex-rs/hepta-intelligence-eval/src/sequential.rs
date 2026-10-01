@@ -151,11 +151,18 @@ pub fn estimate_sequential(
         let ess = scaled_ratio(sum * sum, squares).map_err(|_| SequentialError::Arithmetic)?;
         let mut support = SupportAccumulator::default();
         for bounds in &original_bounds {
-            support.add(bounds[depth]).map_err(|_| SequentialError::Arithmetic)?;
+            support
+                .add(bounds[depth])
+                .map_err(|_| SequentialError::Arithmetic)?;
         }
-        let unresolved = match support.certify(floor).map_err(|_| SequentialError::Arithmetic)? {
+        let unresolved = match support
+            .certify(floor)
+            .map_err(|_| SequentialError::Arithmetic)?
+        {
             SupportCertification::Supported => None,
-            SupportCertification::Insufficient => return insufficient(SequentialEvidenceGap::DepthSupport),
+            SupportCertification::Insufficient => {
+                return insufficient(SequentialEvidenceGap::DepthSupport);
+            }
             SupportCertification::RequiresEquality => Some(SequentialEvidenceGap::DepthSupport),
             SupportCertification::Unresolved => Some(SequentialEvidenceGap::NumericalSupportGap),
         };
@@ -263,10 +270,12 @@ fn estimate_trajectory<'a>(
         // The point estimate rounds each factor to nearest. Admission instead
         // carries an outward envelope from the original propensity ratios, so
         // earlier rounding cannot hide a later cumulative ceiling breach.
-        cumulative_bounds = cumulative_bounds.advance(PropensityRatio {
-            evaluation: u64::try_from(evaluation).map_err(|_| SequentialError::Arithmetic)?,
-            behavior: u64::try_from(behavior).map_err(|_| SequentialError::Arithmetic)?,
-        }).map_err(|_| SequentialError::Arithmetic)?;
+        cumulative_bounds = cumulative_bounds
+            .advance(PropensityRatio {
+                evaluation: u64::try_from(evaluation).map_err(|_| SequentialError::Arithmetic)?,
+                behavior: u64::try_from(behavior).map_err(|_| SequentialError::Arithmetic)?,
+            })
+            .map_err(|_| SequentialError::Arithmetic)?;
         cumulative_numeric_upper = divide_upper(
             cumulative_numeric_upper
                 .checked_mul(rho)
@@ -320,7 +329,10 @@ fn estimate_trajectory<'a>(
 }
 
 fn chosen_ratio(step: &TrajectoryStep) -> Result<PropensityRatio, SequentialError> {
-    let action = step.actions.iter().find(|action| action.action_id == step.chosen_action)
+    let action = step
+        .actions
+        .iter()
+        .find(|action| action.action_id == step.chosen_action)
         .ok_or(SequentialError::Arithmetic)?;
     Ok(PropensityRatio {
         evaluation: action.evaluation_probability.raw(),
@@ -330,12 +342,17 @@ fn chosen_ratio(step: &TrajectoryStep) -> Result<PropensityRatio, SequentialErro
 
 fn equal_positive_prefixes(rows: &[Trajectory]) -> Result<Vec<bool>, SequentialError> {
     let reference = rows.first().ok_or(SequentialError::Arithmetic)?;
-    let reference_ratios: Vec<_> = reference.steps.iter().map(chosen_ratio).collect::<Result<_, _>>()?;
+    let reference_ratios: Vec<_> = reference
+        .steps
+        .iter()
+        .map(chosen_ratio)
+        .collect::<Result<_, _>>()?;
     let mut equal = vec![true; reference_ratios.len()];
     for row in rows.iter().skip(1) {
         let mut products = RatioProductEquality::new();
         for (depth, step) in row.steps.iter().enumerate() {
-            products.advance(chosen_ratio(step)?, reference_ratios[depth])
+            products
+                .advance(chosen_ratio(step)?, reference_ratios[depth])
                 .map_err(|_| SequentialError::Arithmetic)?;
             equal[depth] &= products.equal_positive();
         }

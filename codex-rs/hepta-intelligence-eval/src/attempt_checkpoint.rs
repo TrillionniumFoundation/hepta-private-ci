@@ -17,10 +17,10 @@ use super::*;
 const CHECKPOINT_MAGIC: &[u8; 8] = b"HEPTACP1";
 const MAX_CHECKPOINT_BYTES: u64 = MAX_BYTES;
 
-#[path = "attempt_checkpoint_prefix.rs"]
-mod prefix;
 #[path = "attempt_checkpoint_read.rs"]
 mod bounded_read;
+#[path = "attempt_checkpoint_prefix.rs"]
+mod prefix;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct CheckpointRecord {

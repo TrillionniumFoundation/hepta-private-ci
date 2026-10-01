@@ -36,12 +36,21 @@ impl WeightBounds {
     pub(crate) fn advance(self, ratio: PropensityRatio) -> Result<Self, OpeError> {
         let evaluation = i128::from(ratio.evaluation);
         let behavior = i128::from(ratio.behavior);
-        if self.lower < 0 || self.upper < self.lower
-            || evaluation > SCALE || !(1..=SCALE).contains(&behavior) {
+        if self.lower < 0
+            || self.upper < self.lower
+            || evaluation > SCALE
+            || !(1..=SCALE).contains(&behavior)
+        {
             return Err(OpeError::Arithmetic);
         }
-        let lower = self.lower.checked_mul(evaluation).ok_or(OpeError::Arithmetic)?;
-        let upper = self.upper.checked_mul(evaluation).ok_or(OpeError::Arithmetic)?;
+        let lower = self
+            .lower
+            .checked_mul(evaluation)
+            .ok_or(OpeError::Arithmetic)?;
+        let upper = self
+            .upper
+            .checked_mul(evaluation)
+            .ok_or(OpeError::Arithmetic)?;
         Ok(Self {
             lower: lower / behavior,
             upper: (upper / behavior)
@@ -74,12 +83,22 @@ impl SupportAccumulator {
             return Err(OpeError::Arithmetic);
         }
         self.count = self.count.checked_add(1).ok_or(OpeError::Arithmetic)?;
-        self.lower_sum = self.lower_sum.checked_add(bounds.lower).ok_or(OpeError::Arithmetic)?;
-        self.upper_sum = self.upper_sum.checked_add(bounds.upper).ok_or(OpeError::Arithmetic)?;
-        self.lower_squares = bounds.lower.checked_mul(bounds.lower)
+        self.lower_sum = self
+            .lower_sum
+            .checked_add(bounds.lower)
+            .ok_or(OpeError::Arithmetic)?;
+        self.upper_sum = self
+            .upper_sum
+            .checked_add(bounds.upper)
+            .ok_or(OpeError::Arithmetic)?;
+        self.lower_squares = bounds
+            .lower
+            .checked_mul(bounds.lower)
             .and_then(|square| self.lower_squares.checked_add(square))
             .ok_or(OpeError::Arithmetic)?;
-        self.upper_squares = bounds.upper.checked_mul(bounds.upper)
+        self.upper_squares = bounds
+            .upper
+            .checked_mul(bounds.upper)
             .and_then(|square| self.upper_squares.checked_add(square))
             .ok_or(OpeError::Arithmetic)?;
         Ok(())
@@ -95,7 +114,10 @@ impl SupportAccumulator {
         // Every original weight lies in [L/S,U/S]. Nonnegative sums and
         // squares give (sum L)^2/sum U^2 <= true ESS <= (sum U)^2/sum L^2.
         // At the maximum ESS=n, Cauchy equality can resolve the exact tie.
-        let lower_square = self.lower_sum.checked_mul(self.lower_sum).ok_or(OpeError::Arithmetic)?;
+        let lower_square = self
+            .lower_sum
+            .checked_mul(self.lower_sum)
+            .ok_or(OpeError::Arithmetic)?;
         if scaled_ratio(lower_square, self.upper_squares)?.floor >= minimum {
             return Ok(SupportCertification::Supported);
         }
@@ -103,12 +125,19 @@ impl SupportAccumulator {
             return Ok(SupportCertification::RequiresEquality);
         }
         if self.lower_squares > 0 {
-            let upper_square = self.upper_sum.checked_mul(self.upper_sum).ok_or(OpeError::Arithmetic)?;
+            let upper_square = self
+                .upper_sum
+                .checked_mul(self.upper_sum)
+                .ok_or(OpeError::Arithmetic)?;
             // ESS never exceeds n. A very wide UB can overflow its Q32
             // representation, but UB>=n cannot prove failure below n anyway.
-            let maximum_square = self.count.checked_mul(self.lower_squares).ok_or(OpeError::Arithmetic)?;
+            let maximum_square = self
+                .count
+                .checked_mul(self.lower_squares)
+                .ok_or(OpeError::Arithmetic)?;
             if upper_square < maximum_square
-                && scaled_ratio(upper_square, self.lower_squares)?.floor < minimum {
+                && scaled_ratio(upper_square, self.lower_squares)?.floor < minimum
+            {
                 return Ok(SupportCertification::Insufficient);
             }
         }
@@ -163,10 +192,17 @@ pub(crate) struct RatioProductEquality {
 
 impl RatioProductEquality {
     pub(crate) fn new() -> Self {
-        Self { left: FixedProduct::one(), right: FixedProduct::one() }
+        Self {
+            left: FixedProduct::one(),
+            right: FixedProduct::one(),
+        }
     }
 
-    pub(crate) fn advance(&mut self, left: PropensityRatio, right: PropensityRatio) -> Result<(), OpeError> {
+    pub(crate) fn advance(
+        &mut self,
+        left: PropensityRatio,
+        right: PropensityRatio,
+    ) -> Result<(), OpeError> {
         if left.behavior == 0 || right.behavior == 0 {
             return Err(OpeError::Arithmetic);
         }

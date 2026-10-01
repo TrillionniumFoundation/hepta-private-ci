@@ -3,12 +3,12 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_state::DurableSqlitePoolCapacity;
+use codex_state::open_durable_evidence_pool_with_capacity;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use codex_state::DurableSqlitePoolCapacity;
-use codex_state::open_durable_evidence_pool_with_capacity;
 
 use crate::DestinationApplyDisposition;
 use crate::DestinationApplyReceipt;

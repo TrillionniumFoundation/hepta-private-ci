@@ -158,7 +158,10 @@ pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeE
         }
         prior = Some(&row.decision_id);
         let (weight, weighted_outcome, dr, row_digest) = estimate_row(plan, row)?;
-        let chosen = row.actions.iter().find(|action| action.action_id == row.chosen_action)
+        let chosen = row
+            .actions
+            .iter()
+            .find(|action| action.action_id == row.chosen_action)
             .ok_or(OpeError::UnknownChosenAction)?;
         let ratio = PropensityRatio {
             evaluation: chosen.evaluation_probability.raw(),

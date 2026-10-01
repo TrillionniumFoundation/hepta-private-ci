@@ -458,18 +458,22 @@ fn legacy_multi_organ_fixture() -> (ContributionSet, UtilityProfile) {
     let mut profile = profile();
     profile.required_organs.organ_ids.push(id("observer"));
     profile.risk_ceilings[0].maximum = q32(/*value*/ 3);
-    let mut work_planner = contribution_from("work", "planner", /*success*/ 1, /*latency*/ 0);
+    let mut work_planner =
+        contribution_from("work", "planner", /*success*/ 1, /*latency*/ 0);
     work_planner.risk[0].value = q32(/*value*/ 1);
     work_planner.resource[0].value = q32(/*value*/ 2);
     work_planner.uncertainty = legacy_axis_values(&[("success", 1), ("latency", 2)]);
-    let mut work_observer = contribution_from("work", "observer", /*success*/ 2, /*latency*/ 0);
+    let mut work_observer =
+        contribution_from("work", "observer", /*success*/ 2, /*latency*/ 0);
     work_observer.risk[0].value = q32(/*value*/ 2);
     work_observer.resource[0].value = q32(/*value*/ 3);
     work_observer.uncertainty = legacy_axis_values(&[("success", 3), ("latency", 4)]);
     (
         set(vec![
             contribution_from("abstain", "planner", /*success*/ 0, /*latency*/ 0),
-            contribution_from("abstain", "observer", /*success*/ 0, /*latency*/ 0),
+            contribution_from(
+                "abstain", "observer", /*success*/ 0, /*latency*/ 0,
+            ),
             work_planner,
             work_observer,
         ]),
@@ -483,13 +487,9 @@ fn assert_legacy_equivalent(
     scalarization: Option<ScalarizationProfile>,
 ) -> Result<NduEvaluationReceipt, NduError> {
     let legacy = evaluate_candidates(input.clone(), profile.clone(), scalarization.clone());
-    let explicit = evaluate_candidates_with_policy(
-        input,
-        profile,
-        scalarization,
-        legacy_reference_policy(),
-    )
-    .map(|receipt| receipt.base);
+    let explicit =
+        evaluate_candidates_with_policy(input, profile, scalarization, legacy_reference_policy())
+            .map(|receipt| receipt.base);
     assert_eq!(legacy, explicit);
     legacy
 }
@@ -515,13 +515,41 @@ fn legacy_compatibility_matches_explicit_policy_for_complete_receipts() {
         weight.value = FixedQ32::from_raw(FixedQ32::ONE.raw() / 2);
     }
     let scenarios = [
-        (input, None, EvaluationDisposition::UniqueParetoRecommendation),
-        (hard_violation, None, EvaluationDisposition::InfeasibleExplicitAbstain),
-        (risk_violation, None, EvaluationDisposition::InfeasibleExplicitAbstain),
-        (resource_violation, None, EvaluationDisposition::InfeasibleExplicitAbstain),
-        (tradeoff.clone(), None, EvaluationDisposition::ParetoSetRequiresSlowPath),
-        (tradeoff.clone(), Some(scalarization), EvaluationDisposition::ScalarizedRecommendation),
-        (tradeoff, Some(tied_scalarization), EvaluationDisposition::ScalarizationTieRequiresSlowPath),
+        (
+            input,
+            None,
+            EvaluationDisposition::UniqueParetoRecommendation,
+        ),
+        (
+            hard_violation,
+            None,
+            EvaluationDisposition::InfeasibleExplicitAbstain,
+        ),
+        (
+            risk_violation,
+            None,
+            EvaluationDisposition::InfeasibleExplicitAbstain,
+        ),
+        (
+            resource_violation,
+            None,
+            EvaluationDisposition::InfeasibleExplicitAbstain,
+        ),
+        (
+            tradeoff.clone(),
+            None,
+            EvaluationDisposition::ParetoSetRequiresSlowPath,
+        ),
+        (
+            tradeoff.clone(),
+            Some(scalarization),
+            EvaluationDisposition::ScalarizedRecommendation,
+        ),
+        (
+            tradeoff,
+            Some(tied_scalarization),
+            EvaluationDisposition::ScalarizationTieRequiresSlowPath,
+        ),
     ];
     for (mut input, mut scalarization, disposition) in scenarios {
         let receipt = must(assert_legacy_equivalent(
@@ -560,7 +588,11 @@ fn legacy_compatibility_matches_explicit_policy_for_complete_receipts() {
             scalarization.weights.reverse();
         }
         assert_eq!(
-            must(assert_legacy_equivalent(input, reordered_profile, scalarization)),
+            must(assert_legacy_equivalent(
+                input,
+                reordered_profile,
+                scalarization
+            )),
             receipt
         );
     }
@@ -579,20 +611,43 @@ fn legacy_compatibility_preserves_complete_error_values() {
     mixed_generation.contributions[2].generation = must(Generation::new(/*value*/ 2));
     let mut missing_axis = input.clone();
     for contribution in &mut missing_axis.contributions[2..] {
-        contribution.uncertainty.retain(|value| value.axis == id("success"));
+        contribution
+            .uncertainty
+            .retain(|value| value.axis == id("success"));
     }
     let mut overflow = input.clone();
     overflow.contributions[2].utility[0].value = FixedQ32::from_raw(i64::MAX);
     let cases = [
-        (missing_organ, NduError::MissingRequiredOrgan { candidate: "work".to_owned(), organ: "observer".to_owned() }),
-        (duplicate, NduError::DuplicateOrganContribution { candidate: "work".to_owned(), organ: "planner".to_owned() }),
+        (
+            missing_organ,
+            NduError::MissingRequiredOrgan {
+                candidate: "work".to_owned(),
+                organ: "observer".to_owned(),
+            },
+        ),
+        (
+            duplicate,
+            NduError::DuplicateOrganContribution {
+                candidate: "work".to_owned(),
+                organ: "planner".to_owned(),
+            },
+        ),
         (mixed_objective, NduError::MixedObjective),
         (mixed_generation, NduError::MixedGeneration),
-        (missing_axis, NduError::MissingAxis { candidate: "work".to_owned(), axis: "uncertainty:latency".to_owned() }),
+        (
+            missing_axis,
+            NduError::MissingAxis {
+                candidate: "work".to_owned(),
+                axis: "uncertainty:latency".to_owned(),
+            },
+        ),
         (overflow, NduError::Arithmetic),
     ];
     for (input, error) in cases {
-        assert_eq!(assert_legacy_equivalent(input, profile.clone(), /*scalarization*/ None), Err(error));
+        assert_eq!(
+            assert_legacy_equivalent(input, profile.clone(), /*scalarization*/ None),
+            Err(error)
+        );
     }
     let mut invalid_profile = profile;
     invalid_profile.axis_registry_digest = Digest32::ZERO;

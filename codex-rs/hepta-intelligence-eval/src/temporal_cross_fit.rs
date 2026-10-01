@@ -443,17 +443,22 @@ mod tests {
             }
             let receipt = fit_temporal_fold(&input.1, &input.2, &input.3)
                 .unwrap_or_else(|error| panic!("the conflicting fold must fit locally: {error:?}"));
-            let partition = plan.folds.iter_mut()
+            let partition = plan
+                .folds
+                .iter_mut()
                 .find(|partition| partition.fold_id == input.0)
                 .unwrap_or_else(|| panic!("conflicting fold partition must exist"));
-            partition.training_principals = unique(input.2.iter().map(|row| &row.principal_lineage));
+            partition.training_principals =
+                unique(input.2.iter().map(|row| &row.principal_lineage));
             partition.training_episodes = unique(input.2.iter().map(|row| &row.episode_lineage));
             partition.training_windows = unique(input.2.iter().map(|row| &row.window_id));
             partition.model_digest = receipt.model_digest;
             partition.predictions_digest = receipt.predictions_digest;
             assert!(matches!(
                 plan.execute_temporal_cross_fit_v1(roles, inputs),
-                Err(ProductEvaluationError::Binding("cross-fit decision identity drift"))
+                Err(ProductEvaluationError::Binding(
+                    "cross-fit decision identity drift"
+                ))
             ));
         }
     }
@@ -472,7 +477,9 @@ mod tests {
         input.2[0].evidence_digest = digest("superseding-outcome-evidence");
         let receipt = fit_temporal_fold(&input.1, &input.2, &input.3)
             .unwrap_or_else(|error| panic!("the later corrected training cut must fit: {error:?}"));
-        let partition = plan.folds.iter_mut()
+        let partition = plan
+            .folds
+            .iter_mut()
             .find(|partition| partition.fold_id == input.0)
             .unwrap_or_else(|| panic!("corrected fold partition must exist"));
         partition.training_principals = unique(input.2.iter().map(|row| &row.principal_lineage));
@@ -481,7 +488,9 @@ mod tests {
         partition.model_digest = receipt.model_digest;
         partition.predictions_digest = receipt.predictions_digest;
         plan.execute_temporal_cross_fit_v1(roles, inputs)
-            .unwrap_or_else(|error| panic!("label/evidence revisions must preserve a decision: {error:?}"));
+            .unwrap_or_else(|error| {
+                panic!("label/evidence revisions must preserve a decision: {error:?}")
+            });
     }
 
     #[test]

@@ -26,8 +26,7 @@ use pretty_assertions::assert_eq;
 
 use super::storage;
 
-const CHILD_TEST: &str =
-    "recovery_sync_eio_tests::recovery_sync_eio_blocks_anchor_ack_and_successful_retry_retains_the_tail";
+const CHILD_TEST: &str = "recovery_sync_eio_tests::recovery_sync_eio_blocks_anchor_ack_and_successful_retry_retains_the_tail";
 const ROOT_ENV: &str = "HEPTA_EVAL_RECOVERY_SYNC_TEST_ROOT";
 const PATH_ENV: &str = "HEPTA_EVAL_RECOVERY_SYNC_TEST_PATH";
 const EXPECTATION_ENV: &str = "HEPTA_EVAL_RECOVERY_SYNC_TEST_EXPECTATION";
@@ -235,9 +234,7 @@ fn recovery_sync_child(root: &Path) {
         // Prove the filter survives exec and returns an actual Linux OS EIO.
         // This nonmutating syscall occurs before recovery or any authority CAS.
         assert_eq!(
-            file.sync_all()
-                .err()
-                .and_then(|error| error.raw_os_error()),
+            file.sync_all().err().and_then(|error| error.raw_os_error()),
             Some(5),
             "the kernel must inject fsync EIO in the recovery worker"
         );
@@ -247,11 +244,9 @@ fn recovery_sync_child(root: &Path) {
         cas_calls: Rc::clone(&cas_calls),
     };
     let result = match std::env::var(PATH_ENV).as_deref() {
-        Ok("ordinary") => AnchoredProductEvaluationAttemptJournalV1::recover(
-            file,
-            binding(),
-            authority,
-        ),
+        Ok("ordinary") => {
+            AnchoredProductEvaluationAttemptJournalV1::recover(file, binding(), authority)
+        }
         Ok("checkpoint") => AnchoredProductEvaluationAttemptJournalV1::recover_with_checkpoint(
             file,
             storage::reopen(&root.join("checkpoint")),
@@ -272,7 +267,10 @@ fn recovery_sync_child(root: &Path) {
                 .history(&attempt_id())
                 .unwrap_or_else(|error| panic!("recovered history: {error:?}"));
             assert_eq!(
-                history.into_iter().map(|receipt| receipt.transition).collect::<Vec<_>>(),
+                history
+                    .into_iter()
+                    .map(|receipt| receipt.transition)
+                    .collect::<Vec<_>>(),
                 vec![intent(), consumed()]
             );
             assert_eq!(cas_calls.get(), 1);
@@ -310,7 +308,10 @@ fn recovery_sync_eio_blocks_anchor_ack_and_successful_retry_retains_the_tail() {
         let after = retained_paths.map(|name| {
             fs::read(root.0.join(name)).unwrap_or_else(|error| panic!("after bytes: {error:?}"))
         });
-        assert_eq!(after, before, "failed recovery must not change any durable bytes");
+        assert_eq!(
+            after, before,
+            "failed recovery must not change any durable bytes"
+        );
         let retry = child(&root.0, path, ExpectedRecovery::SuccessfulRetry);
         assert!(
             retry.status.success(),
