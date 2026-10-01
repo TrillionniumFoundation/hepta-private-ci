@@ -601,3 +601,209 @@ async fn step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
     assert_eq!(still_unchanged.event_seq, 1);
     store.close().await;
 }
+
+#[tokio::test]
+async fn terminal_step_cannot_contradict_provider_evidence_before_projection() {
+    for reconcile in [false, true] {
+        let fixture = Fixture::new();
+        let (store, owner, intent, payload) = prepared_store(&fixture).await;
+        let run = store
+            .taskflow_run("step-run")
+            .await
+            .expect("run")
+            .expect("exists");
+        store
+            .apply_taskflow_command(
+                &TaskFlowCommand::new(
+                    "step-run",
+                    "start",
+                    owner.clone(),
+                    run.revision,
+                    TaskFlowTransition::Start,
+                    20,
+                )
+                .expect("start command"),
+            )
+            .await
+            .expect("start");
+        store
+            .prepare_taskflow_step(
+                "step-run", "work", 1, &owner, &intent, &payload, "prepare", 21,
+            )
+            .await
+            .expect("prepare");
+        store
+            .claim_taskflow_step(
+                "step-run", "work", 1, &owner, &intent, &payload, "claim", 22,
+            )
+            .await
+            .expect("claim");
+        if reconcile {
+            store
+                .record_taskflow_step(
+                    "step-run",
+                    "work",
+                    1,
+                    &owner,
+                    &intent,
+                    &payload,
+                    "unknown",
+                    &Sha256Digest::for_bytes(b"unknown"),
+                    TaskFlowStepObservation::Indeterminate,
+                    23,
+                )
+                .await
+                .expect("unknown projection");
+        }
+        let before = store
+            .read_taskflow_step("step-run", "work", 1, &owner)
+            .await
+            .expect("read before")
+            .expect("step");
+        let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
+            .expect("sqlite home");
+        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+            .open_durable_evidence_pool(store.path())
+            .await
+            .expect("evidence pool");
+        let terminal = Sha256Digest::for_bytes(b"provider-terminal");
+        // Reproduce the crash after immutable provider evidence commits and
+        // before the owning recovery path updates the step projection.
+        sqlx::query(
+            "INSERT INTO taskflow_effect_dispatch_attempts (
+            owner_agent_id, run_id, step_id, attempt, intent_digest, payload_digest,
+            binding_digest, destination_id, authority_epoch, grant_id,
+            grant_nonce_digest, record_command_id, started_at_ms
+        ) VALUES (?, 'step-run', 'work', 1, ?, ?, ?, 'provider:test', 1,
+            'test-grant', ?, 'provider-record', 22)",
+        )
+        .bind(AGENT_ID)
+        .bind(intent.as_str())
+        .bind(payload.as_str())
+        .bind(terminal.as_str())
+        .bind(terminal.as_str())
+        .execute(&pool)
+        .await
+        .expect("provider attempt");
+        sqlx::query(
+            "INSERT INTO taskflow_effect_dispatch_observations (
+            owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms
+        ) VALUES (?, 'step-run', 'work', 1, ?, ?, 23)",
+        )
+        .bind(AGENT_ID)
+        .bind(if reconcile {
+            "indeterminate"
+        } else {
+            "succeeded"
+        })
+        .bind(if reconcile {
+            intent.as_str()
+        } else {
+            terminal.as_str()
+        })
+        .execute(&pool)
+        .await
+        .expect("provider observation");
+        if reconcile {
+            sqlx::query("INSERT INTO taskflow_effect_dispatch_reconciliations (
+                owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms
+            ) VALUES (?, 'step-run', 'work', 1, 'succeeded', ?, 24)")
+                .bind(AGENT_ID).bind(terminal.as_str())
+                .execute(&pool).await.expect("provider terminal reconciliation");
+        }
+        for (index, (receipt, succeeded)) in [
+            (terminal.clone(), false),
+            (Sha256Digest::for_bytes(b"different-receipt"), true),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let result = if reconcile {
+                store
+                    .reconcile_taskflow_step(
+                        "step-run",
+                        "work",
+                        1,
+                        &owner,
+                        &intent,
+                        &payload,
+                        &format!("conflicting-{index}"),
+                        &receipt,
+                        if succeeded {
+                            TaskFlowReconcileOutcome::Succeeded
+                        } else {
+                            TaskFlowReconcileOutcome::Failed
+                        },
+                        25,
+                    )
+                    .await
+            } else {
+                store
+                    .record_taskflow_step(
+                        "step-run",
+                        "work",
+                        1,
+                        &owner,
+                        &intent,
+                        &payload,
+                        &format!("conflicting-{index}"),
+                        &receipt,
+                        if succeeded {
+                            TaskFlowStepObservation::Succeeded
+                        } else {
+                            TaskFlowStepObservation::Failed
+                        },
+                        25,
+                    )
+                    .await
+            };
+            assert!(matches!(
+                result,
+                Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+            ));
+            assert_eq!(
+                store
+                    .read_taskflow_step("step-run", "work", 1, &owner)
+                    .await
+                    .expect("read unchanged")
+                    .expect("step"),
+                before
+            );
+        }
+        let matched = if reconcile {
+            store
+                .reconcile_taskflow_step(
+                    "step-run",
+                    "work",
+                    1,
+                    &owner,
+                    &intent,
+                    &payload,
+                    "matching",
+                    &terminal,
+                    TaskFlowReconcileOutcome::Succeeded,
+                    26,
+                )
+                .await
+        } else {
+            store
+                .record_taskflow_step(
+                    "step-run",
+                    "work",
+                    1,
+                    &owner,
+                    &intent,
+                    &payload,
+                    "matching",
+                    &terminal,
+                    TaskFlowStepObservation::Succeeded,
+                    26,
+                )
+                .await
+        }
+        .expect("matching provider terminal remains recoverable");
+        assert_eq!(matched.receipt.receipt_digest, Some(terminal));
+        pool.close().await;
+        store.close().await;
+    }
+}
