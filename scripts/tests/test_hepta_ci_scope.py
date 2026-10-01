@@ -21,8 +21,26 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(scope["inference"])
         self.assertTrue(scope["native"])
         self.assertFalse(scope["full_repo"])
+        self.assertFalse(scope["browser"])
         for group in GROUPS - {"inference"}:
             self.assertFalse(scope[group])
+
+    def test_browser_owner_and_native_composition_select_browser_regressions(self):
+        for path in [
+            "apps/hepta-browser/src/journal.js",
+            "apps/hepta-browser/test/runtime.test.js",
+            "apps/hepta-browser/servo-worker/src/main.rs",
+            "codex-rs/hepta-agentd/src/browser_servo.rs",
+            "codex-rs/hepta-agentd/src/browser_servo_transport.rs",
+            "codex-rs/hepta-agentd/src/browser_servo_transport_tests.rs",
+            "codex-rs/hepta-agentd/src/browser_servo_artifact.rs",
+            "codex-rs/hepta-agentd/src/browser_servo_artifact_tests.rs",
+            "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+            "third_party/servo-patches/MANIFEST.json",
+        ]:
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["browser"])
+        self.assertTrue(select([".github/workflows/blocking-ci.yml"])["browser"])
 
     def test_topology_contract_stays_on_lifecycle_boundary(self):
         scope = select(["codex-rs/hepta-types/src/topology.rs"])

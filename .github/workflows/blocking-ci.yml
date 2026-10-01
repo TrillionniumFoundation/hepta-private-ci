@@ -26,6 +26,7 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      browser: ${{ steps.scope.outputs.browser }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -65,6 +66,21 @@ jobs:
             echo "unscoped skipped dependency was incorrectly accepted" >&2
             exit 1
           fi
+
+  browser:
+    name: Browser owner regression tests
+    needs: scope
+    if: needs.scope.outputs.browser == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Run Browser state, journal, IPC and Agentd boundary regressions
+        run: node --test apps/hepta-browser/test/*.test.js
 
   hepta-contract-gate:
     name: Hepta contract gate
@@ -228,6 +244,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
+      - browser
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -239,6 +256,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          BROWSER: ${{ needs.scope.outputs.browser }}
         shell: bash
         run: |
           set -euo pipefail
@@ -249,6 +267,8 @@ jobs:
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
+          if os.environ["BROWSER"] != "true":
+              allowed.append("browser")
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:

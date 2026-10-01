@@ -83,6 +83,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
     selected = set(GROUPS) if force_full else set()
     derived = force_full
     full_repo = force_full
+    browser = force_full
 
     for path in paths:
         parts = PurePosixPath(path).parts
@@ -129,7 +130,19 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
         if path.startswith("apps/hepta-browser/"):
             selected.add("effects")
+            browser = True
             continue
+
+        if (
+            path.startswith(
+                (
+                    "third_party/servo-patches/",
+                    "codex-rs/hepta-agentd/src/browser_servo",
+                )
+            )
+            or path == "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"
+        ):
+            browser = True
 
         if path in FILE_GROUPS:
             selected.update(FILE_GROUPS[path])
@@ -177,6 +190,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         "native": bool(selected),
         "derived": derived,
         "full_repo": full_repo,
+        "browser": browser or full_repo,
     }
 
 
