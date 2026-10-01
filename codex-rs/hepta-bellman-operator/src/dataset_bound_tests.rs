@@ -135,3 +135,57 @@ fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
     let model = fit_transition_model_verified_v2(verified).expect("fit");
     assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
 }
+
+#[test]
+fn op_06_verified_inputs_reject_relabelled_duplicate_evidence() {
+    let records = [digest("record-a"), digest("record-b")];
+    let receipt = receipt(records.to_vec());
+    let mut plan = tabular_plan(receipt.snapshot.dataset_digest, records);
+    let mut repeated = plan.samples[0].clone();
+    repeated.sample_id = id("relabelled-duplicate");
+    plan.samples.push(repeated);
+    assert!(matches!(
+        verify_tabular_operator_plan_v2(plan, &receipt, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
+
+    let rows = [records[0], records[1], records[0]]
+        .into_iter()
+        .enumerate()
+        .map(|(index, evidence_digest)| WorldModelSampleV1 {
+            sample_id: id(&format!("sample-{index}")),
+            state_id: id("state"),
+            action_id: id("action"),
+            next_state_id: id("next"),
+            outcome: FixedQ32::ONE,
+            evidence_digest,
+        })
+        .collect();
+    assert!(matches!(
+        verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
+}
+
+#[test]
+fn op_06_world_model_verification_enforces_fit_limit_before_membership() {
+    let record = digest("record");
+    let receipt = receipt(vec![record]);
+    let rows = vec![
+        WorldModelSampleV1 {
+            sample_id: id("sample"),
+            state_id: id("state"),
+            action_id: id("action"),
+            next_state_id: id("next"),
+            outcome: FixedQ32::ONE,
+            evidence_digest: record,
+        };
+        MAX_WORLD_MODEL_SAMPLES + 1
+    ];
+    assert!(matches!(
+        verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50),
+        Err(OperatorDatasetBindingError::WorldModel(
+            WorldModelError::SampleLimit
+        ))
+    ));
+}

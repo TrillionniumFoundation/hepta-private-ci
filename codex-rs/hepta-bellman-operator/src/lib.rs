@@ -25,6 +25,7 @@ pub use owner_terminal::TerminalCellError;
 pub use owner_terminal::TerminalCellProfileV1;
 pub use owner_terminal::fit_terminal_cell_from_owner_v1;
 pub use owner_terminal::freeze_terminal_cell_from_owner_v1;
+pub use owner_terminal::freeze_terminal_cell_from_signed_owner_v2;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;
@@ -243,13 +244,15 @@ pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error>
 
 fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let product = i128::from(left.raw()) * i128::from(right.raw());
-    let adjusted = if product >= 0 {
-        product + SCALE / 2
+    let quotient = product / SCALE;
+    let twice_remainder = (product % SCALE).abs() * 2;
+    let rounded = if twice_remainder > SCALE || (twice_remainder == SCALE && quotient % 2 != 0) {
+        quotient + product.signum()
     } else {
-        product - SCALE / 2
+        quotient
     };
     Ok(FixedQ32::from_raw(
-        i64::try_from(adjusted / SCALE).map_err(|_| Error::Arithmetic)?,
+        i64::try_from(rounded).map_err(|_| Error::Arithmetic)?,
     ))
 }
 

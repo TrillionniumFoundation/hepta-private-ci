@@ -84,3 +84,15 @@ fn duplicate_sample_fails() {
         .push(value.dataset.transitions[0].clone());
     assert!(matches!(train(value), Err(Error::DuplicateSample(_))));
 }
+
+#[test]
+fn target_builder_rounds_positive_and_negative_half_ties_to_even() {
+    for (continuation, expected) in [(1, 0), (3, 2), (-1, 0), (-3, -2)] {
+        let mut value = request();
+        value.dataset.transitions.truncate(1);
+        value.dataset.transitions[0].reward = FixedQ32::ZERO;
+        value.dataset.transitions[0].next_value = FixedQ32::from_raw(continuation);
+        let artifact = must(build_targets(value));
+        assert_eq!(artifact.targets[0].target, FixedQ32::from_raw(expected));
+    }
+}

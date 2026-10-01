@@ -4,6 +4,13 @@
 //! solver, causal policy improvement, or deployment selection. Targets and
 //! action labels are derived from authenticated current owner events, never
 //! supplied by the trainer under arbitrary nonzero evidence digests.
+//!
+//! The V1 receipt must come from the host-controlled owner's freeze operation.
+//! V3 receipts carry digest integrity, not the signed freeze attestation; the
+//! current owner API cannot authenticate an arbitrary historical freeze head
+//! or inclusion policy. Active source checks therefore do not replace trusted
+//! receipt provenance at that boundary. The signed-owner V2 entry point derives
+//! its receipt directly from the exact evaluator-attested current owner freeze.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -11,10 +18,12 @@ use std::error::Error;
 use std::fmt;
 
 use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;
+use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -44,6 +53,8 @@ pub struct TerminalCellProfileV1 {
 pub struct FrozenTerminalCellV1 {
     plan: TabularOperatorPlanV1,
     dataset: DatasetSnapshotReceiptV3,
+    trust_digest: Digest32,
+    admitted_at: u64,
 }
 
 impl FrozenTerminalCellV1 {
@@ -79,7 +90,6 @@ pub fn freeze_terminal_cell_from_owner_v1(
     mut profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
-    owner.revalidate_dataset_snapshot(dataset, now)?;
     if dataset.snapshot.objective_digest != profile.objective_digest
         || profile.objective_digest.is_zero()
         || profile.run_snapshot_digest.is_zero()
@@ -91,6 +101,26 @@ pub fn freeze_terminal_cell_from_owner_v1(
         || dataset.snapshot.source_record_digests.len() > MAX_SOURCE_RECORDS
     {
         return Err(TerminalCellError::Unsupported("profile/dataset bounds"));
+    }
+    let verifier = owner.verifier();
+    if dataset.producer.scope_digest != verifier.scope_digest()
+        || dataset.producer.authority_epoch != verifier.authority_epoch()
+        || dataset.snapshot.objective_digest != verifier.objective_digest()
+    {
+        return Err(TerminalCellError::Unsupported("dataset owner context"));
+    }
+    if dataset.snapshot.pending_outcomes != 0
+        || dataset.snapshot.censored_outcomes != 0
+        || dataset.snapshot.outcome_watermark > now
+    {
+        return Err(TerminalCellError::Unsupported("terminal dataset frontier"));
+    }
+    let frontier = owner.witness_frontier()?.anchor;
+    if dataset.snapshot.eligible_frontier > frontier.sequence
+        || (dataset.snapshot.eligible_frontier == frontier.sequence
+            && dataset.snapshot.ledger_head_digest != frontier.chain_digest)
+    {
+        return Err(TerminalCellError::Unsupported("dataset owner frontier"));
     }
     profile.action_ids.sort();
     if profile.action_ids.windows(2).any(|pair| pair[0] == pair[1]) {
@@ -108,6 +138,14 @@ pub fn freeze_terminal_cell_from_owner_v1(
     for record in owner.read_dataset_records(dataset, now)? {
         if !frozen.contains(&record.event_digest) {
             continue;
+        }
+        if record.sequence.get() > dataset.snapshot.eligible_frontier
+            || (record.sequence.get() == dataset.snapshot.eligible_frontier
+                && record.chain_digest != dataset.snapshot.ledger_head_digest)
+        {
+            return Err(TerminalCellError::Unsupported(
+                "source outside dataset frontier",
+            ));
         }
         found.insert(record.event_digest);
         match &record.event {
@@ -134,6 +172,8 @@ pub fn freeze_terminal_cell_from_owner_v1(
                     || value.value.is_none()
                     || value.unit_profile_digest != profile.unit_profile_digest
                     || value.finalized_at.is_none()
+                    || value.finalized_at.is_some_and(|at| at > now)
+                    || value.latest_observable_at > dataset.snapshot.outcome_watermark
                 {
                     return Err(TerminalCellError::Unsupported(
                         "nonterminal or different-unit target",
@@ -199,7 +239,24 @@ pub fn freeze_terminal_cell_from_owner_v1(
     Ok(FrozenTerminalCellV1 {
         plan,
         dataset: dataset.clone(),
+        trust_digest: verifier.trust_digest(),
+        admitted_at: now,
     })
+}
+
+/// Authenticate an evaluator's exact freeze request and derive the complete
+/// dataset through its owner before constructing the opaque terminal plan.
+/// Unlike the compatibility V1 receipt boundary, this entry point never accepts
+/// caller-supplied source membership, metadata or an asserted receipt producer.
+pub fn freeze_terminal_cell_from_signed_owner_v2(
+    owner: &LedgerWriter,
+    plan: DatasetFreezePlanV2,
+    evidence: &SignedLearningEvidenceV1,
+    profile: TerminalCellProfileV1,
+    now: u64,
+) -> Result<FrozenTerminalCellV1, TerminalCellError> {
+    let dataset = owner.freeze_dataset(plan, evidence, now)?;
+    freeze_terminal_cell_from_owner_v1(owner, &dataset, profile, now)
 }
 
 pub fn fit_terminal_cell_from_owner_v1(
@@ -207,8 +264,16 @@ pub fn fit_terminal_cell_from_owner_v1(
     frozen: FrozenTerminalCellV1,
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
-    // Correction, withdrawal or a changed witness between freeze and fitting
+    // Correction, withdrawal or changed trust between freeze and fitting
     // rejects the candidate rather than quietly training on a stale dataset.
+    if frozen.trust_digest != owner.verifier().trust_digest() {
+        return Err(TerminalCellError::Unsupported(
+            "owner trust changed since freeze",
+        ));
+    }
+    if now < frozen.admitted_at {
+        return Err(TerminalCellError::Unsupported("terminal dataset frontier"));
+    }
     owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;
     fit_tabular_operator_strict_v2(frozen.plan).map_err(TerminalCellError::Fit)
 }

@@ -287,6 +287,179 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
 }
 
 #[test]
+fn terminal_owner_rejects_self_consistent_foreign_context_and_frontier_receipts() {
+    let fixture = Fixture::new();
+    let mut owner = fixture.writer();
+    collect(&mut owner, "context-read", "read", FixedQ32::ONE.raw());
+    collect(&mut owner, "context-abstain", "abstain", 0);
+    let receipt = freeze(&owner, "dataset.context");
+    let valid = freeze_terminal_cell_from_owner_v1(&owner, &receipt, profile(1), 50).unwrap();
+    assert!(fit_terminal_cell_from_owner_v1(&owner, valid.clone(), 50).is_ok());
+    assert!(fit_terminal_cell_from_owner_v1(&owner, valid, 49).is_err());
+    // Latest-observable watermark 45 and finalization 46 are distinct clocks.
+    assert!(freeze_terminal_cell_from_owner_v1(&owner, &receipt, profile(1), 45).is_err());
+
+    let mutations: [(&str, fn(&mut DatasetFreezeRequestV1)); 9] = [
+        ("foreign scope", |request| {
+            request.producer.scope_digest = digest("foreign-scope");
+        }),
+        ("foreign epoch", |request| {
+            request.producer.authority_epoch += 1;
+        }),
+        ("future frontier", |request| {
+            request.eligible_frontier += 1;
+        }),
+        ("source beyond frontier", |request| {
+            request.eligible_frontier -= 1;
+        }),
+        ("wrong head", |request| {
+            request.ledger_head_digest = digest("foreign-head");
+        }),
+        ("future watermark", |request| {
+            request.outcome_watermark = 51;
+        }),
+        ("source beyond watermark", |request| {
+            request.outcome_watermark -= 1;
+        }),
+        ("pending metadata", |request| {
+            request.pending_outcomes = 1;
+        }),
+        ("censored metadata", |request| {
+            request.censored_outcomes = 1;
+        }),
+    ];
+    for (label, mutate) in mutations {
+        let mut request = DatasetFreezeRequestV1 {
+            snapshot_id: receipt.snapshot.snapshot_id.clone(),
+            producer: receipt.producer.clone(),
+            ledger_head_digest: receipt.snapshot.ledger_head_digest,
+            objective_digest: receipt.snapshot.objective_digest,
+            eligible_frontier: receipt.snapshot.eligible_frontier,
+            outcome_watermark: receipt.snapshot.outcome_watermark,
+            correction_cut_digest: receipt.correction_cut_digest,
+            revocation_cut_digest: receipt.revocation_cut_digest,
+            inclusion_policy_digest: receipt.inclusion_policy_digest,
+            source_record_digests: receipt.snapshot.source_record_digests.clone(),
+            pending_outcomes: receipt.snapshot.pending_outcomes,
+            censored_outcomes: receipt.snapshot.censored_outcomes,
+        };
+        mutate(&mut request);
+        let changed = freeze_dataset_receipt_v3(request, 50).unwrap();
+        // Digest integrity and active membership alone admit all these values.
+        owner.revalidate_dataset_snapshot(&changed, 50).unwrap();
+        assert!(
+            freeze_terminal_cell_from_owner_v1(&owner, &changed, profile(2), 50).is_err(),
+            "operator boundary must reject {label}"
+        );
+    }
+}
+
+#[test]
+fn terminal_owner_rejects_fit_after_authenticated_trust_rotation() {
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    let fixture = Fixture::new();
+    let mut owner = fixture.writer();
+    collect(&mut owner, "trust-read", "read", FixedQ32::ONE.raw());
+    collect(&mut owner, "trust-abstain", "abstain", 0);
+    let receipt = freeze(&owner, "dataset.trust");
+    let frozen = freeze_terminal_cell_from_owner_v1(&owner, &receipt, profile(1), 50).unwrap();
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: id("learning-root"),
+        scope_digest: digest("scope"),
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let generator_key = SigningKey::from_bytes(&[1; 32]).verifying_key().to_bytes();
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("trust-distribution.successor"),
+            generation: 2,
+            effective_at: 50,
+            trust: LearningEvidenceTrustV1 {
+                scope_digest: digest("scope"),
+                objective_digest: digest("objective"),
+                authority_epoch: 8,
+                signers: vec![TrustedLearningSignerV1 {
+                    principal: AuthenticatedPrincipalV1 {
+                        principal_id: id("generator"),
+                        credential_chain_digest: digest("generator-credential"),
+                        signing_key_digest: Digest32::of_bytes(&generator_key),
+                        scope_digest: digest("scope"),
+                        authority_epoch: 8,
+                        authenticated_at: 10,
+                        expires_at: 100,
+                    },
+                    controller_id: id("generator-controller"),
+                    verifying_key: generator_key,
+                    roles: vec![LearningEvidenceRoleV1::Generator],
+                    revoked_at: None,
+                }],
+            },
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 50,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    owner.rotate_trust(&root, signed, 50).unwrap();
+    owner.revalidate_dataset_snapshot(&receipt, 50).unwrap();
+    assert!(matches!(
+        fit_terminal_cell_from_owner_v1(&owner, frozen, 50),
+        Err(TerminalCellError::Unsupported(
+            "owner trust changed since freeze"
+        ))
+    ));
+}
+
+#[test]
+fn signed_terminal_owner_freeze_authenticates_the_exact_complete_dataset_request() {
+    let fixture = Fixture::new();
+    let mut owner = fixture.writer();
+    collect(&mut owner, "signed-read", "read", FixedQ32::ONE.raw());
+    collect(&mut owner, "signed-abstain", "abstain", 0);
+    let plan = DatasetFreezePlanV2 {
+        snapshot_id: id("dataset.signed"),
+        objective_digest: digest("objective"),
+        inclusion_policy_digest: digest("all-active-owner-episodes"),
+    };
+    let payload = dataset_freeze_signing_payload_v2(&owner.snapshot().unwrap(), &plan).unwrap();
+    let signed = sign(
+        owner.verifier(),
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &payload,
+    );
+    let frozen =
+        freeze_terminal_cell_from_signed_owner_v2(&owner, plan.clone(), &signed, profile(1), 50)
+            .unwrap();
+    assert_eq!(frozen.sample_count(), 2);
+    assert_eq!(frozen.dataset().snapshot.source_record_digests.len(), 4);
+    assert!(fit_terminal_cell_from_owner_v1(&owner, frozen, 50).is_ok());
+
+    let mut changed = plan.clone();
+    changed.inclusion_policy_digest = digest("unattested-inclusion-policy");
+    assert!(matches!(
+        freeze_terminal_cell_from_signed_owner_v2(&owner, changed, &signed, profile(2), 50),
+        Err(TerminalCellError::Ledger(ProductionLedgerError::Evidence(
+            SignedEvidenceError::PayloadMismatch
+        )))
+    ));
+    collect(&mut owner, "signed-later", "read", 0);
+    assert!(matches!(
+        freeze_terminal_cell_from_signed_owner_v2(&owner, plan, &signed, profile(2), 50),
+        Err(TerminalCellError::Ledger(ProductionLedgerError::Evidence(
+            SignedEvidenceError::PayloadMismatch
+        )))
+    ));
+}
+
+#[test]
 #[ignore = "explicit local-host history/concurrent training profile, not an SLO"]
 fn durable_owner_history_and_concurrent_training_profile() {
     use std::time::Instant;

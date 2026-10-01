@@ -4,6 +4,10 @@
 //! qualification code should first bind the exact training rows to a
 //! self-verifying `DatasetSnapshotReceiptV3`, then fit only the resulting
 //! opaque verified input.
+//!
+//! These APIs bind membership, not the semantic origin of caller-supplied
+//! targets or labels, and cannot check later corrections without a ledger owner.
+//! Use the owner-derived terminal Cell APIs for that narrower authenticated path.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -22,6 +26,8 @@ use crate::WorldModelError;
 use crate::WorldModelSampleV1;
 use crate::fit_tabular_operator_strict_v2;
 use crate::fit_transition_model;
+
+const MAX_WORLD_MODEL_SAMPLES: usize = 65_536;
 
 /// Opaque proof that a tabular plan names the exact frozen dataset and exact
 /// source-record evidence admitted by `learning.ledger`; every training row
@@ -70,6 +76,11 @@ pub fn verify_world_model_dataset_v2(
     receipt: &DatasetSnapshotReceiptV3,
     now: u64,
 ) -> Result<VerifiedWorldModelDatasetV2, OperatorDatasetBindingError> {
+    if samples.len() > MAX_WORLD_MODEL_SAMPLES {
+        return Err(OperatorDatasetBindingError::WorldModel(
+            WorldModelError::SampleLimit,
+        ));
+    }
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
     verify_evidence_membership(
         &receipt.snapshot.source_record_digests,
@@ -93,12 +104,19 @@ fn verify_evidence_membership(
     frozen_records: &[Digest32],
     actual: impl Iterator<Item = Digest32>,
 ) -> Result<(), OperatorDatasetBindingError> {
-    let frozen = frozen_records
-        .iter()
-        .copied()
-        .collect::<std::collections::BTreeSet<_>>();
-    let actual = actual.collect::<std::collections::BTreeSet<_>>();
-    if actual != frozen {
+    // The receipt has already admitted a sorted, duplicate-free source set.
+    // Set equality alone would erase repeated evidence and incorrectly mark
+    // relabelled duplicate rows as verified. Preserve row multiplicity and
+    // stop before allocating beyond the frozen set's bounded cardinality.
+    let mut rows = Vec::with_capacity(actual.size_hint().0.min(frozen_records.len()));
+    for digest in actual {
+        if rows.len() == frozen_records.len() {
+            return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
+        }
+        rows.push(digest);
+    }
+    rows.sort_unstable();
+    if rows != frozen_records {
         return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
     }
     Ok(())
