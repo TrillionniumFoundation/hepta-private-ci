@@ -52,6 +52,8 @@ pub use credentials::run_credential_worker;
 
 #[path = "local_model_executable.rs"]
 mod executable;
+#[path = "local_model_resources.rs"]
+mod resources;
 #[path = "local_model_authority_store.rs"]
 mod store;
 use executable::ExecutableCache;
@@ -361,6 +363,7 @@ struct ClientTrust {
 enum Exchange {
     Grant(ModelIssuerRequest),
     Trust(codex_hepta_contracts::ModelTrustRequest),
+    Resource(codex_hepta_fleet::FleetResourceObservationRequestV1),
 }
 
 impl Issuer {
@@ -534,6 +537,25 @@ impl Issuer {
         let mut bytes = vec![0_u8; length];
         stream.read_exact(&mut bytes).await?;
         let request: Exchange = serde_json::from_slice(&bytes)?;
+        if let Exchange::Resource(request) = request {
+            let response = resources::observe(self, request, &peer).await?;
+            anyhow::ensure!(
+                capture_peer(&self.config, &self.verifier, &self.executables, &stream).await?
+                    == peer,
+                "resource caller identity changed during observation"
+            );
+            let bytes = serde_json::to_vec(&response)?;
+            anyhow::ensure!(
+                bytes.len() <= MODEL_ISSUER_MAX_RESPONSE_BYTES,
+                "resource observation exceeds its bound"
+            );
+            stream
+                .write_all(&u32::try_from(bytes.len())?.to_be_bytes())
+                .await?;
+            stream.write_all(&bytes).await?;
+            stream.flush().await?;
+            return Ok(());
+        }
         if let Exchange::Trust(request) = request {
             let response = self.client_trust(request, &peer)?;
             anyhow::ensure!(

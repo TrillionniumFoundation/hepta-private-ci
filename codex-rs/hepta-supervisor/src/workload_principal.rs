@@ -68,6 +68,8 @@ pub(crate) struct HostPrincipalPolicy {
     pub cgroup_root: String,
     #[serde(default)]
     pub agent_workload_uids: Option<AgentWorkloadUids>,
+    #[serde(default)]
+    pub resource_authority_frontier: Option<std::path::PathBuf>,
 }
 
 #[cfg(any(test, feature = "local-model-authority"))]
