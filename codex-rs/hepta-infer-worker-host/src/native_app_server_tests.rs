@@ -397,26 +397,6 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
-}
-
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
@@ -459,9 +439,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let authority_directory = tempfile::tempdir()?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
-        3,
+        5,
     )
     .await?;
+    let authorizer: Arc<dyn TurnStartAuthorizer> = Arc::new(authorizer);
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: host.control_socket().to_path_buf(),
         agent_id: host.agent_id().clone(),
@@ -469,7 +450,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         model: MODEL.to_string(),
         timeout: Duration::from_secs(20),
     })?
-    .with_turn_start_authorizer(Arc::new(authorizer));
+    .with_turn_start_authorizer(Arc::clone(&authorizer));
     let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
@@ -625,6 +606,171 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             .as_deref()
             .is_some_and(|reason| reason.contains("cognitive final-use revalidation failed"))
     );
+    // The owner check precedes this hook. Let the original execution deadline
+    // expire while final cognitive revalidation is pending, after the dispatch
+    // journal write and before any physical turn/start.
+    host.seed_verified_memory(
+        "worker-final-use-deadline",
+        "verified grapefruit deadline marker",
+    )
+    .await?;
+    let deadline_driver = AppServerModelDriver::new(NativeWorkerConfig {
+        agentd_socket: host.control_socket().to_path_buf(),
+        agent_id: host.agent_id().clone(),
+        generation: 1,
+        model: MODEL.to_string(),
+        timeout: Duration::from_secs(3),
+    })?
+    .with_turn_start_authorizer(Arc::clone(&authorizer));
+    let deadline_hook = Arc::new(FinalRevalidationTestHook {
+        reached: tokio::sync::Notify::new(),
+        release: tokio::sync::Notify::new(),
+    });
+    install_final_revalidation_test_hook(Arc::clone(&deadline_hook));
+    let deadline_cancellation = CancellationToken::new();
+    let deadline_worker = deadline_driver.run(
+        &mut durable,
+        NativeAdmission {
+            request_id: "cognitive-final-use-deadline".to_string(),
+            maximum_in_flight: 1,
+        },
+        "answer before the deadline".to_string(),
+        Some("grapefruit".to_string()),
+        &deadline_cancellation,
+    );
+    let delayed_revalidation = async {
+        deadline_hook.reached.notified().await;
+        tokio::time::sleep(Duration::from_millis(3300)).await;
+        deadline_hook.release.notify_one();
+    };
+    let (deadline_result, ()) = tokio::time::timeout(Duration::from_secs(15), async {
+        tokio::join!(deadline_worker, delayed_revalidation)
+    })
+    .await?;
+    assert!(deadline_result.is_err());
+    let deadline_stopped = durable
+        .native_record("cognitive-final-use-deadline")
+        .cloned()
+        .ok_or("missing pre-effect deadline record")?;
+    assert_eq!(deadline_stopped.state, NativeReservationState::Released);
+    assert!(deadline_stopped.dispatch.is_some());
+    assert_eq!(deadline_stopped.turn_id, None);
+    assert_eq!(deadline_stopped.observation, None);
+    assert!(
+        deadline_stopped
+            .pre_dispatch_stop
+            .as_deref()
+            .is_some_and(|reason| { reason.contains("deadline elapsed before effect entry") })
+    );
+
+    // An authoritative owner cancellation is independent of the local token.
+    // Issue it while final cognitive revalidation is suspended after the
+    // intelligence run has reached Dispatched; physical turn/start must stop.
+    host.seed_verified_memory(
+        "worker-owner-cancel",
+        "verified papaya owner cancellation marker",
+    )
+    .await?;
+    let owner = AgentdClient::new(
+        host.control_socket().to_path_buf(),
+        host.agent_id().clone(),
+        1,
+    )?;
+    let owner_deadline = unix_time_ms()? + 60_000;
+    let mut owner_fence_material = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    owner_fence_material.extend_from_slice(host.agent_id().as_str().as_bytes());
+    owner_fence_material.extend_from_slice(&1_u64.to_be_bytes());
+    owner_fence_material.extend_from_slice(&1_u64.to_be_bytes());
+    let owner_fence_digest = Digest32::of_bytes(&owner_fence_material).to_string();
+    let owner_snapshot = codex_hepta_agentd::AgentRunSnapshot {
+        run_id: "worker-owner-cancel".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 1,
+        generation: 1,
+        fence_digest: owner_fence_digest.clone(),
+        deadline_ms: owner_deadline,
+    };
+    let admitted = owner.run_start(owner_snapshot).await?;
+    let attached = owner
+        .run_attach_context(
+            admitted.revision,
+            codex_hepta_agentd::AgentContextAttachment {
+                run_id: "worker-owner-cancel".to_string(),
+                request_digest: "1".repeat(64),
+                objective_digest: "2".repeat(64),
+                body_digest: "3".repeat(64),
+                artifact_set_digest: "4".repeat(64),
+                authority_epoch: 1,
+                generation: 1,
+                fence_digest: owner_fence_digest,
+                deadline_ms: owner_deadline,
+                context_digest: "6".repeat(64),
+                compilation_receipt_digest: "7".repeat(64),
+            },
+        )
+        .await?;
+    let owner_cancel_hook = Arc::new(FinalRevalidationTestHook {
+        reached: tokio::sync::Notify::new(),
+        release: tokio::sync::Notify::new(),
+    });
+    install_final_revalidation_test_hook(Arc::clone(&owner_cancel_hook));
+    let local_token = CancellationToken::new();
+    let owner_cancel_worker = driver.run_intelligence(
+        &mut durable,
+        NativeAdmission {
+            request_id: "worker-owner-cancel".to_string(),
+            maximum_in_flight: 1,
+        },
+        "answer until the owner cancels".to_string(),
+        Some("papaya".to_string()),
+        NativeIntelligenceRunBinding {
+            run_id: "worker-owner-cancel".to_string(),
+            expected_revision: attached.revision,
+            context_digest: "6".repeat(64),
+            envelope_digest: "7".repeat(64),
+        },
+        &local_token,
+    );
+    let cancel_at_owner = async {
+        owner_cancel_hook.reached.notified().await;
+        let run = owner
+            .run_status("worker-owner-cancel".to_string())
+            .await?
+            .ok_or("missing dispatched owner cancellation run")?;
+        assert_eq!(run.phase, AgentRunPhase::Dispatched);
+        let cancelled = owner
+            .run_cancel(
+                run.run_id,
+                run.revision,
+                "operator cancellation".to_string(),
+            )
+            .await;
+        owner_cancel_hook.release.notify_one();
+        Ok::<_, Box<dyn std::error::Error + Send + Sync>>(cancelled?)
+    };
+    let (cancelled_result, owner_cancellation) =
+        tokio::time::timeout(Duration::from_secs(15), async {
+            tokio::join!(owner_cancel_worker, cancel_at_owner)
+        })
+        .await?;
+    owner_cancellation?;
+    assert!(!local_token.is_cancelled());
+    assert!(cancelled_result.is_err());
+    let owner_cancel_stopped = durable
+        .native_record("worker-owner-cancel")
+        .cloned()
+        .ok_or("missing durable owner-cancelled pre-effect record")?;
+    assert_eq!(owner_cancel_stopped.state, NativeReservationState::Released);
+    assert_eq!(owner_cancel_stopped.turn_id, None);
+    assert_eq!(owner_cancel_stopped.observation, None);
+    assert_eq!(
+        owner_cancel_stopped.pre_dispatch_stop.as_deref(),
+        Some(LOCAL_CANCELLED)
+    );
+
     let physical_provider_requests = server.received_requests().await.unwrap_or_default();
     assert_eq!(
         physical_provider_requests
@@ -645,6 +791,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     assert_eq!(
         reopened.native_record(CORRECTION_REQUEST_ID),
         Some(&correction_stopped)
+    );
+    assert_eq!(
+        reopened.native_record("cognitive-final-use-deadline"),
+        Some(&deadline_stopped)
+    );
+    assert_eq!(
+        reopened.native_record("worker-owner-cancel"),
+        Some(&owner_cancel_stopped)
     );
     drop(reopened);
     let _ = std::fs::remove_file(&journal);

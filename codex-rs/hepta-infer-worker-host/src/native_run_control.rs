@@ -125,7 +125,10 @@ impl AppServerModelDriver {
             {
                 return Ok(output.clone());
             }
-            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
+            if let Some(reconciled) = self
+                .reconcile_existing(&record, &prompt, intelligence)
+                .await?
+            {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
                 return settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()

@@ -15,6 +15,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[path = "model_worker_validation.rs"]
+mod validation;
+
+use validation::validate_digest;
+use validation::validate_grant;
+use validation::validate_identity;
+use validation::validate_manifest;
+use validation::validate_request;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -126,6 +135,7 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    ModelUnavailable,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -147,6 +157,12 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Physical model execution and cleanup owned by the local runtime driver.
+///
+/// A failed load must release acquired resources when no handle is returned.
+/// `unload` must drain outstanding work and return `Ok` only after the handle's
+/// resources are confirmed released. Failed unloads may be retried with the
+/// same handle; the worker keeps uncertain models fenced until that succeeds.
 pub trait ModelDriver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
@@ -162,6 +178,7 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    cleanup_pending: bool,
 }
 
 #[derive(Debug)]
@@ -215,11 +232,35 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        let resident_memory_bytes = self.resident_memory_bytes()?;
+        if resident_memory_bytes >= self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
+        }
+        let handle = self.driver.load(&manifest)?;
+        let handle_validation =
+            validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
+                let memory_bytes = resident_memory_bytes
+                    .checked_add(handle.observed_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                if memory_bytes > self.grant.maximum_memory_bytes {
+                    return Err(Error::ModelCapacity);
+                }
+                Ok(())
+            });
+        if let Err(error) = handle_validation {
+            if let Err(cleanup_error) = self.driver.unload(handle.clone()) {
+                self.models.insert(
+                    manifest.model_id.clone(),
+                    LoadedModel {
+                        manifest,
+                        handle,
+                        active_requests: 0,
+                        cleanup_pending: true,
+                    },
+                );
+                return Err(cleanup_error);
+            }
+            return Err(error);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -234,6 +275,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                cleanup_pending: false,
             },
         );
         Ok(observation)
@@ -255,7 +297,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let resident_memory_bytes = self.resident_memory_bytes()?;
+        if resident_memory_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.cleanup_pending {
+            return Err(Error::ModelUnavailable);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -290,16 +339,32 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
+        loaded.cleanup_pending = true;
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                loaded.cleanup_pending = true;
+                return Err(error);
+            }
+        };
+        let other_memory_bytes = resident_memory_bytes - loaded.handle.observed_memory_bytes;
+        loaded.handle.observed_memory_bytes = loaded
+            .handle
+            .observed_memory_bytes
+            .max(observed.observed_memory_bytes);
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if other_memory_bytes
+            .checked_add(loaded.handle.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)?
+            > self.grant.maximum_memory_bytes
+        {
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
@@ -317,6 +382,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
+        loaded.cleanup_pending = !terminal_observed;
         Ok(InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,
@@ -336,14 +402,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        match self.validate_current_grant(now_ms) {
+            Ok(()) | Err(Error::GrantExpired | Error::GrantRevoked) => {}
+            Err(error) => return Err(error),
+        }
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
-        if loaded.active_requests != 0 {
+        if loaded.active_requests != 0 && !loaded.cleanup_pending {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.cleanup_pending = true;
+        self.driver.unload(loaded.handle.clone())?;
+        self.active_requests
+            .retain(|_, active_model_id| active_model_id != model_id);
+        self.models.remove(model_id);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -354,89 +427,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
         validate_grant(now_ms, &self.grant)
     }
-}
 
-fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
-    validate_identity(&value.model_id, "model")?;
-    for (digest, field) in [
-        (&value.model_digest, "model"),
-        (&value.weights_digest, "weights"),
-        (&value.tokenizer_digest, "tokenizer"),
-        (&value.preprocessor_digest, "preprocessor"),
-        (&value.quantization_digest, "quantization"),
-        (&value.runtime_digest, "runtime"),
-        (&value.device_digest, "device"),
-    ] {
-        validate_digest(digest, field)?;
+    fn resident_memory_bytes(&self) -> Result<u64, Error> {
+        self.models.values().try_fold(0_u64, |total, loaded| {
+            if loaded.cleanup_pending {
+                return Err(Error::ModelUnavailable);
+            }
+            total
+                .checked_add(loaded.handle.observed_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })
     }
-    if value.maximum_tokens == 0 || value.maximum_tokens > MAX_TOKENS {
-        return Err(Error::InvalidManifest);
-    }
-    Ok(())
-}
-
-fn validate_grant(now_ms: u64, value: &ResourceGrant) -> Result<(), Error> {
-    validate_identity(&value.grant_id, "grant")?;
-    validate_digest(&value.semantic_digest, "grant semantic")?;
-    if value.revoked {
-        return Err(Error::GrantRevoked);
-    }
-    if value.authority_epoch == 0
-        || value.generation == 0
-        || value.maximum_models == 0
-        || value.maximum_active_requests == 0
-        || value.maximum_memory_bytes == 0
-    {
-        return Err(Error::InvalidGrant);
-    }
-    if now_ms >= value.expires_at_ms {
-        return Err(Error::GrantExpired);
-    }
-    Ok(())
-}
-
-fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
-    validate_identity(&value.request_id, "request")?;
-    validate_identity(&value.reservation_id, "reservation")?;
-    validate_digest(&value.model_digest, "model")?;
-    validate_digest(&value.payload_digest, "payload")?;
-    validate_digest(&value.lease_payload_digest, "lease payload")?;
-    validate_digest(&value.reservation_model_digest, "reservation model")?;
-    if value.maximum_tokens == 0
-        || value.maximum_tokens > MAX_TOKENS
-        || value.reservation_maximum_tokens == 0
-        || value.reservation_maximum_tokens > MAX_TOKENS
-    {
-        return Err(Error::TokenLimit);
-    }
-    if now_ms >= value.deadline_ms {
-        return Err(Error::DeadlineExpired);
-    }
-    Ok(())
-}
-
-fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
-    if value.is_empty()
-        || value.len() > 128
-        || !value
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
-    {
-        return Err(Error::InvalidIdentity(field));
-    }
-    Ok(())
-}
-
-fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
-    if value.len() != 64
-        || value.bytes().all(|byte| byte == b'0')
-        || !value
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
-    {
-        return Err(Error::InvalidDigest(field));
-    }
-    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -515,12 +516,25 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let resident_memory_bytes = self.resident_memory_bytes()?;
+        if resident_memory_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.cleanup_pending {
+            return Err(Error::ModelUnavailable);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
         {
             return Err(Error::ModelMismatch);
+        }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
         }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
@@ -556,13 +570,37 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
+        loaded.cleanup_pending = true;
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        let mut observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                loaded.cleanup_pending = true;
+                return Err(error);
+            }
+        };
+        let other_memory_bytes = resident_memory_bytes - loaded.handle.observed_memory_bytes;
+        loaded.handle.observed_memory_bytes = loaded
+            .handle
+            .observed_memory_bytes
+            .max(observed.observed_memory_bytes);
+        if other_memory_bytes
+            .checked_add(loaded.handle.observed_memory_bytes)
+            .and_then(|total| total.checked_add(observed.transient_allocation_bytes))
+            .ok_or(Error::ArithmeticOverflow)?
+            > self.grant.maximum_memory_bytes
+        {
             return Err(Error::ModelCapacity);
+        }
+        validate_digest(&observed.encoder_digest, "encoder")?;
+        validate_digest(&observed.head_digest, "head")?;
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            return Err(Error::FeatureOutputMismatch);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
@@ -572,6 +610,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        if status != ExecutionStatus::Succeeded {
+            observed.drive_q24.clear();
+            observed.prediction_q24.clear();
+        }
+        loaded.cleanup_pending = !observed.terminal_observed;
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
@@ -695,9 +738,7 @@ fn validate_neuron_feature_output(
     request: &NeuronFeatureRequest,
     value: &DriverNeuronFeatureObservation,
 ) -> Result<(), Error> {
-    if value.encoder_digest != request.encoder_digest
-        || value.head_digest != request.head_digest
-        || value.drive_q24.len() != request.expected_output_width
+    if value.drive_q24.len() != request.expected_output_width
         || value.prediction_q24.len() != request.expected_output_width
         || value
             .drive_q24
@@ -707,8 +748,6 @@ fn validate_neuron_feature_output(
     {
         return Err(Error::FeatureOutputMismatch);
     }
-    validate_digest(&value.encoder_digest, "encoder")?;
-    validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
 

@@ -213,6 +213,27 @@ fn connected_issuer_peer_uid_must_match_configured_owner() {
     assert!(validate_issuer_peer_uid(other, owner).is_err());
 }
 
+#[test]
+fn fifo_config_without_writer_is_rejected_without_blocking() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let fifo = directory.path().join("authority-config.fifo");
+    let status = std::process::Command::new("mkfifo").arg(&fifo).status()?;
+    if !status.success() {
+        return Err("could not create FIFO configuration fixture".into());
+    }
+    let (sender, receiver) = std::sync::mpsc::channel();
+    let reader = std::thread::spawn(move || {
+        let _ = sender.send(read_private_config(&fifo).is_err());
+    });
+    if !receiver.recv_timeout(Duration::from_secs(1))? {
+        return Err("FIFO configuration was accepted".into());
+    }
+    reader
+        .join()
+        .map_err(|_| "FIFO configuration reader panicked")?;
+    Ok(())
+}
+
 /// Bounded test issuer over the production Unix protocol. Only this separate
 /// test task holds the signing key; the worker receives the verifier-only port.
 pub(crate) async fn independent_test_authorizer(

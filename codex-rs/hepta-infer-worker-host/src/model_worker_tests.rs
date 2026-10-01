@@ -6,14 +6,27 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     loaded: usize,
+    runs: usize,
+    unloads: usize,
+    failed_unloads: usize,
+    invalid_handle: bool,
+    fail_run: bool,
+    panic_run: bool,
+    load_memory_bytes: Option<u64>,
+    run_memory_bytes: Option<u64>,
+    transient_allocation_bytes: Option<u64>,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+            opaque_id: if self.invalid_handle {
+                "invalid/handle".to_string()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
+            observed_memory_bytes: self.load_memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -22,6 +35,11 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        self.runs += 1;
+        assert!(!self.panic_run, "driver invocation panicked");
+        if self.fail_run {
+            return Err(Error::DriverFailure("transport lost".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
@@ -36,11 +54,16 @@ impl ModelDriver for Driver {
             succeeded: !self.fail_terminal,
             output_digest: Some("9".repeat(64)),
             consumed_tokens: 16,
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.run_memory_bytes.unwrap_or(1_024),
         })
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        self.unloads += 1;
+        if self.failed_unloads > 0 {
+            self.failed_unloads -= 1;
+            return Err(Error::DriverFailure("cleanup uncertain".to_string()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -52,14 +75,24 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.runs += 1;
+        assert!(!self.panic_run, "driver invocation panicked");
+        if self.fail_run {
+            return Err(Error::DriverFailure("transport lost".to_string()));
+        }
+        let head_digest = if self.corrupt_neuron_head {
+            "f".repeat(64)
+        } else {
+            request.head_digest.clone()
+        };
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
                 succeeded: false,
                 encoder_digest: request.encoder_digest.clone(),
-                head_digest: request.head_digest.clone(),
-                drive_q24: Vec::new(),
-                prediction_q24: Vec::new(),
+                head_digest,
+                drive_q24: vec![1 << 24; request.expected_output_width],
+                prediction_q24: vec![0; request.expected_output_width],
                 observed_memory_bytes: 1_024,
                 transient_allocation_bytes: 2_048,
                 queue_age_micros: 11,
@@ -70,15 +103,11 @@ impl NeuronFeatureDriver for Driver {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
             encoder_digest: request.encoder_digest.clone(),
-            head_digest: if self.corrupt_neuron_head {
-                "f".repeat(64)
-            } else {
-                request.head_digest.clone()
-            },
+            head_digest,
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
-            observed_memory_bytes: 1_024,
-            transient_allocation_bytes: 2_048,
+            observed_memory_bytes: self.run_memory_bytes.unwrap_or(1_024),
+            transient_allocation_bytes: self.transient_allocation_bytes.unwrap_or(2_048),
             queue_age_micros: 11,
             latency_micros: 17,
         })
@@ -270,4 +299,325 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn aggregate_model_memory_denies_load_and_releases_only_new_handle() {
+    let mut budget = grant();
+    budget.maximum_memory_bytes = 1_500;
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, budget, Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("first load");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    assert_eq!(worker.load_model(100, second), Err(Error::ModelCapacity));
+    assert_eq!(
+        (
+            worker.driver.loaded,
+            worker.driver.unloads,
+            worker.models.len()
+        ),
+        (1, 1, 1)
+    );
+    worker
+        .run(100, "model.1", request())
+        .expect("original model");
+}
+
+#[test]
+fn invalid_loaded_handle_is_released_and_failed_cleanup_can_retry_after_expiry() {
+    for failed_unloads in [0, 1] {
+        let driver = Driver {
+            invalid_handle: true,
+            failed_unloads,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+        assert!(worker.load_model(100, manifest()).is_err());
+        if failed_unloads == 0 {
+            assert_eq!(
+                (
+                    worker.driver.loaded,
+                    worker.driver.unloads,
+                    worker.models.len()
+                ),
+                (0, 1, 0)
+            );
+        } else {
+            assert_eq!(
+                worker.run(100, "model.1", request()),
+                Err(Error::ModelUnavailable)
+            );
+            assert_eq!(worker.driver.loaded, 1);
+            worker
+                .unload_model(10_000, "model.1")
+                .expect("expired grant cleanup");
+            assert_eq!(
+                (
+                    worker.driver.loaded,
+                    worker.driver.unloads,
+                    worker.models.len()
+                ),
+                (0, 2, 0)
+            );
+        }
+    }
+}
+
+#[test]
+fn failed_unload_retains_handle_and_fences_execution_until_confirmed_cleanup() {
+    let driver = Driver {
+        failed_unloads: 1,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert!(worker.unload_model(100, "model.1").is_err());
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelUnavailable)
+    );
+    assert_eq!((worker.driver.loaded, worker.driver.runs), (1, 0));
+    worker.unload_model(100, "model.1").expect("cleanup retry");
+    worker.load_model(100, manifest()).expect("reload");
+    worker
+        .run(100, "model.1", request())
+        .expect("run after cleanup");
+}
+
+#[test]
+fn driver_uncertainty_fences_all_models_and_new_loads_until_cleanup() {
+    for fail_run in [false, true] {
+        let driver = Driver {
+            fail_run,
+            indeterminate: !fail_run,
+            ..Driver::default()
+        };
+        let mut budget = grant();
+        budget.maximum_models = 3;
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, budget, driver).expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let mut second = manifest();
+        second.model_id = "model.2".to_string();
+        worker.load_model(100, second).expect("second load");
+        let observed = worker.run(100, "model.1", request());
+        if fail_run {
+            assert!(observed.is_err());
+        } else {
+            assert_eq!(
+                observed.expect("observed result").status,
+                ExecutionStatus::Indeterminate
+            );
+        }
+        assert_eq!(
+            worker.run(100, "model.2", request()),
+            Err(Error::ModelUnavailable)
+        );
+        let mut third = manifest();
+        third.model_id = "model.3".to_string();
+        assert_eq!(worker.load_model(100, third), Err(Error::ModelUnavailable));
+        assert_eq!((worker.driver.loaded, worker.driver.runs), (2, 1));
+        worker
+            .unload_model(100, "model.1")
+            .expect("drained cleanup");
+        worker.driver.fail_run = false;
+        worker.driver.indeterminate = false;
+        worker
+            .run(100, "model.2", request())
+            .expect("unfenced worker");
+    }
+}
+
+#[test]
+fn run_memory_growth_includes_other_models_and_fences_invalid_observation() {
+    let mut budget = grant();
+    budget.maximum_memory_bytes = 2_200;
+    let driver = Driver {
+        run_memory_bytes: Some(1_536),
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, budget, driver).expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.load_model(100, second).expect("second load");
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(
+        worker.run(100, "model.2", request()),
+        Err(Error::ModelUnavailable)
+    );
+    worker
+        .unload_model(100, "model.1")
+        .expect("release over-budget model");
+    worker
+        .run(100, "model.2", request())
+        .expect("remaining model");
+}
+
+#[test]
+fn neuron_feature_token_ceilings_are_checked_before_driver_invocation() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    for (maximum_tokens, reservation_maximum_tokens) in [(129, 129), (64, 63)] {
+        let mut value = neuron_feature_request();
+        value.authorization.maximum_tokens = maximum_tokens;
+        value.authorization.reservation_maximum_tokens = reservation_maximum_tokens;
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", value),
+            Err(Error::TokenLimit)
+        );
+    }
+    assert_eq!(worker.driver.runs, 0);
+}
+
+#[test]
+fn neuron_feature_peak_memory_counts_transient_bytes_with_checked_arithmetic() {
+    for transient_allocation_bytes in [3_073, u64::MAX] {
+        let driver = Driver {
+            transient_allocation_bytes: Some(transient_allocation_bytes),
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let expected = if transient_allocation_bytes == u64::MAX {
+            Error::ArithmeticOverflow
+        } else {
+            Error::ModelCapacity
+        };
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(expected)
+        );
+        assert_eq!(
+            worker.run(100, "model.1", request()),
+            Err(Error::ModelUnavailable)
+        );
+        worker
+            .unload_model(100, "model.1")
+            .expect("release fenced model");
+    }
+}
+
+#[test]
+fn neuron_feature_nonsuccess_drops_outputs_and_preserves_typed_receipt_status() {
+    for indeterminate in [false, true] {
+        let driver = Driver {
+            fail_terminal: !indeterminate,
+            indeterminate,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let receipt = worker
+            .run_neuron_features_receipt(100, "model.1", neuron_feature_request())
+            .expect("nonsuccess receipt");
+        assert_eq!(
+            (receipt.drive_q24, receipt.prediction_q24, receipt.status),
+            (
+                Vec::<i64>::new(),
+                Vec::<i64>::new(),
+                if indeterminate {
+                    NeuronFeatureTerminalStatusV1::Indeterminate
+                } else {
+                    NeuronFeatureTerminalStatusV1::Failed
+                },
+            )
+        );
+        if indeterminate {
+            assert_eq!(
+                worker.run(100, "model.1", request()),
+                Err(Error::ModelUnavailable)
+            );
+        }
+    }
+}
+
+#[test]
+fn neuron_feature_identity_drift_is_fenced_even_when_driver_did_not_succeed() {
+    for indeterminate in [false, true] {
+        let driver = Driver {
+            corrupt_neuron_head: true,
+            fail_terminal: !indeterminate,
+            indeterminate,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(
+            worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()),
+            Err(Error::FeatureOutputMismatch)
+        );
+        assert_eq!(
+            worker.run(100, "model.1", request()),
+            Err(Error::ModelUnavailable)
+        );
+        worker
+            .unload_model(100, "model.1")
+            .expect("release drifted model");
+    }
+}
+
+#[test]
+fn caught_driver_panic_keeps_worker_fenced_until_confirmed_drain() {
+    for feature_path in [false, true] {
+        let driver = Driver {
+            panic_run: true,
+            failed_unloads: 1,
+            ..Driver::default()
+        };
+        let mut budget = grant();
+        budget.maximum_active_requests = 1;
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, budget, driver).expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            if feature_path {
+                worker
+                    .run_neuron_features(100, "model.1", neuron_feature_request())
+                    .map(|_| ())
+            } else {
+                worker.run(100, "model.1", request()).map(|_| ())
+            }
+        }));
+        assert!(panicked.is_err());
+        assert!(worker.run(100, "model.1", request()).is_err());
+        assert!(worker.unload_model(100, "model.1").is_err());
+        assert_eq!(
+            (
+                worker.driver.loaded,
+                worker.models.len(),
+                worker.active_requests.len()
+            ),
+            (1, 1, 1)
+        );
+        worker
+            .unload_model(100, "model.1")
+            .expect("confirmed drain");
+        assert_eq!(
+            (
+                worker.driver.loaded,
+                worker.models.len(),
+                worker.active_requests.len()
+            ),
+            (0, 0, 0)
+        );
+        worker.driver.panic_run = false;
+        worker.load_model(100, manifest()).expect("reload");
+        worker
+            .run(100, "model.1", request())
+            .expect("recovered request capacity");
+    }
 }
