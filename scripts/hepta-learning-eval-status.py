@@ -54,7 +54,7 @@ REQUIRED_SYMBOLS = {
     "LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint",
     "AnchoredProductEvaluationAttemptJournalV1::recover_with_checkpoint",
     "RecordedProductEvaluationRunnerV1::reconcile_pending_page",
-    "Archive::persist",
+    "PreparedArchive::persist",
     "qualification_archive::recover",
     "RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host",
     "RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist_on_selected_host",

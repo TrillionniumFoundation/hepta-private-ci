@@ -130,6 +130,8 @@ ESS 数值认证不是无限精度有理数 ESS 求解器。`S=2^32`，单步使
 
 本节修复已拆成可审查的连续提交，格式化与行为修改分开。详细开发文档已同步迁移及边界；需要最终 source observation、执行记录和可信 control-plane bootstrap/restack 来完成后续资格。独立 scoped 复审没有发现本节范围内未处理的可复现模块缺陷，但这不代表没有未知缺陷。
 
+最终远端 head 的首次规范离线检查中，13 项通过，source-status 实际发现归档写入的旧映射仍为 `qualification_archive.rs::Archive::persist`。实现已经迁移至 `prepared_qualification_archive.rs::PreparedArchive::persist`；本轮同步修正实现映射和必需符号清单，并重新绑定最终候选执行记录。该失败没有被记作通过，也没有放宽源码检查。
+
 ## 7. 有代表性的对抗回归
 
 具体源码和 tests 由 [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) 与 [NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md) 映射；最终 map-only 提交将 source observation 固定到其不可变源码父提交及 tree。代表性回归包括：
