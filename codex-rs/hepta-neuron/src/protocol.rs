@@ -449,18 +449,34 @@ pub fn decode_neuron_runtime_config_v1(
     Ok(value)
 }
 
+/// Publish a summary only after verifying the native config and committed predecessor.
+/// The host authenticates the frozen encoder/model tuple in `config`; native journal
+/// identity alone does not authenticate model artifacts that the kernel does not own.
 pub fn canonical_checkpoint_v1(
     config: &NeuronRuntimeConfigV1,
+    native: &crate::SparseConfig,
     checkpoint: &SparseCheckpoint,
     tick: &NeuronTickReceiptV1,
     expires_unix_ms: u64,
 ) -> Result<NeuronCheckpointV1, NeuronProtocolError> {
+    config
+        .validate_native(native)
+        .map_err(|_| NeuronProtocolError::BindingMismatch("runtime config"))?;
+    if !checkpoint.matches_config_digest(config.native_config_digest) {
+        return Err(NeuronProtocolError::BindingMismatch("runtime config"));
+    }
+    if tick.checkpoint_before != checkpoint.predecessor_digest() {
+        return Err(NeuronProtocolError::BindingMismatch("predecessor"));
+    }
     if tick.checkpoint_after != checkpoint.digest()
         || tick.activation_digest != checkpoint.activation_digest()
         || tick.threshold_digest != checkpoint.threshold_digest()
         || tick.eligibility_digest != checkpoint.eligibility_digest()
     {
         return Err(NeuronProtocolError::BindingMismatch("checkpoint summaries"));
+    }
+    if tick.resource_receipt.saturation_count != checkpoint.projection_count() {
+        return Err(NeuronProtocolError::BindingMismatch("saturation count"));
     }
     let active_indices = committed_active_indices(checkpoint)?;
     let active_count = u64::try_from(active_indices.len())
@@ -754,7 +770,6 @@ fn validate_runtime_config(
         || value.threshold_minimum_q24 < -Q24_LIMIT
         || value.threshold_maximum_q24 > Q24_LIMIT
         || value.threshold_minimum_q24 > value.threshold_maximum_q24
-        || value.saturation_limit == 0
         || value.eligibility_trace_dimension == 0
         || value.eligibility_trace_dimension > 512
         || value.eligibility_maximum_norm_q24 <= 0

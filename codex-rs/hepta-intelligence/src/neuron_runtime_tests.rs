@@ -32,9 +32,39 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 }
 
 #[derive(Clone, Default)]
-struct Witness(Arc<Mutex<Option<JournalAnchor>>>);
+struct Witness(
+    Arc<Mutex<Option<JournalAnchor>>>,
+    Option<Digest32>,
+    Option<(JournalScope, Generation)>,
+);
+
+impl Witness {
+    fn for_config(config: &NeuronRuntimeConfigV1) -> Self {
+        Self(
+            Arc::default(),
+            Some(checked(config.semantic_digest())),
+            Some((scope(), config.generation)),
+        )
+    }
+}
 
 impl AnchorWitnessStore for Witness {
+    fn verify_context(
+        &self,
+        scope: JournalScope,
+        generation: Generation,
+    ) -> Result<(), WitnessStoreError> {
+        match self.2 {
+            Some(context) if context == (scope, generation) => Ok(()),
+            Some(_) => Err(WitnessStoreError::ContextMismatch),
+            None => Err(WitnessStoreError::UnboundRuntimeConfig),
+        }
+    }
+
+    fn runtime_config_digest(&self) -> Result<Digest32, WitnessStoreError> {
+        self.1.ok_or(WitnessStoreError::UnboundRuntimeConfig)
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         self.0
             .lock()
@@ -207,13 +237,15 @@ fn named_product_caller_runs_through_runtime_without_extra_authority() {
             .open(root.path().join("journal")),
     );
     let native = native();
+    let config = config(&native);
+    let witness = Witness::for_config(&config);
     let mut runtime = checked(NeuronRuntime::bootstrap(
         file,
         native.clone(),
         scope(),
         /*max_records*/ 8,
-        config(&native),
-        Witness::default(),
+        config,
+        witness,
     ));
     let output = checked(run_neuron_tick_v1(&mut runtime, &mut Model, tick()));
     assert_eq!(output.tick.sparsity_ppm, 200_000);

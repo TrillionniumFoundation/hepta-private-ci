@@ -13,6 +13,25 @@ use crate::sparse_tick;
 
 const Q: i64 = 1 << 24;
 
+#[test]
+fn zero_projection_budget_roundtrips_in_canonical_config() {
+    let native = native_config();
+    let mut config = runtime_config(&native);
+    config.calibration.maximum_projection_count = 0;
+    let canonical = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2026-10-02T00:00:00Z",
+    ));
+    assert_eq!(canonical.saturation_limit, 0);
+    assert_eq!(
+        checked(decode_neuron_runtime_config_v1(&checked(
+            encode_neuron_runtime_config_v1(&canonical),
+        ))),
+        canonical
+    );
+}
+
 fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
@@ -175,6 +194,7 @@ fn checkpoint_is_derived_from_committed_state_and_roundtrips() {
     let (config, checkpoint, tick) = committed();
     let value = checked(canonical_checkpoint_v1(
         &config,
+        &native_config(),
         &checkpoint,
         &tick,
         1_900_000_000_000,
@@ -207,7 +227,14 @@ fn checkpoint_publication_rejects_forged_owner_summary() {
     let (config, checkpoint, mut tick) = committed();
     tick.eligibility_digest = Digest32::of_bytes(b"forged");
     assert_eq!(
-        canonical_checkpoint_v1(&config, &checkpoint, &tick, 1_900_000_000_000).err(),
+        canonical_checkpoint_v1(
+            &config,
+            &native_config(),
+            &checkpoint,
+            &tick,
+            1_900_000_000_000
+        )
+        .err(),
         Some(NeuronProtocolError::BindingMismatch("checkpoint summaries"))
     );
 }
@@ -306,5 +333,85 @@ fn canonical_runtime_config_roundtrip_rejects_unknown_fields() {
     assert_eq!(
         decode_neuron_runtime_config_v1(&changed).err(),
         Some(NeuronProtocolError::Json)
+    );
+}
+
+#[test]
+fn checkpoint_publication_rejects_wrong_configuration_and_predecessor() {
+    let (mut config, checkpoint, tick) = committed();
+    config.native_config_digest = Digest32::of_bytes(b"unrelated native config");
+    assert_eq!(
+        canonical_checkpoint_v1(
+            &config,
+            &native_config(),
+            &checkpoint,
+            &tick,
+            1_900_000_000_000
+        ),
+        Err(NeuronProtocolError::BindingMismatch("runtime config"))
+    );
+
+    let (config, first, _) = committed();
+    let native = native_config();
+    let input = SparseTick {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+        ndu_digest: Digest32::of_bytes(b"ndu"),
+        body_digest: Digest32::of_bytes(b"body"),
+        input_digest: Digest32::of_bytes(b"input second"),
+        sequence: 2,
+        monotonic_micros: 20,
+        drive_q24: vec![Q, Q / 2, 0, 0, 0],
+        prediction_q24: vec![0; 5],
+    };
+    let (second, receipt) = checked(sparse_tick(&native, &input, Some(&first)));
+    let mut tick = tick;
+    tick.checkpoint_before = Digest32::of_bytes(b"forged predecessor");
+    tick.checkpoint_after = receipt.checkpoint_after;
+    tick.activation_digest = second.activation_digest();
+    tick.threshold_digest = second.threshold_digest();
+    tick.eligibility_digest = second.eligibility_digest();
+    assert_eq!(
+        canonical_checkpoint_v1(&config, &native, &second, &tick, 1_900_000_000_000),
+        Err(NeuronProtocolError::BindingMismatch("predecessor"))
+    );
+}
+
+#[test]
+fn checkpoint_publication_rejects_tampered_config_fields_with_unchanged_native_digest() {
+    let (config, checkpoint, tick) = committed();
+    let mut other_generation = config.clone();
+    other_generation.generation = generation(2);
+    let mut other_head = config.clone();
+    other_head.head_digest = Digest32::of_bytes(b"forged head");
+    let mut other_normalization = config;
+    other_normalization.normalization_digest = Digest32::of_bytes(b"forged normalization");
+    for changed in [other_generation, other_head, other_normalization] {
+        assert_eq!(
+            canonical_checkpoint_v1(
+                &changed,
+                &native_config(),
+                &checkpoint,
+                &tick,
+                1_900_000_000_000,
+            ),
+            Err(NeuronProtocolError::BindingMismatch("runtime config"))
+        );
+    }
+}
+
+#[test]
+fn checkpoint_publication_rejects_forged_saturation_count() {
+    let (config, checkpoint, mut tick) = committed();
+    tick.resource_receipt.saturation_count += 1;
+    assert_eq!(
+        canonical_checkpoint_v1(
+            &config,
+            &native_config(),
+            &checkpoint,
+            &tick,
+            1_900_000_000_000,
+        ),
+        Err(NeuronProtocolError::BindingMismatch("saturation count"))
     );
 }
