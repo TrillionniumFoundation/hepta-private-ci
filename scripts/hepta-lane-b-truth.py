@@ -503,7 +503,7 @@ def package_roots(module: str, roots: list[str]) -> list[Path]:
 def delegate_matches_owner(
     owner: str, roots: list[str], anchor: dict[str, Any]
 ) -> bool:
-    """Require an owner root or an actual direct Cargo dependency.
+    """Require canonical ownership or an unregistered direct Cargo dependency.
 
     Delegating to codex-core through app-server does not transfer ownership of
     core to the Hepta module. A label alone must not admit an arbitrary sibling
@@ -511,6 +511,23 @@ def delegate_matches_owner(
     """
     source = (ROOT / anchor["path"]).resolve()
     if not source.is_relative_to(ROOT.resolve()):
+        return False
+    from hepta_module_source_roots import registered_source_roots
+
+    try:
+        registered = registered_source_roots(ROOT)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise Invalid(f"registered owner inventory: {exc}") from exc
+    canonical_path = source.relative_to(ROOT.resolve()).as_posix()
+    canonical_owner = next(
+        (
+            module
+            for module, owner_roots in registered.items()
+            if allowed(canonical_path, owner_roots)
+        ),
+        None,
+    )
+    if canonical_owner is not None and canonical_owner != owner:
         return False
     packages = package_roots(owner, roots)
     if any(source.is_relative_to(directory) for directory in packages):
