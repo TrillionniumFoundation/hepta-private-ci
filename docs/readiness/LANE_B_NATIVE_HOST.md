@@ -8,11 +8,13 @@ This page describes executable behavior in the source, including gaps that requi
 | --- | --- | --- |
 | Agent admission and private memory context | `hepta-agentd` | `CognitiveContext` uses the attached canonical SQLite `CognitiveStore` |
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
-| Local model driver contract | Physical driver still required | `codex_hepta_infer_worker_host::model_worker` validates manifest/grant/request tuples, accounts driver-reported aggregate allocation and fences uncertain work until confirmed cleanup |
+| Local model driver contract | Physical driver still required | `codex_hepta_infer_worker_host::model_worker` validates manifest/grant/request tuples, accounts driver-reported aggregate allocation and fences uncertain work pending owned-handle cleanup or fresh-generation recovery |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
 | Automation | Agentd `AutomationScheduler` + schema-v16 `AutomationStore`/TaskFlow/step/effect ledger | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
 | Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | `send_observer` is a reusable state machine; no duplicate sender is started |
+
+The local driver component registers rejected post-load handles before automatic unload, so cleanup unwinding preserves a retryable owned handle. A load unwind before returning a handle leaves worker-wide load uncertainty and denies new load/run/feature calls. Known-handle cleanup remains available but cannot clear that unknown-load fence; the host must establish physical cleanup and a fresh driver generation. These are conservative component-state guarantees, not proof of physical allocation or crash cleanup.
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 

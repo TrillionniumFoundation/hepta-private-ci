@@ -12,6 +12,8 @@ struct Driver {
     invalid_handle: bool,
     fail_run: bool,
     panic_run: bool,
+    panic_load: bool,
+    panic_unload: bool,
     load_memory_bytes: Option<u64>,
     run_memory_bytes: Option<u64>,
     transient_allocation_bytes: Option<u64>,
@@ -20,6 +22,7 @@ struct Driver {
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        assert!(!self.panic_load, "driver load panicked");
         Ok(DriverModelHandle {
             opaque_id: if self.invalid_handle {
                 "invalid/handle".to_string()
@@ -60,6 +63,7 @@ impl ModelDriver for Driver {
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
         self.unloads += 1;
+        assert!(!self.panic_unload, "driver unload panicked");
         if self.failed_unloads > 0 {
             self.failed_unloads -= 1;
             return Err(Error::DriverFailure("cleanup uncertain".to_string()));
@@ -620,4 +624,79 @@ fn caught_driver_panic_keeps_worker_fenced_until_confirmed_drain() {
             .run(100, "model.1", request())
             .expect("recovered request capacity");
     }
+}
+
+#[test]
+fn caught_load_panic_without_handle_cannot_be_cleared_by_unrelated_unload() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("known load");
+    worker.driver.panic_load = true;
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        worker.load_model(100, second.clone())
+    }));
+    assert!(panicked.is_err());
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelUnavailable)
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelUnavailable)
+    );
+    worker
+        .unload_model(100, "model.1")
+        .expect("known handle cleanup");
+    worker.driver.panic_load = false;
+    assert_eq!(worker.load_model(100, second), Err(Error::ModelUnavailable));
+    assert_eq!(
+        (
+            worker.driver.loaded,
+            worker.driver.unloads,
+            worker.models.len()
+        ),
+        (1, 1, 0)
+    );
+}
+
+#[test]
+fn invalid_handle_cleanup_panic_retains_handle_until_confirmed_retry() {
+    let driver = Driver {
+        invalid_handle: true,
+        panic_unload: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+    let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        worker.load_model(100, manifest())
+    }));
+    assert!(panicked.is_err());
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelUnavailable)
+    );
+    assert_eq!((worker.driver.loaded, worker.models.len()), (1, 1));
+    worker.driver.panic_unload = false;
+    worker
+        .unload_model(100, "model.1")
+        .expect("confirmed cleanup retry");
+    assert_eq!(
+        (
+            worker.driver.loaded,
+            worker.driver.unloads,
+            worker.models.len()
+        ),
+        (0, 2, 0)
+    );
+    worker.driver.invalid_handle = false;
+    worker
+        .load_model(100, manifest())
+        .expect("reload after confirmed cleanup");
+    worker
+        .run(100, "model.1", request())
+        .expect("recovered execution");
 }

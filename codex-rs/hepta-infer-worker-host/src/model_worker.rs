@@ -160,6 +160,8 @@ impl StdError for Error {}
 /// Physical model execution and cleanup owned by the local runtime driver.
 ///
 /// A failed load must release acquired resources when no handle is returned.
+/// If load unwinds without a handle, abandon the fenced worker generation and
+/// physically clean driver resources before creating a new isolated worker.
 /// `unload` must drain outstanding work and return `Ok` only after the handle's
 /// resources are confirmed released. Failed unloads may be retried with the
 /// same handle; the worker keeps uncertain models fenced until that succeeds.
@@ -189,6 +191,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
+    load_uncertain: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -211,6 +214,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            load_uncertain: false,
         })
     }
 
@@ -236,7 +240,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if resident_memory_bytes >= self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+        // A caller may catch the driver's unwind; unknown allocation stays fenced.
+        self.load_uncertain = true;
+        let loaded = self.driver.load(&manifest);
+        self.load_uncertain = false;
+        let handle = loaded?;
         let handle_validation =
             validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
                 let memory_bytes = resident_memory_bytes
@@ -248,18 +256,19 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 Ok(())
             });
         if let Err(error) = handle_validation {
-            if let Err(cleanup_error) = self.driver.unload(handle.clone()) {
-                self.models.insert(
-                    manifest.model_id.clone(),
-                    LoadedModel {
-                        manifest,
-                        handle,
-                        active_requests: 0,
-                        cleanup_pending: true,
-                    },
-                );
-                return Err(cleanup_error);
-            }
+            let model_id = manifest.model_id.clone();
+            let cleanup_handle = handle.clone();
+            self.models.insert(
+                model_id.clone(),
+                LoadedModel {
+                    manifest,
+                    handle,
+                    active_requests: 0,
+                    cleanup_pending: true,
+                },
+            );
+            self.driver.unload(cleanup_handle)?;
+            self.models.remove(&model_id);
             return Err(error);
         }
         let observation = ModelLoadObservation {
@@ -429,6 +438,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn resident_memory_bytes(&self) -> Result<u64, Error> {
+        if self.load_uncertain {
+            return Err(Error::ModelUnavailable);
+        }
         self.models.values().try_fold(0_u64, |total, loaded| {
             if loaded.cleanup_pending {
                 return Err(Error::ModelUnavailable);
