@@ -10,20 +10,9 @@
 
 use std::fmt;
 use std::fs;
-use std::io::BufReader;
-use std::io::Read;
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Child;
-use std::process::ChildStdin;
-use std::process::ChildStdout;
-use std::process::Command;
-use std::process::Stdio;
 use std::sync::Mutex;
-use std::sync::mpsc;
-use std::thread;
-use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
@@ -44,7 +33,12 @@ const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
-const MAX_DISPATCH_CHANNEL_WAIT: Duration = Duration::from_secs(10);
+
+#[path = "browser_servo_transport.rs"]
+mod transport;
+pub use transport::ChildBrowserTransport;
+#[path = "browser_servo_artifact.rs"]
+mod artifact;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BrowserServoMethod {
@@ -116,9 +110,12 @@ impl BrowserServoCall {
     }
 }
 
+/// Private ordered Browser channel. Implementations must bound both reads and
+/// writes; closing a channel must release pending I/O without waiting forever.
 pub trait BrowserServoTransport: Send {
     fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError>;
     fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError>;
+    fn close(&mut self) {}
 }
 
 pub struct BrowserServoPort<T: BrowserServoTransport> {
@@ -131,6 +128,7 @@ struct PortState<T> {
     next_request_id: u64,
     next_outgoing_sequence: u64,
     next_incoming_sequence: u64,
+    failed: bool,
 }
 
 impl<T: BrowserServoTransport> fmt::Debug for BrowserServoPort<T> {
@@ -151,6 +149,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 next_request_id: 1,
                 next_outgoing_sequence: 1,
                 next_incoming_sequence: 1,
+                failed: false,
             }),
         }
     }
@@ -166,6 +165,27 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             .state
             .lock()
             .map_err(|_| BrowserServoError::Unavailable("Browser port mutex is poisoned".into()))?;
+        if state.failed {
+            return Err(BrowserServoError::Unavailable(
+                "Browser port is closed after an incomplete or invalid exchange".into(),
+            ));
+        }
+        let result = self.call_locked(&mut state, call);
+        if result
+            .as_ref()
+            .is_err_and(|error| !matches!(error, BrowserServoError::Rejected(_)))
+        {
+            state.failed = true;
+            state.transport.close();
+        }
+        result
+    }
+
+    fn call_locked(
+        &self,
+        state: &mut PortState<T>,
+        call: BrowserServoCall,
+    ) -> Result<Value, BrowserServoError> {
         let request_id = format!("browser.agentd.{}", state.next_request_id);
         state.next_request_id = state
             .next_request_id
@@ -173,7 +193,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             .ok_or_else(|| BrowserServoError::Unavailable("Browser request id exhausted".into()))?;
 
         send_frame(
-            &mut state,
+            state,
             "request",
             &request_id,
             json!({
@@ -182,8 +202,17 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             }),
         )?;
 
-        let first = receive_frame(&mut state)?;
+        let first = receive_frame(state)?;
         if call.method.requires_final_use() {
+            // Local admission can reject before asking Agentd to enter the
+            // authority fence. Consume that complete response so a later call
+            // cannot inherit it. Success still requires the full handshake.
+            if first.kind == "response" && first.request_id == request_id {
+                let payload = require_plain_object(&first.payload, "Browser response payload")?;
+                if payload.get("ok") == Some(&Value::Bool(false)) {
+                    return response_result(first, &request_id);
+                }
+            }
             if first.kind != "authority_challenge" || first.request_id != request_id {
                 return Err(BrowserServoError::Protocol(
                     "effect Browser call did not begin with the matching authority challenge"
@@ -193,8 +222,8 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             let invocation = call.final_use.as_ref().ok_or_else(|| {
                 BrowserServoError::Invalid("missing Browser final-use invocation".into())
             })?;
-            self.authorize_dispatch_boundary(&mut state, &request_id, &first, invocation)?;
-            let response = receive_frame(&mut state)?;
+            self.authorize_dispatch_boundary(state, &request_id, &first, invocation)?;
+            let response = receive_frame(state)?;
             response_result(response, &request_id)
         } else {
             response_result(first, &request_id)
@@ -314,7 +343,6 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
     kind: String,
     request_id: String,
     payload: Value,
@@ -450,7 +478,6 @@ fn receive_frame<T: BrowserServoTransport>(
         ));
     }
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
@@ -652,146 +679,6 @@ impl BrowserServoProcessConfig {
     }
 }
 
-pub struct ChildBrowserTransport {
-    child: Child,
-    stdin: ChildStdin,
-    frames: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
-    reader: Option<thread::JoinHandle<()>>,
-}
-
-impl fmt::Debug for ChildBrowserTransport {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("ChildBrowserTransport")
-            .field("pid", &self.child.id())
-            .finish_non_exhaustive()
-    }
-}
-
-impl ChildBrowserTransport {
-    pub fn spawn(config: &BrowserServoProcessConfig) -> Result<Self, BrowserServoError> {
-        config.validate()?;
-        let mut command = Command::new(&config.node_path);
-        command
-            .arg(&config.service_path)
-            .env_clear()
-            .env("HEPTA_BROWSER_WORKER_PATH", &config.worker_path)
-            .env(
-                "HEPTA_BROWSER_WORKER_SHA256",
-                hex_lower(&config.worker_sha256),
-            )
-            .env("HEPTA_BROWSER_PROFILE_ROOT", &config.profile_root)
-            .env("HEPTA_BROWSER_JOURNAL_PATH", &config.journal_path)
-            .env("HEPTA_BROWSER_BWRAP_PATH", &config.bwrap_path)
-            .env(
-                "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
-                config.driver_timeout_ms.to_string(),
-            )
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::inherit());
-        let mut child = command.spawn().map_err(|error| {
-            BrowserServoError::Unavailable(format!("failed to spawn Browser service: {error}"))
-        })?;
-        let stdin = child.stdin.take().ok_or_else(|| {
-            BrowserServoError::Unavailable("Browser child stdin was not piped".into())
-        })?;
-        let stdout = child.stdout.take().ok_or_else(|| {
-            BrowserServoError::Unavailable("Browser child stdout was not piped".into())
-        })?;
-        let (sender, frames) = mpsc::sync_channel(1);
-        let reader = thread::Builder::new()
-            .name("hepta-browser-private-reader".to_string())
-            .spawn(move || {
-                let mut stdout = BufReader::new(stdout);
-                loop {
-                    let result = read_child_frame(&mut stdout);
-                    let terminal = result.is_err();
-                    if sender.send(result).is_err() || terminal {
-                        break;
-                    }
-                }
-            })
-            .map_err(|error| {
-                BrowserServoError::Unavailable(format!(
-                    "failed to start Browser private-channel reader: {error}"
-                ))
-            })?;
-        Ok(Self {
-            child,
-            stdin,
-            frames,
-            reader: Some(reader),
-        })
-    }
-}
-
-impl BrowserServoTransport for ChildBrowserTransport {
-    fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError> {
-        if bytes.len() < 5 || bytes.len() > MAX_FRAME_BYTES + 4 {
-            return Err(BrowserServoError::Protocol(
-                "Browser output frame bytes are outside bounds".into(),
-            ));
-        }
-        self.stdin.write_all(bytes).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel write failed: {error}"
-            ))
-        })?;
-        self.stdin.flush().map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel flush failed: {error}"
-            ))
-        })
-    }
-
-    fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
-        match self.frames.recv_timeout(MAX_DISPATCH_CHANNEL_WAIT) {
-            Ok(result) => result,
-            Err(mpsc::RecvTimeoutError::Timeout) => Err(BrowserServoError::Indeterminate(
-                "Browser private-channel response deadline exceeded".into(),
-            )),
-            Err(mpsc::RecvTimeoutError::Disconnected) => Err(BrowserServoError::Indeterminate(
-                "Browser private-channel reader disconnected".into(),
-            )),
-        }
-    }
-}
-
-impl Drop for ChildBrowserTransport {
-    fn drop(&mut self) {
-        let _ = self.child.kill();
-        let _ = self.child.wait();
-        if let Some(reader) = self.reader.take() {
-            let _ = reader.join();
-        }
-    }
-}
-
-fn read_child_frame(stdout: &mut BufReader<ChildStdout>) -> Result<Vec<u8>, BrowserServoError> {
-    let mut prefix = [0u8; 4];
-    stdout.read_exact(&mut prefix).map_err(|error| {
-        BrowserServoError::Indeterminate(format!(
-            "Browser private-channel prefix read failed: {error}"
-        ))
-    })?;
-    let length = u32::from_be_bytes(prefix) as usize;
-    if length == 0 || length > MAX_FRAME_BYTES {
-        return Err(BrowserServoError::Protocol(
-            "Browser child announced an invalid frame length".into(),
-        ));
-    }
-    let mut body = vec![0u8; length];
-    stdout.read_exact(&mut body).map_err(|error| {
-        BrowserServoError::Indeterminate(format!(
-            "Browser private-channel body read failed: {error}"
-        ))
-    })?;
-    let mut frame = Vec::with_capacity(length + 4);
-    frame.extend_from_slice(&prefix);
-    frame.extend_from_slice(&body);
-    Ok(frame)
-}
-
 fn verify_file_digest(
     path: &Path,
     expected: [u8; 32],
@@ -814,10 +701,17 @@ fn verify_file_digest(
             path.display()
         )));
     }
-    let bytes = fs::read(path).map_err(|error| {
-        BrowserServoError::Invalid(format!("cannot read {}: {error}", path.display()))
+    let mut input = fs::File::open(path).map_err(|error| {
+        BrowserServoError::Invalid(format!("cannot open {}: {error}", path.display()))
     })?;
-    if sha256_bytes(&bytes) != expected {
+    let mut digest = Sha256::new();
+    artifact::stream_bounded(&mut input, maximum, |bytes| digest.update(bytes)).map_err(
+        |error| {
+            BrowserServoError::Invalid(format!("cannot read bounded {}: {error}", path.display()))
+        },
+    )?;
+    let actual: [u8; 32] = digest.finalize().into();
+    if actual != expected {
         return Err(BrowserServoError::BindingMismatch(format!(
             "{} digest does not match selected Browser artifact",
             path.display()
@@ -1101,10 +995,128 @@ mod tests {
             .expect("challenge");
         let error = call.join().expect("call thread").expect_err("must reject");
         assert!(matches!(error, BrowserServoError::BindingMismatch(_)));
+        let next = harness.port.call(
+            BrowserServoCall::read(BrowserServoMethod::ObservePage, json!({})).expect("read call"),
+        );
+        assert!(matches!(next, Err(BrowserServoError::Unavailable(_))));
         assert!(matches!(
             harness.outbound.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
         ));
+    }
+
+    #[test]
+    fn pre_authority_rejection_is_consumed_without_poisoning_the_next_call() {
+        let harness = harness();
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "response",
+                "browser.agentd.1",
+                json!({"ok": false, "error": "profile expired"}),
+            ))
+            .expect("admission rejection");
+        let rejected = harness.port.call(
+            BrowserServoCall::effect(
+                json!({"operationId":"operation.1"}),
+                harness.invocation.clone(),
+            )
+            .expect("effect call"),
+        );
+        assert!(matches!(rejected, Err(BrowserServoError::Rejected(_))));
+        harness
+            .inbound
+            .send(inbound_frame(
+                2,
+                "response",
+                "browser.agentd.2",
+                json!({"ok": true, "result": {"observed": true}}),
+            ))
+            .expect("later response");
+        let next = harness
+            .port
+            .call(
+                BrowserServoCall::read(BrowserServoMethod::ObservePage, json!({}))
+                    .expect("read call"),
+            )
+            .expect("next call remains aligned");
+        assert_eq!(next, json!({"observed": true}));
+    }
+
+    #[test]
+    fn an_effect_success_without_authority_closes_the_port() {
+        let harness = harness();
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "response",
+                "browser.agentd.1",
+                json!({"ok": true, "result": {"terminalObserved": true}}),
+            ))
+            .expect("unfenced response");
+        let result = harness.port.call(
+            BrowserServoCall::effect(
+                json!({"operationId":"operation.1"}),
+                harness.invocation.clone(),
+            )
+            .expect("effect call"),
+        );
+        assert!(matches!(result, Err(BrowserServoError::Protocol(_))));
+        let next = harness.port.call(
+            BrowserServoCall::read(BrowserServoMethod::ObservePage, json!({})).expect("read call"),
+        );
+        assert!(matches!(next, Err(BrowserServoError::Unavailable(_))));
+        assert!(harness.outbound.try_recv().is_ok());
+        assert!(matches!(
+            harness.outbound.try_recv(),
+            Err(mpsc::TryRecvError::Empty)
+        ));
+    }
+
+    #[test]
+    fn failed_dispatch_handshake_cannot_leave_a_response_for_the_next_call() {
+        let harness = harness();
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({"requestDigest":hex_lower(&harness.request_digest),"authorityEpoch":7}),
+            ))
+            .expect("challenge");
+        harness
+            .inbound
+            .send(inbound_frame(
+                2,
+                "response",
+                "browser.agentd.1",
+                json!({"ok": false, "error": "dispatch failed"}),
+            ))
+            .expect("missing-boundary response");
+        harness
+            .inbound
+            .send(inbound_frame(
+                3,
+                "response",
+                "browser.agentd.1",
+                json!({"ok": true, "result": {"stale": true}}),
+            ))
+            .expect("late response");
+        let result = harness.port.call(
+            BrowserServoCall::effect(
+                json!({"operationId":"operation.1"}),
+                harness.invocation.clone(),
+            )
+            .expect("effect call"),
+        );
+        assert!(matches!(result, Err(BrowserServoError::Indeterminate(_))));
+        let next = harness.port.call(
+            BrowserServoCall::read(BrowserServoMethod::ObservePage, json!({})).expect("read call"),
+        );
+        assert!(matches!(next, Err(BrowserServoError::Unavailable(_))));
     }
 
     #[test]
