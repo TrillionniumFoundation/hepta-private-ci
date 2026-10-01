@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "Test-only authority fixtures must fail immediately when setup is invalid."
+)]
+
 use super::*;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
