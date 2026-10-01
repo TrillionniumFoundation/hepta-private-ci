@@ -54,6 +54,15 @@ mod registry;
 mod registry_metadata;
 mod release;
 mod resource;
+#[cfg(feature = "durable-store")]
+mod resource_observation_port;
+
+#[cfg(feature = "durable-store")]
+pub use resource_observation_port::FLEET_RESOURCE_OBSERVATION_OPERATION;
+#[cfg(feature = "durable-store")]
+pub use resource_observation_port::FleetResourceObservationRequestV1;
+#[cfg(feature = "durable-store")]
+pub use resource_observation_port::FleetResourceObservationResponseV1;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
