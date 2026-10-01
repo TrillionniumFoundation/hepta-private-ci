@@ -2,6 +2,7 @@ use super::*;
 use crate::LaneFStageV1;
 use crate::PipelineDispositionV1;
 use codex_hepta_intuition::RiskClass;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
@@ -108,35 +109,104 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
 }
 
 fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
+    ledger_at_with_trust(path, fixture.trust_activation())
+}
+
+fn ledger_at_with_trust(path: &std::path::Path, trust: ActivatedLearningTrustV1) -> LedgerWriter {
     let file = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(path)
-        .unwrap();
+        .unwrap_or_else(|error| panic!("evaluated shadow ledger file: {error:?}"));
     let ledger = DurableLedger::create(
         file,
         digest("host-authorized-ledger"),
         /*max_records*/ 1,
     )
-    .unwrap();
+    .unwrap_or_else(|error| panic!("evaluated shadow ledger creation: {error:?}"));
     let witness = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(witness_path(path))
-        .unwrap();
-    let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+        .unwrap_or_else(|error| panic!("evaluated shadow witness file: {error:?}"));
+    let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger"))
+        .unwrap_or_else(|error| panic!("evaluated shadow witness creation: {error:?}"));
+    let directory = path
+        .parent()
+        .unwrap_or_else(|| panic!("evaluated shadow ledger has a parent directory"));
+    let ledger_directory = std::fs::File::open(directory)
+        .unwrap_or_else(|error| panic!("evaluated shadow ledger directory: {error:?}"));
+    let witness_directory = std::fs::File::open(directory)
+        .unwrap_or_else(|error| panic!("evaluated shadow witness directory: {error:?}"));
     LedgerWriter::from_durable(
         ledger,
         witness,
-        fixture.trust_activation(),
+        trust,
         &ledger_directory,
         &witness_directory,
     )
-    .unwrap()
+    .unwrap_or_else(|error| panic!("evaluated shadow writer creation: {error:?}"))
+}
+
+#[test]
+fn expired_owner_distribution_blocks_evaluated_shadow_before_ports_or_durable_writes()
+-> Result<(), Box<dyn std::error::Error>> {
+    for now in [50, 51] {
+        let fixture = Fixture::new();
+        let candidate_payload = evaluated_candidate_signing_payload_v2(
+            &fixture.qualification,
+            &fixture.bytes,
+            fixture.run.snapshot.learning_artifact_generation,
+        )?;
+        fixture.verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &fixture.candidate_evidence,
+            &candidate_payload,
+            now,
+        )?;
+        let request = fixture.request();
+        let decision = evaluated_shadow_production_decision_v2(
+            &request.run,
+            &request.intuition,
+            &request.episode_id,
+            &fixture.qualification.generator.principal_id,
+            fixture.dataset.snapshot.dataset_digest,
+            fixture.candidate_evidence.payload_digest,
+        )?;
+        fixture.verifier.verify(
+            LearningEvidenceRoleV1::Generator,
+            &fixture.decision_evidence,
+            &decision_signing_payload_v2(&decision)?,
+            now,
+        )?;
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("ledger");
+        let mut ledger =
+            ledger_at_with_trust(&path, fixture.trust_activation_until(/*expires_at*/ 50));
+        let mut ports = Ports::new(&fixture);
+        let before = (fs::read(&path)?, fs::read(witness_path(&path))?);
+        let frontier = ledger.witness_frontier()?;
+        let result = run_evaluated_shadow_v1(request, &mut ledger, &mut ports, now);
+        if now == 50 {
+            assert!(result?.learning.is_some());
+            assert_eq!(ports.calls.len(), 7);
+            assert_eq!(ledger.records()?.len(), 1);
+        } else {
+            assert!(matches!(
+                result,
+                Err(EvaluatedShadowError::Ledger(
+                    ProductionLedgerError::Binding("learning trust is not current")
+                ))
+            ));
+            assert!(ports.calls.is_empty());
+            assert!(ledger.records()?.is_empty());
+            assert_eq!(ledger.witness_frontier()?, frontier);
+            assert_eq!((fs::read(&path)?, fs::read(witness_path(&path))?), before);
+        }
+    }
+    Ok(())
 }
 
 #[test]
