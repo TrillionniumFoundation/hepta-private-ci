@@ -32,6 +32,7 @@ mod operation_destination;
 mod schedule_v2;
 #[cfg(feature = "runtime")]
 mod scheduler;
+mod scheduler_admission;
 #[cfg(feature = "runtime")]
 mod store;
 #[cfg(feature = "runtime")]

@@ -297,10 +297,10 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if !state.automation_admission_ready()? {
             continue;
         }
-        let now_ms = unix_time_ms()?;
+        let _now_ms = unix_time_ms()?;
         // Once admitted, the tick must record the queue outcome. Dropping this
         // future on cancellation could lose an acknowledgement after dispatch.
-        match scheduler.tick(now_ms).await {
+        match scheduler.tick_with_clock(unix_time_ms).await {
             Ok(tick) => {
                 if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation).await? {
                     return Ok(());
