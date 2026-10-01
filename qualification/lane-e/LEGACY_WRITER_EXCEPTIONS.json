@@ -1,12 +1,12 @@
 {
   "schema": "hepta.lane-e-legacy-writer-exceptions.v2",
   "authorityDelta": "none",
-  "reviewedSource": "25d664addcd7c44873dc0001c5adce91c6fe4687",
-  "auditScope": "Source review of RunStart recovery matches and explicitly gated V1 compatibility methods; not production qualification or an external audit signature.",
+  "reviewedSource": "38b9ec0a6a37c389ba5ca478f520967098a30fd7",
+  "auditScope": "Source re-review at 38b9ec0a6a37c389ba5ca478f520967098a30fd7 of RunStart recovery matches and directly cfg-gated V1 compatibility imports/methods, including the default feature closure; not production qualification or an external audit signature.",
   "reviewedBlobs": {
     "codex-rs/hepta-agentd/Cargo.toml": "8d18cd5511dca6e61e33da8a151d81b9a3aa9eec",
     "codex-rs/hepta-agentd/src/objective_ingress.rs": "ec6440803a0f1284bbc1ef98b5121075fe74dbd4",
-    "codex-rs/hepta-agentd/src/intelligence_product.rs": "1781996175ec7f16f44b9f58ac3e2c2bd41358af",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs": "c919f5c9394e8c7d97316b726b2671ab3f83b743",
     "codex-rs/hepta-agentd/src/intelligence_product_runner.rs": "1e83821238aef2b5f478a958e32151c2091acdc8"
   },
   "exceptions": [

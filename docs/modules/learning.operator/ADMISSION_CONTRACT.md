@@ -25,6 +25,14 @@ objective, sensor core, dataset generation, minimum support, one-step and
 multistep calibration limits, OOD false acceptance, drift and runtime limits.
 Both derive profile and runtime digests internally.
 
+The tabular profile's `maximum_absolute_error` commits the independent
+qualification target. The reference fitter does not certify Bellman or
+generalization error from training residuals, and does not enforce that target.
+An accepted profile value, including zero, is not a measured error guarantee;
+the evaluator must independently measure and enforce the preregistered bound
+before selection. This differs from the world-model request's explicitly
+checked supplied calibration limits, which also require independent measurement.
+
 The default crate root exposes an explicit reviewed allowlist. Raw structural
 fitters and caller-authored V2 verification inputs are available only through
 the non-default `qualification-unverified-input` feature and the

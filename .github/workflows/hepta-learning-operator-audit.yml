@@ -95,6 +95,9 @@ jobs:
             args+=(--features qualification-unverified-input)
           fi
           cargo clippy --locked -p codex-hepta-bellman-operator --all-targets "${args[@]}" -- -D warnings
+      - name: Cache locked dependencies for offline API consumers
+        if: matrix.features == 'default'
+        run: cargo fetch --locked --manifest-path codex-rs/Cargo.toml
       - name: Independent default API consumer
         if: matrix.features == 'default'
         run: python3 scripts/hepta-learning-operator-api-surface.py

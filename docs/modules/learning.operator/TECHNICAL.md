@@ -56,6 +56,10 @@ The declared and resolved source root is:
 
 - `codex-rs/hepta-bellman-operator`
 
+Declared roots not yet present:
+
+None.
+
 The product composition boundary additionally includes Agentd ranker admission,
 the shadow coordinator, artifact-owner persistence, qualified V3 shadow loading
 and the contracts crate's three untrusted transport codecs. The generated implementation
@@ -213,6 +217,19 @@ source support. It is not a general Bellman solver, causal policy-improvement
 proof, Laya backend or deployment selection.
 
 ### 4.7 Native profile and evidence boundaries
+
+Capability issuance now reserves learner-owned request/receipt copies,
+canonical row buffers and admission scratch before owner verification or plan
+cloning, and retains that reservation through dispatch. This is an estimated
+heap/work budget for the learner. It does not measure RSS or bound full ledger
+history materialized by an owner's freeze, snapshot or recovery APIs; those
+owners still need separate capacity measurements and limits.
+
+`TrainingProfileV1::maximum_absolute_error` is a committed qualification target,
+not a local fit certificate. The tabular reference fitter does not measure or
+enforce Bellman/generalization error against that value. Independent evaluation
+must supply the measurement and enforce the preregistered bound before selection;
+training residuals alone cannot establish it.
 
 The learner fits a complete finite sensor/action table; the world model fits
 action-conditioned transition counts. The bounded V2 profile uses exact integer

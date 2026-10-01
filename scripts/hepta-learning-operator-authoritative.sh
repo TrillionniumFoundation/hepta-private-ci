@@ -183,9 +183,13 @@ run_stage documentation_schema "${EVIDENCE}/documentation-schema.log" \
   '
 
 run_stage default_api_surface "${EVIDENCE}/default-api-surface.log" \
-  "independent consumer default pass/fail and feature compatibility compilation" \
-  python3 scripts/hepta-learning-operator-api-surface.py \
-    --output "${EVIDENCE}/api-surface.json"
+  "locked dependency preparation and offline default pass/fail and compatibility compilation" \
+  bash -lc '
+    set -euo pipefail
+    cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+    python3 scripts/hepta-learning-operator-api-surface.py \
+      --output ".hepta-evidence/learning-operator/api-surface.json"
+  '
 
 run_stage compile "${EVIDENCE}/compile.log" \
   "workspace all-target check and host-target operator build" \
@@ -319,6 +323,7 @@ qualify_synthetic_merge() (
       esac
     done < "${V8_ENV_LOCAL}"
     python3 scripts/hepta-learning-operator-contract.py verify
+    cargo fetch --locked --manifest-path codex-rs/Cargo.toml
     python3 scripts/hepta-learning-operator-api-surface.py \
       --output ".hepta-evidence/learning-operator-synthetic-api.json"
     cargo check --manifest-path codex-rs/Cargo.toml --locked \
