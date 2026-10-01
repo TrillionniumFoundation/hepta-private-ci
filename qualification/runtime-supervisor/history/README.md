@@ -1,7 +1,7 @@
 # Historical supervisor authoring workflow
 
-`runtime-supervisor-six-phase-materializer.yml.txt` preserves the original bytes
-of `.github/workflows/runtime-supervisor-six-phase-materializer.yml` from
+[runtime-supervisor-six-phase-materializer.yml.txt](runtime-supervisor-six-phase-materializer.yml.txt) preserves the original bytes
+of the retired `runtime-supervisor-six-phase-materializer.yml` workflow from
 commit `6012fc54edd67a8b19dcd8055bc01bbe9fc9a128`:
 
 | Identity | Value |
