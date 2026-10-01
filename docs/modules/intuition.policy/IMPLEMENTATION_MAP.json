@@ -348,7 +348,7 @@
   ],
   "sourceStateProjection": {
     "source": "docs/modules/intuition.policy/CURRENT_STATE.json",
-    "contentSha256": "74e036b3d34ac73f36fd163d9b8fca476543b038e89059630910400f2f299ae6",
+    "contentSha256": "67a6ddb0dd58e6e6a1fcbb2ce184f3e35d0a7d725df586c28dce12d9005995ce",
     "facts": [
       {
         "id": "native_policy",
@@ -388,7 +388,7 @@
       },
       {
         "id": "admission_receipt",
-        "summary": "Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; exact retries require reconciliation; outward V1 is unchanged.",
+        "summary": "Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; Compiled retries require reconciliation, while stored compiler ExplicitAbstain can replay without provider/policy/run/context; outward V1 is unchanged.",
         "state": "source_partial",
         "source": "codex-rs/hepta-agentd/src/state.rs",
         "symbol": "start_canonical_intelligence",
@@ -400,7 +400,7 @@
           "codex-rs/hepta-agentd/src/intelligence_objective_replay_tests.rs",
           "codex-rs/hepta-agentd/src/intelligence_objective_host_replay_tests.rs"
         ],
-        "evidence": "Signed final-use, snapshot-pinned evaluation, live lifecycle and concurrent/reopened-owner retry-isolation regressions; real daemon requests, durable recovery, process-kill replay and delivery evidence remain required."
+        "evidence": "Signed final-use, snapshot-pinned evaluation, live lifecycle, Compiled retry-isolation and compiler-terminal abstention replay regressions; real daemon requests, durable policy-handoff recovery, process-kill replay and delivery evidence remain required."
       },
       {
         "id": "authority_read",
@@ -464,7 +464,7 @@
     "gaps": [
       {
         "id": "durable_handoff",
-        "required": "Persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Tracing and in-process receipts are not a durable journal."
+        "required": "For Compiled canonical requests, persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Stored compiler-terminal ExplicitAbstain has no policy handoff. Tracing and in-process receipts are not a durable journal."
       },
       {
         "id": "transport_receipt",

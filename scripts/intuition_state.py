@@ -248,6 +248,7 @@ def contract_document(state: dict[str, Any]) -> str:
         "```",
         "",
         "A post-policy failure retains the exact acknowledged receipt and its typed cause. The kernel and receipt grant no dispatch authority.",
+        "Compiler-terminal RunStart ExplicitAbstain does not enter this sequence: its immutable publication can be replayed after current authentication checks without provider, policy, run or context work. A Compiled record remains subject to handoff reconciliation even when its policy result is canonical_abstained.",
         "The canonical final-use callback can reject admission but receives only a read-only clock interface. The sink samples time again and revalidates policy qualification after the callback. These checks do not create a cross-owner durable transaction or restart reconciliation.",
         "",
         "## Durable orchestration target, not a completed state machine",

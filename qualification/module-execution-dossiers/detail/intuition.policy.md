@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `74e036b3d34ac73f36fd163d9b8fca476543b038e89059630910400f2f299ae6`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `67a6ddb0dd58e6e6a1fcbb2ce184f3e35d0a7d725df586c28dce12d9005995ce`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; exact retries require reconciliation; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; Compiled retries require reconciliation, while stored compiler ExplicitAbstain can replay without provider/policy/run/context; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -22,7 +22,7 @@ All four production completion predicates remain false. Current execution identi
 
 Remaining closure requirements:
 
-- **durable_handoff**: Persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Tracing and in-process receipts are not a durable journal.
+- **durable_handoff**: For Compiled canonical requests, persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Stored compiler-terminal ExplicitAbstain has no policy handoff. Tracing and in-process receipts are not a durable journal.
 - **transport_receipt**: Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1.
 - **generation_recovery**: Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases.
 - **typed_domains**: Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings.
@@ -134,7 +134,9 @@ Measured p50/p95/p99 values must come from execution artifacts bound to a named 
 
 The canonical body is pinned to the process launch (identity.spawn_generation), while RunStart records the current Fleet lifecycle generation. Starting → Running advances the latter. Current RunStart authority and the launch/current objective fence are checked before provider construction; the two generation domains are not equated. This correction does not complete durable restart reconciliation or the remaining typed-domain migration.
 
-Exact RunStart IdempotentReplay with a configured canonical/policy composition is quarantined before the provider or policy is rerun; the existing-run admission guard also precedes provider construction. Both return stable typed reconciliation-required errors. This is retry isolation, not durable reconciliation, original-receipt restoration or resumed dispatch.
+Exact RunStart IdempotentReplay for a stored Compiled disposition with a configured canonical/policy composition is quarantined before the provider or policy is rerun, including when the policy result was canonical_abstained, selected or slow-path; the existing-run admission guard also precedes provider construction. Both return stable typed reconciliation-required errors. This is retry isolation, not durable policy reconciliation, original-receipt restoration or resumed dispatch.
+
+Stored compiler-terminal ExplicitAbstain has no policy handoff: its immutable RunStart already contains the complete terminal result. After current authentication checks, exact replay returns the original publication/run identifiers and digests with explicit_abstain and idempotent true, without provider, policy, run or context work. This exception does not apply to a Compiled request's canonical_abstained policy result and does not provide policy-receipt recovery.
 
 ## 6. Concrete verification cases
 
@@ -151,7 +153,7 @@ Additional committed test sources include:
 - `intelligence_evaluation_owner_pin_tests.rs`: typed pre-worker stale-owner rejection and actual product evaluation rejection after a signed manifest B-to-A replacement; all owner identity/generation/implementation/key/key-epoch/authority/frontier pins remain snapshot-bound;
 - `intelligence_candidate_bound_tests.rs`: raw legal/intuition count preflight before signed input or worker use, with separate product 127 and compatibility 128 maxima; reaching Busy checks capacity only, not full product authentication;
 - `intelligence_objective_replay_tests.rs`: three signed product fixtures with actual Fleet Starting→Running and ObjectiveRuntimeHost publication; current lifecycle 2/body 1 admits, stale lifecycle/fence/body cannot append, and exact journal replay with changed policy material leaves provider count and complete ledger/witness bytes unchanged; reopened ledger contains one original record. These fixtures have not yet been executed on the new candidate;
-- `intelligence_objective_host_replay_tests.rs`: one actual signed ObjectiveRuntimeHost fixture for concurrent exact retries and reopened durable owner, retaining provider count 1 and complete ledger/witness bytes. It proves only the specified retry-isolation behavior if executed, not original-receipt restoration or process-kill recovery;
+- `intelligence_objective_host_replay_tests.rs`: two actual signed ObjectiveRuntimeHost fixtures. Compiled concurrent/reopened retries retain provider count 1 and complete ledger/witness bytes while rejecting. Compiler-terminal ExplicitAbstain concurrent/reopened retries return the complete original admission with idempotent true, retain provider count 0 and unchanged RunStart journal/ledger/witness bytes; expired input, revoked trust and stale Fleet generation reject. Both fixtures still require execution and do not prove policy-receipt restoration or process-kill recovery;
 - `trust_distribution_tests.rs`: admitted distribution expiry and scheduled root revocation remain checked at use;
 - `intelligence_product_tests.rs`, `intelligence_product_signed_tests.rs` and `intelligence_evaluation_tests.rs`: canonical default-production profile routing, signed product and evaluation distribution-lifetime regressions;
 - host unit tests: eleven pin-binding mutations and prepared-time edge cases;

@@ -29,7 +29,8 @@
 | P1 | retained evaluator session 从独立 learning.eval 读取构造，较早的合法签名 manifest 可提供不属于请求快照的 signer key/key epoch。 | 构造 session 前以一份签名 manifest 验证请求七 owner 的全部 pins，再从同一不可变视图取 evaluator；新增 pre-worker typed stale-owner 与签名 B→A 替换后的实际 evaluation 拒绝回归，尚需新候选执行。 |
 | P1 | RunStart entitlement 和政策资格仍有效时，writer 等待可能跨越原请求或 canonical run 的 deadline。 | 每种 disposition 检查原 RunStart deadline，selected 额外查 canonical deadline；采用 checked 微秒向毫秒向上取整，沿已有 coordinator 的 InvalidDeadline 语义拒绝。新增实际签名输入的 deadline 等待 fixture，不宣称真实 daemon journal 验证。 |
 | P1 | canonical ingress 把冻结 body/spawn generation 与 Fleet 当前 lifecycle generation 相等校验；Starting→Running 递增后，合法生产 RunStart 全部被拒绝。 | body 只绑定 identity.spawn_generation；durable RunStart 由当前 Fleet lifecycle 和 launch/current objective fence 验证，并在 provider.build 前执行。保留后续 commit/admission 复验；新增真实 Fleet Running fixture 的源码回归，尚待执行；不声称 restart 或 typed-domain 全部闭合。 |
-| P1 | durable RunStart IdempotentReplay 仍重建 provider 输入，未沿原 intent／receipt 恢复；进程内也未在 provider 前隔离已 admitted 的运行。episode_id 绑定 run_id，ledger 已拒绝同一 episode 的第二条不同 Decision，不能据此宣称成功二次追加；重复 provider 执行、重新准入及歧义结果仍需隔离。 | 配置 canonical/policy 组合时，journal exact replay 在 provider/policy 前返回 durable_handoff_reconciliation_required；进程内 existing-run guard 也要求 reconciliation。三份签名 product fixture 覆盖真实 Running、stale pins 和 changed-material replay 无二次 append；另有 actual signed ObjectiveRuntimeHost 的并发 exact retry 与 durable owner 关闭重开 fixture，保持 provider count 1 及完整 ledger/witness bytes；全部新 Rust 回归仍需执行。这是 retry isolation，不是原 receipt 恢复或 durable handoff 闭合。 |
+| P1 | durable RunStart IdempotentReplay 仍重建 provider 输入，未沿原 intent／receipt 恢复；进程内也未在 provider 前隔离已 admitted 的运行。episode_id 绑定 run_id，ledger 已拒绝同一 episode 的第二条不同 Decision，不能据此宣称成功二次追加；重复 provider 执行、重新准入及歧义结果仍需隔离。 | 配置 canonical/policy 组合且原 RunStart 为 Compiled 时，journal exact replay 在 provider/policy 前返回 durable_handoff_reconciliation_required；后来政策返回 canonical_abstained、selected 或 slow-path 都不改变该条件。进程内 existing-run guard 也要求 reconciliation。三份签名 product fixture 覆盖真实 Running、stale pins 和 changed-material replay 无二次 append；另有 actual signed ObjectiveRuntimeHost 的并发 exact retry 与 durable owner 关闭重开 fixture，保持 provider count 1 及完整 ledger/witness bytes；全部新 Rust 回归仍需执行。这是 retry isolation，不是原 receipt 恢复或 durable handoff 闭合。 |
+| P2 | 上述 replay guard 原先也拒绝 compiler 原生 ExplicitAbstain 的精确重放；immutable RunStart 已保存完整终止结果且不存在 provider/policy/run/context 交接，过宽隔离损害幂等可用性。 | 例外只由已保存的 RunStart ExplicitAbstain 判定，保留当前认证检查并返回原 publication/run 标识和 digest、explicit_abstain 及 idempotent true，不进入 provider/policy/run/context。Compiled 后的 canonical_abstained 仍隔离；actual signed host 的并发与 clean-reopen fixture 比较完整返回 admission，仅 idempotent 变 true，provider count 保持 0，RunStart journal／ledger／witness 全字节不变，并检查过期输入、信任撤销及 Fleet 代际变化仍拒绝。该新增源码回归尚需执行，不是政策 receipt 恢复或 process-kill 资格。 |
 | P2 | 纯内核允许 128 个真实候选，但产品学习记录还需一个 abstain 项，超过 ledger 的 128 项上限。 | Agentd 产品准备最多允许 127 个真实候选，提前返回稳定错误；内核仍允许 128，不截断完整集、不扩大 ledger 上限。覆盖 127 个候选加 abstain 的持久往返和 128 个产品候选的提前拒绝。 |
 | P2 | ingress 和 canonical runner 在 host 的 127 预检之前已复制候选/ID 或占用 worker。 | raw legal/intuition 两类数量在复制或 worker 使用前 O(1) 校验，product 127、compatibility 128，数量不一致拒绝；Busy fixture 仅证明边界可到 worker，不宣称产品请求已认证成功。 |
 | P2 | 多个候选承诺入口在数量校验之前分配并哈希候选内容。 | 在承诺入口共享执行 1..128 预检，保持已接受历史字节与 digest 不变。 |
@@ -61,7 +62,7 @@
 | Bazel 9.0.0：just bazel-lock-update 与 batch mod deps --lockfile_mode=error 均 exit 0，MODULE.bazel.lock 无 diff | 普通 bazel-lock-check recipe 遭 PID namespace server 启动失败；isolated output root 的 batch 校验采用相同 lockfile error 语义。没有将普通 recipe 称为成功，现有 resolved-version/annotation warnings 未借此扩大修改。 |
 | 当前严格 CI 与 source／synthetic-merge／independent 工件协议 | 仍待完整精确候选结果；旧提交结果、本地测试和工作流定义不能替代新候选资格。 |
 
-新增 Rust 源码回归包括 canonical final-use 四个测试函数／十五个攻击案例、两个签名 manifest coherence 测试、三个 bounded-read 测试、两个 candidate-bound 测试、两个 evaluation-owner-pin 测试及四个 lifecycle/retry-isolation 测试；本报告不把其存在计为执行通过。
+新增 Rust 源码回归包括 canonical final-use 四个测试函数／十五个攻击案例、两个签名 manifest coherence 测试、三个 bounded-read 测试、两个 candidate-bound 测试、两个 evaluation-owner-pin 测试及五个 lifecycle/replay 测试（含一个 compiler 终止弃权重放 fixture）；本报告不把其存在计为执行通过。
 
 分配下降是局部实测优化；性能 gate 的成功与失败均应保留。不得把独立 CI 执行改称独立语义评估接受，也不得把干净关闭后重开改称进程崩溃恢复。
 
@@ -71,7 +72,7 @@
 
 | 剩余项 | 可验收结果 |
 | --- | --- |
-| durable handoff | 通过 Agentd owner 持久保留 exact 已认证请求、policy/evaluation 材料及准备、提交、run/context/交付进度；IdempotentReplay 沿原 intent 和已知 receipt 恢复，不重建 provider 输入或自动 redispatch；需要实际崩溃/重放 fixture。 |
+| durable handoff | 对 Compiled canonical 请求，通过 Agentd owner 持久保留 exact 已认证请求、policy/evaluation 材料及准备、提交、run/context/交付进度；IdempotentReplay 沿原 intent 和已知 receipt 恢复，不重建 provider 输入或自动 redispatch；需要实际崩溃/重放 fixture。已保存的 compiler 终止 ExplicitAbstain 没有 policy handoff，不属于该隔离条件。 |
 | 版本化 outward receipt | 迁移对外 admission／ack 合同，绑定政策回执与实际交付结果；不静默改变现有 V1 含义。 |
 | restart 与 typed domains | 当前权限复验、跨进程单调代际、明确的时间／序列／计数域，以及实际 kill、并发、磁盘与损坏恢复。 |
 | legacy migration | 清点和迁移剩余 V1／V2 advisory 消费者，保留必要的显式兼容边界及版本验证。 |

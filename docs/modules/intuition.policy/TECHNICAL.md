@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `74e036b3d34ac73f36fd163d9b8fca476543b038e89059630910400f2f299ae6`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `67a6ddb0dd58e6e6a1fcbb2ce184f3e35d0a7d725df586c28dce12d9005995ce`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; exact retries require reconciliation; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; Compiled retries require reconciliation, while stored compiler ExplicitAbstain can replay without provider/policy/run/context; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -22,7 +22,7 @@ All four production completion predicates remain false. Current execution identi
 
 Remaining closure requirements:
 
-- **durable_handoff**: Persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Tracing and in-process receipts are not a durable journal.
+- **durable_handoff**: For Compiled canonical requests, persist exact authenticated request, policy/evaluation material and prepare/commit/run/context/delivery progress through Agentd; idempotent replay must reconcile original intent and known receipts without rebuilding provider inputs or automatic redispatch. Stored compiler-terminal ExplicitAbstain has no policy handoff. Tracing and in-process receipts are not a durable journal.
 - **transport_receipt**: Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1.
 - **generation_recovery**: Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases.
 - **typed_domains**: Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings.
@@ -60,7 +60,9 @@ The same boundaries enforce the original RunStart deadline for every disposition
 
 Canonical body generation identifies the process launch and must equal AgentdIdentity.spawn_generation. Durable RunStart generation identifies the current Fleet lifecycle: Starting → Running advances that generation. The daemon rechecks current RunStart authority and the launch/current objective fence before the trusted provider builds owner inputs; it does not equate the lifecycle counter with body/launch identity. Restart and complete typed-domain migration remain separate gaps.
 
-With any canonical/policy composition configured, an exact durable RunStart IdempotentReplay returns agentd.intuition.service.durable_handoff_reconciliation_required before the provider or policy executes again. An existing in-process admitted run likewise returns run_admission_replay_requires_reconciliation before rebuilding owner inputs. This isolates retries while durable handoff remains missing; it does not reconstruct the original policy receipt, resume dispatch or provide outward acknowledgement replay.
+With a canonical/policy composition configured, an exact durable RunStart IdempotentReplay for a stored Compiled disposition returns agentd.intuition.service.durable_handoff_reconciliation_required before the provider or policy executes again. This includes Compiled requests whose policy later returned canonical_abstained, selected or slow-path: those results are not the compiler's terminal disposition. An existing in-process admitted run likewise returns run_admission_replay_requires_reconciliation before rebuilding owner inputs. This isolates retries while durable policy handoff remains missing; it does not reconstruct the original policy receipt, resume dispatch or provide outward acknowledgement replay.
+
+A stored compiler-terminal RunStart ExplicitAbstain already contains its complete immutable result. Its exact replay retains current authentication checks and returns the original publication/run identifiers and digests with disposition explicit_abstain and idempotent true. It performs no provider, policy, run or context work. This narrowly restores terminal-result availability without admitting a Compiled policy-result replay or completing durable policy handoff.
 
 ## 1. Identity, mission and ownership
 
@@ -291,7 +293,7 @@ Current focused test sources (source references, not pass receipts):
 - `codex-rs/hepta-agentd/src/intelligence_evaluation_owner_pin_tests.rs`: two actual-consumer regressions for pre-worker stale-owner rejection and a signed manifest replacement that cannot launder an earlier evaluator key.
 - `codex-rs/hepta-agentd/src/intelligence_candidate_bound_tests.rs`: product/compatibility raw-count preflight before cloning or worker use.
 - `codex-rs/hepta-agentd/src/intelligence_objective_replay_tests.rs`: three signed product fixtures for Running lifecycle 2/body 1, stale lifecycle/fence/body rejection, and exact durable publication replay with changed provider material rejected before a second append.
-- `codex-rs/hepta-agentd/src/intelligence_objective_host_replay_tests.rs`: actual signed ObjectiveRuntimeHost publication, concurrent exact retries and reopened durable owner reject before the provider runs again; no original-receipt reconstruction or process-kill recovery is claimed.
+- `codex-rs/hepta-agentd/src/intelligence_objective_host_replay_tests.rs`: two actual signed ObjectiveRuntimeHost fixtures distinguish Compiled retry isolation from compiler-terminal ExplicitAbstain replay. Compiled concurrent/reopened retries reject before the provider runs again. Terminal retries return the complete original admission with idempotent true, retain provider count 0 and unchanged RunStart journal/ledger/witness bytes; expired input, revoked trust and stale Fleet generation still reject. These source tests do not establish policy-receipt reconstruction or process-kill recovery.
 - `scripts/intuition_golden_vectors.py`: five independent Python digest encodings and 512 seeded owner-separation mutations over the deterministic fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
