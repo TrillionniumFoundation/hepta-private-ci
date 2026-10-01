@@ -1,0 +1,236 @@
+{
+  "schema": "hepta.knowledge-graph-local-adversarial-audit.v1",
+  "date": "2026-10-01",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pullRequest": 1314,
+  "baselineCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+  "finalCodeCommit": "992c3a90fca45c4543db670514984c8ec8c8dc21",
+  "finalCodeTree": "250b001aa22ec36bc689b6d10f2ba7c7be642f9c",
+  "validationMode": "local pre-commit source validation; formatter/style changes only; final six-crate clippy fix removed one test-only redundant clone; not complete exact-head or merge qualification",
+  "ordinaryTests": {
+    "packages": [
+      "codex-hepta-memory",
+      "codex-hepta-kg",
+      "codex-hepta-prompt-registry",
+      "codex-hepta-prompt-optimizer"
+    ],
+    "passed": 404,
+    "failed": 0,
+    "defaultSkipped": 8,
+    "runtimeSecondsExcludingBuild": 16.114,
+    "entrypoint": "just test --offline --locked --lib",
+    "memoryTestCodegenUnits": 8,
+    "debugInfo": 0,
+    "buildJobs": 1
+  },
+  "crashMatrix": {
+    "test": "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+    "passed": true,
+    "runtimeSeconds": 0.545,
+    "windows": [
+      "before_semantic_receipt",
+      "after_semantic_receipt_before_current_pointer"
+    ],
+    "proofBoundary": "process kill and SQLite recovery, not physical power-loss qualification"
+  },
+  "clippy": {
+    "scopedFix": "passed across six affected crates with existing lint warnings; one test-only redundant clone removed",
+    "strictAllTargets": [
+      "codex-hepta-kg",
+      "codex-hepta-prompt-registry",
+      "codex-hepta-prompt-optimizer"
+    ],
+    "memoryStrictLib": "blocked by two pre-existing too_many_arguments warnings",
+    "format": "passed",
+    "bazelLockUpdate": "passed after two additional KG test-only dependencies; no external version changes",
+    "scopedFixPackages": [
+      "codex-hepta-kg",
+      "codex-hepta-memory",
+      "codex-hepta-prompt-registry",
+      "codex-hepta-prompt-optimizer",
+      "codex-hepta-intelligence",
+      "codex-hepta-agentd"
+    ]
+  },
+  "globalStrictSourceIdentity": {
+    "passed": false,
+    "blockedModules": [
+      "platform.types",
+      "kernel.operations",
+      "runtime.supervisor",
+      "runtime.codex",
+      "inference.control",
+      "objective.compiler",
+      "utility.ndu",
+      "intelligence.control",
+      "cognitive.read",
+      "memory.retrieval",
+      "memory.federation",
+      "learning.ledger",
+      "learning.operator",
+      "learning.artifacts",
+      "learning.plasticity",
+      "automation.taskflow",
+      "control.runtime",
+      "control.engineering"
+    ],
+    "reason": "pre-existing branch source anchors unavailable on main ancestry; knowledge.graph original8914 source anchor independently confirmed diverged and explicitly corrected"
+  },
+  "claimBoundary": {
+    "completeExactHeadAndSyntheticMergeQualification": false,
+    "productionImplementationProved": false,
+    "productExecutionProved": false,
+    "targetHostQualified": false,
+    "independentlyAccepted": false,
+    "released": false
+  },
+  "logs": {
+    "joint": {
+      "filename": "kg-performance-final-tests.log",
+      "sha256": "1988bca40018c25df02502a89dd0782469943e792940fea593b4163925bcdcef"
+    },
+    "crash_and_default_capacity": {
+      "filename": "kg-qualification-passed.log",
+      "sha256": "91fe2ef0f4205bd7424bf83256b5f6ebb19030d93262a4be3fbede3d3b473171"
+    },
+    "fix": {
+      "filename": "kg-final-six-fix.log",
+      "sha256": "23f35b6e07bd260cad6ee557052e52f2da814e9ebd67ae794de0451a20ab1d22"
+    },
+    "strict_three": {
+      "filename": "kg-strict-last.log",
+      "sha256": "bb3b84fffcb97372a2cce0a10fc80ab22fcec9eebea707dbe48daad33e852424"
+    },
+    "strict_memory": {
+      "filename": "kg-clippy-final.log",
+      "sha256": "742e3ae69d35021a3d7a8a37ebe8970223fa5802f8c5df55aeb3086025bf6308"
+    },
+    "format": {
+      "filename": "kg-fmt-last.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scoped_identity": {
+      "filename": "kg-scoped-source-identity.json",
+      "sha256": "9c6433cb73d0f256320dafe8f03238bbf9598ef5fb5ea85f426513615b8e559c"
+    },
+    "global_identity": {
+      "filename": "kg-map-qualification.log",
+      "sha256": "12d11a6abece8158dcfd7705f0217ac287185c39ceb5cb37ce4f6a8acbf24632"
+    },
+    "read_capacity": {
+      "filename": "kg-read-capacity-final.log",
+      "sha256": "be060eddc0b2cb33b2b35ab837fe8fdd7f44512981b641b155c27a18f1e9e3c8"
+    },
+    "full_capacity": {
+      "filename": "kg-capacity-final.log",
+      "sha256": "dc0167d19353e8cd6633fafd19cc3354627427370bdcfeea7cba9171462464fa"
+    },
+    "bazel_dev_dependency_lock": {
+      "filename": "kg-bazel-downstream-lock.log",
+      "sha256": "c3e38927d972b72a915f20b778876ec7875b6e4e74b0f5c8bad69731ab32aa33"
+    },
+    "downstream": {
+      "filename": "kg-downstream-final-tests.log",
+      "sha256": "20839f24dc72d409394c15cb8cd795463a4517b89bb4224232105a2342371b9f"
+    },
+    "module_docs": {
+      "filename": "kg-docs-final.log",
+      "sha256": "20a30d086a352bbc32bf2991e1a30f2ab5dbb521a9e30513ee9e95025523999a"
+    }
+  },
+  "fullCapacityAttempt": {
+    "passed": false,
+    "status": "timed_out_during_query_phase_after_all_256_writes",
+    "completedWrites": 256,
+    "writePhaseElapsedMilliseconds": 1676162,
+    "lastWriteNanoseconds": 11467531097,
+    "finiteWatchdogSeconds": 1800,
+    "fullWriteQueryReopenReceiptEmitted": false,
+    "acceptanceBudgetWaived": false
+  },
+  "existingReadCapacity": {
+    "passed": true,
+    "runtimeSeconds": 193.536,
+    "fixtureKind": "support_dense_16_canonical_nodes_128_canonical_edges",
+    "querySamples": 20,
+    "reopenSamples": 5,
+    "receipt": "knowledge.graph-read-capacity-2026-10-01.json",
+    "claim": "independent_existing_fixture_read_and_reopen_only; not full-write completion or target-host acceptance"
+  },
+  "optimizationClosure": {
+    "latestIndependentReviews": "no new actionable source binding, seal, query resource, cache mutation or test-receipt confusion issue in declared scope",
+    "globalOptimalityOrPermanentAbsenceOfVulnerabilities": false,
+    "remainingPerformanceDecision": "target-host budgets and durable incremental runtime qualification remain required"
+  },
+  "downstreamPromptConsumers": {
+    "passed": 8,
+    "failed": 0,
+    "filteredOut": 241,
+    "runtimeSecondsExcludingBuild": 0.076,
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-intelligence"
+    ],
+    "filter": "test(named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host) | test(prompt_delivery::tests::) | test(prompt_pipeline::tests::)",
+    "entrypoint": "just test --offline --locked --lib",
+    "proofBoundary": "targeted product prompt fixtures; not full Agentd KG product E2E"
+  },
+  "previousRemoteIntegrationFailure": {
+    "sourceCommit": "d75292ae58f49065649bcfc8c04bcc6441f6af03",
+    "workflowRun": 36854007720,
+    "job": 110342414943,
+    "cause": "downstream SelectedPromptPortfolioV1 literal incompatible with private output seals",
+    "repairedInCandidate": true,
+    "localTargetedTestsPassed": 8,
+    "finalCurrentHeadRemoteQualificationEstablished": false
+  },
+  "priorScopedSourceIdentity": {
+    "status": "PASS_SCOPED_SOURCE_IDENTITY_AND_OBJECTS",
+    "scope": "four affected maps; not whole-repository qualification or execution proof",
+    "candidate": {
+      "commit": "d75292ae58f49065649bcfc8c04bcc6441f6af03",
+      "tree": "05c02043f1f8ad09c4c47b2defabb48bc5028985"
+    },
+    "maps": [
+      {
+        "module": "knowledge.graph",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 50,
+        "sourceObjects": 50
+      },
+      {
+        "module": "cognitive.store",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 19,
+        "sourceObjects": 19
+      },
+      {
+        "module": "prompt.registry",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 4,
+        "sourceObjects": null
+      },
+      {
+        "module": "prompt.optimizer",
+        "sourceBase": {
+          "commit": "00a7a2996d79d9c1c9410ab98eabfd8ccfe0fbb0",
+          "tree": "c53b2a8fea82b0f24f65d7903116e1aba016e621"
+        },
+        "checkedPaths": 4,
+        "sourceObjects": null
+      }
+    ]
+  },
+  "scopedSourceIdentity": {
+    "status": "PENDING_CURRENT_SOURCE_REFRESH"
+  }
+}

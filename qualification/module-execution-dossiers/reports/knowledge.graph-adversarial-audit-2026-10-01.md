@@ -2,8 +2,8 @@
 
 审计日期：2026-10-01。仓库：`hepta-private-ci`。
 审计基线：`997e7be`；本报告涵盖在该基线上开展的修复与跨模块集成复核。
-内核修复提交：`2645829`。最终候选提交与执行日志由协调者在验证后补齐。
-报告状态：可审阅草稿；最终验证和独立复核闭环状态见第 7、8 节。
+内核初轮修复提交：`2645829`。候选源码及验证身份见第 7 节。
+报告状态：已完成有界对抗复查；验证结果及保留门槛见第 7、8 节。
 
 ## 1. 审计范围与判断方法
 
@@ -105,6 +105,19 @@ delta 的最终预算检查发生在前驱支持向量复制之前。
 候选修复在同一只读事务内与 canonical generation 一起缓存，避免反复构建。
 缓存不跨请求，不跨事务，也不使用过期 generation 替代当前事实。
 
+容量检查进一步暴露重复全图验证：256 写入的实际图包含 16 个 canonical
+节点、128 条 canonical 边和 36,864 个支持出现次数。三类 typed 通道均无边，
+却分别针对 16 个 seed 重新执行全代校验和摘要序列化，产生约 48 次空查询。
+新增 `ValidatedKnowledgeGenerationV2` 消费并验证一次 owned generation，
+不提供可变访问、反序列化或未经验证的构造；后续调用共享原查询 core。
+原自由函数仍每次完整验证，wrapper 查询仍检查摘要、身份、上限并生成相同回执。
+该类型只证明不变的语义一致性，不能认证外部 owner adapter。
+
+memory 在同一事务缓存中复用该 reader 和有序关系种类集合。
+不存在的 typed 种类在逐 seed 检查持久化 generation 摘要后跳过。
+新的负面回归确认第二个 seed 的错误摘要仍失败；正常通道顺序、候选预算、
+打分及截断语义保持不变。独立复核没有发现可变逃逸或来源检查绕过。
+
 历史事实恢复验证原先一次 `fetch_all` 全部事实集及全 scope 活跃 shape。
 候选修复使用同一只读事务中的 128 条 keyset 分页，单事实集查询带上限。
 活跃 shape 使用排序流检查相邻相同实体的 shape 一致性。
@@ -155,6 +168,15 @@ merge base 为 `a126987b84737dbc2ee2592442a314117bddb4a2`，ahead 1 / behind 45�
 旧记录保留于 Git 历史和本报告，不通过 Git replace 或伪造提交制造 ancestry。
 此操作只恢复当前源码导航与对象绑定，不续期旧测试、生产或部署证据。
 
+### 4.6 下游夹具与编译边界
+
+新增私有 selected-output seal 后，远端架构 source-head 检查发现 Agentd
+仍直接用结构体字面量伪造 `SelectedPromptPortfolioV1`。全仓搜索另外找到
+intelligence prompt delivery 测试的同类夹具。两者必须通过真实 registry
+enumeration、learning evidence pricing、KG projection 和 canonical selection
+创建输出，不能靠公开测试构造器或放宽 seal 解决编译问题。
+这项下游联检是必要的兼容性验证；原四 crate 普通测试本身不能覆盖它。
+
 ## 5. 保留的信任边界与未声称完成的工作
 
 裸 `KnowledgeGenerationV2` 的字段和内容摘要不能认证提交者或来源事实。
@@ -163,7 +185,8 @@ canonical selector 仍只接受登记的可信 owner adapter 提供的裸图。
 来源保证由密封 `PromptFactorGraphSourceV1` / `PromptFactorProjectionV1` 和
 既有持久化所有者提供；本次没有把裸摘要包装成认证能力。
 
-查询仍需验证 generation 并扫描有界边集合；本次未宣称建立新索引服务。
+查询仍需通过 generation 语义 admission 并扫描有界边集合。
+不可变 reader 只复用 admission，不跨事务缓存来源；本次未建立新索引服务。
 完整重建是否应改为持久化增量写入，需要目标宿主测量和等价资格证据。
 PERF-LIBRARY 的 CI 延迟结果不等于目标宿主接受预算。
 process-kill / SQLite-WAL 回归不等于物理断电恢复证明。
@@ -171,7 +194,7 @@ process-kill / SQLite-WAL 回归不等于物理断电恢复证明。
 
 ## 6. 主要源码与验证身份
 
-- 内核：`hepta-kg/src/generation.rs`、`generation_limits.rs`。
+- 内核：`hepta-kg/src/generation.rs`、`generation_limits.rs`、`validated_generation.rs`。
 - 对抗回归：`hepta-kg/src/generation_audit_tests.rs`，新增 10 个聚焦用例。
 - 来源投影：`hepta-kg/src/prompt_factor.rs`、`prompt_factor_tests.rs`。
 - 检索及 scope：`hepta-memory/src/cognitive_retrieval*.rs`。
@@ -187,22 +210,26 @@ process-kill / SQLite-WAL 回归不等于物理断电恢复证明。
 
 ## 7. 候选验证记录
 
-最终代码来源提交：`2eba06aef9ecd34e68b6fc3f2567134d8c5e4d43`；
-对应 tree：`c926b0210f802ad65264627ff38ce3274ba9270d`。
-本地验证发生在提交前的候选源码上；随后 Clippy 只自动修正了测试借用/闭包写法。
+最终代码来源提交：`992c3a90fca45c4543db670514984c8ec8c8dc21`；
+对应 tree：`250b001aa22ec36bc689b6d10f2ba7c7be642f9c`。
+本地验证发生在提交前的候选源码上；随后 formatter 及 Clippy 仅修正测试写法。
+最后一轮六 crate fix 只移除 Agentd 测试中一个多余 clone，未改生产语义。
 这不是完整 exact-head / synthetic-merge 资格回执。
 
 | 检查 | 结果 | 证据与边界 |
 | --- | --- | --- |
-| 四 crate 联合普通测试 | 399 通过、0 失败、7 默认跳过 | `just test`，KG / memory / prompt registry / prompt optimizer；15.497 秒运行时间不含编译 |
+| 四 crate 联合普通测试 | 404 通过、0 失败、8 默认跳过 | `just test`，KG / memory / prompt registry / prompt optimizer；16.114 秒运行时间不含编译 |
 | 对抗回归 | 通过 | canonical 用例包含真实签名旧枚举重绑定、追加冲突因子并重算回执、实际 realization 修改及撤销后顺序修改 |
+| 下游密封结果消费 | 8 通过、0 失败 | Agentd 实际 prompt staging；intelligence delivery / pipeline 的 payload、撤销及 drift 回归；0.076 秒，不含编译 |
 | child-kill 崩溃窗口 | 通过 | 两个事务窗口恢复精确 predecessor；用例运行 0.545 秒 |
-| PERF-LIBRARY 容量探针 | 进行中 | 256 写入、20 查询、5 reopen；单独测量配置，最终结果将在后继报告更新 |
-| scoped `just fix` / `just fmt` | 成功 | 四个 crate；fix 自动修改仅涉及测试写法，保留基线 warning |
+| 完整 PERF-LIBRARY 容量探针 | 超时，未通过 | 256 真实写入完成，共 1,676,162 ms；30 分钟 watchdog 在查询阶段终止，未生成完整回执 |
+| 独立已有快照读取容量探针 | 通过 | 同一真实 256-head source cut 上完成 20 查询、5 reopen；193.536 秒用例运行时间；独立 read-capacity JSON |
+| scoped `just fix` / `just fmt` | 成功 | 六个 crate；最后一轮 fix 只移除测试 clone，保留基线 warning |
 | strict all-target Clippy | KG、prompt registry、prompt optimizer 通过 | `--all-targets --no-deps -D warnings` |
 | memory strict Clippy | 基线 lint 债务保留 | 两个已有 8 参数接口；普通 test lint 还有 schema/production writer 测试警告；未添加 allow 隐藏 |
 | Agentd product E2E、exact HEAD / synthetic merge | 本地未执行完整资格 | 保留生产状态 false；交由独立候选资格流水线 |
 | development map / module docs | 40 模块通过 | 导航与登记一致性，不证明执行或发布 |
+| 严格来源身份全局检查 | 18 个其他模块仍阻塞 | 旧分支锚点不是 main 祖先；本次只修复 KG 及关联来源登记，不伪造祖先关系或续期旧执行证据 |
 | detailed-design 全局检查 | 失败 | 既有 `inference.control` design digest 漂移 |
 | implementation contracts 全局检查 | 失败 | 既有 `kernel.operations` source/deployment closure 声明 |
 
@@ -212,15 +239,33 @@ memory 测试在显式每 crate `codegen-units=8` 下重新构建后完成联合
 容量探针在通用 nextest 60 秒 watchdog 下超时，随后使用单独 30 分钟有限 watchdog；
 它不是产品延迟接受阈值，也未降低 256 次真实写入的默认负载。
 
+独立读取测量使用相同产品 query 和普通 owner reopen，来源摘要逐次一致。
+共享宿主、未优化 test profile（`opt-level=0`，debug info 为 0）的结果如下：
+
+| 测量 | 样本 | p50 | p95 / p99 |
+| --- | --- | --- | --- |
+| 产品查询 | 20 | 5.482 秒 | 5.745 秒 |
+| 普通 reopen | 5 | 14.173 秒 | 15.983 秒 |
+
+原始纳秒和 source/generation/publication 摘要保存在
+`knowledge.graph-read-capacity-2026-10-01.json`。这是一份支持密集夹具的独立
+读取测量：4,096 / 32,768 为物理出现次数，canonical 图为 16 节点 / 128 边。
+它没有证明 4,096 个不同 canonical 节点或目标宿主 SLO；没有完整的修复前
+读取分位数，故不声称提升倍数。完整写入测试的超时状态没有被它替代。
+
 ## 8. 独立复查与有界闭环结论
 
 内核初轮修复后，独立复查再次发现最后来源同时撤销节点与边的反例，已修复并通过。
 跨模块复查追踪当前 enumeration 与旧图、关系插入/撤销及 exercise 的组合。
 后续发现公开 snapshot 重绑定和向 selected result 追加仍存活的冲突因子的反例。
 两个反例已通过原始 snapshot/source 配对与完整私有输出 seal 封闭，真实签名回归通过。
-最终独立只读复核未发现新的可操作来源切点或 KG 硬约束绕过。
+容量阶段的查询重复验证也已修复，补充了不可变 reader 的完整结果等价、
+改写 generation 拒绝、query 资源及身份检查和空 typed 通道 fence 回归。
+最终独立只读复核还检查了真实 fixture 的独立 read-capacity 测试，
+未发现新的可操作来源切点、KG 硬约束绕过或测量成功状态混淆。
+远端检查暴露的两处下游测试构造依赖也纳入修复及定向验证。
 
 有界结论：在本报告范围、声明的资源上限及可信 owner adapter 假设内，
 修复后独立复查未发现新的可复现阻塞问题。
 这不等于全局最优、永久没有漏洞、目标宿主验收、激活或发布完成。
-容量测量及来源映射验证的最终记录会补入后继报告；生产资格门槛继续保留。
+完整写入容量 qualification 与目标宿主性能接受仍需各自证据；生产门槛继续保留。
