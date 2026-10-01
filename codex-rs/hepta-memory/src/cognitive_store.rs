@@ -673,6 +673,86 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
         )));
     }
 
+    // The writer indexes every immutable revision, including superseded and
+    // tombstoned history. Historical rows also affect FTS corpus statistics.
+    // Verify the complete source-derived view without loading its history into
+    // Rust memory or issuing one query for each revision.
+    // FTS columns are not STRICT: join affinity accepts numeric TEXT/REAL
+    // revisions that the typed retrieval reader cannot decode as integers.
+    let mismatched_memory_fts: i64 = sqlx::query_scalar(
+        "WITH indexed_revisions AS (
+             SELECT memory_id, CAST(revision AS INTEGER) AS revision,
+                    COUNT(*) AS occurrence_count
+             FROM memory_fts
+             GROUP BY memory_id, CAST(revision AS INTEGER)
+         )
+         SELECT (
+             SELECT COUNT(*) FROM memory_revisions r
+             LEFT JOIN indexed_revisions f
+               ON f.memory_id = r.memory_id AND f.revision = r.revision
+             WHERE f.occurrence_count IS NULL OR f.occurrence_count != 1
+         ) + (
+             SELECT COUNT(*) FROM memory_fts f
+             LEFT JOIN memory_revisions r
+               ON r.memory_id = f.memory_id AND r.revision = f.revision
+             WHERE typeof(f.memory_id) != 'text'
+                OR typeof(f.revision) != 'integer'
+                OR typeof(f.content) != 'text'
+                OR r.memory_id IS NULL OR f.content IS NOT r.content
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if mismatched_memory_fts != 0 {
+        return Err(CognitiveStoreError::Corrupt(
+            "memory FTS rows do not match immutable memory revisions".to_string(),
+        ));
+    }
+
+    // Revision-scoped entity text is also indexed once and retained after its
+    // head changes. Prove the historical corpus as well as the selected graph.
+    let mismatched_entity_fts: i64 = sqlx::query_scalar(
+        "WITH indexed_entities AS (
+             SELECT memory_id, CAST(memory_revision AS INTEGER) AS memory_revision,
+                    entity_key, COUNT(*) AS occurrence_count
+             FROM kg_revision_entity_fts
+             GROUP BY memory_id, CAST(memory_revision AS INTEGER), entity_key
+         )
+         SELECT (
+             SELECT COUNT(*) FROM kg_revision_entities e
+             LEFT JOIN indexed_entities f
+               ON f.memory_id = e.memory_id
+              AND f.memory_revision = e.memory_revision
+              AND f.entity_key = e.entity_key
+             WHERE f.occurrence_count IS NULL OR f.occurrence_count != 1
+         ) + (
+             SELECT COUNT(*) FROM kg_revision_entity_fts f
+             LEFT JOIN kg_revision_entities e
+               ON e.memory_id = f.memory_id
+              AND e.memory_revision = f.memory_revision
+              AND e.entity_key = f.entity_key
+             WHERE typeof(f.memory_id) != 'text'
+                OR typeof(f.memory_revision) != 'integer'
+                OR typeof(f.entity_key) != 'text'
+                OR typeof(f.canonical_entity_id) != 'text'
+                OR typeof(f.entity_type) != 'text'
+                OR typeof(f.label) != 'text'
+                OR e.entity_key IS NULL
+                OR f.canonical_entity_id IS NOT e.canonical_entity_id
+                OR f.entity_type IS NOT e.entity_type
+                OR f.label IS NOT e.label
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if mismatched_entity_fts != 0 {
+        return Err(CognitiveStoreError::Corrupt(
+            "KG revision entity FTS rows do not match immutable entity facts".to_string(),
+        ));
+    }
+
     let incomplete_fact_sets: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM kg_revision_fact_sets s
          WHERE s.entity_count != (
@@ -1100,12 +1180,18 @@ async fn verify_current_projection_contents(
             Some("revision_facts_v1") => {
                 let fts_rows = sqlx::query(
                     "SELECT f.memory_id, CAST(f.memory_revision AS INTEGER) AS memory_revision,
-                            f.canonical_entity_id, f.entity_type, f.label
+                            f.canonical_entity_id, f.entity_type, f.label,
+                            e.entity_key AS source_entity_key
                      FROM kg_revision_entity_fts f
                      JOIN memory_heads h
                        ON h.memory_id = f.memory_id AND h.revision = f.memory_revision
                      JOIN memory_revisions r
                        ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
+                     LEFT JOIN kg_revision_entities e
+                       ON e.memory_id = f.memory_id
+                      AND e.memory_revision = f.memory_revision
+                      AND e.entity_key = f.entity_key
+                      AND e.canonical_entity_id = f.canonical_entity_id
                      WHERE r.owner_agent_id = ? AND r.scope_kind = ?
                        AND r.workspace_sha256 IS ?
                        AND r.verification = 'verified' AND r.lifecycle = 'active'
@@ -1127,6 +1213,15 @@ async fn verify_current_projection_contents(
                 let mut stored_fts = fts_rows
                     .into_iter()
                     .map(|row| {
+                        if row
+                            .try_get::<Option<String>, _>("source_entity_key")
+                            .map_err(unavailable)?
+                            .is_none()
+                        {
+                            return Err(CognitiveStoreError::Corrupt(format!(
+                                "KG current projection `{projection_scope}` revision FTS rows have an unbound entity key"
+                            )));
+                        }
                         Ok((
                             row.try_get::<String, _>("memory_id").map_err(unavailable)?,
                             row.try_get::<i64, _>("memory_revision")

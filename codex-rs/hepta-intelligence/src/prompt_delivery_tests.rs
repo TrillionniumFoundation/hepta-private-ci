@@ -12,6 +12,8 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_prompt_registry::FactorSource;
 use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
+use codex_hepta_prompt_registry::PromptFactorRelation;
+use codex_hepta_prompt_registry::PromptFactorRelationKind;
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_prompt_registry::final_use_admission_binding;
@@ -20,6 +22,7 @@ use codex_hepta_prompt_registry::final_use_revoke_binding;
 use codex_hepta_types::FixedQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -204,7 +207,7 @@ pub(crate) fn canonical_selection(
         },
     )
     .expect("enumerate current registry");
-    let portfolio = SelectedPromptPortfolioV1 {
+    let mut portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
             candidate_set_digest: candidates.receipt.receipt_digest,
@@ -213,10 +216,11 @@ pub(crate) fn canonical_selection(
             expected_utility_q32: FixedQ32::ONE,
             total_token_upper_bound: 4,
             valid_until_unix_ms: 9_000,
-            receipt_digest: digest("portfolio-receipt"),
+            receipt_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         },
         selected: candidates.candidates,
+        registry_digest: candidates.registry_snapshot.registry_digest,
         objective_digest: digest("objective"),
         state_digest: digest("state"),
         model_tuple: tuple.clone(),
@@ -227,6 +231,7 @@ pub(crate) fn canonical_selection(
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
     };
+    portfolio.receipt.receipt_digest = portfolio.compute_receipt_digest();
     let exercise_request = PromptExerciseRequestV1 {
         decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
         current_state_digest: digest("state"),
@@ -413,6 +418,440 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
     assert!(matches!(
         error,
         PromptRegistryCompilationErrorV2::Pipeline(_)
+    ));
+}
+
+fn admit_peer_factor(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    grant_now: u64,
+) -> PromptFactor {
+    let mut peer = registry
+        .registry()
+        .expect("registry")
+        .factor(&id("factor:verify"))
+        .cloned()
+        .expect("admitted factor");
+    peer.factor_id = id("factor:peer");
+    peer.content_digest = digest("factor:peer");
+    peer.lifecycle = Lifecycle::Draft;
+    registry
+        .register_factor(peer.clone())
+        .expect("register peer before selection");
+    let reviewer = id("reviewer:peer");
+    let scope = digest("scope:prompt:peer");
+    let evidence = digest("evidence:prompt:peer");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "admission:prompt:peer".to_owned(),
+        nonce: [25; 32],
+        binding: final_use_admission_binding(&peer, &reviewer, scope, evidence)
+            .expect("peer admission binding"),
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("peer signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .admit_factor_final_use(authority, &signed, &peer.factor_id, scope, evidence)
+        .expect("admit peer before selection");
+    registry
+        .registry()
+        .expect("registry")
+        .factor(&peer.factor_id)
+        .cloned()
+        .expect("admitted peer")
+}
+
+fn register_peer_realization(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    grant_now: u64,
+    peer: &PromptFactor,
+    payload: &[u8],
+) -> Result<PromptRealizationBindingV2, Box<dyn std::error::Error>> {
+    let mut realization = registry
+        .registry()?
+        .realization_binding(&id("realization:verify"))
+        .cloned()
+        .ok_or("original realization missing")?;
+    realization.realization_id = id("realization:peer");
+    realization.factor_id = peer.factor_id.clone();
+    realization.payload_digest = Digest32::of_bytes(payload);
+    let publisher = id("publisher:peer");
+    let scope = digest("scope:realization:peer");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "realization:prompt:peer".to_owned(),
+        nonce: [26; 32],
+        binding: final_use_realization_binding(
+            peer,
+            &publisher,
+            scope,
+            &realization,
+            /*supersedes_realization_id*/ None,
+        )?,
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes()?)
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry.register_realization_payload_final_use_v2(
+        authority,
+        &signed,
+        &publisher,
+        scope,
+        realization.clone(),
+        payload.to_vec(),
+        /*supersedes_realization_id*/ None,
+    )?;
+    Ok(realization)
+}
+
+#[test]
+fn compiler_rejects_selected_payload_substitution_under_the_original_factor_receipt()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary
+        .path()
+        .join("prompt-registry-selection-substitution");
+    let (mut registry, tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, b"Original admitted instruction.");
+    let peer = admit_peer_factor(&mut registry, &authority, &signing_key, grant_now);
+    let realization = register_peer_realization(
+        &mut registry,
+        &authority,
+        &signing_key,
+        grant_now,
+        &peer,
+        b"Different admitted instruction.",
+    )?;
+    // Capture the original selection after both payloads exist under one source.
+    let mut selected = canonical_selection(&registry, &tuple, 100);
+    let request = PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:selection-substitution"),
+        serialization_id: id("serialization:selection-substitution"),
+        attachment_id: id("attachment:selection-substitution"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 128,
+        },
+        now_unix_ms: 100,
+        token_budget: 128,
+        truncation_policy_digest: digest("truncation"),
+    };
+    let original = compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        request.clone(),
+    )
+    .expect("original selection compiles under unchanged source");
+    assert_eq!(
+        original.selected_deliveries[0].payload,
+        b"Original admitted instruction.".to_vec()
+    );
+    selected.portfolio.selected = vec![PromptCandidateBindingV1 {
+        factor_id: peer.factor_id,
+        binding_digest: realization.digest(),
+        realization,
+    }];
+    assert_eq!(
+        selected.portfolio.receipt.factor_ids,
+        vec![id("factor:verify")]
+    );
+    for recompute in [false, true] {
+        if recompute {
+            selected.portfolio.receipt.receipt_digest = selected.portfolio.compute_receipt_digest();
+        }
+        let error = compile_prompt_registry_v2(
+            &registry,
+            &selected.portfolio,
+            &selected.exercise_request,
+            request.clone(),
+        )
+        .expect_err("a receipt for the original factor cannot compile a substituted payload");
+        assert!(matches!(
+            error,
+            PromptRegistryCompilationErrorV2::Pipeline(PromptPipelineErrorV1::ExerciseRejected(
+                PromptExerciseActionV1::RejectStale
+            ))
+        ));
+    }
+    Ok(())
+}
+
+#[test]
+fn compiler_rejects_owner_conflict_registered_before_snapshot_and_selection()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary
+        .path()
+        .join("prompt-registry-preexisting-conflict");
+    let original_payload = b"Original admitted instruction.";
+    let peer_payload = b"Different admitted instruction.";
+    let (mut registry, tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, original_payload);
+    let peer = admit_peer_factor(&mut registry, &authority, &signing_key, grant_now);
+    register_peer_realization(
+        &mut registry,
+        &authority,
+        &signing_key,
+        grant_now,
+        &peer,
+        peer_payload,
+    )?;
+    let conflict = PromptFactorRelation {
+        relation_id: id("relation:peer:verify:preexisting-conflict"),
+        left_factor_id: peer.factor_id.clone(),
+        right_factor_id: id("factor:verify"),
+        kind: PromptFactorRelationKind::Conflicts,
+        evidence_digest: digest("evidence:peer:verify:preexisting-conflict"),
+    };
+    // Freeze every selection snapshot only after this owner constraint exists.
+    registry.register_factor_relation(conflict.clone())?;
+    let source = registry.registry()?.factor_graph_source_v1();
+    source.validate()?;
+    assert_eq!(source.relations(), &[conflict]);
+
+    let mut selected = canonical_selection(&registry, &tuple, 100);
+    let request = PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:preexisting-conflict"),
+        serialization_id: id("serialization:preexisting-conflict"),
+        attachment_id: id("attachment:preexisting-conflict"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 128,
+        },
+        now_unix_ms: 100,
+        token_budget: 128,
+        truncation_policy_digest: digest("truncation"),
+    };
+    let original = compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        request.clone(),
+    )?;
+    assert_eq!(
+        original.selected_deliveries[0].payload,
+        original_payload.to_vec()
+    );
+
+    let candidates = enumerate_factors_v1(
+        registry.registry()?,
+        PromptEnumerationRequestV1 {
+            set_id: id("set:preexisting-conflict"),
+            objective_digest: selected.portfolio.objective_digest,
+            state_digest: selected.portfolio.state_digest,
+            generation_vector_digest: selected.portfolio.generation_vector_digest,
+            model_tuple: tuple.clone(),
+            now_unix_ms: request.now_unix_ms,
+            required_factor_ids: vec![peer.factor_id.clone(), id("factor:verify")],
+            maximum_candidates: 8,
+            selection_grammar_digest: digest("grammar"),
+        },
+    )?;
+    assert_eq!(
+        candidates.registry_snapshot.registry_digest,
+        source.registry_snapshot_digest()
+    );
+    selected.portfolio.receipt.candidate_set_digest = candidates.receipt.receipt_digest;
+    selected.portfolio.receipt.factor_ids = candidates.receipt.candidate_factor_ids;
+    selected.portfolio.selected = candidates.candidates;
+    selected.portfolio.receipt.total_token_upper_bound = selected
+        .portfolio
+        .selected
+        .iter()
+        .try_fold(0_u32, |total, binding| {
+            total.checked_add(binding.realization.token_cost)
+        })
+        .ok_or("selected token sum overflow")?;
+    selected.portfolio.receipt.receipt_digest = selected.portfolio.compute_receipt_digest();
+
+    let snapshot = registry.snapshot_v2(selected.portfolio.generation_vector_digest, &tuple)?;
+    assert_eq!(snapshot.registry_digest, selected.portfolio.registry_digest);
+    let compatible = registry.read_compatible_v2(
+        &snapshot,
+        selected.portfolio.generation_vector_digest,
+        &tuple,
+        request.now_unix_ms,
+        selected.portfolio.receipt.factor_ids.clone(),
+        8,
+    )?;
+    assert_eq!(
+        compatible.bindings,
+        selected
+            .portfolio
+            .selected
+            .iter()
+            .map(|binding| binding.realization.clone())
+            .collect::<Vec<_>>()
+    );
+    assert_eq!(
+        selected.portfolio.receipt.factor_ids,
+        vec![peer.factor_id.clone(), id("factor:verify")]
+    );
+    let mut peer_only = selected.portfolio.clone();
+    peer_only
+        .selected
+        .retain(|binding| binding.factor_id == peer.factor_id);
+    peer_only.receipt.factor_ids = vec![peer.factor_id];
+    peer_only.receipt.total_token_upper_bound = peer_only.selected[0].realization.token_cost;
+    peer_only.receipt.receipt_digest = peer_only.compute_receipt_digest();
+    let peer_output = compile_prompt_registry_v2(
+        &registry,
+        &peer_only,
+        &selected.exercise_request,
+        request.clone(),
+    )?;
+    assert_eq!(
+        peer_output.selected_deliveries[0].payload,
+        peer_payload.to_vec()
+    );
+    assert_eq!(registry.registry()?.factor_graph_source_v1(), source);
+
+    match compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        request,
+    ) {
+        Err(PromptRegistryCompilationErrorV2::Pipeline(
+            PromptPipelineErrorV1::ExerciseRejected(PromptExerciseActionV1::RejectStale),
+        )) => Ok(()),
+        Ok(output) => {
+            assert_eq!(
+                output
+                    .selected_deliveries
+                    .iter()
+                    .map(|delivery| delivery.payload.clone())
+                    .collect::<BTreeSet<_>>(),
+                BTreeSet::from([peer_payload.to_vec(), original_payload.to_vec()])
+            );
+            Err("compiler accepted both payloads despite the owner conflict predating every snapshot".into())
+        }
+        Err(error) => Err(error.into()),
+    }
+}
+
+#[test]
+fn compiler_rejects_relation_only_registry_drift_with_unchanged_selected_bindings() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let root = temporary.path().join("prompt-registry-relation-drift");
+    let (mut registry, tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, b"Inspect evidence before mutation.");
+    let peer = admit_peer_factor(&mut registry, &authority, &signing_key, grant_now);
+    let selected = canonical_selection(&registry, &tuple, 100);
+    let before = registry
+        .snapshot_v2(selected.portfolio.generation_vector_digest, &tuple)
+        .expect("selection source snapshot");
+    let selected_bindings = registry
+        .read_compatible_v2(
+            &before,
+            selected.portfolio.generation_vector_digest,
+            &tuple,
+            /*now_unix_ms*/ 100,
+            selected.portfolio.receipt.factor_ids.clone(),
+            /*maximum_results*/ 8,
+        )
+        .expect("selected bindings before relation mutation")
+        .bindings;
+    let request = PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:relation-drift"),
+        serialization_id: id("serialization:relation-drift"),
+        attachment_id: id("attachment:relation-drift"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 128,
+        },
+        now_unix_ms: 100,
+        token_budget: 128,
+        truncation_policy_digest: digest("truncation"),
+    };
+    compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        request.clone(),
+    )
+    .expect("current selection compiles before relation mutation");
+
+    registry
+        .register_factor_relation(PromptFactorRelation {
+            relation_id: id("relation:verify:peer:conflict"),
+            left_factor_id: peer.factor_id,
+            right_factor_id: id("factor:verify"),
+            kind: PromptFactorRelationKind::Conflicts,
+            evidence_digest: digest("evidence:verify:peer:conflict"),
+        })
+        .expect("register conflict through the durable owner");
+    let after = registry
+        .snapshot_v2(selected.portfolio.generation_vector_digest, &tuple)
+        .expect("current source snapshot");
+    assert_ne!(before.registry_digest, after.registry_digest);
+    let current_bindings = registry
+        .read_compatible_v2(
+            &after,
+            selected.portfolio.generation_vector_digest,
+            &tuple,
+            /*now_unix_ms*/ 100,
+            selected.portfolio.receipt.factor_ids.clone(),
+            /*maximum_results*/ 8,
+        )
+        .expect("selected realization remains compatible")
+        .bindings;
+    assert_eq!(current_bindings, selected_bindings);
+
+    let error = compile_prompt_registry_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        request,
+    )
+    .expect_err("relation drift must require a new selection before delivery");
+    assert!(matches!(
+        error,
+        PromptRegistryCompilationErrorV2::Pipeline(PromptPipelineErrorV1::ExerciseRejected(
+            PromptExerciseActionV1::RejectStale
+        ))
     ));
 }
 

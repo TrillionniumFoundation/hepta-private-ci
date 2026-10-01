@@ -53,6 +53,8 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[path = "durable_relations.rs"]
+mod relations;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -438,6 +440,8 @@ struct StoredV2 {
     payloads: Vec<StoredPayload>,
     supersessions: Vec<StoredSupersession>,
     lifecycle_events: Vec<StoredLifecycleEvent>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    relations: Vec<relations::StoredRelation>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -630,6 +634,7 @@ fn stored_metadata(registry: &PromptRegistry) -> StoredV2 {
             })
             .collect(),
         lifecycle_events: registry.lifecycle_events.iter().map(stored_event).collect(),
+        relations: relations::encode(registry),
     }
 }
 
@@ -679,7 +684,13 @@ fn restore_v2(
             return Err(DurableRegistryError::Corrupt);
         }
     }
-    if factors.len().saturating_add(realizations.len()) > configured_maximum {
+    let relations = relations::decode(stored.relations)?;
+    if factors
+        .len()
+        .saturating_add(realizations.len())
+        .saturating_add(relations.len())
+        > configured_maximum
+    {
         return Err(DurableRegistryError::CapacityExceeded);
     }
 
@@ -738,7 +749,7 @@ fn restore_v2(
         realization_bindings,
         realization_payloads,
         realization_supersessions,
-        relations: BTreeMap::new(),
+        relations,
         lifecycle_events,
         revision,
         lifecycle_frontier: stored.lifecycle_frontier,
@@ -882,6 +893,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             .factors
             .len()
             .saturating_add(registry.realizations.len())
+            .saturating_add(registry.relations.len())
             > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
@@ -982,6 +994,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             return Err(DurableRegistryError::Corrupt);
         }
     }
+    relations::validate(registry)?;
 
     if registry.realizations.len() != registry.realization_bindings.len() {
         return Err(DurableRegistryError::Corrupt);

@@ -1,0 +1,3345 @@
+{
+  "schema": "hepta.knowledge-graph-native-validation.round3.v1",
+  "generatedAtUtc": "2026-10-01T07:41:15.992492+00:00",
+  "currentWorkingTreeHead": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+  "currentWorkingTreeTree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+  "currentDirtyTrackedFiles": [
+    "M docs/modules/MODULE_DOCS.json",
+    " M docs/modules/knowledge.graph/TECHNICAL.md",
+    " M qualification/knowledge-graph/SECOND_PASS_AUDIT_20261001.md",
+    " M qualification/module-execution-dossiers/DETAILS.json",
+    " M qualification/module-execution-dossiers/detail/knowledge.graph.md"
+  ],
+  "scope": "scoped package library/integration tests and six-owner lint; never full workspace",
+  "wholeCandidateQualificationGranted": false,
+  "productionGranted": false,
+  "productEndToEndClosureGranted": false,
+  "deepQualificationGranted": false,
+  "activationGranted": false,
+  "environment": {
+    "rust": "1.95.0",
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "buildJobs": 1,
+    "testDebug": 0,
+    "devDebug": 0,
+    "incremental": 0,
+    "sandboxEnvironmentUnchanged": true,
+    "sharedDiskCapacityUnstable": true
+  },
+  "sourceSnapshots": {
+    "post-small-package-capture": {
+      "head": "676a18740ee50e93ca50c077a2e69b9c47f6b40e",
+      "tree": "c19b803b775251fa097f25211fae12e6c5016d9e",
+      "capture_phase": "after small package native execution, before Agentd and lint",
+      "sourceCaptureFile": "native-source-after-small-packages.json",
+      "sourceCaptureSha256": "f9d277b5c6072b1bc8b9272fa7950f2d1d2962c0d91de4b7c1023a4a512e9552",
+      "criticalFileCount": 349,
+      "criticalFilesAggregateSha256": "a69f9c6bf223dc286d8dfc5a8cb3d7bd2d0ae7daa2f082d06ffe5b8f8bd16a18",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "history-before-automatic-launch": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:00:45.196269+00:00",
+      "working_tree_patch": "history-before-automatic-launch-source.patch",
+      "working_tree_patch_sha256": "df1716960dbd8a31bdaf611f3118eb1ec5f903c045f4e964f0da19375959f975",
+      "sourceCaptureFile": "history-before-automatic-launch-source.json",
+      "sourceCaptureSha256": "7e6b6de304f7a20474b8a80e388c79a4f7d19ce65b96ab5b7525b12c6d92ee46",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "memory-final-perf-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:03:16.514520+00:00",
+      "working_tree_patch": "memory-final-perf-source.patch",
+      "working_tree_patch_sha256": "df1716960dbd8a31bdaf611f3118eb1ec5f903c045f4e964f0da19375959f975",
+      "sourceCaptureFile": "memory-final-perf-source.json",
+      "sourceCaptureSha256": "f814cde4462c28ff34158cb27694f825d8d26500776a056d63e2cbdfc7456937",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "memory-final-perf-after": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:04:18.062301+00:00",
+      "working_tree_patch": "memory-final-perf-after-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "memory-final-perf-after-source.json",
+      "sourceCaptureSha256": "61273b8e9cbb45ba6ba9ec5509a74639c1a746b2fd13393d1f3370274795a891",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "product-default-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:04:22.924398+00:00",
+      "working_tree_patch": "product-default-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "product-default-source.json",
+      "sourceCaptureSha256": "2d6d827609b2823143af776c73e875368b6b7bf55b0120839d8f975649547792",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "product-default-after": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:11:01.445566+00:00",
+      "working_tree_patch": "product-default-after-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "product-default-after-source.json",
+      "sourceCaptureSha256": "eeaba9567d5bda7c421e913c30ad0ea2979a9efcaaab7fcd3b2505432d4155e5",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "product-witness-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:13:25.678407+00:00",
+      "working_tree_patch": "product-witness-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "product-witness-source.json",
+      "sourceCaptureSha256": "4e2b4ab050d6741e3ffa699555144ac7da87689c0c19fb0626324d2b43a50d89",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "product-witness-after": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:16:27.583370+00:00",
+      "working_tree_patch": "product-witness-after-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "product-witness-after-source.json",
+      "sourceCaptureSha256": "f0bd2260d68dd544f34bbf8bfb98b9e165d975b73e71e7d0591c36acd6ba8017",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "fix-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:16:38.608558+00:00",
+      "working_tree_patch": "fix-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "fix-source.json",
+      "sourceCaptureSha256": "f38c9abc3060ee2d19efb7ad0e8910a258ca20d5f9e2b29fa5af7f6a1f8c7752",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "fix-after": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:17:11.107700+00:00",
+      "working_tree_patch": "fix-after-source.patch",
+      "working_tree_patch_sha256": "159ecb29d0f53ecf0cac247df335d80b4414cb4abc93a758553fede0c9fcc6da",
+      "sourceCaptureFile": "fix-after-source.json",
+      "sourceCaptureSha256": "74bb6ee80d3c4cb41c674a70bb08001ba3600ad8bb4f030df8bac01197285fbe",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "strict-lint-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:17:33.959068+00:00",
+      "working_tree_patch": "strict-lint-source.patch",
+      "working_tree_patch_sha256": "159ecb29d0f53ecf0cac247df335d80b4414cb4abc93a758553fede0c9fcc6da",
+      "sourceCaptureFile": "strict-lint-source.json",
+      "sourceCaptureSha256": "1ed1a04687dd3493e68a900b5611c1f643285baf767188fe34d79b942acdbf20",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "strict-lint-after": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:17:35.602373+00:00",
+      "working_tree_patch": "strict-lint-after-source.patch",
+      "working_tree_patch_sha256": "159ecb29d0f53ecf0cac247df335d80b4414cb4abc93a758553fede0c9fcc6da",
+      "sourceCaptureFile": "strict-lint-after-source.json",
+      "sourceCaptureSha256": "3e2c19de4af189da826716edc108287e141430327c49e7702c32c6967c821680",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "fix-retry-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:19:37.255105+00:00",
+      "working_tree_patch": "fix-retry-source.patch",
+      "working_tree_patch_sha256": "fbde85ceb3f5671e745129b15b16cccf7c2a55bfc6340578f184548e70a7aa44",
+      "sourceCaptureFile": "fix-retry-source.json",
+      "sourceCaptureSha256": "30def3839cbc909ba3b49b095d4153a624ced024db6d7ec62b29f87756827d81",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "fix-retry-after": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:28:43.644655+00:00",
+      "working_tree_patch": "fix-retry-after-source.patch",
+      "working_tree_patch_sha256": "0e07f8bd4bbe78b3c42bccf36512e68795cb61f23e34d1648eeef9e66ba988a4",
+      "sourceCaptureFile": "fix-retry-after-source.json",
+      "sourceCaptureSha256": "d1fb873366745f7113546f49742cd586deef65550bfa115583d339eb78c6c32e",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "4e03020d63ca1a6b4956137bce55356e6403631031edb7f169b5a384e9a95f0c",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "core-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:34:05.927239+00:00",
+      "working_tree_patch": "core-final-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "core-final-source.json",
+      "sourceCaptureSha256": "aaed91bae4a87ffe9a783b0d40f5ede547403b03524f1ae67001c018850b13cb",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "core-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:34:19.332660+00:00",
+      "working_tree_patch": "core-final-after-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "core-final-after-source.json",
+      "sourceCaptureSha256": "907b14d68ba47d8017728b2d59c62ff317fc450c58ca923c93dfa51c308849ab",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "memory-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:34:19.450793+00:00",
+      "working_tree_patch": "memory-final-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "memory-final-source.json",
+      "sourceCaptureSha256": "9fb3c96faafc9c6bd699e1ab494e82ac2e5cce3cc5aec8afc18a3d06a9a41d76",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "memory-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:35:46.305487+00:00",
+      "working_tree_patch": "memory-final-after-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "memory-final-after-source.json",
+      "sourceCaptureSha256": "531be739f7bca56821a614eaa6fb3170cb1587cc5f06d665e75d8b656ae15221",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "crash-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:35:46.417747+00:00",
+      "working_tree_patch": "crash-final-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "crash-final-source.json",
+      "sourceCaptureSha256": "f5e840f53fd9e732a4556062b59aa8fc61fac5f9325715b253dd38691633663d",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "crash-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:35:49.250551+00:00",
+      "working_tree_patch": "crash-final-after-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "crash-final-after-source.json",
+      "sourceCaptureSha256": "56cdc497d8353217262b5eaea1f1f5ad0bf8f3bc3e6b95ade2cc92f47ba8b183",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "history-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:35:49.369567+00:00",
+      "working_tree_patch": "history-final-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "history-final-source.json",
+      "sourceCaptureSha256": "3c1585c6633917f5c6476132c7acb44c6f0922e4897508b5c8ba43961ae78ba0",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "history-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:36:14.138820+00:00",
+      "working_tree_patch": "history-final-after-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "history-final-after-source.json",
+      "sourceCaptureSha256": "22e21b56434ea2d5544b32302ac4c909b9396097488c3f1144613ec05d7891cc",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "prompt-delivery-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:36:15.418443+00:00",
+      "working_tree_patch": "prompt-delivery-final-source.patch",
+      "working_tree_patch_sha256": "bd7e3264e71765b6be48cff37c7b57e6721f7551d67a46df28644cae512493fd",
+      "sourceCaptureFile": "prompt-delivery-final-source.json",
+      "sourceCaptureSha256": "b71b67af1ec6f9ef5e1d3ed9eec97b55315fdceaa6771fa42d9568a278e9cf1f",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "prompt-delivery-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:36:21.334725+00:00",
+      "working_tree_patch": "prompt-delivery-final-after-source.patch",
+      "working_tree_patch_sha256": "3a49efc4bc9022695dc0e73c914597f17a1c2324ba31db7dbb60b1700ef83d7c",
+      "sourceCaptureFile": "prompt-delivery-final-after-source.json",
+      "sourceCaptureSha256": "85b38f7e30cc1082a7c45399eddc9f66a4ca8f765ae29f63327d53593fce402a",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "fix-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:36:35.684634+00:00",
+      "working_tree_patch": "fix-final-source.patch",
+      "working_tree_patch_sha256": "3a49efc4bc9022695dc0e73c914597f17a1c2324ba31db7dbb60b1700ef83d7c",
+      "sourceCaptureFile": "fix-final-source.json",
+      "sourceCaptureSha256": "22a043039d287dc0452490847de13b17f4ccfc3c3c918f5cfe031ad109044b02",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "fix-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:38:02.209325+00:00",
+      "working_tree_patch": "fix-final-after-source.patch",
+      "working_tree_patch_sha256": "5be3f20262a3c469e5218ae9242bbf9d84a7e1772ae3d35897f3a9d36de862a0",
+      "sourceCaptureFile": "fix-final-after-source.json",
+      "sourceCaptureSha256": "b804b773da0e0d5b998976e98ca181c3face6ab51a945fa0333a0992ec7be435",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "strict-lint-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:38:14.781892+00:00",
+      "working_tree_patch": "strict-lint-final-source.patch",
+      "working_tree_patch_sha256": "5be3f20262a3c469e5218ae9242bbf9d84a7e1772ae3d35897f3a9d36de862a0",
+      "sourceCaptureFile": "strict-lint-final-source.json",
+      "sourceCaptureSha256": "44d5f4ed41b1edd41d64f90102d2790e51d9e2050070b940f441b5cc5d990cbd",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "strict-lint-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:41:04.284664+00:00",
+      "working_tree_patch": "strict-lint-final-after-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "sourceCaptureFile": "strict-lint-final-after-source.json",
+      "sourceCaptureSha256": "cca375ee4750b90d22bf9218c6605f4367e2262f52360265e0e93d36227ebb2a",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "prompt-runtime-final-before": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:41:42.418096+00:00",
+      "working_tree_patch": "prompt-runtime-final-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "sourceCaptureFile": "prompt-runtime-final-source.json",
+      "sourceCaptureSha256": "5d6e2f038855509fe47f07fbe95ef01da36883002fac6fae82d8b89dc57e3f77",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "prompt-runtime-final-after": {
+      "head": "c3056c379e5a272bb8c3037b4608f5d4341c0c01",
+      "tree": "0f2b6cc22855358902631a2574d023323e924c4d",
+      "captured_at_utc": "2026-10-01T06:47:35.532940+00:00",
+      "working_tree_patch": "prompt-runtime-final-after-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "sourceCaptureFile": "prompt-runtime-final-after-source.json",
+      "sourceCaptureSha256": "354f5e6d2d8f8c40928c76ca286ccf3ab971c236930e8489b1e838bf46f0edb5",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "d009f1b301da6ca54a191a1b8e4d539119530ffac6be7e4ba0c208e9c406dff5",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "source-auth-baseline-optimizer-before": {
+      "head": "7af3dbca5b7f55a51752e61551910e90314091c9",
+      "tree": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+      "captured_at_utc": "2026-10-01T07:02:02.242382+00:00",
+      "working_tree_patch": "source-auth-baseline-optimizer-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "source-auth-baseline-optimizer-source.json",
+      "sourceCaptureSha256": "ba4de09f21de7d409c51907fdc8011d39817f610cc628fd90128dd1535ab1d6e",
+      "criticalFileCount": 1094,
+      "criticalFilesAggregateSha256": "a7f46c5bbbd983ecae4c2eb01e24180cf1b55e1ff5bb84e9dfa0bbea8512d771",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "source-auth-baseline-optimizer-after": {
+      "head": "7af3dbca5b7f55a51752e61551910e90314091c9",
+      "tree": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+      "captured_at_utc": "2026-10-01T07:02:07.846387+00:00",
+      "working_tree_patch": "source-auth-baseline-optimizer-after-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "source-auth-baseline-optimizer-after-source.json",
+      "sourceCaptureSha256": "3d378558c031e756848554c761691d564942e36abbcd47ff98827d9cb5e64ee4",
+      "criticalFileCount": 1094,
+      "criticalFilesAggregateSha256": "a7f46c5bbbd983ecae4c2eb01e24180cf1b55e1ff5bb84e9dfa0bbea8512d771",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "source-auth-baseline-compiler-before": {
+      "head": "7af3dbca5b7f55a51752e61551910e90314091c9",
+      "tree": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+      "captured_at_utc": "2026-10-01T07:02:07.987576+00:00",
+      "working_tree_patch": "source-auth-baseline-compiler-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "source-auth-baseline-compiler-source.json",
+      "sourceCaptureSha256": "98952ef64fe450495d6c6c167fb3c581553453971aa62d4c1b910abe612d0eab",
+      "criticalFileCount": 1094,
+      "criticalFilesAggregateSha256": "a7f46c5bbbd983ecae4c2eb01e24180cf1b55e1ff5bb84e9dfa0bbea8512d771",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "source-auth-baseline-compiler-after": {
+      "head": "7af3dbca5b7f55a51752e61551910e90314091c9",
+      "tree": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+      "captured_at_utc": "2026-10-01T07:02:14.520233+00:00",
+      "working_tree_patch": "source-auth-baseline-compiler-after-source.patch",
+      "working_tree_patch_sha256": "e8efdb3f8e1ebe06fc37f59675ec0b47c4e47873d1ca919892e469d1820cb97e",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "source-auth-baseline-compiler-after-source.json",
+      "sourceCaptureSha256": "21d8b8136c869a6fc5f61cfdf2f4fd135b1462dd0e93644f72cbd77aa1a2c454",
+      "criticalFileCount": 1094,
+      "criticalFilesAggregateSha256": "a7f46c5bbbd983ecae4c2eb01e24180cf1b55e1ff5bb84e9dfa0bbea8512d771",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "source-auth-baseline-optimizer-executed-before": {
+      "head": "7af3dbca5b7f55a51752e61551910e90314091c9",
+      "tree": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+      "captured_at_utc": "2026-10-01T07:03:23.338630+00:00",
+      "working_tree_patch": "source-auth-baseline-optimizer-executed-source.patch",
+      "working_tree_patch_sha256": "78b6354beb00401e99d9438fb5d0f433dbd70c64ddd61f19b9c7789e35c49790",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "source-auth-baseline-optimizer-executed-source.json",
+      "sourceCaptureSha256": "b34963d482972792b875e501e3d32695f574e98af26397f664c207998c1ccd11",
+      "criticalFileCount": 1094,
+      "criticalFilesAggregateSha256": "a7f46c5bbbd983ecae4c2eb01e24180cf1b55e1ff5bb84e9dfa0bbea8512d771",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "source-auth-baseline-optimizer-executed-after": {
+      "head": "7af3dbca5b7f55a51752e61551910e90314091c9",
+      "tree": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+      "captured_at_utc": "2026-10-01T07:03:26.551401+00:00",
+      "working_tree_patch": "source-auth-baseline-optimizer-executed-after-source.patch",
+      "working_tree_patch_sha256": "78b6354beb00401e99d9438fb5d0f433dbd70c64ddd61f19b9c7789e35c49790",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "source-auth-baseline-optimizer-executed-after-source.json",
+      "sourceCaptureSha256": "097332d3928abc5e188bbb30b6cd597cbd793e6d4372a1366432f371f7c6bd1c",
+      "criticalFileCount": 1094,
+      "criticalFilesAggregateSha256": "a7f46c5bbbd983ecae4c2eb01e24180cf1b55e1ff5bb84e9dfa0bbea8512d771",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "core-source-auth-fixed-before": {
+      "head": "0314b2f2ac8219a28bf8cf20e85a382d068d2b6b",
+      "tree": "7caf01588f720fa3fa68e7d581dcbcdfbd1154f4",
+      "captured_at_utc": "2026-10-01T07:16:04.373746+00:00",
+      "working_tree_patch": "core-source-auth-fixed-source.patch",
+      "working_tree_patch_sha256": "1b3a265c3699df60b7626c48d446ff09f2b28621f3cc261c770a13b9a37b718e",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "core-source-auth-fixed-source.json",
+      "sourceCaptureSha256": "50618453c41796810e1ede8b0a128c798a84895d02f8611df873fc6b499c9482",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "b236bd5f0c7aca1296034b274d3ff0c5b3b9fa6035ac294b353be1054ee9f621",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "core-source-auth-fixed-after": {
+      "head": "0314b2f2ac8219a28bf8cf20e85a382d068d2b6b",
+      "tree": "7caf01588f720fa3fa68e7d581dcbcdfbd1154f4",
+      "captured_at_utc": "2026-10-01T07:16:16.219877+00:00",
+      "working_tree_patch": "core-source-auth-fixed-after-source.patch",
+      "working_tree_patch_sha256": "1b3a265c3699df60b7626c48d446ff09f2b28621f3cc261c770a13b9a37b718e",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "core-source-auth-fixed-after-source.json",
+      "sourceCaptureSha256": "bf2e02979167c6e1279d9d1b14ca21a218f24202a223c839f7dfa902585ccc0a",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "b236bd5f0c7aca1296034b274d3ff0c5b3b9fa6035ac294b353be1054ee9f621",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    },
+    "core-source-auth-fixed-retry-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:17:58.292541+00:00",
+      "working_tree_patch": "core-source-auth-fixed-retry-source.patch",
+      "working_tree_patch_sha256": "7ebb5991977e5896ad0d361c0c37ecb2f8be2411ed988816fef9cbf3f2b7485f",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "core-source-auth-fixed-retry-source.json",
+      "sourceCaptureSha256": "6f6b86e8520357ebdc9007a31e34491b890088fbba6d323463a39cd84546f17a",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "core-source-auth-fixed-retry-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:18:10.256163+00:00",
+      "working_tree_patch": "core-source-auth-fixed-retry-after-source.patch",
+      "working_tree_patch_sha256": "7ebb5991977e5896ad0d361c0c37ecb2f8be2411ed988816fef9cbf3f2b7485f",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "core-source-auth-fixed-retry-after-source.json",
+      "sourceCaptureSha256": "ec489b89c41623a11979842b5e6698bb52f3ef69e20b560051838f12c802ca93",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-delivery-source-auth-fixed-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:18:19.715424+00:00",
+      "working_tree_patch": "prompt-delivery-source-auth-fixed-source.patch",
+      "working_tree_patch_sha256": "7ebb5991977e5896ad0d361c0c37ecb2f8be2411ed988816fef9cbf3f2b7485f",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-delivery-source-auth-fixed-source.json",
+      "sourceCaptureSha256": "851593a819c34c39c4a8974f6f2a7f5f8729e1cb2d682f90e15031f4c15d93b2",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-delivery-source-auth-fixed-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:18:26.256013+00:00",
+      "working_tree_patch": "prompt-delivery-source-auth-fixed-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-delivery-source-auth-fixed-after-source.json",
+      "sourceCaptureSha256": "50d8b10e61d3bfaf872a7a8a9f7b1ec13200fcbadb940f699027cb72ac5ad80c",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:18:30.769218+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-source.json",
+      "sourceCaptureSha256": "ae16f4e2f51aea3b54c75a2b699220e0bd1ec305469b930285096ecd38c67329",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:18:56.886583+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-after-source.json",
+      "sourceCaptureSha256": "9adf81e1b38daa7f919f2cd1b8938d121906e998179423170fff858d3907a880",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "memory-source-auth-fixed-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:19:37.396957+00:00",
+      "working_tree_patch": "memory-source-auth-fixed-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "memory-source-auth-fixed-source.json",
+      "sourceCaptureSha256": "12ea9dfc6b4a40a62d0d8d5ff8ec07216fc42bceba695e0f641e2f1d9830c13d",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "memory-source-auth-fixed-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:20:36.709258+00:00",
+      "working_tree_patch": "memory-source-auth-fixed-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "memory-source-auth-fixed-after-source.json",
+      "sourceCaptureSha256": "f8ba3a4785c6a2c937334a8e2abbc539528edc8b2037b8efee539d0b7c0c00f4",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "crash-source-auth-fixed-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:20:43.477332+00:00",
+      "working_tree_patch": "crash-source-auth-fixed-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "crash-source-auth-fixed-source.json",
+      "sourceCaptureSha256": "887374dd1c0f1097a66e05047703db337ffee1b718f372dbf23bc2bcea166fab",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "crash-source-auth-fixed-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:20:45.908342+00:00",
+      "working_tree_patch": "crash-source-auth-fixed-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "crash-source-auth-fixed-after-source.json",
+      "sourceCaptureSha256": "b3388d92f29c47bcdcaf02bf5f325a2c4e787e31350bc54ff7b585fe871f7d88",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "history-source-auth-fixed-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:20:57.497821+00:00",
+      "working_tree_patch": "history-source-auth-fixed-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "history-source-auth-fixed-source.json",
+      "sourceCaptureSha256": "42045751902ee81cd01f7285697d3bf196e5c5b6b93f1f0b3017b2f503d22161",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "history-source-auth-fixed-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:21:21.498634+00:00",
+      "working_tree_patch": "history-source-auth-fixed-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "history-source-auth-fixed-after-source.json",
+      "sourceCaptureSha256": "67d35f81b8a8e661c9abf9ca1fc4265949962d928edc335a76b5d20cfdbe48e8",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "intelligence-owned-cache-clean-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:21:27.866615+00:00",
+      "working_tree_patch": "intelligence-owned-cache-clean-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "intelligence-owned-cache-clean-source.json",
+      "sourceCaptureSha256": "3c0604c4e88df43caee554c7f768b9390b5787a81d33837d5b606e47e1cee236",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "intelligence-owned-cache-clean-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:21:28.401403+00:00",
+      "working_tree_patch": "intelligence-owned-cache-clean-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "intelligence-owned-cache-clean-after-source.json",
+      "sourceCaptureSha256": "fb33a81b3a461abb06a0a1ec87b5b46177d228321a82537e8d193b1a4a8f25d9",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-rebuild-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:21:33.319915+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-rebuild-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-rebuild-source.json",
+      "sourceCaptureSha256": "f5c9489ad68cb436c596c85aa543083df95c61df7bc4b2d12e734892e7162ee8",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-rebuild-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:21:59.322697+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-rebuild-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-rebuild-after-source.json",
+      "sourceCaptureSha256": "b825643a2cd582f3434271d40a0b602bf83e5e8602ba458174470ef1e8d22047",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-locator-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:24:14.500147+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-locator-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-locator-source.json",
+      "sourceCaptureSha256": "161b21f54d07a7975bfc29221d8a049c09ea286f5006e1a17cd8ba00548b2d08",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-locator-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:24:24.724743+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-locator-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-locator-after-source.json",
+      "sourceCaptureSha256": "edc22e86dc7e5d1785c22ca62cb9d564a3c6e98338cc4b9ef5bd0bef589cf9c1",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "optimizer-intelligence-owned-cache-clean-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:25:16.945695+00:00",
+      "working_tree_patch": "optimizer-intelligence-owned-cache-clean-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "optimizer-intelligence-owned-cache-clean-source.json",
+      "sourceCaptureSha256": "43e18a390b4d7d4e14ec3d8963e151dfddb56a7c628f2e4488c5ab93c05ef296",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "optimizer-intelligence-owned-cache-clean-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:25:17.954381+00:00",
+      "working_tree_patch": "optimizer-intelligence-owned-cache-clean-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "optimizer-intelligence-owned-cache-clean-after-source.json",
+      "sourceCaptureSha256": "dd3bc984c88bc52cb2c1fdf35819c4942bdc44d3407222ba7c7e650898135c2d",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-pair-rebuild-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:25:18.152738+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-pair-rebuild-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-pair-rebuild-source.json",
+      "sourceCaptureSha256": "27edade75040c223a07fa630b21c41098ca6ab49881e9d4c21a5c45127726f8e",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-pair-rebuild-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:25:45.202479+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-pair-rebuild-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-pair-rebuild-after-source.json",
+      "sourceCaptureSha256": "7a9cedb7475a68fb5a9ecde668968d60c8ca4d7d2b91df78a5efff00a8fd377e",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "intelligence-library-diagnostic-build-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:27:39.056706+00:00",
+      "working_tree_patch": "intelligence-library-diagnostic-build-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "intelligence-library-diagnostic-build-source.json",
+      "sourceCaptureSha256": "f42dc126a45393b6dec40c77c05854a9018f0080953e224c8f945c4a8820e805",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "intelligence-library-diagnostic-build-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:27:41.508380+00:00",
+      "working_tree_patch": "intelligence-library-diagnostic-build-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "intelligence-library-diagnostic-build-after-source.json",
+      "sourceCaptureSha256": "c4b2c1f8c5a04d93222e01fc81813734d2770705f240da563078a783ca54b74e",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-mtime-rebuild-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:30:38.897260+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-mtime-rebuild-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-mtime-rebuild-source.json",
+      "sourceCaptureSha256": "b3402cd5785b2948a7f4bfd63620b213dbcbbf13765d13b2c87ea938cc7323ad",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-source-auth-fixed-mtime-rebuild-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:31:51.828920+00:00",
+      "working_tree_patch": "prompt-runtime-source-auth-fixed-mtime-rebuild-after-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "prompt-runtime-source-auth-fixed-mtime-rebuild-after-source.json",
+      "sourceCaptureSha256": "a3b0ee25bd2675213853390bdd409c98e57e4a916c680b12aa243e05b3ea1b9d",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "fix-source-auth-final-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:32:01.739777+00:00",
+      "working_tree_patch": "fix-source-auth-final-source.patch",
+      "working_tree_patch_sha256": "3e0ce96a0b475b981a997de74012bfc9c6cc3068979f9128ae2162da6f5972b2",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "fix-source-auth-final-source.json",
+      "sourceCaptureSha256": "89caf965263d7ea4bd56d9d56b97aa68a186df326979aef877091b8664ad0036",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "fix-source-auth-final-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:36:23.121105+00:00",
+      "working_tree_patch": "fix-source-auth-final-after-source.patch",
+      "working_tree_patch_sha256": "cc49f21908db4dc41d1ec1fe520af71d0e8d706d00413478f6a840016de014c7",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "fix-source-auth-final-after-source.json",
+      "sourceCaptureSha256": "9df6748248f060368342d636a5f0c0fc4b95dbf57ea01045c517dec33b4a4156",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "strict-lint-source-auth-final-before": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:36:55.051535+00:00",
+      "working_tree_patch": "strict-lint-source-auth-final-source.patch",
+      "working_tree_patch_sha256": "3b545c8974e224cd764019a3464064ba4d9445defa5f532603d1ff9746069b38",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "strict-lint-source-auth-final-source.json",
+      "sourceCaptureSha256": "63b8021c87c4a31e99201a9aec9cd9d49d8085bedb4adb2c294865dfed53eb55",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "strict-lint-source-auth-final-after": {
+      "head": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "tree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+      "captured_at_utc": "2026-10-01T07:39:44.372210+00:00",
+      "working_tree_patch": "strict-lint-source-auth-final-after-source.patch",
+      "working_tree_patch_sha256": "3b545c8974e224cd764019a3464064ba4d9445defa5f532603d1ff9746069b38",
+      "critical_files_include_untracked_sources": true,
+      "untracked_source_contents": {},
+      "sourceCaptureFile": "strict-lint-source-auth-final-after-source.json",
+      "sourceCaptureSha256": "54a5d2d4669b2e99d30724c53711b35811422d3135ac1949f0f3f92f16c45e46",
+      "criticalFileCount": 1096,
+      "criticalFilesAggregateSha256": "1dfe7ab66c36f6d3f5009eb993aa7c2f976c1dd087a5b14229b000211f8bc72b",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": true
+    },
+    "prompt-runtime-before": {
+      "head": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "captured_at_utc": "2026-10-01T06:11:38.835622+00:00",
+      "working_tree_patch": "prompt-runtime-source.patch",
+      "working_tree_patch_sha256": "52a8601a8d567caee4fdcc5fe4916f100b6f0a231ad632ab6a7cb9ed81d2b088",
+      "sourceCaptureFile": "prompt-runtime-source.json",
+      "sourceCaptureSha256": "e2da4180609cd243c17626bd22b2ad3b7cd4d07662140889842d753a4395ad1f",
+      "criticalFileCount": 1093,
+      "criticalFilesAggregateSha256": "717e4dbf19281fcb45162b8953d0a123b4eba6211ee95f21d5877e5b7924c2c9",
+      "allCapturedCriticalFilesEqualToCurrentWorkingTree": false
+    }
+  },
+  "commands": [
+    {
+      "label": "memory",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "log": "memory.log",
+      "logSha256": "4fb3a8f9029c5ca13c7237492acd0b3dab0b0fda5c8ab576960395c0d1ee45ed",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  56.302s] 277 tests run: 275 passed, 2 failed, 8 skipped"
+        ],
+        "testsExecuted": 277,
+        "passed": 275,
+        "failed": 2,
+        "timedOut": 0,
+        "skipped": 8,
+        "skippedReason": "ignored"
+      },
+      "note": "initial full package: fresh-connection FTS test fixtures subsequently corrected",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "head": "177cd3f896877bfae4721e7df64994822347baa9",
+        "tree": "5879e25222d1f8dc54c423e986bf9b4727bd7c57",
+        "file": "source-before-native.txt",
+        "fileSha256": "4a31b80b77e8dabdc244e1e00e2d43f492d5c7772a3be330876ba15b24b07060",
+        "scope": "working tree/scoped compilation; dirty files and capture timing must also be considered"
+      },
+      "sourcePatch": {
+        "path": "memory-source-before-native.patch",
+        "sha256": "8e1e63bdfb63192b5f4c0f541ce0560d7b8568b9e502b9e56d031a440e943728"
+      }
+    },
+    {
+      "label": "memory-fts-focused",
+      "command": null,
+      "commandProvenance": "verbatim argv not preserved",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "log": "memory-fts-focused.log",
+      "logSha256": "9762f28633d6e0774951030665c0d374aaee005c3fe245475a5b07e21b2dadce",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.286s] 2 tests run: 0 passed, 2 failed, 283 skipped"
+        ],
+        "testsExecuted": 2,
+        "passed": 0,
+        "failed": 2,
+        "timedOut": 0,
+        "skipped": 283,
+        "skippedReason": "filtered"
+      },
+      "note": "focused two prior fixture failures; filter targets recorded below, argv not retained verbatim",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "wholeHeadAtCommandStart": null,
+        "scope": "working tree/scoped evidence; post-small-package snapshot is not a contemporaneous whole-head assertion",
+        "postExecutionSourceReference": "post-small-package-capture"
+      },
+      "knownFilterTargets": [
+        "reopen_rejects_memory_fts_source_drift",
+        "reopen_rejects_obsolete_entity_fts_source_drift"
+      ]
+    },
+    {
+      "label": "optimizer",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "log": "optimizer.log",
+      "logSha256": "5fa0434cb89cff1075e8e40c66248dc530b06ab50c108062e48d6d41e8754ef7",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.960s] 43 tests run: 43 passed, 0 skipped"
+        ],
+        "testsExecuted": 43,
+        "passed": 43,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 0
+      },
+      "note": "43 optimizer tests including signed temporal boundaries and payload-substitution rejection",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "wholeHeadAtCommandStart": null,
+        "scope": "working tree/scoped evidence; post-small-package snapshot is not a contemporaneous whole-head assertion",
+        "postExecutionSourceReference": "post-small-package-capture"
+      },
+      "sourcePatch": {
+        "path": "optimizer-source-before-native.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "kernel-registry",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "log": "kernel-registry.log",
+      "logSha256": "eac8b2533ddcf03bc445c49bb4db374411fc923e0d623233bafca27ae6a34552",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   6.197s] 90 tests run: 90 passed, 0 skipped"
+        ],
+        "testsExecuted": 90,
+        "passed": 90,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 0
+      },
+      "note": "35 KG plus 55 registry tests",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "wholeHeadAtCommandStart": null,
+        "scope": "working tree/scoped evidence; post-small-package snapshot is not a contemporaneous whole-head assertion",
+        "postExecutionSourceReference": "post-small-package-capture"
+      }
+    },
+    {
+      "label": "prompt-delivery",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "-E",
+        "test(prompt_delivery::tests)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "log": "prompt-delivery.log",
+      "logSha256": "be6aa26bfef1095f248628c47edac73a1990fc7ba26b241d4a1bb10845e4c5de",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.207s] 5 tests run: 4 passed, 1 failed, 77 skipped"
+        ],
+        "testsExecuted": 5,
+        "passed": 4,
+        "failed": 1,
+        "timedOut": 0,
+        "skipped": 77,
+        "skippedReason": "filtered"
+      },
+      "note": "initial compiler fixture Conflict endpoints were not sorted",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "wholeHeadAtCommandStart": null,
+        "scope": "working tree/scoped evidence; post-small-package snapshot is not a contemporaneous whole-head assertion",
+        "postExecutionSourceReference": "post-small-package-capture"
+      },
+      "sourcePatch": {
+        "path": "intelligence-source-before-native.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "prompt-delivery-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "-E",
+        "test(prompt_delivery::tests)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "log": "prompt-delivery-fixed.log",
+      "logSha256": "d827d00475a840098f09130a8a2d162319018a6a10c1e2e3be2e6ef0a5180aa4",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.251s] 5 tests run: 5 passed, 77 skipped"
+        ],
+        "testsExecuted": 5,
+        "passed": 5,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 77,
+        "skippedReason": "filtered"
+      },
+      "note": "5 compiler boundary tests after canonical Conflict endpoint fixture correction",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "wholeHeadAtCommandStart": null,
+        "scope": "working tree/scoped evidence; post-small-package snapshot is not a contemporaneous whole-head assertion",
+        "postExecutionSourceReference": "post-small-package-capture"
+      }
+    },
+    {
+      "label": "memory-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "log": "memory-fixed.log",
+      "logSha256": "619c5180228411d0e298f1d597bd0b2973eaf06458cb253b5501425e406d6376",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  70.343s] 277 tests run: 277 passed, 8 skipped"
+        ],
+        "testsExecuted": 277,
+        "passed": 277,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 8,
+        "skippedReason": "ignored"
+      },
+      "note": "277 memory tests after fresh-connection FTS fixture correction; prior to performance source edit",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "head": "a0a05cc3de3b416b90dd17faa8263b1fee1f9863",
+        "tree": "c19b803b775251fa097f25211fae12e6c5016d9e",
+        "file": "source-memory-fixed.txt",
+        "fileSha256": "873184a8945c86af0df34b347375912f7047a34cbcb38127dda8544e90bfa69b",
+        "scope": "working tree/scoped compilation; dirty files and capture timing must also be considered"
+      },
+      "sourcePatch": {
+        "path": "memory-source-fixed.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "crash",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "log": "crash.log",
+      "logSha256": "9487f0d9355bdbff9d137f78023e9373c1d1bf8ae0002633a98f592560487b0e",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.353s] 1 test run: 1 passed, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 1,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "note": "ignored crash/reopen witness explicitly selected",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "head": "a0a05cc3de3b416b90dd17faa8263b1fee1f9863",
+        "tree": "c19b803b775251fa097f25211fae12e6c5016d9e",
+        "file": "source-memory-fixed.txt",
+        "fileSha256": "873184a8945c86af0df34b347375912f7047a34cbcb38127dda8544e90bfa69b",
+        "scope": "working tree/scoped compilation; dirty files and capture timing must also be considered",
+        "compiledTreeMatches676Baseline": "c19b803b775251fa097f25211fae12e6c5016d9e"
+      }
+    },
+    {
+      "label": "capacity",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "log": "capacity.log",
+      "logSha256": "9e6bae1872dec98090d8a7e36d22430b6dc0f23dc61ea69e2dcdcdab42cc7590",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [1800.144s] 1 test run: 0 passed, 1 timed out, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 1,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "note": "676/c19 baseline, not optimized-source performance receipt",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "head": "a0a05cc3de3b416b90dd17faa8263b1fee1f9863",
+        "tree": "c19b803b775251fa097f25211fae12e6c5016d9e",
+        "file": "source-memory-fixed.txt",
+        "fileSha256": "873184a8945c86af0df34b347375912f7047a34cbcb38127dda8544e90bfa69b",
+        "scope": "working tree/scoped compilation; dirty files and capture timing must also be considered",
+        "compiledTreeMatches676Baseline": "c19b803b775251fa097f25211fae12e6c5016d9e"
+      },
+      "configuredWorkload": {
+        "writes": 256,
+        "querySamples": 20,
+        "reopenSamples": 5,
+        "contentionReaders": 4,
+        "contentionRounds": 10
+      },
+      "watchdogSeconds": 1800,
+      "lastPhaseLines": [
+        "KG_PHASE contention elapsed_ms=1577202",
+        "KG_PHASE close elapsed_ms=1772143",
+        "KG_PHASE reopen elapsed_ms=1772196",
+        "KG_PHASE reopened=1 elapsed_ms=1785138",
+        "KG_PHASE reopened=2 elapsed_ms=1797955"
+      ],
+      "performanceReceiptEmitted": false,
+      "hostSloFailureClaim": false
+    },
+    {
+      "label": "history",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; verbatim argv capture was added for later stages",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "log": "history.log",
+      "logSha256": "bfbf6a58d4d7c2cf19da920836d8691295a9429ce304ccb282a6ecd775bd26fb",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  23.252s] 1 test run: 1 passed, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 1,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "note": "2be1 performance source recompiled before history execution",
+      "wholeCandidateQualificationClaim": false,
+      "sourceIdentityCapture": {
+        "reference": "history-before-automatic-launch",
+        "captureTiming": "before automatic command launch; after old capacity binary started"
+      },
+      "historyReceipt": {
+        "activationGranted": false,
+        "correctionNs": {
+          "p50": 115688782,
+          "p95": 184697335,
+          "p99": 215244501
+        },
+        "corrections": 128,
+        "deletedFactsResurrected": false,
+        "finalGeneration": 130,
+        "peakRssKiB": 51924,
+        "postDeletionReopens": 3,
+        "queryNs": {
+          "p50": 50541407,
+          "p95": 71761588,
+          "p99": 71761588
+        },
+        "reopenNs": {
+          "p50": 233971019,
+          "p95": 1311496689,
+          "p99": 1311496689
+        },
+        "reopenSamples": 8,
+        "schema": "hepta.knowledge-graph-history.v1"
+      }
+    },
+    {
+      "label": "memory-final-perf",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 61.265,
+      "log": "memory-final-perf.log",
+      "logSha256": "e9eef9c98a264bbc53788bee29af54859adbdf083f99299648b490e4075f2244",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  58.914s] 277 tests run: 277 passed, 8 skipped"
+        ],
+        "testsExecuted": 277,
+        "passed": 277,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 8,
+        "skippedReason": "ignored by default"
+      },
+      "sourceBeforeReference": "memory-final-perf-before",
+      "sourceAfterReference": "memory-final-perf-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "product-default",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "cognitive_product_e2e",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 398.193,
+      "log": "product-default.log",
+      "logSha256": "3e6a6154de78f832e4539166ba85cd051b2b6c3c669b6ebb8e798b2b9a4faa53",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command"
+      },
+      "sourceBeforeReference": "product-default-before",
+      "sourceAfterReference": "product-default-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "error: could not compile `codex-exec-server` (lib) due to 1 previous error",
+        "error: command `/workspace/scratch/b60c367bf765/tooling/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --test cognitive_product_e2e --locked` exited with code 101",
+        "error: recipe `test` failed on line 89 with exit code 101"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "product-witness",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--features",
+        "qualification-cognitive-write",
+        "--test",
+        "cognitive_product_e2e",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 181.664,
+      "log": "product-witness.log",
+      "logSha256": "a7beb4dcdeff7321af66754d505711b113d103e57e125d58a6c6a0a18f602b38",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command"
+      },
+      "sourceBeforeReference": "product-witness-before",
+      "sourceAfterReference": "product-witness-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+        "error: could not compile `codex-core-plugins` (lib)",
+        "error: command `/workspace/scratch/b60c367bf765/tooling/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --test cognitive_product_e2e --features qualification-cognitive-write --locked` exited with code 101",
+        "error: recipe `test` failed on line 89 with exit code 101"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 32.412,
+      "log": "fix.log",
+      "logSha256": "23041f0317c133e6a131b6444fed5d4e6c685c68ff715f72e17b4fa0a28540bf",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "fix-before",
+      "sourceAfterReference": "fix-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "firstDiagnosticLines": [
+        "error[E0583]: file not found for module `byte_phf`",
+        "--> /workspace/scratch/b60c367bf765/tooling/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerotrie-0.2.4/src/lib.rs:67:1",
+        "error: could not compile `zerotrie` (lib) due to 1 previous error",
+        "error: recipe `fix` failed on line 58 with exit code 101"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "strict-lint",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--no-deps",
+        "--all-targets",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 1.553,
+      "log": "strict-lint.log",
+      "logSha256": "b04c7c011019fdb84550dec5990f299835cfbd6f9d7752e4ed1c8c2b4c6a1028",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "strict-lint-before",
+      "sourceAfterReference": "strict-lint-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "firstDiagnosticLines": [
+        "error[E0583]: file not found for module `byte_phf`",
+        "--> /workspace/scratch/b60c367bf765/tooling/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerotrie-0.2.4/src/lib.rs:67:1",
+        "error: could not compile `zerotrie` (lib) due to 1 previous error"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "fix-retry",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 546.083,
+      "log": "fix-retry.log",
+      "logSha256": "ce9598e1603ed26576151a6841ad96e90a45ae566b1a62a5753150eab80196b8",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "fix-retry-before",
+      "sourceAfterReference": "fix-retry-after",
+      "criticalSourceAggregateUnchangedDuringCommand": false,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "diagnosticLinesObservedDespiteZeroExit": [
+        "--> hepta-memory/src/cognitive_intelligence_writer.rs:156:5",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-intelligence/src/canonical.rs:463:1",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25"
+      ],
+      "changedCriticalSourcePaths": [
+        "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+        "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+      ]
+    },
+    {
+      "label": "core-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 13.308,
+      "log": "core-final.log",
+      "logSha256": "f84d8022f2cf0db5333f89cc5c80626a83573c684142bf4208fa3add7a60532c",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   6.556s] 133 tests run: 133 passed, 0 skipped"
+        ],
+        "testsExecuted": 133,
+        "passed": 133,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 0
+      },
+      "sourceBeforeReference": "core-final-before",
+      "sourceAfterReference": "core-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "memory-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 86.634,
+      "log": "memory-final.log",
+      "logSha256": "7202f61ef90fb8acc6455e809e28a0607d95beca33c0e6c70f3732a058d97800",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  58.743s] 277 tests run: 277 passed, 8 skipped"
+        ],
+        "testsExecuted": 277,
+        "passed": 277,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 8,
+        "skippedReason": "ignored by default"
+      },
+      "sourceBeforeReference": "memory-final-before",
+      "sourceAfterReference": "memory-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "crash-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 2.758,
+      "log": "crash-final.log",
+      "logSha256": "3e45c8f1140bbfb054ddadf94ee3b0d16c5738fa5eba88cd04f2effec01cc3ab",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.278s] 1 test run: 1 passed, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 1,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "sourceBeforeReference": "crash-final-before",
+      "sourceAfterReference": "crash-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "history-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 24.686,
+      "log": "history-final.log",
+      "logSha256": "93f45b7274b65c07ccb3b8bfaa60da6edc083149380f378b8027bcb719291160",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  22.870s] 1 test run: 1 passed, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 1,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "sourceBeforeReference": "history-final-before",
+      "sourceAfterReference": "history-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "historyReceipt": {
+        "activationGranted": false,
+        "correctionNs": {
+          "p50": 110590235,
+          "p95": 169525921,
+          "p99": 198550934
+        },
+        "corrections": 128,
+        "deletedFactsResurrected": false,
+        "finalGeneration": 130,
+        "peakRssKiB": 49184,
+        "postDeletionReopens": 3,
+        "queryNs": {
+          "p50": 55227539,
+          "p95": 60132216,
+          "p99": 60132216
+        },
+        "reopenNs": {
+          "p50": 254542836,
+          "p95": 1339919232,
+          "p99": 1339919232
+        },
+        "reopenSamples": 8,
+        "schema": "hepta.knowledge-graph-history.v1"
+      }
+    },
+    {
+      "label": "prompt-delivery-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "-E",
+        "test(prompt_delivery::tests)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 5.84,
+      "log": "prompt-delivery-final.log",
+      "logSha256": "76019075bb495cc1227cf9ca65d584a3633abb8eef2e40af660947967c38ddec",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.213s] 5 tests run: 5 passed, 77 skipped"
+        ],
+        "testsExecuted": 5,
+        "passed": 5,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 77,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-delivery-final-before",
+      "sourceAfterReference": "prompt-delivery-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "fix-final",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 86.435,
+      "log": "fix-final.log",
+      "logSha256": "f285b3858c82690413d97baab338bdae18eeaf1b1ec194c70a3c58cbed10c4fc",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "fix-final-before",
+      "sourceAfterReference": "fix-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "diagnosticLinesObservedDespiteZeroExit": [
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-intelligence/src/canonical.rs:463:1",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25",
+        "--> hepta-agentd/src/state.rs:178:25"
+      ]
+    },
+    {
+      "label": "strict-lint-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--no-deps",
+        "--all-targets",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 169.24,
+      "log": "strict-lint-final.log",
+      "logSha256": "87d8f11a395fbe627b0f4d646b15cac1c577e3b5891308d64c1bd04b52504f79",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "strict-lint-final-before",
+      "sourceAfterReference": "strict-lint-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "firstDiagnosticLines": [
+        "error: large size difference between variants",
+        "--> hepta-intelligence/src/canonical.rs:463:1",
+        "error: could not compile `codex-hepta-intelligence` (lib) due to 1 previous error"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "prompt-runtime-final",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 352.799,
+      "log": "prompt-runtime-final.log",
+      "logSha256": "f21f0e18424cfd8b8f8b059c47fff75880984d62dd570a8f5e37636c08a26215",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.364s] 16 tests run: 16 passed, 160 skipped"
+        ],
+        "testsExecuted": 16,
+        "passed": 16,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 160,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-runtime-final-before",
+      "sourceAfterReference": "prompt-runtime-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "diagnosticLinesObservedDespiteZeroExit": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25",
+        "--> hepta-agentd/src/state.rs:178:25"
+      ]
+    },
+    {
+      "label": "source-auth-baseline-optimizer",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "--lib",
+        "-E",
+        "test(canonical_source)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 4,
+      "elapsedSeconds": 5.286,
+      "log": "source-auth-baseline-optimizer.log",
+      "logSha256": "f21eddf554d9681a5c7e5ed35fc61c94335aac2c1074f72d1583a5f13ccbcc69",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.002s] 0 tests run: 0 passed, 45 skipped"
+        ],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 45,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "source-auth-baseline-optimizer-before",
+      "sourceAfterReference": "source-auth-baseline-optimizer-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: no tests to run",
+        "error: recipe `test` failed on line 89 with exit code 4"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "source-auth-baseline-compiler",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "-E",
+        "test(compiler_rejects_owner_conflict_registered_before_snapshot_and_selection)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "elapsedSeconds": 6.428,
+      "log": "source-auth-baseline-compiler.log",
+      "logSha256": "2a52af638b45ace1181edbf2c4bf9ba13489c631544b8e0445a7e6f0b31a7797",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.072s] 1 test run: 0 passed, 1 failed, 82 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 0,
+        "failed": 1,
+        "timedOut": 0,
+        "skipped": 82,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "source-auth-baseline-compiler-before",
+      "sourceAfterReference": "source-auth-baseline-compiler-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "source-auth-baseline-optimizer-executed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "--lib",
+        "-E",
+        "test(canonical::tests::source)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "elapsedSeconds": 3.093,
+      "log": "source-auth-baseline-optimizer-executed.log",
+      "logSha256": "05506abbc3323074e62d61d2b2ca28c9dbcb7f9a48b468184f076aed953b18e8",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.153s] 2 tests run: 0 passed, 2 failed, 43 skipped"
+        ],
+        "testsExecuted": 2,
+        "passed": 0,
+        "failed": 2,
+        "timedOut": 0,
+        "skipped": 43,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "source-auth-baseline-optimizer-executed-before",
+      "sourceAfterReference": "source-auth-baseline-optimizer-executed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "testPanicDiagnostics": [
+        [
+          "thread 'canonical::tests::source::exercise_rejects_registered_conflict_in_fresh_recomputed_portfolio' (109) panicked at hepta-prompt-optimizer/src/canonical_source_tests.rs:139:5:",
+          "assertion `left == right` failed",
+          "  left: Exercise"
+        ],
+        [
+          "thread 'canonical::tests::source::registered_owner_conflict_cannot_be_omitted_or_clock_masked_from_selection' (111) panicked at hepta-prompt-optimizer/src/canonical_source_tests.rs:120:9:",
+          "registered owner constraint tampering must be rejected: omit: Ok(SelectedPromptPortfolioV1 { receipt: PromptPortfolioReceiptV1 { portfolio_id: StableId(BoundedText(\"portfolio:owner-source\")), candidate_set_digest: Digest32(\"108a6adaba4c6c1461fa3bb7c7a0d9e003e4ffff7b658e94c518745db48f637d\"), factor_ids: [StableId(BoundedText(\"factor:a\")), StableId(BoundedText(\"factor:b\"))], interaction_digest: Digest32(\"24c909683c791dfbb2e2cc868847bf90c7cc5f73d233057a2ef5e048f659eccc\"), expected_utility_q32: FixedQ32(190), total_token_upper_bound: 2, valid_until_unix_ms: 5000, receipt_digest: Digest32(\"0b4578f6befef4fba5c103626bd357300b500f1bb178862fac6c529af07d8f84\"), authority: AuthorityPosture { _deny_all: () } }, selected: [PromptCandidateBindingV1 { factor_id: StableId(BoundedText(\"factor:a\")), realization: PromptRealizationBindingV2 { realization_id: StableId(BoundedText(\"realization:0\")), factor_id: StableId(BoundedText(\"factor:a\")), model_id: StableId(BoundedText(\"model:test\")), model_version: \"2026-09-21\", model_digest: Digest32(\"9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4\"), tokenizer_digest: Digest32(\"5f97e3774c51edd1d63706c2ec3826c564a067794770cdab0f8c4797971cacf9\"), template_digest: Digest32(\"5cde0f1298f41f7d1c8b907a36992a7a513225a2615bd6e307bf1a9149b06b40\"), tool_schema_digest: Digest32(\"f9d35d43770d39092a663e665e82ae1d84a9e0da3d0d10c407acada6a40cd281\"), context_profile_digest: Digest32(\"7b18a209b307949b72a05f056446ea2b0b089d7d72fee98953308079ee05db1e\"), locale_id: StableId(BoundedText(\"locale:en-US\")), role: DeveloperInstruction, payload_digest: Digest32(\"239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5\"), token_cost: 1, expires_unix_ms: None }, binding_digest: Digest32(\"4777c98bdaa5ecaab491bc872e0dcdfd459104071bbb09192d119c3e0b18efc1\") }, PromptCandidateBindingV1 { factor_id: StableId(BoundedText(\"factor:b\")), realization: PromptRealizationBindingV2 { realization_id: StableId(BoundedText(\"realization:second-factor\")), factor_id: StableId(BoundedText(\"factor:b\")), model_id: StableId(BoundedText(\"model:test\")), model_version: \"2026-09-21\", model_digest: Digest32(\"9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4\"), tokenizer_digest: Digest32(\"5f97e3774c51edd1d63706c2ec3826c564a067794770cdab0f8c4797971cacf9\"), template_digest: Digest32(\"5cde0f1298f41f7d1c8b907a36992a7a513225a2615bd6e307bf1a9149b06b40\"), tool_schema_digest: Digest32(\"f9d35d43770d39092a663e665e82ae1d84a9e0da3d0d10c407acada6a40cd281\"), context_profile_digest: Digest32(\"7b18a209b307949b72a05f056446ea2b0b089d7d72fee98953308079ee05db1e\"), locale_id: StableId(BoundedText(\"locale:en-US\")), role: DeveloperInstruction, payload_digest: Digest32(\"94d166b9907f7bcc6527760a2631094a409936876b04e1c7853d51ca6e88f25d\"), token_cost: 1, expires_unix_ms: None }, binding_digest: Digest32(\"6d26c22162af5a5fc039539e68fcbca2e59fbcce0ff48d0d72de90f5e1c5a306\") }], registry_digest: Digest32(\"9ca1a695e7d19240ec384c66cbe421799684cd2c22dfea10a3c3c9b4a25469c1\"), objective_digest: Digest32(\"d454bec656d32723404961023ed9cb3c37221687c40b498a57b3eefa93c4c5f4\"), state_digest: Digest32(\"4ba69735ca53765ed6a709edb56c6ea236b7193a3b29a6b390c346f0f4340e4e\"), model_tuple: PromptModelTupleV2 { model_id: StableId(BoundedText(\"model:test\")), model_version: \"2026-09-21\", model_digest: Digest32(\"9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4\"), tokenizer_digest: Digest32(\"5f97e3774c51edd1d63706c2ec3826c564a067794770cdab0f8c4797971cacf9\"), template_digest: Digest32(\"5cde0f1298f41f7d1c8b907a36992a7a513225a2615bd6e307bf1a9149b06b40\"), tool_schema_digest: Digest32(\"f9d35d43770d39092a663e665e82ae1d84a9e0da3d0d10c407acada6a40cd281\"), context_profile_digest: Digest32(\"7b18a209b307949b72a05f056446ea2b0b089d7d72fee98953308079ee05db1e\"), locale_id: StableId(BoundedText(\"locale:en-US\")) }, model_tuple_digest: Digest32(\"fd834a33f83cc185872a4294475a5b7d56adba68aafbf29eb45b9a1f7daf4560\"), generation_vector_digest: Digest32(\"928ffb13f19bbfd0943bcbccb1f7fa2b04187c76ee4c2e2d369d55a3116e9a72\"), pricing_set_digest: Digest32(\"f0fa8e091b7c3a44ee434b675eaa0fe0e9fff8a983983b94c5f7ffdeedc771a4\"), graph_generation_digest: Digest32(\"d5d86faf6672dc579e728f07ce40ec8361e119767111513c3d358568fbab38e6\"), selection_method: GreedyPrerequisiteBundleV1, optimality: HeuristicNoCertificate })",
+          "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      ]
+    },
+    {
+      "label": "core-source-auth-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 100,
+      "elapsedSeconds": 11.728,
+      "log": "core-source-auth-fixed.log",
+      "logSha256": "c742abebaa95342c8addfeefdafef4788a52a57d2e202ee2d967994114fc43b4",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   7.312s] 139 tests run: 137 passed, 2 failed, 0 skipped"
+        ],
+        "testsExecuted": 139,
+        "passed": 137,
+        "failed": 2,
+        "timedOut": 0,
+        "skipped": 0
+      },
+      "sourceBeforeReference": "core-source-auth-fixed-before",
+      "sourceAfterReference": "core-source-auth-fixed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "testPanicDiagnostics": [
+        [
+          "thread 'canonical::tests::source::registered_numeric_relations_require_exact_edges_and_authenticated_pair_evidence' (247) panicked at hepta-prompt-optimizer/src/canonical_tests.rs:38:49:",
+          "valid id: identifier contains an invalid character",
+          "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ],
+        [
+          "thread 'canonical::tests::source::registered_owner_conflict_cannot_be_omitted_or_clock_masked_from_selection' (249) panicked at hepta-prompt-optimizer/src/canonical_tests.rs:38:49:",
+          "valid id: identifier contains an invalid character",
+          "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      ]
+    },
+    {
+      "label": "core-source-auth-fixed-retry",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 11.729,
+      "log": "core-source-auth-fixed-retry.log",
+      "logSha256": "03504640ec67f0bfc7e8eee0c6e8b5816760a8cc737accdfd1ad916d429719cf",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   6.958s] 139 tests run: 139 passed, 0 skipped"
+        ],
+        "testsExecuted": 139,
+        "passed": 139,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 0
+      },
+      "sourceBeforeReference": "core-source-auth-fixed-retry-before",
+      "sourceAfterReference": "core-source-auth-fixed-retry-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "prompt-delivery-source-auth-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "-E",
+        "test(prompt_delivery::tests)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 6.457,
+      "log": "prompt-delivery-source-auth-fixed.log",
+      "logSha256": "b851614adb36574580082721901eec0c287c42b34a9c33236480467a01a91068",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.277s] 6 tests run: 6 passed, 77 skipped"
+        ],
+        "testsExecuted": 6,
+        "passed": 6,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 77,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-delivery-source-auth-fixed-before",
+      "sourceAfterReference": "prompt-delivery-source-auth-fixed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "prompt-runtime-source-auth-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 25.836,
+      "log": "prompt-runtime-source-auth-fixed.log",
+      "logSha256": "ed0e4b7dd327c22a6627f61b04cd2fc0dd5c9baeb73ee07e23e6b74ff4391140",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command",
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-runtime-source-auth-fixed-before",
+      "sourceAfterReference": "prompt-runtime-source-auth-fixed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "memory-source-auth-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 59.226,
+      "log": "memory-source-auth-fixed.log",
+      "logSha256": "e420947083ade11f49e94e295141541a388ac204e21b806bdfde2a8609a21806",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  55.930s] 277 tests run: 277 passed, 8 skipped"
+        ],
+        "testsExecuted": 277,
+        "passed": 277,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 8,
+        "skippedReason": "ignored by default"
+      },
+      "sourceBeforeReference": "memory-source-auth-fixed-before",
+      "sourceAfterReference": "memory-source-auth-fixed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "crash-source-auth-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 2.347,
+      "log": "crash-source-auth-fixed.log",
+      "logSha256": "9be9b06c1068b0860a8c6f810a5b2ac5ab464cc4be87a922d77ebc04ed0db5b5",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.355s] 1 test run: 1 passed, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 1,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "sourceBeforeReference": "crash-source-auth-fixed-before",
+      "sourceAfterReference": "crash-source-auth-fixed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true
+    },
+    {
+      "label": "history-source-auth-fixed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "-E",
+        "test(=cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection)",
+        "--run-ignored",
+        "only",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 23.915,
+      "log": "history-source-auth-fixed.log",
+      "logSha256": "0ed736cf3336ff3937f4a7604bb7ed300f0c34319c166863832c25665b001172",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [  22.024s] 1 test run: 1 passed, 284 skipped"
+        ],
+        "testsExecuted": 1,
+        "passed": 1,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 284,
+        "skippedReason": "aggregate excluded by explicit filter and run-ignored=only policy"
+      },
+      "sourceBeforeReference": "history-source-auth-fixed-before",
+      "sourceAfterReference": "history-source-auth-fixed-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "historyReceipt": {
+        "activationGranted": false,
+        "correctionNs": {
+          "p50": 112675040,
+          "p95": 155532651,
+          "p99": 174583794
+        },
+        "corrections": 128,
+        "deletedFactsResurrected": false,
+        "finalGeneration": 130,
+        "peakRssKiB": 51360,
+        "postDeletionReopens": 3,
+        "queryNs": {
+          "p50": 50309122,
+          "p95": 60876061,
+          "p99": 60876061
+        },
+        "reopenNs": {
+          "p50": 224460472,
+          "p95": 1273990845,
+          "p99": 1273990845
+        },
+        "reopenSamples": 8,
+        "schema": "hepta.knowledge-graph-history.v1"
+      }
+    },
+    {
+      "label": "intelligence-owned-cache-clean",
+      "command": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 0.435,
+      "log": "intelligence-owned-cache-clean.log",
+      "logSha256": "3089092a258a95067726f2fe7b61bc4eaae0a666376e7008a7b0c7ee733e3c9f",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "intelligence-owned-cache-clean-before",
+      "sourceAfterReference": "intelligence-owned-cache-clean-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false
+    },
+    {
+      "label": "prompt-runtime-source-auth-fixed-rebuild",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 25.744,
+      "log": "prompt-runtime-source-auth-fixed-rebuild.log",
+      "logSha256": "469a14940e582b9f71ae58c789f29dab1326ecd6e0ad723ee132a0a4a0c558e1",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command",
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-runtime-source-auth-fixed-rebuild-before",
+      "sourceAfterReference": "prompt-runtime-source-auth-fixed-rebuild-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "prompt-runtime-source-auth-fixed-locator",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 9.948,
+      "log": "prompt-runtime-source-auth-fixed-locator.log",
+      "logSha256": "41c4929aa29fb2762a8827e63af97928476fc10f8a824e1e1997f071202a63a4",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command",
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-runtime-source-auth-fixed-locator-before",
+      "sourceAfterReference": "prompt-runtime-source-auth-fixed-locator-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25"
+      ],
+      "testPanicDiagnostics": [],
+      "callerEnvironmentOverride": {
+        "RUSTC_LOG": "rustc_metadata::locator=info"
+      },
+      "loggerChangesCompilationFlagsOrSandbox": false
+    },
+    {
+      "label": "optimizer-intelligence-owned-cache-clean",
+      "command": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 0.905,
+      "log": "optimizer-intelligence-owned-cache-clean.log",
+      "logSha256": "812a19ce81e4bbdefe3fe368bb63721e430e13b3fb055898307f80178599f316",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "optimizer-intelligence-owned-cache-clean-before",
+      "sourceAfterReference": "optimizer-intelligence-owned-cache-clean-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false
+    },
+    {
+      "label": "prompt-runtime-source-auth-fixed-pair-rebuild",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 26.737,
+      "log": "prompt-runtime-source-auth-fixed-pair-rebuild.log",
+      "logSha256": "ed0e4b7dd327c22a6627f61b04cd2fc0dd5c9baeb73ee07e23e6b74ff4391140",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command",
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-runtime-source-auth-fixed-pair-rebuild-before",
+      "sourceAfterReference": "prompt-runtime-source-auth-fixed-pair-rebuild-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "firstDiagnosticLines": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "intelligence-library-diagnostic-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "-vv"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 2.364,
+      "log": "intelligence-library-diagnostic-build.log",
+      "logSha256": "68ceb389fe3d1f497e272c71ed0af0973c145b1c6ad402328095df2026e166d1",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "intelligence-library-diagnostic-build-before",
+      "sourceAfterReference": "intelligence-library-diagnostic-build-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false
+    },
+    {
+      "label": "prompt-runtime-source-auth-fixed-mtime-rebuild",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 72.596,
+      "log": "prompt-runtime-source-auth-fixed-mtime-rebuild.log",
+      "logSha256": "7af59f4f82acd5d05c06eacfa84799564f9c0510af83dfa80820c37ae2304fb0",
+      "counts": {
+        "rawNextestSummary": [
+          "Summary [   0.395s] 16 tests run: 16 passed, 160 skipped"
+        ],
+        "testsExecuted": 16,
+        "passed": 16,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": 160,
+        "skippedReason": "filter excluded unselected tests"
+      },
+      "sourceBeforeReference": "prompt-runtime-source-auth-fixed-mtime-rebuild-before",
+      "sourceAfterReference": "prompt-runtime-source-auth-fixed-mtime-rebuild-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": true,
+      "diagnosticLinesObservedDespiteZeroExit": [
+        "error: failed to build archive at `/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_exec_server-3753f6d920b7a332.rlib`: No space left on device (os error 28)",
+        "rustc-LLVM ERROR: IO failure on output stream: No space left on device",
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25"
+      ],
+      "callerEnvironmentOverride": {
+        "CARGO_TERM_VERBOSE": "true"
+      },
+      "sourceContentOrCompilationFlagsOrSandboxChanged": false
+    },
+    {
+      "label": "fix-source-auth-final",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 0,
+      "elapsedSeconds": 261.141,
+      "log": "fix-source-auth-final.log",
+      "logSha256": "d8860853038f562106531954a108963e2e3287479029c4d1c3a455e4dbb4f336",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "fix-source-auth-final-before",
+      "sourceAfterReference": "fix-source-auth-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "diagnosticLinesObservedDespiteZeroExit": [
+        "--> ext/hepta-memory/src/cognitive/mod.rs:274:19",
+        "--> ext/hepta-memory/src/cognitive/federation.rs:864:4",
+        "--> hepta-intelligence/src/canonical.rs:463:1",
+        "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:24:5",
+        "--> hepta-agentd/src/plasticity_learning_producer.rs:32:25",
+        "--> hepta-agentd/src/state.rs:178:25"
+      ]
+    },
+    {
+      "label": "strict-lint-source-auth-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-kg",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "--no-deps",
+        "--all-targets",
+        "--features",
+        "codex-hepta-agentd/qualification-cognitive-write",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "commandProvenance": "verbatim subprocess argv",
+      "cwd": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs",
+      "exitCode": 101,
+      "elapsedSeconds": 169.078,
+      "log": "strict-lint-source-auth-final.log",
+      "logSha256": "e20e877f8db89faf8bc11d378a2608d35523bac6e4fe79cd873874d9294df6a0",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "non-test lint/check command; no runtime tests requested"
+      },
+      "sourceBeforeReference": "strict-lint-source-auth-final-before",
+      "sourceAfterReference": "strict-lint-source-auth-final-after",
+      "criticalSourceAggregateUnchangedDuringCommand": true,
+      "wholeCandidateQualificationClaim": false,
+      "testExecutionRequested": false,
+      "firstDiagnosticLines": [
+        "error: large size difference between variants",
+        "--> hepta-intelligence/src/canonical.rs:463:1",
+        "error: could not compile `codex-hepta-intelligence` (lib) due to 1 previous error"
+      ],
+      "testPanicDiagnostics": []
+    },
+    {
+      "label": "prompt-runtime",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "commandProvenance": "execution context; runner after-source write encountered ENOSPC",
+      "exitCode": 101,
+      "log": "prompt-runtime.log",
+      "logSha256": "780e6f6c24fe2d9fea041399a6ef3cd61999d3f749cd8ae265612eefd223db54",
+      "counts": {
+        "rawNextestSummary": [],
+        "testsExecuted": 0,
+        "passed": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "skipped": null,
+        "boundary": "build/check failed before nextest execution, or non-test command"
+      },
+      "sourceBeforeReference": "prompt-runtime-before",
+      "sourceAfterCaptureError": "ENOSPC while writing after-source patch",
+      "diagnostic": "darling_macro cc/ld terminated with signal7 Bus error; simultaneous full-disk conditions are recorded without claiming a proven cause",
+      "wholeCandidateQualificationClaim": false
+    }
+  ],
+  "dependencyGeneration": {
+    "actual_command": "just bazel-lock-update",
+    "bazel_version": "9.0.0",
+    "release_sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403",
+    "source_identity": [
+      "177cd3f896877bfae4721e7df64994822347baa9",
+      "5879e25222d1f8dc54c423e986bf9b4727bd7c57"
+    ],
+    "cargo_input_patch": "cargo-input.patch",
+    "exit_code": 0,
+    "lock_patch_bytes": 0,
+    "lock_bytes": 1658169,
+    "lock_sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0",
+    "lock_git_blob": "b511f2f09a21057a3d3654e441a69835cbd91ce9",
+    "cargo_lock_unchanged_during_refresh": true,
+    "runtime_configuration": {
+      "batch": true,
+      "repo_contents_cache": false,
+      "digest_verified_repository_cache": true,
+      "tls_certificate_verification": true,
+      "truststore": "Task-owned copy of existing system CA store plus existing CODEX_PROXY_CERT"
+    },
+    "prior_attempts": [
+      {
+        "exit_code": 126,
+        "reason": "Transient wrapper exec permission failure; no Bazel module execution"
+      },
+      {
+        "exit_code": 2,
+        "reason": "Experimental repository-contents cache left incomplete external directories; requirements/Cargo inputs unavailable"
+      }
+    ],
+    "nonfatal_warnings": [
+      "platforms direct1.0.0/resolved1.1.0",
+      "rules_cc direct0.2.18/resolved0.2.20",
+      "libgit2-sys/libssh2-sys existing annotation recommendations"
+    ],
+    "dependency_input_files": {
+      "codex-rs/Cargo.lock": {
+        "sha256": "2937160d6cda72adcebbb7babff45abe530cc4adc78446a65e91ec314f204606",
+        "bytes": 418071,
+        "copy": "Cargo.lock"
+      },
+      "codex-rs/hepta-agentd/Cargo.toml": {
+        "sha256": "82a37306655dc4d543d14f2baa6e52ef14e8b889b50eeb74da6bb3dd447501b1",
+        "bytes": 4435,
+        "copy": "hepta-agentd-Cargo.toml"
+      }
+    },
+    "receiptSha256": "0cfe86f6e2c28b8079e859a2e7ed41dd68438d0bf9c6803f5edf47c6621b3f4c",
+    "log": "bazel-lock-refresh-round3/bazel-lock-update-batch.log",
+    "logSha256": "bdb8a983daf29cea9f1c75452754ad9ca415af880e1410b70c3dbd8a7b5de6dd",
+    "dependencyInputsStillEqualToCurrentWorkingTree": true
+  },
+  "evidenceCaptureFailures": [
+    "prompt-runtime first pre-command source-patch write failed with ENOSPC; that failed capture is not counted as native execution",
+    "prompt-runtime later actual native execution returned101; after-source capture failed with ENOSPC",
+    "one runner edit was truncated by ENOSPC and restored before launching witness"
+  ],
+  "ownedCacheRepair": {
+    "survey": "owned-crate-source-survey.json",
+    "surveySha256": "507ed8fae1fe4d7d2192d1ee9160238d5f0afefc34e4b17007d1aa7abbe98f8d",
+    "repair": "owned-crate-source-repair.json",
+    "repairSha256": "0d06f397b85c11c30ee3ff62d29bbdd5b87c85fe1bb230e030be9be30956d829",
+    "filesRestored": 24,
+    "bytesRestored": 181213,
+    "packages": [
+      "zerotrie-0.2.4",
+      "webbrowser-1.2.4"
+    ],
+    "basis": "every restored member came from a Cargo.lock SHA256 verified archive; only task-owned missing files were created",
+    "repositoryOrTargetOrSharedSourcesModified": false
+  },
+  "junitGenerated": false,
+  "rawEvidenceBundle": {
+    "storedOutsideRepository": true,
+    "sha256": "306280a4e132df5f063fc4751899a1c0403f39fb6e81a5288345c595a71d1760",
+    "externalFileId": "libfile_9988e1531a208191924089002bc2b4dc",
+    "authorizedUploadedFileId": "file_00000000b750820989c5106becb92e53",
+    "fileName": "native-round3-logs.tar.gz",
+    "bytes": 6994417,
+    "version": 0,
+    "url": "https://chatgpt.com/api/library/files/libfile_9988e1531a208191924089002bc2b4dc/download",
+    "manifestPath": "MANIFEST.json",
+    "manifestSha256": "e27386ade1f4e07726025754a54cb2ac5deef74472a3ffda93975fd38ea9ac57",
+    "verifiedFileCount": 305,
+    "allManifestFileHashesVerified": true,
+    "scope": "Actual logs, exit codes and source captures; historical command scopes and failures retained. No build products, environment files, registry databases or credentials.",
+    "accessBoundary": "Private authorized evidence artifact. The external identity and hashes do not grant independent reviewer access, acceptance, activation or release.",
+    "status": "durably retained external raw evidence with SHA256 and per-file manifest"
+  },
+  "earlierChecksumOldSourceCounterexample": {
+    "executed": false,
+    "scope": "optional isolated old canonical implementation with newer selected-payload/checksum tests",
+    "notRunReason": "unstable disk and additional checkout/build budget; current checksum regressions were executed"
+  },
+  "ownerSourceAuthCounterexampleBaseline": {
+    "executed": true,
+    "intentionalRed": true,
+    "testOnlySourceHeadAtExecution": "7af3dbca5b7f55a51752e61551910e90314091c9",
+    "testOnlySourceTreeAtExecution": "b43cc0c93f6ae56f9dda47b9aed5cdfb93bff9bc",
+    "publishedAliasHeadWithIdenticalTree": "807df52331ae76fe84bf9ecf4f16031161f70868",
+    "publishedAliasDoesNotReplaceActualExecutionHead": true,
+    "unchangedProductionCanonicalGitBlob": "00f35794b286aa5b200bc1c88bde41a9e1f242f8",
+    "executedCommandLabels": [
+      "source-auth-baseline-optimizer-executed",
+      "source-auth-baseline-compiler"
+    ],
+    "testsExecuted": 3,
+    "testsFailed": 3,
+    "diagnosticBasis": [
+      "omitted owner Conflict returns a selected portfolio containing factor:a and factor:b",
+      "exercise returns Exercise instead of RejectStale",
+      "compiler accepts both genuinely signed payloads despite the owner Conflict predating every snapshot"
+    ],
+    "setupFailureObserved": false,
+    "sourceCriticalHashUnchangedDuringBothExecutedCommands": true,
+    "zeroMatchAttempt": {
+      "label": "source-auth-baseline-optimizer",
+      "filter": "test(canonical_source)",
+      "exitCode": 4,
+      "testsExecuted": 0,
+      "skipped": 45,
+      "counterexampleEvidence": false
+    }
+  },
+  "nextestConfiguration": {
+    "path": "nextest.toml",
+    "sha256": "57371f33d207a9ff25a85fb89e0eb60616512c73ba277105cd0d5c3ef29db355",
+    "profile": "local",
+    "defaultRetries": 0,
+    "defaultSlowTimeoutPeriodSeconds": 60,
+    "defaultTerminateAfterPeriods": 30,
+    "localProfileInheritsDefaultsNormally": true,
+    "unsupportedInheritsKeyPresent": false
+  },
+  "ownedBuildCacheNaturalRebuild": {
+    "path": "owned-build-cache-natural-rebuild.json",
+    "sha256": "12e329bb9a2525e26b05fca0545afd1f9e0194fe048dbd71ff960b804cc69483",
+    "summary": {
+      "schema": "hepta.owned-build-cache-natural-rebuild.v1",
+      "authorizedPackage": "codex-hepta-intelligence",
+      "targetDirectory": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target",
+      "artifactCaptures": [
+        {
+          "path": "intelligence-build-cache-before-clean.json",
+          "sha256": "9fac02d123945a4595431ce45306e72767a88d24f13aaa5e9733ed7cbd14c956"
+        },
+        {
+          "path": "intelligence-build-cache-after-clean.json",
+          "sha256": "9f11fc68b797d37a12eb62e5a9e897160d8732d5534f13d0e263eaba395ded22"
+        },
+        {
+          "path": "intelligence-build-cache-after-rebuild.json",
+          "sha256": "ce6a03550b8266cb0d47c1ac263de6d05feb19704c56a4948790677ae2f87ad0"
+        }
+      ],
+      "cleanCommand": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "cleanExitCode": 0,
+      "cleanLog": "intelligence-owned-cache-clean.log",
+      "cleanLogSha256": "3089092a258a95067726f2fe7b61bc4eaae0a666376e7008a7b0c7ee733e3c9f",
+      "cleanOutput": "Removed 40 files, 22.8MiB total",
+      "retryCommand": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "retryExitCode": 101,
+      "retryLog": "prompt-runtime-source-auth-fixed-rebuild.log",
+      "retryLogSha256": "469a14940e582b9f71ae58c789f29dab1326ecd6e0ad723ee132a0a4a0c558e1",
+      "testsExecuted": 0,
+      "sameE0463ObservedAfterStandardRebuild": true,
+      "manualTargetOrFingerprintEditing": false,
+      "environmentVersionAndSandboxUnchanged": true,
+      "rootCauseConfirmed": false
+    }
+  },
+  "ownedBuildCacheNaturalPairRebuild": {
+    "path": "owned-build-cache-natural-pair-rebuild.json",
+    "sha256": "e8c364e7944635bec192ffcbb4a4141a7e05e970b6daae4b3c488a59eacff8cf",
+    "summary": {
+      "schema": "hepta.owned-build-cache-natural-pair-rebuild.v1",
+      "authorizedPackages": [
+        "codex-hepta-prompt-optimizer",
+        "codex-hepta-intelligence"
+      ],
+      "sameExecCellSequentialCleanAndRetry": true,
+      "targetDirectory": "/workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target",
+      "artifactCaptures": [
+        {
+          "path": "intelligence-build-cache-pair-before-clean.json",
+          "sha256": "5cb240dea96d9a8fa93bbf6587181b0d89e51c78e3f1ed0fb5428906b62bbeb0"
+        },
+        {
+          "path": "intelligence-build-cache-pair-after-clean.json",
+          "sha256": "26ebf16326771ed94c9c4d7b83522081a3c7ef6f2c18916c57296a4f735c5a1a"
+        },
+        {
+          "path": "intelligence-build-cache-pair-after-rebuild.json",
+          "sha256": "e4f79e84c635291285528bfff21bffe95484e921fb9a6227c72eddcc29327b61"
+        }
+      ],
+      "cleanCommand": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "cleanExitCode": 0,
+      "cleanLog": "optimizer-intelligence-owned-cache-clean.log",
+      "cleanLogSha256": "812a19ce81e4bbdefe3fe368bb63721e430e13b3fb055898307f80178599f316",
+      "cleanOutput": "Removed 73 files, 37.0MiB total",
+      "retryCommand": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::)",
+        "--no-tests=fail",
+        "--no-capture",
+        "--config-file",
+        "/workspace/scratch/b60c367bf765/tooling/evidence/nextest.toml"
+      ],
+      "retryExitCode": 101,
+      "retryLog": "prompt-runtime-source-auth-fixed-pair-rebuild.log",
+      "retryLogSha256": "ed0e4b7dd327c22a6627f61b04cd2fc0dd5c9baeb73ee07e23e6b74ff4391140",
+      "testsExecuted": 0,
+      "sameE0463ObservedAfterStandardPairRebuild": true,
+      "manualTargetOrFingerprintEditing": false,
+      "environmentVersionAndSandboxUnchanged": true,
+      "rootCauseBeyondLocatorHashMismatchConfirmed": false
+    }
+  },
+  "runtimeLocatorDiagnostic": {
+    "path": "runtime-locator-diagnostic.json",
+    "sha256": "0b1a414cf11a392d28948b053d95963c20cd1ab74da8e90e856eeaaf1242ea89",
+    "summary": {
+      "schema": "hepta.rust-metadata-locator-diagnostic.v1",
+      "commandResult": "prompt-runtime-source-auth-fixed-locator-result.json",
+      "callerEnvironmentOverride": {
+        "RUSTC_LOG": "rustc_metadata::locator=info"
+      },
+      "rustflagsFeaturesCapsSandboxUnchanged": true,
+      "exitCode": 101,
+      "testsExecuted": 0,
+      "log": "prompt-runtime-source-auth-fixed-locator.log",
+      "logSha256": "41c4929aa29fb2762a8827e63af97928476fc10f8a824e1e1997f071202a63a4",
+      "evidenceLines": {
+        "intelligenceDependencyRead": 4030,
+        "optimizerCandidateAndMismatch": [
+          4055,
+          4062
+        ],
+        "terminalE0463": 4947
+      },
+      "rejectedDependency": "codex_hepta_prompt_optimizer",
+      "expectedCrateHash": "6697e6a6a82fd613133b027114011112",
+      "observed7e3CrateHash": "97fc9544527fd9f57852defd1a453d74",
+      "diagnosticExcerpt": [
+        " INFO rustc_metadata::locator lib candidate: /workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_hepta_prompt_optimizer-7e3f4cec6d32fdb3.rlib",
+        " INFO rustc_metadata::locator lib candidate: /workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_hepta_prompt_optimizer-7e3f4cec6d32fdb3.rmeta",
+        " INFO rustc_metadata::locator rmeta reading metadata from: /workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_hepta_prompt_optimizer-7e3f4cec6d32fdb3.rmeta",
+        " INFO rustc_metadata::locator Rejecting via hash: expected 6697e6a6a82fd613133b027114011112 got 97fc9544527fd9f57852defd1a453d74",
+        " INFO rustc_metadata::locator metadata mismatch",
+        " INFO rustc_metadata::locator rlib reading metadata from: /workspace/scratch/b60c367bf765/hepta-private-ci/codex-rs/target/debug/deps/libcodex_hepta_prompt_optimizer-7e3f4cec6d32fdb3.rlib",
+        " INFO rustc_metadata::locator Rejecting via hash: expected 6697e6a6a82fd613133b027114011112 got 97fc9544527fd9f57852defd1a453d74",
+        " INFO rustc_metadata::locator metadata mismatch"
+      ],
+      "rootCauseBeyondHashMismatchConfirmed": false
+    }
+  },
+  "scopedLibraryVerboseDiagnostic": {
+    "path": "intelligence-library-verbose-diagnostic.json",
+    "sha256": "715183155ec6f6d6ceb015705d76815535a2096b39e67e0f313a1d507c7fbdd3",
+    "exitCode": 0,
+    "testExecutionRequested": false,
+    "newUnit": "6ac3276a729ba22f",
+    "agentdFailingUnitChanged": false,
+    "runtimeIssueResolvedClaim": false
+  },
+  "archiveMetadataReadonlyEvidence": {
+    "path": "rlib-metadata-consistency-readonly.json",
+    "sha256": "4cb050371cd74a3e52e719a8a17bf527494b3e4aa1c856407b1c669eb33ac593"
+  },
+  "runtimeExactUnitNaturalRebuild": {
+    "path": "runtime-exact-unit-natural-rebuild.json",
+    "sha256": "84860e41ee17c5e820f8888d6f9982741c6d0e28177e17b5a275907d4a871bdf",
+    "exitCode": 0,
+    "testsExecuted": 16,
+    "testsPassed": 16,
+    "filtered": 160,
+    "exactIntelligenceUnit": "0e9b93c7dcbd841e",
+    "dependencyHashMismatchNoLongerBlockedExecution": true,
+    "singleOperationRootCauseConfirmed": false
+  },
+  "preexistingLintSourceIdentity": {
+    "path": "preexisting-large-enum-source-identity.json",
+    "sha256": "46ccbfa8c86c49e8e060222423300b79713f0f483122de354a51af3aa4e7dcd1",
+    "summary": {
+      "schema": "hepta.preexisting-lint-source-identity.v1",
+      "confirmationRecordedAtUtc": "2026-10-01T07:36:46.185272+00:00",
+      "remoteMainConfirmationProvenance": "parent rechecked main via GitHub API and directly read canonical.rs at the same ref before this capture",
+      "mainHead": "997e7beef8151160065df36b024bc8da5c989e93",
+      "locallyVerifiedOriginMainHead": "997e7beef8151160065df36b024bc8da5c989e93",
+      "currentCandidateHead": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+      "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "currentFileGitBlob": "c610f073b47939acf15e7e76aad59883ac13fad4",
+      "mainFileGitBlob": "c610f073b47939acf15e7e76aad59883ac13fad4",
+      "sameGitBlob": true,
+      "currentFileSha256": "c234509a7a542dd21f65482cc349818f94be2733c381d6ef8a989ad26d98ed05",
+      "definitionLine": 463,
+      "enum": "CanonicalRunOutcomeV1",
+      "variants": [
+        "Ready(IntelligenceHostEnvelopeV1)",
+        "Abstained(CanonicalTerminalReceiptV1)",
+        "SlowPath(CanonicalTerminalReceiptV1)"
+      ],
+      "mainPassedSameLintClaim": false
+    }
+  },
+  "finalScopedFixDiagnostics": {
+    "path": "fix-source-auth-final-diagnostics.json",
+    "sha256": "29bfdd2cd3e08209297c23b83a4538138140903e7139b63611e4531eceab97a0",
+    "individualWarningCount": 216,
+    "exitCode": 0,
+    "sourceChanged": false,
+    "strictClosureClaim": false
+  },
+  "ownerSourceAuthRepairScopedEvidence": {
+    "sourceHead": "6fe8237c493b9c2a52bf2b685da1d9b1b11333cd",
+    "sourceTree": "bbe525f939dc110e1d0fdfa10b445f0d46b30c68",
+    "commandLabels": [
+      "core-source-auth-fixed-retry",
+      "prompt-delivery-source-auth-fixed",
+      "memory-source-auth-fixed",
+      "crash-source-auth-fixed",
+      "history-source-auth-fixed"
+    ],
+    "testsExecuted": 424,
+    "testsPassed": 424,
+    "allListedCommandsReturnedZero": true,
+    "originalThreeCounterexamplesNowPass": true,
+    "runtimeCurrentCandidateExecutedTests": 16,
+    "runtimeCurrentCandidateCommandLabels": [
+      "prompt-runtime-source-auth-fixed",
+      "prompt-runtime-source-auth-fixed-rebuild",
+      "prompt-runtime-source-auth-fixed-locator",
+      "prompt-runtime-source-auth-fixed-pair-rebuild",
+      "prompt-runtime-source-auth-fixed-mtime-rebuild"
+    ],
+    "totalScopedTestsPassedIncludingRuntime": 440,
+    "productCurrentCandidateExecutedTests": 0,
+    "productCurrentCandidateCommandLabels": [],
+    "wholeCandidateQualificationGranted": false
+  },
+  "rawEvidenceBundleBinding": {
+    "path": "native-round3-raw-bundle-binding.json",
+    "sha256": "aa09c84eb93b90ff6f841e9db5b474f3d80502471c8c71cdffe1df9dbdb2779f"
+  },
+  "moduleClaimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "proofBoundary": "Native commands bind source 6fe8237c493b9c2a52bf2b685da1d9b1b11333cd and tree bbe525f939dc110e1d0fdfa10b445f0d46b30c68 through unchanged critical Rust/TOML/SQL hashes. Subsequent documentation and navigation-only commits do not become whole-candidate source/merge/product qualification."
+}

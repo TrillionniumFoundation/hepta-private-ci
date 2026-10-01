@@ -29,6 +29,13 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+#[path = "canonical_source.rs"]
+mod canonical_source;
+#[path = "canonical_temporal.rs"]
+mod canonical_temporal;
+#[path = "canonical_portfolio.rs"]
+mod portfolio_integrity;
+
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
 pub const MAX_CANONICAL_INTERACTION_EDGES: u32 = 512;
@@ -63,6 +70,8 @@ pub struct EnumeratedPromptCandidatesV1 {
     pub omitted_count: u32,
     pub candidates: Vec<PromptCandidateBindingV1>,
     pub receipt: PromptCandidateSetReceiptV1,
+    // Preserve the complete owner source; a caller cannot replace its relations.
+    factor_graph_source: Box<canonical_source::EnumeratedSourceV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -177,6 +186,9 @@ pub fn enumerate_factors_v1(
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     };
+    let factor_graph_source = Box::new(canonical_source::EnumeratedSourceV1::capture(
+        registry, &snapshot,
+    ));
     Ok(EnumeratedPromptCandidatesV1 {
         registry_snapshot: snapshot,
         model_tuple: request.model_tuple,
@@ -186,6 +198,7 @@ pub fn enumerate_factors_v1(
         omitted_count: u32::try_from(omitted).unwrap_or(u32::MAX),
         candidates,
         receipt,
+        factor_graph_source,
     })
 }
 
@@ -340,6 +353,7 @@ pub fn price_factors_v1(
     if now_unix_ms == 0 {
         return Err(CanonicalPromptError::InvalidTime);
     }
+    canonical_source::validate_enumerated_source(&candidates)?;
     validate_candidate_binding(&candidates, completeness)?;
     let completeness_payload = candidate_completeness_signing_payload_v1(completeness)?;
     verifier
@@ -530,6 +544,9 @@ pub struct PromptPortfolioReceiptV1 {
 pub struct SelectedPromptPortfolioV1 {
     pub receipt: PromptPortfolioReceiptV1,
     pub selected: Vec<PromptCandidateBindingV1>,
+    /// Exact owner snapshot used for enumeration. Any owner source mutation
+    /// requires re-enumeration and selection before an intervention boundary.
+    pub registry_digest: Digest32,
     pub objective_digest: Digest32,
     pub state_digest: Digest32,
     pub model_tuple: PromptModelTupleV2,
@@ -569,18 +586,30 @@ pub fn select_portfolio_v1(
     if now_unix_ms == 0 || request.requested_valid_until_unix_ms <= now_unix_ms {
         return Err(CanonicalPromptError::InvalidTime);
     }
+    canonical_source::validate_priced_source(priced)?;
     graph
         .validate()
         .map_err(|e| CanonicalPromptError::KnowledgeGraph(format!("{e:?}")))?;
     if graph.generation_vector_digest != priced.candidates.generation_vector_digest {
         return Err(CanonicalPromptError::GenerationVectorMismatch);
     }
+    let owner_source_digest = canonical_source::validate_graph_source(&priced.candidates, graph)?;
 
     let factor_ids = priced
         .rows
         .iter()
         .map(|row| row.binding.factor_id.clone())
         .collect::<Vec<_>>();
+    if let Some(missing) = factor_ids.iter().find(|factor_id| {
+        graph
+            .nodes
+            .binary_search_by(|node| node.node_id.cmp(factor_id))
+            .is_err()
+    }) {
+        return Err(CanonicalPromptError::KnowledgeGraph(format!(
+            "candidate factor missing from complete graph: {missing}"
+        )));
+    }
     let relation_result = query_relations(
         graph,
         KnowledgeRelationQueryV2 {
@@ -781,28 +810,20 @@ pub fn select_portfolio_v1(
             valid_until = valid_until.min(expires);
         }
     }
+    valid_until =
+        canonical_temporal::cap_temporal_valid_until(graph, &known, now_unix_ms, valid_until);
     if valid_until <= now_unix_ms {
         return Err(CanonicalPromptError::PortfolioExpired);
     }
     pair_evidence_digests.sort();
     let interaction_digest = digest_interactions(
+        owner_source_digest,
         relation_result.result_digest,
         &pair_evidence_digests,
         &requires,
         &conflicts,
     );
-    let receipt_digest = digest_portfolio_receipt(
-        &request.portfolio_id,
-        priced.candidates.candidates_digest,
-        &selected_ids,
-        interaction_digest,
-        expected_utility,
-        total_token_upper_bound,
-        valid_until,
-        priced.pricing_set_digest,
-        graph.generation_digest,
-    );
-    Ok(SelectedPromptPortfolioV1 {
+    let mut portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
             candidate_set_digest: priced.candidates.candidates_digest,
@@ -811,10 +832,11 @@ pub fn select_portfolio_v1(
             expected_utility_q32: expected_utility,
             total_token_upper_bound,
             valid_until_unix_ms: valid_until,
-            receipt_digest,
+            receipt_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         },
         selected: selected_bindings,
+        registry_digest: priced.candidates.registry_snapshot.registry_digest,
         objective_digest: priced.candidates.receipt.objective_digest,
         state_digest: priced.candidates.receipt.state_digest,
         model_tuple: priced.candidates.model_tuple.clone(),
@@ -824,7 +846,9 @@ pub fn select_portfolio_v1(
         graph_generation_digest: graph.generation_digest,
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
-    })
+    };
+    portfolio.receipt.receipt_digest = portfolio.compute_receipt_digest();
+    Ok(portfolio)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -892,6 +916,9 @@ pub fn exercise_v1(
     let mut decision = if portfolio.selected.is_empty() {
         PromptExerciseActionV1::NoIntervention
     } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
+        || !portfolio.has_consistent_selection()
+        || portfolio.receipt.receipt_digest != portfolio.compute_receipt_digest()
+        || portfolio.receipt.authority.grants_any()
         || request.current_state_digest != portfolio.state_digest
         || request.generation_vector_digest != portfolio.generation_vector_digest
         || request.model_tuple != portfolio.model_tuple
@@ -916,6 +943,9 @@ pub fn exercise_v1(
             MAX_CANONICAL_PROMPT_FACTORS as u32,
         );
         match current {
+            _ if current_snapshot.registry_digest != portfolio.registry_digest => {
+                PromptExerciseActionV1::RejectStale
+            }
             Err(_) => PromptExerciseActionV1::RejectStale,
             Ok(set) => {
                 let current_by_realization = set
@@ -931,7 +961,12 @@ pub fn exercise_v1(
                                 && current.digest() == selected.binding_digest
                         })
                 });
-                if !exact {
+                if !exact
+                    || canonical_source::has_registered_conflict(
+                        registry,
+                        &portfolio.receipt.factor_ids,
+                    )
+                {
                     PromptExerciseActionV1::RejectStale
                 } else if portfolio.receipt.expected_utility_q32 > request.wait_value_q32 {
                     PromptExerciseActionV1::Exercise
@@ -1221,12 +1256,14 @@ fn digest_pricing_set(rows: &[PricedPromptCandidateV1], policy_digest: Digest32)
 }
 
 fn digest_interactions(
+    owner_source_digest: Digest32,
     graph_result_digest: Digest32,
     evidence_digests: &[Digest32],
     requires: &BTreeMap<StableId, BTreeSet<StableId>>,
     conflicts: &BTreeSet<(StableId, StableId)>,
 ) -> Digest32 {
-    let mut bytes = b"hepta.prompt-optimizer.interactions.v1".to_vec();
+    let mut bytes = b"hepta.prompt-optimizer.interactions.v2".to_vec();
+    bytes.extend_from_slice(owner_source_digest.as_array());
     bytes.extend_from_slice(graph_result_digest.as_array());
     for digest in evidence_digests {
         bytes.extend_from_slice(digest.as_array());
@@ -1241,37 +1278,6 @@ fn digest_interactions(
         push_id(&mut bytes, left);
         push_id(&mut bytes, right);
     }
-    Digest32::of_bytes(&bytes)
-}
-
-#[allow(clippy::too_many_arguments)]
-fn digest_portfolio_receipt(
-    portfolio_id: &StableId,
-    candidate_set_digest: Digest32,
-    factor_ids: &[StableId],
-    interaction_digest: Digest32,
-    expected_utility: FixedQ32,
-    total_tokens: u32,
-    valid_until: u64,
-    pricing_set_digest: Digest32,
-    graph_generation_digest: Digest32,
-) -> Digest32 {
-    let mut bytes = b"hepta.prompt-optimizer.portfolio-receipt.v1".to_vec();
-    push_id(&mut bytes, portfolio_id);
-    for digest in [
-        candidate_set_digest,
-        interaction_digest,
-        pricing_set_digest,
-        graph_generation_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    push_ids(&mut bytes, factor_ids);
-    bytes.extend_from_slice(&expected_utility.raw().to_be_bytes());
-    bytes.extend_from_slice(&total_tokens.to_be_bytes());
-    bytes.extend_from_slice(&valid_until.to_be_bytes());
-    bytes.push(0);
-    bytes.push(0);
     Digest32::of_bytes(&bytes)
 }
 
