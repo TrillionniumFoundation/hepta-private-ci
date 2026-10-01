@@ -440,9 +440,9 @@ impl NativeShellRuntime {
         let total = records.len();
         let last_page = total.saturating_sub(1) / page_size;
         let page = requested_page.min(last_page);
-        let start = page
-            .checked_mul(page_size)
-            .ok_or_else(|| ShellError::State("operation history page offset overflow".to_owned()))?;
+        let start = page.checked_mul(page_size).ok_or_else(|| {
+            ShellError::State("operation history page offset overflow".to_owned())
+        })?;
         let receipts = records
             .iter()
             .rev()

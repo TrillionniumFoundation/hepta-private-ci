@@ -1,21 +1,33 @@
 //! Observations from the ordinary GUI startup, not the static smoke profile.
 use crate::error::ShellError;
-use crate::model::{RuntimeView, SessionIncarnation};
+use crate::model::RuntimeView;
+use crate::model::SessionIncarnation;
+use crate::private_state::PrivateStateRoot;
 use std::path::PathBuf;
 use std::time::Instant;
 
 pub struct StartupRecorder {
     path: PathBuf,
+    root: PrivateStateRoot,
     started: Instant,
     manifest_digest: String,
 }
 impl StartupRecorder {
-    pub fn new(path: PathBuf, started: Instant, manifest_digest: String) -> Self {
-        Self {
+    pub fn new(
+        path: PathBuf,
+        started: Instant,
+        manifest_digest: String,
+    ) -> Result<Self, ShellError> {
+        let parent = path.parent().ok_or_else(|| {
+            ShellError::InvalidInput("startup record must have an existing private parent".into())
+        })?;
+        let root = PrivateStateRoot::open_existing(parent.to_path_buf())?;
+        Ok(Self {
             path,
+            root,
             started,
             manifest_digest,
-        }
+        })
     }
     pub(crate) fn record(
         self,
@@ -30,6 +42,7 @@ impl StartupRecorder {
             ));
         }
         crate::update_storage::persist_json_atomic(
+            &self.root,
             &self.path,
             &serde_json::json!({
                 "schema":"hepta.native-product-startup.v1", "process_id":std::process::id(),
@@ -42,3 +55,7 @@ impl StartupRecorder {
         )
     }
 }
+
+#[cfg(test)]
+#[path = "startup_tests.rs"]
+mod tests;

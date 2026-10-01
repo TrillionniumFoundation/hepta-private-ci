@@ -644,6 +644,127 @@ fn stale_recovery_refuses_to_overwrite_an_unrelated_newer_binary() {
 }
 
 #[test]
+fn cancelled_stage_removes_only_its_exact_owned_package() {
+    let temp = private_tempdir();
+    let (signing, keys, _) = key_fixture(temp.path());
+    let package = temp.path().join("operator-download");
+    let target = temp.path().join("installed");
+    std::fs::write(&package, b"candidate").unwrap();
+    std::fs::write(&target, b"predecessor").unwrap();
+    let manifest = signed_update_manifest(&signing, &package, &target, b"cleanup-evidence");
+    let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+    let pending = manager.verify_and_stage(manifest, &package, 1).unwrap();
+    let unrelated = pending
+        .staged_package
+        .parent()
+        .unwrap()
+        .join("operator-data");
+    std::fs::write(&unrelated, b"keep").unwrap();
+
+    manager.clear_pending().unwrap();
+    assert!(!pending.staged_package.exists());
+    assert!(!manager.pending_path().exists());
+    assert_eq!(std::fs::read(&package).unwrap(), b"candidate");
+    assert_eq!(std::fs::read(&target).unwrap(), b"predecessor");
+    assert_eq!(std::fs::read(&unrelated).unwrap(), b"keep");
+}
+
+#[test]
+fn backup_ceiling_denies_activation_before_copy_or_state_transition() {
+    let temp = private_tempdir();
+    let (signing, keys, _) = key_fixture(temp.path());
+    let package = temp.path().join("candidate");
+    let target = temp.path().join("installed");
+    std::fs::write(&package, b"new candidate").unwrap();
+    std::fs::write(&target, b"new predecessor").unwrap();
+    let manifest = signed_update_manifest(&signing, &package, &target, b"retention-evidence");
+    let predecessor = manifest.predecessor_digest.clone();
+    let manager = UpdateManager::new(keys.clone(), temp.path().join("updates")).unwrap();
+    manager.verify_and_stage(manifest, &package, 1).unwrap();
+    for bytes in [b"one".as_slice(), b"two", b"three", b"four"] {
+        let backup = target.with_extension(format!("{}.predecessor", sha256_hex(bytes)));
+        std::fs::write(backup, bytes).unwrap();
+    }
+    let error = activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap_err();
+    assert!(error.to_string().contains("retention ceiling"));
+    assert_eq!(std::fs::read(&target).unwrap(), b"new predecessor");
+    assert!(
+        !target
+            .with_extension(format!("{predecessor}.predecessor"))
+            .exists()
+    );
+    assert_eq!(
+        manager.load_pending().unwrap().unwrap().status,
+        PendingUpdateStatus::Staged
+    );
+}
+
+#[test]
+fn clearing_pending_preserves_replaced_or_foreign_staging_files() {
+    for replacement in ["different_bytes", "foreign_path"] {
+        let temp = private_tempdir();
+        let (signing, keys, _) = key_fixture(temp.path());
+        let package = temp.path().join("operator-download");
+        let target = temp.path().join("installed");
+        std::fs::write(&package, b"candidate").unwrap();
+        std::fs::write(&target, b"predecessor").unwrap();
+        let manifest = signed_update_manifest(&signing, &package, &target, b"preserve-evidence");
+        let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+        let mut pending = manager.verify_and_stage(manifest, &package, 1).unwrap();
+        let staged = pending.staged_package.clone();
+        if replacement == "different_bytes" {
+            std::fs::write(&staged, b"operator-data").unwrap();
+        } else {
+            pending.staged_package = package.clone();
+            std::fs::write(
+                manager.pending_path(),
+                serde_json::to_vec(&pending).unwrap(),
+            )
+            .unwrap();
+        }
+        manager.clear_pending().unwrap();
+        assert!(staged.exists());
+        assert!(package.exists());
+        assert!(!manager.pending_path().exists());
+    }
+}
+
+#[test]
+fn replacing_a_terminal_lifecycle_cleans_stage_and_retains_predecessor_evidence() {
+    let temp = private_tempdir();
+    let (signing, keys, _) = key_fixture(temp.path());
+    let first_package = temp.path().join("first");
+    let next_package = temp.path().join("next");
+    let target = temp.path().join("installed");
+    std::fs::write(&first_package, b"first candidate").unwrap();
+    std::fs::write(&next_package, b"next candidate").unwrap();
+    std::fs::write(&target, b"predecessor").unwrap();
+    let manager = UpdateManager::new(keys.clone(), temp.path().join("updates")).unwrap();
+    let first = signed_update_manifest(&signing, &first_package, &target, b"first-evidence");
+    let staged = manager.verify_and_stage(first, &first_package, 1).unwrap();
+    activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
+    manager.rollback_unconfirmed().unwrap();
+    let backup = manager
+        .load_pending()
+        .unwrap()
+        .unwrap()
+        .backup_path
+        .unwrap();
+    let next = signed_update_manifest(&signing, &next_package, &target, b"next-evidence");
+    manager.verify_and_stage(next, &next_package, 1).unwrap();
+    assert!(!staged.staged_package.exists());
+    assert_eq!(std::fs::read(backup).unwrap(), b"predecessor");
+    assert!(
+        manager
+            .pending_path()
+            .parent()
+            .unwrap()
+            .join("last-update-result.json")
+            .exists()
+    );
+}
+
+#[test]
 fn signed_endpoint_manifest_binds_gateway_address_and_keyring_account() {
     let temp = private_tempdir();
     let (signing, keys, _) = key_fixture(temp.path());

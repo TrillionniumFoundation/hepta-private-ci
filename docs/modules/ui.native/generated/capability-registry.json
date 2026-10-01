@@ -33,6 +33,7 @@
   ],
   "limits": {
     "stableIdBytes": 128,
+    "nativePathBytes": 16384,
     "copyTextBytes": 262144,
     "notificationTitleBytes": 256,
     "notificationBodyBytes": 4096
@@ -53,6 +54,7 @@
     "prepared",
     "invoking",
     "indeterminate",
+    "observation_closed",
     "terminal"
   ],
   "terminalStatuses": [

@@ -3,8 +3,6 @@
 //! evidence bound to its exact source SHA.
 
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -21,10 +19,36 @@ use crate::model::OperationKey;
 use crate::model::PlatformAction;
 use crate::model::TerminalStatus;
 use crate::model::sha256_hex;
+use crate::private_state::PrivateStateRoot;
 use crate::retirement::RetirementStore;
 use crate::retirement::directory as retirement_directory;
+use crate::retirement::qualification_fixture::AUTHORITY_SCOPE;
+use crate::retirement::qualification_fixture::MixedAuthority;
+use crate::retirement::qualification_fixture::REBUILD_SCOPE;
+
+mod process_samples;
+
+use self::process_samples::fresh_process_sample;
+use self::process_samples::percentile_samples;
+use self::process_samples::sample_milliseconds;
 
 const STORAGE_BUDGETS: &str = include_str!("../STORAGE_BUDGETS.json");
+
+fn compiled_build_profile() -> &'static str {
+    if cfg!(debug_assertions) {
+        "debug"
+    } else {
+        "release"
+    }
+}
+
+fn require_release_qualification() {
+    assert_eq!(
+        compiled_build_profile(),
+        "release",
+        "blocking storage performance qualification requires the optimized --release profile"
+    );
+}
 
 #[derive(Debug)]
 struct QualificationRoot {
@@ -45,8 +69,8 @@ impl QualificationRoot {
             "hepta-ui-native-{label}-{}-{nonce}",
             std::process::id()
         ));
-        let _ = fs::remove_dir_all(&path);
-        fs::create_dir_all(&path).expect("create storage qualification root");
+        fs::create_dir_all(&base).expect("create qualification root parent");
+        PrivateStateRoot::open(path.clone()).expect("create private storage qualification root");
         Self {
             path,
             keep: std::env::var_os("HEPTA_UI_NATIVE_KEEP_STORAGE_ROOT").is_some(),
@@ -180,6 +204,7 @@ fn assert_at_most(label: &str, actual: f64, ceiling: u64) {
 #[test]
 #[ignore = "full 4096-active-record storage qualification"]
 fn storage_active_scale_qualification() {
+    require_release_qualification();
     let budgets = budgets();
     let active_records = budget_u64(&budgets, "performance", "activeRecordsSubject") as usize;
     assert_eq!(
@@ -212,16 +237,30 @@ fn storage_active_scale_qualification() {
     assert_eq!(capacity.pending_records, 0);
     drop(journal);
 
-    let cold_started = Instant::now();
-    let reopened = OperationJournal::open(&journal_path).expect("cold reopen active-scale journal");
-    let cold_start_ms = cold_started.elapsed().as_secs_f64() * 1_000.0;
-    assert_eq!(reopened.all().len(), active_records);
+    let sample_count = budget_u64(&budgets, "performance", "freshProcessSamples") as usize;
     assert!(
-        reopened
-            .all()
-            .iter()
-            .all(|record| record.phase == OperationPhase::Terminal)
+        sample_count >= 20,
+        "fresh-process p95 requires at least 20 observations"
     );
+    let open_process_samples = (0..sample_count)
+        .map(|ordinal| fresh_process_sample(&root.path, "active", ordinal, &serde_json::json!({
+            "kind": "active-open", "journalPath": journal_path,
+            "expectedRecords": active_records, "pageIndex": ordinal % active_records.div_ceil(64),
+        })))
+        .collect::<Vec<_>>();
+    let open_samples_ms = sample_milliseconds(&open_process_samples, "elapsedMilliseconds");
+    let open_p95_ms = percentile_samples(&open_samples_ms, 95);
+    let page_samples_ms = sample_milliseconds(&open_process_samples, "historyPageMilliseconds");
+    let page_p95_ms = percentile_samples(&page_samples_ms, 95);
+    let page_max_retained_bytes = open_process_samples
+        .iter()
+        .map(|sample| {
+            sample["historyPageRetainedJsonBytes"]
+                .as_u64()
+                .expect("retained history bytes")
+        })
+        .max()
+        .expect("history page population");
 
     let p50_ms = percentile_milliseconds(&mutation_latencies, 50);
     let p95_ms = percentile_milliseconds(&mutation_latencies, 95);
@@ -230,7 +269,11 @@ fn storage_active_scale_qualification() {
     let wal_bytes = file_bytes(&crate::journal_storage::wal_path(&journal_path));
     let previous_bytes = file_bytes(&crate::journal_storage::previous_path(&journal_path));
     let total_bytes = recursive_bytes(&root.path);
-    let rss_mib = peak_rss_mib();
+    let rss_mib = open_process_samples
+        .iter()
+        .filter_map(|sample| sample["peakRssMiB"].as_u64())
+        .chain(peak_rss_mib())
+        .max();
     let transitions = mutation_latencies.len();
 
     let evidence = serde_json::json!({
@@ -239,7 +282,21 @@ fn storage_active_scale_qualification() {
         "root": root.path.display().to_string(),
         "activeRecords": active_records,
         "transitions": transitions,
-        "coldStartMilliseconds": cold_start_ms,
+        "mutationSamplesMilliseconds": mutation_latencies.iter()
+            .map(|duration| duration.as_secs_f64() * 1_000.0).collect::<Vec<_>>(),
+        "measurementScope": {
+            "buildProfile": compiled_build_profile(),
+            "open": "fresh-process-os-page-cache-uncontrolled",
+            "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+        },
+        "processSampleCount": sample_count,
+        "openProcessSamples": open_process_samples,
+        "freshProcessOpenSamplesMilliseconds": open_samples_ms,
+        "freshProcessOpenP95Milliseconds": open_p95_ms,
+        "historyPageSize": 64,
+        "historyPageSamplesMilliseconds": page_samples_ms,
+        "historyPageP95Milliseconds": page_p95_ms,
+        "historyPageMaxRetainedJsonBytes": page_max_retained_bytes,
         "mutationP50Milliseconds": p50_ms,
         "mutationP95Milliseconds": p95_ms,
         "mutationP99Milliseconds": p99_ms,
@@ -260,9 +317,28 @@ fn storage_active_scale_qualification() {
         "active WAL exceeds its structural budget"
     );
     assert_at_most(
-        "active cold start",
-        cold_start_ms,
+        "active fresh-process open p95",
+        open_p95_ms,
         budget_u64(&budgets, "performance", "coldStartP95Milliseconds"),
+    );
+    assert_at_most(
+        "64-receipt history page p95",
+        page_p95_ms,
+        budget_u64(&budgets, "performance", "historyPageP95Milliseconds"),
+    );
+    assert!(
+        page_max_retained_bytes
+            <= budget_u64(
+                &budgets,
+                "performance",
+                "historyPageRetainedSerializedBytes"
+            ),
+        "retained history-page serialization exceeded its hard budget"
+    );
+    assert!(
+        rss_mib.expect("Linux qualification must expose VmHWM")
+            <= budget_u64(&budgets, "performance", "activePeakRssMiB"),
+        "active peak RSS exceeded its hard budget"
     );
     assert_at_most(
         "mutation p50",
@@ -284,122 +360,243 @@ fn storage_active_scale_qualification() {
 #[test]
 #[ignore = "full 1000000-retired-identity storage qualification"]
 fn storage_retirement_scale_qualification() {
+    require_release_qualification();
     let budgets = budgets();
     let retired_identities =
         budget_u64(&budgets, "performance", "retiredIdentitiesSubject") as usize;
     let root = QualificationRoot::create("retired");
     let journal_path = root.path.join("operation-journal.json");
-    let mut store = RetirementStore::create(&journal_path).expect("create retirement store");
-
-    let approximate_bucket = retired_identities.div_ceil(256);
-    let mut buckets = (0..256)
-        .map(|_| Vec::with_capacity(approximate_bucket))
-        .collect::<Vec<Vec<String>>>();
-    let mut first_identity = None;
-    let mut last_identity = String::new();
-    for index in 0..retired_identities {
-        let identity = sha256_hex(format!("hepta-retired-qualification-{index}"));
-        if first_identity.is_none() {
-            first_identity = Some(identity.clone());
-        }
-        last_identity.clone_from(&identity);
-        let prefix = usize::from_str_radix(&identity[..2], 16)
-            .expect("SHA-256 retirement prefix is hexadecimal");
-        buckets[prefix].push(identity);
-    }
-
-    let append_started = Instant::now();
-    for mut bucket in buckets {
-        bucket.sort_unstable();
-        if !bucket.is_empty() {
-            store
-                .append(&bucket)
-                .expect("append retirement qualification bucket");
+    let active_records = budget_u64(&budgets, "performance", "activeRecordsSubject") as usize;
+    let mut journal = OperationJournal::open(&journal_path).expect("create combined journal");
+    // Persist the real live population before publishing the retirement fixture.
+    // Closing these operations afterward checkpoints the published retirement
+    // frontier through the journal's ordinary WAL and snapshot implementation.
+    for phase in [OperationPhase::Prepared, OperationPhase::Invoking] {
+        for index in 0..active_records {
+            journal
+                .upsert(operation_record(index, phase))
+                .expect("persist combined live population");
         }
     }
-    let append_ms = append_started.elapsed().as_secs_f64() * 1_000.0;
+    drop(journal);
+    let fixture_started = Instant::now();
+    let authority = MixedAuthority::build(&journal_path, retired_identities);
+    let store = RetirementStore::open(&journal_path, Some(&authority.checkpoint))
+        .expect("derive indexed mixed authority fixture")
+        .expect("mixed authority fixture exists");
+    let append_ms = fixture_started.elapsed().as_secs_f64() * 1_000.0;
     assert_eq!(store.len(), retired_identities);
-    let checkpoint = store.checkpoint();
+    let checkpoint = authority.checkpoint.clone();
     let segment_count = store.segments();
-    let first_identity = first_identity.expect("retirement subject is non-empty");
+    assert_eq!(segment_count, authority.shape.segment_count);
+    assert_eq!(authority.shape.mixed_prefix_segments, segment_count);
+    assert!(authority.shape.minimum_prefixes_per_segment > 1);
+    let first_identity = authority.first_identity.clone();
+    let last_identity = authority.last_identity.clone();
     let head_path = retirement_directory(&journal_path).join("head.json");
     let original_head = fs::read(&head_path).expect("read indexed retirement head");
     drop(store);
+    let mut journal = OperationJournal::open(&journal_path).expect("open combined live population");
+    assert_eq!(journal.retired_count(), retired_identities);
+    for index in 0..active_records {
+        journal
+            .upsert(operation_record(index, OperationPhase::Terminal))
+            .expect("close combined population with durable retirement checkpoint");
+    }
+    assert_eq!(journal.all().len(), active_records);
+    drop(journal);
 
-    let indexed_started = Instant::now();
-    let indexed = RetirementStore::open(&journal_path, Some(&checkpoint))
-        .expect("open indexed retirement store")
-        .expect("indexed retirement store exists");
-    let indexed_open_ms = indexed_started.elapsed().as_secs_f64() * 1_000.0;
-    assert_eq!(indexed.len(), retired_identities);
-    assert!(indexed.contains(&first_identity));
-    assert!(indexed.contains(&last_identity));
-    drop(indexed);
-
-    let legacy_head = serde_json::json!({
-        "schema": "hepta.native-retirement.v2",
-        "checkpoint": checkpoint,
+    let sample_count = budget_u64(&budgets, "performance", "freshProcessSamples") as usize;
+    assert!(
+        sample_count >= 20,
+        "fresh-process p95 requires at least 20 observations"
+    );
+    let mut config = serde_json::json!({
+        "kind": "retired-open", "journalPath": journal_path,
+        "expectedRecords": retired_identities, "checkpoint": checkpoint,
+        "firstIdentity": first_identity, "lastIdentity": last_identity,
+        "expectedHeadSha256": sha256_hex(&original_head),
     });
-    let mut head = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&head_path)
-        .expect("open retirement head for deterministic legacy projection");
-    head.write_all(
-        &serde_json::to_vec(&legacy_head).expect("serialize legacy retirement head"),
-    )
-    .expect("write legacy retirement head");
-    head.sync_all().expect("sync legacy retirement head");
-    drop(head);
+    let open_process_samples = (0..sample_count)
+        .map(|ordinal| fresh_process_sample(&root.path, "retired-open", ordinal, &config))
+        .collect::<Vec<_>>();
+    let open_samples_ms = sample_milliseconds(&open_process_samples, "elapsedMilliseconds");
+    let open_p95_ms = percentile_samples(&open_samples_ms, 95);
+    let combined_journal = measure_combined_journal(
+        &root.path,
+        &journal_path,
+        active_records,
+        retired_identities,
+        sample_count,
+    );
 
-    let rebuild_started = Instant::now();
-    let rebuilt = RetirementStore::open(&journal_path, Some(&checkpoint))
-        .expect("rebuild retirement index")
-        .expect("rebuilt retirement store exists");
-    let rebuild_ms = rebuild_started.elapsed().as_secs_f64() * 1_000.0;
-    assert_eq!(rebuilt.len(), retired_identities);
-    assert!(rebuilt.contains(&first_identity));
-    assert!(rebuilt.contains(&last_identity));
-    assert_eq!(rebuilt.segments(), segment_count);
-    drop(rebuilt);
-
-    let rebuilt_head = fs::read(&head_path).expect("read rebuilt retirement head");
-    let deterministic_rebuild = rebuilt_head == original_head;
+    config["kind"] = "retired-rebuild".into();
+    config["expectedAuthoritySegments"] = segment_count.into();
+    config["expectedMixedPrefixSegments"] = authority.shape.mixed_prefix_segments.into();
+    config["expectedMinimumPrefixesPerSegment"] =
+        authority.shape.minimum_prefixes_per_segment.into();
+    let mut index_rebuild_process_samples = Vec::with_capacity(sample_count);
+    for ordinal in 0..sample_count {
+        // A distinct root starts with only immutable authority segments and a
+        // copied v2 head. Every sample pays first-migration derived-asset writes.
+        let cold = QualificationRoot::create(&format!("retired-rebuild-{ordinal}"));
+        let cold_journal = cold.path.join("operation-journal.json");
+        authority.clone_cold(&cold_journal);
+        config["journalPath"] = serde_json::json!(cold_journal);
+        index_rebuild_process_samples.push(fresh_process_sample(
+            &cold.path,
+            "retired-rebuild",
+            ordinal,
+            &config,
+        ));
+    }
+    let rebuild_samples_ms =
+        sample_milliseconds(&index_rebuild_process_samples, "elapsedMilliseconds");
+    let rebuild_p95_ms = percentile_samples(&rebuild_samples_ms, 95);
+    let indexed_head_sha256 = sha256_hex(&original_head);
+    let deterministic_rebuild = index_rebuild_process_samples
+        .iter()
+        .all(|sample| sample["rebuiltHeadSha256"].as_str() == Some(indexed_head_sha256.as_str()));
     let total_bytes = recursive_bytes(&root.path);
-    let rss_mib = peak_rss_mib();
+    let rss_mib = open_process_samples
+        .iter()
+        .chain(&index_rebuild_process_samples)
+        .filter_map(|sample| sample["peakRssMiB"].as_u64())
+        .chain(peak_rss_mib())
+        .chain(combined_journal["peakRssMiB"].as_u64())
+        .max();
     let evidence = serde_json::json!({
         "schema": "hepta.ui-native-storage-retirement-evidence.v1",
         "sourceSha": source_sha(),
         "root": root.path.display().to_string(),
         "retiredIdentities": retired_identities,
         "retirementSegments": segment_count,
-        "appendMilliseconds": append_ms,
-        "indexedColdOpenMilliseconds": indexed_open_ms,
-        "indexRebuildMilliseconds": rebuild_ms,
+        "authorityFixtureBuildMilliseconds": append_ms,
+        "authorityBatchSize": 1024,
+        "authorityMixedPrefixSegments": authority.shape.mixed_prefix_segments,
+        "authorityMinimumPrefixesPerSegment": authority.shape.minimum_prefixes_per_segment,
+        "measurementScope": {
+            "buildProfile": compiled_build_profile(),
+            "open": "fresh-process-os-page-cache-uncontrolled",
+            "rebuild": REBUILD_SCOPE,
+            "authoritySegments": AUTHORITY_SCOPE,
+        },
+        "processSampleCount": sample_count,
+        "openProcessSamples": open_process_samples,
+        "indexRebuildProcessSamples": index_rebuild_process_samples,
+        "freshProcessOpenSamplesMilliseconds": open_samples_ms,
+        "freshProcessOpenP95Milliseconds": open_p95_ms,
+        "freshProcessIndexRebuildSamplesMilliseconds": rebuild_samples_ms,
+        "freshProcessIndexRebuildP95Milliseconds": rebuild_p95_ms,
+        "combinedJournal": combined_journal,
         "deterministicRebuild": deterministic_rebuild,
+        "expectedIndexedHeadSha256": indexed_head_sha256,
         "totalStorageBytes": total_bytes,
         "peakRssMiB": rss_mib,
     });
     write_evidence(&root.path, "retired", &evidence);
 
-    assert!(deterministic_rebuild, "retirement index rebuild is not deterministic");
+    assert!(
+        deterministic_rebuild,
+        "retirement index rebuild is not deterministic"
+    );
     assert_at_most(
-        "million-retired indexed cold open",
-        indexed_open_ms,
+        "million-retired fresh-process indexed open p95",
+        open_p95_ms,
         budget_u64(&budgets, "performance", "coldStartP95Milliseconds"),
     );
     assert_at_most(
-        "million-retired index rebuild",
-        rebuild_ms,
+        "million-retired fresh-process index rebuild p95",
+        rebuild_p95_ms,
         budget_u64(
             &budgets,
             "performance",
             "millionRetiredIndexRebuildP95Milliseconds",
         ),
     );
+    assert_combined_journal_budgets(&evidence["combinedJournal"], &budgets);
     let rss_mib = rss_mib.expect("Linux qualification must expose VmHWM");
     assert!(
         rss_mib <= budget_u64(&budgets, "performance", "millionRetiredPeakRssMiB"),
         "million-retired peak RSS exceeded its hard budget"
     );
+}
+
+fn measure_combined_journal(
+    root: &Path,
+    journal_path: &Path,
+    active_records: usize,
+    retired_identities: usize,
+    sample_count: usize,
+) -> Value {
+    let page_count = active_records.div_ceil(64);
+    let observations = (0..sample_count)
+        .map(|ordinal| {
+            fresh_process_sample(root, "combined-open", ordinal, &serde_json::json!({
+                "kind": "combined-open", "journalPath": journal_path,
+                "expectedRecords": active_records, "expectedRetiredIdentities": retired_identities,
+                "pageIndex": ordinal * (page_count - 1) / (sample_count - 1),
+            }))
+        })
+        .collect::<Vec<_>>();
+    let open_samples = sample_milliseconds(&observations, "elapsedMilliseconds");
+    let page_samples = sample_milliseconds(&observations, "historyPageMilliseconds");
+    let retained_bytes = observations
+        .iter()
+        .map(|sample| {
+            sample["historyPageRetainedJsonBytes"]
+                .as_u64()
+                .expect("combined history bytes")
+        })
+        .max()
+        .expect("combined sample population");
+    let rss_mib = observations
+        .iter()
+        .filter_map(|sample| sample["peakRssMiB"].as_u64())
+        .chain(peak_rss_mib())
+        .max();
+    serde_json::json!({
+        "schema": "hepta.ui-native-storage-combined-evidence.v1", "sourceSha": source_sha(),
+        "activeRecords": active_records, "retiredIdentities": retired_identities,
+        "measurementScope": {
+            "buildProfile": compiled_build_profile(),
+            "open": "fresh-process-os-page-cache-uncontrolled",
+            "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+        },
+        "processSampleCount": sample_count, "openProcessSamples": observations,
+        "freshProcessOpenP95Milliseconds": percentile_samples(&open_samples, 95),
+        "freshProcessOpenSamplesMilliseconds": open_samples,
+        "historyPageSize": 64, "historyPageP95Milliseconds": percentile_samples(&page_samples, 95),
+        "historyPageSamplesMilliseconds": page_samples,
+        "historyPageMaxRetainedJsonBytes": retained_bytes, "peakRssMiB": rss_mib,
+    })
+}
+
+fn assert_combined_journal_budgets(evidence: &Value, budgets: &Value) {
+    for (field, ceiling) in [
+        (
+            "freshProcessOpenP95Milliseconds",
+            "coldStartP95Milliseconds",
+        ),
+        ("historyPageP95Milliseconds", "historyPageP95Milliseconds"),
+        (
+            "historyPageMaxRetainedJsonBytes",
+            "historyPageRetainedSerializedBytes",
+        ),
+    ] {
+        assert_at_most(
+            field,
+            evidence[field].as_f64().expect("combined measurement"),
+            budget_u64(budgets, "performance", ceiling),
+        );
+    }
+    let rss_mib = evidence["peakRssMiB"]
+        .as_u64()
+        .expect("Linux combined peak RSS");
+    for ceiling in ["activePeakRssMiB", "millionRetiredPeakRssMiB"] {
+        assert!(
+            rss_mib <= budget_u64(budgets, "performance", ceiling),
+            "combined active-and-retired peak RSS exceeded its hard budget"
+        );
+    }
 }

@@ -1,13 +1,18 @@
+mod binding_prepare;
 mod history_page;
 mod native_picker;
 mod operations_view;
+mod path_input;
 mod readiness;
+mod runtime_status;
 mod shutdown;
 mod task_supervisor;
 mod update_views;
 
+use self::binding_prepare::PreparedBinding;
 use self::history_page::HISTORY_PAGE_SIZE;
 use self::readiness::ReadinessFrames;
+use self::runtime_status::render_runtime_status;
 use self::shutdown::Shutdown;
 use self::task_supervisor::FileInputTarget;
 use self::task_supervisor::FileInputTicket;
@@ -84,6 +89,7 @@ enum UiTaskKind {
     Refresh,
     Reconcile,
     Execute,
+    PrepareBinding,
     StageUpdate,
     Ready,
     History,
@@ -97,6 +103,7 @@ impl UiTaskKind {
             Self::Refresh => "hepta-native-refresh",
             Self::Reconcile => "hepta-native-reconcile",
             Self::Execute => "hepta-native-effect",
+            Self::PrepareBinding => "hepta-native-binding-prepare",
             Self::StageUpdate => "hepta-native-update-stage",
             Self::Ready => "hepta-native-readiness",
             Self::History => "hepta-native-history-read",
@@ -110,6 +117,7 @@ impl UiTaskKind {
             Self::Refresh => locale.text("Refreshing runtime", "正在刷新运行时"),
             Self::Reconcile => locale.text("Reconciling operations", "正在对账操作"),
             Self::Execute => locale.text("Executing bounded operation", "正在执行受限操作"),
+            Self::PrepareBinding => locale.text("Preparing exact binding", "正在生成精确 binding"),
             Self::StageUpdate => locale.text("Verifying and staging update", "正在验证并暂存更新"),
             Self::Ready => locale.text("Recording verified GUI readiness", "正在记录界面就绪状态"),
             Self::History => locale.text("Reading one history page", "正在读取一页历史"),
@@ -122,8 +130,9 @@ impl UiTaskKind {
 #[derive(Debug)]
 enum UiTaskOutput {
     Shutdown,
+    PrepareBinding(PreparedBinding),
     Refresh {
-        status: serde_json::Value,
+        status_rendered: String,
         view_revision: u64,
         ready_view: RuntimeView,
         history: OperationHistoryPage,
@@ -165,11 +174,6 @@ fn lock_runtime_for_task<'a>(
     admission
         .wait_lock(runtime.as_ref(), RUNTIME_LOCK_WAIT)
         .map_err(|message| ShellError::State(message.to_owned()))
-}
-
-fn render_runtime_status(status: &serde_json::Value) -> String {
-    serde_json::to_string_pretty(status)
-        .unwrap_or_else(|error| format!("status serialization failed: {error}"))
 }
 
 fn spawn_ui_task<F>(
@@ -237,7 +241,7 @@ pub struct HeptaNativeApp {
     notification_title: String,
     notification_body: String,
     operation_grant_path: String,
-    operation_binding: Option<String>,
+    operation_binding: Option<PreparedBinding>,
     operation_message: Option<String>,
     startup_recorder: Option<crate::startup::StartupRecorder>,
     update_handoff: Option<crate::update_handoff::UpdateHandoff>,
@@ -480,18 +484,21 @@ impl HeptaNativeApp {
             }
         };
         match outcome {
+            Ok(UiTaskOutput::PrepareBinding(binding)) => {
+                self.install_prepared_binding(binding);
+            }
             Ok(UiTaskOutput::Shutdown) => {
                 self.shutdown.check_deadline(Instant::now());
                 self.shutdown.runtime_closed = true;
                 self.connected = false;
             }
             Ok(UiTaskOutput::Refresh {
-                status,
+                status_rendered,
                 view_revision,
                 ready_view,
                 history,
             }) => {
-                self.status_rendered = Some(render_runtime_status(&status));
+                self.status_rendered = Some(status_rendered);
                 self.view_revision = Some(view_revision);
                 self.ready_view = Some(ready_view);
                 self.readiness_frames.reset();
@@ -547,14 +554,17 @@ impl HeptaNativeApp {
                     self.readiness_frames.reset();
                     self.operation_binding = None;
                 }
-                if kind == UiTaskKind::Execute {
+                if kind == UiTaskKind::PrepareBinding {
+                    self.operation_binding = None;
+                    self.operation_message = None;
+                } else if kind == UiTaskKind::Execute {
                     self.operation_message = None;
                 } else if kind == UiTaskKind::StageUpdate {
                     self.update_message = None;
-                } else if kind == UiTaskKind::PickFile {
-                    if let Some(context) = self.repaint.lock().ok().and_then(|value| value.clone()) {
-                        task_supervisor::cancel_file_input(&context);
-                    }
+                } else if kind == UiTaskKind::PickFile
+                    && let Some(context) = self.repaint.lock().ok().and_then(|value| value.clone())
+                {
+                    task_supervisor::cancel_file_input(&context);
                 }
                 self.last_error = Some(error);
             }
@@ -617,12 +627,15 @@ impl HeptaNativeApp {
                 .begin()
                 .map_err(|message| ShellError::State(message.to_owned()))?;
             let (presentation, status) = runtime.refresh_runtime_view()?;
+            // Pretty JSON may expand well beyond the bounded wire payload.
+            // Serialize once on the worker, never during the GUI callback.
+            let status_rendered = render_runtime_status(&status)?;
             let ready_view = runtime.view().cloned().ok_or_else(|| {
                 ShellError::State("authenticated refresh did not retain its view".into())
             })?;
             let history = runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?;
             Ok(UiTaskOutput::Refresh {
-                status,
+                status_rendered,
                 view_revision: presentation.revision,
                 ready_view,
                 history,
@@ -771,6 +784,9 @@ impl eframe::App for HeptaNativeApp {
         if self.shutdown_view(ui) {
             return;
         }
+        // Input cancellation belongs to the app callback, regardless of the
+        // screen selected while a worker is waiting for runtime admission.
+        self.file_input_focus = self.handle_file_input_intent(ui);
         if self.any_task_active() || self.shutdown.requested() {
             ui.ctx().request_repaint_after(Duration::from_millis(250));
         }
@@ -805,3 +821,7 @@ impl eframe::App for HeptaNativeApp {
 #[cfg(test)]
 #[path = "ui_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "ui/input_event_tests.rs"]
+mod input_event_tests;

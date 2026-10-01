@@ -41,6 +41,7 @@ def request_path(connection: Gio.DBusConnection, token: str) -> str:
 
 
 def main() -> int:
+    deadline = time.monotonic() + MAXIMUM_SECONDS
     action = sys.argv[1] if len(sys.argv) == 2 else ""
     if action not in ("open", "reveal"):
         fail("expected open or reveal portal action", 64)
@@ -151,8 +152,17 @@ def main() -> int:
         finish(124, message="resource handoff observation deadline exceeded")
         return GLib.SOURCE_REMOVE
 
-    GLib.timeout_add_seconds(MAXIMUM_SECONDS, on_timeout)
-    loop.run()
+    # Bus connection and synchronous method dispatch consume the same budget.
+    # Leave the Rust owner time to observe Close before its launcher deadline.
+    if not bool(state["done"]):
+        remaining_ms = int((deadline - time.monotonic()) * 1000)
+        if remaining_ms <= 0:
+            on_timeout()
+        else:
+            timer = GLib.timeout_add(remaining_ms, on_timeout)
+            loop.run()
+            if int(state["exit"]) != 124:
+                GLib.source_remove(timer)
     for subscription in state["subscriptions"]:
         connection.signal_unsubscribe(subscription)
     return int(state["exit"])

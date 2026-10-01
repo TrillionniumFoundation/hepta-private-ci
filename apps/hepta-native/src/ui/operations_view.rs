@@ -29,7 +29,7 @@ fn project_operation_presentation(
 
 impl HeptaNativeApp {
     pub(super) fn operations_view(&mut self, ui: &mut egui::Ui) {
-        let focus_target = self.handle_file_input_intent(ui);
+        let focus_target = self.file_input_focus.take();
         ui.heading(self.locale.text("Native operations", "原生操作"));
         if let Ok(runtime) = self.runtime.try_lock() {
             let capacity = runtime.journal_capacity();
@@ -57,9 +57,17 @@ impl HeptaNativeApp {
         ));
         ui.separator();
         ui.label(self.locale.text("Authority subject", "权限主体"));
-        ui.text_edit_singleline(&mut self.operation_subject_id);
+        ui.add(
+            egui::TextEdit::singleline(&mut self.operation_subject_id)
+                .id(egui::Id::new("native-operation-subject"))
+                .char_limit(crate::model::MAX_STABLE_ID_BYTES),
+        );
         ui.label(self.locale.text("Operation ID", "操作 ID"));
-        ui.text_edit_singleline(&mut self.operation_id);
+        ui.add(
+            egui::TextEdit::singleline(&mut self.operation_id)
+                .id(egui::Id::new("native-operation-id"))
+                .char_limit(crate::model::MAX_STABLE_ID_BYTES),
+        );
         egui::ComboBox::from_id_salt("native-operation-action")
             .selected_text(self.operation_action.to_string())
             .show_ui(ui, |ui| {
@@ -86,23 +94,43 @@ impl HeptaNativeApp {
                     ));
                 }
                 ui.label(self.locale.text("Absolute path", "绝对路径"));
-                ui.text_edit_singleline(&mut self.operation_path);
+                ui.add(
+                    egui::TextEdit::singleline(&mut self.operation_path)
+                        .id(egui::Id::new("native-operation-path"))
+                        .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
+                );
             }
             PlatformAction::CopyText => {
                 ui.label(self.locale.text("Clipboard text", "剪贴板文本"));
-                ui.text_edit_multiline(&mut self.operation_text);
+                ui.add(
+                    egui::TextEdit::multiline(&mut self.operation_text)
+                        .id(egui::Id::new("native-operation-text"))
+                        .char_limit(crate::model::MAX_COPY_TEXT_BYTES),
+                );
             }
             PlatformAction::Notify => {
                 ui.label(self.locale.text("Notification title", "通知标题"));
-                ui.text_edit_singleline(&mut self.notification_title);
+                ui.add(
+                    egui::TextEdit::singleline(&mut self.notification_title)
+                        .id(egui::Id::new("native-notification-title"))
+                        .char_limit(crate::model::MAX_NOTIFICATION_TITLE_BYTES),
+                );
                 ui.label(self.locale.text("Notification body", "通知正文"));
-                ui.text_edit_multiline(&mut self.notification_body);
+                ui.add(
+                    egui::TextEdit::multiline(&mut self.notification_body)
+                        .id(egui::Id::new("native-notification-body"))
+                        .char_limit(crate::model::MAX_NOTIFICATION_BODY_BYTES),
+                );
             }
         }
         ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
         let grant_response = ui
             .horizontal(|ui| {
-                let response = ui.text_edit_singleline(&mut self.operation_grant_path);
+                let response = ui.add(
+                    egui::TextEdit::singleline(&mut self.operation_grant_path)
+                        .id(egui::Id::new("native-operation-grant"))
+                        .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
+                );
                 if ui
                     .add_enabled(
                         !self.picker_busy(),
@@ -131,6 +159,7 @@ impl HeptaNativeApp {
             grant_response.request_focus();
         }
         self.render_file_input_intent_status(ui);
+        self.invalidate_edited_binding();
         let busy = self.is_busy();
         ui.horizontal(|ui| {
             if ui
@@ -164,7 +193,7 @@ impl HeptaNativeApp {
                 "交给独立签发方的 binding：",
             ));
             ui.add(
-                egui::TextEdit::multiline(binding)
+                egui::TextEdit::multiline(&mut binding.text)
                     .font(egui::TextStyle::Monospace)
                     .desired_rows(10)
                     .interactive(false),
@@ -318,20 +347,19 @@ impl HeptaNativeApp {
                 runtime.close_operation_observation(&key)?;
                 runtime.compact_closed_history(256)?;
                 Ok(UiTaskOutput::Reconcile {
-                    history: runtime
-                        .operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
+                    history: runtime.operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
                 })
             });
         }
     }
 
-    fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
+    pub(super) fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
         let payload = match self.operation_action {
             PlatformAction::OpenPath => PlatformPayload::OpenPath {
-                path: PathBuf::from(self.operation_path.trim()),
+                path: super::path_input::absolute_path(&self.operation_path)?,
             },
             PlatformAction::RevealPath => PlatformPayload::RevealPath {
-                path: PathBuf::from(self.operation_path.trim()),
+                path: super::path_input::absolute_path(&self.operation_path)?,
             },
             PlatformAction::CopyText => PlatformPayload::CopyText {
                 text: self.operation_text.clone(),
@@ -345,48 +373,9 @@ impl HeptaNativeApp {
         Ok(payload)
     }
 
-    fn prepare_operation_binding(&mut self) {
-        let outcome = (|| -> Result<String, ShellError> {
-            let payload = self.operation_payload()?;
-            let runtime = self.runtime.try_lock().map_err(|_| {
-                ShellError::State("native runtime is busy; retry after the current task".to_owned())
-            })?;
-            let binding = runtime.prepare_platform_binding(
-                self.operation_subject_id.trim(),
-                self.operation_id.trim(),
-                &payload,
-            )?;
-            serde_json::to_string_pretty(&binding).map_err(ShellError::from)
-        })();
-        match outcome {
-            Ok(binding) => {
-                self.operation_binding = Some(binding);
-                self.operation_message = Some(
-                    self.locale
-                        .text(
-                            "Binding prepared. The independent authority owner must choose grant identity, nonce, epoch and lifetime and sign the complete grant.",
-                            "Binding 已生成。独立 authority owner 必须自行选择 grant identity、nonce、epoch 与有效期，并签署完整 grant。",
-                        )
-                        .to_owned(),
-                );
-                self.last_error = None;
-            }
-            Err(error) => {
-                self.operation_binding = None;
-                self.operation_message = None;
-                self.last_error = Some(error.to_string());
-            }
-        }
-    }
-
     fn execute_operation(&mut self) {
         let outcome = (|| -> Result<(PathBuf, u64, PlatformPayload), ShellError> {
-            let grant_path = PathBuf::from(self.operation_grant_path.trim());
-            if !grant_path.is_absolute() {
-                return Err(ShellError::InvalidInput(
-                    "signed final-use grant path must be absolute".to_owned(),
-                ));
-            }
+            let grant_path = super::path_input::absolute_path(&self.operation_grant_path)?;
             let displayed_revision = self.view_revision.ok_or_else(|| {
                 ShellError::State("native runtime view is unavailable".to_owned())
             })?;

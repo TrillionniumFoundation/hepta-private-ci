@@ -36,7 +36,8 @@
       "sourcePathExists": true,
       "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "467272b0f91d123d6fbbccd211dfb726c95965da"
     },
     {
       "operation": "store",
@@ -47,15 +48,16 @@
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
         "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
-        "codex-rs/hepta-private-state/src/windows.rs"
+        "codex-rs/utils/private-state/src/windows.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "codex-rs/hepta-private-state/src/windows.rs"
+        "codex-rs/utils/private-state/src/windows.rs"
       ],
-      "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback."
+      "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback. Current Windows contracts delegate directly to codex-rs/utils/private-state/src/windows.rs, which owns the OS implementation and inline handle/path/confinement tests. codex-rs/hepta-private-state/src/windows.rs is a compatibility reexport of that utility for existing consumers. sourceBase retains historical provenance; sourceObjects/observedAtHead bind current navigation; old values/receipts remain original Git commits; no qualification migration.",
+      "sourceBlob": "e61f1f9e8a5d335e466cbf9a552bdaccdaad298d"
     },
     {
       "operation": "authority_lease_registry",
@@ -69,7 +71,8 @@
       "sourcePathExists": true,
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "af53ba2467ee0da59cce42b4bf15d134ce44efa6"
     },
     {
       "operation": "final_use_approval_verifier",
@@ -83,7 +86,8 @@
       "sourcePathExists": true,
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "378c590128111e8ad670be6a88a58043b0a29578"
     },
     {
       "operation": "final_use_revocation_feed_verifier",
@@ -97,7 +101,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "378c590128111e8ad670be6a88a58043b0a29578"
     },
     {
       "operation": "authority_external_trust",
@@ -112,7 +117,8 @@
       "sourcePathExists": true,
       "designOperation": "trusted_time_and_external_anti_rollback_frontier",
       "mappingClass": "owner_native_interface",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "043ffd75a20c42935959a98d37f40e3d7229c407"
     },
     {
       "operation": "final_use_revocation_convergence",
@@ -126,7 +132,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "378c590128111e8ad670be6a88a58043b0a29578"
     },
     {
       "operation": "verified_use_witness_v1",
@@ -141,7 +148,8 @@
       "sourcePathExists": true,
       "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
       "mappingClass": "owner_native_evidence",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     },
     {
       "operation": "verified_use_token_witness_v1",
@@ -155,7 +163,8 @@
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     }
   ],
   "repositoryControlledGaps": [
@@ -229,6 +238,38 @@
       "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
     },
     {
+      "path": "apps/hepta-browser/test/agentd-service.test.js",
+      "object": "5949a26f01664cc2fdc3e70bce536590f7a96bed"
+    },
+    {
+      "path": "apps/hepta-browser/test/runtime.test.js",
+      "object": "685860e4bf15244da8aada37a83caaf0aa10b836"
+    },
+    {
+      "path": "apps/hepta-native/src/main.rs",
+      "object": "6a9f5435a6ebd2479fd385c212cf95bfc8883f12"
+    },
+    {
+      "path": "apps/hepta-native/src/qualification.rs",
+      "object": "6125ec94624fbc17fd7af9566c3920508733d62f"
+    },
+    {
+      "path": "apps/hepta-native/src/runtime.rs",
+      "object": "fdede319fc20427f54b38a94b00995047de107f3"
+    },
+    {
+      "path": "apps/hepta-native/src/security.rs",
+      "object": "f37cec27552b5d1319d4b9e50ae5c3fe26782666"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "34807f98151fe072df26715b3f5239d07cd6677b"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "6134c87fba905909425cec7e5aae6138e9a56538"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
       "object": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f"
     },
@@ -241,12 +282,16 @@
       "object": "7840a3aab99080c99849c04553611fd728df1332"
     },
     {
+      "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "object": "d7d0f0e6f77c55d0e4a0269a33ae5574c5e0e1f6"
+    },
+    {
       "path": "codex-rs/hepta-contracts",
-      "object": "65c7a8a9a80e710668880cf254355b59edf6413e"
+      "object": "f7494360ff19c98f835d30d98665fe2df27475e5"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "890dc91fd5b5b44580268c5f4741131f85538361"
+      "object": "af53ba2467ee0da59cce42b4bf15d134ce44efa6"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -262,7 +307,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "87467d56f183de3b09ad897442ec033dee183a78"
+      "object": "e61f1f9e8a5d335e466cbf9a552bdaccdaad298d"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
@@ -270,7 +315,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
-      "object": "481798ab380c1ae5aaa13f501cc2d9f76ec76a71"
+      "object": "5b22f62d0b8b6526f0458b853bfc51350332c394"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -290,15 +335,61 @@
     },
     {
       "path": "codex-rs/hepta-private-state",
-      "object": "b0f1e9423766988eae362de4d29c1fb66fdb48c2"
+      "object": "193d112b22257ac52abe0c81b94bc959d1b8a9c3"
     },
     {
       "path": "codex-rs/hepta-private-state/src/windows.rs",
-      "object": "e1ec864abe7173e1b96443b0ed87bc5b5441bd80"
+      "object": "735c5256c37998f6b2d6fd6a70571c2851606ee2"
+    },
+    {
+      "path": "codex-rs/utils/private-state",
+      "object": "71ef7976242e38ce1651cca711cfbb695109b76a"
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows.rs",
+      "object": "516583b01be8a2ae5d058fd719718f6a52f843cf"
     },
     {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "52ffbf87abc8d30cdb918a95323ca657b7ac8280"
+      "object": "2d82140f115f6e7af169f5edaedb984de88dcd53"
     }
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+    "tree": "f90313f067446c629b8da50058ee1bd2101e76e7"
+  },
+  "observedSourcePaths": [
+    "apps/hepta-browser/src/runtime-host.js",
+    "apps/hepta-browser/test/agentd-service.test.js",
+    "apps/hepta-browser/test/runtime.test.js",
+    "apps/hepta-native/src/main.rs",
+    "apps/hepta-native/src/qualification.rs",
+    "apps/hepta-native/src/runtime.rs",
+    "apps/hepta-native/src/security.rs",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+    "codex-rs/hepta-agentd/src/browser_servo.rs",
+    "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+    "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "codex-rs/hepta-contracts/src/authority_trust.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs",
+    "codex-rs/hepta-contracts/src/final_use_tests.rs",
+    "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+    "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+    "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "codex-rs/hepta-fleet/src/revocation_control.rs",
+    "codex-rs/hepta-private-state",
+    "codex-rs/hepta-private-state/src/windows.rs",
+    "codex-rs/utils/private-state",
+    "codex-rs/utils/private-state/src/windows.rs",
+    "docs/modules/kernel.authority/TECHNICAL.md"
   ]
 }

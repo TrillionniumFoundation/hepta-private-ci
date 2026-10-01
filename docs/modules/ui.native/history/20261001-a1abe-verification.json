@@ -1,0 +1,548 @@
+{
+  "schema": "hepta.ui-native-historical-verification.v1",
+  "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+  "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+  "reviewHeadSha": "8f436f282eab4f141d53a89f129727159cf2d758",
+  "reviewHeadTree": "3f56504d17ac7794fd9d95d881e1fc1bc9f641f3",
+  "evidenceRole": "Historical diagnostics for immutable A1 implementation source; no qualification inherited by a later source",
+  "localAuditVerification": {
+    "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
+    "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+    "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+    "applicationTests": {
+      "status": "passed-current-source-local-diagnostic",
+      "passed": 243,
+      "failed": 0,
+      "ignoredStorageScaleTests": 3,
+      "elapsedSeconds": 2.472,
+      "buildProfile": "debug",
+      "executionPlatform": "Linux",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "executionHeadSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationFilesMatchFrozenGit": true,
+      "rawLogSha256": "c3b493aba7f9cbd83095c1b4436837fc8090456a50fc533fd928e6d7e2039dd3",
+      "acceptedQualification": false
+    },
+    "ownerTests": {
+      "status": "source-equivalent-isolated-Linux-contracts-diagnostic-passed",
+      "passed": 194,
+      "failed": 0,
+      "skipped": 0,
+      "elapsedSeconds": 1.085,
+      "fifoRegressionTests": 2,
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "sourceFilesCompared": 61,
+      "comparedSourceFilesUnchangedAfterFixAndTests": true,
+      "completeWorkspaceOwnersExecuted": false,
+      "macOSFixturesExecuted": false,
+      "windowsFixturesExecuted": false,
+      "isolatedStrictClippyPassed": true,
+      "isolatedJustFixPassed": true,
+      "scope": "Reduced owner workspace and lock graph; seven unrelated nextest member overrides omitted only in the isolated copy; not an exact platform qualification subject",
+      "acceptedQualification": false
+    },
+    "strictClippy": {
+      "status": "passed-current-source-application-local-diagnostic",
+      "allTargets": true,
+      "allFeatures": true,
+      "denyWarnings": true,
+      "elapsedSeconds": 7.75,
+      "executionPlatform": "Linux",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "rawLogSha256": "db3100a4efdc8de1a4560ee30c2d72224899af249dcb593d9a3757f4e0acd9f0",
+      "completeWorkspaceOwnerClippyPassed": false,
+      "acceptedQualification": false
+    },
+    "pythonTests": {
+      "status": "passed-current-source-local-diagnostic",
+      "ran": 238,
+      "passed": 237,
+      "failed": 0,
+      "platformSkips": 1,
+      "skipScope": "Windows-only real NTFS junction on Linux",
+      "elapsedSeconds": 12.484,
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "rawLogSha256": "4f38ea6558f44c6ecf140004967994b1e20bd81ed08e6d70bf584fdf78fdba36",
+      "acceptedQualification": false
+    },
+    "releaseMixedStorageDiagnostics": {
+      "status": "pending-current-source-and-syscall-evidence",
+      "acceptedQualification": false
+    },
+    "releaseBinaries": {
+      "status": "passed-current-source-Linux-local-diagnostic",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "buildHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "buildProfile": "release",
+      "lockedOfflineBuild": true,
+      "buildSeconds": 317,
+      "built": 3,
+      "binaries": {
+        "hepta-native": {
+          "sha256": "e4c4cedec53e1b994005ff53bc551cdd66897446f171ebec3532ddec10a130f0",
+          "bytes": 24693368
+        },
+        "hepta-native-updater": {
+          "sha256": "7d323a3ef3410ad9cf65b82b6d1350f11e7a17842c5fc3c9731b5b11a03ad671",
+          "bytes": 3099128
+        },
+        "hepta-native-credential": {
+          "sha256": "491580f2597e9a7cac56d58ec8368f0fc9b3f99a5f5e0c167043b326a5268c4f",
+          "bytes": 6392504
+        }
+      },
+      "rawBuildLogSha256": "d42d59459b42d18c8585333061ebee3598a110f11de7a66792e5293c1125957e",
+      "binarySelfTestPassed": true,
+      "selfTestReceiptSha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13",
+      "realChildFaultChecksPassed": 7,
+      "realChildFaultReceiptSha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7",
+      "physicalGuiAcceptance": false,
+      "effectAuthorityGranted": false,
+      "activationAuthorityGranted": false,
+      "releaseAuthorityGranted": false,
+      "acceptedQualification": false
+    },
+    "compileNegativeVerification": {
+      "status": "passed-clean-review-head-local-diagnostic",
+      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "cases": 3,
+      "allPrivacyDiagnosticsObserved": true,
+      "allExpectedExitCodes": true,
+      "allDependencyResolutionPinned": true,
+      "rawReceiptSha256": "38cfd95b6e7fc768c68ad70d74ad11bfe32e86f7962f1573160868b615218b2c",
+      "acceptedQualification": false
+    },
+    "sourceStructuralVerification": {
+      "status": "structural-pass",
+      "passed": true,
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "rawLogSha256": "a72f9c118ff3e0c4a8f00fd31dcc41da1b7fc5a1feb0fdb1cfe84b5a925e970b",
+      "acceptedQualification": false,
+      "cleanReviewHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "cleanReviewHeadRawLogSha256": "0d472370625ab45269621560c78ab3b0f384e3f3ab1dab8e70e0489841c93a3a"
+    },
+    "projectionVerification": {
+      "status": "pending-current-source-execution"
+    },
+    "packagePortalTests": {
+      "status": "pending-current-source-execution"
+    },
+    "mapAdapterVerification": {
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
+    },
+    "globalModuleDocsVerification": {
+      "status": "failed-outside-ui-native-on-clean-review-head",
+      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "globalExitCode": 1,
+      "failedOtherModules": [
+        "automation.taskflow",
+        "cognitive.read",
+        "intelligence.control",
+        "kernel.authority",
+        "kernel.operations",
+        "knowledge.graph",
+        "learning.operator",
+        "learning.plasticity",
+        "memory.federation",
+        "memory.retrieval",
+        "platform.types",
+        "runtime.supervisor",
+        "utility.ndu"
+      ],
+      "strictNativeAdapterPassed": true,
+      "otherModuleRulesOrSourceAnchorsRelaxed": false,
+      "docsRawLogSha256": "40ba14c589927a0ec112049af416db1145392e818762e1091f6cdbd900ae2759",
+      "mapsRawLogSha256": "fee7a4fc49d009e2848d05543879e04604b261b1b9d42e7e5e09b42aa9098ade",
+      "acceptedQualification": false
+    },
+    "workflowEntryValidation": {
+      "status": "pending-final-review-head-workflow",
+      "remoteSevenSubjectQualificationPassed": false
+    },
+    "ciQualificationPassed": false,
+    "physicalPlatformAcceptanceComplete": false,
+    "localBuildResourceDiagnostics": {
+      "cachedLinkAttemptPassed": false,
+      "cachedLinkLogSha256": "c1db09834c4891da76e97aa47a0afc3e689823c289e708d3a9c80413399a7be9",
+      "subsequentBuildPassed": false,
+      "subsequentBuildLogSha256": "125abefc52cad6cf9acf2307bf0d2b68131966ff5aa909bdaf35155a522fc583",
+      "observedDiskExhaustion": true,
+      "observedGitIndexWriteFailure": true,
+      "observedLinkerBusError": true,
+      "onlyTaskOwnedReproducibleCargoCacheCleaned": true,
+      "freshApplicationAndReleaseBuildsPassed": true,
+      "productSourceChangedToHideBuildFailure": false,
+      "acceptedQualification": false
+    }
+  },
+  "exactLocalAuditCopyOrigin": {
+    "gitCommit": "8f436f282eab4f141d53a89f129727159cf2d758",
+    "path": "docs/modules/ui.native/CURRENT_DELIVERY.json",
+    "gitBlobBytesSha256": "5b567b79ad0b0d8898a424f23c346220aa84980aa87dc1a834d547e954a37e8a",
+    "semanticCopyUnchanged": true
+  },
+  "supplementalExecutionDiagnostics": {
+    "latestCleanReviewStructural": {
+      "executionHeadSha": "8f436f282eab4f141d53a89f129727159cf2d758",
+      "executionHeadTree": "3f56504d17ac7794fd9d95d881e1fc1bc9f641f3",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "acceptedQualification": false,
+      "rawPath": "/tmp/hepta-native-darwin-final-clean-structural.json",
+      "sha256": "eb6cbe515985062d785b1293f9d36d6d065862b0636c10db79a8d47061101011",
+      "bytes": 1464,
+      "exactReceipt": {
+        "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+        "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+        "limitations": [
+          "structural evidence is not physical-platform acceptance",
+          "performance budgets remain unqualified until measured artifacts are attached",
+          "release flags remain false pending independent review"
+        ],
+        "localCargoDependencyPaths": [
+          "apps/hepta-native",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-control-plane",
+          "codex-rs/hepta-native-gateway",
+          "codex-rs/hepta-ndu",
+          "codex-rs/hepta-paths",
+          "codex-rs/hepta-plasticity",
+          "codex-rs/hepta-private-state",
+          "codex-rs/hepta-runtime",
+          "codex-rs/hepta-types",
+          "codex-rs/hepta-wire",
+          "codex-rs/keyring-store",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+          "codex-rs/utils/cargo-bin",
+          "codex-rs/utils/private-state"
+        ],
+        "orderedParents": [
+          "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502"
+        ],
+        "repositoryHead": "8f436f282eab4f141d53a89f129727159cf2d758",
+        "repositoryTree": "3f56504d17ac7794fd9d95d881e1fc1bc9f641f3",
+        "retiredWorkflowCount": 16,
+        "schema": "hepta.ui-native-source-evidence.v1",
+        "sourceContracts": [
+          "active-index",
+          "journal-v7",
+          "retirement-bucket-v1",
+          "retirement-index-v1",
+          "retirement-v3",
+          "wal-magic",
+          "wal-v1"
+        ],
+        "status": "structural-pass",
+        "workflow": "ui-native-qualification.yml"
+      }
+    },
+    "earlierCleanReviewRawEvidence": {
+      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "executionHeadTree": "b690b267b21ae590e9a53644efe128390539e631",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "acceptedQualification": false,
+      "role": "Raw records supplement exact copied localAuditVerification; successful release/negative observations do not turn pending fields into passes or grant physical/release acceptance",
+      "records": {
+        "releaseBuild": {
+          "rawPath": "/tmp/hepta-native-darwin-release-build.log",
+          "sha256": "d42d59459b42d18c8585333061ebee3598a110f11de7a66792e5293c1125957e",
+          "bytes": 9138
+        },
+        "selfTest": {
+          "rawPath": "/tmp/hepta-native-darwin-self-test.json",
+          "sha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13",
+          "bytes": 132,
+          "exactReceipt": {
+            "schema": "hepta.native-self-test.v1",
+            "platform": "linux",
+            "architecture": "x86_64",
+            "gui": "eframe-0.36.2",
+            "accessibility": "accesskit"
+          }
+        },
+        "realChildFaultChecks": {
+          "rawPath": "/tmp/hepta-native-darwin-crash-test.json",
+          "sha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7",
+          "bytes": 452,
+          "exactReceipt": {
+            "schema": "hepta.native-packaged-fault-qualification.v1",
+            "platform": "linux",
+            "architecture": "x86_64",
+            "authenticated_view": true,
+            "cross_generation_fenced": true,
+            "permission_denial_no_dispatch": true,
+            "grant_revocation_before_effect": true,
+            "parent_death_ack_loss_reconciled": true,
+            "updater_death_rolled_back": true,
+            "rollback_failure_recovery_required": true,
+            "effect_authority_granted": false,
+            "activation_authority_granted": false,
+            "release_authority_granted": false
+          }
+        },
+        "compileNegative": {
+          "rawPath": "/tmp/hepta-native-darwin-compile-negative.json",
+          "sha256": "38cfd95b6e7fc768c68ad70d74ad11bfe32e86f7962f1573160868b615218b2c",
+          "bytes": 1761,
+          "exactReceipt": {
+            "applicationCargoLockSha256": "0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836",
+            "cases": [
+              {
+                "dependencyResolutionPinned": true,
+                "diagnosticSha256": "7180ff969e736ef8e168a5914b34c1964bc7b73e6572c39061c63c06e3428f21",
+                "exitCode": 101,
+                "fixtureCargoLockSha256": "665e444db14c321ebd398ec88eb514552f211eeee889d47301a2f710f231a26a",
+                "lockedCompilerCheck": true,
+                "module": "journal_storage",
+                "privacyDiagnosticObserved": true,
+                "seedCargoLockSha256": "0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836"
+              },
+              {
+                "dependencyResolutionPinned": true,
+                "diagnosticSha256": "358e83aad31e462705381be34e5348ee5e9f2fcc81ab9a4aa844f027768c9b9c",
+                "exitCode": 101,
+                "fixtureCargoLockSha256": "805417e7f9b5abbf7864aa93b54c1cf505798a31f668ea2bb4f5ef5ddc80a2b1",
+                "lockedCompilerCheck": true,
+                "module": "retirement",
+                "privacyDiagnosticObserved": true,
+                "seedCargoLockSha256": "0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836"
+              },
+              {
+                "dependencyResolutionPinned": true,
+                "diagnosticSha256": "80cd69e9579c9a44c205bc77263a21f95d5e7da02514017f0ebaf8a5ef5ca85a",
+                "exitCode": 101,
+                "fixtureCargoLockSha256": "f2b68188471cc223107903f13b1d74c81c1f605ff313c13e3ec1bc29b8707da7",
+                "lockedCompilerCheck": true,
+                "module": "task_supervisor",
+                "privacyDiagnosticObserved": true,
+                "seedCargoLockSha256": "0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836"
+              }
+            ],
+            "compilerNegativePassed": true,
+            "effectAuthorityGranted": false,
+            "releaseAuthorized": false,
+            "schema": "hepta.ui-native-compile-negative.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502"
+          }
+        },
+        "structural": {
+          "rawPath": "/tmp/hepta-native-darwin-clean-review-structural.json",
+          "sha256": "0d472370625ab45269621560c78ab3b0f384e3f3ab1dab8e70e0489841c93a3a",
+          "bytes": 1464,
+          "exactReceipt": {
+            "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+            "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+            "limitations": [
+              "structural evidence is not physical-platform acceptance",
+              "performance budgets remain unqualified until measured artifacts are attached",
+              "release flags remain false pending independent review"
+            ],
+            "localCargoDependencyPaths": [
+              "apps/hepta-native",
+              "codex-rs/Cargo.toml",
+              "codex-rs/hepta-contracts",
+              "codex-rs/hepta-control-plane",
+              "codex-rs/hepta-native-gateway",
+              "codex-rs/hepta-ndu",
+              "codex-rs/hepta-paths",
+              "codex-rs/hepta-plasticity",
+              "codex-rs/hepta-private-state",
+              "codex-rs/hepta-runtime",
+              "codex-rs/hepta-types",
+              "codex-rs/hepta-wire",
+              "codex-rs/keyring-store",
+              "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+              "codex-rs/utils/cargo-bin",
+              "codex-rs/utils/private-state"
+            ],
+            "orderedParents": [
+              "a1abe5b2a083213c095cdabaf4b3048144e3cad0"
+            ],
+            "repositoryHead": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "repositoryTree": "b690b267b21ae590e9a53644efe128390539e631",
+            "retiredWorkflowCount": 16,
+            "schema": "hepta.ui-native-source-evidence.v1",
+            "sourceContracts": [
+              "active-index",
+              "journal-v7",
+              "retirement-bucket-v1",
+              "retirement-index-v1",
+              "retirement-v3",
+              "wal-magic",
+              "wal-v1"
+            ],
+            "status": "structural-pass",
+            "workflow": "ui-native-qualification.yml"
+          }
+        },
+        "globalModuleDocs": {
+          "rawPath": "/tmp/hepta-native-darwin-clean-global-docs.log",
+          "sha256": "40ba14c589927a0ec112049af416db1145392e818762e1091f6cdbd900ae2759",
+          "bytes": 2111
+        },
+        "globalMaps": {
+          "rawPath": "/tmp/hepta-native-darwin-clean-global-maps.log",
+          "sha256": "fee7a4fc49d009e2848d05543879e04604b261b1b9d42e7e5e09b42aa9098ade",
+          "bytes": 2066
+        }
+      }
+    }
+  },
+  "ciRunObservations": [
+    {
+      "runId": 36827460737,
+      "runAttempt": 1,
+      "candidateSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "status": "in_progress",
+      "conclusion": null,
+      "updatedAt": "2026-10-01T07:11:56Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36827460737",
+      "repositoryControlledQualificationPassed": false,
+      "currentOrLaterSourceQualificationInherited": false,
+      "observationRole": "Earlier F5 candidate at the same A1 implementation source; observed macOS failures are historical diagnostics and are not exact acceptance for 8f or a later source.",
+      "jobs": [
+        {
+          "jobId": 110256249278,
+          "name": "ui.native / immutable source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "failedSteps": []
+        },
+        {
+          "jobId": 110258187998,
+          "name": "ui.native / Linux / exact implementation storage scale",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedSteps": []
+        },
+        {
+          "jobId": 110258188135,
+          "name": "ui.native / Windows / head",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedSteps": []
+        },
+        {
+          "jobId": 110258188139,
+          "name": "ui.native / macOS / merge",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedSteps": [
+            "Full tests, release binaries and compiler-negative API boundary"
+          ]
+        },
+        {
+          "jobId": 110258188176,
+          "name": "ui.native / Windows / merge",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedSteps": []
+        },
+        {
+          "jobId": 110258188213,
+          "name": "ui.native / macOS / head",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedSteps": [
+            "Full tests, release binaries and compiler-negative API boundary"
+          ]
+        },
+        {
+          "jobId": 110258188224,
+          "name": "ui.native / Linux / head",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedSteps": []
+        },
+        {
+          "jobId": 110258188267,
+          "name": "ui.native / Linux / merge",
+          "status": "queued",
+          "conclusion": null,
+          "failedSteps": []
+        }
+      ],
+      "candidateTree": "b690b267b21ae590e9a53644efe128390539e631",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "overallRunTerminal": false,
+      "observedSubjectFailure": true,
+      "runMetadataAndJobSnapshotsObservedSeparately": true
+    },
+    {
+      "runId": 36828645681,
+      "runAttempt": 1,
+      "candidateSha": "8f436f282eab4f141d53a89f129727159cf2d758",
+      "status": "queued",
+      "conclusion": null,
+      "updatedAt": "2026-10-01T07:13:52Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36828645681",
+      "repositoryControlledQualificationPassed": false,
+      "currentOrLaterSourceQualificationInherited": false,
+      "observationRole": "Separate latest 8f candidate at the same A1 implementation source; queued or in-progress subjects are unqualified.",
+      "jobs": [
+        {
+          "jobId": 110259938992,
+          "name": "ui.native / immutable source identity",
+          "status": "queued",
+          "conclusion": null,
+          "failedSteps": []
+        }
+      ],
+      "candidateTree": "3f56504d17ac7794fd9d95d881e1fc1bc9f641f3",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "overallRunTerminal": false,
+      "observedSubjectFailure": false,
+      "runMetadataAndJobSnapshotsObservedSeparately": true
+    }
+  ],
+  "realCISubjectRecords": {
+    "macosF5Failure": {
+      "path": "docs/modules/ui.native/history/20261001-a1abe-macos-failure.json",
+      "sha256": "f4fbf8602686272c3060b97fc77266b92732993198cd8286715683df3a38c63c",
+      "candidateSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "runId": 36827460737,
+      "evidenceRole": "Actual historical same-source macOS failures; does not qualify later source"
+    },
+    "linuxF5Storage": {
+      "path": "docs/modules/ui.native/history/20261001-a1abe-linux-storage.json",
+      "sha256": "a013a35fb0e53f449b927897e49b53858ecdfb28e6d4442b41414c317a0fda93",
+      "runId": 36827460737,
+      "evidenceRole": "Actual historical A1/F5 subject evidence only; cannot qualify the new B537 source"
+    },
+    "windowsF5Subjects": {
+      "path": "docs/modules/ui.native/history/20261001-a1abe-windows-verification.json",
+      "sha256": "426b3f8a9a82085a69fd2e31d0577b6e5b50398aea28f6b3a1d5234936d27b20",
+      "runId": 36827460737,
+      "evidenceRole": "Actual historical A1/F5 subject evidence only; cannot qualify the new B537 source"
+    },
+    "macos8fFailure": {
+      "path": "docs/modules/ui.native/history/20261001-a1abe-8f-macos-failure.json",
+      "sha256": "c28b3396842940dec52fc84c546f2ca79f76c2850c3d080880660dc9721b79ca",
+      "candidateSha": "8f436f282eab4f141d53a89f129727159cf2d758",
+      "runId": 36828645681,
+      "evidenceRole": "Separate actual A1/8f macOS failure; no receipt or accepted pass inherited from F5"
+    }
+  },
+  "archivePreparationState": {
+    "status": "immutable-observation-before-source-repair-qualification",
+    "sourceRepairMayProceedWithoutWaitingForHistoricalCIRun": true,
+    "ciCandidatesKeptSeparate": true,
+    "pendingSubjectsCountAsPass": false,
+    "localAuditVerificationMayBeRelabeled": false,
+    "completeTerminalSevenSubjectReceiptSet": false,
+    "observedMacosFailuresRequireNewOrdinarySource": true
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

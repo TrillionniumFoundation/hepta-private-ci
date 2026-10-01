@@ -1,15 +1,30 @@
 {
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "convergenceBranch": "work/ui-native-product-closure-20260930",
-  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
+  "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
     "portalResource": "23d20707aebcdf8e5646d2bc3d74fd6751ec83d9",
     "lanesAndPaging": "172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3",
-    "packageClosure": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52"
+    "packageClosure": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+    "auditBaseline": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+    "adversarialAudit": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+    "adversarialAuditFollowup": "ed5fd2229502099addd6bedec2fae18783d5c162",
+    "boundaryHardening": "32310eefbef2a80164b669fe3bfcaef69b47b9da",
+    "crossPlatformQualificationRepair": "85185bcb274682ece9da5086813fd60cc2a7214a",
+    "testExecutableHashingRepair": "0c176c9d4df6055418529389bf0f749f74ac1a69",
+    "sourceCheckoutIdentityRepair": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
+    "platformQualificationRepair": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+    "darwinPrivatePermissionsRepair": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+    "macosPrivateAdmissionFixtureRepair": "b5378e29d0fe191225abe853d848b498552f5850",
+    "macosRetirementFixtureRepair": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+    "windowsPrivateAtomicPublicationRepair": "403df62a7bf3ac065f2b0ad21661d08b66b32731",
+    "cancelledAckPipeFixtureRepair": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
+    "deterministicMergeLfRepair": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+    "explicitUpdateAndAuthorityLockReleaseRepair": "0a129b41c2a2d42ca907ea8257bf780108bc664f"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -46,14 +61,27 @@
     "isolatedLinuxAppDirLifecycleHarness": true,
     "sameRunEvidenceAggregate": true,
     "failureArtifactRetention": true,
-    "sbomAndProvenanceGenerator": true
+    "sbomAndProvenanceGenerator": true,
+    "transitiveLocalCargoDependencyFreeze": true,
+    "immutableBudgetContractExceptSourceNavigation": true,
+    "privateStatePureOsUtilityWithCompatibilityFacade": true,
+    "prefixGroupedRetirementMembershipOnJournalOpen": true,
+    "releaseProfileStorageQualificationHarness": true,
+    "combinedActiveAndRetiredFreshProcessSubject": true,
+    "exactLockDerivedSbomDependencyInventory": true,
+    "darwinSameDescriptorPrivateAclAndOwnershipChecks": true,
+    "unsafeAtomicDestinationsPreservedBeforeReplacement": true,
+    "nonblockingUnixAuthorityFileAdmission": true,
+    "typedWindowsRegistrarLayoutFixture": true
   },
   "repositoryBlocking": [
+    "equivalent verified resource-capability adapters for macOS/Windows Open/Reveal remain unimplemented",
     "the final seven-subject workflow has not completed successfully for the exact review head",
-    "4096-active and 1000000-retired storage evidence has not passed every hard budget",
+    "current frozen source still requires release-profile 4096-active, 1000000-retired and combined storage evidence with retained durability syscall traces; the historical 32310 CI storage subject passed independently",
     "measured source coverage and sustained soak evidence remain absent",
     "Windows AppUserModelID registration and WinRT notification require execution on a physical packaged Windows host",
-    "macOS and Linux portal/notification resource paths require physical-host acceptance"
+    "macOS and Linux portal/notification resource paths require physical-host acceptance",
+    "Windows object creation currently requires an effective token default owner matching primary TokenUser and no thread impersonation; ordinary/elevated/owner-mismatch scenarios remain unqualified on physical Windows"
   ],
   "externalBlocking": [
     "physical Windows, macOS, X11 and Wayland acceptance",
@@ -86,10 +114,775 @@
     "provenanceGenerated": false,
     "physicalPlatformAcceptanceComplete": false
   },
-  "productImplementationCandidateComplete": true,
+  "productImplementationCandidateComplete": false,
   "productionImplementation": false,
   "productionQualified": false,
   "deploymentQualified": false,
   "independentAcceptanceComplete": false,
-  "releaseAuthorized": false
+  "releaseAuthorized": false,
+  "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
+  "localAuditVerification": {
+    "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
+    "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+    "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+    "applicationTests": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "632d2a65e542480e617564eb423e3e76111cc8cd",
+      "scope": "Precommit execution of repair code, before ordinary source publication; diagnostic only",
+      "executionIncludedUncommittedRepairCode": true,
+      "formatOnlyChangeAfterExecution": "updater pub use ordering",
+      "status": "passed-precommit-Linux-local-diagnostic",
+      "runner": "just test / cargo nextest",
+      "buildProfile": "debug",
+      "passed": 245,
+      "failed": 0,
+      "skippedIndependentScaleEntries": 3,
+      "testSeconds": 2.46,
+      "rawLog": {
+        "path": "/tmp/hepta-native-lock-release-precommit-nextest.log",
+        "bytes": 32087,
+        "sha256": "b66bb67bec53bea7c8b63b2a3e34079928e26b1fc671ff06e547bd84f8c86c9f"
+      }
+    },
+    "ownerTests": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "632d2a65e542480e617564eb423e3e76111cc8cd",
+      "scope": "Precommit execution of repair code, before ordinary source publication; diagnostic only",
+      "executionIncludedUncommittedRepairCode": true,
+      "formatOnlyChangeAfterExecution": "updater pub use ordering",
+      "status": "passed-exact-copy-reduced-contracts-workspace-local-diagnostic",
+      "fullOwnerBundleExecuted": false,
+      "package": "codex-hepta-contracts",
+      "allFeatures": true,
+      "passed": 196,
+      "failed": 0,
+      "testSeconds": 1.028,
+      "focusedRedFailed": 2,
+      "focusedGreenPassed": 2,
+      "sourceFileCount": 63,
+      "copiedSourceMatchesCommittedProduct": true,
+      "normalWorkspaceOfflineMetadataBlockedBy": "uncached imbl from unrelated hepta-matrixd dependency",
+      "rawReceipt": {
+        "path": "/tmp/hepta-native-owner-lock-diagnostic/receipt.json",
+        "bytes": 4835,
+        "sha256": "5c2a5d6d36f94d567ce5f3a603358474a6143f3d52deb847e97534ca753f8aa9"
+      },
+      "fullLog": {
+        "path": "/tmp/hepta-native-owner-lock-green-full-contracts.log",
+        "bytes": 27039,
+        "sha256": "0bbdab36aaf9212d458d2a37f37a8ee62a3c9b6a2b305f56f38318efc2a34282"
+      }
+    },
+    "strictClippy": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "632d2a65e542480e617564eb423e3e76111cc8cd",
+      "scope": "Precommit execution of repair code, before ordinary source publication; diagnostic only",
+      "executionIncludedUncommittedRepairCode": true,
+      "formatOnlyChangeAfterExecution": "updater pub use ordering",
+      "status": "passed-precommit-Linux-local-diagnostic",
+      "allTargets": true,
+      "allFeatures": true,
+      "warningsDenied": true,
+      "seconds": 8.67,
+      "rawLog": {
+        "path": "/tmp/hepta-native-lock-release-precommit-clippy.log",
+        "bytes": 436,
+        "sha256": "41c6366acbb013d5217c62aa94649316a23445f4eaf216b9da633ee37a3d9ded"
+      }
+    },
+    "pythonTests": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
+      "status": "passed-current-source-Linux-local-diagnostic",
+      "total": 240,
+      "passed": 239,
+      "failed": 0,
+      "skipped": 1,
+      "seconds": 15.191,
+      "skipReason": "Windows-only actual NTFS junction case does not execute on Linux",
+      "rawLog": {
+        "path": "/tmp/hepta-native-lock-release-precommit-python.log",
+        "bytes": 40032,
+        "sha256": "bd086ab017c5d1333e7b3a8e0916926d6706917e8e008d3fb15fc4a4165c90ca"
+      }
+    },
+    "releaseMixedStorageDiagnostics": {
+      "status": "pending-current-source-and-syscall-evidence",
+      "acceptedQualification": false
+    },
+    "releaseBinaries": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
+      "status": "passed-current-source-Linux-local-diagnostic",
+      "buildProfile": "release",
+      "lockedOfflineBuild": true,
+      "buildSeconds": 23.09,
+      "built": 3,
+      "unchangedLinuxProductionArtifactsReused": false,
+      "binaries": {
+        "hepta-native": {
+          "sha256": "eee420d50a04738b0f762cf0a43798cad411e3b0c63d3b5a72ab852bdc8cd57d",
+          "bytes": 24691400
+        },
+        "hepta-native-updater": {
+          "sha256": "dd37b22ea27edbf762bc7459730128bd0e6c57964aa8ebade9cc89aac3f0b561",
+          "bytes": 3102096
+        },
+        "hepta-native-credential": {
+          "sha256": "e952b067c0d32a24a9eca726f6b9ddb44ab21632548da3b1d88160506cb8e2a9",
+          "bytes": 6393376
+        }
+      },
+      "rawBuildLog": {
+        "path": "/tmp/hepta-native-lock-release-binaries-build.log",
+        "bytes": 283,
+        "sha256": "f3452d674ef0b1f7c30eb8076619cce783fbe0dafb4d9f6f709389c2c85b70da"
+      },
+      "binarySelfTestPassed": true,
+      "selfTestReceipt": {
+        "path": "/tmp/hepta-native-lock-release-self-test.json",
+        "bytes": 132,
+        "sha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13"
+      },
+      "realChildFaultChecksPassed": 7,
+      "realChildFaultReceipt": {
+        "path": "/tmp/hepta-native-lock-release-crash-test.json",
+        "bytes": 452,
+        "sha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7"
+      },
+      "unsignedPackageProduced": false,
+      "physicalGuiAcceptance": false,
+      "effectAuthorityGranted": false,
+      "activationAuthorityGranted": false,
+      "releaseAuthorityGranted": false
+    },
+    "compileNegativeVerification": {
+      "status": "pending-clean-review-head-execution",
+      "acceptedQualification": false
+    },
+    "sourceStructuralVerification": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
+      "status": "passed-current-source-precommit-metadata-check",
+      "sourceFileCount": 420,
+      "selectionPaths": 32,
+      "localCargoDependencies": 16,
+      "inventorySha256": "8865ed312eaff178ad8909e2e1fadb3a53ec009fe8297f5e09692afb4c3b58e6",
+      "rawReceipt": {
+        "path": "/tmp/hepta-native-lock-release-precommit-structural.json",
+        "bytes": 1464,
+        "sha256": "b690b68eff9c882e921f846f056d7ac0b035075aceb33a115e06ce4c77a8c5c8"
+      }
+    },
+    "projectionVerification": {
+      "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+      "acceptedQualification": false,
+      "executionHeadSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+      "scope": "Frozen product Git bytes with metadata publication in progress; local diagnostic only",
+      "status": "passed-current-source-local-diagnostic",
+      "generatePassed": true,
+      "verifyPassed": true,
+      "testsPassed": 7,
+      "rawLog": {
+        "path": "/tmp/hepta-native-lock-release-projection-tests.log",
+        "bytes": 736,
+        "sha256": "d1649e52f1cd3dfb557b75c83894f3c1fd8570e792d52a9858589a5c3c0e9b18"
+      }
+    },
+    "packagePortalTests": {
+      "status": "pending-current-source-execution"
+    },
+    "mapAdapterVerification": {
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
+    },
+    "globalModuleDocsVerification": {
+      "status": "pending-final-clean-check",
+      "acceptedQualification": false
+    },
+    "workflowEntryValidation": {
+      "status": "pending-final-review-head-workflow",
+      "remoteSevenSubjectQualificationPassed": false,
+      "acceptedQualification": false,
+      "historicalFailedRunId": 36838749224,
+      "historicalResultsInherited": false
+    },
+    "ciQualificationPassed": false,
+    "physicalPlatformAcceptanceComplete": false
+  },
+  "historicalLocalAuditVerification": [
+    {
+      "scope": "shared Linux container diagnostics, not seven-subject qualification",
+      "implementationSourceSha": "f4ce125546ab743ebedbc793762add89b1143ac3",
+      "applicationTests": {
+        "passed": 200,
+        "failed": 0,
+        "ignoredScaleSubjectsAndWorker": 3,
+        "unixSocketFixtureUnavailable": true
+      },
+      "ownerTests": {
+        "passed": 210,
+        "failed": 0
+      },
+      "pythonTests": {
+        "passed": 165,
+        "failed": 0
+      },
+      "packagePortalTests": {
+        "passed": 36,
+        "failed": 0
+      },
+      "projectionTests": {
+        "passed": 7,
+        "failed": 0
+      },
+      "moduleRegistryTests": {
+        "passed": 4,
+        "failed": 0
+      },
+      "debugBinarySelfTestPassed": true,
+      "debugBinaryProcessFaultQualificationPassed": true,
+      "activeScaleDiagnosticPassed": true,
+      "durabilitySyscallCaptureAvailable": false,
+      "ciQualificationPassed": false,
+      "claim": "historical diagnostics retained with their recorded source identity; not evidence for the latest frozen implementation"
+    }
+  ],
+  "historicalLocalAuditDiagnostics": [
+    {
+      "scope": "shared Linux container diagnostics, not seven-subject or physical-platform qualification",
+      "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+      "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+      "applicationTests": {
+        "passed": 205,
+        "failed": 0,
+        "ignoredScaleSubjectsAndWorker": 3
+      },
+      "ownerTests": {
+        "passed": 210,
+        "failed": 0,
+        "qualifiedPackages": [
+          "codex-hepta-native-gateway",
+          "codex-hepta-contracts",
+          "codex-hepta-private-state",
+          "codex-utils-private-state"
+        ]
+      },
+      "strictClippy": {
+        "applicationPassed": true,
+        "ownerPassed": true,
+        "warningPolicy": "deny-warnings"
+      },
+      "pythonTests": {
+        "status": "passed",
+        "passed": 176,
+        "failed": 0,
+        "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v"
+      },
+      "releaseStorageDiagnostics": {
+        "status": "local-diagnostic-passed",
+        "acceptedQualification": false,
+        "buildProfile": "release",
+        "freshProcessesPerPopulation": 20,
+        "active": {
+          "records": 4096,
+          "transitions": 12288,
+          "openP95Milliseconds": 28.658269,
+          "mutationP50Milliseconds": 0.022253,
+          "mutationP95Milliseconds": 0.037445,
+          "mutationP99Milliseconds": 0.175958,
+          "historyPageP95Milliseconds": 0.047931,
+          "peakRssMiB": 21
+        },
+        "retired": {
+          "identities": 1000000,
+          "segments": 1024,
+          "indexedOpenP95Milliseconds": 0.448568,
+          "indexRebuildP95Milliseconds": 1922.28797,
+          "deterministicRebuild": true
+        },
+        "combined": {
+          "activeRecords": 4096,
+          "retiredIdentities": 1000000,
+          "openP95Milliseconds": 434.261593,
+          "historyPageP95Milliseconds": 0.08194,
+          "retainedPageJsonBytes": 28417,
+          "peakRssMiB": 112
+        },
+        "rawPercentilesRecomputed": true,
+        "limitations": [
+          "shared Linux container; OS page cache uncontrolled",
+          "metadata continuation was pending; no clean CI review head",
+          "PTRACE_TRACEME denied; no syscall write-amplification qualification",
+          "historical fixture clustered the full retired lifetime by prefix instead of chronological mixed-prefix 1024-identity batches",
+          "historical rebuild samples reused existing derived index assets; the 1922.28797 ms p95 is not first-migration evidence"
+        ],
+        "measurementScope": {
+          "authoritySegments": "historical-prefix-clustered-legacy-identity-segments",
+          "rebuild": "historical-fresh-process-rebuild-with-reused-derived-index-assets"
+        }
+      },
+      "durabilitySyscallCaptureAvailable": false,
+      "ciQualificationPassed": false,
+      "physicalPlatformAcceptanceComplete": false,
+      "workspaceGraph": {
+        "localManifests": 195,
+        "errors": 0,
+        "testsPassed": 53,
+        "boundaryRulesWeakened": false
+      },
+      "projectionTests": {
+        "passed": 7,
+        "failed": 0,
+        "reproducibilityVerified": true
+      },
+      "moduleRegistryTests": {
+        "passed": 4,
+        "failed": 0
+      },
+      "bazelLockChecks": {
+        "updatePassed": true,
+        "checkPassed": true,
+        "lockChanged": false,
+        "bazelVersion": "9.0.0"
+      },
+      "releaseBinaries": {
+        "built": 3,
+        "selfTestPassed": true,
+        "realChildFaultQualificationPassed": true,
+        "physicalGuiAcceptance": false
+      },
+      "unsignedLinuxPackage": {
+        "builtFromReleaseBinaries": true,
+        "reproducibleAcrossTwoOutputs": true,
+        "archiveSha256": "4c8cc41eb120d7b860ce926036c18412bda784f42f4e312ffdf73d64605444b9",
+        "packagedSelfTestPassed": true,
+        "packagedFaultQualificationPassed": true,
+        "supplyChainAccepted": false,
+        "signingAccepted": false
+      },
+      "releaseBinarySelfTestPassed": true,
+      "releaseBinaryFaultQualificationPassed": true,
+      "unsignedPackageQualificationPassed": false,
+      "claim": "Historical local diagnostics for the recorded source only; no pass applies to the current mixed-prefix first-migration workload."
+    },
+    {
+      "scope": "shared Linux container diagnostics, not seven-subject or physical-platform qualification",
+      "implementationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+      "implementationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
+      "applicationTests": {
+        "passed": 212,
+        "failed": 0,
+        "ignoredScaleSubjectsAndWorker": 3
+      },
+      "ownerTests": {
+        "passed": 210,
+        "failed": 0,
+        "qualifiedPackages": [
+          "codex-hepta-native-gateway",
+          "codex-hepta-contracts",
+          "codex-hepta-private-state",
+          "codex-utils-private-state"
+        ],
+        "executedSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+        "executedSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+        "rerunForCurrentImplementation": false,
+        "currentOwnerSourceObjectsUnchanged": true,
+        "sourceComparison": "ownerSourceComparison"
+      },
+      "strictClippy": {
+        "applicationPassed": true,
+        "applicationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+        "applicationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
+        "ownerPassed": true,
+        "ownerExecutedSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+        "ownerExecutedSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+        "ownerRerunForCurrentImplementation": false,
+        "currentOwnerSourceObjectsUnchanged": true,
+        "warningPolicy": "deny-warnings"
+      },
+      "ownerSourceComparison": {
+        "executedSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+        "currentSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+        "allObjectsUnchanged": true,
+        "objects": {
+          ".cargo": {
+            "objectKind": "absent",
+            "executedSourceObjectSha": null,
+            "currentSourceObjectSha": null
+          },
+          "codex-rs": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "968eee918142dca931fedbc3482cde628067f9bb",
+            "currentSourceObjectSha": "968eee918142dca931fedbc3482cde628067f9bb"
+          },
+          "codex-rs/.cargo": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "b4b28cca20c34953dbecd5187dd7f3153a085ab7",
+            "currentSourceObjectSha": "b4b28cca20c34953dbecd5187dd7f3153a085ab7"
+          },
+          "codex-rs/Cargo.lock": {
+            "objectKind": "blob",
+            "executedSourceObjectSha": "96cd0783ba713f50c40968eee97fb8925dea70ad",
+            "currentSourceObjectSha": "96cd0783ba713f50c40968eee97fb8925dea70ad"
+          },
+          "codex-rs/Cargo.toml": {
+            "objectKind": "blob",
+            "executedSourceObjectSha": "6134c87fba905909425cec7e5aae6138e9a56538",
+            "currentSourceObjectSha": "6134c87fba905909425cec7e5aae6138e9a56538"
+          },
+          "codex-rs/hepta-contracts": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "f6598be8edbf0cf1e2485fd1e140c8d6bc1f117a",
+            "currentSourceObjectSha": "f6598be8edbf0cf1e2485fd1e140c8d6bc1f117a"
+          },
+          "codex-rs/hepta-control-plane": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "38956c12b68efcb0234fb318eb21a945d196294e",
+            "currentSourceObjectSha": "38956c12b68efcb0234fb318eb21a945d196294e"
+          },
+          "codex-rs/hepta-native-gateway": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "b453cb2e481951cd486c3f6cc92960d7104ce28e",
+            "currentSourceObjectSha": "b453cb2e481951cd486c3f6cc92960d7104ce28e"
+          },
+          "codex-rs/hepta-ndu": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "6dd23fe103026e424a6795f87a799b3dfb92f76b",
+            "currentSourceObjectSha": "6dd23fe103026e424a6795f87a799b3dfb92f76b"
+          },
+          "codex-rs/hepta-paths": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "b4e38001e7b68dd047c59d59b02b0b716ecda633",
+            "currentSourceObjectSha": "b4e38001e7b68dd047c59d59b02b0b716ecda633"
+          },
+          "codex-rs/hepta-plasticity": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "3fed6654770ebd7d81ee9605eab4854eb5354702",
+            "currentSourceObjectSha": "3fed6654770ebd7d81ee9605eab4854eb5354702"
+          },
+          "codex-rs/hepta-private-state": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "193d112b22257ac52abe0c81b94bc959d1b8a9c3",
+            "currentSourceObjectSha": "193d112b22257ac52abe0c81b94bc959d1b8a9c3"
+          },
+          "codex-rs/hepta-runtime": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "b8c2d3fd9ca13a1af82c8f316363c2e47b280711",
+            "currentSourceObjectSha": "b8c2d3fd9ca13a1af82c8f316363c2e47b280711"
+          },
+          "codex-rs/hepta-types": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297",
+            "currentSourceObjectSha": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297"
+          },
+          "codex-rs/hepta-wire": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "d8f26171ef868d94485175b6761d185074a38e74",
+            "currentSourceObjectSha": "d8f26171ef868d94485175b6761d185074a38e74"
+          },
+          "codex-rs/keyring-store": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "4b8861f529417dc0771070129f3fe88909fac187",
+            "currentSourceObjectSha": "4b8861f529417dc0771070129f3fe88909fac187"
+          },
+          "codex-rs/rust-toolchain.toml": {
+            "objectKind": "blob",
+            "executedSourceObjectSha": "910c65114ec128a8317ee8257428451f3cd28230",
+            "currentSourceObjectSha": "910c65114ec128a8317ee8257428451f3cd28230"
+          },
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "30b3c99dd46f39070912154817ab294d8d467bd1",
+            "currentSourceObjectSha": "30b3c99dd46f39070912154817ab294d8d467bd1"
+          },
+          "codex-rs/utils/cargo-bin": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "2643c9a44de0a306af07cbed68f8845a87b1b2c8",
+            "currentSourceObjectSha": "2643c9a44de0a306af07cbed68f8845a87b1b2c8"
+          },
+          "codex-rs/utils/private-state": {
+            "objectKind": "tree",
+            "executedSourceObjectSha": "24cc5cbacca28c36ee70033686249806d5738f0c",
+            "currentSourceObjectSha": "24cc5cbacca28c36ee70033686249806d5738f0c"
+          }
+        },
+        "claim": "Owner tests and owner Clippy ran at the executed source; matching owner roots, transitive local dependencies, Cargo lock and configuration are source continuity observations, not a rerun."
+      },
+      "pythonTests": {
+        "status": "passed",
+        "planned": 226,
+        "passed": 226,
+        "failed": 0,
+        "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v"
+      },
+      "releaseMixedStorageDiagnostics": {
+        "status": "local-diagnostic-passed",
+        "acceptedQualification": false,
+        "implementationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+        "implementationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
+        "buildProfile": "release",
+        "freshProcessesPerPopulation": 20,
+        "measurementScope": {
+          "authoritySegments": "mixed-prefix-chronological-legacy-identity-batches",
+          "rebuild": "fresh-process-mixed-prefix-authority-chain-with-no-derived-assets",
+          "operatingSystemPageCache": "uncontrolled"
+        },
+        "authorityBatchSize": 1024,
+        "expectedRetirementSegments": 977,
+        "requiredBeforeDerivedIndexAssets": 0,
+        "hardBudgetCeilingsUnchanged": true,
+        "rawPercentilesRecomputed": true,
+        "measurements": {
+          "active": {
+            "activeRecords": 4096,
+            "transitions": 12288,
+            "freshProcessOpenP95Milliseconds": 25.115076,
+            "mutationP50Milliseconds": 0.022022,
+            "mutationP95Milliseconds": 0.044515000000000006,
+            "mutationP99Milliseconds": 0.296215,
+            "historyPageP95Milliseconds": 0.040018000000000005,
+            "historyPageMaxRetainedJsonBytes": 28417,
+            "peakRssMiB": 22,
+            "snapshotBytes": 2608315,
+            "walBytes": 0,
+            "totalStorageBytes": 5207798
+          },
+          "retired": {
+            "retiredIdentities": 1000000,
+            "retirementSegments": 977,
+            "freshProcessOpenP95Milliseconds": 0.399275,
+            "freshProcessIndexRebuildP95Milliseconds": 1461.650395,
+            "peakRssMiB": 31,
+            "totalStorageBytes": 144415688,
+            "deterministicRebuild": true,
+            "authorityFixtureBuildMilliseconds": 2192.080028
+          },
+          "combinedJournal": {
+            "activeRecords": 4096,
+            "retiredIdentities": 1000000,
+            "freshProcessOpenP95Milliseconds": 447.80991,
+            "historyPageP95Milliseconds": 0.059657,
+            "historyPageMaxRetainedJsonBytes": 28417,
+            "peakRssMiB": 31
+          }
+        },
+        "durabilitySyscallCaptureAvailable": false,
+        "authorityMinimumPrefixesPerSegment": 228,
+        "authorityMixedPrefixSegments": 977,
+        "expectedIndexedHeadSha256": "a437b567ef1c9757305487f41331d5beb33ad2c19155ff11d0e675ce3fd7e44a",
+        "rawEvidenceSha256": {
+          "active": "69bbb49eafb9d7dc80bcb191b2780a87c2fb9f2961b82da8c677e656dc0ba0e7",
+          "retired": "82f496354cb0faf05c09f7529c67f6ef5ed5d65543b06a0ea333165ac2bc2c4f"
+        },
+        "limitations": [
+          "shared container; operating-system page cache uncontrolled",
+          "metadata continuation was pending; not a clean seven-subject CI head",
+          "one million legacy identity-only tombstones; not one million full archived receipts",
+          "authority fixture construction is not measured RetirementStore append performance",
+          "strace PTRACE_TRACEME denied; durability and write amplification remain unqualified"
+        ]
+      },
+      "durabilitySyscallCaptureAvailable": false,
+      "ciQualificationPassed": false,
+      "physicalPlatformAcceptanceComplete": false,
+      "releaseBinaries": {
+        "status": "local-diagnostic-passed",
+        "sourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+        "buildProfile": "release",
+        "binaryCount": 3,
+        "selfTestPassed": true,
+        "actualChildFaultQualificationE2ePassed": true,
+        "acceptedQualification": false
+      },
+      "projectionVerification": {
+        "passed": true,
+        "testsPassed": 7,
+        "registeredTestFiles": 74,
+        "lintPassed": true
+      },
+      "compileNegativeVerification": {
+        "applicationCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886",
+        "cases": [
+          {
+            "dependencyResolutionPinned": true,
+            "diagnosticSha256": "7180ff969e736ef8e168a5914b34c1964bc7b73e6572c39061c63c06e3428f21",
+            "exitCode": 101,
+            "fixtureCargoLockSha256": "c30fdc5107f1197af862d0e90ccedb8c3c1124e3ffcc9af864fd7f8a0912bef7",
+            "lockedCompilerCheck": true,
+            "module": "journal_storage",
+            "privacyDiagnosticObserved": true,
+            "seedCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886"
+          },
+          {
+            "dependencyResolutionPinned": true,
+            "diagnosticSha256": "358e83aad31e462705381be34e5348ee5e9f2fcc81ab9a4aa844f027768c9b9c",
+            "exitCode": 101,
+            "fixtureCargoLockSha256": "af1a80574db791fc14da690746b894e1ab4fb4a613fbe1b182c7324d87f42ce2",
+            "lockedCompilerCheck": true,
+            "module": "retirement",
+            "privacyDiagnosticObserved": true,
+            "seedCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886"
+          },
+          {
+            "dependencyResolutionPinned": true,
+            "diagnosticSha256": "e80bd27cd7d4d6f5e6c67e70db34ee9074c1e8db8f10a79a2631a65ad7b2cd24",
+            "exitCode": 101,
+            "fixtureCargoLockSha256": "d0a5c7ed4cff017362f53b0fa4b4b3fd5e00eeb8bb88c9d582b532cf5b9ce6b9",
+            "lockedCompilerCheck": true,
+            "module": "task_supervisor",
+            "privacyDiagnosticObserved": true,
+            "seedCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886"
+          }
+        ],
+        "compilerNegativePassed": true,
+        "effectAuthorityGranted": false,
+        "releaseAuthorized": false,
+        "schema": "hepta.ui-native-compile-negative.v1",
+        "sourceSha": "9005dcee92537ad77e5d115bf367d10a0cfef756",
+        "scope": "actual offline locked external-crate checks; each required E0603 was observed",
+        "acceptedQualification": false
+      },
+      "globalModuleDocsVerification": {
+        "status": "failed-existing-other-module-provenance",
+        "executedHeadSha": "9005dcee92537ad77e5d115bf367d10a0cfef756",
+        "command": "python3 scripts/hepta-module-docs.py verify",
+        "otherModuleProvenanceFailures": 39,
+        "nativeAdapterPassed": true,
+        "globalVerificationPassed": false,
+        "logSha256": "6f4f050b1d68b23ec2c3d7769029ac307618bf7fad8e9b75afeab179d119f778"
+      },
+      "workflowEntryValidation": {
+        "initialRejectedRunId": 36791294111,
+        "initialRejectedHeadSha": "37bdcc3d929d24fb44155dd8cf05a3fa93becc2f",
+        "observedFailure": "Unrecognized named-value runner in jobs.qualify.env and jobs.storage_scale.env; zero jobs created",
+        "fix": "initialize temporary paths on the runner and persist through GITHUB_ENV",
+        "localJobContextGuardPassed": true,
+        "runScriptsBashSyntaxPassed": 20,
+        "realShellPathPropagationPassed": true,
+        "remoteSevenSubjectQualificationPassed": false
+      },
+      "claim": "Historical local diagnostics for the recorded ed5 source only; the 212 application tests, 226 Python tests, mixed storage measurements and 20 owner object comparisons do not establish execution at the latest frozen implementation."
+    },
+    {
+      "scope": "shared Linux container diagnostics, not seven-subject or physical-platform qualification",
+      "implementationSourceSha": "ca66da671da6f22f1fe8e4ff4ddb4c8fdb8cf7b3",
+      "implementationSourceTree": "74b8760b64d6cc1fccd548607a3a3516b2262b59",
+      "applicationTests": {
+        "passed": 243,
+        "failed": 0,
+        "ignoredScaleSubjectsAndWorker": 3,
+        "buildProfile": "release",
+        "runner": "cargo-nextest"
+      },
+      "renderedUiSnapshot": {
+        "matched": true,
+        "snapshot": "apps/hepta-native/src/ui/snapshots/binding_preparation_and_stale_projection.snap"
+      },
+      "strictClippy": {
+        "applicationPassed": false,
+        "failure": "useless_vec in the oversized Windows marker test fixture; final source replaces the temporary Vec with an equivalent 129-element array"
+      },
+      "ciQualificationPassed": false,
+      "physicalPlatformAcceptanceComplete": false,
+      "claim": "Historical ca66 test and snapshot execution only; the final frozen source requires a fresh application test run."
+    }
+  ],
+  "historicalVerificationRecords": [
+    {
+      "path": "docs/modules/ui.native/history/20261001-32310-verification.json",
+      "sha256": "89343bed47d55bef75a1d92dc233e9cb7e5365068c32c142fa4b5dadd06fe009",
+      "implementationSourceSha": "32310eefbef2a80164b669fe3bfcaef69b47b9da",
+      "implementationSourceTree": "90e28eb295688c11e93d4aec0ad983ba53e0e612",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-0c176-verification.json",
+      "sha256": "0511ee0bfbc88eb907ee828ab1a73ccb2a5e7a256af847dc3f308b189ebb2cf9",
+      "implementationSourceSha": "0c176c9d4df6055418529389bf0f749f74ac1a69",
+      "implementationSourceTree": "e5b86a2f883ee969aec87cd6bb011c1361ddbd71",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-ebd04-verification.json",
+      "sha256": "b766793214c45f4ef3746a572e7f37ec2bdd6c732826a2a151baa6efcb30b575",
+      "implementationSourceSha": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
+      "implementationSourceTree": "59c0fa2b20036d591e5438e91bd6d7257c7c12d0",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-703e9-verification.json",
+      "sha256": "b53f2ffbbe9f9ba9e68bc338b49f3e8ca07991af0bdc683ea58272a36b15aecd",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-a1abe-verification.json",
+      "sha256": "98baa9fca3872bc7f08d7c2db255050144be7d7865e08ffbec490a42588dbc29",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-b5378-verification.json",
+      "sha256": "f97cb48106acc0f36447aabae830dd450c32b3d8e0ca5ee3c532b1df59735354",
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-89c64-verification.json",
+      "sha256": "5416ddcd824249b11939e8a3c4cfdeb95414c7ba1b45cc5fb8aa8b11ca201ef9",
+      "implementationSourceSha": "89c64152c9b971fcaabe98aeb0d24452e1c6e30d",
+      "implementationSourceTree": "304aeb469d13f24341052cf10fef89016aff90fb",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-403df-verification.json",
+      "sha256": "3ffbd5ae68acb27d01b4ee1383c4053fc78b70dbc5720dbdd70e60fb7cfc773b",
+      "implementationSourceSha": "403df62a7bf3ac065f2b0ad21661d08b66b32731",
+      "implementationSourceTree": "c9186b61a723f4017d4bb2ba440b48e8701413eb",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-ee6a1-verification.json",
+      "sha256": "22c43b425c90adf149504ea558d81bda6edd92a7eb0f061bf7d4f8e2a18b8ac3",
+      "implementationSourceSha": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
+      "implementationSourceTree": "ca4eb87caf92a2b741a3b8818cf87a19a88bb0dd",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-d544-632d-verification.json",
+      "sha256": "95af54b594c3bdccaec12b00470048d8e360730ac41004baab8e1ea0760f7bfb",
+      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    }
+  ],
+  "historicalQualificationReviewRecords": [
+    {
+      "reviewHeadSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+      "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+      "path": "docs/modules/ui.native/history/20261001-dc59-verification.json",
+      "sha256": "fb738cf0c20435e583cf8bf0fd9b70ce6a14316f0322c9d620535ed4ec5b523a",
+      "role": "Exact historical pre-execution metadata plus failed CI and separate clean-review diagnostics; no result promotion"
+    }
+  ]
 }

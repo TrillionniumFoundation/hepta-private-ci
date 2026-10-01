@@ -38,11 +38,20 @@ zeroize = "1.8.2"
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "1.1.5", features = ["fs", "process"] }
 
+[target.'cfg(target_os = "macos")'.dependencies]
+codex-utils-private-state = { path = "../../codex-rs/utils/private-state" }
+
 [target.'cfg(windows)'.dependencies]
 codex-hepta-private-state = { path = "../../codex-rs/hepta-private-state" }
 
 [dev-dependencies]
+insta = "=1.46.3"
 tempfile = "3.23"
 
 [build-dependencies]
 embed-manifest = "1.5.0"
+
+# Restart fixtures hash their actual executable, including full debug symbols.
+# Keep production deadlines meaningful without changing the bytes under test.
+[profile.test.package.sha2]
+opt-level = 3

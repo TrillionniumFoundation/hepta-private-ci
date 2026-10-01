@@ -1,7 +1,7 @@
 {
   "schema": "hepta.ui-native-storage-budgets.v2",
-  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
+  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
   "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
   "status": "provisional-unqualified",
   "structural": {
@@ -22,12 +22,16 @@
   "performance": {
     "activeRecordsSubject": 4096,
     "retiredIdentitiesSubject": 1000000,
+    "freshProcessSamples": 20,
     "coldStartP95Milliseconds": 2000,
     "mutationP50Milliseconds": 25,
     "mutationP95Milliseconds": 100,
     "mutationP99Milliseconds": 250,
     "millionRetiredPeakRssMiB": 256,
     "millionRetiredIndexRebuildP95Milliseconds": 30000,
+    "activePeakRssMiB": 256,
+    "historyPageP95Milliseconds": 25,
+    "historyPageRetainedSerializedBytes": 2097152,
     "maximumWriteAmplificationBytesPerStateTransition": 262144
   },
   "requiredMeasurements": [
@@ -38,7 +42,10 @@
     "WAL and snapshot byte growth",
     "peak resident set size",
     "retirement index deterministic rebuild time",
-    "64-record durable history page latency and allocation profile"
+    "20 fresh-process open/rebuild observations with uncontrolled OS page cache",
+    "64-record durable history page p95 latency and exact retained serialized bytes",
+    "4096 active records and 1000000 retired identities together: 20 fresh-process journal opens and 64-record history pages",
+    "compiled release-profile observations matching optimized product binaries; debug results are diagnostic only"
   ],
   "measurements": null,
   "qualificationRule": "Every performance field is a blocking ceiling. Missing, cancelled, skipped, foreign-SHA or over-budget evidence is failure.",

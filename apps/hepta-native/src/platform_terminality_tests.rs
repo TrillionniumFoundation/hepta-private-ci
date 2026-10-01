@@ -13,7 +13,8 @@ fn launcher_failure_after_side_effect_stays_indeterminate() {
         .arg("native-launcher-test")
         .arg(&effect);
     let active = Arc::new(AtomicUsize::new(0));
-    let status = run_bounded_launcher(command, "test effect", &active).unwrap();
+    let status =
+        run_bounded_launcher(command, "test effect", &active, Duration::from_secs(1)).unwrap();
     assert!(!status.success());
     assert_eq!(std::fs::read_to_string(effect).unwrap(), "applied");
     let adapter =
@@ -30,7 +31,8 @@ fn launcher_success_without_queryable_receipt_stays_indeterminate() {
     let mut command = Command::new("sh");
     command.args(["-c", "exit 0"]);
     let active = Arc::new(AtomicUsize::new(0));
-    let status = run_bounded_launcher(command, "test launch", &active).unwrap();
+    let status =
+        run_bounded_launcher(command, "test launch", &active, Duration::from_secs(1)).unwrap();
     assert!(status.success());
     let adapter =
         SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());

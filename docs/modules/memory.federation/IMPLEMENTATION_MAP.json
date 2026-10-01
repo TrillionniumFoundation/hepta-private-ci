@@ -38,7 +38,8 @@
         "codex-rs/hepta-memory/src/cognitive_runtime.rs",
         "codex-rs/hepta-agentd/src/runtime.rs",
         "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
-      ]
+      ],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     },
     {
       "operation": "observe_cancellation",
@@ -52,7 +53,8 @@
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     }
   ],
   "repositoryControlledGaps": [
@@ -150,13 +152,21 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "082f89f44ed0577320cca304061b96425ecb657e",
-    "tree": "032d03150bb62f5ad6883cb0c1d1f8cfc4955565"
+    "commit": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+    "tree": "9fa335e95a577c642683252b00d7f6d23708f5d7"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation/src/v2.rs",
+    "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "codex-rs/utils/private-state",
+    "docs/modules/memory.federation/TECHNICAL.md"
   ],
   "productCallers": [
     {
@@ -171,6 +181,14 @@
     }
   ],
   "sourceObjects": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "34807f98151fe072df26715b3f5239d07cd6677b"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "6134c87fba905909425cec7e5aae6138e9a56538"
+    },
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
       "object": "61b143142015b17924d9f2804714fb9968b2e9a6"
@@ -200,8 +218,13 @@
       "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
     },
     {
+      "path": "codex-rs/utils/private-state",
+      "object": "71ef7976242e38ce1651cca711cfbb695109b76a"
+    },
+    {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
     }
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob"
 }

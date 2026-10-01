@@ -10,6 +10,7 @@ use sha2::Sha256;
 use crate::error::ShellError;
 
 pub const MAX_STABLE_ID_BYTES: usize = 128;
+pub const MAX_NATIVE_PATH_BYTES: usize = 16 * 1024;
 pub const MAX_COPY_TEXT_BYTES: usize = 256 * 1024;
 pub const MAX_NOTIFICATION_TITLE_BYTES: usize = 256;
 pub const MAX_NOTIFICATION_BODY_BYTES: usize = 4096;
@@ -30,7 +31,7 @@ pub fn validate_stable_id(value: &str, name: &'static str) -> Result<(), ShellEr
 
 pub fn validate_digest(value: &str, name: &'static str) -> Result<(), ShellError> {
     if value.len() != 64
-        || value == "0".repeat(64)
+        || value == "0000000000000000000000000000000000000000000000000000000000000000"
         || !value
             .bytes()
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
@@ -196,6 +197,13 @@ impl PlatformPayload {
                 if !path.is_absolute() {
                     return Err(ShellError::InvalidInput(
                         "platform paths must be absolute".to_owned(),
+                    ));
+                }
+                if path.as_os_str().len() > MAX_NATIVE_PATH_BYTES
+                    || path.as_os_str().as_encoded_bytes().contains(&0)
+                {
+                    return Err(ShellError::InvalidInput(
+                        "platform path exceeds its byte bound or contains NUL".into(),
                     ));
                 }
             }

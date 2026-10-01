@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.plasticity`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above were materialized in the bounded V8 source candidate; its closed-world inventory, focused tests, compilation, lint and exact-head receipts are historical evidence for that source. The implementation map preserves historical `sourceBase` provenance while `observedAtHead` and exact source objects bind the current caller/delegate/test observation, including shared contracts and OS utilities. Refreshing that observation does not transfer the V8 test results to a new candidate; current execution and independent acceptance remain pending. This status does not activate `learning.plasticity`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 

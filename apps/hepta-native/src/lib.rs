@@ -21,6 +21,7 @@ pub mod file_input;
 mod native_http;
 
 pub mod update_handoff;
+mod update_lock;
 mod update_storage;
 
 pub mod fonts;
@@ -35,3 +36,6 @@ mod retirement;
 
 #[cfg(test)]
 mod storage_qualification_tests;
+
+#[cfg(test)]
+mod private_state_test_support;

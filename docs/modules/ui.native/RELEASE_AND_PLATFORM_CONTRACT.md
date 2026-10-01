@@ -25,8 +25,9 @@ for installer or release trust.
 
 Repository-controlled checks require:
 
-- the AccessKit adapter to be compiled;
-- keyboard/focus behavior to remain in the qualification fixture set;
+- the AccessKit feature to remain declared and its adapter to compile in the
+  executed application build;
+- keyboard/focus behavior to have executed behavioral acceptance evidence;
 - platform metadata to preserve high-DPI behavior;
 - generated projections to fail when the accessibility feature or source
   contract disappears.
@@ -42,6 +43,10 @@ Physical acceptance remains mandatory for:
 
 Receipts must record these as `false` until independent physical evidence is
 attached.
+
+The generated platform matrix checks source feature presence. It does not
+establish compilation, keyboard/focus behavior or physical acceptance. Current
+projection tooling therefore reports keyboard/focus acceptance as pending.
 
 ## Crash and recovery contract
 
@@ -64,22 +69,35 @@ platform-effect uncertainty, update interruption, and package restart.
 
 Every candidate evidence bundle must contain:
 
-1. exact source SHA and source tree;
-2. native and projection workflow SHA-256 values;
-3. aggregate dependency-lock digest;
-4. Node and Rust toolchain identities;
+1. candidate, immutable implementation and executed subject SHA/tree identities,
+   including ordered merge parents;
+2. current qualification workflow commit and SHA-256 identity;
+3. application and owner Cargo-lock identities;
+4. executed Rust toolchain identity;
 5. runner operating system, architecture, and image;
 6. generated test-manifest digest;
-7. aggregate generated-artifact digest;
+7. complete check logs, measured outcomes and artifact digests;
 8. qualification timestamp;
-9. source dependency SBOM in SPDX 2.3 JSON;
+9. package-bound source dependency SBOM in CycloneDX 1.6 JSON and in-toto
+   provenance, with their binding manifest;
 10. unsigned package manifest, archive checksum, and packaged-binary smoke;
 11. exact-head and deterministic synthetic-merge results; and
 12. explicit false values for unobserved signing, physical accessibility, and
     release authority.
 
-The projection workflow emits the receipt and SBOM. The native workflow emits
-build, test, fault, package, installed-Linux, and artifact evidence.
+The sole current workflow, `.github/workflows/ui-native-qualification.yml`,
+collects six exact-head/ordered-parent-merge platform bundles plus the exact
+implementation storage subject. `scripts/hepta_ui_native_qualification_evidence.py`
+seals platform observations and emits package-bound SBOM/provenance through
+`scripts/hepta_ui_native_supply_chain.py`; the aggregate requires every subject
+from the same run and attempt. It retains build, test, fault, package,
+installed-Linux and storage evidence.
+
+`tools/ui-native-projections/receipt.mjs` produces a local projection observation
+bound to the current workflow and generated artifacts. Its optional SPDX 2.3
+source inventory is auxiliary. Neither establishes workflow execution or replaces
+the current qualification bundle. Historical workflow receipts remain provenance
+for their original subjects and cannot promote a current candidate.
 
 ## Signing and notarization dry-run
 

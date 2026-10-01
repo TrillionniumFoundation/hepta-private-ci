@@ -64,9 +64,11 @@ INTEGRATION_FILES = (
     ROOT / "scripts/hepta_ui_native_integrate_20260928.py",
     ROOT / "scripts/test_hepta_ui_native_source.py",
 )
-SOURCE_LOG_PATHS = tuple(
-    path.relative_to(ROOT).as_posix() for path in INTEGRATION_FILES
-) + TRACKED_ROOTS + (":(exclude)apps/hepta-native/CURRENT_SOURCE.json",)
+SOURCE_LOG_PATHS = (
+    tuple(path.relative_to(ROOT).as_posix() for path in INTEGRATION_FILES)
+    + TRACKED_ROOTS
+    + (":(exclude)apps/hepta-native/CURRENT_SOURCE.json",)
+)
 
 
 def git(*args):
@@ -82,9 +84,7 @@ def git(*args):
 def committed_blob(path):
     relative = path.relative_to(ROOT).as_posix()
     try:
-        return subprocess.check_output(
-            ["git", "show", f"HEAD:{relative}"], cwd=ROOT
-        )
+        return subprocess.check_output(["git", "show", f"HEAD:{relative}"], cwd=ROOT)
     except subprocess.CalledProcessError as error:
         raise RuntimeError(
             f"native source identity requires committed path: {relative}"
@@ -98,17 +98,21 @@ def require_branch():
     branch = git("branch", "--show-current")
     if branch == write_branch:
         return
-    if not branch and subprocess.run(
-        [
-            "git",
-            "merge-base",
-            "--is-ancestor",
-            f"refs/remotes/origin/{write_branch}",
-            "HEAD",
-        ],
-        cwd=ROOT,
-        check=False,
-    ).returncode == 0:
+    if (
+        not branch
+        and subprocess.run(
+            [
+                "git",
+                "merge-base",
+                "--is-ancestor",
+                f"refs/remotes/origin/{write_branch}",
+                "HEAD",
+            ],
+            cwd=ROOT,
+            check=False,
+        ).returncode
+        == 0
+    ):
         return
     raise RuntimeError(
         "metadata writes require the named native candidate or its isolated detached continuation"
@@ -171,7 +175,9 @@ def fingerprint(write):
             raise RuntimeError(f"native source is missing or a symlink: {relative}")
         committed = committed_blob(source_path)
         if source_path.read_bytes() != committed:
-            raise RuntimeError(f"native source differs from committed bytes: {relative}")
+            raise RuntimeError(
+                f"native source differs from committed bytes: {relative}"
+            )
         observed[relative] = hashlib.sha256(committed).hexdigest()
     policy = inventory_policy()
     if write:
@@ -193,6 +199,7 @@ def fingerprint(write):
             )
             + "\n",
             encoding="utf-8",
+            newline="\n",
         )
     else:
         committed_manifest = committed_blob(path)
@@ -243,6 +250,7 @@ def rewrite_retired_navigation(value):
         return {key: rewrite_retired_navigation(child) for key, child in value.items()}
     return value
 
+
 def sync_registry_metadata():
     changes = {}
     cargo_bindings = json.loads(
@@ -290,8 +298,9 @@ def sync_registry_metadata():
     rows[0]["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
     changes[relative] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     for relative, text in changes.items():
-        (ROOT / relative).write_text(text, encoding="utf-8")
+        (ROOT / relative).write_text(text, encoding="utf-8", newline="\n")
     subprocess.run(["git", "add", "--", *changes], cwd=ROOT, check=True)
+
 
 def sync_metadata():
     require_branch()
@@ -316,7 +325,7 @@ def sync_metadata():
     ]:
         data["claimBoundary"][key] = False
     data["productionImplementation"] = False
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8", newline="\n")
     path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
     bindings = json.loads(path.read_text(encoding="utf-8"))
     changed = []
@@ -345,9 +354,12 @@ def sync_metadata():
     visit(bindings)
     if len(changed) != 1:
         raise RuntimeError("expected one native source binding, found {len(changed)}")
-    path.write_text(json.dumps(bindings, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(bindings, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     sync_registry_metadata()
     print("bound native mapping to committed source", source)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

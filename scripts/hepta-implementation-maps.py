@@ -21,6 +21,7 @@ from pathlib import Path
 
 from hepta_module_source_roots import _path as checked_source_path
 from hepta_module_source_roots import resolve_source_roots
+from hepta_ui_native_map_adapter import verify_native_map
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -539,9 +540,21 @@ EXECUTION_CLAIMS = frozenset(
     {
         "productionImplementation",
         "productExecutionProved",
+        "requestLocalReadOnlyProductExecutionProved",
+        "authenticatedProductionProductExecutionProved",
+        "productExecutionComplete",
+        "productionQualified",
+        "deploymentQualified",
+        "deploymentQualificationComplete",
         "independentAcceptance",
+        "independentAcceptanceComplete",
+        "independentDecisionEvidenceProved",
+        "targetHostQualified",
+        "namedHostQualificationReceiptProved",
         "activation",
+        "productionWriterActivated",
         "release",
+        "releaseAuthorized",
     }
 )
 BOOLEAN_CLAIMS = EXECUTION_CLAIMS | {
@@ -1207,7 +1220,9 @@ def verify(
             (expected_tree, "expected-tree"),
         ):
             if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
-                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+                raise ValueError(
+                    f"--{label} must be an exact 40-character Git object id"
+                )
         if expected_sha is not None and candidate["commit"] != expected_sha:
             raise ValueError(
                 f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
@@ -1232,12 +1247,31 @@ def verify(
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
     provenance_anchored_exact_blob_maps = 0
+    native_schema_adapters = []
     for module in modules:
         mid = module["id"]
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
             validate_claim_types(row)
             validate_closed_world_bindings(row)
+            if (
+                mid == "ui.native"
+                and row.get("schema") == "hepta.module-implementation-map.v6"
+            ):
+                adapted = verify_native_map(ROOT, row, module, candidate, git)
+                checked_paths.update(adapted["paths"])
+                source = adapted["source"]
+                source_bases.add((source["commit"], source["tree"]))
+                native_schema_adapters.append(
+                    {
+                        "module": mid,
+                        "schemaVersion": 6,
+                        "implementationSource": source,
+                        "ownedRoots": adapted["ownedRoots"],
+                        "qualificationEstablished": False,
+                    }
+                )
+                continue
             if (
                 row.get("schema") != "hepta.module-implementation-map.v3"
                 or row.get("schemaVersion") != 3
@@ -1436,6 +1470,7 @@ def verify(
                 "candidateBoundMaps": candidate_bound_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
                 "provenanceAnchoredExactBlobMaps": provenance_anchored_exact_blob_maps,
+                "nativeSchemaAdapters": native_schema_adapters,
                 "legacyProvenanceOnlyMaps": [],
                 "sourceObservationCount": len(source_bases),
                 "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
@@ -1475,7 +1510,9 @@ def main():
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
-    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+    if (
+        args.expected_sha is not None or args.expected_tree is not None
+    ) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
         migrate(args.modules)

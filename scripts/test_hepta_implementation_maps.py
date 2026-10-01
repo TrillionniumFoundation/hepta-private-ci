@@ -389,9 +389,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
         current = self.commit("change exact blob implementation")
         result = self.migrate(["alpha"])
-        self.assertEqual(
-            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
-        )
+        self.assertEqual(result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
         migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(migrated["sourceBase"], provenance)
         self.assertEqual(migrated["observedAtHead"], current)
@@ -403,9 +401,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         result = self.verify()
         self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
 
-        before = (
-            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
-        ).read_bytes()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         self.write("README.md", "later prose must not rewrite provenance\n")
         self.commit("prose after exact blob observation")
         self.assertEqual(self.migrate(["alpha"])["migrated"], 0)
@@ -869,6 +865,132 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.commit("alpha source observation")
         self.verify()
         self.assertEqual(self.migrate()["migrated"], 0)
+
+    def test_stale_read_only_execution_proof_rejected_before_any_map_write(self):
+        self.rows["beta"]["claimBoundary"].update(
+            requestLocalReadOnlyProductExecutionProved=True,
+            authenticatedProductionProductExecutionProved=False,
+        )
+        self.change_maps()
+        self.write("src/beta/lib.rs", "pub fn calculate() { let changed = 1; }\n")
+        self.commit("change code after read-only execution proof")
+        before = self.map_bytes()
+        with patch.object(Path, "write_text") as writes:
+            with self.assertRaisesRegex(maps.SourceDrift, "changed after source"):
+                self.migrate()
+        writes.assert_not_called()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_module_execution_aliases_reject_stale_source_before_any_write(self):
+        aliases = (
+            "authenticatedProductionProductExecutionProved",
+            "productExecutionComplete",
+            "productionQualified",
+            "deploymentQualified",
+            "deploymentQualificationComplete",
+            "independentAcceptanceComplete",
+            "independentDecisionEvidenceProved",
+            "targetHostQualified",
+            "namedHostQualificationReceiptProved",
+            "productionWriterActivated",
+            "releaseAuthorized",
+        )
+        original = copy.deepcopy(self.rows["beta"])
+        self.write("src/beta/lib.rs", "pub fn calculate() { let changed = 2; }\n")
+        self.commit("change code after execution qualification")
+        for location in (None, "claimBoundary", "completion"):
+            for name in aliases:
+                with self.subTest(location=location, claim=name):
+                    self.rows["beta"] = copy.deepcopy(original)
+                    claim = self.rows["beta"]
+                    if location is not None:
+                        claim = claim.setdefault(location, {})
+                    claim[name] = True
+                    self.change_maps()
+                    before = self.map_bytes()
+                    with patch.object(Path, "write_text") as writes:
+                        with self.assertRaises(maps.SourceDrift):
+                            self.migrate()
+                    writes.assert_not_called()
+                    self.assertEqual(before, self.map_bytes())
+
+    def test_false_execution_claims_preserve_source_facts_during_navigation(self):
+        execution = {
+            name: False
+            for name in (
+                "requestLocalReadOnlyProductExecutionProved",
+                "authenticatedProductionProductExecutionProved",
+                "productExecutionComplete",
+                "productionQualified",
+                "deploymentQualified",
+                "deploymentQualificationComplete",
+                "independentAcceptanceComplete",
+                "independentDecisionEvidenceProved",
+                "targetHostQualified",
+                "namedHostQualificationReceiptProved",
+                "productionWriterActivated",
+                "releaseAuthorized",
+            )
+        }
+        facts = {
+            "authenticatedOwnerSourceImplemented": True,
+            "productionWriterSourceImplemented": True,
+            "independentDecisionSourceImplemented": True,
+            "stochasticAdmissionSourceImplemented": True,
+            "calendarV2ProductControlComplete": True,
+        }
+        self.rows["beta"]["claimBoundary"].update(execution | facts)
+        self.rows["beta"]["canonicalConsumerConvergenceProved"] = True
+        self.change_maps()
+        self.write("src/beta/lib.rs", "pub fn calculate() { let changed = 3; }\n")
+        current = self.commit("source-only navigation change")
+        alpha = self.map_bytes()["alpha"]
+        self.assertEqual(
+            self.migrate(["beta"])["maps"],
+            ["docs/modules/beta/IMPLEMENTATION_MAP.json"],
+        )
+        migrated = maps.load("docs/modules/beta/IMPLEMENTATION_MAP.json")
+        self.assertEqual(migrated["sourceBase"], current)
+        self.assertEqual(
+            {name: migrated["claimBoundary"][name] for name in execution | facts},
+            execution | facts,
+        )
+        self.assertIs(migrated["canonicalConsumerConvergenceProved"], True)
+        self.assertEqual(self.map_bytes()["alpha"], alpha)
+        self.commit("persist truthful navigation")
+        self.verify()
+
+    def test_malformed_execution_claims_rejected_before_any_map_write(self):
+        aliases = (
+            "requestLocalReadOnlyProductExecutionProved",
+            "authenticatedProductionProductExecutionProved",
+            "productExecutionComplete",
+            "productionQualified",
+            "deploymentQualified",
+            "deploymentQualificationComplete",
+            "independentAcceptanceComplete",
+            "independentDecisionEvidenceProved",
+            "targetHostQualified",
+            "namedHostQualificationReceiptProved",
+            "productionWriterActivated",
+            "releaseAuthorized",
+        )
+        original = copy.deepcopy(self.rows["beta"])
+        for location in (None, "claimBoundary", "completion"):
+            for name in aliases:
+                with self.subTest(location=location, claim=name):
+                    self.rows["beta"] = copy.deepcopy(original)
+                    claim = self.rows["beta"]
+                    if location is not None:
+                        claim = claim.setdefault(location, {})
+                    claim[name] = "false"
+                    self.change_maps()
+                    before = self.map_bytes()
+                    with patch.object(Path, "write_text") as writes:
+                        with self.assertRaisesRegex(ValueError, "must be boolean"):
+                            self.migrate()
+                    writes.assert_not_called()
+                    self.assertEqual(before, self.map_bytes())
 
     def test_observed_additional_input_rebind_is_still_checked(self):
         row = self.rows["alpha"]

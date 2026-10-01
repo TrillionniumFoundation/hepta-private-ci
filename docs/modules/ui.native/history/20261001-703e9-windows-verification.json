@@ -1,0 +1,746 @@
+{
+  "runId": 36823756631,
+  "runAttempt": 1,
+  "reviewSourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+  "reviewTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+  "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+  "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+  "subjects": [
+    {
+      "subject": "head",
+      "jobId": 110248992652,
+      "jobConclusion": "failure",
+      "artifactId": 11145490850,
+      "artifactPath": "/workspace/scratch/0643a11f4b6a/attachments/90734971-50dd-4172-bd33-ca36c140a271/windows-11145490850.zip",
+      "artifactSha256": "cf75b6451a1cd3e39224fdff0855213d828782364500e4437b747cad6e5c96a6",
+      "artifactDigestVerified": true,
+      "source": {
+        "parents": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+        "commit": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+        "tree": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+        "subject": "Freeze repaired platform fixtures and retain exact prior CI evidence"
+      },
+      "sourceTextSha256": "07afe8b2b4b0f1d56ca307f977d7f7ee318328a893153041dd0cfcf00b85c886",
+      "inventorySha256": "ed88f56f6f586955ed6d11ac09717c89a8e8fa05a5986bcec3df21cf4deffa2b",
+      "checks": [
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--check"
+            ],
+            "elapsedSeconds": 1.8129999999999882,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:33:56.880520+00:00",
+            "label": "app_format",
+            "log": "app_format.log",
+            "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:33:55.073360+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets",
+              "--all-features",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 84.07800000000003,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:35:21.973409+00:00",
+            "label": "app_lint",
+            "log": "app_lint.log",
+            "logSha256": "06aaaade7915e946db5387854c491f5b942612aa2698b7cc378215a44aecf3ff",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:33:57.897952+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets"
+            ],
+            "elapsedSeconds": 225.594,
+            "exitCode": 101,
+            "finishedAt": "2026-10-01T06:40:51.469092+00:00",
+            "label": "app_tests",
+            "log": "app_tests.log",
+            "logSha256": "71e498ca9788df4c9da392cd8e88b750673158a1604484a70f3d1ca2c3bfed53",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:37:05.870779+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 0.9839999999999804,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:31:56.235924+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "53bb6930a7ef3cd18e4de893a834e13f3f044feb75eec0f8463844e28c6e6f79",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:31:55.240326+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--",
+              "--check"
+            ],
+            "elapsedSeconds": 0.6720000000000255,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:33:57.723888+00:00",
+            "label": "owner_format",
+            "log": "owner_format.log",
+            "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:33:57.059097+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features",
+              "--no-deps",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 103.48500000000001,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:37:05.631853+00:00",
+            "label": "owner_lint",
+            "log": "owner_lint.log",
+            "logSha256": "254b64430ff0bad87b0b0880c424efcf8a3fa45e464057193fffbd5c6759f373",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:35:22.153541+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 116.48400000000001,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:33:53.600909+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "321a2f83544b7d1153c731c09610d58035088723f856edade2323936aa903a6e",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:31:57.123520+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.546999999999997,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:31:56.955808+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "7e180baa11c6f198ee9bb5ff08df7a88c13d7753a50e9af0a1dd6f212e9bef6b",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:31:56.415003+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        }
+      ],
+      "pythonTests": {
+        "passed": true,
+        "count": 238,
+        "elapsedSecondsFromLog": 115.689,
+        "skipped": 4
+      },
+      "applicationTestRunners": [
+        {
+          "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-7473f2223ef9d39e.exe)",
+          "result": "ok. 98 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 26.54s"
+        },
+        {
+          "runner": "unittests src\\main.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-50e578dc4130caa8.exe)",
+          "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "unittests src\\bin\\hepta-native-credential.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_credential-e4ee4b9785afc68d.exe)",
+          "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "unittests src\\bin\\hepta-native-updater.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_updater-e2412e1c5ad3e5ad.exe)",
+          "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\backend.rs (apps/hepta-native/target\\debug\\deps\\backend-16409d52c083dac0.exe)",
+          "result": "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+        },
+        {
+          "runner": "tests\\backend_security.rs (apps/hepta-native/target\\debug\\deps\\backend_security-9d5ada39a2c523c2.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\file_input.rs (apps/hepta-native/target\\debug\\deps\\file_input-6299b578b9c618b5.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\journal.rs (apps/hepta-native/target\\debug\\deps\\journal-cc35eb793d1c5597.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+        },
+        {
+          "runner": "tests\\journal_regressions.rs (apps/hepta-native/target\\debug\\deps\\journal_regressions-396aa4c4da4fc94e.exe)",
+          "result": "ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.33s"
+        },
+        {
+          "runner": "tests\\launch_config.rs (apps/hepta-native/target\\debug\\deps\\launch_config-24c2691567f8525d.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\private_state.rs (apps/hepta-native/target\\debug\\deps\\private_state-b8e7ff2913222ab4.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\remediation_regressions.rs (apps/hepta-native/target\\debug\\deps\\remediation_regressions-c4e222d7aebcc550.exe)",
+          "result": "ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s"
+        },
+        {
+          "runner": "tests\\resource_identity.rs (apps/hepta-native/target\\debug\\deps\\resource_identity-250b30d7bc4aa46b.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\retirement_recovery.rs (apps/hepta-native/target\\debug\\deps\\retirement_recovery-c3dd12ff91dd2e30.exe)",
+          "result": "ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 26.45s"
+        },
+        {
+          "runner": "tests\\runtime.rs (apps/hepta-native/target\\debug\\deps\\runtime-3e3b468d64515196.exe)",
+          "result": "ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.21s"
+        },
+        {
+          "runner": "tests\\security_updater.rs (apps/hepta-native/target\\debug\\deps\\security_updater-2b0107dfe1397c8e.exe)",
+          "result": "ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.89s"
+        },
+        {
+          "runner": "tests\\session_store.rs (apps/hepta-native/target\\debug\\deps\\session_store-4d6b8521f2bb5459.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\shutdown_recovery.rs (apps/hepta-native/target\\debug\\deps\\shutdown_recovery-043d4161c7ca6807.exe)",
+          "result": "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+        },
+        {
+          "runner": "tests\\trusted_key_regressions.rs (apps/hepta-native/target\\debug\\deps\\trusted_key_regressions-1150449309b4c7a2.exe)",
+          "result": "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+        },
+        {
+          "runner": "tests\\update_handoff.rs (apps/hepta-native/target\\debug\\deps\\update_handoff-66a349e3932d1d6c.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\update_product.rs (apps/hepta-native/target\\debug\\deps\\update_product-eedbc8a4e838cfc5.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.75s"
+        },
+        {
+          "runner": "tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)",
+          "result": "FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.06s"
+        }
+      ],
+      "failedRegistrarExcerpt": "Running tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)\n\nrunning 1 test\ntest packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut ... FAILED\n\nfailures:\n\n---- packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut stdout ----\n\nthread 'packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut' (6572) panicked at tests\\windows_registrar.rs:95:5:\nOutput { status: ExitStatus(ExitStatus(1)), stdout: \"\", stderr: \"Exception calling \\\"SizeOf\\\" with \\\"1\\\" argument(s): \\\"Type 'System.RuntimeType' cannot be marshaled as an unmanaged \\r\\nstructure; no meaningful size or offset can be computed.\\\"\\r\\nAt line:38 char:5\\r\\n+ if ([System.Runtime.InteropServices.Marshal]::SizeOf($variantType) -n ...\\r\\n+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\r\\n    + CategoryInfo          : NotSpecified: (:) [], ParentContainsErrorRecordException\\r\\n    + FullyQualifiedErrorId : ArgumentException\\r\\n \\r\\n\" }\nstack backtrace:\n   0: std::panicking::panic_handler\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\std\\src\\panicking.rs:689\n   1: core::panicking::panic_fmt\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\panicking.rs:80\n   2: windows_registrar::packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut\n             at .\\tests\\windows_registrar.rs:95\n   3: windows_registrar::packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut::closure$0\n             at .\\tests\\windows_registrar.rs:7\n   4: core::ops::function::FnOnce::call_once<windows_registrar::packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut::closure_env$0,tuple$<> >\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\ops\\function.rs:250\n   5: core::ops::function::FnOnce::call_once\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\ops\\function.rs:250\nnote: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.\n\n\nfailures:\n    packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.06s\n\nerror: test failed, to rerun pass `--test windows_registrar`\n"
+    },
+    {
+      "subject": "merge",
+      "jobId": 110248992677,
+      "jobConclusion": "failure",
+      "artifactId": 11144699484,
+      "artifactPath": "/workspace/scratch/0643a11f4b6a/attachments/927c12ee-2cee-446f-80f1-d541670bf48e/windows-11144699484.zip",
+      "artifactSha256": "3da1997ed713e49138024d1c07cb37100b3172a23afb1a6e124c5d355af12d5f",
+      "artifactDigestVerified": true,
+      "source": {
+        "parents": "9be52d267d02a76f73e8a94fd086191c351d1c70 ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+        "commit": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+        "tree": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+        "subject": "deterministic ui.native qualification merge"
+      },
+      "sourceTextSha256": "4a6692b4c0106a227a1ce5304adef4cbc2a3584ce2348bf8bc814b7781cc155f",
+      "inventorySha256": "c49dfa239ea3d7e53d39bfdf2f88116cd9814da6845000502529a96b6cf0acc5",
+      "checks": [
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--check"
+            ],
+            "elapsedSeconds": 1.4220000000004802,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:33:44.456602+00:00",
+            "label": "app_format",
+            "log": "app_format.log",
+            "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:33:43.037838+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets",
+              "--all-features",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 74.625,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:35:00.093098+00:00",
+            "label": "app_lint",
+            "log": "app_lint.log",
+            "logSha256": "bce8427cb6782b7408c94137509b1c7b28061e27e7f2053f19352cae20c832c6",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:33:45.458516+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets"
+            ],
+            "elapsedSeconds": 174.40599999999904,
+            "exitCode": 101,
+            "finishedAt": "2026-10-01T06:39:38.046626+00:00",
+            "label": "app_tests",
+            "log": "app_tests.log",
+            "logSha256": "de898d99cdeaec2b89b933c67ce8d9a60964d80c5410c56b2298a4d3e9c95035",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:36:43.636960+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 1.0630000000001019,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:31:52.228738+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "413e49afcb7f1ba8852afcf66fea88de4406922c475775313e0d145a6a0b782f",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:31:51.164561+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--",
+              "--check"
+            ],
+            "elapsedSeconds": 0.6559999999990396,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:33:45.285732+00:00",
+            "label": "owner_format",
+            "log": "owner_format.log",
+            "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:33:44.628434+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features",
+              "--no-deps",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 103.125,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:36:43.395861+00:00",
+            "label": "owner_lint",
+            "log": "owner_lint.log",
+            "logSha256": "160f0d01773e48c6a5c93d053f34910ba19889c738e7a8c1fb6d8977f9e7c062",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:35:00.273651+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 108.45299999999952,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:33:41.556865+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "414dd856703181c520eb56896671fd5a6e44432ccf8d45ffcac16bf528bfd0c8",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:31:53.109320+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.5159999999996217,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T06:31:52.932377+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "3b7dd2c721edd0e41d4a2c1adcb869e61ed65cf9a724fd74131c63ebab432fc1",
+            "runAttempt": "1",
+            "runId": "36823756631",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "ab327fd51f814571d76694020e20e25b13b8ef8c",
+            "sourceTreeSha": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T06:31:52.407181+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        }
+      ],
+      "pythonTests": {
+        "passed": true,
+        "count": 238,
+        "elapsedSecondsFromLog": 107.806,
+        "skipped": 4
+      },
+      "applicationTestRunners": [
+        {
+          "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-7473f2223ef9d39e.exe)",
+          "result": "ok. 98 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 18.21s"
+        },
+        {
+          "runner": "unittests src\\main.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-50e578dc4130caa8.exe)",
+          "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "unittests src\\bin\\hepta-native-credential.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_credential-e4ee4b9785afc68d.exe)",
+          "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "unittests src\\bin\\hepta-native-updater.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_updater-e2412e1c5ad3e5ad.exe)",
+          "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\backend.rs (apps/hepta-native/target\\debug\\deps\\backend-16409d52c083dac0.exe)",
+          "result": "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+        },
+        {
+          "runner": "tests\\backend_security.rs (apps/hepta-native/target\\debug\\deps\\backend_security-9d5ada39a2c523c2.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\file_input.rs (apps/hepta-native/target\\debug\\deps\\file_input-6299b578b9c618b5.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\journal.rs (apps/hepta-native/target\\debug\\deps\\journal-cc35eb793d1c5597.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+        },
+        {
+          "runner": "tests\\journal_regressions.rs (apps/hepta-native/target\\debug\\deps\\journal_regressions-396aa4c4da4fc94e.exe)",
+          "result": "ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.63s"
+        },
+        {
+          "runner": "tests\\launch_config.rs (apps/hepta-native/target\\debug\\deps\\launch_config-24c2691567f8525d.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+        },
+        {
+          "runner": "tests\\private_state.rs (apps/hepta-native/target\\debug\\deps\\private_state-b8e7ff2913222ab4.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\remediation_regressions.rs (apps/hepta-native/target\\debug\\deps\\remediation_regressions-c4e222d7aebcc550.exe)",
+          "result": "ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s"
+        },
+        {
+          "runner": "tests\\resource_identity.rs (apps/hepta-native/target\\debug\\deps\\resource_identity-250b30d7bc4aa46b.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\retirement_recovery.rs (apps/hepta-native/target\\debug\\deps\\retirement_recovery-c3dd12ff91dd2e30.exe)",
+          "result": "ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.32s"
+        },
+        {
+          "runner": "tests\\runtime.rs (apps/hepta-native/target\\debug\\deps\\runtime-3e3b468d64515196.exe)",
+          "result": "ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s"
+        },
+        {
+          "runner": "tests\\security_updater.rs (apps/hepta-native/target\\debug\\deps\\security_updater-2b0107dfe1397c8e.exe)",
+          "result": "ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s"
+        },
+        {
+          "runner": "tests\\session_store.rs (apps/hepta-native/target\\debug\\deps\\session_store-4d6b8521f2bb5459.exe)",
+          "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\shutdown_recovery.rs (apps/hepta-native/target\\debug\\deps\\shutdown_recovery-043d4161c7ca6807.exe)",
+          "result": "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+        },
+        {
+          "runner": "tests\\trusted_key_regressions.rs (apps/hepta-native/target\\debug\\deps\\trusted_key_regressions-1150449309b4c7a2.exe)",
+          "result": "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+        },
+        {
+          "runner": "tests\\update_handoff.rs (apps/hepta-native/target\\debug\\deps\\update_handoff-66a349e3932d1d6c.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "runner": "tests\\update_product.rs (apps/hepta-native/target\\debug\\deps\\update_product-eedbc8a4e838cfc5.exe)",
+          "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s"
+        },
+        {
+          "runner": "tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)",
+          "result": "FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.07s"
+        }
+      ],
+      "failedRegistrarExcerpt": "Running tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)\n\nrunning 1 test\ntest packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut ... FAILED\n\nfailures:\n\n---- packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut stdout ----\n\nthread 'packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut' (2364) panicked at tests\\windows_registrar.rs:95:5:\nOutput { status: ExitStatus(ExitStatus(1)), stdout: \"\", stderr: \"Exception calling \\\"SizeOf\\\" with \\\"1\\\" argument(s): \\\"Type 'System.RuntimeType' cannot be marshaled as an unmanaged \\r\\nstructure; no meaningful size or offset can be computed.\\\"\\r\\nAt line:38 char:5\\r\\n+ if ([System.Runtime.InteropServices.Marshal]::SizeOf($variantType) -n ...\\r\\n+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\r\\n    + CategoryInfo          : NotSpecified: (:) [], ParentContainsErrorRecordException\\r\\n    + FullyQualifiedErrorId : ArgumentException\\r\\n \\r\\n\" }\nstack backtrace:\n   0: std::panicking::panic_handler\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\std\\src\\panicking.rs:689\n   1: core::panicking::panic_fmt\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\panicking.rs:80\n   2: windows_registrar::packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut\n             at .\\tests\\windows_registrar.rs:95\n   3: windows_registrar::packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut::closure$0\n             at .\\tests\\windows_registrar.rs:7\n   4: core::ops::function::FnOnce::call_once<windows_registrar::packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut::closure_env$0,tuple$<> >\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\ops\\function.rs:250\n   5: core::ops::function::FnOnce::call_once\n             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\ops\\function.rs:250\nnote: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.\n\n\nfailures:\n    packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.07s\n\nerror: test failed, to rerun pass `--test windows_registrar`\n"
+    }
+  ],
+  "rootCause": {
+    "path": "apps/hepta-native/tests/windows_registrar.rs",
+    "observedLine": 95,
+    "test": "packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut",
+    "diagnostic": "Exception calling SizeOf with 1 argument: System.RuntimeType cannot be marshaled as an unmanaged structure; no meaningful size or offset can be computed.",
+    "failingInvocation": "[System.Runtime.InteropServices.Marshal]::SizeOf($variantType)",
+    "cause": "PowerShell overload binding uses a RuntimeType instance marshaling overload rather than the intended Type-based layout query.",
+    "minimalRepair": "C# probe SizeOfPropVariant() returns Marshal.SizeOf(typeof(PropVariant)); PowerShell invokes that no-argument static probe method. Expected size, all field offsets, actual COM shortcut round-trip and strict checks are retained.",
+    "offsetOfReview": "Official API has OffsetOf(Type,string) and OffsetOf<T>(string), with different arity and no same-arity object overload. Existing OffsetOf assertions retained.",
+    "productRegistrarLayoutChangedByThisRepair": false,
+    "ownerTokenGroupObserved": false,
+    "fullRoundTripPassed": false
+  },
+  "subsequentChecksNotExecuted": [
+    "owner_tests",
+    "release_build",
+    "compiler_negative_api_boundary",
+    "release_self_test",
+    "process_kill_recovery",
+    "unsigned_package",
+    "seal_exact_subject_observations"
+  ],
+  "qualificationPassed": false,
+  "repairRequiresNewSourceBoundWindowsExecution": true
+}

@@ -22,8 +22,11 @@ class CurrentSourceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
+        subprocess.run(
+            ["git", "config", "core.autocrlf", "false"], cwd=self.root, check=True
+        )
         subprocess.run(
             ["git", "config", "user.name", "test"], cwd=self.root, check=True
         )
@@ -63,9 +66,7 @@ class CurrentSourceTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        subprocess.run(
-            ["git", "commit", "-qm", "manifest"], cwd=self.root, check=True
-        )
+        subprocess.run(["git", "commit", "-qm", "manifest"], cwd=self.root, check=True)
 
     def verify_output(self):
         output = io.StringIO()
@@ -83,9 +84,32 @@ class CurrentSourceTests(unittest.TestCase):
         manifest = json.loads((self.app / "CURRENT_SOURCE.json").read_text())
         self.assertEqual(manifest["schema"], "hepta.ui.native.current-source.v3")
         self.assertNotIn("files", manifest)
-        self.assertEqual(
-            manifest["inventoryPolicy"], source.inventory_policy()
+        self.assertEqual(manifest["inventoryPolicy"], source.inventory_policy())
+
+    def test_manifest_stays_exact_with_windows_default_newlines(self):
+        subprocess.run(
+            ["git", "config", "core.autocrlf", "true"], cwd=self.root, check=True
         )
+        write_text = Path.write_text
+
+        def windows_default(path, data, *args, **kwargs):
+            kwargs.setdefault("newline", "\r\n")
+            return write_text(path, data, *args, **kwargs)
+
+        with patch.object(Path, "write_text", windows_default):
+            self.commit_manifest()
+        manifest = self.app / "CURRENT_SOURCE.json"
+        self.assertNotIn(b"\r\n", manifest.read_bytes())
+        self.assertEqual(manifest.read_bytes(), source.committed_blob(manifest))
+        self.assertIn("verified 1 native source identities", self.verify_output())
+
+    def test_json_equivalent_crlf_manifest_is_still_rejected(self):
+        self.commit_manifest()
+        manifest = self.app / "CURRENT_SOURCE.json"
+        committed = source.committed_blob(manifest)
+        manifest.write_bytes(committed.replace(b"\n", b"\r\n"))
+        with self.assertRaisesRegex(RuntimeError, "differs from committed bytes"):
+            self.verify_output()
 
     def test_new_committed_source_is_automatically_inventoried(self):
         self.commit_manifest()
@@ -191,9 +215,7 @@ class CurrentSourceTests(unittest.TestCase):
         }
         rewritten = source.rewrite_retired_navigation(value)
         self.assertEqual(rewritten["source"], "apps/hepta-native/src/runtime.rs")
-        self.assertEqual(
-            rewritten["tests"][0], "apps/hepta-native/tests/runtime.rs"
-        )
+        self.assertEqual(rewritten["tests"][0], "apps/hepta-native/tests/runtime.rs")
         self.assertEqual(
             rewritten["commands"][0],
             "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets",

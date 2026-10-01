@@ -40,7 +40,7 @@ const PORTAL_OPEN_URI_PROGRAM: &str = include_str!("../portal/open_uri.py");
 #[cfg(target_os = "windows")]
 const WINDOWS_TOAST_PROGRAM: &str = include_str!("../portal/windows_toast.ps1");
 
-#[cfg(target_os = "windows")]
+#[cfg(any(target_os = "windows", test))]
 const WINDOWS_AUMID: &str = "Trillionnium.Hepta.Native";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -88,6 +88,7 @@ pub trait PlatformAdapter: Send {
 
 #[derive(Debug, Clone)]
 pub struct PlatformPolicy {
+    #[cfg(target_os = "linux")]
     allowed_path_roots: Vec<PathBuf>,
     allow_clipboard: bool,
     allow_notifications: bool,
@@ -99,6 +100,7 @@ impl PlatformPolicy {
         allow_clipboard: bool,
         allow_notifications: bool,
     ) -> Result<Self, ShellError> {
+        #[cfg(target_os = "linux")]
         let mut canonical_roots = Vec::with_capacity(allowed_path_roots.len());
         for root in allowed_path_roots {
             if !root.is_absolute() {
@@ -112,15 +114,20 @@ impl PlatformPolicy {
                     root.display()
                 ))
             })?;
+            #[cfg(target_os = "linux")]
             canonical_roots.push(canonical);
+            #[cfg(not(target_os = "linux"))]
+            let _ = canonical;
         }
         Ok(Self {
+            #[cfg(target_os = "linux")]
             allowed_path_roots: canonical_roots,
             allow_clipboard,
             allow_notifications,
         })
     }
 
+    #[cfg(target_os = "linux")]
     fn path_allowed(&self, path: &Path) -> bool {
         let Ok(canonical) = std::fs::canonicalize(path) else {
             return false;
@@ -186,7 +193,9 @@ impl SystemPlatformAdapter {
             (rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::NONBLOCK).bits() as i32,
         );
         let file = options.open(path).map_err(|error| {
-            ShellError::Platform(format!("open verified resource without following links: {error}"))
+            ShellError::Platform(format!(
+                "open verified resource without following links: {error}"
+            ))
         })?;
         let metadata = file.metadata()?;
         if !metadata.is_file() && !metadata.is_dir() {
@@ -317,11 +326,8 @@ impl PlatformAdapter for SystemPlatformAdapter {
                             "verified resource identity changed before effect entry".to_owned(),
                         ));
                     }
-                    let status = launch_portal_resource(
-                        file,
-                        payload.action(),
-                        &self.active_launchers,
-                    )?;
+                    let status =
+                        launch_portal_resource(file, payload.action(), &self.active_launchers)?;
                     if !status.success() {
                         return Err(ShellError::Platform(format!(
                             "XDG resource handoff failed: {status}"
@@ -595,9 +601,14 @@ fn notification_supported() -> bool {
     let Some(marker) = windows_identity_marker() else {
         return false;
     };
-    windows_powershell().is_some()
-        && std::fs::read_to_string(marker)
-            .is_ok_and(|value| value.trim() == WINDOWS_AUMID)
+    windows_powershell().is_some() && registered_notification_identity(&marker)
+}
+
+#[cfg(any(target_os = "windows", test))]
+fn registered_notification_identity(marker: &Path) -> bool {
+    crate::file_input::read_bytes(marker, 128).is_ok_and(|bytes| {
+        std::str::from_utf8(&bytes).is_ok_and(|value| value.trim() == WINDOWS_AUMID)
+    })
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -661,7 +672,12 @@ fn launch_notification(
             "-Command",
             WINDOWS_TOAST_PROGRAM,
         ]);
-    run_bounded_launcher(command, "send WinRT notification", active, NOTIFICATION_TIMEOUT)
+    run_bounded_launcher(
+        command,
+        "send WinRT notification",
+        active,
+        NOTIFICATION_TIMEOUT,
+    )
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -815,3 +831,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "platform_terminality_tests.rs"]
 mod terminality_tests;
+
+#[cfg(test)]
+#[path = "platform_identity_tests.rs"]
+mod identity_tests;

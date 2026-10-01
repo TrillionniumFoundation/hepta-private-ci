@@ -176,6 +176,8 @@ pub(crate) enum FileInputError {
     },
     MissingFilesystemPath,
     RelativePath,
+    NonUtf8Path,
+    PathTooLong,
 }
 
 impl std::fmt::Display for FileInputError {
@@ -204,6 +206,10 @@ impl std::fmt::Display for FileInputError {
                 "the dropped item has no filesystem path; in-memory or URI drops are rejected",
             ),
             Self::RelativePath => formatter.write_str("the selected file path must be absolute"),
+            Self::NonUtf8Path => formatter.write_str(
+                "the selected path cannot be represented exactly by the UTF-8 input field",
+            ),
+            Self::PathTooLong => formatter.write_str("the selected path exceeds its byte bound"),
         }
     }
 }
@@ -265,6 +271,10 @@ impl FileInputIntent {
             .ok_or(FileInputError::MissingFilesystemPath)?;
         if !path.is_absolute() {
             return Err(FileInputError::RelativePath);
+        }
+        let text = path.to_str().ok_or(FileInputError::NonUtf8Path)?;
+        if text.len() > crate::model::MAX_NATIVE_PATH_BYTES {
+            return Err(FileInputError::PathTooLong);
         }
         self.active = None;
         Ok(path.clone())

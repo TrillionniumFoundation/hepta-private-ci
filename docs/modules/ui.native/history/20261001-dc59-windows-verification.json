@@ -1,0 +1,521 @@
+{
+  "schema": "hepta.ui.native.windows-ci-failure-history.v1",
+  "observedAt": "2026-10-01T08:41:27.346613+00:00",
+  "runId": 36836809639,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36836809639",
+  "reviewSourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+  "reviewTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+  "baseSourceSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "headParentSha": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+  "runtimeWorkflow": {
+    "workflowSha": "48f593a45dc4fe2e2e53632ce973195e5e6552c1",
+    "workflowPath": ".github/workflows/ui-native-qualification.yml",
+    "workflowBlobSha": "a0655883c347a5a396d1d6d19f893a48a13ff408",
+    "workflowFileSha256": "3281415da3c709e728324b42428c6132d89d48f2f6e4d6f8586b466e6dba079b",
+    "workflowBytes": 30034,
+    "observedBothWindowsRawJobLogWorkflowEnv": true
+  },
+  "currentSourceManifestGitBlobSha256": "e268526f30f92ae1b4851d89951bb4f1c72bc125bf37b3179e179cb4e51bf688",
+  "frozenImplementationInventory": {
+    "schema": "hepta.ui-native-frozen-implementation-inventory.v1",
+    "sourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+    "sourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+    "fileCount": 417,
+    "inventorySha256": "8235fbc0deffc155632c99a0258c352fd0fe61201e9eacac37e57d2351b2692d",
+    "selectionPaths": [
+      ".cargo",
+      ".gitattributes",
+      "apps/hepta-native/.cargo",
+      "apps/hepta-native/.gitattributes",
+      "apps/hepta-native/Cargo.lock",
+      "apps/hepta-native/Cargo.toml",
+      "apps/hepta-native/STORAGE_BUDGETS.json",
+      "apps/hepta-native/build.rs",
+      "apps/hepta-native/packaging",
+      "apps/hepta-native/portal",
+      "apps/hepta-native/rust-toolchain.toml",
+      "apps/hepta-native/src",
+      "apps/hepta-native/tests",
+      "apps/hepta-native/tools/archive_safety.py",
+      "apps/hepta-native/tools/package_unsigned.py",
+      "codex-rs/.cargo",
+      "codex-rs/Cargo.lock",
+      "codex-rs/Cargo.toml",
+      "codex-rs/hepta-contracts",
+      "codex-rs/hepta-control-plane",
+      "codex-rs/hepta-native-gateway",
+      "codex-rs/hepta-ndu",
+      "codex-rs/hepta-paths",
+      "codex-rs/hepta-plasticity",
+      "codex-rs/hepta-private-state",
+      "codex-rs/hepta-runtime",
+      "codex-rs/hepta-types",
+      "codex-rs/hepta-wire",
+      "codex-rs/keyring-store",
+      "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+      "codex-rs/utils/cargo-bin",
+      "codex-rs/utils/private-state"
+    ],
+    "digestRule": "SHA-256 of canonical UTF-8 JSON mapping selected Git blob paths to their SHA-256 at sourceSha",
+    "currentBudgetRule": "compiled budget semantics must match sourceSha; only source-navigation SHA/tree anchors may continue",
+    "qualificationClaim": false
+  },
+  "integrationFileSelectionCount": 32,
+  "localDependencyPathCount": 16,
+  "subjects": [
+    {
+      "subject": "head",
+      "jobId": 110286304607,
+      "jobConclusion": "failure",
+      "artifactId": 11150045783,
+      "artifactPath": "/workspace/scratch/0643a11f4b6a/attachments/2677097f-6d33-4954-ab7c-fe08a4c94da5/windows-11150045783.zip",
+      "artifactSha256": "a42760cd8ef43d1efc598536f840db2a93b4de3689f6d8e12c348a82fe464108",
+      "artifactSha256VerifiedAgainstApi": true,
+      "artifactBytes": 9470,
+      "source": {
+        "parents": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+        "commit": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+        "tree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+        "subject": "docs(ui.native): freeze audited candidate and preserve exact-source evidence"
+      },
+      "sourceTextSha256": "e0826aab160ad98268bebb7a636bb80e217c78e34716b3f7d180e2388c6b5149",
+      "checks": [
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 0.7660000000000196,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T08:32:42.694325+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "3519ea725519239d01d2032ff8db696a95e25fd2c7c89f311294237ff7e4e8f3",
+            "runAttempt": "1",
+            "runId": "36836809639",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+            "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T08:32:41.936425+00:00",
+            "timedOut": false
+          },
+          "logSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 113.17199999999997,
+            "exitCode": 1,
+            "finishedAt": "2026-10-01T08:34:36.556310+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "d87804449f982f1487335bb682f763541e51f49080b1601f61829a75e5eaa966",
+            "runAttempt": "1",
+            "runId": "36836809639",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+            "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T08:32:43.385740+00:00",
+            "timedOut": false
+          },
+          "logSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.42200000000002547,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T08:32:43.255018+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "fdd0e76614d725f935043ad81c6b135e50a03c6e3d0818daf9664c867886ec0d",
+            "runAttempt": "1",
+            "runId": "36836809639",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+            "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T08:32:42.838736+00:00",
+            "timedOut": false
+          },
+          "logSha256Verified": true
+        }
+      ],
+      "identityEvidence": {
+        "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+        "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+        "limitations": [
+          "structural evidence is not physical-platform acceptance",
+          "performance budgets remain unqualified until measured artifacts are attached",
+          "release flags remain false pending independent review"
+        ],
+        "localCargoDependencyPaths": [
+          "apps/hepta-native",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-control-plane",
+          "codex-rs/hepta-native-gateway",
+          "codex-rs/hepta-ndu",
+          "codex-rs/hepta-paths",
+          "codex-rs/hepta-plasticity",
+          "codex-rs/hepta-private-state",
+          "codex-rs/hepta-runtime",
+          "codex-rs/hepta-types",
+          "codex-rs/hepta-wire",
+          "codex-rs/keyring-store",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+          "codex-rs/utils/cargo-bin",
+          "codex-rs/utils/private-state"
+        ],
+        "orderedParents": [
+          "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9"
+        ],
+        "repositoryHead": "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+        "repositoryTree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+        "retiredWorkflowCount": 16,
+        "schema": "hepta.ui-native-source-evidence.v1",
+        "sourceContracts": [
+          "active-index",
+          "journal-v7",
+          "retirement-bucket-v1",
+          "retirement-index-v1",
+          "retirement-v3",
+          "wal-magic",
+          "wal-v1"
+        ],
+        "status": "structural-pass",
+        "workflow": "ui-native-qualification.yml"
+      },
+      "pythonTests": {
+        "total": 239,
+        "passed": 234,
+        "failed": 1,
+        "errors": 0,
+        "skipped": 4,
+        "elapsedSecondsFromLog": 112.42
+      },
+      "failureExcerpt": "FAIL: test_incomplete_and_execution_claims_cannot_be_promoted (test_hepta_ui_native_map_adapter.NativeMapAdapterTests.test_incomplete_and_execution_claims_cannot_be_promoted)\n----------------------------------------------------------------------\nSystemExit: FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"D:\\a\\hepta-private-ci\\hepta-private-ci\\scripts\\test_hepta_ui_native_map_adapter.py\", line 322, in test_incomplete_and_execution_claims_cannot_be_promoted\n    self.reject(\"values must be booleans\")\n  File \"D:\\a\\hepta-private-ci\\hepta-private-ci\\scripts\\test_hepta_ui_native_map_adapter.py\", line 217, in reject\n    with self.assertRaisesRegex(SystemExit, message):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"values must be booleans\" does not match \"FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean\"\n"
+    },
+    {
+      "subject": "merge",
+      "jobId": 110286304455,
+      "jobConclusion": "failure",
+      "artifactId": 11150005918,
+      "artifactPath": "/workspace/scratch/0643a11f4b6a/attachments/e0cbabe1-9610-4aee-8c1b-0120c4fb2704/windows-11150005918.zip",
+      "artifactSha256": "930e7ae2af2f398a251647a55f5b9a39e801b1f786001beda815ee3ed0af90cc",
+      "artifactSha256VerifiedAgainstApi": true,
+      "artifactBytes": 9501,
+      "source": {
+        "parents": "9be52d267d02a76f73e8a94fd086191c351d1c70 dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6",
+        "commit": "658914a3e602337e707901a9f8d11388b6486799",
+        "tree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+        "subject": "deterministic ui.native qualification merge"
+      },
+      "sourceTextSha256": "ad605a3a42c33e7662e18e9519d33ae0d4e4d8bfddb126cba9d7716fe63ecb96",
+      "checks": [
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 1.0150000000001,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T08:32:44.910696+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "d0c792433d9c08cb42a91e64f8381825b3c00ff1036e703f3c54ee7a1576285f",
+            "runAttempt": "1",
+            "runId": "36836809639",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+            "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T08:32:43.893420+00:00",
+            "timedOut": false
+          },
+          "logSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 106.57799999999975,
+            "exitCode": 1,
+            "finishedAt": "2026-10-01T08:34:32.330944+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "a2b01094cb25ca6e8e60dfd6116f365c0049c5c23e4281a4f3bb6b9216142933",
+            "runAttempt": "1",
+            "runId": "36836809639",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+            "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T08:32:45.750546+00:00",
+            "timedOut": false
+          },
+          "logSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.5,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T08:32:45.583337+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "97d5b63a99a924c4f7bfcfc769afd26fd126c9a3eca03cdc4df9cb48dfe3209e",
+            "runAttempt": "1",
+            "runId": "36836809639",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+            "sourceTreeSha": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T08:32:45.087453+00:00",
+            "timedOut": false
+          },
+          "logSha256Verified": true
+        }
+      ],
+      "identityEvidence": {
+        "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+        "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
+        "limitations": [
+          "structural evidence is not physical-platform acceptance",
+          "performance budgets remain unqualified until measured artifacts are attached",
+          "release flags remain false pending independent review"
+        ],
+        "localCargoDependencyPaths": [
+          "apps/hepta-native",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-control-plane",
+          "codex-rs/hepta-native-gateway",
+          "codex-rs/hepta-ndu",
+          "codex-rs/hepta-paths",
+          "codex-rs/hepta-plasticity",
+          "codex-rs/hepta-private-state",
+          "codex-rs/hepta-runtime",
+          "codex-rs/hepta-types",
+          "codex-rs/hepta-wire",
+          "codex-rs/keyring-store",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+          "codex-rs/utils/cargo-bin",
+          "codex-rs/utils/private-state"
+        ],
+        "orderedParents": [
+          "9be52d267d02a76f73e8a94fd086191c351d1c70",
+          "dc59dbaf55ebbaf13bac27f06cbdd809f19f38f6"
+        ],
+        "repositoryHead": "658914a3e602337e707901a9f8d11388b6486799",
+        "repositoryTree": "794f1bcb23ae9a5bd7e58f2ff6fa025c9405aa16",
+        "retiredWorkflowCount": 16,
+        "schema": "hepta.ui-native-source-evidence.v1",
+        "sourceContracts": [
+          "active-index",
+          "journal-v7",
+          "retirement-bucket-v1",
+          "retirement-index-v1",
+          "retirement-v3",
+          "wal-magic",
+          "wal-v1"
+        ],
+        "status": "structural-pass",
+        "workflow": "ui-native-qualification.yml"
+      },
+      "pythonTests": {
+        "total": 239,
+        "passed": 234,
+        "failed": 1,
+        "errors": 0,
+        "skipped": 4,
+        "elapsedSecondsFromLog": 105.991
+      },
+      "failureExcerpt": "FAIL: test_incomplete_and_execution_claims_cannot_be_promoted (test_hepta_ui_native_map_adapter.NativeMapAdapterTests.test_incomplete_and_execution_claims_cannot_be_promoted)\n----------------------------------------------------------------------\nSystemExit: FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"D:\\a\\hepta-private-ci\\hepta-private-ci\\scripts\\test_hepta_ui_native_map_adapter.py\", line 322, in test_incomplete_and_execution_claims_cannot_be_promoted\n    self.reject(\"values must be booleans\")\n  File \"D:\\a\\hepta-private-ci\\hepta-private-ci\\scripts\\test_hepta_ui_native_map_adapter.py\", line 217, in reject\n    with self.assertRaisesRegex(SystemExit, message):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"values must be booleans\" does not match \"FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean\"\n"
+    }
+  ],
+  "aggregateOverallTerminalObserved": false,
+  "aggregateStatusAtCapture": "not started; storage job 110286304281 still in progress",
+  "qualificationAccepted": false,
+  "productionQualified": false,
+  "releaseAuthorized": false,
+  "lfMergeConstruction": {
+    "actualWindowsMergeSourceSha": "658914a3e602337e707901a9f8d11388b6486799",
+    "lfMatchedActualWindowsSource": true,
+    "objects": {
+      "lf": {
+        "commitSha": "658914a3e602337e707901a9f8d11388b6486799",
+        "payloadSha256": "059784d7492abe23177d4de722704b55f8eb32a70afc84dabf76a046e7a55de5",
+        "payloadBytes": 374,
+        "messageNewlineHex": "0a"
+      },
+      "crlfCounterexample": {
+        "commitSha": "1eb1eb5aa6b66b0c76fc77342d85cd84a98dab7d",
+        "payloadSha256": "d2ce6683e377f94dbafb43e0e43332b86c37361107246b5cdf458354d99e7c96",
+        "payloadBytes": 375,
+        "messageNewlineHex": "0d0a"
+      }
+    },
+    "fullPlatformQualificationClaim": false
+  },
+  "rootCause": {
+    "test": "test_incomplete_and_execution_claims_cannot_be_promoted",
+    "path": "scripts/test_hepta_ui_native_map_adapter.py",
+    "line": 322,
+    "fixture": "claimBoundary.productExecutionComplete = 0",
+    "expectedOldRegex": "values must be booleans",
+    "actualTypedRejection": "FAIL_HEPTA_IMPLEMENTATION_MAPS: ui.native: productExecutionComplete must be boolean",
+    "cause": "The new strict global execution-claim type validator correctly rejects the integer first; this preempts the older adapter diagnostic expected by the fixture.",
+    "smallestRepair": "Update the expected regex to productExecutionComplete must be boolean while retaining the integer-zero fixture and SystemExit requirement.",
+    "securityRejectionWorked": true,
+    "newWindowsProductFailureObserved": false
+  },
+  "requiredNewWindowsRegressions": [
+    {
+      "path": "apps/hepta-native/src/journal_windows_tests.rs",
+      "name": "snapshot_rejects_existing_destination_dacl_without_replacing_evidence",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/journal_windows_tests.rs",
+      "name": "snapshot_rejects_atomic_temp_dacl_before_writing_and_before_commit",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/journal_windows_tests.rs",
+      "name": "snapshot_rejects_held_parent_dacl_drift_at_each_publish_cut",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/journal_windows_tests.rs",
+      "name": "snapshot_rejects_linked_existing_destination_without_changing_either_entry",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_windows_tests.rs",
+      "name": "private_copy_rejects_existing_destination_dacl_without_replacing_evidence",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_windows_tests.rs",
+      "name": "private_copy_rejects_temp_dacl_before_copying_and_before_publication",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_windows_tests.rs",
+      "name": "private_copy_rejects_parent_dacl_drift_before_writing_or_publishing",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_windows_tests.rs",
+      "name": "private_source_dacl_drift_rejects_installer_copy_before_replacement",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_windows_tests.rs",
+      "name": "external_installer_copy_does_not_require_private_dacl_policy",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
+      "name": "safe_publication_and_replacement_release_non_delete_sharing_verifiers",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
+      "name": "replacement_preserves_existing_destination_with_an_untrusted_acl",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
+      "name": "replacement_preserves_staging_with_an_untrusted_acl",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
+      "name": "replacement_rejects_a_staging_hardlink_without_modifying_either_entry",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
+      "name": "replacement_rejects_root_acl_drift_without_modifying_evidence",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows_replace_tests.rs",
+      "name": "missing_staging_preserves_existing_destination",
+      "executed": false,
+      "reason": "Rust tests were skipped after the Python contract failure."
+    }
+  ],
+  "laterExecutionCount": 0,
+  "notExecuted": [
+    "app_format",
+    "owner_format",
+    "app_lint",
+    "owner_lint",
+    "app_tests (including all 9 new native ACL/atomic regressions and actual CLR layout/temporary shortcut)",
+    "owner_tests (including all 6 new utility Windows replacement regressions)",
+    "release",
+    "compile_negative",
+    "self_test",
+    "crash_test",
+    "package",
+    "packaged_self_test",
+    "packaged_crash_test",
+    "seal exact-subject observations"
+  ],
+  "sealedQualificationReceiptProduced": false,
+  "retainedNativePackageProduced": false,
+  "jobLogRetrieval": {
+    "bothActualGitHubJobLogsRetrieved": true,
+    "decodedHeadLogChars": 726896,
+    "decodedMergeLogChars": 727546,
+    "workflowShaUniqueEnvValue": "48f593a45dc4fe2e2e53632ce973195e5e6552c1",
+    "largeCheckoutLogsNotCopiedIntoThisSummary": true
+  }
+}

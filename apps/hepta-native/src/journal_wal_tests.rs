@@ -1,9 +1,11 @@
-use super::OperationJournal;
-use super::OperationPhase;
-use super::OperationRecord;
-use super::WAL_CHECKPOINT_ENTRIES;
+use crate::journal::OperationJournal;
+use crate::journal::OperationPhase;
+use crate::journal::OperationRecord;
+use crate::journal::WAL_CHECKPOINT_ENTRIES;
 use crate::model::OperationKey;
 use crate::model::PlatformAction;
+
+use crate::private_state_test_support::private_tempdir;
 
 fn record(operation_id: &str, phase: OperationPhase) -> OperationRecord {
     OperationRecord {
@@ -27,7 +29,7 @@ fn record(operation_id: &str, phase: OperationPhase) -> OperationRecord {
 
 #[test]
 fn wal_recovers_prepared_and_invoking_without_blind_replay() {
-    let root = tempfile::tempdir().unwrap();
+    let root = private_tempdir();
     let path = root.path().join("operations.json");
     let prepared = record("operation.one", OperationPhase::Prepared);
     let key = prepared.key.clone();
@@ -58,9 +60,38 @@ fn wal_recovers_prepared_and_invoking_without_blind_replay() {
     );
 }
 
+#[cfg(any(unix, windows))]
+#[test]
+fn journal_recovery_rejects_a_hardlinked_wal_without_truncating_either_name() {
+    use std::io::Write as _;
+
+    let parent = private_tempdir();
+    let root = crate::private_state::PrivateStateRoot::open(parent.path().join("state")).unwrap();
+    let path = root.path().join("operations.json");
+    {
+        let mut journal = OperationJournal::open(&path).unwrap();
+        journal
+            .upsert(record("operation.one", OperationPhase::Prepared))
+            .unwrap();
+    }
+    let wal = crate::journal_storage::wal_path(&path);
+    let mut file = std::fs::OpenOptions::new().append(true).open(&wal).unwrap();
+    file.write_all(b"H").unwrap();
+    file.sync_all().unwrap();
+    drop(file);
+    let alias = parent.path().join("outside-wal");
+    std::fs::hard_link(&wal, &alias).unwrap();
+    let original = std::fs::read(&wal).unwrap();
+
+    let error = OperationJournal::open(&path).unwrap_err();
+    assert!(error.to_string().contains("multiple directory entries"));
+    assert_eq!(std::fs::read(&wal).unwrap(), original);
+    assert_eq!(std::fs::read(&alias).unwrap(), original);
+}
+
 #[test]
 fn bounded_wal_checkpoints_and_reopens_with_exact_index() {
-    let root = tempfile::tempdir().unwrap();
+    let root = private_tempdir();
     let path = root.path().join("operations.json");
     {
         let mut journal = OperationJournal::open(&path).unwrap();

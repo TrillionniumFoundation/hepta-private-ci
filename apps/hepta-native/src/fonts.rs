@@ -1,7 +1,8 @@
 //! Optional local CJK font fallback. Font files are neither embedded nor shipped.
 use crate::error::ShellError;
 use eframe::egui;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 pub fn load_fallback(explicit: Option<&Path>) -> Result<Option<egui::FontDefinitions>, ShellError> {
     let candidates: &[&str] = if cfg!(windows) {

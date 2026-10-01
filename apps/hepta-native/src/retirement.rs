@@ -23,6 +23,15 @@ use crate::model::sha256_hex;
 use crate::model::validate_digest;
 use crate::private_state::PrivateStateRoot;
 
+#[path = "retirement_membership.rs"]
+mod membership;
+#[cfg(test)]
+#[path = "retirement_qualification_fixture.rs"]
+pub(crate) mod qualification_fixture;
+#[path = "retirement_rebuild.rs"]
+mod rebuild;
+pub(crate) use membership::RetirementMembership;
+
 const HEAD_SCHEMA: &str = "hepta.native-retirement.v3";
 const SEGMENT_SCHEMA: &str = "hepta.native-retirement.v2";
 const LEGACY_SCHEMA: &str = "hepta.native-retirement.v1";
@@ -184,60 +193,6 @@ impl RetirementStore {
         })
     }
 
-    fn migrate_legacy(
-        root: PrivateStateRoot,
-        head: Head,
-        expected: Option<&Checkpoint>,
-    ) -> Result<Self, ShellError> {
-        let mut cursor = head.checkpoint.clone();
-        let mut segment_digests = Vec::new();
-        let mut seen = HashSet::new();
-        let mut expected_seen = expected.is_none_or(|value| value == &Checkpoint::default());
-        while let Some(digest) = cursor.head.clone() {
-            if segment_digests.len() >= MAX_LEGACY_REBUILD_SEGMENTS {
-                return Err(ShellError::State(format!(
-                    "retirement index rebuild exceeds {MAX_LEGACY_REBUILD_SEGMENTS} segments"
-                )));
-            }
-            if !seen.insert(digest.clone()) {
-                return Err(ShellError::State("retirement segment cycle".to_owned()));
-            }
-            if expected.is_some_and(|value| value == &cursor) {
-                expected_seen = true;
-            }
-            let segment = read_segment(&root, &digest, Some(cursor.count))?;
-            segment_digests.push(digest);
-            cursor = segment.previous;
-        }
-        if cursor.count != 0 {
-            return Err(ShellError::State(
-                "retirement chain is incomplete".to_owned(),
-            ));
-        }
-        if expected.is_some_and(|value| value == &cursor) {
-            expected_seen = true;
-        }
-        if !expected_seen {
-            return Err(ShellError::State(
-                "retirement head regressed or belongs to another journal".to_owned(),
-            ));
-        }
-
-        let mut store = Self {
-            root,
-            checkpoint: head.checkpoint,
-            segment_count: segment_digests.len(),
-            buckets: BTreeMap::new(),
-            cache: RefCell::new(BucketCache::default()),
-        };
-        for digest in segment_digests.iter().rev() {
-            let segment = read_segment(&store.root, digest, None)?;
-            store.merge_segment_into_index(&segment)?;
-        }
-        store.publish_indexed_head()?;
-        Ok(store)
-    }
-
     fn publish_indexed_head(&mut self) -> Result<(), ShellError> {
         self.root.verify()?;
         let manifest = IndexManifest {
@@ -255,7 +210,8 @@ impl RetirementStore {
         }
         let manifest_digest =
             write_content_addressed(&self.root, "index", &manifest_bytes, INDEX_MANIFEST_BYTES)?;
-        crate::journal_storage::write(
+        crate::journal_storage::write_private(
+            &self.root,
             &self.root.path().join("head.json"),
             &serde_json::to_vec(&Head {
                 schema: HEAD_SCHEMA.to_owned(),
@@ -338,7 +294,7 @@ impl RetirementStore {
                     }
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-                    crate::journal_storage::write(&path, &bytes)?;
+                    crate::journal_storage::write_private(&self.root, &path, &bytes)?;
                 }
                 Err(error) => return Err(error.into()),
             }
@@ -380,15 +336,6 @@ impl RetirementStore {
                 ));
             }
             let digest = write_content_addressed(&self.root, "segment", &bytes, SEGMENT_BYTES)?;
-            // Segment files retain the historical bare digest name.
-            let bare = self.root.path().join(format!("{digest}.json"));
-            let named = self.root.path().join(format!("segment-{digest}.json"));
-            if !bare.exists() {
-                std::fs::rename(&named, &bare)?;
-                sync_parent(&bare)?;
-            } else {
-                let _ = std::fs::remove_file(named);
-            }
             checkpoint = Checkpoint {
                 head: Some(digest),
                 count: checkpoint
@@ -456,28 +403,15 @@ impl RetirementStore {
         let Some(Some(digest)) = self.lookup_entry(identity)? else {
             return Ok(None);
         };
-        let bytes = crate::file_input::read_bytes(
-            &self.root.path().join(format!("record-{digest}.json")),
-            RECORD_BYTES,
-        )?;
-        if sha256_hex(&bytes) != digest {
-            return Err(ShellError::State(
-                "archived record digest mismatch".to_owned(),
-            ));
-        }
-        let record: OperationRecord = serde_json::from_slice(&bytes)?;
-        record.validate()?;
-        if retirement_digest(&record.endpoint_id, &record.key)? != identity
-            || !matches!(
-                record.phase,
-                OperationPhase::Terminal | OperationPhase::ObservationClosed
-            )
-        {
-            return Err(ShellError::State(
-                "archived record identity or phase mismatch".to_owned(),
-            ));
-        }
-        Ok(Some(record))
+        self.read_archived_record(identity, &digest).map(Some)
+    }
+
+    fn read_archived_record(
+        &self,
+        identity: &str,
+        digest: &str,
+    ) -> Result<OperationRecord, ShellError> {
+        read_archived_record(&self.root, identity, digest)
     }
 
     fn lookup_entry(&self, identity: &str) -> Result<Option<Option<String>>, ShellError> {
@@ -521,31 +455,36 @@ impl RetirementStore {
     pub(crate) fn checkpoint(&self) -> Checkpoint {
         self.checkpoint.clone()
     }
+}
 
-    fn merge_segment_into_index(&mut self, segment: &Segment) -> Result<(), ShellError> {
-        let mut grouped: BTreeMap<String, Vec<(String, Option<String>)>> = BTreeMap::new();
-        for identity in &segment.digests {
-            grouped.entry(index_prefix(identity)?).or_default().push((
-                identity.clone(),
-                segment.record_digests.get(identity).cloned(),
-            ));
-        }
-        for (prefix, entries) in grouped {
-            let mut bucket = load_bucket_from_manifest(&self.root, &self.buckets, &prefix)?;
-            for (identity, record_digest) in entries {
-                if bucket.entries.insert(identity, record_digest).is_some() {
-                    return Err(ShellError::State(
-                        "duplicate retirement identity".to_owned(),
-                    ));
-                }
-            }
-            validate_bucket(&bucket)?;
-            let bytes = serde_json::to_vec(&bucket)?;
-            let digest = write_content_addressed(&self.root, "bucket", &bytes, INDEX_BUCKET_BYTES)?;
-            self.buckets.insert(prefix, digest);
-        }
-        Ok(())
+fn read_archived_record(
+    root: &PrivateStateRoot,
+    identity: &str,
+    digest: &str,
+) -> Result<OperationRecord, ShellError> {
+    root.verify()?;
+    let bytes = crate::file_input::read_bytes(
+        &root.path().join(format!("record-{digest}.json")),
+        RECORD_BYTES,
+    )?;
+    if sha256_hex(&bytes) != digest {
+        return Err(ShellError::State(
+            "archived record digest mismatch".to_owned(),
+        ));
     }
+    let record: OperationRecord = serde_json::from_slice(&bytes)?;
+    record.validate()?;
+    if retirement_digest(&record.endpoint_id, &record.key)? != identity
+        || !matches!(
+            record.phase,
+            OperationPhase::Terminal | OperationPhase::ObservationClosed
+        )
+    {
+        return Err(ShellError::State(
+            "archived record identity or phase mismatch".to_owned(),
+        ));
+    }
+    Ok(record)
 }
 
 fn validate_manifest(manifest: &IndexManifest) -> Result<(), ShellError> {
@@ -733,7 +672,14 @@ fn write_content_addressed(
         )));
     }
     let digest = sha256_hex(bytes);
-    let path = root.path().join(format!("{kind}-{digest}.json"));
+    // Segments keep their historical bare digest name. Publish directly at
+    // that name so there is no second path-based rename after the rooted write.
+    let name = if kind == "segment" {
+        format!("{digest}.json")
+    } else {
+        format!("{kind}-{digest}.json")
+    };
+    let path = root.path().join(name);
     match std::fs::symlink_metadata(&path) {
         Ok(_) => {
             if crate::file_input::read_bytes(&path, maximum)? != bytes {
@@ -743,25 +689,11 @@ fn write_content_addressed(
             }
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            crate::journal_storage::write(&path, bytes)?;
+            crate::journal_storage::write_private(root, &path, bytes)?;
         }
         Err(error) => return Err(error.into()),
     }
     Ok(digest)
-}
-
-#[cfg(unix)]
-fn sync_parent(path: &Path) -> Result<(), ShellError> {
-    use std::fs::File;
-    if let Some(parent) = path.parent() {
-        File::open(parent)?.sync_all()?;
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_parent(_path: &Path) -> Result<(), ShellError> {
-    Ok(())
 }
 
 #[cfg(test)]

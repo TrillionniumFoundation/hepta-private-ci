@@ -54,7 +54,7 @@ The exclusive root owns the canonical `OperationIntentV1` semantics and determin
 | exact-head / synthetic-merge execution | pending current candidate CI |
 | independent acceptance / release | false |
 
-Canonical exact source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=path_blob_manifest_v1`. The verifier resolves every mapped path through `git rev-parse HEAD:<path>`; a tracked map therefore does not need to contain its own future HEAD/tree hash.
+Canonical exact source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=candidate_or_exact_observation_v1`, `mappingSourceIdentityMode=exact_blob` and `exactSourceEvidence.kind=path_blob_manifest_v1`. The verifier binds mapped blobs and the complete caller/delegate/test closure to the explicit `observedAtHead`; a tracked map does not contain its own future HEAD/tree hash. Historical `sourceBase` provenance and old execution receipts remain separate. A refreshed observation of shared contracts or OS utilities establishes navigation only; current execution and independent acceptance remain pending.
 
 The 16,384-record limits belong to the in-memory reference oracle. Durable configured limits and fail-before-mutation checks live in the CognitiveStore owner. Long-lived segment/checkpoint compaction remains a separate gap.
 

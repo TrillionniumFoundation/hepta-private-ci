@@ -1,0 +1,2275 @@
+{
+  "observedAt": "2026-10-01T07:20:59.073585+00:00",
+  "runId": 36827460737,
+  "runAttempt": 1,
+  "reviewSourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+  "reviewTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+  "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+  "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+  "baseSourceSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "subjects": [
+    {
+      "subject": "head",
+      "jobId": 110258188135,
+      "jobConclusion": "success",
+      "artifactId": 11146337042,
+      "artifactPath": "/workspace/scratch/0643a11f4b6a/attachments/44f2aa1d-68dd-47bc-9598-96e5ab9c09fa/windows-11146337042.zip",
+      "artifactSha256": "4b742d1888b3420c0caa1aff4c9ef0cb7153791a7b2ba34be428277f940f0496",
+      "artifactDigestVerified": true,
+      "source": {
+        "parents": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+        "commit": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+        "tree": "b690b267b21ae590e9a53644efe128390539e631",
+        "subject": "Freeze Darwin permissions repair and retain source703 platform receipts"
+      },
+      "sourceTextSha256": "bb67d893092df729d1e4bd4db9e6050786528812e92b2b6086a99a3d81c59d42",
+      "qualificationReceiptSha256": "1c14ce00b5fd6e72400710ec2d19c55a5c48c7e6971e23ab84092135413abd37",
+      "qualificationReceipt": {
+        "accessibilityAcceptance": false,
+        "artifacts": [
+          {
+            "bytes": 4719176,
+            "name": "hepta-native-windows-x86_64-unsigned.zip",
+            "sha256": "4d17348f07b7181bada5c068c8146b1346bef8d5c36d797f6f16bcddc07241d6"
+          }
+        ],
+        "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+        "candidateSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+        "checks": [
+          {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 1.0620000000000118,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:03:56.273533+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "d33eb8e09b54e48008d5620c5d3adbe6f4a635f47d6c26c94f336707a5f0f88e",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:03:55.202016+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.5469999999999686,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:03:57.014021+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "76a01ed046720ea0e21034ca3ed794af025e7c2616cd37f6608e8ee1f8118461",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:03:56.467191+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 108.60900000000004,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:05:45.813210+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "0f28e75688f6271b7a70f5223d378e5926ef8446c1eaecbc3e3fd65280858e7c",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:03:57.206644+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--check"
+            ],
+            "elapsedSeconds": 1.4680000000000177,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:05:48.802334+00:00",
+            "label": "app_format",
+            "log": "app_format.log",
+            "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:05:47.334772+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--",
+              "--check"
+            ],
+            "elapsedSeconds": 0.6719999999999686,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:05:49.648143+00:00",
+            "label": "owner_format",
+            "log": "owner_format.log",
+            "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:05:48.977333+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets",
+              "--all-features",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 77.0,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:07:06.816627+00:00",
+            "label": "app_lint",
+            "log": "app_lint.log",
+            "logSha256": "f203bbdc48269dc19eb60b2b67043052083d799b9016f6046a93c8f4a49486d6",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:05:49.825201+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features",
+              "--no-deps",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 111.48399999999992,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:08:58.470710+00:00",
+            "label": "owner_lint",
+            "log": "owner_lint.log",
+            "logSha256": "7a8daa685826cb24e97718216a045130d4c3a5749434eb86eeb2c51c425e1921",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:07:06.997618+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets"
+            ],
+            "elapsedSeconds": 190.48400000000004,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:12:09.276505+00:00",
+            "label": "app_tests",
+            "log": "app_tests.log",
+            "logSha256": "946e412404ae701990812749cd5ba682de69f1d3b5fa8137050555da9cd5287c",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:08:58.781242+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features"
+            ],
+            "elapsedSeconds": 68.73400000000004,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:13:18.204225+00:00",
+            "label": "owner_tests",
+            "log": "owner_tests.log",
+            "logSha256": "1d90e4cec8d47749758d92a7ceb5ab87155011d734b53a9fbfc8d8d13cc5e6c4",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:12:09.457964+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "build",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--release",
+              "--bins"
+            ],
+            "elapsedSeconds": 246.78099999999995,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:25.163603+00:00",
+            "label": "release",
+            "log": "release.log",
+            "logSha256": "663189e7bef4121b5d165dea042d57937798560ae7e52b1969a3d90aaf652d37",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:13:18.382304+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.21800000000007458,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:39.803043+00:00",
+            "label": "self_test",
+            "log": "self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:39.583863+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.42200000000002547,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:40.415401+00:00",
+            "label": "crash_test",
+            "log": "crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:39.993228+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "apps/hepta-native/tools/package_unsigned.py",
+              "--platform",
+              "windows",
+              "--architecture",
+              "x86_64",
+              "--release-dir",
+              "apps/hepta-native/target/release",
+              "--out-dir",
+              "D:\\a\\_temp/ui-native-platform/native-package"
+            ],
+            "elapsedSeconds": 1.0470000000000255,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:41.647081+00:00",
+            "label": "package",
+            "log": "package.log",
+            "logSha256": "e669586412554bd3aa5bff22af4d50ba10bd71e506b5ed2c37aec92da226abcc",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:40.600271+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.17200000000002547,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:42.011483+00:00",
+            "label": "packaged_self_test",
+            "log": "packaged_self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:41.836787+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.40600000000017644,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:42.608125+00:00",
+            "label": "packaged_crash_test",
+            "log": "packaged_crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:42.197600+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/hepta_ui_native_compile_negative.py"
+            ],
+            "elapsedSeconds": 13.983999999999924,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:39.324605+00:00",
+            "label": "compile_negative",
+            "log": "compile_negative.log",
+            "logSha256": "81a2483c56d62f42166b825c681fb54c6500fe32d4e2590ccde34d1ea819706d",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:25.346283+00:00",
+            "timedOut": false
+          }
+        ],
+        "dependencyLocks": {
+          "apps/hepta-native/Cargo.lock": "0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836",
+          "codex-rs/Cargo.lock": "8be5fdbe366db117dfc8bdc5188689bbe315ba765c983c137ace7d965cfc9114"
+        },
+        "physicalHostAcceptance": false,
+        "platform": {
+          "ImageOS": "win25-vs2026",
+          "ImageVersion": "20260922.246.2",
+          "RUNNER_ARCH": "X64",
+          "os": "Windows"
+        },
+        "productionSigningObserved": false,
+        "qualificationPassed": true,
+        "releaseAuthorized": false,
+        "runAttempt": "1",
+        "runId": "36827460737",
+        "schema": "hepta.ui.native.qualification.v3",
+        "scope": "repository-controlled-candidate",
+        "sourceInventorySha256": "7c5581992b27c1be175a96973cd33b4996e0540764497c03a4f77369bb9ae47d",
+        "sourceKind": "head",
+        "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+        "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+        "supplyChain": {
+          "manifestSha256": "4ee343bebf4789857bc8dae04b4da8a0097cc8ee488baefce603db0083e9e3ce",
+          "physicalHostAcceptance": false,
+          "productionSigningObserved": false,
+          "provenanceSha256": "2231973aa0b98b8cd46e91317c97d48fe56022fe794cc88fa986a838724384bc",
+          "releaseAuthorized": false,
+          "sbomSha256": "1b1273022d18a3c91b4429ff34cf93223dd7748b06abb2e35c4aad23773db48f"
+        },
+        "testManifestSha256": "7b324b7cd192bc1dc3ebd0bb49b93dc30d0b8374246c6d8903380b9d5d55eb8b",
+        "timestamp": "2026-10-01T07:17:44.151560+00:00",
+        "toolchain": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-pc-windows-msvc\nrelease: 1.95.0\nLLVM version: 22.1.2",
+        "workflowFileSha256": "2d7b941fa3e9e5fa309857a34cfddc7ed42273cd7acfe98c93729ddaaff386aa",
+        "workflowSha": "3ef7e4e4571e91960bd9a56b9db7d9ea8181a7d6"
+      },
+      "checks": [
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--check"
+            ],
+            "elapsedSeconds": 1.4680000000000177,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:05:48.802334+00:00",
+            "label": "app_format",
+            "log": "app_format.log",
+            "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:05:47.334772+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets",
+              "--all-features",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 77.0,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:07:06.816627+00:00",
+            "label": "app_lint",
+            "log": "app_lint.log",
+            "logSha256": "f203bbdc48269dc19eb60b2b67043052083d799b9016f6046a93c8f4a49486d6",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:05:49.825201+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets"
+            ],
+            "elapsedSeconds": 190.48400000000004,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:12:09.276505+00:00",
+            "label": "app_tests",
+            "log": "app_tests.log",
+            "logSha256": "946e412404ae701990812749cd5ba682de69f1d3b5fa8137050555da9cd5287c",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:08:58.781242+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/hepta_ui_native_compile_negative.py"
+            ],
+            "elapsedSeconds": 13.983999999999924,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:39.324605+00:00",
+            "label": "compile_negative",
+            "log": "compile_negative.log",
+            "logSha256": "81a2483c56d62f42166b825c681fb54c6500fe32d4e2590ccde34d1ea819706d",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:25.346283+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.42200000000002547,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:40.415401+00:00",
+            "label": "crash_test",
+            "log": "crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:39.993228+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 1.0620000000000118,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:03:56.273533+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "d33eb8e09b54e48008d5620c5d3adbe6f4a635f47d6c26c94f336707a5f0f88e",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:03:55.202016+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--",
+              "--check"
+            ],
+            "elapsedSeconds": 0.6719999999999686,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:05:49.648143+00:00",
+            "label": "owner_format",
+            "log": "owner_format.log",
+            "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:05:48.977333+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features",
+              "--no-deps",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 111.48399999999992,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:08:58.470710+00:00",
+            "label": "owner_lint",
+            "log": "owner_lint.log",
+            "logSha256": "7a8daa685826cb24e97718216a045130d4c3a5749434eb86eeb2c51c425e1921",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:07:06.997618+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features"
+            ],
+            "elapsedSeconds": 68.73400000000004,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:13:18.204225+00:00",
+            "label": "owner_tests",
+            "log": "owner_tests.log",
+            "logSha256": "1d90e4cec8d47749758d92a7ceb5ab87155011d734b53a9fbfc8d8d13cc5e6c4",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:12:09.457964+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "apps/hepta-native/tools/package_unsigned.py",
+              "--platform",
+              "windows",
+              "--architecture",
+              "x86_64",
+              "--release-dir",
+              "apps/hepta-native/target/release",
+              "--out-dir",
+              "D:\\a\\_temp/ui-native-platform/native-package"
+            ],
+            "elapsedSeconds": 1.0470000000000255,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:41.647081+00:00",
+            "label": "package",
+            "log": "package.log",
+            "logSha256": "e669586412554bd3aa5bff22af4d50ba10bd71e506b5ed2c37aec92da226abcc",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:40.600271+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.40600000000017644,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:42.608125+00:00",
+            "label": "packaged_crash_test",
+            "log": "packaged_crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:42.197600+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.17200000000002547,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:42.011483+00:00",
+            "label": "packaged_self_test",
+            "log": "packaged_self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:41.836787+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 108.60900000000004,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:05:45.813210+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "0f28e75688f6271b7a70f5223d378e5926ef8446c1eaecbc3e3fd65280858e7c",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:03:57.206644+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.5469999999999686,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:03:57.014021+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "76a01ed046720ea0e21034ca3ed794af025e7c2616cd37f6608e8ee1f8118461",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:03:56.467191+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "build",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--release",
+              "--bins"
+            ],
+            "elapsedSeconds": 246.78099999999995,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:25.163603+00:00",
+            "label": "release",
+            "log": "release.log",
+            "logSha256": "663189e7bef4121b5d165dea042d57937798560ae7e52b1969a3d90aaf652d37",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:13:18.382304+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.21800000000007458,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:17:39.803043+00:00",
+            "label": "self_test",
+            "log": "self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:17:39.583863+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        }
+      ],
+      "pythonTests": {
+        "passed": true,
+        "count": 238,
+        "elapsedSecondsFromLog": 107.874,
+        "skipped": 4
+      },
+      "rustTestCounts": {
+        "app_tests": {
+          "passed": 200,
+          "failed": 0,
+          "ignored": 3
+        },
+        "owner_tests": {
+          "passed": 167,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      "rustTestRunners": {
+        "app_tests": [
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-7473f2223ef9d39e.exe)",
+            "result": "ok. 98 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 18.82s"
+          },
+          {
+            "runner": "unittests src\\main.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-50e578dc4130caa8.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\bin\\hepta-native-credential.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_credential-e4ee4b9785afc68d.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\bin\\hepta-native-updater.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_updater-e2412e1c5ad3e5ad.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\backend.rs (apps/hepta-native/target\\debug\\deps\\backend-16409d52c083dac0.exe)",
+            "result": "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+          },
+          {
+            "runner": "tests\\backend_security.rs (apps/hepta-native/target\\debug\\deps\\backend_security-9d5ada39a2c523c2.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\file_input.rs (apps/hepta-native/target\\debug\\deps\\file_input-6299b578b9c618b5.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\journal.rs (apps/hepta-native/target\\debug\\deps\\journal-cc35eb793d1c5597.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+          },
+          {
+            "runner": "tests\\journal_regressions.rs (apps/hepta-native/target\\debug\\deps\\journal_regressions-396aa4c4da4fc94e.exe)",
+            "result": "ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.43s"
+          },
+          {
+            "runner": "tests\\launch_config.rs (apps/hepta-native/target\\debug\\deps\\launch_config-24c2691567f8525d.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\private_state.rs (apps/hepta-native/target\\debug\\deps\\private_state-b8e7ff2913222ab4.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\remediation_regressions.rs (apps/hepta-native/target\\debug\\deps\\remediation_regressions-c4e222d7aebcc550.exe)",
+            "result": "ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s"
+          },
+          {
+            "runner": "tests\\resource_identity.rs (apps/hepta-native/target\\debug\\deps\\resource_identity-250b30d7bc4aa46b.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\retirement_recovery.rs (apps/hepta-native/target\\debug\\deps\\retirement_recovery-c3dd12ff91dd2e30.exe)",
+            "result": "ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.95s"
+          },
+          {
+            "runner": "tests\\runtime.rs (apps/hepta-native/target\\debug\\deps\\runtime-3e3b468d64515196.exe)",
+            "result": "ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s"
+          },
+          {
+            "runner": "tests\\security_updater.rs (apps/hepta-native/target\\debug\\deps\\security_updater-2b0107dfe1397c8e.exe)",
+            "result": "ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s"
+          },
+          {
+            "runner": "tests\\session_store.rs (apps/hepta-native/target\\debug\\deps\\session_store-4d6b8521f2bb5459.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\shutdown_recovery.rs (apps/hepta-native/target\\debug\\deps\\shutdown_recovery-043d4161c7ca6807.exe)",
+            "result": "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+          },
+          {
+            "runner": "tests\\trusted_key_regressions.rs (apps/hepta-native/target\\debug\\deps\\trusted_key_regressions-1150449309b4c7a2.exe)",
+            "result": "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+          },
+          {
+            "runner": "tests\\update_handoff.rs (apps/hepta-native/target\\debug\\deps\\update_handoff-66a349e3932d1d6c.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\update_product.rs (apps/hepta-native/target\\debug\\deps\\update_product-eedbc8a4e838cfc5.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s"
+          },
+          {
+            "runner": "tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.92s"
+          }
+        ],
+        "owner_tests": [
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_hepta_contracts-29c789a43430b787.exe)",
+            "result": "ok. 131 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s"
+          },
+          {
+            "runner": "tests\\authbus_b3_adapter_qualification.rs (apps/hepta-native/target\\debug\\deps\\authbus_b3_adapter_qualification-51b557fea3d917ec.exe)",
+            "result": "ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\authbus_local_qualification.rs (apps/hepta-native/target\\debug\\deps\\authbus_local_qualification-598b2f32d34ad8fd.exe)",
+            "result": "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\final_use_linearization.rs (apps/hepta-native/target\\debug\\deps\\final_use_linearization-65425b9a901415fe.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_hepta_native_gateway-a073852cd1174f99.exe)",
+            "result": "ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+          },
+          {
+            "runner": "unittests src\\bin\\hepta-native-gateway.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_gateway-c867fe1a238b37b7.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_hepta_private_state-a10268a94c36dad1.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_utils_private_state-c2373a115af57609.exe)",
+            "result": "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+          }
+        ]
+      },
+      "actualWindowsRegistrarPassed": true,
+      "registrarSuccessExcerpt": "Running tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)\n\nrunning 1 test\ntest packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.92s\n\n",
+      "windowsFinalUseTests": [
+        "test final_use::windows_tests::windows_revocation_head_survives_restart ... ok",
+        "test final_use::windows_tests::windows_durable_nonce_survives_restart_and_keeps_single_owner ... ok"
+      ],
+      "retainedNativePackages": [
+        {
+          "bytes": 4719176,
+          "name": "hepta-native-windows-x86_64-unsigned.zip",
+          "sha256": "4d17348f07b7181bada5c068c8146b1346bef8d5c36d797f6f16bcddc07241d6",
+          "retainedPackageDigestVerified": true,
+          "manifestEqualityVerified": true,
+          "allFileDigestsVerified": true,
+          "fileCount": 6,
+          "binaryCount": 3
+        }
+      ],
+      "packageReceipt": {
+        "schema": "hepta.ui-native-package-receipt.v1",
+        "platform": "windows",
+        "architecture": "x86_64",
+        "archive": "hepta-native-windows-x86_64-unsigned.zip",
+        "archiveSha256": "4d17348f07b7181bada5c068c8146b1346bef8d5c36d797f6f16bcddc07241d6",
+        "stagingRoot": "staging/HeptaNative",
+        "extractedRoot": "extracted/HeptaNative",
+        "manifest": {
+          "schema": "hepta.ui-native-unsigned-package.v2",
+          "version": "0.1.0",
+          "platform": "windows",
+          "architecture": "x86_64",
+          "unsignedDevelopmentArtifact": true,
+          "productionSigningObserved": false,
+          "notarizationObserved": false,
+          "releaseAuthorized": false,
+          "windowsAppUserModelIdRegistrationIncluded": true,
+          "linuxPortalFirstPicker": false,
+          "binarySha256": {
+            "hepta-native.exe": "351f9e3d1b657224ceac37af46bec46c58bf9774bdc156e549abaa3ab1f03e50",
+            "hepta-native-updater.exe": "d72910c3e36c5054a8091f2f9c80de7c30748df69cd0c091acf608198f1c70b1",
+            "hepta-native-credential.exe": "2ee38d7534c8ec196f27a117f0862fd3d54eb5d314a722994c0963e42ca3b129"
+          },
+          "fileSha256": {
+            "app.manifest": "2cbc350d6170d8c073c86bd5b6d582e98b0f2371118b9b793c4239ca1a3a0075",
+            "hepta-native-credential.exe": "2ee38d7534c8ec196f27a117f0862fd3d54eb5d314a722994c0963e42ca3b129",
+            "hepta-native-updater.exe": "d72910c3e36c5054a8091f2f9c80de7c30748df69cd0c091acf608198f1c70b1",
+            "hepta-native.exe": "351f9e3d1b657224ceac37af46bec46c58bf9774bdc156e549abaa3ab1f03e50",
+            "PACKAGING.md": "5203c9e11d23d485f3acb54b15465366c97257dd5f0769e217161dabc0cdadd2",
+            "Register-HeptaNativeIdentity.ps1": "73f8baa4890346acda147fb65702f8a95eb7b9ab6d4a942b9196d432a693f5a1"
+          }
+        }
+      },
+      "observationLogTails": {
+        "compile_negative": "{\n  \"applicationCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\",\n  \"cases\": [\n    {\n      \"dependencyResolutionPinned\": true,\n      \"diagnosticSha256\": \"74f4092bfbb2e8b708c535729f70864140759a9e7495fcf33c615b0e20cfd6cf\",\n      \"exitCode\": 101,\n      \"fixtureCargoLockSha256\": \"665e444db14c321ebd398ec88eb514552f211eeee889d47301a2f710f231a26a\",\n      \"lockedCompilerCheck\": true,\n      \"module\": \"journal_storage\",\n      \"privacyDiagnosticObserved\": true,\n      \"seedCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\"\n    },\n    {\n      \"dependencyResolutionPinned\": true,\n      \"diagnosticSha256\": \"fce08ae87f7c3cd0bdd21f07840a22f67cd7e2b2e74638ad5931189a9b9533de\",\n      \"exitCode\": 101,\n      \"fixtureCargoLockSha256\": \"805417e7f9b5abbf7864aa93b54c1cf505798a31f668ea2bb4f5ef5ddc80a2b1\",\n      \"lockedCompilerCheck\": true,\n      \"module\": \"retirement\",\n      \"privacyDiagnosticObserved\": true,\n      \"seedCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\"\n    },\n    {\n      \"dependencyResolutionPinned\": true,\n      \"diagnosticSha256\": \"fa58662cd1726dcfec01124eb9c1e9ed4a5cfa97ebc35f14327fb24bccdfb8da\",\n      \"exitCode\": 101,\n      \"fixtureCargoLockSha256\": \"f2b68188471cc223107903f13b1d74c81c1f605ff313c13e3ec1bc29b8707da7\",\n      \"lockedCompilerCheck\": true,\n      \"module\": \"task_supervisor\",\n      \"privacyDiagnosticObserved\": true,\n      \"seedCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\"\n    }\n  ],\n  \"compilerNegativePassed\": true,\n  \"effectAuthorityGranted\": false,\n  \"releaseAuthorized\": false,\n  \"schema\": \"hepta.ui-native-compile-negative.v1\",\n  \"sourceSha\": \"f5c898eaf9d3cec2bd4cfe39e839bac16ca99502\"\n}\n",
+        "self_test": "{\"schema\":\"hepta.native-self-test.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"gui\":\"eframe-0.36.2\",\"accessibility\":\"accesskit\"}\n",
+        "crash_test": "{\"schema\":\"hepta.native-packaged-fault-qualification.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"authenticated_view\":true,\"cross_generation_fenced\":true,\"permission_denial_no_dispatch\":true,\"grant_revocation_before_effect\":true,\"parent_death_ack_loss_reconciled\":true,\"updater_death_rolled_back\":true,\"rollback_failure_recovery_required\":true,\"effect_authority_granted\":false,\"activation_authority_granted\":false,\"release_authority_granted\":false}\n",
+        "package": "{\n  \"schema\": \"hepta.ui-native-package-receipt.v1\",\n  \"platform\": \"windows\",\n  \"architecture\": \"x86_64\",\n  \"archive\": \"hepta-native-windows-x86_64-unsigned.zip\",\n  \"archiveSha256\": \"4d17348f07b7181bada5c068c8146b1346bef8d5c36d797f6f16bcddc07241d6\",\n  \"stagingRoot\": \"staging/HeptaNative\",\n  \"extractedRoot\": \"extracted/HeptaNative\",\n  \"manifest\": {\n    \"schema\": \"hepta.ui-native-unsigned-package.v2\",\n    \"version\": \"0.1.0\",\n    \"platform\": \"windows\",\n    \"architecture\": \"x86_64\",\n    \"unsignedDevelopmentArtifact\": true,\n    \"productionSigningObserved\": false,\n    \"notarizationObserved\": false,\n    \"releaseAuthorized\": false,\n    \"windowsAppUserModelIdRegistrationIncluded\": true,\n    \"linuxPortalFirstPicker\": false,\n    \"binarySha256\": {\n      \"hepta-native.exe\": \"351f9e3d1b657224ceac37af46bec46c58bf9774bdc156e549abaa3ab1f03e50\",\n      \"hepta-native-updater.exe\": \"d72910c3e36c5054a8091f2f9c80de7c30748df69cd0c091acf608198f1c70b1\",\n      \"hepta-native-credential.exe\": \"2ee38d7534c8ec196f27a117f0862fd3d54eb5d314a722994c0963e42ca3b129\"\n    },\n    \"fileSha256\": {\n      \"app.manifest\": \"2cbc350d6170d8c073c86bd5b6d582e98b0f2371118b9b793c4239ca1a3a0075\",\n      \"hepta-native-credential.exe\": \"2ee38d7534c8ec196f27a117f0862fd3d54eb5d314a722994c0963e42ca3b129\",\n      \"hepta-native-updater.exe\": \"d72910c3e36c5054a8091f2f9c80de7c30748df69cd0c091acf608198f1c70b1\",\n      \"hepta-native.exe\": \"351f9e3d1b657224ceac37af46bec46c58bf9774bdc156e549abaa3ab1f03e50\",\n      \"PACKAGING.md\": \"5203c9e11d23d485f3acb54b15465366c97257dd5f0769e217161dabc0cdadd2\",\n      \"Register-HeptaNativeIdentity.ps1\": \"73f8baa4890346acda147fb65702f8a95eb7b9ab6d4a942b9196d432a693f5a1\"\n    }\n  }\n}\n",
+        "packaged_self_test": "{\"schema\":\"hepta.native-self-test.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"gui\":\"eframe-0.36.2\",\"accessibility\":\"accesskit\"}\n",
+        "packaged_crash_test": "{\"schema\":\"hepta.native-packaged-fault-qualification.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"authenticated_view\":true,\"cross_generation_fenced\":true,\"permission_denial_no_dispatch\":true,\"grant_revocation_before_effect\":true,\"parent_death_ack_loss_reconciled\":true,\"updater_death_rolled_back\":true,\"rollback_failure_recovery_required\":true,\"effect_authority_granted\":false,\"activation_authority_granted\":false,\"release_authority_granted\":false}\n"
+      }
+    },
+    {
+      "subject": "merge",
+      "jobId": 110258188176,
+      "jobConclusion": "success",
+      "artifactId": 11146861049,
+      "artifactPath": "/workspace/scratch/0643a11f4b6a/attachments/f8a36718-3771-471b-9685-3c3754336a2b/windows-11146861049.zip",
+      "artifactSha256": "b11a1fc44ce554c3dc274f0f50fc3b2e1f0a8f0af8ae0e1fb231e823063fc83b",
+      "artifactDigestVerified": true,
+      "source": {
+        "parents": "9be52d267d02a76f73e8a94fd086191c351d1c70 f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+        "commit": "132d39c725e8685a9360184cf688e63c8ef02502",
+        "tree": "b690b267b21ae590e9a53644efe128390539e631",
+        "subject": "deterministic ui.native qualification merge"
+      },
+      "sourceTextSha256": "10218318b539476f7b5c89a8ba88344631f07fbc2a7dd7fc33aa6d449c59ff5b",
+      "qualificationReceiptSha256": "e2b074291a18dcb0c42f09c8dcece0c0501a0d53db8261f374289da61cebdd39",
+      "qualificationReceipt": {
+        "accessibilityAcceptance": false,
+        "artifacts": [
+          {
+            "bytes": 4719182,
+            "name": "hepta-native-windows-x86_64-unsigned.zip",
+            "sha256": "1e2c46329acf45905eb253295e10a4d669d9dea23e8f67b6b492efcc869d41b0"
+          }
+        ],
+        "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+        "candidateSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+        "checks": [
+          {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 0.8279999999999745,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:04:11.034916+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "58ef78dbbdb2333a6e6d7383c20d7e460a8d1184ea5220417a4bc5c90878375d",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:04:10.196522+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.5,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:04:11.671216+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "ab2854549c310145a26bb7c44db0581de85d2c87781efc9bafd1bab7f146073c",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:04:11.176295+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 129.53199999999993,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:06:21.331501+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "46f9d2a2f38ce56491ce7e94143b302719328ebcb745a411490732b21b5fd928",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:04:11.800169+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--check"
+            ],
+            "elapsedSeconds": 7.75,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:06:30.776647+00:00",
+            "label": "app_format",
+            "log": "app_format.log",
+            "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:06:23.028764+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--",
+              "--check"
+            ],
+            "elapsedSeconds": 0.5160000000000764,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:06:31.453933+00:00",
+            "label": "owner_format",
+            "log": "owner_format.log",
+            "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:06:30.935401+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets",
+              "--all-features",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 73.82799999999997,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:07:45.423526+00:00",
+            "label": "app_lint",
+            "log": "app_lint.log",
+            "logSha256": "42e611354a9bd3c2703a320d72656b50e30774e51a8f3a343f5e3bdd9b88b9d8",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:06:31.590068+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features",
+              "--no-deps",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 90.60900000000015,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:09:16.177377+00:00",
+            "label": "owner_lint",
+            "log": "owner_lint.log",
+            "logSha256": "444fe43e309e244898476ffb6368bac68891719b4e7e1c49da97393edbe0fae2",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:07:45.552197+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets"
+            ],
+            "elapsedSeconds": 158.0,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:11:54.352378+00:00",
+            "label": "app_tests",
+            "log": "app_tests.log",
+            "logSha256": "2667b19c77c95bbe96eb93ed631070ad0af1637246b4a006ea1740db3bc4e038",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:09:16.364233+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features"
+            ],
+            "elapsedSeconds": 51.452999999999975,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:12:45.941795+00:00",
+            "label": "owner_tests",
+            "log": "owner_tests.log",
+            "logSha256": "e1bdb984eb4acd115e3296e668ddb242bba8816cf3d0cfd75155020e51d5cf80",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:11:54.483187+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "build",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--release",
+              "--bins"
+            ],
+            "elapsedSeconds": 170.67200000000003,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:36.755669+00:00",
+            "label": "release",
+            "log": "release.log",
+            "logSha256": "746144fdad1ec9b1d26fbe74b7f8c70d81ae4d04da057a3f64c0755ae8bfd269",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:12:46.076821+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.20299999999997453,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:47.188626+00:00",
+            "label": "self_test",
+            "log": "self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:46.975000+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.625,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:47.945302+00:00",
+            "label": "crash_test",
+            "log": "crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:47.325530+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "apps/hepta-native/tools/package_unsigned.py",
+              "--platform",
+              "windows",
+              "--architecture",
+              "x86_64",
+              "--release-dir",
+              "apps/hepta-native/target/release",
+              "--out-dir",
+              "D:\\a\\_temp/ui-native-platform/native-package"
+            ],
+            "elapsedSeconds": 0.8589999999999236,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:48.929961+00:00",
+            "label": "package",
+            "log": "package.log",
+            "logSha256": "58a0e330df711201950097adcf1a6bc17740dba5c297cd7fea1e3d73d448cec9",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:48.075787+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.15600000000017644,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:49.217141+00:00",
+            "label": "packaged_self_test",
+            "log": "packaged_self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:49.059321+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.484000000000151,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:49.848939+00:00",
+            "label": "packaged_crash_test",
+            "log": "packaged_crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:49.351992+00:00",
+            "timedOut": false
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/hepta_ui_native_compile_negative.py"
+            ],
+            "elapsedSeconds": 9.905999999999949,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:46.792761+00:00",
+            "label": "compile_negative",
+            "log": "compile_negative.log",
+            "logSha256": "22c44c5619ab05769634266fe3e829f757f0ea6222a13b8fa6659b3a4d6c11fe",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:36.886370+00:00",
+            "timedOut": false
+          }
+        ],
+        "dependencyLocks": {
+          "apps/hepta-native/Cargo.lock": "0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836",
+          "codex-rs/Cargo.lock": "8be5fdbe366db117dfc8bdc5188689bbe315ba765c983c137ace7d965cfc9114"
+        },
+        "physicalHostAcceptance": false,
+        "platform": {
+          "ImageOS": "win25-vs2026",
+          "ImageVersion": "20260922.246.2",
+          "RUNNER_ARCH": "X64",
+          "os": "Windows"
+        },
+        "productionSigningObserved": false,
+        "qualificationPassed": true,
+        "releaseAuthorized": false,
+        "runAttempt": "1",
+        "runId": "36827460737",
+        "schema": "hepta.ui.native.qualification.v3",
+        "scope": "repository-controlled-candidate",
+        "sourceInventorySha256": "7c5581992b27c1be175a96973cd33b4996e0540764497c03a4f77369bb9ae47d",
+        "sourceKind": "merge",
+        "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+        "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+        "supplyChain": {
+          "manifestSha256": "191d84d1018a72efa5579f46462fe9e9e87a5ebb2d3a631e8605c3f7a47d8ff9",
+          "physicalHostAcceptance": false,
+          "productionSigningObserved": false,
+          "provenanceSha256": "7e83c0d6ada4ee5b25879c8b41c35d97badb28dc14fbefdbc5ee5e02db0baf5a",
+          "releaseAuthorized": false,
+          "sbomSha256": "50a04acc3427f0f7e2fa515d5664e78f70aaa20d131776ce0bb05dd638e16fdb"
+        },
+        "testManifestSha256": "7b324b7cd192bc1dc3ebd0bb49b93dc30d0b8374246c6d8903380b9d5d55eb8b",
+        "timestamp": "2026-10-01T07:15:50.986741+00:00",
+        "toolchain": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-pc-windows-msvc\nrelease: 1.95.0\nLLVM version: 22.1.2",
+        "workflowFileSha256": "2d7b941fa3e9e5fa309857a34cfddc7ed42273cd7acfe98c93729ddaaff386aa",
+        "workflowSha": "3ef7e4e4571e91960bd9a56b9db7d9ea8181a7d6"
+      },
+      "checks": [
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--check"
+            ],
+            "elapsedSeconds": 7.75,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:06:30.776647+00:00",
+            "label": "app_format",
+            "log": "app_format.log",
+            "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:06:23.028764+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets",
+              "--all-features",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 73.82799999999997,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:07:45.423526+00:00",
+            "label": "app_lint",
+            "log": "app_lint.log",
+            "logSha256": "42e611354a9bd3c2703a320d72656b50e30774e51a8f3a343f5e3bdd9b88b9d8",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:06:31.590068+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--all-targets"
+            ],
+            "elapsedSeconds": 158.0,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:11:54.352378+00:00",
+            "label": "app_tests",
+            "log": "app_tests.log",
+            "logSha256": "2667b19c77c95bbe96eb93ed631070ad0af1637246b4a006ea1740db3bc4e038",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:09:16.364233+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/hepta_ui_native_compile_negative.py"
+            ],
+            "elapsedSeconds": 9.905999999999949,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:46.792761+00:00",
+            "label": "compile_negative",
+            "log": "compile_negative.log",
+            "logSha256": "22c44c5619ab05769634266fe3e829f757f0ea6222a13b8fa6659b3a4d6c11fe",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:36.886370+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.625,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:47.945302+00:00",
+            "label": "crash_test",
+            "log": "crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:47.325530+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/check_hepta_ui_native_convergence.py"
+            ],
+            "elapsedSeconds": 0.8279999999999745,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:04:11.034916+00:00",
+            "label": "identity",
+            "log": "identity.log",
+            "logSha256": "58ef78dbbdb2333a6e6d7383c20d7e460a8d1184ea5220417a4bc5c90878375d",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:04:10.196522+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "fmt",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--",
+              "--check"
+            ],
+            "elapsedSeconds": 0.5160000000000764,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:06:31.453933+00:00",
+            "label": "owner_format",
+            "log": "owner_format.log",
+            "logSha256": "1f5a7b55610a261e5b3f38ce48850219a0447c29ce8ffacb9b6a379fa2e94674",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:06:30.935401+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "clippy",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features",
+              "--no-deps",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "elapsedSeconds": 90.60900000000015,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:09:16.177377+00:00",
+            "label": "owner_lint",
+            "log": "owner_lint.log",
+            "logSha256": "444fe43e309e244898476ffb6368bac68891719b4e7e1c49da97393edbe0fae2",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:07:45.552197+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "test",
+              "--manifest-path",
+              "codex-rs/Cargo.toml",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "-p",
+              "codex-hepta-contracts",
+              "-p",
+              "codex-hepta-private-state",
+              "-p",
+              "codex-utils-private-state",
+              "--all-targets",
+              "--all-features"
+            ],
+            "elapsedSeconds": 51.452999999999975,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:12:45.941795+00:00",
+            "label": "owner_tests",
+            "log": "owner_tests.log",
+            "logSha256": "e1bdb984eb4acd115e3296e668ddb242bba8816cf3d0cfd75155020e51d5cf80",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:11:54.483187+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "apps/hepta-native/tools/package_unsigned.py",
+              "--platform",
+              "windows",
+              "--architecture",
+              "x86_64",
+              "--release-dir",
+              "apps/hepta-native/target/release",
+              "--out-dir",
+              "D:\\a\\_temp/ui-native-platform/native-package"
+            ],
+            "elapsedSeconds": 0.8589999999999236,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:48.929961+00:00",
+            "label": "package",
+            "log": "package.log",
+            "logSha256": "58a0e330df711201950097adcf1a6bc17740dba5c297cd7fea1e3d73d448cec9",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:48.075787+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--qualification-e2e"
+            ],
+            "elapsedSeconds": 0.484000000000151,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:49.848939+00:00",
+            "label": "packaged_crash_test",
+            "log": "packaged_crash_test.log",
+            "logSha256": "286cea0f07dda386a03b031d11eaabbf55f1b696a40ea8dfd35dd441fe88076f",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:49.351992+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "D:\\a\\_temp/ui-native-platform/native-package/extracted/HeptaNative/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.15600000000017644,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:49.217141+00:00",
+            "label": "packaged_self_test",
+            "log": "packaged_self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:49.059321+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts",
+              "-p",
+              "test_hepta_ui_native_*.py",
+              "-v"
+            ],
+            "elapsedSeconds": 129.53199999999993,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:06:21.331501+00:00",
+            "label": "python_tests",
+            "log": "python_tests.log",
+            "logSha256": "46f9d2a2f38ce56491ce7e94143b302719328ebcb745a411490732b21b5fd928",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:04:11.800169+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "python3",
+              "scripts/test_hepta_module_registry.py"
+            ],
+            "elapsedSeconds": 0.5,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:04:11.671216+00:00",
+            "label": "registry",
+            "log": "registry.log",
+            "logSha256": "ab2854549c310145a26bb7c44db0581de85d2c87781efc9bafd1bab7f146073c",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:04:11.176295+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "cargo",
+              "+1.95.0",
+              "build",
+              "--manifest-path",
+              "apps/hepta-native/Cargo.toml",
+              "--locked",
+              "--release",
+              "--bins"
+            ],
+            "elapsedSeconds": 170.67200000000003,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:36.755669+00:00",
+            "label": "release",
+            "log": "release.log",
+            "logSha256": "746144fdad1ec9b1d26fbe74b7f8c70d81ae4d04da057a3f64c0755ae8bfd269",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:12:46.076821+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        },
+        {
+          "receipt": {
+            "command": [
+              "apps/hepta-native/target/release/hepta-native.exe",
+              "--self-test"
+            ],
+            "elapsedSeconds": 0.20299999999997453,
+            "exitCode": 0,
+            "finishedAt": "2026-10-01T07:15:47.188626+00:00",
+            "label": "self_test",
+            "log": "self_test.log",
+            "logSha256": "2814bdd7b83331890c720d5d222a646de4b1f8a3fa260efe3b6da313197940a5",
+            "runAttempt": "1",
+            "runId": "36827460737",
+            "schema": "hepta.ui.native.check.v1",
+            "sourceSha": "132d39c725e8685a9360184cf688e63c8ef02502",
+            "sourceTreeSha": "b690b267b21ae590e9a53644efe128390539e631",
+            "sourceUnchanged": true,
+            "startedAt": "2026-10-01T07:15:46.975000+00:00",
+            "timedOut": false
+          },
+          "retainedLogSha256Verified": true
+        }
+      ],
+      "pythonTests": {
+        "passed": true,
+        "count": 238,
+        "elapsedSecondsFromLog": 128.367,
+        "skipped": 4
+      },
+      "rustTestCounts": {
+        "app_tests": {
+          "passed": 200,
+          "failed": 0,
+          "ignored": 3
+        },
+        "owner_tests": {
+          "passed": 167,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      "rustTestRunners": {
+        "app_tests": [
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-7473f2223ef9d39e.exe)",
+            "result": "ok. 98 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 23.78s"
+          },
+          {
+            "runner": "unittests src\\main.rs (apps/hepta-native/target\\debug\\deps\\hepta_native-50e578dc4130caa8.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\bin\\hepta-native-credential.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_credential-e4ee4b9785afc68d.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\bin\\hepta-native-updater.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_updater-e2412e1c5ad3e5ad.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\backend.rs (apps/hepta-native/target\\debug\\deps\\backend-16409d52c083dac0.exe)",
+            "result": "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+          },
+          {
+            "runner": "tests\\backend_security.rs (apps/hepta-native/target\\debug\\deps\\backend_security-9d5ada39a2c523c2.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\file_input.rs (apps/hepta-native/target\\debug\\deps\\file_input-6299b578b9c618b5.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\journal.rs (apps/hepta-native/target\\debug\\deps\\journal-cc35eb793d1c5597.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+          },
+          {
+            "runner": "tests\\journal_regressions.rs (apps/hepta-native/target\\debug\\deps\\journal_regressions-396aa4c4da4fc94e.exe)",
+            "result": "ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.38s"
+          },
+          {
+            "runner": "tests\\launch_config.rs (apps/hepta-native/target\\debug\\deps\\launch_config-24c2691567f8525d.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\private_state.rs (apps/hepta-native/target\\debug\\deps\\private_state-b8e7ff2913222ab4.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\remediation_regressions.rs (apps/hepta-native/target\\debug\\deps\\remediation_regressions-c4e222d7aebcc550.exe)",
+            "result": "ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s"
+          },
+          {
+            "runner": "tests\\resource_identity.rs (apps/hepta-native/target\\debug\\deps\\resource_identity-250b30d7bc4aa46b.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\retirement_recovery.rs (apps/hepta-native/target\\debug\\deps\\retirement_recovery-c3dd12ff91dd2e30.exe)",
+            "result": "ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.21s"
+          },
+          {
+            "runner": "tests\\runtime.rs (apps/hepta-native/target\\debug\\deps\\runtime-3e3b468d64515196.exe)",
+            "result": "ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.87s"
+          },
+          {
+            "runner": "tests\\security_updater.rs (apps/hepta-native/target\\debug\\deps\\security_updater-2b0107dfe1397c8e.exe)",
+            "result": "ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.82s"
+          },
+          {
+            "runner": "tests\\session_store.rs (apps/hepta-native/target\\debug\\deps\\session_store-4d6b8521f2bb5459.exe)",
+            "result": "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\shutdown_recovery.rs (apps/hepta-native/target\\debug\\deps\\shutdown_recovery-043d4161c7ca6807.exe)",
+            "result": "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+          },
+          {
+            "runner": "tests\\trusted_key_regressions.rs (apps/hepta-native/target\\debug\\deps\\trusted_key_regressions-1150449309b4c7a2.exe)",
+            "result": "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+          },
+          {
+            "runner": "tests\\update_handoff.rs (apps/hepta-native/target\\debug\\deps\\update_handoff-66a349e3932d1d6c.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\update_product.rs (apps/hepta-native/target\\debug\\deps\\update_product-eedbc8a4e838cfc5.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s"
+          },
+          {
+            "runner": "tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)",
+            "result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.49s"
+          }
+        ],
+        "owner_tests": [
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_hepta_contracts-29c789a43430b787.exe)",
+            "result": "ok. 131 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s"
+          },
+          {
+            "runner": "tests\\authbus_b3_adapter_qualification.rs (apps/hepta-native/target\\debug\\deps\\authbus_b3_adapter_qualification-51b557fea3d917ec.exe)",
+            "result": "ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\authbus_local_qualification.rs (apps/hepta-native/target\\debug\\deps\\authbus_local_qualification-598b2f32d34ad8fd.exe)",
+            "result": "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "tests\\final_use_linearization.rs (apps/hepta-native/target\\debug\\deps\\final_use_linearization-65425b9a901415fe.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_hepta_native_gateway-a073852cd1174f99.exe)",
+            "result": "ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+          },
+          {
+            "runner": "unittests src\\bin\\hepta-native-gateway.rs (apps/hepta-native/target\\debug\\deps\\hepta_native_gateway-c867fe1a238b37b7.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_hepta_private_state-a10268a94c36dad1.exe)",
+            "result": "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+          },
+          {
+            "runner": "unittests src\\lib.rs (apps/hepta-native/target\\debug\\deps\\codex_utils_private_state-c2373a115af57609.exe)",
+            "result": "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+          }
+        ]
+      },
+      "actualWindowsRegistrarPassed": true,
+      "registrarSuccessExcerpt": "Running tests\\windows_registrar.rs (apps/hepta-native/target\\debug\\deps\\windows_registrar-be562a3aa7540f84.exe)\n\nrunning 1 test\ntest packaged_identity_registrar_has_native_layout_and_round_trips_owned_shortcut ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.49s\n\n",
+      "windowsFinalUseTests": [
+        "test final_use::windows_tests::windows_durable_nonce_survives_restart_and_keeps_single_owner ... ok",
+        "test final_use::windows_tests::windows_revocation_head_survives_restart ... ok"
+      ],
+      "retainedNativePackages": [
+        {
+          "bytes": 4719182,
+          "name": "hepta-native-windows-x86_64-unsigned.zip",
+          "sha256": "1e2c46329acf45905eb253295e10a4d669d9dea23e8f67b6b492efcc869d41b0",
+          "retainedPackageDigestVerified": true,
+          "manifestEqualityVerified": true,
+          "allFileDigestsVerified": true,
+          "fileCount": 6,
+          "binaryCount": 3
+        }
+      ],
+      "packageReceipt": {
+        "schema": "hepta.ui-native-package-receipt.v1",
+        "platform": "windows",
+        "architecture": "x86_64",
+        "archive": "hepta-native-windows-x86_64-unsigned.zip",
+        "archiveSha256": "1e2c46329acf45905eb253295e10a4d669d9dea23e8f67b6b492efcc869d41b0",
+        "stagingRoot": "staging/HeptaNative",
+        "extractedRoot": "extracted/HeptaNative",
+        "manifest": {
+          "schema": "hepta.ui-native-unsigned-package.v2",
+          "version": "0.1.0",
+          "platform": "windows",
+          "architecture": "x86_64",
+          "unsignedDevelopmentArtifact": true,
+          "productionSigningObserved": false,
+          "notarizationObserved": false,
+          "releaseAuthorized": false,
+          "windowsAppUserModelIdRegistrationIncluded": true,
+          "linuxPortalFirstPicker": false,
+          "binarySha256": {
+            "hepta-native.exe": "90eb25be74fa1f008bdbeed56cc68029ba98b50cb26043ff53d9829d474c9221",
+            "hepta-native-updater.exe": "9b85d7aef139ef2a5d4d7ff0254e649d085ef186e32c5155e1940e45a65c5d36",
+            "hepta-native-credential.exe": "556f99ef0b9f7750665851bc3edf895382ad9e7c4202164671af98d937af5f32"
+          },
+          "fileSha256": {
+            "app.manifest": "2cbc350d6170d8c073c86bd5b6d582e98b0f2371118b9b793c4239ca1a3a0075",
+            "hepta-native-credential.exe": "556f99ef0b9f7750665851bc3edf895382ad9e7c4202164671af98d937af5f32",
+            "hepta-native-updater.exe": "9b85d7aef139ef2a5d4d7ff0254e649d085ef186e32c5155e1940e45a65c5d36",
+            "hepta-native.exe": "90eb25be74fa1f008bdbeed56cc68029ba98b50cb26043ff53d9829d474c9221",
+            "PACKAGING.md": "5203c9e11d23d485f3acb54b15465366c97257dd5f0769e217161dabc0cdadd2",
+            "Register-HeptaNativeIdentity.ps1": "73f8baa4890346acda147fb65702f8a95eb7b9ab6d4a942b9196d432a693f5a1"
+          }
+        }
+      },
+      "observationLogTails": {
+        "compile_negative": "{\n  \"applicationCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\",\n  \"cases\": [\n    {\n      \"dependencyResolutionPinned\": true,\n      \"diagnosticSha256\": \"74f4092bfbb2e8b708c535729f70864140759a9e7495fcf33c615b0e20cfd6cf\",\n      \"exitCode\": 101,\n      \"fixtureCargoLockSha256\": \"665e444db14c321ebd398ec88eb514552f211eeee889d47301a2f710f231a26a\",\n      \"lockedCompilerCheck\": true,\n      \"module\": \"journal_storage\",\n      \"privacyDiagnosticObserved\": true,\n      \"seedCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\"\n    },\n    {\n      \"dependencyResolutionPinned\": true,\n      \"diagnosticSha256\": \"fce08ae87f7c3cd0bdd21f07840a22f67cd7e2b2e74638ad5931189a9b9533de\",\n      \"exitCode\": 101,\n      \"fixtureCargoLockSha256\": \"805417e7f9b5abbf7864aa93b54c1cf505798a31f668ea2bb4f5ef5ddc80a2b1\",\n      \"lockedCompilerCheck\": true,\n      \"module\": \"retirement\",\n      \"privacyDiagnosticObserved\": true,\n      \"seedCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\"\n    },\n    {\n      \"dependencyResolutionPinned\": true,\n      \"diagnosticSha256\": \"fa58662cd1726dcfec01124eb9c1e9ed4a5cfa97ebc35f14327fb24bccdfb8da\",\n      \"exitCode\": 101,\n      \"fixtureCargoLockSha256\": \"f2b68188471cc223107903f13b1d74c81c1f605ff313c13e3ec1bc29b8707da7\",\n      \"lockedCompilerCheck\": true,\n      \"module\": \"task_supervisor\",\n      \"privacyDiagnosticObserved\": true,\n      \"seedCargoLockSha256\": \"0cf6bd92d1f32f390c51b22fbf23e07b2739033956e6f0c98528f6327f09d836\"\n    }\n  ],\n  \"compilerNegativePassed\": true,\n  \"effectAuthorityGranted\": false,\n  \"releaseAuthorized\": false,\n  \"schema\": \"hepta.ui-native-compile-negative.v1\",\n  \"sourceSha\": \"132d39c725e8685a9360184cf688e63c8ef02502\"\n}\n",
+        "self_test": "{\"schema\":\"hepta.native-self-test.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"gui\":\"eframe-0.36.2\",\"accessibility\":\"accesskit\"}\n",
+        "crash_test": "{\"schema\":\"hepta.native-packaged-fault-qualification.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"authenticated_view\":true,\"cross_generation_fenced\":true,\"permission_denial_no_dispatch\":true,\"grant_revocation_before_effect\":true,\"parent_death_ack_loss_reconciled\":true,\"updater_death_rolled_back\":true,\"rollback_failure_recovery_required\":true,\"effect_authority_granted\":false,\"activation_authority_granted\":false,\"release_authority_granted\":false}\n",
+        "package": "{\n  \"schema\": \"hepta.ui-native-package-receipt.v1\",\n  \"platform\": \"windows\",\n  \"architecture\": \"x86_64\",\n  \"archive\": \"hepta-native-windows-x86_64-unsigned.zip\",\n  \"archiveSha256\": \"1e2c46329acf45905eb253295e10a4d669d9dea23e8f67b6b492efcc869d41b0\",\n  \"stagingRoot\": \"staging/HeptaNative\",\n  \"extractedRoot\": \"extracted/HeptaNative\",\n  \"manifest\": {\n    \"schema\": \"hepta.ui-native-unsigned-package.v2\",\n    \"version\": \"0.1.0\",\n    \"platform\": \"windows\",\n    \"architecture\": \"x86_64\",\n    \"unsignedDevelopmentArtifact\": true,\n    \"productionSigningObserved\": false,\n    \"notarizationObserved\": false,\n    \"releaseAuthorized\": false,\n    \"windowsAppUserModelIdRegistrationIncluded\": true,\n    \"linuxPortalFirstPicker\": false,\n    \"binarySha256\": {\n      \"hepta-native.exe\": \"90eb25be74fa1f008bdbeed56cc68029ba98b50cb26043ff53d9829d474c9221\",\n      \"hepta-native-updater.exe\": \"9b85d7aef139ef2a5d4d7ff0254e649d085ef186e32c5155e1940e45a65c5d36\",\n      \"hepta-native-credential.exe\": \"556f99ef0b9f7750665851bc3edf895382ad9e7c4202164671af98d937af5f32\"\n    },\n    \"fileSha256\": {\n      \"app.manifest\": \"2cbc350d6170d8c073c86bd5b6d582e98b0f2371118b9b793c4239ca1a3a0075\",\n      \"hepta-native-credential.exe\": \"556f99ef0b9f7750665851bc3edf895382ad9e7c4202164671af98d937af5f32\",\n      \"hepta-native-updater.exe\": \"9b85d7aef139ef2a5d4d7ff0254e649d085ef186e32c5155e1940e45a65c5d36\",\n      \"hepta-native.exe\": \"90eb25be74fa1f008bdbeed56cc68029ba98b50cb26043ff53d9829d474c9221\",\n      \"PACKAGING.md\": \"5203c9e11d23d485f3acb54b15465366c97257dd5f0769e217161dabc0cdadd2\",\n      \"Register-HeptaNativeIdentity.ps1\": \"73f8baa4890346acda147fb65702f8a95eb7b9ab6d4a942b9196d432a693f5a1\"\n    }\n  }\n}\n",
+        "packaged_self_test": "{\"schema\":\"hepta.native-self-test.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"gui\":\"eframe-0.36.2\",\"accessibility\":\"accesskit\"}\n",
+        "packaged_crash_test": "{\"schema\":\"hepta.native-packaged-fault-qualification.v1\",\"platform\":\"windows\",\"architecture\":\"x86_64\",\"authenticated_view\":true,\"cross_generation_fenced\":true,\"permission_denial_no_dispatch\":true,\"grant_revocation_before_effect\":true,\"parent_death_ack_loss_reconciled\":true,\"updater_death_rolled_back\":true,\"rollback_failure_recovery_required\":true,\"effect_authority_granted\":false,\"activation_authority_granted\":false,\"release_authority_granted\":false}\n"
+      }
+    }
+  ],
+  "allWindowsSubjectsTerminalSuccess": true,
+  "qualificationScope": "Only these exact F5 repository-controlled Windows subjects; other platforms and newer docs/source require their own exact evidence.",
+  "acceptsLatest8fOrB537Candidate": false,
+  "ownerGroupTokenObserved": false,
+  "physicalHostAcceptance": false,
+  "productionSigningObserved": false,
+  "releaseAuthorized": false
+}

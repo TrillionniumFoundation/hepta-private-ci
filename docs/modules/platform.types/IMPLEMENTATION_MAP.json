@@ -39,7 +39,8 @@
       "publicSymbols": [
         "BoundedText",
         "BoundedBytes"
-      ]
+      ],
+      "sourceBlob": "5b8afd7be362d5383283d03b785b57b6128fa28d"
     },
     {
       "operation": "validate_id",
@@ -59,7 +60,8 @@
         "IdProfileV1",
         "IdNamespaceV1",
         "validate_id"
-      ]
+      ],
+      "sourceBlob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
     },
     {
       "operation": "raw_authority_ingress",
@@ -78,7 +80,8 @@
         "AuthorityFlagsV1",
         "AuthorityPosture",
         "NonAuthorizingPosture"
-      ]
+      ],
+      "sourceBlob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
     },
     {
       "operation": "canonical_digest_v1",
@@ -98,7 +101,8 @@
       "publicSymbols": [
         "canonical_encode_v1",
         "canonical_digest_v1"
-      ]
+      ],
+      "sourceBlob": "331d16b144b559d170c5e2919b6c042b45289f61"
     },
     {
       "operation": "canonical_validate_v1",
@@ -117,7 +121,8 @@
       "delegatedCallees": [],
       "publicSymbols": [
         "canonical_validate_v1"
-      ]
+      ],
+      "sourceBlob": "331d16b144b559d170c5e2919b6c042b45289f61"
     },
     {
       "operation": "fixed_q32",
@@ -136,7 +141,8 @@
         "FixedQ32",
         "ProbabilityQ32",
         "FIXED_Q32_ARITHMETIC_PROFILE_V1"
-      ]
+      ],
+      "sourceBlob": "3c2674dce405fd20f254f5f1816654aae99d7c13"
     },
     {
       "operation": "contract_registry_v1",
@@ -155,7 +161,8 @@
         "ContractRegistryV1",
         "RegistryDefinitionV1",
         "RegistryKindV1"
-      ]
+      ],
+      "sourceBlob": "b9af7af31f2eb6dda29f78701ccc608563920f87"
     },
     {
       "operation": "numeric_profile_definition_v1",
@@ -173,7 +180,8 @@
       "publicSymbols": [
         "NumericProfileV1",
         "NumericProfileDefinitionV1"
-      ]
+      ],
+      "sourceBlob": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
     },
     {
       "operation": "rescale_signal",
@@ -192,7 +200,8 @@
         "NumericSignalV1",
         "NumericConversionReceiptV1",
         "rescale_signal"
-      ]
+      ],
+      "sourceBlob": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7"
     },
     {
       "operation": "rescale_signal_registered",
@@ -209,7 +218,8 @@
       "delegatedCallees": [],
       "publicSymbols": [
         "rescale_signal_registered"
-      ]
+      ],
+      "sourceBlob": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7"
     },
     {
       "operation": "generated_bindings_v1",
@@ -229,7 +239,8 @@
         "generated/python/hepta_platform_types_v1.py",
         "generated/javascript/hepta_platform_types_v1.mjs",
         "generated/typescript/hepta_platform_types_v1.d.ts"
-      ]
+      ],
+      "sourceBlob": "f8f2d0ceb0d84d79cbf0121a727259b140f7b2f2"
     }
   ],
   "ownedTargetProtocols": [
@@ -277,12 +288,142 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "082f89f44ed0577320cca304061b96425ecb657e",
-    "tree": "032d03150bb62f5ad6883cb0c1d1f8cfc4955565"
+    "commit": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+    "tree": "9fa335e95a577c642683252b00d7f6d23708f5d7"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "codex-rs/hepta-types/bindings/generate_bindings.py",
+    "codex-rs/hepta-types/bindings/verify_generated.mjs",
+    "codex-rs/hepta-types/bindings/verify_generated.py",
+    "codex-rs/hepta-types/conformance/verify_rejections.mjs",
+    "codex-rs/hepta-types/conformance/verify_rejections.py",
+    "codex-rs/hepta-types/conformance/verify_vectors.py",
+    "codex-rs/hepta-types/conformance/verify_vectors.ts",
+    "codex-rs/hepta-types/src/bounded.rs",
+    "codex-rs/hepta-types/src/bounded_tests.rs",
+    "codex-rs/hepta-types/src/canonical_digest.rs",
+    "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+    "codex-rs/hepta-types/src/fixed.rs",
+    "codex-rs/hepta-types/src/fixed_tests.rs",
+    "codex-rs/hepta-types/src/identity.rs",
+    "codex-rs/hepta-types/src/identity_tests.rs",
+    "codex-rs/hepta-types/src/numeric_conversion.rs",
+    "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+    "codex-rs/hepta-types/src/numeric_profile.rs",
+    "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+    "codex-rs/hepta-types/src/registry.rs",
+    "codex-rs/hepta-types/src/registry_tests.rs",
+    "codex-rs/utils/private-state",
+    "docs/modules/platform.types/TECHNICAL.md"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceObjects": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "34807f98151fe072df26715b3f5239d07cd6677b"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "6134c87fba905909425cec7e5aae6138e9a56538"
+    },
+    {
+      "path": "codex-rs/hepta-types",
+      "object": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297"
+    },
+    {
+      "path": "codex-rs/hepta-types/bindings/generate_bindings.py",
+      "object": "f8f2d0ceb0d84d79cbf0121a727259b140f7b2f2"
+    },
+    {
+      "path": "codex-rs/hepta-types/bindings/verify_generated.mjs",
+      "object": "d1e686821f28c4f54f3d7215fc02ea1b7dddf05c"
+    },
+    {
+      "path": "codex-rs/hepta-types/bindings/verify_generated.py",
+      "object": "9437a58417646d1ea30bf90e7da56e4b8d358748"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
+      "object": "8ed39a8988bd8e8da33192714139556879450133"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
+      "object": "fdfc3e44000763596749ca887d9d87aa59968326"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_vectors.py",
+      "object": "b1f6e2dc89e6ed61290e1b75f1f8e89913638d24"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_vectors.ts",
+      "object": "d7a1fff002c3452c53bfdf7c008f75c17841ef4b"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded.rs",
+      "object": "5b8afd7be362d5383283d03b785b57b6128fa28d"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded_tests.rs",
+      "object": "b82714a659ef1bc0505a9aa2fb1ebd2f443a9589"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "object": "331d16b144b559d170c5e2919b6c042b45289f61"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+      "object": "3f85f0d52ad0198b83476d051d36f0992ac6c106"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "object": "3c2674dce405fd20f254f5f1816654aae99d7c13"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed_tests.rs",
+      "object": "0b6194dd7ec6f14c966faa951abbbc8289e3ffdb"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "object": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity_tests.rs",
+      "object": "a51092759c8ac8da9d494f920637a291ef1a38a1"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "object": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+      "object": "dcaadc76f2563010e955cc5a61e64909bd3b7312"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "object": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+      "object": "87f2a3388516610ac96da38fb2e1c36feba41a72"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry.rs",
+      "object": "b9af7af31f2eb6dda29f78701ccc608563920f87"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry_tests.rs",
+      "object": "3f1091284d412fdebd05ccb76c7a803349252c99"
+    },
+    {
+      "path": "codex-rs/utils/private-state",
+      "object": "71ef7976242e38ce1651cca711cfbb695109b76a"
+    },
+    {
+      "path": "docs/modules/platform.types/TECHNICAL.md",
+      "object": "f575941653a1e3ad684784e774148edddda80d60"
+    }
   ]
 }

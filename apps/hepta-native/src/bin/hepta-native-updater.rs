@@ -2,7 +2,6 @@ use hepta_native::security::TrustedKeySet;
 use hepta_native::update_handoff::UpdateHandoff;
 use hepta_native::updater::PendingUpdateStatus;
 use hepta_native::updater::UpdateManager;
-use hepta_native::updater::activate_staged_update;
 use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
@@ -55,7 +54,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("interrupted update rolled back; restage before activation".into());
     }
     wait_for_executable_release(&target)?;
-    activate_staged_update(&pending, &key_set, &target, protocol)?;
+    manager.activate_staged_update(&target, protocol)?;
     restart_and_observe(&manager, &target, &restart_args)
 }
 
@@ -84,7 +83,8 @@ fn restart_and_observe(
             return Err(error.into());
         }
     };
-    let deadline = Instant::now() + Duration::from_secs(30);
+    let mut deadline = Instant::now() + Duration::from_secs(30);
+    let mut acknowledged = false;
     let outcome = (|| -> Result<(), Box<dyn std::error::Error>> {
         loop {
             if let Some(status) = child.try_wait()? {
@@ -93,29 +93,43 @@ fn restart_and_observe(
             match manager.load_pending() {
                 Ok(Some(pending))
                     if pending.status == PendingUpdateStatus::Confirmed
+                        && acknowledged
                         && pending.handoff.as_ref() == Some(&handoff)
                         && pending
                             .readiness
                             .as_ref()
                             .is_some_and(|ready| ready.process_id == child.id()) =>
                 {
-                    // The candidate's stdin monitor exits on helper death before
-                    // this ack, including the helper-death/reopen failure cut.
-                    child
-                        .stdin
-                        .take()
-                        .ok_or("candidate handoff pipe disappeared")?
-                        .write_all(b"C")?;
+                    // The candidate committed confirmation after consuming C.
                     return Ok(());
                 }
                 Ok(Some(pending))
-                    if pending.status == PendingUpdateStatus::ActivatedUnconfirmed => {}
+                    if pending.status == PendingUpdateStatus::ActivatedUnconfirmed
+                        && pending.handoff.as_ref() == Some(&handoff) =>
+                {
+                    if !acknowledged
+                        && pending
+                            .readiness
+                            .as_ref()
+                            .is_some_and(|ready| ready.process_id == child.id())
+                    {
+                        // Confirmation belongs to the candidate after it receives
+                        // this ack. Lost helper delivery cannot leave Confirmed.
+                        child
+                            .stdin
+                            .take()
+                            .ok_or("candidate handoff pipe disappeared")?
+                            .write_all(b"C")?;
+                        acknowledged = true;
+                        deadline = Instant::now() + Duration::from_secs(5);
+                    }
+                }
                 Ok(_) => return Err("candidate update state changed before readiness".into()),
                 Err(error) => return Err(format!("observe candidate readiness: {error}").into()),
             }
             if Instant::now() >= deadline {
                 return Err(
-                    "candidate failed to produce authenticated GUI readiness within 30 seconds"
+                    "candidate failed to complete authenticated GUI readiness and acknowledgement within its deadline"
                         .into(),
                 );
             }
@@ -125,8 +139,13 @@ fn restart_and_observe(
     if outcome.is_ok() {
         return outcome;
     }
-    // Drop the handoff pipe first; the product candidate treats its loss as a
-    // failed startup. Do not restore bytes until process termination is observed.
+    // Cancellation and candidate confirmation contend on one owner lock. Do
+    // not kill a candidate that committed C while this helper observed timeout.
+    if !manager.cancel_unconfirmed_restart(&handoff)? {
+        return Ok(());
+    }
+    // Invalidate the handoff before killing; a late C cannot commit confirmation.
+    // Do not restore bytes until process termination is observed.
     drop(child.stdin.take());
     if child.try_wait()?.is_none() {
         child.kill()?;

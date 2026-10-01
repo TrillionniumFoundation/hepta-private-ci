@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.ui-native-historical-verification.v1",
+  "implementationSourceSha": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
+  "implementationSourceTree": "ca4eb87caf92a2b741a3b8818cf87a19a88bb0dd",
+  "reviewHeadSha": null,
+  "reviewHeadTree": null,
+  "evidenceRole": "Intermediate ordinary Windows-publication/ACK-fixture source before deterministic merge correction; local diagnostics only; no final review workflow",
+  "localAuditVerification": {
+    "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
+    "implementationSourceSha": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
+    "implementationSourceTree": "ca4eb87caf92a2b741a3b8818cf87a19a88bb0dd",
+    "applicationTests": {
+      "status": "pending-current-source-execution",
+      "buildProfile": "debug"
+    },
+    "ownerTests": {
+      "status": "pending-current-source-execution"
+    },
+    "strictClippy": {
+      "status": "pending-current-source-execution"
+    },
+    "pythonTests": {
+      "status": "pending-current-source-execution"
+    },
+    "releaseMixedStorageDiagnostics": {
+      "status": "pending-current-source-and-syscall-evidence",
+      "acceptedQualification": false
+    },
+    "releaseBinaries": {
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
+    },
+    "compileNegativeVerification": {
+      "status": "pending-clean-review-head-execution",
+      "acceptedQualification": false
+    },
+    "sourceStructuralVerification": {
+      "status": "pending-final-metadata-check",
+      "acceptedQualification": false
+    },
+    "projectionVerification": {
+      "status": "pending-current-source-execution"
+    },
+    "packagePortalTests": {
+      "status": "pending-current-source-execution"
+    },
+    "mapAdapterVerification": {
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
+    },
+    "globalModuleDocsVerification": {
+      "status": "pending-final-clean-check",
+      "acceptedQualification": false
+    },
+    "workflowEntryValidation": {
+      "status": "pending-final-review-head-workflow",
+      "remoteSevenSubjectQualificationPassed": false
+    },
+    "ciQualificationPassed": false,
+    "physicalPlatformAcceptanceComplete": false
+  },
+  "exactLocalAuditCopyOrigin": "Unpublished ee6 metadata before qualification deterministic merge repair; all18 fields copied exactly",
+  "supplementalExecutionDiagnostics": {
+    "applicationTests": {
+      "executionHeadSha": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
+      "passed": 243,
+      "failed": 0,
+      "skippedIndependentScaleEntries": 3,
+      "testSeconds": 2.135,
+      "rawLog": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-frozen-nextest.log",
+        "sha256": "13cd00325cda489c097d2505037e7dd21c0c7a413634762cfc50a183be1db8ed",
+        "bytes": 31484
+      },
+      "acceptedQualification": false
+    },
+    "strictClippy": {
+      "allTargets": true,
+      "allFeatures": true,
+      "warningsDenied": true,
+      "seconds": 4.24,
+      "rawLog": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-frozen-clippy.log",
+        "sha256": "796733a1245823627babbb4fcf5d365cb5c5bc7671fcff877dceea547ebb199a",
+        "bytes": 162
+      },
+      "acceptedQualification": false
+    },
+    "pythonTests": {
+      "total": 238,
+      "passed": 237,
+      "skipped": 1,
+      "seconds": 15.63,
+      "rawLog": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-python.log",
+        "sha256": "4835fd60990ae482b520dd2a89dc955138e4747892e05df6f70e29cda037502e",
+        "bytes": 39648
+      },
+      "acceptedQualification": false
+    },
+    "releaseBinaries": {
+      "lockedOfflineBuild": true,
+      "buildSeconds": 0.47,
+      "previousSource403RecompilationSeconds": 13.17,
+      "unchangedLinuxArtifactsReused": true,
+      "rawBuildLog": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-release-build.log",
+        "sha256": "ba2425c7a36e4c914770e74bfb84d983da0bb865beafa387104d8f8721e9b636",
+        "bytes": 62
+      },
+      "binaries": {
+        "hepta-native": {
+          "path": "/workspace/scratch/0643a11f4b6a/native-target/release/hepta-native",
+          "sha256": "e4c4cedec53e1b994005ff53bc551cdd66897446f171ebec3532ddec10a130f0",
+          "bytes": 24693368
+        },
+        "hepta-native-updater": {
+          "path": "/workspace/scratch/0643a11f4b6a/native-target/release/hepta-native-updater",
+          "sha256": "7d323a3ef3410ad9cf65b82b6d1350f11e7a17842c5fc3c9731b5b11a03ad671",
+          "bytes": 3099128
+        },
+        "hepta-native-credential": {
+          "path": "/workspace/scratch/0643a11f4b6a/native-target/release/hepta-native-credential",
+          "sha256": "491580f2597e9a7cac56d58ec8368f0fc9b3f99a5f5e0c167043b326a5268c4f",
+          "bytes": 6392504
+        }
+      },
+      "selfTestReceipt": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-self-test.json",
+        "sha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13",
+        "bytes": 132
+      },
+      "realChildFaultReceipt": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-crash-test.json",
+        "sha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7",
+        "bytes": 452
+      },
+      "realChildFaultChecksPassed": 7,
+      "acceptedQualification": false
+    },
+    "precommitGlobalMaps": {
+      "status": "dirty-checkout-refused-not-a-clean-validation",
+      "rawLog": {
+        "path": "/tmp/hepta-native-windows-atomic-ack-precommit-global-maps.log",
+        "sha256": "aa3064b1b9fb4f2745edb48357ee8be573e194f7d48e13c7ad07ff44211fbabd",
+        "bytes": 106
+      },
+      "acceptedQualification": false
+    }
+  },
+  "ciQualificationPassed": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

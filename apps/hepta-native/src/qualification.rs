@@ -564,7 +564,8 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
         .lock()
         .map_err(|_| ShellError::State("qualification platform lock poisoned".to_owned()))?;
     let parent_death_ack_loss_reconciled = restarted
-        .operation_history()
+        .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)?
+        .receipts
         .iter()
         .any(|receipt| receipt.terminal_observed)
         && crash_observation.invoke_calls == 0
@@ -629,12 +630,7 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
     let recovery_manifest =
         signed_update_manifest(&update_signing, &recovery_candidate, &recovery_target)?;
     reopened.verify_and_stage(recovery_manifest, &recovery_candidate, 1)?;
-    activate_staged_update(
-        &reopened.pending_path(),
-        &TrustedKeySet::from_path(&trusted_keys_path)?,
-        &recovery_target,
-        1,
-    )?;
+    reopened.activate_staged_update(&recovery_target, 1)?;
     let pending = reopened
         .load_pending()?
         .ok_or_else(|| ShellError::Update("qualification pending update disappeared".to_owned()))?;

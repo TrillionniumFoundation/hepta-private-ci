@@ -357,7 +357,14 @@ fn operation_identity_is_fenced_by_session_incarnation() {
     assert!(second.terminal_observed);
     assert_ne!(first.key.session_id, second.key.session_id);
     assert_eq!(platform_state.lock().unwrap().invoke_calls, 2);
-    assert_eq!(runtime.operation_history().len(), 2);
+    assert_eq!(
+        runtime
+            .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)
+            .unwrap()
+            .receipts
+            .len(),
+        2
+    );
 }
 
 #[test]
@@ -446,7 +453,10 @@ fn crash_after_dispatch_before_ack_reconciles_invoking_without_reinvoke() {
     );
     runtime.connect_runtime(&manifest()).unwrap();
 
-    let history = runtime.operation_history();
+    let history = runtime
+        .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)
+        .unwrap()
+        .receipts;
     assert_eq!(history.len(), 1);
     assert!(history[0].terminal_observed);
     let state = platform_state.lock().unwrap();
@@ -507,7 +517,10 @@ fn restart_reconciles_old_indeterminate_without_reinvoke() {
     let gate = Arc::new(KernelFinalUseGate::open(config).unwrap());
     let mut restarted = runtime_fixture(&temp, vec![session2], second_state.clone(), gate);
     restarted.connect_runtime(&manifest()).unwrap();
-    let history = restarted.operation_history();
+    let history = restarted
+        .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)
+        .unwrap()
+        .receipts;
     assert_eq!(history.len(), 1);
     assert!(history[0].terminal_observed);
     let state = second_state.lock().unwrap();
@@ -663,7 +676,13 @@ fn stale_backend_view_is_rejected_before_authority_or_platform_entry() {
     let error = runtime.request_platform_capability(stale).unwrap_err();
     assert!(error.to_string().contains("stale runtime view"));
     assert_eq!(platform_state.lock().unwrap().invoke_calls, 0);
-    assert!(runtime.operation_history().is_empty());
+    assert!(
+        runtime
+            .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)
+            .unwrap()
+            .receipts
+            .is_empty()
+    );
 }
 
 #[test]
@@ -928,7 +947,7 @@ fn effect_return_then_receipt_write_failure_fences_and_recovers_without_replay()
             inner: MockPlatform {
                 state: state.clone(),
             },
-            path: path.clone(),
+            path: path.with_extension("json.wal"),
         }),
         Some(gate.clone()),
         OperationJournal::open(&path).unwrap(),
@@ -950,8 +969,9 @@ fn effect_return_then_receipt_write_failure_fences_and_recovers_without_replay()
             .request_platform_capability(request.clone())
             .is_err()
     );
-    std::fs::remove_dir(&path).unwrap();
-    std::fs::rename(path.with_extension("fenced"), &path).unwrap();
+    let wal = path.with_extension("json.wal");
+    std::fs::remove_dir(&wal).unwrap();
+    std::fs::rename(wal.with_extension("fenced"), &wal).unwrap();
     assert!(
         runtime
             .request_platform_capability(request.clone())

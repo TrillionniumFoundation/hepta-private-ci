@@ -1,0 +1,421 @@
+{
+  "schema": "hepta.ui-native-historical-verification.v1",
+  "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+  "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+  "reviewHeadSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+  "reviewHeadTree": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+  "evidenceRole": "Historical source703 observations only; no result qualifies later Darwin permissions, ACL, authority FIFO or other source changes",
+  "localAuditVerification": {
+    "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
+    "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+    "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+    "applicationTests": {
+      "status": "pending-current-source-execution",
+      "buildProfile": "debug"
+    },
+    "ownerTests": {
+      "status": "pending-current-source-execution"
+    },
+    "strictClippy": {
+      "status": "pending-current-source-execution"
+    },
+    "pythonTests": {
+      "status": "pending-current-source-execution"
+    },
+    "releaseMixedStorageDiagnostics": {
+      "status": "pending-current-source-and-syscall-evidence",
+      "acceptedQualification": false
+    },
+    "releaseBinaries": {
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
+    },
+    "compileNegativeVerification": {
+      "status": "pending-clean-review-head-execution",
+      "acceptedQualification": false
+    },
+    "sourceStructuralVerification": {
+      "status": "structural-pass",
+      "passed": true,
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "rawLogSha256": "5e5875ce7edca319b3dd7221ed409bb28146ec1a8ef78fa4bc5e2e607d7f729d",
+      "acceptedQualification": false
+    },
+    "projectionVerification": {
+      "status": "pending-current-source-execution"
+    },
+    "packagePortalTests": {
+      "status": "pending-current-source-execution"
+    },
+    "mapAdapterVerification": {
+      "status": "pending-current-source-execution",
+      "acceptedQualification": false
+    },
+    "globalModuleDocsVerification": {
+      "status": "pending-final-clean-check",
+      "acceptedQualification": false
+    },
+    "workflowEntryValidation": {
+      "status": "pending-final-review-head-workflow",
+      "remoteSevenSubjectQualificationPassed": false
+    },
+    "ciQualificationPassed": false,
+    "physicalPlatformAcceptanceComplete": false,
+    "platformFixtureDiagnostics": {
+      "status": "focused-diagnostic-passed",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "passed": 2,
+      "expressionFilteredTests": 244,
+      "elapsedSeconds": 0.163,
+      "rawLogSha256": "0e0faa779853198b19fe632241e29bcab518bc99ebc7947d3c50b1684bfcff59",
+      "executionPlatform": "Linux",
+      "executionHeadSha": "ca661dff8806c922efe721786feaf4299850a32b",
+      "executionWorktreeClean": false,
+      "repairedImplementationFilesMatchFrozenSource": true,
+      "scope": "Post-EBD worktree focused regressions for actual exit-zero candidate rollback and picker environment; not macOS or complete current-source qualification",
+      "acceptedQualification": false
+    }
+  },
+  "supplementalExecutionDiagnostics": {
+    "executionHeadSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+    "executionHeadTree": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+    "executionWorktreeClean": true,
+    "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+    "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+    "compiledImplementationPathsUnchanged": true,
+    "storageBudgetSemanticsUnchanged": true,
+    "applicationTests": {
+      "rawLogSha256": "017020ed48e7b6e297367be7e56a58e0bb0a638ad7b92d10ec3694108c8fc90c",
+      "rawLogBytes": 36385,
+      "status": "passed",
+      "buildProfile": "debug",
+      "runner": "just test with Nextest",
+      "normalTestsPassed": 243,
+      "normalTestsFailed": 0,
+      "ignoredScaleSubjectsAndWorker": 3,
+      "elapsedSeconds": 4.803
+    },
+    "pythonTests": {
+      "rawLogSha256": "d5baef09cc420e4a097fe86369d763cf3d6249f80cfd42605dde435d45af25b7",
+      "rawLogBytes": 39648,
+      "status": "passed",
+      "testsRun": 238,
+      "passed": 237,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 1,
+      "elapsedSeconds": 14.97,
+      "scope": "Linux; a Windows-specific OS skip is not a Windows pass"
+    },
+    "applicationStrictClippy": {
+      "rawLogSha256": "601726dc1188c02d31b6c3152fdf752a2b28093f763b8af60113e0176090b683",
+      "rawLogBytes": 247,
+      "status": "passed",
+      "elapsedSeconds": 7.51,
+      "allTargets": true,
+      "allFeatures": true,
+      "denyWarnings": true,
+      "ownerExecutionInherited": false
+    },
+    "compilerNegativeVerification": {
+      "rawLogSha256": "e8444bc65ed12c7ec3db7a49f525ba57115f336b100f0a73e4c9c14bdb329792",
+      "rawLogBytes": 1761,
+      "receipt": {
+        "applicationCargoLockSha256": "612e3139224be6d1f36dab01850ee048bd7ec9e405dbbd8a556096dc17d3e701",
+        "cases": [
+          {
+            "dependencyResolutionPinned": true,
+            "diagnosticSha256": "7180ff969e736ef8e168a5914b34c1964bc7b73e6572c39061c63c06e3428f21",
+            "exitCode": 101,
+            "fixtureCargoLockSha256": "c30fdc5107f1197af862d0e90ccedb8c3c1124e3ffcc9af864fd7f8a0912bef7",
+            "lockedCompilerCheck": true,
+            "module": "journal_storage",
+            "privacyDiagnosticObserved": true,
+            "seedCargoLockSha256": "612e3139224be6d1f36dab01850ee048bd7ec9e405dbbd8a556096dc17d3e701"
+          },
+          {
+            "dependencyResolutionPinned": true,
+            "diagnosticSha256": "358e83aad31e462705381be34e5348ee5e9f2fcc81ab9a4aa844f027768c9b9c",
+            "exitCode": 101,
+            "fixtureCargoLockSha256": "af1a80574db791fc14da690746b894e1ab4fb4a613fbe1b182c7324d87f42ce2",
+            "lockedCompilerCheck": true,
+            "module": "retirement",
+            "privacyDiagnosticObserved": true,
+            "seedCargoLockSha256": "612e3139224be6d1f36dab01850ee048bd7ec9e405dbbd8a556096dc17d3e701"
+          },
+          {
+            "dependencyResolutionPinned": true,
+            "diagnosticSha256": "80cd69e9579c9a44c205bc77263a21f95d5e7da02514017f0ebaf8a5ef5ca85a",
+            "exitCode": 101,
+            "fixtureCargoLockSha256": "d0a5c7ed4cff017362f53b0fa4b4b3fd5e00eeb8bb88c9d582b532cf5b9ce6b9",
+            "lockedCompilerCheck": true,
+            "module": "task_supervisor",
+            "privacyDiagnosticObserved": true,
+            "seedCargoLockSha256": "612e3139224be6d1f36dab01850ee048bd7ec9e405dbbd8a556096dc17d3e701"
+          }
+        ],
+        "compilerNegativePassed": true,
+        "effectAuthorityGranted": false,
+        "releaseAuthorized": false,
+        "schema": "hepta.ui-native-compile-negative.v1",
+        "sourceSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab"
+      },
+      "acceptedQualification": false
+    },
+    "sourceStructuralVerification": {
+      "rawLogSha256": "1da0daf5c5ac7032e25c4b1d9be66b92affdcdd1ae517273f0ab7550132a1b7c",
+      "rawLogBytes": 1464,
+      "receipt": {
+        "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+        "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+        "limitations": [
+          "structural evidence is not physical-platform acceptance",
+          "performance budgets remain unqualified until measured artifacts are attached",
+          "release flags remain false pending independent review"
+        ],
+        "localCargoDependencyPaths": [
+          "apps/hepta-native",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-control-plane",
+          "codex-rs/hepta-native-gateway",
+          "codex-rs/hepta-ndu",
+          "codex-rs/hepta-paths",
+          "codex-rs/hepta-plasticity",
+          "codex-rs/hepta-private-state",
+          "codex-rs/hepta-runtime",
+          "codex-rs/hepta-types",
+          "codex-rs/hepta-wire",
+          "codex-rs/keyring-store",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+          "codex-rs/utils/cargo-bin",
+          "codex-rs/utils/private-state"
+        ],
+        "orderedParents": [
+          "703e9bf2871b26d646f1c4d748e0b0061f70ad3c"
+        ],
+        "repositoryHead": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+        "repositoryTree": "6a2d838f769d7d5141627fe0b49cac3da833220d",
+        "retiredWorkflowCount": 16,
+        "schema": "hepta.ui-native-source-evidence.v1",
+        "sourceContracts": [
+          "active-index",
+          "journal-v7",
+          "retirement-bucket-v1",
+          "retirement-index-v1",
+          "retirement-v3",
+          "wal-magic",
+          "wal-v1"
+        ],
+        "status": "structural-pass",
+        "workflow": "ui-native-qualification.yml"
+      },
+      "frozenGitBlobFileCount": 406,
+      "selectionPathCount": 32,
+      "localCargoDependencyPathCount": 16,
+      "acceptedQualification": false
+    },
+    "globalModuleVerification": {
+      "moduleDocs": {
+        "rawLogSha256": "22d11c9e92fe34dabfed59381cdcc6a18a66dc9246e464b609ecba3c1f3b0d25",
+        "rawLogBytes": 1539,
+        "status": "blocked-other-module-source-provenance",
+        "globalVerificationPassed": false,
+        "nativeAdapterListedAsFailure": false,
+        "failedOtherModules": [
+          "platform.types",
+          "kernel.authority",
+          "kernel.operations",
+          "runtime.supervisor",
+          "utility.ndu",
+          "intelligence.control",
+          "cognitive.read",
+          "memory.retrieval",
+          "memory.federation",
+          "knowledge.graph",
+          "learning.operator",
+          "learning.plasticity",
+          "automation.taskflow"
+        ],
+        "otherModuleFailures": 13
+      },
+      "implementationMaps": {
+        "rawLogSha256": "30835d1cce1b18a78468e30b43092ae4bde18a13f8aa866b6d8f97a83b4c3f58",
+        "rawLogBytes": 1494,
+        "status": "blocked-other-module-source-provenance",
+        "globalVerificationPassed": false,
+        "nativeAdapterListedAsFailure": false,
+        "failedOtherModules": [
+          "platform.types",
+          "kernel.authority",
+          "kernel.operations",
+          "runtime.supervisor",
+          "utility.ndu",
+          "intelligence.control",
+          "cognitive.read",
+          "memory.retrieval",
+          "memory.federation",
+          "knowledge.graph",
+          "learning.operator",
+          "learning.plasticity",
+          "automation.taskflow"
+        ],
+        "otherModuleFailures": 13
+      }
+    },
+    "releaseBinaries": {
+      "rawLogSha256": "36f1dcdeaabd82b382a35e1b077d0511974f047db7b6b2cb175b2e9829f3e0df",
+      "rawLogBytes": 9138,
+      "status": "passed",
+      "binaryCount": 3,
+      "buildProfile": "release",
+      "buildElapsedSeconds": 330,
+      "selfTest": {
+        "receipt": {
+          "schema": "hepta.native-self-test.v1",
+          "platform": "linux",
+          "architecture": "x86_64",
+          "gui": "eframe-0.36.2",
+          "accessibility": "accesskit"
+        },
+        "rawLogSha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13",
+        "rawLogBytes": 132
+      },
+      "actualChildFaultQualification": {
+        "receipt": {
+          "schema": "hepta.native-packaged-fault-qualification.v1",
+          "platform": "linux",
+          "architecture": "x86_64",
+          "authenticated_view": true,
+          "cross_generation_fenced": true,
+          "permission_denial_no_dispatch": true,
+          "grant_revocation_before_effect": true,
+          "parent_death_ack_loss_reconciled": true,
+          "updater_death_rolled_back": true,
+          "rollback_failure_recovery_required": true,
+          "effect_authority_granted": false,
+          "activation_authority_granted": false,
+          "release_authority_granted": false
+        },
+        "rawLogSha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7",
+        "rawLogBytes": 452
+      },
+      "acceptedQualification": false
+    },
+    "productionQualified": false,
+    "deploymentQualified": false,
+    "releaseAuthorized": false
+  },
+  "realCISubjectRecords": {
+    "macOS": {
+      "path": "docs/modules/ui.native/history/20261001-703e9-macos-verification.json",
+      "sha256": "a086c493f34692a1d5fc088b905f87eaeebbefe75a4ad8c93f96923dd9a8fda7",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "evidenceRole": "historical platform observations only; does not qualify a later implementation source"
+    },
+    "Windows": {
+      "path": "docs/modules/ui.native/history/20261001-703e9-windows-verification.json",
+      "sha256": "bef6202bd98366a39d41dbe121e9aacc2c758caaded2d385a6f83e20347f1945",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "evidenceRole": "historical platform observations only; does not qualify a later implementation source"
+    },
+    "Linux": {
+      "path": "docs/modules/ui.native/history/20261001-703e9-linux-verification.json",
+      "sha256": "6328068187cb75184205c399ba9cab83f599a866648fd6ae21f9d757429c5f7f",
+      "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
+      "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "evidenceRole": "historical platform observations only; does not qualify a later implementation source"
+    }
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "terminalCiObservation": {
+    "runId": 36823756631,
+    "runAttempt": 1,
+    "candidateSha": "ae9edebbaa0d0eb0d150d6e12fd856ec1095bfab",
+    "status": "completed",
+    "conclusion": "failure",
+    "updatedAt": "2026-10-01T06:48:10Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36823756631",
+    "aggregateJobId": 110253641550,
+    "aggregateConclusion": "failure",
+    "repositoryControlledQualificationPassed": false,
+    "currentOrLaterSourceQualificationInherited": false,
+    "observationRole": "Terminal historical run: identity, storage, macOS head/merge and Linux head/merge succeeded; Windows head/merge failed in the PowerShell registrar fixture and aggregate qualification failed. No observations qualify a later implementation source.",
+    "jobs": [
+      {
+        "jobId": 110244759629,
+        "name": "ui.native / immutable source identity",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "jobId": 110248992457,
+        "name": "ui.native / Linux / exact implementation storage scale",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "jobId": 110248992551,
+        "name": "ui.native / macOS / head",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "jobId": 110248992574,
+        "name": "ui.native / Linux / head",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "jobId": 110248992616,
+        "name": "ui.native / macOS / merge",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "jobId": 110248992625,
+        "name": "ui.native / Linux / merge",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "jobId": 110248992652,
+        "name": "ui.native / Windows / head",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Full tests, release binaries and compiler-negative API boundary"
+        ]
+      },
+      {
+        "jobId": 110248992677,
+        "name": "ui.native / Windows / merge",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Full tests, release binaries and compiler-negative API boundary"
+        ]
+      },
+      {
+        "jobId": 110253641550,
+        "name": "ui.native / qualification result",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Missing, cancelled and skipped subjects are failure"
+        ]
+      }
+    ]
+  }
+}

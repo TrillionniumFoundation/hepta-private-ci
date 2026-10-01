@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "69e7c773f9ebaa777783a4965749a0051edf37eb"
     },
     {
       "operation": "compile_cue",
@@ -47,7 +48,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_cue",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "build_candidate_union_from_generated",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "settle_engram",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "engram_settle",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0"
     },
     {
       "operation": "recall_generated_with_engram",
@@ -91,7 +95,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "observe_retrieval_assignment",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "7d701b3a4db8820a962cd9174ffd6ce9e41f12e1"
     },
     {
       "operation": "build_candidate_union",
@@ -117,7 +123,8 @@
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "recall",
@@ -129,7 +136,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "adapt_generation_bound_recall_to_canonical_shadow_v1",
@@ -143,7 +151,8 @@
       "sourcePathExists": true,
       "designOperation": "canonical_recall_shadow_adapter",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     }
   ],
   "repositoryControlledGaps": [
@@ -191,8 +200,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "082f89f44ed0577320cca304061b96425ecb657e",
-    "tree": "032d03150bb62f5ad6883cb0c1d1f8cfc4955565"
+    "commit": "9ca0e42e211e87cf3fd0d1a15ba9d484d20093a9",
+    "tree": "9fa335e95a577c642683252b00d7f6d23708f5d7"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -217,6 +226,16 @@
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
     "codex-rs/hepta-memory-retrieval",
+    "codex-rs/hepta-memory-retrieval/src/decision.rs",
+    "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/engram.rs",
+    "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+    "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/generator.rs",
+    "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/v2.rs",
+    "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
@@ -226,6 +245,8 @@
     "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+    "codex-rs/utils/private-state",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
     "qualification/memory-retrieval/TARGET_HOST.md"
   ],
   "canonicalCognitiveRecallMigration": {
@@ -247,8 +268,88 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "object": "3b741e6364da55970eed0d70b8429c7cef8a149e"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "34807f98151fe072df26715b3f5239d07cd6677b"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "6134c87fba905909425cec7e5aae6138e9a56538"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "object": "5d13cd8f355bab3ecb95f8c068517de200dd143f"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "bf1dcdcd86aff60bc528d42915cee909efd944a6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "21b5cb0e03f66fc86645a73fd978626ce1e9638a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+      "object": "14b482e9e523274d3af6f7f513d025bf4ac704ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "7dde8b3954eeca66ecee1f91d6a388d2871a5540"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "32f0ac3fe848581ea60c2694dee4a2f52dda8f55"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "afb9cac35db1c57d58edb3b31c6beee31bab2560"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "object": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "object": "1d76cad44498e9538cefff1e20202482520257ff"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+      "object": "29773833806142d8c6967cd2ac94d48958d90b2e"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "object": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/model.rs",
+      "object": "ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+      "object": "0bd78900ad762610858a7d805db9538d893f2307"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+      "object": "5df22a598d0df05c2baaf436748f065283d9aea9"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
@@ -295,8 +396,53 @@
       "object": "b7106760e9a336177b4b05973ba9e52ada3d13f7"
     },
     {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "object": "6ba04f39f78e7d6295c9922d279e37e0492180f2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+      "object": "0e92e867745eca2315d08b34b5ff319e19c76d93"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+      "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
+      "object": "38f87484a8e07da934ceb429ff73f9104d9241a0"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "object": "dfc79598fc33fef2a7c9228037d39179b05310ec"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+      "object": "255461531b165634463de79f4aee92f1de6ffc08"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+      "object": "4ae4274836a7412ce1ce1581c4f7c002a45edf4d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+      "object": "560783823aa390a1ee4767f05d6a2f0551cdd120"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+      "object": "d3d93e441bb05b97def0b84964e28361db1b0e06"
+    },
+    {
+      "path": "codex-rs/utils/private-state",
+      "object": "71ef7976242e38ce1651cca711cfbb695109b76a"
+    },
+    {
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
       "object": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
+    },
+    {
+      "path": "qualification/memory-retrieval/TARGET_HOST.md",
+      "object": "91713f7cf1be82f54c79eab5715d0860b8475eac"
     }
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob"
 }

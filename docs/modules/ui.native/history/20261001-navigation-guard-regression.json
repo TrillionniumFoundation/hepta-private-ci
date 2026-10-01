@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.implementation-map-execution-claim-regression.v1",
+  "historicalImplementationCommit": "d5445993e9ac96626bf9314053df77eeedb90e4d",
+  "historicalScriptSha256": "79d85e07064e7140d0705c24a8bce75d09c6c7bf25ef0ae4d6dc53b9c180aa01",
+  "scope": "Synthetic real-Git behavioral regressions, not product execution or qualification",
+  "acceptedQualification": false,
+  "old": {
+    "claimedRequestLocalReadOnlyExecution": true,
+    "claimedAuthenticatedProductionExecution": false,
+    "sourceBefore": {
+      "commit": "23d93aad4488c8fbcda59e3ea30747698c1943a4",
+      "tree": "60e0690f6e87cead339523633b3a8898413a6e68"
+    },
+    "changedSource": {
+      "commit": "f48d79a1a6c539d24964a96b93d3a6a54ec9c17a",
+      "tree": "a92fcc0e5d3eddfb4b06b3f1ca7989d3058f0cd1"
+    },
+    "sourceAfter": {
+      "commit": "f48d79a1a6c539d24964a96b93d3a6a54ec9c17a",
+      "tree": "a92fcc0e5d3eddfb4b06b3f1ca7989d3058f0cd1"
+    },
+    "betaMapBeforeSha256": "fdee451fd7ca73edf7706b0d5c95e6f42a453037e690a0e657443a661b3c784d",
+    "betaMapAfterSha256": "8ea2fb75c67e019f7f76a7389e88c164c9d2b153a61ead735fc2847f60b26118",
+    "allMapBytesPreserved": false,
+    "migrationResult": {
+      "migrated": 2,
+      "maps": [
+        "docs/modules/alpha/IMPLEMENTATION_MAP.json",
+        "docs/modules/beta/IMPLEMENTATION_MAP.json"
+      ]
+    },
+    "rejection": null
+  },
+  "fixed": {
+    "claimedRequestLocalReadOnlyExecution": true,
+    "claimedAuthenticatedProductionExecution": false,
+    "sourceBefore": {
+      "commit": "23d93aad4488c8fbcda59e3ea30747698c1943a4",
+      "tree": "60e0690f6e87cead339523633b3a8898413a6e68"
+    },
+    "changedSource": {
+      "commit": "f48d79a1a6c539d24964a96b93d3a6a54ec9c17a",
+      "tree": "a92fcc0e5d3eddfb4b06b3f1ca7989d3058f0cd1"
+    },
+    "sourceAfter": {
+      "commit": "23d93aad4488c8fbcda59e3ea30747698c1943a4",
+      "tree": "60e0690f6e87cead339523633b3a8898413a6e68"
+    },
+    "betaMapBeforeSha256": "fdee451fd7ca73edf7706b0d5c95e6f42a453037e690a0e657443a661b3c784d",
+    "betaMapAfterSha256": "fdee451fd7ca73edf7706b0d5c95e6f42a453037e690a0e657443a661b3c784d",
+    "allMapBytesPreserved": true,
+    "migrationResult": null,
+    "rejection": "mapped source/evidence changed after source observation: src/beta/lib.rs"
+  }
+}

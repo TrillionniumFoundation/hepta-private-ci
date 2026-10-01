@@ -4,6 +4,7 @@
 These are exact-source CI observations, NOT signatures or release authority.
 Run inside the same Actions run/attempt as the producers. Never mix retries.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -71,13 +72,17 @@ def deterministic_subjects(
         "GIT_AUTHOR_DATE": "2000-01-01T00:00:00Z",
         "GIT_COMMITTER_DATE": "2000-01-01T00:00:00Z",
     }
-    merge = subprocess.check_output(
-        ["git", "commit-tree", tree, "-p", base, "-p", candidate],
-        cwd=root,
-        input="deterministic ui.native qualification merge\n",
-        text=True,
-        env=env,
-    ).strip()
+    merge = (
+        subprocess.check_output(
+            ["git", "commit-tree", tree, "-p", base, "-p", candidate],
+            cwd=root,
+            # Text-mode pipes convert LF to CRLF on Windows and change the commit ID.
+            input=b"deterministic ui.native qualification merge\n",
+            env=env,
+        )
+        .decode("ascii")
+        .strip()
+    )
     return {
         "head": {
             "sourceSha": candidate,
@@ -97,12 +102,17 @@ def aggregate(
     run_id: str,
     attempt: str,
     subjects: dict[str, dict[str, str]],
+    implementation: str | None = None,
 ) -> dict:
     for value in (candidate, base, workflow_sha):
         if not evidence.SHA.fullmatch(value) or value == "0" * 40:
             raise ValueError("invalid exact-source identity")
     if not DIGEST.fullmatch(workflow_digest):
         raise ValueError("missing workflow digest")
+    if implementation is not None and (
+        not evidence.SHA.fullmatch(implementation) or implementation == "0" * 40
+    ):
+        raise ValueError("invalid frozen implementation identity")
     if (
         not run_id.isdigit()
         or int(run_id) <= 0
@@ -149,7 +159,9 @@ def aggregate(
         if receipt.get("schema") != evidence.SCHEMA or any(
             receipt.get(key) != value for key, value in expected.items()
         ):
-            raise ValueError(f"{name}: foreign/missing subject, workflow or run identity")
+            raise ValueError(
+                f"{name}: foreign/missing subject, workflow or run identity"
+            )
         if (
             receipt.get("qualificationPassed") is not True
             or receipt.get("scope") != "repository-controlled-candidate"
@@ -217,8 +229,7 @@ def aggregate(
         locks = signature["dependencyLocks"]
         if (
             not isinstance(locks, dict)
-            or set(locks)
-            != {"apps/hepta-native/Cargo.lock", "codex-rs/Cargo.lock"}
+            or set(locks) != {"apps/hepta-native/Cargo.lock", "codex-rs/Cargo.lock"}
             or any(
                 not isinstance(value, str) or not DIGEST.fullmatch(value)
                 for value in locks.values()
@@ -290,6 +301,11 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     try:
+        candidate_state = json.loads(
+            evidence.git(
+                args.root, "show", f"{args.candidate}:apps/hepta-native/CANDIDATE.json"
+            )
+        )
         workflow = subprocess.check_output(
             ["git", "show", f"{args.workflow_sha}:{evidence.WORKFLOW}"],
             cwd=args.root,
@@ -303,6 +319,7 @@ def main() -> int:
             run_id=os.environ.get("GITHUB_RUN_ID", ""),
             attempt=os.environ.get("GITHUB_RUN_ATTEMPT", ""),
             subjects=deterministic_subjects(args.root, args.candidate, args.base),
+            implementation=candidate_state["implementationSourceSha"],
         )
         evidence.write_json(args.out, result)
     except (

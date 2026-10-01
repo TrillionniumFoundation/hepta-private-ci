@@ -36,7 +36,7 @@ The durable source owner is not this crate. Product composition acquires one aut
 
 The canonical work package `MEM-READ-1-SNAPSHOT-PORT` is `source_implemented_execution_pending`. That state means source and composition exist while exact-candidate execution evidence remains pending. It does not imply independent acceptance, activation, promotion or release.
 
-The implementation map binds `sourceBase`/`observedAtHead` to an exact reviewed product-source commit/tree and separately binds every mapped production operation and composed product caller to its current HEAD blob. Later documentation-only truth commits therefore do not require an impossible self-referential Git commit hash, while any source or caller drift still fails verification.
+The implementation map retains `sourceBase` as historical provenance. Under `mappingSourceIdentityMode=exact_blob`, `observedAtHead` records the current navigation commit/tree, while `sourceObjects` and operation `sourceBlob` values bind mapped production operations, composed callers and declared evidence to their current Git objects. Historical receipts remain bound to their original commits; navigation rebinding does not qualify execution on the current candidate. Later documentation-only truth commits do not require an impossible self-referential Git commit hash, while any mapped source, caller or evidence drift still fails verification.
 
 ## 3. Boundary, responsibilities and non-goals
 
