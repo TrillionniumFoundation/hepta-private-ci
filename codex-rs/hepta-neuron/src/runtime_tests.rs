@@ -327,6 +327,20 @@ fn input(sequence: u64, checkpoint_digest: Digest32) -> NeuronTickInputV1 {
 }
 
 #[test]
+fn initial_scope_derivation_matches_the_real_tick_and_rejects_an_empty_objective() {
+    let tick = input(1, Digest32::ZERO);
+    assert_eq!(
+        checked(tick.journal_scope()),
+        checked(NeuronTickInputV1::journal_scope_for_subject(&tick.subject_id, tick.objective_digest)),
+    );
+    assert!(NeuronTickInputV1::journal_scope_for_subject(&tick.subject_id, Digest32::ZERO).is_err());
+    let next_objective = Digest32::of_bytes(b"a distinct compiled next goal");
+    let next = checked(NeuronTickInputV1::journal_scope_for_subject(&tick.subject_id, next_objective));
+    assert_eq!(next.scope_digest, checked(tick.journal_scope()).scope_digest);
+    assert_ne!(next.objective_digest, tick.objective_digest);
+}
+
+#[test]
 fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
     let fixture = Fixture::new();
     let native = native_config();

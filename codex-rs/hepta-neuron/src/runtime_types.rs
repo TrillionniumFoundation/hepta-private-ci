@@ -308,9 +308,20 @@ impl NeuronTickInputV1 {
     /// subject hashing dialect when composing the durable owner.
     pub fn journal_scope(&self) -> Result<crate::JournalScope, NeuronRuntimeError> {
         validate_tick_input(self)?;
+        Self::journal_scope_for_subject(&self.subject_id, self.objective_digest)
+    }
+
+    /// Use the same subject scope before an actual encoded tick exists.
+    pub fn journal_scope_for_subject(
+        subject_id: &StableId,
+        objective_digest: Digest32,
+    ) -> Result<crate::JournalScope, NeuronRuntimeError> {
+        if objective_digest.is_zero() {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
         Ok(crate::JournalScope {
-            scope_digest: subject_scope_digest(&self.subject_id)?,
-            objective_digest: self.objective_digest,
+            scope_digest: subject_scope_digest(subject_id)?,
+            objective_digest,
         })
     }
 
