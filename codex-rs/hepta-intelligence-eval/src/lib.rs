@@ -39,9 +39,33 @@ pub use fenced_holdout::HoldoutWriterFenceV1;
 pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 mod ope;
+mod paired_supervised_estimate;
+mod paired_supervised_plan;
+mod paired_supervised_qualification;
+mod paired_supervised_registration;
+mod paired_supervised_runner;
+mod paired_supervised_scope;
+mod paired_supervised_values;
 mod product_evidence_file;
 mod product_registration;
 mod product_runner;
+pub use paired_supervised_estimate::PairedClassObservationV1;
+pub use paired_supervised_estimate::PairedNativeObservationV1;
+pub use paired_supervised_estimate::PairedObservationCutV1;
+pub use paired_supervised_estimate::PairedObservedMetricV1;
+pub use paired_supervised_estimate::PairedSupervisedEstimateV1;
+pub use paired_supervised_estimate::PairedTaskObservationV1;
+pub use paired_supervised_estimate::paired_observation_cut_signing_payload_v1;
+pub use paired_supervised_plan::PairedBenchmarkPolicyV1;
+pub use paired_supervised_plan::PairedEvidenceMetricsV1;
+pub use paired_supervised_plan::PairedMetricContractV1;
+pub use paired_supervised_plan::PairedMetricKindV1;
+pub use paired_supervised_plan::PairedRuntimeBindingV1;
+pub use paired_supervised_plan::PairedSupervisedErrorV1;
+pub use paired_supervised_plan::PairedSupervisedPlanInputsV1;
+pub use paired_supervised_plan::PairedSupervisedPlanV1;
+pub use paired_supervised_plan::PairedTaskBindingV1;
+pub use paired_supervised_plan::freeze_paired_supervised_plan_v1;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
@@ -430,3 +454,19 @@ mod fixed_holdout_custody;
 pub use fixed_holdout_custody::inspect_fixed_source_holdout;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_holdout_custody::prepare_fixed_source_holdout;
+
+pub use paired_supervised_qualification::ProductPairedQualificationReceiptV1;
+pub use paired_supervised_qualification::paired_evaluation_signing_payload_v1;
+pub use paired_supervised_registration::AuthenticatedPairedRegistrationV1;
+pub use paired_supervised_registration::paired_registration_signing_payload_v1;
+pub use paired_supervised_runner::PairedFinalHoldoutProviderV1;
+pub use paired_supervised_runner::ProductPairedEvaluationReceiptV1;
+pub use paired_supervised_runner::SignedPairedObservationCutV1;
+
+#[cfg(test)]
+mod paired_supervised_test_support;
+#[cfg(test)]
+mod paired_supervised_tests;
+
+#[cfg(test)]
+mod paired_supervised_boundary_tests;

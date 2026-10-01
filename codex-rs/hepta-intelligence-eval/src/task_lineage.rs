@@ -295,6 +295,10 @@ impl FrozenTaskSourceLineageV1 {
         self.scope_digest
     }
 
+    pub(crate) fn record_digests(&self) -> impl Iterator<Item = Digest32> + '_ {
+        self.records.keys().copied()
+    }
+
     pub(crate) fn record(
         &self,
         digest: Digest32,

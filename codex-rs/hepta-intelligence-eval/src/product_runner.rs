@@ -363,6 +363,14 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         self.holdout.anchor()
     }
 
+    /// Versioned execution profiles share the same authoritative custody owner.
+    pub(crate) fn consume_profile_holdout(
+        &mut self,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<FinalHoldoutJournalReceiptV1, ProductEvaluationError> {
+        Ok(self.holdout.consume(plan)?)
+    }
+
     pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(
         &mut self,
         product_plan: &ProductFrozenEvaluationPlanV1,

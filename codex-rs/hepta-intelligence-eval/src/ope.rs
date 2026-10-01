@@ -18,6 +18,7 @@ use crate::push_id;
 
 #[path = "ope_confidence.rs"]
 mod confidence;
+pub(crate) use confidence::radius as conservative_bounded_radius;
 
 pub use confidence::ClusterAssignment;
 pub use confidence::ClusterConfidenceError;
