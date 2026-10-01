@@ -8,14 +8,16 @@ import {
   lstat,
   mkdir,
   mkdtemp,
+  open,
   realpath,
   symlink,
   writeFile,
 } from "node:fs/promises";
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
+import { constants } from "node:fs";
 import { once } from "node:events";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 import {
   LinuxBubblewrapLauncher,
@@ -49,14 +51,14 @@ function fakeLauncher({
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
     },
-    spawn() {
+    spawn(options) {
       const child = new EventEmitter();
       child.pid = 4242;
       child.stdin = new PassThrough();
       child.stdout = new PassThrough();
       child.stderr = new PassThrough();
       child.kill = () => true;
-      onSpawn?.(child);
+      onSpawn?.(child, options);
       const decoder = new WorkerFrameDecoder();
       let sequence = 1;
       child.stdin.on("data", (chunk) => {
@@ -648,6 +650,98 @@ test("fixture startup aborts and kills a worker that never acknowledges start", 
   );
   assert.equal(kills.includes("SIGKILL"), true);
 });
+
+test(
+  "startup refuses a FIFO without waiting for another process to open its writer",
+  { skip: process.platform === "win32", timeout: 2_000 },
+  async (t) => {
+    const root = await realpath(
+      await mkdtemp(join(tmpdir(), "hepta-worker-fifo-")),
+    );
+    const workerPath = join(root, "worker.fifo");
+    execFileSync("mkfifo", [workerPath]);
+    // Release any accidentally blocking read from a regressed implementation,
+    // so the negative test itself cannot leave an open syscall in the process.
+    t.after(async () => {
+      try {
+        const writer = await open(
+          workerPath,
+          constants.O_WRONLY | constants.O_NONBLOCK,
+        );
+        await writer.close();
+      } catch (error) {
+        if (error.code !== "ENXIO") throw error;
+      }
+    });
+    const driver = new SubprocessBrowserDriver({
+      workerPath,
+      workerDigest: D1,
+      profileRoot: join(root, "profiles"),
+      launcher: fakeLauncher(),
+    });
+    t.after(() => driver.shutdown());
+    await assert.rejects(
+      driver.start({ profileId: "profile.fifo", generation: 1 }),
+      /bounded regular file/,
+    );
+  },
+);
+
+test("verified artifact isolation and cleanup survive reuse of the subprocess driver", async (t) => {
+  const launches = [];
+  const { driver } = await preparedDriver({
+    launcher: fakeLauncher({
+      onSpawn: (_child, options) => {
+        launches.push(options);
+      },
+    }),
+  });
+  t.after(() => driver.shutdown());
+  const first = launches[0];
+  assert.equal(first.workerPath.startsWith(`${first.profileDir}${sep}`), false);
+  assert.equal((await lstat(first.workerPath)).isFile(), true);
+  assert.equal((await lstat(first.profileDir)).isDirectory(), true);
+  await driver.shutdown();
+  await assert.rejects(lstat(first.workerPath), { code: "ENOENT" });
+  await assert.rejects(lstat(first.profileDir), { code: "ENOENT" });
+  await driver.start({ profileId: "profile.1", generation: 2 });
+  const second = launches[1];
+  assert.notEqual(second.workerPath, first.workerPath);
+  assert.equal(
+    second.workerPath.startsWith(`${second.profileDir}${sep}`),
+    false,
+  );
+  assert.equal((await lstat(second.workerPath)).isFile(), true);
+  await assert.rejects(
+    driver.observe({ profileId: "profile.1", generation: 1 }),
+    /generation mismatch/,
+  );
+  await driver.stop({ profileId: "profile.1", generation: 2 });
+  await assert.rejects(lstat(second.workerPath), { code: "ENOENT" });
+  await assert.rejects(lstat(second.profileDir), { code: "ENOENT" });
+});
+
+test(
+  "the Linux launcher rejects read-only worker bindings with a writable profile alias",
+  { skip: process.platform !== "linux" },
+  () => {
+    const launcher = new LinuxBubblewrapLauncher();
+    assert.throws(
+      () =>
+        launcher.argv({
+          workerPath: "/private/profile/.verified-worker",
+          profileDir: "/private/profile",
+        }),
+      /outside the writable profile/,
+    );
+    assert.doesNotThrow(() =>
+      launcher.argv({
+        workerPath: "/private/profile.artifact/.verified-worker",
+        profileDir: "/private/profile",
+      }),
+    );
+  },
+);
 
 test(
   "shutdown kills a real pipe-connected worker that remains alive after stdin EOF",

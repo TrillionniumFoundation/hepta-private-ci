@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants } from "node:fs";
 import { mkdir, open, rm } from "node:fs/promises";
-import { isAbsolute, join } from "node:path";
+import { isAbsolute, join, relative, sep } from "node:path";
 
 import {
   WorkerFrameDecoder,
@@ -11,6 +11,7 @@ import {
 } from "./worker-protocol.js";
 import { positiveInteger, stableId } from "./runtime-contract.js";
 import { ensurePrivateWorkerProfileRoot } from "./worker-profile.js";
+import { readBoundedWorkerArtifact } from "./worker-artifact.js";
 
 const DIGEST = /^[0-9a-f]{64}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
@@ -69,6 +70,17 @@ export class LinuxBubblewrapLauncher {
   argv({ workerPath, profileDir }) {
     if (!isAbsolute(workerPath) || !isAbsolute(profileDir)) {
       throw new TypeError("workerPath and profileDir must be absolute");
+    }
+    const workerRelativeToProfile = relative(profileDir, workerPath);
+    if (
+      workerRelativeToProfile === "" ||
+      (!isAbsolute(workerRelativeToProfile) &&
+        workerRelativeToProfile !== ".." &&
+        !workerRelativeToProfile.startsWith(`..${sep}`))
+    ) {
+      throw new TypeError(
+        "verified worker artifact must be outside the writable profile",
+      );
     }
     return [
       "--unshare-all",
@@ -389,6 +401,7 @@ export class SubprocessBrowserDriver {
   #child = null;
   #client = null;
   #profileDir = null;
+  #artifactDir = null;
   #verifiedWorkerPath = null;
   #sessionId = null;
   #generation = null;
@@ -443,7 +456,9 @@ export class SubprocessBrowserDriver {
         `${sessionId}.${generation}.${randomUUID()}`,
       );
       await mkdir(this.#profileDir, { mode: 0o700 });
-      this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
+      this.#artifactDir = `${this.#profileDir}.artifact`;
+      await mkdir(this.#artifactDir, { mode: 0o700 });
+      this.#verifiedWorkerPath = join(this.#artifactDir, ".verified-worker");
       await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
       if (signal?.aborted || this.#shutdownRequested) throw abortError();
       this.#sessionId = sessionId;
@@ -576,7 +591,10 @@ export class SubprocessBrowserDriver {
 
   async #readVerifiedWorkerArtifact() {
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const handle = await open(this.#workerPath, constants.O_RDONLY | noFollow);
+    const handle = await open(
+      this.#workerPath,
+      constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0),
+    );
     try {
       const info = await handle.stat();
       if (
@@ -588,7 +606,10 @@ export class SubprocessBrowserDriver {
           "browser worker artifact must be a bounded regular file",
         );
       }
-      const bytes = await handle.readFile();
+      const bytes = await readBoundedWorkerArtifact(
+        handle,
+        MAX_WORKER_ARTIFACT_BYTES,
+      );
       if (sha256(bytes) !== this.#workerDigest) {
         throw new TypeError("browser worker artifact digest mismatch");
       }
@@ -633,10 +654,12 @@ export class SubprocessBrowserDriver {
   }
 
   async #cleanupProfile() {
-    if (!this.#profileDir) return;
-    const profileDir = this.#profileDir;
+    const paths = [this.#profileDir, this.#artifactDir].filter(Boolean);
     this.#profileDir = null;
+    this.#artifactDir = null;
     this.#verifiedWorkerPath = null;
-    await rm(profileDir, { recursive: true, force: true });
+    await Promise.all(
+      paths.map((path) => rm(path, { recursive: true, force: true })),
+    );
   }
 }
