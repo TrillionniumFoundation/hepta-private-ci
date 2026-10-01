@@ -128,6 +128,14 @@ pub(crate) struct ProjectionEdge {
     pub(crate) source_revision: i64,
 }
 
+struct CanonicalNodeProjection {
+    entity_type: String,
+    label: String,
+    kind_id: StableId,
+    payload_digest: Digest32,
+    supports: Vec<KnowledgeSupportV2>,
+}
+
 const KG_GRAPH_PROFILE_V2: &[u8] = b"hepta:cognitive:kg-sqlite-adapter:v1";
 
 pub(crate) fn canonical_generation_from_projection(
@@ -141,37 +149,50 @@ pub(crate) fn canonical_generation_from_projection(
     let graph_profile_digest = Digest32::of_bytes(KG_GRAPH_PROFILE_V2);
 
     let mut occurrence_to_canonical = BTreeMap::<String, StableId>::new();
-    let mut canonical_nodes =
-        BTreeMap::<StableId, (StableId, Digest32, Vec<KnowledgeSupportV2>)>::new();
+    // These caches belong to this bounded source cut only. Occurrence support
+    // digests still bind every source revision independently.
+    let mut node_kinds = BTreeMap::<String, StableId>::new();
+    let mut canonical_nodes = BTreeMap::<StableId, CanonicalNodeProjection>::new();
     for node in nodes {
         let canonical_id = stable_id(&node.canonical_entity_id, "canonical entity id")?;
         occurrence_to_canonical.insert(node.node_id.clone(), canonical_id.clone());
-        let kind_id = stable_digest_id(
-            "kg-kind:v1:",
-            b"hepta:cognitive:kg-node-kind:v1",
-            &[node.entity_type.as_bytes()],
-        )?;
-        let payload_digest = framed_digest32(
-            b"hepta:cognitive:kg-node-payload:v1",
-            &[
-                node.canonical_entity_id.as_bytes(),
-                node.entity_type.as_bytes(),
-                node.label.as_bytes(),
-            ],
-        );
         let support = node_support(node)?;
         match canonical_nodes.entry(canonical_id) {
             std::collections::btree_map::Entry::Vacant(entry) => {
-                entry.insert((kind_id, payload_digest, vec![support]));
+                let kind_id = match node_kinds.entry(node.entity_type.clone()) {
+                    std::collections::btree_map::Entry::Vacant(entry) => entry
+                        .insert(stable_digest_id(
+                            "kg-kind:v1:",
+                            b"hepta:cognitive:kg-node-kind:v1",
+                            &[node.entity_type.as_bytes()],
+                        )?)
+                        .clone(),
+                    std::collections::btree_map::Entry::Occupied(entry) => entry.get().clone(),
+                };
+                let payload_digest = framed_digest32(
+                    b"hepta:cognitive:kg-node-payload:v1",
+                    &[
+                        node.canonical_entity_id.as_bytes(),
+                        node.entity_type.as_bytes(),
+                        node.label.as_bytes(),
+                    ],
+                );
+                entry.insert(CanonicalNodeProjection {
+                    entity_type: node.entity_type.clone(),
+                    label: node.label.clone(),
+                    kind_id,
+                    payload_digest,
+                    supports: vec![support],
+                });
             }
             std::collections::btree_map::Entry::Occupied(mut entry) => {
-                let (existing_kind, existing_payload, supports) = entry.get_mut();
-                if *existing_kind != kind_id || *existing_payload != payload_digest {
+                let existing = entry.get_mut();
+                if existing.entity_type != node.entity_type || existing.label != node.label {
                     return Err(CognitiveStoreError::Conflict(
                         "canonical KG node supports disagree on kind or payload".to_string(),
                     ));
                 }
-                supports.push(support);
+                existing.supports.push(support);
             }
         }
     }
@@ -179,16 +200,17 @@ pub(crate) fn canonical_generation_from_projection(
     let canonical_nodes = canonical_nodes
         .into_iter()
         .map(
-            |(node_id, (node_kind_id, payload_digest, supports))| KnowledgeNodeV2 {
+            |(node_id, projection)| KnowledgeNodeV2 {
                 node_id,
-                node_kind_id,
-                payload_digest,
-                supports,
+                node_kind_id: projection.kind_id,
+                payload_digest: projection.payload_digest,
+                supports: projection.supports,
             },
         )
         .collect::<Vec<_>>();
 
     let mut canonical_edges = BTreeMap::<KnowledgeEdgeIdentityV2, Vec<KnowledgeSupportV2>>::new();
+    let mut relation_kinds = BTreeMap::<String, KnowledgeRelationKindV2>::new();
     for edge in edges {
         let source_node_id = occurrence_to_canonical
             .get(&edge.from_node_id)
@@ -206,9 +228,15 @@ pub(crate) fn canonical_generation_from_projection(
                     "KG edge target occurrence has no canonical node identity".to_string(),
                 )
             })?;
+        let relation = match relation_kinds.entry(edge.relation.clone()) {
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(canonical_relation_kind(&edge.relation)?).clone()
+            }
+            std::collections::btree_map::Entry::Occupied(entry) => entry.get().clone(),
+        };
         let identity = KnowledgeEdgeIdentityV2 {
             source_node_id,
-            relation: canonical_relation_kind(&edge.relation)?,
+            relation,
             target_node_id,
         };
         canonical_edges
@@ -257,11 +285,52 @@ pub(crate) fn canonical_generation_from_projection(
     })
 }
 
+enum ProjectionLoadMode {
+    GenerationOnly,
+    QueryCut,
+}
+
 pub(crate) async fn load_canonical_generation_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     projection_scope: &str,
     generation: i64,
 ) -> Result<KnowledgeGenerationV2, CognitiveStoreError> {
+    load_generation_cut_tx(
+        transaction,
+        projection_scope,
+        generation,
+        ProjectionLoadMode::GenerationOnly,
+    )
+    .await
+    .map(|(generation, _)| generation)
+}
+
+pub(crate) async fn load_generation_query_cut_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    projection_scope: &str,
+    generation: i64,
+) -> Result<
+    (KnowledgeGenerationV2, Option<BTreeMap<String, (String, i64)>>),
+    CognitiveStoreError,
+> {
+    load_generation_cut_tx(
+        transaction,
+        projection_scope,
+        generation,
+        ProjectionLoadMode::QueryCut,
+    )
+    .await
+}
+
+async fn load_generation_cut_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    projection_scope: &str,
+    generation: i64,
+    mode: ProjectionLoadMode,
+) -> Result<
+    (KnowledgeGenerationV2, Option<BTreeMap<String, (String, i64)>>),
+    CognitiveStoreError,
+> {
     if generation <= 0 {
         return Err(CognitiveStoreError::Corrupt(
             "KG generation must be positive".to_string(),
@@ -303,6 +372,29 @@ pub(crate) async fn load_canonical_generation_tx(
             b"hepta:cognitive:kg-legacy-source-vector:v1",
             &[digest32_from_sha256(&source_snapshot_sha256)?.as_array()],
         ),
+    };
+    let mut compact_supports = match mode {
+        ProjectionLoadMode::GenerationOnly => None,
+        ProjectionLoadMode::QueryCut => {
+            let storage_mode: Option<String> = sqlx::query_scalar(
+                "SELECT storage_mode FROM kg_projection_generation_storage
+                 WHERE projection_scope = ? AND generation = ?",
+            )
+            .bind(projection_scope)
+            .bind(generation)
+            .fetch_optional(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
+            match storage_mode {
+                Some(storage_mode) if storage_mode == "revision_facts_v1" => Some(BTreeMap::new()),
+                Some(storage_mode) => {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "unsupported KG generation storage mode `{storage_mode}`"
+                    )));
+                }
+                None => None,
+            }
+        }
     };
 
     // A generation is an immutable cut over revision facts. For every memory
@@ -349,12 +441,18 @@ pub(crate) async fn load_canonical_generation_tx(
         ));
     }
     let mut nodes = Vec::with_capacity(node_rows.len());
+    let mut occurrence_ids = BTreeMap::new();
     for row in node_rows {
         let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
         let memory_revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
         let entity_key: String = row.try_get("entity_key").map_err(unavailable)?;
+        let node_id = occurrence_node_id(&memory_id, memory_revision, &entity_key);
+        occurrence_ids.insert(
+            (memory_id.clone(), memory_revision, entity_key),
+            node_id.clone(),
+        );
         nodes.push(ProjectionNode {
-            node_id: occurrence_node_id(&memory_id, memory_revision, &entity_key),
+            node_id,
             canonical_entity_id: row.try_get("canonical_entity_id").map_err(unavailable)?,
             entity_type: row.try_get("entity_type").map_err(unavailable)?,
             label: row.try_get("label").map_err(unavailable)?,
@@ -415,11 +513,37 @@ pub(crate) async fn load_canonical_generation_tx(
         let relation_key: String = row.try_get("relation_key").map_err(unavailable)?;
         let from_entity_key: String = row.try_get("from_entity_key").map_err(unavailable)?;
         let to_entity_key: String = row.try_get("to_entity_key").map_err(unavailable)?;
+        let from_node_id = occurrence_ids
+            .get(&(memory_id.clone(), memory_revision, from_entity_key))
+            .cloned()
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt(
+                    "KG edge source occurrence has no canonical node identity".to_string(),
+                )
+            })?;
+        let to_node_id = occurrence_ids
+            .get(&(memory_id.clone(), memory_revision, to_entity_key))
+            .cloned()
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt(
+                    "KG edge target occurrence has no canonical node identity".to_string(),
+                )
+            })?;
+        let edge_id = occurrence_edge_id(&memory_id, memory_revision, &relation_key);
+        if let Some(index) = compact_supports.as_mut()
+            && index
+                .insert(edge_id.clone(), (memory_id.clone(), memory_revision))
+                .is_some()
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "duplicate compact KG edge occurrence identity".to_string(),
+            ));
+        }
         edges.push(ProjectionEdge {
-            edge_id: occurrence_edge_id(&memory_id, memory_revision, &relation_key),
+            edge_id,
             canonical_relation_id: row.try_get("canonical_relation_id").map_err(unavailable)?,
-            from_node_id: occurrence_node_id(&memory_id, memory_revision, &from_entity_key),
-            to_node_id: occurrence_node_id(&memory_id, memory_revision, &to_entity_key),
+            from_node_id,
+            to_node_id,
             relation: row.try_get("relation").map_err(unavailable)?,
             valid_from: row
                 .try_get("valid_from_unix_seconds")
@@ -452,85 +576,7 @@ pub(crate) async fn load_canonical_generation_tx(
                 .to_string(),
         ));
     }
-    Ok(rebuilt)
-}
-
-pub(crate) async fn load_compact_edge_support_index_tx(
-    transaction: &mut Transaction<'_, Sqlite>,
-    projection_scope: &str,
-    generation: i64,
-) -> Result<Option<BTreeMap<String, (String, i64)>>, CognitiveStoreError> {
-    let storage_mode: Option<String> = sqlx::query_scalar(
-        "SELECT storage_mode
-         FROM kg_projection_generation_storage
-         WHERE projection_scope = ? AND generation = ?",
-    )
-    .bind(projection_scope)
-    .bind(generation)
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    let Some(storage_mode) = storage_mode else {
-        return Ok(None);
-    };
-    if storage_mode != "revision_facts_v1" {
-        return Err(CognitiveStoreError::Corrupt(format!(
-            "unsupported KG generation storage mode `{storage_mode}`"
-        )));
-    }
-
-    let rows = sqlx::query(
-        "WITH selected_heads AS (
-             SELECT h.trigger_memory_id AS memory_id,
-                    h.trigger_memory_revision AS memory_revision
-             FROM kg_projection_generation_receipts h
-             WHERE h.projection_scope = ?
-               AND h.generation <= ?
-               AND h.generation = (
-                   SELECT MAX(x.generation)
-                   FROM kg_projection_generation_receipts x
-                   WHERE x.projection_scope = h.projection_scope
-                     AND x.trigger_memory_id = h.trigger_memory_id
-                     AND x.generation <= ?
-               )
-         )
-         SELECT q.memory_id, q.memory_revision, q.relation_key
-         FROM selected_heads h
-         JOIN memory_revisions m
-           ON m.memory_id = h.memory_id AND m.revision = h.memory_revision
-         JOIN kg_revision_relations q
-           ON q.memory_id = h.memory_id AND q.memory_revision = h.memory_revision
-         WHERE m.verification = 'verified' AND m.lifecycle = 'active'
-         ORDER BY q.memory_id, q.memory_revision, q.relation_key LIMIT ?",
-    )
-    .bind(projection_scope)
-    .bind(generation)
-    .bind(generation)
-    .bind(limit_plus_one(MAX_SCOPE_EDGES)?)
-    .fetch_all(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    if rows.len() > MAX_SCOPE_EDGES {
-        return Err(CognitiveStoreError::Corrupt(
-            "compact KG edge-support index exceeds the canonical edge limit".to_string(),
-        ));
-    }
-    let mut index = BTreeMap::new();
-    for row in rows {
-        let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
-        let memory_revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
-        let relation_key: String = row.try_get("relation_key").map_err(unavailable)?;
-        let edge_id = occurrence_edge_id(&memory_id, memory_revision, &relation_key);
-        if index
-            .insert(edge_id, (memory_id, memory_revision))
-            .is_some()
-        {
-            return Err(CognitiveStoreError::Corrupt(
-                "duplicate compact KG edge occurrence identity".to_string(),
-            ));
-        }
-    }
-    Ok(Some(index))
+    Ok((rebuilt, compact_supports))
 }
 
 fn node_support(node: &ProjectionNode) -> Result<KnowledgeSupportV2, CognitiveStoreError> {
@@ -864,6 +910,7 @@ impl CognitiveStore {
         }
         let mut canonical_shapes = BTreeMap::<String, (String, String)>::new();
         let mut nodes = Vec::with_capacity(entity_rows.len());
+        let mut occurrence_ids = BTreeMap::new();
         for row in entity_rows {
             let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
             let memory_revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
@@ -891,8 +938,13 @@ impl CognitiveStore {
                     (entity_type.clone(), label.clone()),
                 );
             }
+            let node_id = occurrence_node_id(&memory_id, memory_revision, &entity_key);
+            occurrence_ids.insert(
+                (memory_id.clone(), memory_revision, entity_key),
+                node_id.clone(),
+            );
             nodes.push(ProjectionNode {
-                node_id: occurrence_node_id(&memory_id, memory_revision, &entity_key),
+                node_id,
                 canonical_entity_id: stored_canonical_entity_id,
                 entity_type,
                 label,
@@ -963,11 +1015,27 @@ impl CognitiveStore {
                     "KG relation identity does not match its canonical endpoints".to_string(),
                 ));
             }
+            let from_node_id = occurrence_ids
+                .get(&(memory_id.clone(), memory_revision, from_entity_key))
+                .cloned()
+                .ok_or_else(|| {
+                    CognitiveStoreError::Corrupt(
+                        "KG edge source occurrence has no canonical node identity".to_string(),
+                    )
+                })?;
+            let to_node_id = occurrence_ids
+                .get(&(memory_id.clone(), memory_revision, to_entity_key))
+                .cloned()
+                .ok_or_else(|| {
+                    CognitiveStoreError::Corrupt(
+                        "KG edge target occurrence has no canonical node identity".to_string(),
+                    )
+                })?;
             edges.push(ProjectionEdge {
                 edge_id: occurrence_edge_id(&memory_id, memory_revision, &relation_key),
                 canonical_relation_id: stored_canonical_relation_id,
-                from_node_id: occurrence_node_id(&memory_id, memory_revision, &from_entity_key),
-                to_node_id: occurrence_node_id(&memory_id, memory_revision, &to_entity_key),
+                from_node_id,
+                to_node_id,
                 relation,
                 valid_from: row
                     .try_get("valid_from_unix_seconds")

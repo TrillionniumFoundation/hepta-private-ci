@@ -26,8 +26,7 @@ use crate::MemoryVerification;
 use crate::ProjectionGeneration;
 use crate::SourceRevisionId;
 use crate::StableMemoryId;
-use crate::cognitive_kg_store::load_canonical_generation_tx;
-use crate::cognitive_kg_store::load_compact_edge_support_index_tx;
+use crate::cognitive_kg_store::load_generation_query_cut_tx;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 
@@ -843,7 +842,7 @@ impl CognitiveStore {
                 .entry((seed.projection_scope.clone(), seed.generation))
             {
                 std::collections::btree_map::Entry::Vacant(entry) => {
-                    let canonical = load_canonical_generation_tx(
+                    let (canonical, compact_supports) = load_generation_query_cut_tx(
                         transaction,
                         &seed.projection_scope,
                         seed.generation,
@@ -860,12 +859,6 @@ impl CognitiveStore {
                                 "persisted KG generation failed immutable read validation: {error}"
                             ))
                         })?;
-                    let compact_supports = load_compact_edge_support_index_tx(
-                        transaction,
-                        &seed.projection_scope,
-                        seed.generation,
-                    )
-                    .await?;
                     entry.insert(RetrievalGeneration {
                         canonical,
                         relation_kinds,
