@@ -176,6 +176,23 @@
         "fresh_recovery_publication_cancel_race_is_frozen_as_cancelled"
       ],
       "supportScope": "exact-run pre-send, live and terminal control checks with mocked Agentd RPC and App Server transport; real local journal reopen and authenticated ThreadRead fixture projections; no target-host cancellation latency or daemon crash-cut qualification"
+    },
+    {
+      "id": "prompt_optimizer_owner_provenance",
+      "tests": [
+        "enumerated_owner_rejects_binding_mutation_and_valid_output_graft_before_pricing",
+        "priced_owner_rejects_utility_mutation_and_valid_output_graft_before_selection",
+        "selected_owner_preserves_wait_and_stale_semantics_but_rejects_public_mutations"
+      ],
+      "supportScope": "real registry enumeration, signed completeness/pricing fixtures and graph-bound selection; private original snapshots reject public field mutation and whole-valid-output grafts at each next-owner consumption; preserves fresh Exercise, Wait and RejectStale; no live credentials, model-quality or production acceptance claim"
+    },
+    {
+      "id": "prompt_runtime_single_initialization",
+      "tests": [
+        "concurrent_resolve_initializes_once_and_caches_ready_none_and_failure",
+        "cancelled_initializer_allows_waiting_resolve_to_retry_without_overlap"
+      ],
+      "supportScope": "actual PromptRuntimeHost preparation closure with bounded concurrent and cancelled initialization; Ready, None and Failed share one cached turn resolution; cancelled initializers permit a waiting retry without overlapping host preparation; no physical provider or production acceptance claim"
     }
   ],
   "ordinaryProductTests": [
@@ -819,6 +836,36 @@
       "name": "settled_outbox_timestamp_does_not_block_new_prepared_work",
       "sourcePath": "codex-rs/hepta-operations/src/durable_claim_clock_tests.rs",
       "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "enumerated_owner_rejects_binding_mutation_and_valid_output_graft_before_pricing",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs",
+      "package": "codex-hepta-prompt-optimizer",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "priced_owner_rejects_utility_mutation_and_valid_output_graft_before_selection",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs",
+      "package": "codex-hepta-prompt-optimizer",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "selected_owner_preserves_wait_and_stale_semantics_but_rejects_public_mutations",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs",
+      "package": "codex-hepta-prompt-optimizer",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "concurrent_resolve_initializes_once_and_caches_ready_none_and_failure",
+      "sourcePath": "codex-rs/ext/hepta-prompt/src/resolve_tests.rs",
+      "package": "codex-hepta-prompt-extension",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "cancelled_initializer_allows_waiting_resolve_to_retry_without_overlap",
+      "sourcePath": "codex-rs/ext/hepta-prompt/src/resolve_tests.rs",
+      "package": "codex-hepta-prompt-extension",
       "executionStatus": "pending"
     }
   ],

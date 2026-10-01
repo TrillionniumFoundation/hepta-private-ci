@@ -97,6 +97,7 @@ would weaken these guarantees.
 | Registry delivery can substitute owner lineage after rehashing | Public payload, exercise or compatible snapshot fields are replaced with internally consistent hashes | Compare the DTO to private admitted owner lineage and immutable serialization bytes |
 | Complete registry output can be grafted across compilations | Another legal compilation replaces every public delivery field while the old private exercise lineage remains | Freeze the original complete delivery-set digest and reject the cross-output graft |
 | Direct prepared delivery can substitute a complete valid serialization | Two deliveries share original context/exercise but have different framing and IDs; all public serialization fields are replaced together | Freeze the original complete prepared-delivery aggregate before its first consumer |
+| Upstream Prompt Optimizer outputs can wash substituted semantics into a new owner result | Enumerated bindings, priced net utility or selected utility/expiry/state are changed before the next owner computes a fresh digest; a whole valid output can also replace the old public view | Freeze all public semantics in private original snapshots for enumeration, pricing and selection; validate at every next-owner consumption |
 | Prompt delivery fabricates full-payload token accounting | Registered fragment token costs are reused as the token count of an arbitrary serialized payload | Require the model-profile-bound exact tokenizer for the complete serialized bytes; legacy APIs without one reject |
 | Async journal/page ownership holds mutex guards across I/O | Recovery and physical execution keep an async mutex guard alive during owner calls | Keep serialization with a single permit; use short cursor locks and cancellation-safe journal checkout |
 | Documentation and test navigation drift | Technical claims and mapped test names no longer match source | Correct the guides and validate exact source/test mappings |
@@ -568,3 +569,113 @@ source, logs and dependency libraries. No compiler was killed by this audit.
 The source repairs require their own remote compilation, factory child
 regression, strict lint and platform results; previous candidate passes are
 not substituted for those checks.
+
+### R3: Prompt Optimizer producer provenance and candidate evidence
+
+The renewed audit of immutable source
+`7f48e2dd15b328ab27cadccea41ee3c4f3bd488f` found a remaining upstream owner
+boundary defect. The private prepared/delivery seals protected their admitted
+inputs, but public enumeration, pricing and selection outputs could be altered
+before those seals existed. A changed candidate binding, priced net utility or
+selected utility/expiry/state could be accepted by the next producer and receive
+a fresh internally consistent digest. Replacing all public fields with another
+valid output while retaining the old lineage was also not rejected.
+
+Prompt Optimizer now retains private immutable originals for all three output
+layers. The snapshots cover every public semantic, authority and nested field;
+pricing, selection and exercise validate the relevant original before consuming
+it. Clones share the snapshot through `Arc`, and comparisons need no additional
+allocation. This does not change producer function signatures or signed and
+persisted byte grammar, add authority, or introduce another store/execution
+path. It intentionally prevents external output struct literals and struct
+update syntax. The new `OwnerOutputDrift` error variant affects exhaustive error
+matches. [COMPATIBILITY.md](COMPATIBILITY.md#canonical-prompt-optimizer-owner-outputs)
+records both source changes without calling them additive.
+
+Three new regressions use actual public enumeration, signed completeness and
+pricing fixtures, and graph-bound selection. They reject field tampering and
+whole-valid-output grafts at all three layers, and retain valid Exercise, Wait
+and RejectStale semantics. The two tracked external Intelligence/Agentd fixtures
+now use those actual producers rather than constructing owner outputs; two KG
+dev-dependencies and two workspace lock edges support those fixtures. Two
+independent follow-up source reviews found no new confirmed defect in the
+inspected provenance and compatibility paths. That finite review does not prove
+all production behaviors or remove the external acceptance gates.
+
+Local R3 worktree verification ran `just test -p codex-hepta-prompt-optimizer`
+with 35 passed and zero skipped, including all three new regressions, and
+`just test -p codex-hepta-intelligence` with 104 passed and zero skipped,
+including the migrated real-producer fixture. Scoped `just fix -p
+codex-hepta-prompt-optimizer` exited zero without source changes. These are local
+snapshot observations, not exact-head CI or Agentd execution receipts.
+
+The old `7f48e2dd` source completed three Linux lanes with 104 intelligence,
+61 operation-owner, 119 ledger and 63 native assertions passed in each lane:
+347 passes, with one ignored operation test and one ignored ledger test.
+Default Agentd compilation then failed on two source errors. The R3 candidate
+repairs the policy re-export and the cancellation caller's unnecessary `Ok`
+Debug constraint; their new-candidate Agentd execution must be recorded
+separately. The old lane results cannot qualify those fixes or the new owner
+seals. Eight macro emission tests passed again. `bazel --batch mod deps
+--lockfile_mode=update` completed and left `MODULE.bazel.lock` unchanged, but the
+subsequent no-fetch Agentd query exited 7 before package loading because the
+generated crates repository was not cached. No Bazel analysis/build pass is
+claimed.
+
+Tracked mappings remain pending. The exact-execution verifier now requires
+`prompt-optimizer-tests.json` from its own package command, maps all three new
+test passes to that record, and assigns the owner sources to review partition F.
+Linux lanes execute that package and include it in strict lint. macOS diagnostics
+also execute and lint it. The GitHub qualification-host lane compiles its actual
+release test binary and invokes all three provenance regressions. Those host
+assertions extend functional conformance only; existing fixture latency,
+signature, hard-kill and resource measurements retain their original scope.
+New-candidate CI remains pending. Production embedding, real provider execution,
+target-host qualification, independent acceptance, activation and release remain
+unproved and false in the tracked declaration.
+
+## Physical prompt-runtime prerequisite and exact evidence follow-up
+
+The old `7f48e2dd15b328ab27cadccea41ee3c4f3bd488f` candidate also completed
+macOS diagnostics run `36849233068`, job `110326681412`. Its canonical and
+operation-owner commands passed 165 assertions, including all nine new durable
+clock regressions, with one ignored fresh-process crash worker. Default Agentd
+and all-target compilation each exited 101 on the new factory fixture's missing
+policy import and its unnecessary `Ok` payload `Debug` requirement. No factory
+parent or child containment result was executed on that source.
+
+Its actual strict command exited 101 on two prerequisite-owner diagnostics in
+`codex-rs/ext/hepta-prompt/src/lib.rs`: a `tokio::sync::MutexGuard` retained
+across preparation await at line 500, and a complex private terminal tuple at
+line 760. The file's blob was exactly `d460584b51eb10ebbd65be29d5fb6a7eedf51927`
+on both that candidate and main `997e7beef8151160065df36b024bc8da5c989e93`.
+These were historical code, newly exposed after the earlier lint cleanup, but
+still blocked this module's actual adapter/App Server prompt consumer. Their
+failure does not prove that every later lint target completed cleanly.
+
+The same source's qualification-host run `36849233170`, job `110326682110`,
+passed the measurement helper's eight tests and then failed release-Agentd
+compilation with the two factory fixture errors. Factory, durable clock/crash
+matrix, semantic probes and timing/resource stages were skipped. No metrics
+were produced, and older `7339a9e` host measurements do not qualify this source.
+
+The new private extension resolution retains the existing single-preparation
+and turn-cache semantics through `OnceCell<ResolvedAttachment>::get_or_init`.
+It stores Ready, None and Failed; an unfinished cancelled initializer releases
+the slot for a waiting retry. It does not drop serialization around real host
+preparation or convert a cached failure into `get_or_try_init` retries. A private
+type alias retains the terminal tuple's fields and order. Public APIs, Cargo
+features, provider/terminal identity and the separate injection flag are
+unchanged. Two new bounded tests use actual host closures and detect preparation
+entry counts and maximum concurrency for shared cached results and a cancelled
+initializer followed by a waiting retry.
+
+Source declarations, traceability and partition F require these named passes
+from `prompt-extension-tests.json` and its own `codex-hepta-prompt-extension`
+package command. Linux and macOS execute that owner; Linux strict lint names it
+explicitly. The host compiles its typed release test binary and runs the two
+full `resolve_tests::...` paths with `--exact`. These added assertions do not
+broaden the existing performance metrics. Extension and new-candidate Agentd
+execution are still pending here; the local 35 optimizer and 104 intelligence
+passes recorded above cannot qualify them. Tracked exact-head, merge and
+production/promotion claims remain pending or false.

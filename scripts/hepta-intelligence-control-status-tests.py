@@ -210,6 +210,63 @@ class CommandEvidenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             STATUS.project_execution({}, {}, self.head, "source-head", "passed", None)
 
+    def test_pass_projection_requires_each_prompt_owner_command_record(self) -> None:
+        for missing in ("prompt-optimizer-tests.json", "prompt-extension-tests.json"):
+            def admit_record(path: Path, *_: object) -> tuple[dict, str]:
+                if path.name == missing:
+                    raise FileNotFoundError(path)
+                return {}, ""
+
+            with self.subTest(record=missing), patch.object(
+                STATUS, "validate_command_record", side_effect=admit_record
+            ):
+                with self.assertRaises(FileNotFoundError):
+                    STATUS.project_execution(
+                        {"sourceBindings": [], "statusMatrix": {}},
+                        {"ordinaryProductTests": [], "qualificationOnlyTests": []},
+                        self.head, "source-head", "passed", self.root,
+                    )
+
+    def test_prompt_owner_test_cannot_borrow_an_intelligence_record(self) -> None:
+        for package, record, module, name in (
+            (
+                "codex-hepta-prompt-optimizer", "prompt-optimizer-tests.json",
+                "canonical::tests::provenance",
+                "enumerated_owner_rejects_binding_mutation_and_valid_output_graft_before_pricing",
+            ),
+            (
+                "codex-hepta-prompt-extension", "prompt-extension-tests.json",
+                "resolve_tests",
+                "concurrent_resolve_initializes_once_and_caches_ready_none_and_failure",
+            ),
+        ):
+            trace = {
+                "ordinaryProductTests": [{"name": name, "package": package}],
+                "qualificationOnlyTests": [],
+            }
+            owner_log = "test another_test ... ok\n"
+
+            def admit_record(path: Path, *_: object) -> tuple[dict, str]:
+                log = owner_log if path.name == record else f"test {name} ... ok\n"
+                return {"log_sha256": "c" * 64}, log
+
+            with self.subTest(package=package), patch.object(
+                STATUS, "validate_command_record", side_effect=admit_record
+            ):
+                with self.assertRaises(ValueError):
+                    STATUS.project_execution(
+                        {"sourceBindings": [], "statusMatrix": {}}, trace,
+                        self.head, "source-head", "passed", self.root,
+                    )
+                owner_log = f"test {module}::{name} ... ok\n"
+                _, observed = STATUS.project_execution(
+                    {"sourceBindings": [], "statusMatrix": {}}, trace,
+                    self.head, "source-head", "passed", self.root,
+                )
+                self.assertEqual(
+                    observed["ordinaryProductTests"][0]["commandRecord"], record,
+                )
+
     def test_log_path_cannot_escape_record_directory(self) -> None:
         changed = copy.deepcopy(self.record)
         changed["log_file"] = "../command.log"

@@ -16,6 +16,7 @@ on:
       - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/ext/hepta-prompt/**"
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-context-compiler/**"
       - "codex-rs/hepta-intelligence-eval/**"
@@ -43,6 +44,7 @@ on:
       - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/ext/hepta-prompt/**"
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-context-compiler/**"
       - "codex-rs/hepta-intelligence-eval/**"
@@ -190,6 +192,24 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-command-records/intelligence-tests.json"
           -- cargo test --locked -p codex-hepta-intelligence
 
+      - name: Test canonical prompt-optimizer owner provenance
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/prompt-optimizer-tests.json"
+          -- cargo test --locked -p codex-hepta-prompt-optimizer
+
+      - name: Test physical prompt-runtime single initialization and cancellation
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/prompt-extension-tests.json"
+          -- cargo test --locked -p codex-hepta-prompt-extension
+
       - name: Test operation-owner recovery and claim boundaries
         working-directory: codex-rs
         env:
@@ -245,7 +265,7 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-command-records/agentd-all-targets.json"
           -- cargo check --locked -p codex-hepta-agentd --all-targets
 
-      - name: Strict lint intelligence and operation-owner packages
+      - name: Strict lint intelligence and prompt/operation-owner packages
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
@@ -253,7 +273,9 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-command-records/clippy.json"
           -- cargo clippy --locked -p codex-hepta-intelligence
-          -p codex-hepta-agentd -p codex-hepta-operations --all-targets -- -D warnings
+          -p codex-hepta-agentd -p codex-hepta-operations
+          -p codex-hepta-prompt-optimizer -p codex-hepta-prompt-extension
+          --all-targets -- -D warnings
 
       - name: Project only observed exact execution evidence
         shell: bash

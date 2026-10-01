@@ -38,6 +38,12 @@ REQUIRED_PARTITION_PATHS = {
         "codex-rs/hepta-agentd/src/intelligence_membership.rs",
         "codex-rs/hepta-agentd/src/intelligence_commit_state.rs",
     },
+    "F": {
+        "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+        "codex-rs/hepta-prompt-optimizer/src/canonical_integrity.rs",
+        "codex-rs/ext/hepta-prompt/src/lib.rs",
+        "codex-rs/ext/hepta-prompt/src/resolve_tests.rs",
+    },
 }
 
 
@@ -67,6 +73,8 @@ def partition_for(path: str) -> str:
                 "codex-rs/core/",
                 "codex-rs/hepta-authbus/",
                 "codex-rs/hepta-prompt-registry/",
+                "codex-rs/hepta-prompt-optimizer/",
+                "codex-rs/ext/hepta-prompt/",
                 "codex-rs/state/",
                 "codex-rs/hepta-context-compiler/",
                 "codex-rs/hepta-ndu/",

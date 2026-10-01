@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-prompt-optimizer/**'
+      - 'codex-rs/ext/hepta-prompt/**'
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-infer-worker-host/**'
       - 'codex-rs/hepta-operations/**'
@@ -85,6 +87,13 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-diagnostic-records/owner-tests.json"
           -- cargo test --locked -p codex-hepta-intelligence -p codex-hepta-operations
+      - name: Execute canonical prompt-optimizer provenance regressions
+        if: ${{ !cancelled() }}
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-diagnostic-records/prompt-optimizer-tests.json"
+          -- cargo test --locked -p codex-hepta-prompt-optimizer
       - name: Install DotSlash
         if: ${{ !cancelled() }}
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
@@ -94,6 +103,13 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Execute physical prompt-runtime owner regressions
+        if: ${{ !cancelled() }}
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-diagnostic-records/prompt-extension-tests.json"
+          -- cargo test --locked -p codex-hepta-prompt-extension
       - name: Execute default Agentd intelligence regressions
         if: ${{ !cancelled() }}
         working-directory: codex-rs
@@ -115,7 +131,9 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-diagnostic-records/clippy.json"
           -- cargo clippy --locked -p codex-hepta-intelligence
-          -p codex-hepta-operations -p codex-hepta-agentd --all-targets -- -D warnings
+          -p codex-hepta-operations -p codex-hepta-agentd
+          -p codex-hepta-prompt-optimizer -p codex-hepta-prompt-extension
+          --all-targets -- -D warnings
       - name: Produce formatter patch outside the executed checkout
         if: ${{ !cancelled() }}
         shell: bash

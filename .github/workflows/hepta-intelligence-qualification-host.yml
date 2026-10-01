@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/ext/hepta-prompt/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-context-compiler/**"
@@ -177,18 +179,22 @@ jobs:
           }
           compile_probe codex-hepta-agentd codex_hepta_agentd agentd
           compile_probe codex-hepta-intelligence codex_hepta_intelligence intelligence
+          compile_probe codex-hepta-prompt-optimizer codex_hepta_prompt_optimizer prompt-optimizer
+          compile_probe codex-hepta-prompt-extension codex_hepta_prompt_extension prompt-extension
           compile_integration_probe codex-hepta-intelligence canonical_candidate_closure intelligence-candidate
           compile_probe codex-hepta-operations codex_hepta_operations operations
           compile_probe codex-hepta-infer-worker-host codex_hepta_infer_worker_host infer-worker
           compile_probe codex-hepta-supervisor codex_hepta_supervisor supervisor
           printf 'AGENTD_TEST_BINARY=%s\n' "$(cat "$root/agentd-test-binary")" >> "$GITHUB_ENV"
           printf 'INTELLIGENCE_TEST_BINARY=%s\n' "$(cat "$root/intelligence-test-binary")" >> "$GITHUB_ENV"
+          printf 'PROMPT_OPTIMIZER_TEST_BINARY=%s\n' "$(cat "$root/prompt-optimizer-test-binary")" >> "$GITHUB_ENV"
+          printf 'PROMPT_EXTENSION_TEST_BINARY=%s\n' "$(cat "$root/prompt-extension-test-binary")" >> "$GITHUB_ENV"
           printf 'INTELLIGENCE_CANDIDATE_TEST_BINARY=%s\n' "$(cat "$root/intelligence-candidate-test-binary")" >> "$GITHUB_ENV"
           printf 'OPERATIONS_TEST_BINARY=%s\n' "$(cat "$root/operations-test-binary")" >> "$GITHUB_ENV"
           printf 'INFER_WORKER_TEST_BINARY=%s\n' "$(cat "$root/infer-worker-test-binary")" >> "$GITHUB_ENV"
           printf 'SUPERVISOR_TEST_BINARY=%s\n' "$(cat "$root/supervisor-test-binary")" >> "$GITHUB_ENV"
 
-      - name: Execute crash recovery and saturation matrix
+      - name: Execute crash recovery, saturation and prompt provenance matrix
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
@@ -199,8 +205,9 @@ jobs:
           run_probe() {
             local executable="$1"
             local filter="$2"
+            shift 2
             local output="$root/${filter}.log"
-            timeout 180 "$executable" "$filter" --nocapture --test-threads=1 > "$output" 2>&1
+            timeout 180 "$executable" "$filter" "$@" --nocapture --test-threads=1 > "$output" 2>&1
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
           }
           run_probe "$AGENTD_TEST_BINARY" explicit_hard_timeout_terminates_a_real_child_process
@@ -210,6 +217,11 @@ jobs:
           run_probe "$AGENTD_TEST_BINARY" replay_verification_uses_current_time_not_frozen_event_time
           run_probe "$AGENTD_TEST_BINARY" guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen
           run_probe "$AGENTD_TEST_BINARY" rollback_lock_and_parent_links_fail_without_mutating_target
+          run_probe "$PROMPT_OPTIMIZER_TEST_BINARY" canonical::tests::provenance::enumerated_owner_rejects_binding_mutation_and_valid_output_graft_before_pricing --exact
+          run_probe "$PROMPT_OPTIMIZER_TEST_BINARY" canonical::tests::provenance::priced_owner_rejects_utility_mutation_and_valid_output_graft_before_selection --exact
+          run_probe "$PROMPT_OPTIMIZER_TEST_BINARY" canonical::tests::provenance::selected_owner_preserves_wait_and_stale_semantics_but_rejects_public_mutations --exact
+          run_probe "$PROMPT_EXTENSION_TEST_BINARY" resolve_tests::concurrent_resolve_initializes_once_and_caches_ready_none_and_failure --exact
+          run_probe "$PROMPT_EXTENSION_TEST_BINARY" resolve_tests::cancelled_initializer_allows_waiting_resolve_to_retry_without_overlap --exact
           run_probe "$OPERATIONS_TEST_BINARY" child_process_kill_matrix_preserves_durable_effect_semantics
           run_probe "$OPERATIONS_TEST_BINARY" acknowledgement_loss_stays_indeterminate_until_terminal_observer
           run_probe "$OPERATIONS_TEST_BINARY" exact_claim_freezes_the_adopted_intent_generation

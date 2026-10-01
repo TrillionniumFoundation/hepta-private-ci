@@ -21,7 +21,9 @@
     "codex-rs/hepta-agentd",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-learning-ledger",
-    "codex-rs/hepta-infer-worker-host"
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-prompt-optimizer",
+    "codex-rs/ext/hepta-prompt"
   ],
   "statusMatrix": {
     "documentationDepthClosed": true,
@@ -417,6 +419,36 @@
         "let now = self.now_millis()?",
         "ensure_clock_not_behind"
       ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "symbols": [
+        "pub fn enumerate_factors_v1",
+        "pub fn price_factors_v1",
+        "pub fn select_portfolio_v1",
+        "pub fn exercise_v1",
+        "OwnerOutputDrift"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical_integrity.rs",
+      "symbols": [
+        "EnumeratedOriginalV1",
+        "PricedOriginalV1",
+        "SelectedOriginalV1",
+        "fn validate_original",
+        "Arc::new(self.clone())"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "symbols": [
+        "resolved: OnceCell<ResolvedAttachment>",
+        "async fn resolve",
+        "get_or_init",
+        "type PromptRuntimeTerminalMapping",
+        "pub fn install_prompt_runtime"
+      ]
     }
   ],
   "canonicalOperations": [
@@ -517,6 +549,41 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
       "requirements": [
         "authority_manifest_anti_rollback"
+      ]
+    },
+    {
+      "operation": "enumerate_factors_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "requirements": [
+        "prompt_optimizer_owner_provenance"
+      ]
+    },
+    {
+      "operation": "price_factors_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "requirements": [
+        "prompt_optimizer_owner_provenance"
+      ]
+    },
+    {
+      "operation": "select_portfolio_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "requirements": [
+        "prompt_optimizer_owner_provenance"
+      ]
+    },
+    {
+      "operation": "exercise_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "requirements": [
+        "prompt_optimizer_owner_provenance"
+      ]
+    },
+    {
+      "operation": "PromptRuntimeExtension::resolve",
+      "sourcePath": "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "requirements": [
+        "prompt_runtime_single_initialization"
       ]
     }
   ],

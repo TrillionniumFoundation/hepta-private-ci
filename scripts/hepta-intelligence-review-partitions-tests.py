@@ -122,6 +122,23 @@ class ReviewPartitionTests(unittest.TestCase):
             hostile["partitions"][1]["sourcePaths"].remove(path)
             self.reject(hostile)
 
+    def test_prompt_owner_cannot_be_omitted_reassigned_or_borrow_a_record(self) -> None:
+        for path in REVIEW.REQUIRED_PARTITION_PATHS["F"]:
+            with self.subTest(path=path):
+                hostile = copy.deepcopy(self.value)
+                hostile["partitions"][5]["sourcePaths"].remove(path)
+                self.reject(hostile)
+                hostile["partitions"][0]["sourcePaths"].append(path)
+                self.reject(hostile)
+        for record in ("prompt-optimizer-tests.json", "prompt-extension-tests.json"):
+            with self.subTest(record=record):
+                hostile = copy.deepcopy(self.value)
+                hostile["partitions"][5]["requiredCommandRecords"].remove(record)
+                hostile["partitions"][5]["requiredCommandRecords"].append(
+                    "intelligence-tests.json"
+                )
+                self.reject(hostile)
+
     def test_nonexistent_absolute_or_escaping_source_and_scope_reject(self) -> None:
         for path in (
             "missing/source.rs",

@@ -15,6 +15,43 @@ New public APIs must preserve the existing operation identity and effect-boundar
 semantics. Renames require a deprecation window or an atomic update of every
 tracked caller. Consumer compilation is part of the exact-head qualification.
 
+### Canonical Prompt Optimizer owner outputs
+
+`EnumeratedPromptCandidatesV1`, `PricedPromptCandidatesV1` and
+`SelectedPromptPortfolioV1` now contain private owner-produced original
+snapshots. External struct literals and struct update syntax for these types no
+longer compile. Callers obtain them through `enumerate_factors_v1`,
+`price_factors_v1` and `select_portfolio_v1`; public fields remain readable and
+outputs remain cloneable. Mutating a public field does not authorize the next
+owner to consume that altered view. Pricing, selection and exercise reject drift
+or a whole-output graft with `CanonicalPromptError::OwnerOutputDrift`.
+The added error enum variant also requires source updates to exhaustive matches.
+This is an intentional source compatibility tightening, not an additive-only
+change.
+
+Producer function signatures, protocol serialization and signed/persisted digest
+bytes are unchanged. No public seal constructor or test-support admission API is
+provided. The two tracked Intelligence and Agentd fixture callers now use the
+real enumeration, signed pricing and graph-bound selection producers. Their
+test-only KG dependencies add two workspace dependency edges to `Cargo.lock`;
+they do not add a production owner or change authority. Consumer compilation
+and owner regressions are required on the new candidate's own source identity.
+
+### Physical prompt-runtime turn resolution
+
+The private physical prompt extension now uses `OnceCell<ResolvedAttachment>`
+to serialize preparation shared by context and provider-policy contributors.
+Ready, None and Failed remain cached for the turn. Concurrent callers share one
+completed result; cancellation before completion permits a waiting initializer
+to retry without overlapping preparation. Failure is stored as a resolved value,
+not converted into an automatic retry. The separate injection flag and physical
+attempt/terminal lease retain their existing behavior.
+
+This private implementation change and terminal-mapping type alias preserve
+public function signatures, contributor interfaces, dependency features and
+persisted/wire bytes. Exact-head extension package regressions and consumer
+compilation remain required; a private cache refactor grants no new authority.
+
 ### Exact tokenizer admission
 
 Physical prompt preparation now requires a host-owned `ExactTokenizerV2`.

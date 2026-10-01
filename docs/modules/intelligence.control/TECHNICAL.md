@@ -114,6 +114,34 @@ uses only `PreparedAgentdIntelligenceRunV1::physical_prompt`, not arbitrary prom
 text. Compatibility preparation without this delivery cannot execute the physical
 product path. Live selected-action semantics and quality remain acceptance gates.
 
+The upstream Prompt Optimizer also retains private original snapshots for
+`EnumeratedPromptCandidatesV1`, `PricedPromptCandidatesV1` and
+`SelectedPromptPortfolioV1`. Pricing, selection and exercise compare every
+public semantic, authority and nested field with its owner-produced original
+before consumption. Recomputing public digests or grafting a different complete
+valid output while retaining the old private snapshot fails with
+`CanonicalPromptError::OwnerOutputDrift`. Snapshots share immutable `Arc` storage
+across clones; checks compare retained values without changing signed or
+persisted digest grammar. The production logic is in Prompt Optimizer's
+`canonical.rs` and private `canonical_integrity.rs`. Real-producer regressions
+cover binding, net utility, receipt utility/expiry, state and complete-output
+substitution, while retaining fresh Exercise, Wait and RejectStale behavior.
+External output construction and exhaustive error matches require the
+[declared source migration](COMPATIBILITY.md#canonical-prompt-optimizer-owner-outputs).
+
+The physical prompt prerequisite is `codex-hepta-prompt-extension`, consumed by
+the Codex adapter and embedded App Server. It installs the turn context and
+physical provider-policy contributors for the Agentd-owned `PromptRuntimeHost`.
+Their shared private turn state retains one `OnceCell<ResolvedAttachment>`.
+`get_or_init` serializes preparation and caches Ready, None and Failed alike;
+concurrent contributors receive the same resolution. Cancellation drops an
+unfinished initializer so a waiting caller can retry without overlapping host
+preparation. The separate injection flag and sealed physical terminal lease
+remain unchanged. Private terminal mapping uses the same tuple through a type
+alias, without changing public APIs, dependency features or persisted bytes.
+Two bounded regressions exercise actual preparation closures, concurrent cache
+resolution and cancellation followed by a waiting retry.
+
 Prompt delivery requires an actual host-owned `ExactTokenizerV2` through
 `prepare_prompt_delivery_with_tokenizer_v1`,
 `compile_prompt_registry_with_tokenizer_v2` or
@@ -456,10 +484,18 @@ test observed passing. All package tests, including unrelated tests within those
 packages, still run.
 
 The independent workflow runs source-head and deterministic base-merge lanes:
-formatting; intelligence and operations package tests; default Agentd library
-tests; separately labelled legacy tests; all-target compilation; strict Clippy.
+formatting; intelligence, prompt-optimizer, prompt-extension, operations and
+ledger package tests; native owner and default Agentd library tests; separately
+labelled legacy tests; all-target compilation; strict Clippy, including both
+prompt prerequisites. `prompt-extension-tests.json` must contain the extension's
+own command and actual named passes; another package's log cannot qualify it.
 Read-only macOS diagnostics may retain additional failures and a formatter patch
 from a separate worktree, but do not replace those qualification lanes.
+They execute the extension's complete package tests. The qualification-host
+workflow resolves its exact release library test binary from Cargo's typed
+compiler artifacts and runs both private resolution regressions by full module
+path with `--exact`. These assertions add functional coverage and do not extend
+the existing latency, signature, hard-kill or resource measurement claims.
 
 Real-child watchdog test source is not an executed result. Default-profile
 process restart, App Server E2E, every durable crash cut and performance/quality
@@ -675,6 +711,9 @@ and unknown-commit boundaries are explicitly allocated. The verifier rejects
 missing owners, duplicated sources, nonexistent paths, unknown requirements and
 omitted test-command records. An allocation remains `pending`; it is not an
 independent review, execution receipt or acceptance decision.
+Partition F explicitly covers the Prompt Optimizer's private owner originals
+and the physical prompt extension's turn resolution, with separate command
+records and ordinary test mappings for both prerequisite owners.
 
 [FAULT_MATRIX.json](FAULT_MATRIX.json) retains the sixteen required process-loss
 and acknowledgement cuts. Every cut remains `pending` with no bound execution

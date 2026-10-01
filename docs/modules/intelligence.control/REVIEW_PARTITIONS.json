@@ -227,9 +227,15 @@
     },
     {
       "id": "F",
-      "title": "prerequisite fixes",
+      "title": "prerequisite owners and prompt provenance",
       "owner": "integration-owners",
-      "sourcePaths": [],
+      "sourcePaths": [
+        "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+        "codex-rs/hepta-prompt-optimizer/src/canonical_integrity.rs",
+        "codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs",
+        "codex-rs/ext/hepta-prompt/src/lib.rs",
+        "codex-rs/ext/hepta-prompt/src/resolve_tests.rs"
+      ],
       "reviewGlobs": [
         "CALLERS.toml",
         "codex-rs/core/src/client.rs",
@@ -238,16 +244,27 @@
         "codex-rs/state/**",
         "codex-rs/Cargo.lock",
         "codex-rs/hepta-context-compiler/**",
-        "codex-rs/hepta-ndu/**"
+        "codex-rs/hepta-ndu/**",
+        "codex-rs/hepta-prompt-optimizer/**",
+        "codex-rs/ext/hepta-prompt/**"
       ],
-      "requirementIds": [],
+      "requirementIds": [
+        "prompt_optimizer_owner_provenance",
+        "prompt_runtime_single_initialization"
+      ],
       "requiredCommandRecords": [
         "agentd-all-targets.json",
-        "clippy.json"
+        "clippy.json",
+        "prompt-optimizer-tests.json",
+        "prompt-extension-tests.json"
       ],
       "risks": [
         "unowned cross-module change",
-        "workspace drift"
+        "workspace drift",
+        "mutable owner output substitution",
+        "public DTO construction and exhaustive error-match compatibility",
+        "duplicate physical prompt preparation",
+        "cancelled initialization and shared turn cache drift"
       ],
       "reviewStatus": "pending"
     }

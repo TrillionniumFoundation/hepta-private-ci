@@ -57,6 +57,11 @@ REQUIRED_TESTS = {
     "actual_stage_outputs_fill_templates_but_reject_substitution",
     "utility_universe_rejects_foreign_and_missing_candidates",
     "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+    "enumerated_owner_rejects_binding_mutation_and_valid_output_graft_before_pricing",
+    "priced_owner_rejects_utility_mutation_and_valid_output_graft_before_selection",
+    "selected_owner_preserves_wait_and_stale_semantics_but_rejects_public_mutations",
+    "concurrent_resolve_initializes_once_and_caches_ready_none_and_failure",
+    "cancelled_initializer_allows_waiting_resolve_to_retry_without_overlap",
 }
 REQUIRED_OPERATIONS = {
     "build_legal_candidates",
@@ -70,6 +75,11 @@ REQUIRED_OPERATIONS = {
     "append_intelligence_decision_v1",
     "append_intelligence_outcome_v1",
     "AgentdIntelligenceLearningHostV1::reconcile_unsettled",
+    "enumerate_factors_v1",
+    "price_factors_v1",
+    "select_portfolio_v1",
+    "exercise_v1",
+    "PromptRuntimeExtension::resolve",
 }
 COMMANDS = {
     "fmt.json": ["cargo", "fmt", "--all", "--", "--check"],
@@ -79,6 +89,20 @@ COMMANDS = {
         "--locked",
         "-p",
         "codex-hepta-intelligence",
+    ],
+    "prompt-optimizer-tests.json": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+    ],
+    "prompt-extension-tests.json": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-extension",
     ],
     "ledger-tests.json": [
         "cargo",
@@ -138,6 +162,10 @@ COMMANDS = {
         "codex-hepta-agentd",
         "-p",
         "codex-hepta-operations",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-prompt-extension",
         "--all-targets",
         "--",
         "-D",
@@ -150,6 +178,8 @@ PACKAGE_RECORDS = {
     "codex-hepta-operations": "operations-tests.json",
     "codex-hepta-learning-ledger": "ledger-tests.json",
     "codex-hepta-infer-worker-host": "native-tests.json",
+    "codex-hepta-prompt-optimizer": "prompt-optimizer-tests.json",
+    "codex-hepta-prompt-extension": "prompt-extension-tests.json",
 }
 FALSE_CLAIMS = (
     "nativeBuildVerified",
