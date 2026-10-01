@@ -231,6 +231,32 @@ impl LearningArtifactOwnerHost {
         if expected != recovery.checkpoint {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
+        if matches!(
+            transaction.phase(),
+            ArtifactPublicationPhaseV1::PayloadDurable
+                | ArtifactPublicationPhaseV1::RegistryDurable
+                | ArtifactPublicationPhaseV1::WitnessDurable
+        ) {
+            // An unfinished operation must prove its already-declared payload
+            // before resuming or exposing any later publication effect. A
+            // checkpoint cannot stand in for missing or corrupt actual bytes.
+            // Historical Acknowledged receipts retain their separate semantics.
+            let manifest = &admission.validated_manifest.manifest;
+            let relative = PathBuf::from("payloads").join(format!(
+                "{}-{}.bin",
+                manifest.artifact_id, manifest.bytes_digest
+            ));
+            let path = crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?;
+            let bytes = crate::storage::read_bounded(
+                File::open(path)?,
+                crate::storage::MAX_PAYLOAD,
+                manifest.encoded_size_bytes,
+                crate::ArtifactStorageError::PayloadMismatch,
+            )?;
+            if Digest32::of_bytes(&bytes) != manifest.bytes_digest {
+                return Err(crate::ArtifactStorageError::PayloadMismatch.into());
+            }
+        }
         Ok(())
     }
 

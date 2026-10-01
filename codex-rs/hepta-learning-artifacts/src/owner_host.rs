@@ -1927,7 +1927,7 @@ mod tests {
             20,
         )
         .fixture("admission");
-        let registry = ArtifactRegistry::new();
+        let mut registry = ArtifactRegistry::new();
         let mut transaction = owner
             .begin_publication(
                 id("operation"),
@@ -1938,12 +1938,12 @@ mod tests {
                 20,
             )
             .fixture("begin");
-        transaction
-            .record_payload_durable(digest("payload"), 7)
-            .fixture("payload durable");
         owner
-            .persist_checkpoint(&transaction)
-            .fixture("payload checkpoint");
+            .stage_compatibility_registration(&transaction, &mut registry, /*now*/ 20)
+            .fixture("compatibility registration");
+        owner
+            .ensure_payload_durable(&mut transaction, &registry, b"payload", /*now*/ 20)
+            .fixture("actual payload and checkpoint durable");
         let snapshot = transaction.snapshot();
         drop(owner);
 
@@ -2444,3 +2444,7 @@ mod generation_tests;
 #[cfg(test)]
 #[path = "owner_pending_fence_tests.rs"]
 mod pending_fence_tests;
+
+#[cfg(test)]
+#[path = "owner_pending_payload_tests.rs"]
+mod pending_payload_tests;
