@@ -248,6 +248,14 @@ impl SecretsRuntimeOwner {
         {
             return self.status(operation).await;
         }
+        let policy = self
+            .authbus
+            .policy_snapshot(&StableId::new(&self.config.policy_id).map_err(unavailable)?)
+            .await
+            .map_err(unavailable)?;
+        if policy.revoked || policy.expires_at_ms != self.config.policy_expires_at_ms {
+            return self.status(operation).await;
+        }
         let authority = self.authority.for_original_deadline(deadline);
         let (pair, update) = match authority.authorize_original_once(operation) {
             Ok(pair) => pair,
@@ -283,7 +291,7 @@ impl SecretsRuntimeOwner {
             return Err(ConsumerPortError::Rejected);
         }
         let admission = BaoAuthBusAdmission {
-            policy_revision: 1,
+            policy_revision: policy.revision,
             quota_key: quota.quota_key,
             expected_quota_revision: quota.revision,
             operation_id: StableId::new(operation).map_err(unavailable)?,

@@ -324,7 +324,7 @@ The strict `SecretsRuntimeServiceConfig` in `src/runtime_config.rs` consumes:
 
 | Field | Root-installed value or relationship |
 | --- | --- |
-| `schema_version`, `service` | 1; runtime UID 992, GID976, `/run/hepta-secrets-runtime/runtime.sock`, exact allowed peers `[969,986]`. New-operation request budget 30000ms and drain 35000ms. |
+| `schema_version`, `service` | 1; runtime UID 992, GID976, `/run/hepta-secrets-runtime/service.sock`, exact allowed peers `[969,986]`. New-operation request budget 30000ms and drain 35000ms. |
 | `agents` | Original UUID per kernel UID:986=`3ad2bb64-09ba-4811-b892-466c5fd952df`,969=`10b204bc-ec72-48a2-a2c2-cf5d2f5ed730`. |
 | `roles`, `evidence` | Existing independent SDK configurations with exact issuer/approval/time/revocation/ACK/settlement public pins. Role RPC 4000ms, hard maximum 5000ms; consumer preparation 4000ms. |
 | `revocation_distributor_id`, `revocation_verifying_key` | Independent operator distributor and its public pin; no model/evaluator key. |
@@ -338,9 +338,9 @@ Each Agent receives a separate Root-owned client configuration containing
 `schema_version:1`, its actual `agent_uid`/`agent_id`, `runtime_uid:992`, the
 runtime socket path and `operation_timeout_ms:30000`. The concrete
 `SecretsRuntimeClient` verifies the actual UID and original Agent UUID.
-`consume-original CLIENT_JSON AGENT_UUID ORIGINAL_ID BUDGET_MS`,
-`runtime-status CLIENT_JSON AGENT_UUID ORIGINAL_ID`, and
-`recover-original CLIENT_JSON AGENT_UUID ORIGINAL_ID` invoke that same client.
+`consume-original CLIENT_JSON ORIGINAL_ID AGENT_UUID`,
+`runtime-status CLIENT_JSON ORIGINAL_ID AGENT_UUID`, and
+`recover-original CLIENT_JSON ORIGINAL_ID AGENT_UUID` invoke that same client.
 These commands are qualification and operational callers; wiring the SDK into
 The ordinary Agentd Root-enrolled capability is described below; installed Fleet activation remains separate.
 
@@ -466,3 +466,40 @@ The compatibility workflow's complete matrix gate protects full OpenBao
 replacement claims; `--report-only` retains partial/gap evidence. Optional
 unenabled lease, transit, HA or plugin capabilities do not block exact KV
 activation and cannot be exposed before their own qualification.
+
+### Explicit original-policy maintenance
+
+`hepta-secrets-runtime maintain-runtime-policy RUNTIME_JSON ROOT_INTENT_JSON`
+executes as the enrolled runtime UID992. Both inputs are strict Root-owned
+files under the same protected configuration parent. The intent binds the
+exact runtime configuration bytes, expected original policy revision, and
+either a later policy expiry or policy revocation. It is consumed by the real
+entry; callers cannot submit maintenance through the Agent endpoint.
+
+Maintenance takes the same stable endpoint writer lock as the daemon, so a
+live daemon refuses it and physical shutdown is required first. It opens only
+the existing AuthBus database and external checkpoint, observes the original
+UID982 signed trusted clock, and uses the existing revision-CAS owner APIs.
+It never initializes a missing store, changes policy scope/principal/action,
+resets or replaces quota periods, extends old grants, issues nonces, calls the
+provider, or touches the consumer ACK owner. Renewal is bounded to thirty days
+ahead of that signed time. Repeating the same request observes its exact
+successor revision rather than repeating the mutation.
+
+Normal consumption reads the retained current policy revision; it no longer
+assumes revision1 after a legal renewal. Expired or revoked policy refuses new
+issuance while original Status/Recover remains available. The Root publication
+helper retains an interrupted maintenance intent and publishes only its exact
+successor runtime configuration/manifest. Publication recovery never rolls
+back any owner database or counter.
+
+The real non-dev Linux chain passed ten checks using original protected SSD
+state: actual twenty-second policy expiry, live-writer exclusion, interruption
+after committed revision2 and before manifest publication, same-intent resume,
+four original-owner restarts, a fresh UID969 KV2 request with revision2 and
+independent FULL ACK/settlement, then revision3 revocation with both original
+UID986/969 histories unchanged. Three native owner checks additionally retain
+an original held reservation and every quota counter across renewal. All128
+package library tests passed with two existing skips, two threads and zero
+retries. Installed activation remains pending; retirement/archive and quota
+limit/period changes are not exposed by this maintenance entry.
