@@ -14,7 +14,7 @@ function isExpectedNavigationInterruption(error) {
   ].some(fragment => message.includes(fragment));
 }
 
-export async function loadControlConsole(page) {
+export async function loadControlConsole(page, { openConsole = true } = {}) {
   const navigationId = `navigation:${randomUUID()}`;
   const relativeUrl = `/?${NAVIGATION_PARAMETER}=${encodeURIComponent(navigationId)}`;
   const response = await page.context().request.get(relativeUrl);
@@ -74,6 +74,10 @@ export async function loadControlConsole(page) {
     leaderAndClaims: "scope-scoped-cross-tab",
     credentials: "memory-only-never-broadcast-or-persisted",
   });
+
+  if (openConsole && await page.locator("#tab-console").count()) {
+    await page.locator("#tab-console").click();
+  }
 
   return Object.freeze({
     ...receipt,

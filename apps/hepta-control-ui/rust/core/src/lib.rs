@@ -3,6 +3,8 @@
 //! No filesystem, transport, credential, durable execution or grant owner lives here.
 
 pub mod canonical;
+#[path = "../../../../hepta-ui-shared/chat.rs"]
+pub mod chat;
 pub mod confirmation;
 pub mod controller;
 pub mod error;

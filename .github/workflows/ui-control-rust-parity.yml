@@ -1,10 +1,10 @@
 name: ui.control Rust migration parity
 on:
   push:
-    branches: ["work/ui-control-rust-20261002"]
-    paths: ["apps/hepta-control-ui/**", ".github/workflows/ui-control-rust-parity.yml"]
+    branches: ["work/ui-control-rust-20261002", "work/ui-chat-first-20261002"]
+    paths: ["apps/hepta-control-ui/**", "apps/hepta-ui-shared/**", ".github/workflows/ui-control-rust-parity.yml"]
   pull_request:
-    paths: ["apps/hepta-control-ui/**", ".github/workflows/ui-control-rust-parity.yml"]
+    paths: ["apps/hepta-control-ui/**", "apps/hepta-ui-shared/**", ".github/workflows/ui-control-rust-parity.yml"]
   workflow_dispatch:
 permissions:
   contents: read

@@ -22,7 +22,7 @@ test("workflow resolves one integration base and uses explicit Rust browser asse
   assert.equal((workflow.match(/git fetch --no-tags origin "\$BASE_REF"/gu)??[]).length,1);
   assert.match(workflow,/needs: identity/u);
   assert.match(workflow,/base-sha: \$\{\{ needs\.identity\.outputs\.base_sha \}\}/u);
-  assert.match(workflow,/branches: \["work\/ui-control-rust-20261002"\]/u);
+  assert.match(workflow,/branches: \["work\/ui-control-rust-20261002", "work\/ui-chat-first-20261002"\]/u);
   assert.match(workflow,/contents: read/u);
   assert.match(workflow,/pull_request:\n    paths: \["apps\/hepta-control-ui\/\*\*"/u);
   assert.doesNotMatch(workflow,/pull-requests: write|secrets\.|gh pr |\bdeploy\b/iu);

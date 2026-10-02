@@ -5,6 +5,7 @@ use crate::{
     transport::SameOriginHttpTransport,
 };
 use hepta_control_core::{
+    chat::{AppTab, ChatState},
     controller::{Controller, SubmissionInput},
     error::{ControlError, ErrorCode},
     projection::Action,
@@ -33,6 +34,7 @@ thread_local! {
 struct BrowserApp {
     window: Window,
     core: Controller,
+    chat: ChatState,
     dom: Dom,
     transport: Rc<SameOriginHttpTransport>,
     recovery: Option<Rc<ScopedRecoveryStore>>,
@@ -65,6 +67,7 @@ impl BrowserApp {
         if self.destroyed {
             return;
         }
+        let _ = crate::shell::render(&self.dom.document, &self.chat);
         let view = self.core.view(now());
         let _ = self.dom.render(
             &view,
@@ -212,6 +215,7 @@ pub fn read_view() -> Result<JsValue, JsValue> {
 fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
     let window = web_sys::window().ok_or_else(ControlError::invalid)?;
     let document = window.document().ok_or_else(ControlError::invalid)?;
+    crate::shell::mount(&document)?;
     let dom = Dom::new(document.clone())?;
     dom.reset_interaction();
     let csrf_document = document.clone();
@@ -231,6 +235,7 @@ fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
     let app = Rc::new(RefCell::new(BrowserApp {
         window,
         core: Controller::new(1024)?,
+        chat: ChatState::default(),
         dom,
         transport,
         recovery: None,
@@ -263,6 +268,20 @@ fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
 }
 
 fn attach_events(app: &Rc<RefCell<BrowserApp>>, document: &Document) -> Result<(), ControlError> {
+    for (id, tab) in [("tab-chat", AppTab::Chat), ("tab-console", AppTab::Console)] {
+        let weak = Rc::downgrade(app);
+        listen(app, element(document, id)?.as_ref(), "click", move |_| {
+            if let Some(app) = weak.upgrade() {
+                let mut state = app.borrow_mut();
+                if state.destroyed || state.dom.dialog.open() {
+                    return;
+                }
+                state.chat.tab = tab;
+                state.render();
+            }
+        })?;
+    }
+
     for (id, action) in [
         ("request-start", Action::RequestStart),
         ("request-reconcile", Action::RequestReconcile),
