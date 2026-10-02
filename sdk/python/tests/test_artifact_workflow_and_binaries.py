@@ -96,47 +96,24 @@ def test_generation_has_single_maintenance_entrypoint_script() -> None:
 
 
 def test_root_fmt_recipes_use_shared_formatter_driver() -> None:
-    """The root formatting recipes should use the shared cross-platform driver."""
-    justfile = ROOT.parents[1] / "justfile"
-    lines = justfile.read_text().splitlines()
-    fmt_index = lines.index("fmt:")
-    fmt_check_index = lines.index("fmt-check:")
-    next_recipe_index = next(
-        index
-        for index in range(fmt_check_index + 1, len(lines))
-        if lines[index] and not lines[index].startswith((" ", "\t", "#"))
-    )
-    actual = {
-        "working_directory": lines[0],
-        "fmt_comment": next(line for line in reversed(lines[:fmt_index]) if line.startswith("#")),
-        "fmt_commands": [
-            line.strip()
-            for line in lines[fmt_index + 1 : fmt_check_index]
-            if line.strip() and not line.startswith("#")
-        ],
-        "fmt_check_comment": next(
-            line for line in reversed(lines[:fmt_check_index]) if line.startswith("#")
-        ),
-        "fmt_check_commands": [
-            line.strip() for line in lines[fmt_check_index + 1 : next_recipe_index] if line.strip()
-        ],
+    """Recipe arguments must reach the driver; fmt-check must check the full tree."""
+    lines = (ROOT.parents[1] / "justfile").read_text().splitlines()
+    commands = {}
+    for declaration in ("fmt *args:", "fmt-check:"):
+        start = lines.index(declaration) + 1
+        end = next(
+            index
+            for index in range(start, len(lines))
+            if lines[index] and not lines[index].startswith((" ", "\t", "#"))
+        )
+        commands[declaration] = [
+            line.strip() for line in lines[start:end] if line.strip() and not line.startswith("#")
+        ]
+    assert lines[0] == 'set working-directory := "codex-rs"'
+    assert commands == {
+        "fmt *args:": ["@{{ python }} ../scripts/format.py {args}"],
+        "fmt-check:": ["@{{ python }} ../scripts/format.py --all --check"],
     }
-    expected = {
-        "working_directory": 'set working-directory := "codex-rs"',
-        "fmt_comment": (
-            "# Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts."
-        ),
-        "fmt_commands": ["@{{ python }} ../scripts/format.py"],
-        "fmt_check_comment": "# Check formatting without modifying files.",
-        "fmt_check_commands": ["@{{ python }} ../scripts/format.py --check"],
-    }
-
-    assert actual == expected, (
-        "The root formatting recipes must use the shared formatter driver. "
-        "Fix the recipes in `justfile`, then run `just fmt`.\n"
-        f"Expected: {json.dumps(expected, indent=2)}\n"
-        f"Actual: {json.dumps(actual, indent=2)}"
-    )
 
 
 def test_root_format_driver_covers_all_formatter_groups(
@@ -249,14 +226,10 @@ def test_root_format_driver_covers_all_formatter_groups(
         "MODULE.bazel",
         "third_party/v8/libcxx.BUILD.bazel",
     )
-    assert [group.commands[-1].args[-3:] for group in formatters[3:]] == [
-        ("ruff", "format", "sdk/python"),
-        ("ruff", "format", "scripts"),
-    ]
-    assert [group.commands[-1].args[-4:] for group in checks[3:]] == [
-        ("ruff", "format", "--check", "sdk/python"),
-        ("ruff", "format", "--check", "scripts"),
-    ]
+    assert formatters[3].commands[-1].args[-3:] == ("ruff", "format", "sdk/python")
+    assert formatters[4].commands[-1].args[-4:] == ("ruff", "format", "scripts", ".github")
+    assert checks[3].commands[-1].args[-4:] == ("ruff", "format", "--check", "sdk/python")
+    assert checks[4].commands[-1].args[-5:] == ("ruff", "format", "--check", "scripts", ".github")
 
 
 def test_root_format_driver_discards_successful_command_output(
@@ -294,7 +267,7 @@ def test_root_format_driver_is_silent_when_all_formatters_succeed(
         "run_formatter_group",
         lambda group: script.FormatterResult(group.name, "hidden output\n", 0),
     )
-    monkeypatch.setattr(sys, "argv", ["format.py"])
+    monkeypatch.setattr(sys, "argv", ["format.py", "--all"])
 
     assert script.main() == 0
     captured = capsys.readouterr()
@@ -318,7 +291,7 @@ def test_root_format_driver_reports_only_failed_formatters(
         return script.FormatterResult(group.name, "hidden output\n", 0)
 
     monkeypatch.setattr(script, "run_formatter_group", fake_run)
-    monkeypatch.setattr(sys, "argv", ["format.py"])
+    monkeypatch.setattr(sys, "argv", ["format.py", "--all"])
 
     assert script.main() == 1
     captured = capsys.readouterr()
@@ -326,6 +299,67 @@ def test_root_format_driver_reports_only_failed_formatters(
     assert captured.err == (
         "==> Broken formatter failed\n$ broken\nfailure output\nFormatting failed: Broken\n"
     )
+
+
+@pytest.mark.parametrize(
+    ("arguments", "check", "base"),
+    [
+        ([], False, None),
+        (["--check"], True, None),
+        (["--base", "reviewed-sha"], False, "reviewed-sha"),
+    ],
+)
+def test_root_format_driver_defaults_to_changed_scope(monkeypatch, capsys, arguments, check, base):
+    script = _load_root_format_script_module()
+    selected = ["scripts/changed.py"]
+    observed = []
+    group = script.FormatterGroup("Selected", ())
+
+    def changed(actual_base):
+        assert actual_base == base
+        return selected
+
+    def scoped(paths, *, check, base):
+        observed.append((paths, check, base))
+        return (group,)
+
+    def reject_full_tree(*, check):
+        pytest.fail("default or --base mode must not expand to the full tree")
+
+    monkeypatch.setattr(script, "changed_paths", changed)
+    monkeypatch.setattr(script, "scoped_formatter_groups", scoped)
+    monkeypatch.setattr(script, "formatter_groups", reject_full_tree)
+    monkeypatch.setattr(
+        script, "run_formatter_group", lambda group: script.FormatterResult(group.name, "", 0)
+    )
+    monkeypatch.setattr(sys, "argv", ["format.py", *arguments])
+    assert script.main() == 0
+    assert observed == [(selected, check, base)]
+    assert capsys.readouterr() == ("", "")
+
+
+def test_root_format_driver_empty_scope_does_not_run_formatters(monkeypatch, capsys):
+    script = _load_root_format_script_module()
+    monkeypatch.setattr(script, "changed_paths", lambda base: [])
+    monkeypatch.setattr(script, "scoped_formatter_groups", lambda paths, *, check, base: ())
+    monkeypatch.setattr(
+        script, "run_formatter_group", lambda group: pytest.fail("empty scope ran formatter")
+    )
+    monkeypatch.setattr(sys, "argv", ["format.py"])
+    assert script.main() == 0
+    assert "No changed files need formatting" in capsys.readouterr().out
+
+
+def test_root_format_driver_rejects_conflicting_scope_arguments(monkeypatch, capsys):
+    script = _load_root_format_script_module()
+    monkeypatch.setattr(
+        script, "changed_paths", lambda base: pytest.fail("invalid arguments queried Git")
+    )
+    monkeypatch.setattr(sys, "argv", ["format.py", "--all", "--base", "reviewed-sha"])
+    with pytest.raises(SystemExit) as failure:
+        script.main()
+    assert failure.value.code == 2
+    assert "not allowed with argument --all" in capsys.readouterr().err
 
 
 def test_generate_types_wires_all_generation_steps() -> None:

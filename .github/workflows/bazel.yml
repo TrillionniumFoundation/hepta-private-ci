@@ -156,6 +156,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        if: matrix.shard == 1
+        with:
+          toolchain: 1.95.0
+
       - name: Test BuildBuddy Bazel wrapper
         if: matrix.shard == 1
         shell: pwsh

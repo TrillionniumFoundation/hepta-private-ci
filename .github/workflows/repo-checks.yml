@@ -41,6 +41,10 @@ jobs:
       - name: Verify Bazel clippy flags match Cargo workspace lints
         run: python3 .github/scripts/verify_bazel_clippy_lints.py
 
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+
       - name: Test Bazel wrapper regression suite
         run: python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'
 
@@ -101,13 +105,15 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+
       - name: Test wrappers on the native host
         shell: bash
         run: python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'
 
       - uses: ./.github/actions/setup-ci
-
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:

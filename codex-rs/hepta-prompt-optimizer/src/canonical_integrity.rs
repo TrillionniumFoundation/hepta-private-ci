@@ -210,6 +210,7 @@ impl SelectedPromptPortfolioV1 {
             || self.generation_vector_digest.is_zero()
             || self.pricing_set_digest.is_zero()
             || self.graph_generation_digest.is_zero()
+            || self.registry_snapshot_digest.is_zero()
             || self.model_tuple_digest != self.model_tuple.digest()
             || receipt.factor_ids
                 != self
@@ -245,7 +246,7 @@ impl SelectedPromptPortfolioV1 {
 }
 
 pub(super) fn portfolio_digest(portfolio: &SelectedPromptPortfolioV1) -> Digest32 {
-    let mut bytes = b"hepta.prompt-optimizer.verified-portfolio.v1".to_vec();
+    let mut bytes = b"hepta.prompt-optimizer.verified-portfolio.v2".to_vec();
     for digest in [
         portfolio.receipt.receipt_digest,
         portfolio.objective_digest,
@@ -254,6 +255,7 @@ pub(super) fn portfolio_digest(portfolio: &SelectedPromptPortfolioV1) -> Digest3
         portfolio.generation_vector_digest,
         portfolio.pricing_set_digest,
         portfolio.graph_generation_digest,
+        portfolio.registry_snapshot_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }

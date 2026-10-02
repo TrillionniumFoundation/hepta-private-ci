@@ -98,3 +98,9 @@ exports_files([
     "workspace_root_test_launcher.bat.tpl",
     "workspace_root_test_launcher.sh.tpl",
 ])
+
+# Only fleet's compile-time catalog reader needs this source input.
+exports_files(
+    ["docs/modules/MODULES.json"],
+    visibility = ["//codex-rs/hepta-fleet:__pkg__"],
+)
