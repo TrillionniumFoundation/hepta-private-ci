@@ -107,9 +107,24 @@
           "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
           "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_before_idle_hydration_preserves_matrix_budget_bytes --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_preserves_independent_matrix_binding_diagnostics_without_hydration --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements. Constructor typed signed denial is primed before independent main/Matrix acquisition and automatic replay; exact matching Committed/RolledBack terminal evidence is recognized without false quarantine. The primer writes no journal and performs no CAS or process operation; full later recovery and terminal acknowledgement remain after acquisition. Trusted denial blocks new main/Matrix restart claims and dispatch while retaining diagnostics, actual exit, exact cleanup and prior durable charges.",
+      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements. Constructor typed signed denial is primed before independent main/Matrix acquisition and automatic replay; exact matching Committed/RolledBack terminal evidence is recognized without false quarantine. The primer writes no journal and performs no CAS or process operation; full later recovery and terminal acknowledgement remain after acquisition. Trusted denial blocks new main/Matrix restart claims and dispatch while retaining diagnostics, actual exit, exact cleanup and prior durable charges. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -236,9 +251,24 @@
           "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs",
           "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_before_idle_hydration_preserves_matrix_budget_bytes --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_preserves_independent_matrix_binding_diagnostics_without_hydration --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
         }
       ],
-      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence. A same-spawn DeferredDrain/Stop marker excludes fresh automatic restart admission on true main exit; a stale marker does not suppress another spawn. Trusted recovery denial blocks new main and Matrix retry claims without suppressing actual exit observation, exact lease cleanup or degradation diagnostics. Stored exact Matrix exit also makes graceful deferral signal/phase/event-free while its marker waits for exact cleanup; late cleanup cannot repeat main control or lifecycle CAS after acknowledged Killing.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence. A same-spawn DeferredDrain/Stop marker excludes fresh automatic restart admission on true main exit; a stale marker does not suppress another spawn. Trusted recovery denial blocks new main and Matrix retry claims without suppressing actual exit observation, exact lease cleanup or degradation diagnostics. Stored exact Matrix exit also makes graceful deferral signal/phase/event-free while its marker waits for exact cleanup; late cleanup cannot repeat main control or lifecycle CAS after acknowledged Killing. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -532,9 +562,24 @@
           "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs",
           "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_before_idle_hydration_preserves_matrix_budget_bytes --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_preserves_independent_matrix_binding_diagnostics_without_hydration --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
         }
       ],
-      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable. Trusted signed recovery denial blocks new main and Matrix retry claims and replacement dispatch, retaining diagnostics, actual exit cleanup and existing durable charges. True main exit under a same-spawn DeferredDrain/Stop marker does not grant a new automatic claim; stale-spawn markers do not alter another incarnation policy.",
+      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable. Trusted signed recovery denial blocks new main and Matrix retry claims and replacement dispatch, retaining diagnostics, actual exit cleanup and existing durable charges. True main exit under a same-spawn DeferredDrain/Stop marker does not grant a new automatic claim; stale-spawn markers do not alter another incarnation policy. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -684,9 +729,24 @@
           "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
           "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_before_idle_hydration_preserves_matrix_budget_bytes --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_preserves_independent_matrix_binding_diagnostics_without_hydration --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
         }
       ],
-      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain. Signature/catalog/preflight validation and digest-bound status construction finish before the first durable Prepared publication attempt. Failure from that attempt onward returns SignedMutationIndeterminate, mapped by signed RPC to operation_indeterminate, with bounded original diagnostics, trusted in-memory RecoveryRequired and a best-effort durable marker. Even a Prepared directory-sync fault before confirmed process delivery cannot prove no effect. Pure pre-publication refusal remains safe rejection. Public bundle/request and offline seed/public-key readers use descriptor-safe bounded regular inputs while retaining existing caller checks and zeroization; stdin/key-fd streams and signing-authority composition are unchanged. This result does not claim physical delivery, independent authority acceptance, process exit or cleanup. The very first Prepared release-transaction publication already binds the exact grant digest, authority epoch, both catalog admission bindings and their compatibility digest. Missing bindings reject before that write, with no unsigned Prepared intermediate. Trusted signed denial blocks new main/Matrix restart claims while retaining exact ownership and cleanup.",
+      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain. Signature/catalog/preflight validation and digest-bound status construction finish before the first durable Prepared publication attempt. Failure from that attempt onward returns SignedMutationIndeterminate, mapped by signed RPC to operation_indeterminate, with bounded original diagnostics, trusted in-memory RecoveryRequired and a best-effort durable marker. Even a Prepared directory-sync fault before confirmed process delivery cannot prove no effect. Pure pre-publication refusal remains safe rejection. Public bundle/request and offline seed/public-key readers use descriptor-safe bounded regular inputs while retaining existing caller checks and zeroization; stdin/key-fd streams and signing-authority composition are unchanged. This result does not claim physical delivery, independent authority acceptance, process exit or cleanup. The very first Prepared release-transaction publication already binds the exact grant digest, authority epoch, both catalog admission bindings and their compatibility digest. Missing bindings reject before that write, with no unsigned Prepared intermediate. Trusted signed denial blocks new main/Matrix restart claims while retaining exact ownership and cleanup. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
       "operation": "signed_upgrade",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -758,9 +818,24 @@
           "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
           "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_before_idle_hydration_preserves_matrix_budget_bytes --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_preserves_independent_matrix_binding_diagnostics_without_hydration --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
         }
       ],
-      "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness. The same first-Prepared-publication-attempt boundary preserves pure signature/catalog/preflight rejection but classifies later publication/continuation failure as SignedMutationIndeterminate/RPC operation_indeterminate. Trusted recovery intent and bounded diagnostics remain even if the best-effort durable marker fails. Descriptor-safe regular-file and directory I/O supplements existing authority and zeroization checks without relaxing them, claiming rollback completion or converting unknown effects into success. The first Prepared release transaction already contains complete grant/epoch and source/target admission/compatibility bindings before publication; there is no unsigned Prepared intermediate. Trusted denial cannot downgrade a legacy unsigned transaction into automatic Drain, spawn or terminal inference.",
+      "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness. The same first-Prepared-publication-attempt boundary preserves pure signature/catalog/preflight rejection but classifies later publication/continuation failure as SignedMutationIndeterminate/RPC operation_indeterminate. Trusted recovery intent and bounded diagnostics remain even if the best-effort durable marker fails. Descriptor-safe regular-file and directory I/O supplements existing authority and zeroization checks without relaxing them, claiming rollback completion or converting unknown effects into success. The first Prepared release transaction already contains complete grant/epoch and source/target admission/compatibility bindings before publication; there is no unsigned Prepared intermediate. Trusted denial cannot downgrade a legacy unsigned transaction into automatic Drain, spawn or terminal inference. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
       "operation": "signed_rollback",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -822,9 +897,24 @@
           "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
           "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_before_idle_hydration_preserves_matrix_budget_bytes --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::signed_denial_preserves_independent_matrix_binding_diagnostics_without_hydration --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+          "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
         }
       ],
-      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. Exact prepared source/target CAS generation and predecessor distinguish rollback-target success from failed-target source restoration. An interrupted terminal publication can resume only its exact signed decision after repeated verification, acknowledging both journals and advancing owner-local revision once; unrelated transaction digests are omitted from status. Decision/frontier/outcome/replay checks precede the first terminal transaction publication attempt; later failed transaction/intent/revision acknowledgement returns SignedMutationIndeterminate/RPC operation_indeterminate. The trusted recovery preimage and possibly published terminal bytes remain bound to the exact decision for retry; neither terminal record is overwritten to manufacture rollback. Failure leaves owner-local recovery revision unchanged, and both durable acknowledgements plus revision update are required before release of quarantine and one successful increment. A Prepared/RecoveryRequired intent with no release transaction has no supported terminalization API because the decision requires that exact transaction digest. The legacy digest-only abort writer has no production consumer and cannot clear quarantine or supply Aborted, exit or cleanup authority. Constructor pure typed reads prime unresolved denial before independent acquisition or automatic replay, recognizing exact Committed/RolledBack intent or transaction/release proof without false quarantine; late complete recovery and terminal durability publication stay after acquisition. Legacy unsigned Prepared plus signed RecoveryRequired remains isolated. Missing transaction or authority binding requires a separately versioned authorized protocol. ProductionRecoveryOutcome supports Committed/RolledBack only; signed Aborted has no producer and the legacy abort directive cannot clear quarantine. Trusted denial blocks new main/Matrix restart claims while preserving diagnostics, true exit and exact cleanup.",
+      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. Exact prepared source/target CAS generation and predecessor distinguish rollback-target success from failed-target source restoration. An interrupted terminal publication can resume only its exact signed decision after repeated verification, acknowledging both journals and advancing owner-local revision once; unrelated transaction digests are omitted from status. Decision/frontier/outcome/replay checks precede the first terminal transaction publication attempt; later failed transaction/intent/revision acknowledgement returns SignedMutationIndeterminate/RPC operation_indeterminate. The trusted recovery preimage and possibly published terminal bytes remain bound to the exact decision for retry; neither terminal record is overwritten to manufacture rollback. Failure leaves owner-local recovery revision unchanged, and both durable acknowledgements plus revision update are required before release of quarantine and one successful increment. A Prepared/RecoveryRequired intent with no release transaction has no supported terminalization API because the decision requires that exact transaction digest. The legacy digest-only abort writer has no production consumer and cannot clear quarantine or supply Aborted, exit or cleanup authority. Constructor pure typed reads prime unresolved denial before independent acquisition or automatic replay, recognizing exact Committed/RolledBack intent or transaction/release proof without false quarantine; late complete recovery and terminal durability publication stay after acquisition. Legacy unsigned Prepared plus signed RecoveryRequired remains isolated. Missing transaction or authority binding requires a separately versioned authorized protocol. ProductionRecoveryOutcome supports Committed/RolledBack only; signed Aborted has no producer and the legacy abort directive cannot clear quarantine. Trusted denial blocks new main/Matrix restart claims while preserving diagnostics, true exit and exact cleanup. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -936,9 +1026,9 @@
     "scripts/just-shell.py"
   ],
   "observedAtHead": {
-    "commit": "90ef2d19255502306488ef9009eed916a6d004bb",
-    "tree": "ac043ce60a390b7515989f11ed580b4e83f12bff",
-    "interpretation": "Source-only observation of the exact 2026-10-02 control, signed-constructor and descriptor-I/O composition repairs. All existing elapsed-time and owner boundaries are retained: live Fresh/Retained Stop keeps the original checked monotonic deadline and stronger Kill; exact-owned due containment precedes fallible Fleet/poll reads, without granting new admission, Drain acknowledgement, exit or cleanup authority. A stored exact Matrix exit retains a same-main-spawn deferred action through foreign-lease cleanup failure without another signal, phase or event; after exact cleanup an acknowledged main Killing phase does not repeat main control or CAS. An exact main exit with same-spawn DeferredDrain/Stop cannot create a fresh automatic restart claim. The first signed Prepared release-transaction publication already includes grant digest, authority epoch, both catalog admission bindings and compatibility digest; pure unsigned transitions remain separate. Constructor prime_signed_recovery_denial is a typed read before independent main/Matrix acquisition and automatic replay. It derives trusted unresolved denial while recognizing only a Committed/RolledBack intent or exact matching terminal transaction/release proof without false quarantine; late full validation and durable terminal acknowledgement remain after acquisition. Trusted denial preserves diagnostics, independent ownership, actual exit and exact cleanup while denying new main/Matrix restart claims and replacement dispatch. Legacy unsigned Prepared transactions beside signed RecoveryRequired intent cannot downgrade to unsigned Drain/spawn or unsigned terminal inference. Missing transaction or authority binding still requires a separately versioned authorized terminalization protocol. Signed Aborted is only a codec/projection shape, with no production producer; the legacy digest-only abort directive has no production consumer. Signed publication-attempt failures remain SignedMutationIndeterminate/RPC operation_indeterminate with trusted recovery state and bounded diagnostics, without claiming physical delivery or independent authority acceptance. Private regular-file and directory-descriptor helpers preserve bounds, zeroization, full Fleet/catalog/CAS checks and platform behavior; ordinary blocked regular storage and ancestor integrity remain host prerequisites. The existing per-exchange 200 ms absolute transport budget, peer-PID-before-request-bytes contract, four common exchange tests and Linux-only full-backlog test are unchanged; this is not a whole Stop/adoption SLO or per-Agent isolation claim. The final static source inventory is 28 new Supervisor and two new Fleet leaves since 1f111388, with 84 unique common repair identities and five Fleet identities. Historical 6c6c051e recorded 21 new Supervisor/two Fleet and 77 repair identities; 6958a901 retained all eight failed lanes: six native lanes with the actual three failing library leaves, plus two deep lanes whose default library observed 406 enumerated, 403 passed and three failed before later stages were skipped. Older 7c4e0ab/d74cde5/d0169ba and 1f111388 records also remain bound to their original sources; none validates these later bytes. The actual 6958a901 Bazel update and after-check both exited zero and kept MODULE.bazel.lock byte-identical; no lock change or current/future-head qualification is inferred. At the time this observation is written, exact final-candidate/platform execution remains to be obtained independently. All mapped objects and 23 related operation blobs bind this exact source commit/tree. Immutable sourceBase, ownership, capability status, gaps and acceptance/activation/release claims remain unchanged; no production or target-host qualification is inferred."
+    "commit": "2a26991bdd15d81c5ec9cbd9bae483634ae59aa7",
+    "tree": "181f5659209ee67c88e449f2ed050daef1476ea7",
+    "interpretation": "Exact source-only observation after the 5b71df96 constructor-diagnostic counterexamples were repaired. Durable validation returns typed transaction/intent observations and bounded faults from one validation pass; trusted signed denial is primed before idle hydration, Matrix budget normalization, independent ownership acquisition or automatic replay. Pure current/previous catalog and independent main/Matrix binding diagnostics remain visible under denial, while budget bytes and serving metadata are preserved. Original corrupt-witness and process-recovery regressions remain unchanged; three additional native leaves cover future/expired idle budgets, Matrix binding diagnostics and ownerless persisted catalog corruption. Source inventory has 31 new Supervisor and two new Fleet leaves since 1f111388, with 88 unique common repair identities and five Fleet identities. The 90ef2d19 checkpoint had 28 new Supervisor leaves and 84 repair identities. Three unlinked lifecycle prototypes are exact-byte archives outside the compiled crate; their embedded tests do not count as implementation or execution. The explicit authoring CLI restores them only within its existing transaction. Historical CI and Bazel receipts remain bound to their original heads. The actual 5b71 diagnostic has nine successful exits, six selected source inputs and an unchanged MODULE.bazel.lock; this grants no later-source execution or product qualification. All mapped objects and operation blobs bind this complete source ancestor. Existing owner boundaries, immutable sourceBase and sourceIdentityPolicy, capability statuses, gaps, acceptance, activation and release claims remain unchanged. Exact future candidate and platform execution still require independent receipts; no current-main merge, target-host qualification, independent acceptance, activation or release credit is transferred."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -975,6 +1065,10 @@
   ],
   "productCallerSemantics": "Named native source consumers compose the hepta-supervisord binary with the Supervisor library: the binary selects the ordinary or externally pinned verifier entry, fenced UDS handlers dispatch lifecycle and signed operations, and the owned ticker calls Supervisor::tick. These bindings establish source composition only. They do not establish product execution, target-host qualification, production writer admission, activation, release or independent acceptance.",
   "sourceObjects": [
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "object": "e6ebe13372907efd10297714d25b8e69e89ddd2f"
+    },
     {
       "path": ".github/workflows/hepta-repository-integrity.yml",
       "object": "0832c50e337461e75c494b097efa8849d581bf3c"
@@ -1045,7 +1139,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "bc2fd2c7e5df82e45a87e277edecddf3ede8c383"
+      "object": "8511add68fc0d2411988e9c6e8abcfa1cdaa1584"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_bundle.rs",
@@ -1097,7 +1191,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_recovery.rs",
-      "object": "00839ee2633507db36136d43ebb22fad4243cff5"
+      "object": "3850f7855efc8e634ad4129faaab22bdbef7982f"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_recovery_probe.rs",
@@ -1213,7 +1307,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix.rs",
-      "object": "932cb568e4761e2c91fcef3a7a2b1aed31be00c0"
+      "object": "5c3a09c845b71a4a8845d6f290e23cd527133d54"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix_binding_io_tests.rs",
@@ -1240,6 +1334,10 @@
       "object": "6d332b458aad305fe68c1209676cedfb0dcce4bf"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/matrix_recovery_admission.rs",
+      "object": "3612a456ea641cac6eb9e30031ee061da7e63c98"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/matrix_tick.rs",
       "object": "b56b7b8ba1c98089d89a544858ea04ae24597457"
     },
@@ -1248,20 +1346,8 @@
       "object": "eae69d1f591fd8a82d77bd284b7ae328bf822889"
     },
     {
-      "path": "codex-rs/hepta-supervisor/src/mutation_journal.rs",
-      "object": "71aa2cea44e9a09af307e6c96b0bab4d3f89a43f"
-    },
-    {
-      "path": "codex-rs/hepta-supervisor/src/process_exit_witness.rs",
-      "object": "0057ad13bacf842ead124a81b812237143c7060f"
-    },
-    {
       "path": "codex-rs/hepta-supervisor/src/recovery_control_tests.rs",
       "object": "5ef5a5dce0e0e37ad8c00d37af9a366adafe1181"
-    },
-    {
-      "path": "codex-rs/hepta-supervisor/src/recovery_observation.rs",
-      "object": "881852ec560aaf94c48b09842ca477b938781a6e"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/recovery_ownership_tests.rs",
@@ -1316,12 +1402,16 @@
       "object": "43d6e4b551d51b84a32df1b7421b463897508c97"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
+      "object": "4e385ec566fa9d65110185f0f2f3f62b2ea1f244"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/signed_constructor_recovery.rs",
-      "object": "39a78ae05bb3e3993937792d5c1d82689b9177db"
+      "object": "1d6160a7ec1bf53c265452181762e84990836e8d"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
-      "object": "165810ee8d388e0fc882a36eeed03c48fe2f1d95"
+      "object": "4afa0d51025c12515befca60adc3ee474414f2d1"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/signed_effect.rs",
@@ -1437,7 +1527,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
-      "object": "89053c7518467ff466017d054d563d8a5dc886f7"
+      "object": "5ed10301888154f0c6978740acd2f4a9a982e07a"
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
@@ -1445,7 +1535,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
-      "object": "758b1b6a3155ef35d4fac1bc35ad0398c06d525c"
+      "object": "abe63462c4f42ee8759e951a0f6426e69b20ad49"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md",
@@ -1453,7 +1543,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_CONTROL_RUNBOOK.md",
-      "object": "eeffdf0f05731cd92e9d8d6d86911d59109d288f"
+      "object": "c2f5a95170ef25786a167ebe1af05d883f4c070b"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_QUALIFICATION_PROFILE.json",
@@ -1465,7 +1555,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md",
-      "object": "6788a18c101714f01158b25862037465650cae65"
+      "object": "7d577d01fb2ff37e0dbf0101a3dc0049b6bf11c4"
     },
     {
       "path": "docs/modules/runtime.supervisor/RESTART_CANCELLATION.md",
@@ -1481,7 +1571,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "e20145dd9bf034cfc6c614fadcb24e75f1019f3b"
+      "object": "4b1ae607a280ad6c2e48f2d1275172ced09967ed"
     },
     {
       "path": "justfile",
@@ -1492,6 +1582,10 @@
       "object": "c684aaf50ba2b3f260a0c917781eac1be89cd059"
     },
     {
+      "path": "qualification/runtime-supervisor/BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261002_5B71DF96.json",
+      "object": "563fd2fefbbcf3e4fb3f6f3aa2e0a51e70649a0d"
+    },
+    {
       "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261001_6958A901.json",
       "object": "bd31b14d8dd00d36004fd12f216b8c1a537e5d4f"
     },
@@ -1500,12 +1594,28 @@
       "object": "3d35c0aaf896805655bdd2c8c1629d3580810798"
     },
     {
+      "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261002_5B71DF96.json",
+      "object": "091c7ffab7f1e22085a01c3a38763d49041ea590"
+    },
+    {
       "path": "qualification/runtime-supervisor/history/README.md",
-      "object": "f0fab3b2b419b475532ef6426abdf9a8d8b28c33"
+      "object": "c522f3327190699fbba1dfd46d609e5ea8c842fe"
     },
     {
       "path": "qualification/runtime-supervisor/history/runtime-supervisor-six-phase-materializer.yml.txt",
       "object": "7096a6275e824eb06c4f19f19a5e8b8b959ff73a"
+    },
+    {
+      "path": "qualification/runtime-supervisor/history/unlinked-prototypes/mutation_journal.rs.txt",
+      "object": "71aa2cea44e9a09af307e6c96b0bab4d3f89a43f"
+    },
+    {
+      "path": "qualification/runtime-supervisor/history/unlinked-prototypes/process_exit_witness.rs.txt",
+      "object": "0057ad13bacf842ead124a81b812237143c7060f"
+    },
+    {
+      "path": "qualification/runtime-supervisor/history/unlinked-prototypes/recovery_observation.rs.txt",
+      "object": "881852ec560aaf94c48b09842ca477b938781a6e"
     },
     {
       "path": "scripts/hepta-repository-integrity.py",
@@ -1517,7 +1627,7 @@
     },
     {
       "path": "scripts/hepta_supervisor_ci_v3.py",
-      "object": "e2916ed4a19163d134fe38bf0b51f0ee64c242f6"
+      "object": "ff97e939fa1871d1530784a757f53b98baedf391"
     },
     {
       "path": "scripts/hepta_workflow_integrity.py",
@@ -1529,7 +1639,7 @@
     },
     {
       "path": "scripts/runtime_supervisor_six_phase_materialize.py",
-      "object": "4b7831c424c4f68e48cd9dc1dfc04ce073a24744"
+      "object": "7802c12478ca5ddf3c0556b837d9dc7213374f3f"
     },
     {
       "path": "scripts/test_hepta_repository_integrity.py",
@@ -1541,7 +1651,7 @@
     },
     {
       "path": "scripts/test_hepta_supervisor_ci_v3.py",
-      "object": "12b095adffee3f9e17ad9366c30b4d10994cd620"
+      "object": "655fc380701742b2db884477ea2a3a1123f254d4"
     },
     {
       "path": "scripts/test_hepta_supervisor_workflow.py",
