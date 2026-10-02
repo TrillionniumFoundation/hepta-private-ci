@@ -760,12 +760,13 @@ fn validate_runtime_config(
         || value.temporal_state_dimension > 256
         || value.activation_dimension == 0
         || value.activation_dimension > MAX_ACTIVATION_DIMENSION
+        || value.inhibition_edges > 4_096
         || value.modulator_dimension == 0
         || value.modulator_dimension > 8
         || value.state_minimum_q24 != -Q24_LIMIT
         || value.state_maximum_q24 != Q24_LIMIT
         || !value.checked_wide_intermediates
-        || value.top_k_minimum_ratio_ppm == 0
+        || value.top_k_minimum_ratio_ppm < 10_000
         || value.top_k_minimum_ratio_ppm > value.top_k_maximum_ratio_ppm
         || value.top_k_maximum_ratio_ppm > 200_000
         || !value.per_population_first
@@ -779,6 +780,7 @@ fn validate_runtime_config(
         || value.eligibility_trace_dimension == 0
         || value.eligibility_trace_dimension > 512
         || value.eligibility_maximum_norm_q24 <= 0
+        || value.eligibility_maximum_norm_q24 > ELIGIBILITY_L1_Q24
         || value.eligibility_decay_q24 < 0
         || value.eligibility_decay_q24 > Q24_ONE
         || value.p95_latency_micros == 0
