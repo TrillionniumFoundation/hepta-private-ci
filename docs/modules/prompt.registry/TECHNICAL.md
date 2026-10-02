@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots above are materialized. Executed checks belong to an exact source candidate and are recorded in the [2026-10-01 audit](ADVERSARIAL_AUDIT_2026-10-01.md). Focused tests, all-target compilation, strict lint and source/merge qualification remain distinct observations; a successful focused test does not imply that a later blocked lint step executed. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots above are materialized. Executed checks belong to an exact source candidate and are recorded in the [2026-10-02 audit](ADVERSARIAL_AUDIT_2026-10-02.md). Focused tests, all-target compilation, strict lint and source/merge qualification remain distinct observations; a successful focused test does not imply that a later blocked lint step executed. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 Follow [the global development policy](../../DEVELOPMENT.md#2-canonical-document-system-and-historical-cleanup): ordinary authorized source work runs affected package tests and applicable review checks. `hepta-docs.py`, `hepta-module-docs.py` and `hepta-implementation-maps.py` use `--profile development` to validate current ownership, schemas, paths and references, including local edits. Their default qualification profile additionally checks historical source identities and inventories. Qualification receipts require committed inputs and apply when the relevant runtime, independent-evaluation, candidate-execution or release boundary is exercised. A development-profile pass neither renews those receipts nor proves production completion. Automatic native CI selects affected owners and reverse consumers from both Git revisions; deeper qualification workflows remain reusable or manually runnable.
 
@@ -349,7 +349,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs) covers adversarial storage restore and bootstrap recovery.
 - [codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs) covers missing state, old backups, equal-revision forks, mismatch-before-trim/migration and parent-sync retry.
 - [codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/protocol_bounds_tests.rs) covers exact 8,191/8,192/8,193-byte dimension-array boundaries and canonical ordering.
-- [codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs) covers V1 capacity before record decode, orphan bindings, exact-capacity migration, V3 metadata/ref preflight before payload access and payload rejection before grant claim; these new fixtures await candidate execution.
+- [codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs](../../../codex-rs/hepta-prompt-registry/src/durable_input_bounds_tests.rs) covers V1 capacity before record decode, orphan bindings, exact-capacity migration, V3 metadata/ref preflight before payload access and payload rejection before grant claim; their executed scope and remaining qualification gaps are recorded in the current audit.
 - [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs) and [prompt_delivery_multirole_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_multirole_tests.rs) cover sealed compilation and exact selected realization identity.
 - [codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_integrity_tests.rs) covers rehashed pricing/portfolio tampering and candidate semantic integrity.
 - [codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_signed_pricing_tests.rs) follows actual durable enumeration and independent signed completeness/pricing through expiry and known-revocation selection boundaries.
@@ -422,9 +422,27 @@ not a registry-owned evidence authority.
 An empty sealed portfolio follows the same exercise time and scope checks.
 `exercise_v1` returns `RejectStale` for time before selection, at/after its
 exclusive deadline, or changed state digest, generation vector or exact model
-tuple/digest. Only a current, in-window empty portfolio yields `NoIntervention`;
-that branch cannot bypass freshness checks. Nonempty portfolios then undergo
-the current registry/lifecycle read and exercise-versus-wait comparison.
+tuple/digest. Both empty and nonempty portfolios additionally require the current registry
+snapshot digest to equal the exact enumeration cut retained in the private seal.
+Only a current, in-window empty portfolio yields `NoIntervention`. A new registry
+revision, even an unrelated draft insertion with unchanged selected bindings,
+returns `RejectStale` and requires fresh enumeration/pricing/selection. Reopening
+an unchanged exact cut preserves the decision; reopening the changed cut does not
+restore the old selection. This is source-cut invalidation, not a global-optimality
+claim or authentication of a backup's currentness.
+
+Canonical portfolio receipt encoding now uses the
+`hepta.prompt-optimizer.portfolio-receipt.v2` digest domain, with
+`candidate_set_digest` binding the complete enumeration receipt (including source
+snapshot/revision, objective, model, grammar and omission count), rather than just
+the realization list. The process-only seal uses `verified-portfolio.v2` and
+retains one private 32-byte registry snapshot digest. Native `V1` Rust type names
+and public field layout remain, but receipt digest semantics have changed. Old
+V1 receipt identities remain historical and are neither relabeled nor silently
+upgraded. Sealed portfolios have no deserialization/recovery constructor; fresh
+selection is required. Agentd's existing persisted attachment identities are not
+rewritten or promoted by this repair, and their physical-send freshness gate
+remains open. See the current audit for the compatibility and replay review.
 
 Selection also bounds the frozen KG projection by its next relevant support
 transition, using the optimizer's private `canonical_temporal.rs` helper.
@@ -482,8 +500,8 @@ KMP helper rather than repeated slice-window equality. Each search is
 `O(haystack length + needle length)` and retains first-match, nonoverlapping
 cursor and missing-occurrence semantics. The needle is explicitly capped at
 64 KiB, bounding its `usize` prefix table to 512 KiB on a 64-bit target.
-This algorithmic bound comes from the source structure; the new Rust candidate
-has neither execution nor benchmark evidence yet. The signed maximal-pattern
+This algorithmic bound comes from the source structure; the current audit records
+focused execution, while representative benchmark evidence remains open. The signed maximal-pattern
 fixture uses declared token cost and does not attest tokenizer cost.
 
 Agentd's runtime journal rejects a dispatch whose `dispatched_unix_ms` is equal

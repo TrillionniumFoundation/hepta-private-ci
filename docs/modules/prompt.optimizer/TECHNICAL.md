@@ -80,6 +80,16 @@ The bounded components are:
 
 The source-level composition path continues outside this owner's root through `hepta-intelligence`: an exercised portfolio is materialized from the exact registry payload, compiled by `context.compiler`, revalidated again before attachment preparation, and bound to terminal delivery observation before learning-ledger admission. Those adapters do not transfer registry, context, runtime or learning ownership into `prompt.optimizer`.
 
+The [2026-10-02 registry-consumer audit](../prompt.registry/ADVERSARIAL_AUDIT_2026-10-02.md)
+repairs source-cut loss during canonical selection. Every portfolio privately
+retains its enumeration snapshot digest and exercise rejects a changed cut,
+including empty portfolios and unchanged selected realization bytes. The public
+portfolio receipt uses the `portfolio-receipt.v2` digest domain and binds the
+complete enumeration receipt. This changes digest semantics despite retaining
+native V1 type names; old receipt identities remain historical, with no implicit
+upgrade or serialized reconstruction of the private selection seal. Exact-cut
+invalidation does not prove global optimality or independent recovery freshness.
+
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.

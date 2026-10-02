@@ -153,6 +153,19 @@ cross-objective or cross-trust-epoch selection fails with `PricingIntegrity`.
 The enumeration's private seal binds snapshot and omitted count; callers cannot
 rehash those public fields to invent a new source enumeration or hide omissions.
 Only `enumerate_factors_v1` establishes that process provenance.
+The selector now retains the enumeration's exact snapshot digest in a private,
+fixed-size field and compares it with the current registry before empty or
+nonempty exercise. Mutation remains stale after reopen; unchanged exact-cut
+reopen preserves the decision. The `portfolio-receipt.v2` digest domain binds the
+full enumeration receipt instead of its bare realization list, so two source cuts
+with identical candidates have distinct portfolio/exercise receipt identities.
+The process seal is correspondingly `verified-portfolio.v2`. This is an explicit
+receipt-semantic change, not a wire-layout compatibility claim: prior V1 receipts
+remain historical and no automatic upgrade/reconstruction path exists. Existing
+Agentd attachment journal records remain opaque historical identities; physical
+send revocation and independently current recovery custody remain separate gaps.
+The [2026-10-02 audit](../../../docs/modules/prompt.registry/ADVERSARIAL_AUDIT_2026-10-02.md)
+records adversarial reproduction, execution scope and completion dimensions.
 The optimizer's learning.ledger dependency exposes
 [`VerifiedLearningEvidenceV1::valid_until_unix_ms`](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs):
 the exclusive endpoint is the minimum signed/principal expiry plus one
@@ -164,10 +177,11 @@ the no-pair path. Portfolio validity also includes pair-evidence endpoints, requ
 validity and realization expiry. Privately sealed selection time makes exercise
 before selection return `RejectStale`. Evidence trust remains ledger/host-owned;
 these dependency checks do not create another registry authority.
-`exercise_v1` applies the exclusive horizon and exact state/vector/model scope
-checks before returning `NoIntervention` for an empty sealed portfolio. Empty
-portfolios return `RejectStale` for backdated/expired time or scope drift, while
-nonempty portfolios additionally revalidate the current registry/lifecycle cut.
+`exercise_v1` applies the exclusive horizon, exact state/vector/model scope and
+original registry snapshot checks before either empty or nonempty decisions.
+Both return `RejectStale` for backdated/expired time, scope drift or a changed
+registry cut. Only a current empty portfolio yields `NoIntervention`; nonempty
+portfolios additionally revalidate the exact selected realization bindings.
 Exercise and registry compilation validate the selected-portfolio
 seal. `CandidateIntegrity`, `PricingIntegrity` and `PortfolioIntegrity` preserve
 these failure distinctions. Callers use verified pricing/selection constructors;
