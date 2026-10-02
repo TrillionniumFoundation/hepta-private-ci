@@ -88,6 +88,7 @@ pub use production::DatasetFreezePlanV2;
 pub use production::LedgerWriter;
 pub use production::ProductionDecisionV2;
 pub use production::ProductionLedgerError;
+pub use production::UnlearningLineagePreviewV1;
 pub use production::UnlearningLineageReceiptV1;
 pub use production::UnlearningLineageRequestV1;
 pub use production::candidate_ids_digest_v2;

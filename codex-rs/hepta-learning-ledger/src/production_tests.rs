@@ -457,6 +457,72 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         LearningEvidenceRoleV1::UnlearningAuthority,
         &unlearning_signing_payload_v1(&unlearning),
     );
+    let before_preview = writer.snapshot().unwrap();
+    let before_witness = writer.witness_frontier().unwrap();
+    let preview = writer
+        .preview_unlearning(
+            credit_receipt.chain_digest,
+            &unlearning,
+            &dataset,
+            &unlearning_evidence,
+            50,
+        )
+        .expect("authenticated canonical no-effect preview");
+    assert_eq!(writer.snapshot().unwrap(), before_preview);
+    assert_eq!(writer.witness_frontier().unwrap(), before_witness);
+    assert_eq!(preview.principal().principal_id, id("privacy-owner"));
+    assert!(
+        writer
+            .preview_unlearning(
+                Digest32::ZERO,
+                &unlearning,
+                &dataset,
+                &unlearning_evidence,
+                50
+            )
+            .is_err()
+    );
+    assert!(
+        writer
+            .preview_unlearning(
+                credit_receipt.chain_digest,
+                &unlearning,
+                &dataset,
+                &unlearning_evidence,
+                unlearning_evidence.expires_at + 1
+            )
+            .is_err()
+    );
+    let mut substituted = unlearning.clone();
+    substituted.reason_digest = digest("different-reason");
+    assert!(
+        writer
+            .preview_unlearning(
+                credit_receipt.chain_digest,
+                &substituted,
+                &dataset,
+                &unlearning_evidence,
+                50
+            )
+            .is_err()
+    );
+    let wrong_role = sign(
+        writer.verifier(),
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &unlearning_signing_payload_v1(&unlearning),
+    );
+    assert!(
+        writer
+            .preview_unlearning(
+                credit_receipt.chain_digest,
+                &unlearning,
+                &dataset,
+                &wrong_role,
+                50
+            )
+            .is_err()
+    );
     let receipt = writer
         .append_unlearning(
             credit_receipt.chain_digest,
@@ -466,6 +532,9 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
             50,
         )
         .unwrap();
+
+    assert_eq!(receipt.append.event_digest, preview.event_digest());
+    assert_eq!(receipt.source_event_digest, preview.source_event_digest());
 
     let frontier = writer.witness_frontier().unwrap();
     assert_eq!(frontier.anchor.sequence, 5);

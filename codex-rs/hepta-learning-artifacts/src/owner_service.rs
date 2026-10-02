@@ -64,6 +64,8 @@ pub struct ArtifactPublicationHeadPreviewV1 {
 mod operational_renewal;
 #[path = "owner_service_suffix.rs"]
 mod suffix;
+#[path = "owner_service_withdrawal.rs"]
+mod withdrawal;
 
 pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
@@ -95,6 +97,18 @@ impl LearningArtifactOwnerService {
         admission: WithdrawalBoundArtifactAdmissionV3,
         now: u64,
     ) -> Result<ArtifactPublicationHeadPreviewV1, LearningArtifactOwnerServiceError> {
+        self.preview_publication_with_state_changes(operation_id, admission, &[], now)
+    }
+
+    /// Preview the exact bounded suffix under this original writer before the
+    /// independent signer authorizes CURRENT. This creates no checkpoint.
+    pub fn preview_publication_with_state_changes(
+        &self,
+        operation_id: StableId,
+        admission: WithdrawalBoundArtifactAdmissionV3,
+        state_changes: &[ArtifactEvent],
+        now: u64,
+    ) -> Result<ArtifactPublicationHeadPreviewV1, LearningArtifactOwnerServiceError> {
         if let Some(blocked) = &self.recovery_required
             && blocked != &operation_id
         {
@@ -124,6 +138,11 @@ impl LearningArtifactOwnerService {
         }
         self.host
             .stage_compatibility_registration(&transaction, &mut registry, now)?;
+        crate::publication_registry_suffix::stage_state_changes(
+            transaction.intent(),
+            &mut registry,
+            state_changes,
+        )?;
         let original_signed_head = self
             .host
             .original_head_for_registry(registry.head_digest(), now)?;
@@ -566,6 +585,7 @@ const fn phase_rank(phase: ArtifactPublicationPhaseV1) -> u8 {
 pub enum LearningArtifactOwnerServiceError {
     Host(ArtifactOwnerHostError),
     Publication(ArtifactPublicationError),
+    DatasetRevocation(crate::DatasetRevocationError),
     InvalidConfiguration,
     WithdrawalFrontierConflict,
     RecoveryConflict,
@@ -596,6 +616,12 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
     }
 }
 
+impl From<crate::DatasetRevocationError> for LearningArtifactOwnerServiceError {
+    fn from(value: crate::DatasetRevocationError) -> Self {
+        Self::DatasetRevocation(value)
+    }
+}
+
 #[cfg(test)]
 #[path = "owner_service_tests.rs"]
 mod tests;
@@ -614,3 +640,7 @@ mod operational_renewal_tests;
 #[cfg(test)]
 #[path = "owner_service_status_tests.rs"]
 mod status_tests;
+
+#[cfg(test)]
+#[path = "owner_service_withdrawal_tests.rs"]
+mod withdrawal_tests;

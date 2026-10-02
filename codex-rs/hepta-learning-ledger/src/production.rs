@@ -58,6 +58,9 @@ use crate::verify_dataset_snapshot_receipt_v3;
 
 #[path = "production_active_trust.rs"]
 mod active_trust;
+#[path = "production_unlearning.rs"]
+mod unlearning;
+pub use unlearning::UnlearningLineagePreviewV1;
 
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
@@ -482,80 +485,6 @@ impl LedgerWriter {
             authentication_digest: signed_evidence_digest(evidence),
         });
         self.commit(expected_predecessor, event)
-    }
-
-    pub fn append_unlearning(
-        &mut self,
-        expected_predecessor: Digest32,
-        request: UnlearningLineageRequestV1,
-        dataset: &DatasetSnapshotReceiptV3,
-        evidence: &SignedLearningEvidenceV1,
-        now: u64,
-    ) -> Result<UnlearningLineageReceiptV1, ProductionLedgerError> {
-        // Unlearning may target an old frozen dataset after its original
-        // producer credential has expired. Verify immutable receipt integrity at
-        // the producer's authenticated point; current authority comes from the
-        // separately verified UnlearningAuthority evidence below.
-        verify_dataset_snapshot_receipt_v3(dataset, dataset.producer.authenticated_at)?;
-        if request.dataset_snapshot_id != dataset.snapshot.snapshot_id
-            || request.dataset_digest != dataset.snapshot.dataset_digest
-            || dataset.snapshot.objective_digest != self.trust.verifier().objective_digest()
-        {
-            return Err(ProductionLedgerError::Binding(
-                "unlearning dataset identity or objective",
-            ));
-        }
-
-        let snapshot = self.backend.snapshot()?;
-        let source = snapshot
-            .records()
-            .iter()
-            .find(|record| record.event.record_id() == &request.source_record_id)
-            .ok_or_else(|| {
-                ProductionLedgerError::Ledger(LedgerError::TargetNotFound(
-                    request.source_record_id.to_string(),
-                ))
-            })?;
-        if !dataset
-            .snapshot
-            .source_record_digests
-            .contains(&source.event_digest)
-        {
-            return Err(ProductionLedgerError::Binding(
-                "unlearning source not in dataset",
-            ));
-        }
-
-        let payload = unlearning_signing_payload_v1(&request);
-        let verified = self.verify_current_evidence(
-            LearningEvidenceRoleV1::UnlearningAuthority,
-            evidence,
-            &payload,
-            now,
-        )?;
-        require_role(&verified, LearningEvidenceRoleV1::UnlearningAuthority)?;
-        let event = LedgerEvent::UnlearningLineageV1(UnlearningLineageEventV1 {
-            record_id: request.record_id,
-            lineage_id: request.lineage_id.clone(),
-            source_record_id: request.source_record_id.clone(),
-            source_event_digest: source.event_digest,
-            dataset_snapshot_id: request.dataset_snapshot_id.clone(),
-            dataset_digest: request.dataset_digest,
-            artifact_id: request.artifact_id.clone(),
-            authority_id: verified.principal().principal_id.clone(),
-            reason_digest: request.reason_digest,
-            authentication_digest: signed_evidence_digest(evidence),
-        });
-        let append = self.commit(expected_predecessor, event)?;
-        Ok(UnlearningLineageReceiptV1 {
-            lineage_id: request.lineage_id,
-            source_record_id: request.source_record_id,
-            source_event_digest: source.event_digest,
-            dataset_snapshot_id: request.dataset_snapshot_id,
-            dataset_digest: request.dataset_digest,
-            artifact_id: request.artifact_id,
-            append,
-        })
     }
 
     /// Append the exact retrieval assignment emitted by the authoritative

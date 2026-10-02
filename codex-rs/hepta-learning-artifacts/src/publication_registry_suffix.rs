@@ -5,7 +5,7 @@ use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationIntentV1;
 use crate::ArtifactRegistry;
 
-const MAX_PUBLICATION_STATE_CHANGES: usize = 64;
+pub(crate) const MAX_PUBLICATION_STATE_CHANGES: usize = 64;
 
 pub(crate) fn validate_registry_suffix(
     intent: &ArtifactPublicationIntentV1,
