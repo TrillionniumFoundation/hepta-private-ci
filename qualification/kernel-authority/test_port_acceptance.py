@@ -157,6 +157,33 @@ class PortAcceptanceTests(unittest.TestCase):
         with self.assertRaises(PORTS.EvidenceError):
             PORTS.verified_pilot(other, self.root)
 
+    def test_candidate_identity_rejects_numeric_boolean_aliases(self):
+        for receipt, save, verify in (
+            (self.receipt, self.save, self.verify),
+            (self.process_receipt, self.save_process, self.verify_process),
+        ):
+            for field in ("activationGranted", "releaseGranted"):
+                for replacement in (0, 0.0):
+                    with self.subTest(field=field, replacement=replacement, scope=receipt["scope"]):
+                        receipt["candidate"] = copy.deepcopy(self.identity)
+                        receipt["candidate"][field] = replacement
+                        save()
+                        with self.assertRaises(PORTS.EvidenceError):
+                            verify()
+            receipt["candidate"] = copy.deepcopy(self.identity)
+            save()
+
+    def test_process_execution_rejects_boolean_and_float_counts(self):
+        original = copy.deepcopy(self.process_receipt["testExecution"])
+        for field in ("passedCount", "failedCount", "ignoredCount", "measuredCount", "suiteSummaries"):
+            for replacement in (bool(original[field]), float(original[field])):
+                with self.subTest(field=field, replacement=replacement):
+                    self.process_receipt["testExecution"] = copy.deepcopy(original)
+                    self.process_receipt["testExecution"][field] = replacement
+                    self.save_process()
+                    with self.assertRaises(PORTS.EvidenceError):
+                        self.verify_process()
+
     def test_altered_raw_log_is_rejected_even_when_receipt_claims_green(self):
         row = self.receipt["cases"][0]
         (self.root / row["logPath"]).write_text("running 0 tests\n")

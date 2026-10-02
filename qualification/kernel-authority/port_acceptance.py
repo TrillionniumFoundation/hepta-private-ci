@@ -118,7 +118,10 @@ def verified_pilot(identity, root):
         raise EvidenceError("native pilot schema mismatch")
     if type(value["schemaVersion"]) is not int or value["schemaVersion"] != 1:
         raise EvidenceError("native pilot version mismatch")
-    if value["candidate"] != identity or value["scope"] != "repository-process-pilot":
+    if (
+        RUNTIME.canonical_bytes(value["candidate"]) != RUNTIME.canonical_bytes(identity)
+        or value["scope"] != "repository-process-pilot"
+    ):
         raise EvidenceError("native pilot is not for this exact candidate and scope")
     for field in (
         "deploymentActivationProved",
@@ -172,7 +175,10 @@ def verified_pilot(identity, root):
         except EXECUTION.ExecutionError:
             pass
         passed = row["exitCode"] == 0 and execution is not None
-        if row["passed"] is not passed or row["testExecution"] != execution:
+        if (
+            row["passed"] is not passed
+            or RUNTIME.canonical_bytes(row["testExecution"]) != RUNTIME.canonical_bytes(execution)
+        ):
             raise EvidenceError("native pass claim contradicts its raw execution log")
         if (execution is not None and row["validationError"] is not None) or (
             execution is None and not isinstance(row["validationError"], str)
@@ -222,7 +228,10 @@ def verified_product_process(identity, root):
         raise EvidenceError("product-process schema mismatch")
     if type(value["schemaVersion"]) is not int or value["schemaVersion"] != 1:
         raise EvidenceError("product-process version mismatch")
-    if value["candidate"] != identity or value["scope"] != "two-normal-agentd-product-processes":
+    if (
+        RUNTIME.canonical_bytes(value["candidate"]) != RUNTIME.canonical_bytes(identity)
+        or value["scope"] != "two-normal-agentd-product-processes"
+    ):
         raise EvidenceError("product-process receipt is not for this exact candidate")
     if value["command"] != list(PROCESS.command()) or value["workingDirectory"] != "codex-rs":
         raise EvidenceError("product-process command or owner drifted")
@@ -256,7 +265,12 @@ def verified_product_process(identity, root):
     except PROCESS.QualificationError:
         pass
     passed = value["exitCode"] == 0 and execution is not None
-    if value["testExecution"] != execution or value["passed"] is not passed:
+    # Python structural equality aliases booleans, integers and floats. The
+    # retained receipt must preserve the exact JSON types of the raw-log parse.
+    if (
+        RUNTIME.canonical_bytes(value["testExecution"]) != RUNTIME.canonical_bytes(execution)
+        or value["passed"] is not passed
+    ):
         raise EvidenceError("product-process pass claim contradicts its raw execution log")
     if (execution is not None and value["validationError"] is not None) or (
         execution is None and not isinstance(value["validationError"], str)

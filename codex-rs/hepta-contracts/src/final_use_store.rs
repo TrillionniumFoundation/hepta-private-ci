@@ -96,6 +96,7 @@ pub(super) struct Store {
     root: File,
     signer_id: String,
     trust: StoreTrust,
+    obsolete_claims: bool,
     _lock: File,
 }
 
@@ -173,10 +174,11 @@ impl Store {
         let initialized = entry_exists(&root, "authority.lock")?;
         let lock = open_private(&root, "authority.lock", Access::Create)?;
         lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
-        let store = Self {
+        let mut store = Self {
             root,
             signer_id: signer_id.to_owned(),
             trust,
+            obsolete_claims: false,
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
@@ -330,6 +332,16 @@ impl Store {
         Ok((store, state))
     }
 
+    /// Called only after the owner has validated its complete recovered frontier.
+    /// A snapshot-first epoch rollover can leave obsolete frames on disk. Remove
+    /// those frames before new appends, without changing live nonces or authority.
+    pub(super) fn compact_obsolete_claims(&self, state: &State) -> Result<(), FinalUseError> {
+        if self.obsolete_claims {
+            self.replace_claims(state.head.authority_epoch, &state.used_nonces)?;
+        }
+        Ok(())
+    }
+
     /// Persist a revocation/epoch transition. This path is not the per-claim
     /// hot path, so it may compact the claim journal to the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
@@ -374,7 +386,7 @@ impl Store {
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
-    fn read_claims(&self, authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+    fn read_claims(&mut self, authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
         if !entry_exists(&self.root, "authority.claims")? {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -393,6 +405,9 @@ impl Store {
             let epoch = u64::from_be_bytes(epoch_bytes);
             if epoch == 0 || epoch > authority_epoch {
                 return Err(FinalUseError::InvalidTrust);
+            }
+            if epoch < authority_epoch {
+                self.obsolete_claims = true;
             }
             if epoch == authority_epoch {
                 let mut nonce = [0u8; 32];

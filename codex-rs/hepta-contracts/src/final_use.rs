@@ -362,6 +362,7 @@ impl FinalUseAuthority {
         }
         clock.now_unix_ms().map_err(map_trust_error)?;
         let (store, state) = store::Store::open(directory, &signer_id, verifying_key, head)?;
+        store.compact_obsolete_claims(&state)?;
         Ok(Self(Arc::new(Inner {
             signer_id,
             issuer_keys: vec![PinnedIssuerKey {
@@ -399,6 +400,7 @@ impl FinalUseAuthority {
         if trusted != observed {
             return Err(FinalUseError::AntiRollbackViolation);
         }
+        store.compact_obsolete_claims(&state)?;
         Ok(Self(Arc::new(Inner {
             signer_id,
             issuer_keys: vec![PinnedIssuerKey {
@@ -493,6 +495,7 @@ impl FinalUseAuthority {
             }
             recover_local_state_from_trusted_frontier(&store, &mut state, &head, trusted)?;
         }
+        store.compact_obsolete_claims(&state)?;
         Ok(Self(Arc::new(Inner {
             signer_id,
             issuer_keys,
