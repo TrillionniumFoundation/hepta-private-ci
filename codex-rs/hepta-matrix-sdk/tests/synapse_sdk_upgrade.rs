@@ -25,6 +25,10 @@ async fn receive(client: &Client, room: &OwnedRoomId, body: &str) -> TestResult<
                 .await?;
             if let Some(joined) = sync.rooms.joined.get(room) {
                 for event in &joined.timeline.events {
+                    eprintln!(
+                        "SDK_QUALIFICATION sync_event_type {:?}",
+                        event.raw().get_field::<String>("type")?
+                    );
                     if let AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
                         SyncMessageLikeEvent::Original(event),
                     )) = event.raw().deserialize()?
@@ -72,11 +76,22 @@ async fn encrypted_send_sync_and_sqlite_reopen_against_isolated_synapse() -> Tes
         .await?;
     let room_id = room.room_id().to_owned();
     bob.join_room_by_id(&room_id).await?;
+    // Publish the recipient's keys before the sender resolves the room devices.
+    bob.sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
+        .await?;
     alice
         .sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
         .await?;
-    bob.sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
-        .await?;
+    let bob_user = bob.user_id().ok_or("missing Bob identity")?;
+    // This public API refreshes device keys even when cross-signing is absent.
+    let _ = alice.encryption().request_user_identity(bob_user).await?;
+    let devices = alice.encryption().get_user_devices(bob_user).await?;
+    assert!(
+        devices
+            .devices()
+            .any(|device| Some(device.device_id()) == bob.device_id())
+    );
+    eprintln!("SDK_QUALIFICATION recipient_keys_ready");
     assert!(room.latest_encryption_state().await?.is_encrypted());
     let sent = room
         .send(RoomMessageEventContent::text_plain("before reopen"))
@@ -90,10 +105,12 @@ async fn encrypted_send_sync_and_sqlite_reopen_against_isolated_synapse() -> Tes
         .await?;
     assert!(replay.encryption_info.is_some());
     assert_eq!(replay.response.event_id, event_id);
+    eprintln!("SDK_QUALIFICATION encrypted_transaction_replay_accepted");
     assert_eq!(
         receive(&bob, &room_id, "before reopen").await?,
         event_id.as_str()
     );
+    eprintln!("SDK_QUALIFICATION before_reopen_decrypted");
     let raw_response = alice
         .send(
             matrix_sdk::ruma::api::client::room::get_room_event::v3::Request::new(
@@ -111,6 +128,7 @@ async fn encrypted_send_sync_and_sqlite_reopen_against_isolated_synapse() -> Tes
         .build()
         .await?;
     reopened.restore_session(bob_session).await?;
+    eprintln!("SDK_QUALIFICATION sqlite_session_reopened");
     let sent = room
         .send(RoomMessageEventContent::text_plain("after reopen"))
         .with_transaction_id(OwnedTransactionId::from("fixture-txn-2"))
@@ -120,5 +138,6 @@ async fn encrypted_send_sync_and_sqlite_reopen_against_isolated_synapse() -> Tes
         receive(&reopened, &room_id, "after reopen").await?,
         sent.response.event_id.as_str()
     );
+    eprintln!("SDK_QUALIFICATION after_reopen_decrypted");
     Ok(())
 }
