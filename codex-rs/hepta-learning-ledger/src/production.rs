@@ -460,6 +460,10 @@ impl LedgerWriter {
         if verified.principal() != &batch.allocator {
             return Err(ProductionLedgerError::Binding("credit allocator"));
         }
+        let decision = find_authenticated_decision(self.backend.core()?, &batch.episode_id)?;
+        if decision.objective_digest != self.trust.verifier().objective_digest() {
+            return Err(ProductionLedgerError::Binding("credit objective"));
+        }
         let event = LedgerEvent::CreditBatchV2(CreditAllocationBatchRecordV2 {
             record_id: batch.batch_id.clone(),
             batch_id: batch.batch_id,
@@ -545,19 +549,43 @@ impl LedgerWriter {
 
     /// Revalidate a frozen dataset immediately before final artifact use.
     ///
-    /// The receipt first verifies its own immutable identity, then every frozen
-    /// source event must still be present in the current canonical active
+    /// Current authority and objective must match. The immutable prefix must be
+    /// independently witnessed, and every source must be within that prefix and
+    /// still present in the current canonical active
     /// projection. A later correction, revocation or unlearning event therefore
     /// invalidates stale datasets without rewriting their historical receipts.
+    /// This verifies current metadata, not signed receipt issuance; consumers
+    /// requiring issuance must retain and verify the original freeze evidence.
     pub fn revalidate_dataset_snapshot(
         &self,
         receipt: &DatasetSnapshotReceiptV3,
         now: u64,
     ) -> Result<(), ProductionLedgerError> {
+        self.ensure_current_trust(now)?;
+        if receipt.snapshot.objective_digest != self.trust.verifier().objective_digest() {
+            return Err(ProductionLedgerError::Binding("dataset objective"));
+        }
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
         let ledger = self.backend.core()?;
+        let witness = self.witness.frontier()?;
+        let frontier = receipt.snapshot.eligible_frontier;
+        let prefix = usize::try_from(frontier)
+            .ok()
+            .and_then(|sequence| sequence.checked_sub(1))
+            .and_then(|index| ledger.records().get(index));
+        if frontier > witness.anchor.sequence
+            || prefix
+                .is_none_or(|record| record.chain_digest != receipt.snapshot.ledger_head_digest)
+        {
+            return Err(ProductionLedgerError::Binding(
+                "dataset unwitnessed or invalid prefix",
+            ));
+        }
         for digest in &receipt.snapshot.source_record_digests {
-            if ledger.active_record_by_digest(digest)?.is_none() {
+            if ledger
+                .active_record_by_digest(digest)?
+                .is_none_or(|record| record.sequence.get() > frontier)
+            {
                 return Err(ProductionLedgerError::Binding(
                     "dataset source revoked, corrected or unavailable",
                 ));
@@ -605,6 +633,12 @@ impl LedgerWriter {
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
+        if plan.objective_digest != self.trust.verifier().objective_digest() {
+            return Err(ProductionLedgerError::Binding("dataset objective"));
+        }
+        if self.backend.frontier()? != self.witness.frontier()? {
+            return Err(ProductionLedgerError::WitnessLag);
+        }
         let snapshot = self.backend.snapshot()?;
         let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)?;
         let verified = self.verify_current_evidence(
