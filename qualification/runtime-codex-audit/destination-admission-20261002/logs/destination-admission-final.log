@@ -1,0 +1,167 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-hepta-agentd v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agentd)
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:181:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+181 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+198 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+warning: function `read_restart_journal` is never used
+   --> hepta-supervisor/src/restart_journal.rs:313:15
+    |
+313 | pub(crate) fn read_restart_journal(
+    |               ^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `restore_window` is never used
+   --> hepta-supervisor/src/restart_journal.rs:356:15
+    |
+356 | pub(crate) fn restore_window(
+    |               ^^^^^^^^^^^^^^
+
+warning: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used
+  --> hepta-supervisor/src/restart_state.rs:37:19
+   |
+19 | impl<D: ProcessDriver> Supervisor<D> {
+   | ------------------------------------ methods in this implementation
+...
+37 |     pub(crate) fn reset_restart_budget_for_release(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+47 |     pub(crate) fn reset_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn restore_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `reset_slot_restart_budget` is never used
+   --> hepta-supervisor/src/restart_state.rs:147:4
+    |
+147 | fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read
+   --> hepta-supervisor/src/runtime.rs:153:9
+    |
+145 | pub(crate) struct AgentSlot<P> {
+    |                   --------- fields in this struct
+...
+153 |     pub restart_window_started_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
+154 |     pub restart_window_started_unix_millis: Option<u64>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     pub restart_retry_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^
+156 |     pub restart_automatic: bool,
+    |         ^^^^^^^^^^^^^^^^^
+157 |     pub restart_after_exit: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+158 |     pub restart_exhausted: bool,
+    |         ^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-supervisor` (lib) generated 5 warnings
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-worker-host)
+warning: method `append_with_delivery` is never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:52:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- method in this implementation
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 2 warnings (1 duplicate)
+    Finished `test` profile [unoptimized] target(s) in 40.79s
+────────────
+ Nextest run ID 0efc7cb7-f747-4c51-bc63-278703765944 with nextest profile: local
+    Starting 9 tests across 1 binary (188 tests skipped)
+        PASS [   0.102s] (1/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::closed_retained_admissions_cannot_be_overridden_by_a_ready_host
+        PASS [   0.186s] (2/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::dispatched_reopened_and_retired_destination_runs_never_reacquire_admission
+        PASS [   0.476s] (3/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::failed_revalidation_cannot_be_revived_by_restoring_host_values
+        PASS [   0.183s] (4/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::host_must_advance_revision_for_every_trust_snapshot_change
+        PASS [   0.138s] (5/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::retained_integrity_failure_fences_the_scoped_result
+        PASS [   0.226s] (6/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::retained_owner_is_unchanged_and_reopen_requires_fresh_validation
+        PASS [   0.697s] (7/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::run_context_plan_revision_and_generation_relabeling_are_rejected
+        PASS [   0.141s] (8/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::signature_role_and_revocation_are_independently_checked
+        PASS [   0.662s] (9/9) codex-hepta-agentd lane_b_runtime::bridge_admission::tests::stale_currentness_and_movement_during_validation_fail_closed
+────────────
+     Summary [   2.812s] 9 tests run: 9 passed, 188 skipped
