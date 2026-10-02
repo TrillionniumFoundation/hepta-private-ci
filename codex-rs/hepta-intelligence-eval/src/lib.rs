@@ -523,6 +523,10 @@ pub use initial_neuron_operational_host::run_initial_neuron_operational_evaluato
 pub use initial_neuron_operational_reader::VerifiedInitialOperationalEvidenceV1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use initial_neuron_operational_reader::inspect_initial_neuron_operational_evidence;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_gguf_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_material_v2;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_cycle_host;
