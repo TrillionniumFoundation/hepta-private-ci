@@ -1,0 +1,42 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: a09f5a73-57cb-4d0c-8932-926ce4f8a880
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Loading: 0 packages loaded
+Loading: 38 packages loaded
+    currently loading: @@rules_rs+//
+Loading: 38 packages loaded
+    currently loading: @@rules_rs+//
+Loading: 38 packages loaded
+    currently loading: @@rules_rs+//
+Loading: 38 packages loaded
+    currently loading: @@rules_rs+//
+Loading: 39 packages loaded
+Loading: 39 packages loaded
+Loading: 99 packages loaded
+    currently loading: @@platforms//
+Loading: 151 packages loaded
+Loading: 192 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind
+Loading: 213 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind
+Loading: 242 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind
+Loading: 271 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind
+INFO: Repo rules_rs++crate+crates__windows-targets-0.48.5 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__tracing-opentelemetry-0.32.1 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__walkdir-2.5.0 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__thiserror-2.0.18 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__similar-2.7.0 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__regex-1.12.3 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__rustls-pki-types-1.14.0 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__tempfile-3.27.0 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__gix-0.81.0 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__once_cell-1.21.4 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__futures-0.3.31 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+INFO: Repo rules_rs++crate+crates__rustls-0.23.43 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+ERROR: /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs++crate+crates/BUILD.bazel:3762:6: no such package '@@rules_rs++crate+crates__num-bigint-0.4.6//': error moving repo @@rules_rs++crate+crates__num-bigint-0.4.6 into the repo contents cache: [unix_jni.cc:471] /workspace/scratch/aebafee84981/hepta-bazel-tmp/repo-contents/3aee977775226923d15b9d30e5187c728e9b5f920c5aa2e58d82f8dbf8e21b0f (No space left on device) and referenced by '@@rules_rs++crate+crates//:num-bigint-0.4.6'
+ERROR: Evaluation of query "somepath(//codex-rs/hepta-operations:hepta-operations, //codex-rs/state/tests/support:support)" failed: preloading transitive closure failed: no such package '@@rules_rs++crate+crates__num-bigint-0.4.6//': error moving repo @@rules_rs++crate+crates__num-bigint-0.4.6 into the repo contents cache: [unix_jni.cc:471] /workspace/scratch/aebafee84981/hepta-bazel-tmp/repo-contents/3aee977775226923d15b9d30e5187c728e9b5f920c5aa2e58d82f8dbf8e21b0f (No space left on device)
+Loading: 283 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind

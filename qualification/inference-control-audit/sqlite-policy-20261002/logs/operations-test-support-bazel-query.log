@@ -1,0 +1,27 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: 95b6fc6d-e535-4257-b1eb-8ee135635294
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Loading: 0 packages loaded
+# /workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state/tests/support/BUILD.bazel:5:13
+rust_library(
+  name = "support",
+  visibility = ["//visibility:public"],
+  generator_name = "support",
+  generator_function = "rust_library",
+  generator_location = "codex-rs/state/tests/support/BUILD.bazel:5:13",
+  testonly = True,
+  crate_name = "codex_state_test_support",
+  crate_root = "//codex-rs/state/tests/support:lib.rs",
+  deps = ["@crates//:log-0.4.29", "@crates//:sqlx-0.9.0"],
+  edition = "2024",
+  proc_macro_deps = ["@crates//:log-0.4.29", "@crates//:sqlx-0.9.0"],
+  srcs = ["//codex-rs/state/tests/support:lib.rs"],
+)
+# Rule support instantiated at (most recent call last):
+#   /workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state/tests/support/BUILD.bazel:5:13                                         in <toplevel>
+#   /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1 in rust_library
+#   /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13 in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+

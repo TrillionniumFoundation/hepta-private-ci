@@ -1,0 +1,94 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling sha2 v0.10.9
+   Compiling rustix v1.1.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling tempfile v3.27.0
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling rama-dns v0.3.0-alpha.4
+   Compiling gix-tempfile v21.0.2
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling gix-lock v21.0.2
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling fd-lock v4.0.4
+   Compiling rustyline v14.0.0
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling sqlx-core v0.9.0
+   Compiling starlark v0.14.2
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling gix-ref v0.61.0
+   Compiling codex-execpolicy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/execpolicy)
+   Compiling codex-network-proxy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/network-proxy)
+   Compiling sqlx-sqlite v0.9.0
+   Compiling codex-http-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/http-client)
+   Compiling codex-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/protocol)
+   Compiling sqlx-macros-core v0.9.0
+   Compiling gix-shallow v0.10.0
+   Compiling gix-config v0.54.0
+   Compiling gix-protocol v0.59.0
+   Compiling gix-odb v0.78.0
+   Compiling sqlx-macros v0.9.0
+   Compiling gix-discover v0.49.0
+   Compiling gix v0.81.0
+   Compiling sqlx v0.9.0
+   Compiling codex-file-system v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/git-utils)
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-history v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/history)
+   Compiling codex-state v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state)
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-contracts)
+   Compiling codex-state-test-support v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state/tests/support)
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-types)
+   Compiling codex-hepta-operations v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-operations)
+    Finished `test` profile [unoptimized] target(s) in 1m 46s
+────────────
+ Nextest run ID fd3d5434-e69b-4a8e-bc65-020c5fa36eae with nextest profile: local
+    Starting 42 tests across 1 binary
+        PASS [   0.010s] ( 1/42) codex-hepta-operations destination_dedupe::tests::domain_write_and_dedupe_receipt_commit_atomically
+        PASS [   0.011s] ( 2/42) codex-hepta-operations destination_dedupe::pool_policy_tests::destination_constructor_preserves_all_connection_policies
+        PASS [   0.009s] ( 3/42) codex-hepta-operations destination_dedupe::tests::rollback_removes_domain_write_and_dedupe_together
+        PASS [   0.011s] ( 4/42) codex-hepta-operations destination_dedupe::tests::semantic_identity_drift_conflicts
+        PASS [   0.012s] ( 5/42) codex-hepta-operations durable_store::tests::corrupt_database_fails_closed
+        PASS [   0.029s] ( 6/42) codex-hepta-operations durable_store::tests::acknowledgement_loss_stays_indeterminate_until_terminal_observer
+        PASS [   0.031s] ( 7/42) codex-hepta-operations durable_store::tests::crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable
+        PASS [   0.020s] ( 8/42) codex-hepta-operations durable_store::tests::exact_multiwriter_prepare_is_idempotent_and_payload_drift_conflicts
+        PASS [   0.014s] ( 9/42) codex-hepta-operations durable_store::tests::future_migration_lineage_blocks_old_binary_reopen
+        PASS [   0.027s] (10/42) codex-hepta-operations durable_store::tests::expired_safe_lease_can_be_taken_over_by_higher_generation
+        PASS [   0.017s] (11/42) codex-hepta-operations durable_store::tests::migration_checksum_tamper_fails_reopen
+        PASS [   0.016s] (12/42) codex-hepta-operations durable_store::tests::prepare_is_atomic_and_survives_reopen
+        PASS [   0.028s] (13/42) codex-hepta-operations durable_store::tests::newer_generation_adopts_unsettled_dispatch_and_fences_predecessor
+        PASS [   0.014s] (14/42) codex-hepta-operations durable_store::tests::retirement_cutoff_range_never_retires_pending_work_or_relaxes_batch_limits
+        PASS [   0.031s] (15/42) codex-hepta-operations durable_store::tests::proven_not_dispatched_requeues_with_a_new_fence
+        PASS [   0.016s] (16/42) codex-hepta-operations durable_store::tests::retirement_never_discards_an_unreconciled_external_effect
+        PASS [   0.016s] (17/42) codex-hepta-operations durable_store::tests::terminal_gc_writes_tombstone_and_prevents_resurrection
+        PASS [   0.020s] (18/42) codex-hepta-operations exact_claim_tests::exact_claim_fences_lower_generation_and_allows_current_takeover
+        PASS [   0.005s] (19/42) codex-hepta-operations fault_tests::child_process_crash_boundary_helper
+        PASS [   0.016s] (20/42) codex-hepta-operations exact_claim_tests::exact_claim_never_consumes_an_older_queued_operation
+        PASS [   0.043s] (21/42) codex-hepta-operations fault_tests::sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction
+        PASS [   0.009s] (22/42) codex-hepta-operations ledger::tests::authorized_replay_revalidates_payload_operation_and_expiry
+        PASS [   0.005s] (23/42) codex-hepta-operations ledger::tests::dispatch_ack_is_not_terminal_success
+        PASS [   0.004s] (24/42) codex-hepta-operations ledger::tests::exact_command_replay_is_idempotent_within_the_reference_model
+        PASS [   0.004s] (25/42) codex-hepta-operations ledger::tests::exhausted_revision_preserves_every_transition_and_terminal_outcome
+        PASS [   0.004s] (26/42) codex-hepta-operations ledger::tests::expired_or_payload_mismatched_witness_is_rejected
+        PASS [   0.004s] (27/42) codex-hepta-operations ledger::tests::indeterminate_requires_current_fence_reconciliation
+        PASS [   0.084s] (28/42) codex-hepta-operations fault_tests::child_process_kill_matrix_preserves_durable_effect_semantics
+        PASS [   0.006s] (29/42) codex-hepta-operations ledger::tests::payload_drift_conflicts
+        PASS [   0.005s] (30/42) codex-hepta-operations ledger::tests::reference_ledger_capacity_is_bounded
+        PASS [   0.005s] (31/42) codex-hepta-operations ledger::tests::reference_witness_digest_binds_every_semantic_field
+        PASS [   0.004s] (32/42) codex-hepta-operations ledger::tests::zero_digests_reject_without_mutation
+        PASS [   0.006s] (33/42) codex-hepta-operations model::operation_intent_tests::canonical_intent_digest_binds_every_kernel_semantic_field
+        PASS [   0.007s] (34/42) codex-hepta-operations model::operation_intent_tests::zero_semantic_digests_are_rejected
+        PASS [   0.007s] (35/42) codex-hepta-operations outbox::tests::acknowledged_replay_retains_generation_fence
+        PASS [   0.006s] (36/42) codex-hepta-operations outbox::tests::claim_and_ack_are_generation_fenced
+        PASS [   0.006s] (37/42) codex-hepta-operations outbox::tests::exact_enqueue_claim_and_ack_replay_are_idempotent
+        PASS [   0.006s] (38/42) codex-hepta-operations outbox::tests::reference_outbox_capacity_is_bounded
+        PASS [   0.007s] (39/42) codex-hepta-operations outbox::tests::zero_payload_and_acknowledgement_reject_without_mutation
+        PASS [   0.008s] (40/42) codex-hepta-operations sqlite_pool_policy_tests::fixture_inspection_never_creates_missing_history
+        PASS [   0.015s] (41/42) codex-hepta-operations sqlite_pool_policy_tests::durable_operation_constructor_preserves_all_connection_policies
+        PASS [   0.010s] (42/42) codex-hepta-operations sqlite_pool_policy_tests::page_fault_helper_rejects_a_different_pool_profile
+────────────
+     Summary [   0.312s] 42 tests run: 42 passed, 0 skipped

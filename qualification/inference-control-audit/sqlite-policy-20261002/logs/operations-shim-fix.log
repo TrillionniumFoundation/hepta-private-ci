@@ -1,0 +1,277 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking scopeguard v1.2.0
+    Checking lock_api v0.4.14
+    Checking parking_lot v0.12.5
+    Checking digest v0.10.7
+    Checking mio v1.2.0
+    Checking tokio v1.52.3
+    Checking serde_json v1.0.149
+    Checking getrandom v0.3.4
+    Checking futures-util v0.3.32
+    Checking zeroize v1.8.2
+    Checking tinystr v0.8.3
+    Checking sha1 v0.10.6
+    Checking icu_locale_core v2.2.0
+    Checking icu_provider v2.2.0
+    Checking spin v0.9.8
+    Checking tokio-util v0.7.18
+    Checking sha2 v0.10.9
+    Checking prodash v31.0.0
+    Checking gix-features v0.46.2
+    Checking icu_normalizer v2.2.0
+    Checking icu_properties v2.2.0
+    Checking futures-executor v0.3.32
+    Checking uuid v1.20.0
+    Checking getrandom v0.4.2
+    Checking idna_adapter v1.2.1
+    Checking idna v1.1.0
+    Checking rand_core v0.9.5
+    Checking time v0.3.47
+    Checking rand_chacha v0.9.0
+    Checking rustls-pki-types v1.14.0
+    Checking getrandom v0.2.17
+    Checking linux-raw-sys v0.12.1
+    Checking aws-lc-rs v1.16.2
+    Checking rustix v1.1.4
+    Checking ring v0.17.14
+    Checking rand v0.9.3
+    Checking url v2.5.8
+    Checking futures v0.3.31
+    Checking flume v0.12.0
+    Checking rama-utils v0.3.0-alpha.4
+    Checking ahash v0.8.12
+    Checking sha1-checked v0.10.0
+    Checking tokio-graceful v0.2.2
+    Checking rama-core v0.3.0-alpha.4
+    Checking gix-hash v0.23.0
+    Checking rama-http-types v0.3.0-alpha.4
+    Checking rustls-webpki v0.103.13
+    Checking num-integer v0.1.46
+    Checking rama-net v0.3.0-alpha.4
+    Checking num-bigint v0.4.6
+    Checking rustls v0.23.43
+    Checking gix-hashtable v0.13.0
+    Checking tempfile v3.27.0
+    Checking gix-object v0.58.0
+    Checking h2 v0.4.16
+    Checking tokio-stream v0.1.18
+    Checking schemars v0.8.22
+    Checking rand v0.10.1
+    Checking lock_free_hashtable v0.1.4
+    Checking moka v0.12.13
+    Checking asn1-rs v0.7.1
+    Checking heapless v0.7.17
+    Checking quickcheck v1.1.0
+    Checking hickory-proto v0.25.2
+    Checking ts-rs v11.1.0
+    Checking webpki-roots v1.0.9
+    Checking gix-fs v0.19.2
+    Checking arrayvec v0.7.6
+    Checking dashmap v6.1.0
+    Checking rustls-native-certs v0.8.3
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/absolute-path)
+    Checking blake3 v1.8.2
+    Checking hickory-resolver v0.25.2
+    Checking allocative v0.3.6
+    Checking hyper v1.8.1
+    Checking postcard v1.1.3
+    Checking sorted_vector_map v0.2.1
+    Checking static_interner v0.1.2
+    Checking tokio-rustls v0.26.4
+    Checking pagable v0.4.1
+    Checking rama-http-headers v0.3.0-alpha.4
+    Checking hyper-util v0.1.20
+    Checking oid-registry v0.8.1
+    Checking rama-dns v0.3.0-alpha.4
+    Checking gix-tempfile v21.0.2
+    Checking der-parser v10.0.0
+    Checking clap_builder v4.5.58
+    Checking rama-http v0.3.0-alpha.4
+    Checking tower v0.5.3
+    Checking starlark_map v0.14.2
+    Checking x509-parser v0.18.1
+    Checking gix-lock v21.0.2
+    Checking rama-tcp v0.3.0-alpha.4
+    Checking cookie v0.18.1
+    Checking tokio-native-tls v0.3.1
+    Checking flate2 v1.1.8
+    Checking lsp-types v0.97.0
+    Checking tokio-test v0.4.5
+    Checking fd-lock v4.0.4
+    Checking yasna v0.5.2
+    Checking publicsuffix v2.3.0
+    Checking rustyline v14.0.0
+    Checking tracing-subscriber v0.3.22
+    Checking rcgen v0.14.7
+    Checking clap v4.5.58
+    Checking cookie_store v0.22.1
+    Checking rama-http-core v0.3.0-alpha.4
+    Checking starlark_syntax v0.14.2
+    Checking png v0.18.0
+    Checking hyper-tls v0.6.0
+    Checking debugserver-types v0.5.0
+    Checking tower-http v0.6.8
+    Checking hyper-rustls v0.27.7
+    Checking gix-commitgraph v0.35.0
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/rustls-provider)
+    Checking rama-unix v0.3.0-alpha.4
+    Checking rama-udp v0.3.0-alpha.4
+    Checking opentelemetry v0.31.0
+    Checking starlark v0.14.2
+    Checking enumflags2 v0.7.12
+    Checking tracing-opentelemetry v0.32.1
+    Checking codex-utils-cache v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/cache)
+    Checking rama-socks5 v0.3.0-alpha.4
+    Checking rama-http-backend v0.3.0-alpha.4
+    Checking reqwest v0.12.28
+    Checking gix-revwalk v0.29.0
+    Checking icu_locale v2.2.0
+    Checking image v0.25.9
+    Checking rama-tls-rustls v0.3.0-alpha.4
+    Checking gix-ref v0.61.0
+    Checking codex-utils-home-dir v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/home-dir)
+    Checking concurrent-queue v2.5.0
+    Checking codex-utils-path-uri v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/path-uri)
+    Checking event-listener v5.4.1
+    Checking codex-utils-string v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/string)
+    Checking codex-execpolicy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/network-proxy)
+    Checking icu_decimal v2.2.0
+    Checking codex-utils-image v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/image)
+    Checking codex-http-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/http-client)
+    Checking landlock v0.4.4
+    Checking codex-extension-items v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/redacted-string)
+    Checking gix-glob v0.24.0
+    Checking codex-async-utils v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/async-utils)
+    Checking futures-intrusive v0.5.0
+    Checking der v0.7.10
+    Checking codex-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/protocol)
+    Checking sqlx-core v0.9.0
+    Checking gix-pack v0.68.0
+    Checking gix-transport v0.55.1
+    Checking gix-revision v0.43.0
+    Checking gix-shallow v0.10.0
+    Checking gix-config v0.54.0
+    Checking gix-protocol v0.59.0
+    Checking sqlx-sqlite v0.9.0
+    Checking gix-refspec v0.39.0
+    Checking gix-odb v0.78.0
+    Checking spki v0.7.3
+    Checking gix-discover v0.49.0
+    Checking gix-traverse v0.55.0
+    Checking gix-diff v0.61.0
+    Checking gix v0.81.0
+    Checking sqlx v0.9.0
+    Checking pkcs8 v0.10.2
+    Checking codex-utils-pty v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/pty)
+    Checking codex-file-system v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/file-system)
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/git-utils)
+    Checking ed25519 v2.2.3
+    Checking curve25519-dalek v4.1.3
+    Checking codex-history v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/history)
+    Checking ed25519-dalek v2.2.0
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-contracts)
+    Checking codex-state v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state)
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-types)
+    Checking codex-state-test-support v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state/tests/support)
+    Checking codex-hepta-operations v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-operations)
+warning: used `expect()` on a `Result` value
+  --> hepta-operations/tests/destination_recovery_binding.rs:29:5
+   |
+29 |     StableId::new(value).expect("test identity")
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-operations/tests/destination_recovery_binding.rs:42:5
+   |
+42 | /     SqlitePoolOptions::new()
+43 | |         .max_connections(1)
+44 | |         .connect_with(SqliteConnectOptions::new().filename(path))
+45 | |         .await
+46 | |         .expect("open existing owner database")
+   | |_______________________________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: use of a disallowed method `sqlx::pool::PoolOptions::connect_with`
+  --> hepta-operations/tests/destination_recovery_binding.rs:44:10
+   |
+44 |         .connect_with(SqliteConnectOptions::new().filename(path))
+   |          ^^^^^^^^^^^^
+   |
+   = note: Create SQLite pools through codex-state's sqlite shim.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#disallowed_methods
+   = note: requested on the command line with `-D clippy::disallowed-methods`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-operations/tests/destination_recovery_binding.rs:53:17
+   |
+53 |     let start = store.begin_apply(identity).await.expect("admit");
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-operations/tests/destination_recovery_binding.rs:62:9
+   |
+62 | /         sqlx::query(query)
+63 | |             .execute(&mut **apply.transaction().expect("owner transaction"))
+64 | |             .await
+65 | |             .expect("stage actual owner mutation");
+   | |__________________________________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-operations/tests/destination_recovery_binding.rs:63:29
+   |
+63 |             .execute(&mut **apply.transaction().expect("owner transaction"))
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-operations/tests/destination_recovery_binding.rs:272:21
+    |
+272 |       let mut child = Command::new(std::env::current_exe().expect("test executable"))
+    |  _____________________^
+273 | |         .args([
+274 | |             "--ignored",
+275 | |             "--exact",
+...   |
+282 | |         .spawn()
+283 | |         .expect("spawn real owner process");
+    | |___________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-operations/tests/destination_recovery_binding.rs:272:34
+    |
+272 |     let mut child = Command::new(std::env::current_exe().expect("test executable"))
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-operations/tests/destination_recovery_binding.rs:286:31
+    |
+286 |         if let Some(status) = child.try_wait().expect("observe child") {
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-operations` (test "destination_recovery_binding") generated 9 warnings
+    Finished `dev` profile [unoptimized] target(s) in 1m 46s

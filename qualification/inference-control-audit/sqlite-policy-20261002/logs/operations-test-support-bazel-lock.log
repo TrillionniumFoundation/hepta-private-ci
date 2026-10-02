@@ -1,0 +1,54 @@
+bazel mod deps --lockfile_mode=update
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: f8d013be-5b6a-4149-85f2-eb90a6bb894b
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+ no actions running
+ no actions running
+ no actions running
+DEBUG: /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libgit2", version = "1.9.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "off",
+    deps = ["@libgit2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "on",
+)
+```
+DEBUG: /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "off",
+    deps = ["@libssh2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "on",
+)
+```
+<root> (codex@_)
+
