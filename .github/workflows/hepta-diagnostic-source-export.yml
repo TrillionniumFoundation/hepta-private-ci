@@ -1,7 +1,23 @@
 name: Hepta diagnostic source export
 
 on:
+  pull_request:
+    branches: [work/ui-rust-scifi-audit-20261002]
+    paths:
+      - apps/hepta-native/src/ui.rs
+      - apps/hepta-native/src/ui/**
+      - apps/hepta-native/src/chat_runtime*.rs
+      - apps/hepta-native/src/main*.rs
+      - apps/hepta-native/src/launch_config.rs
+      - apps/hepta-native/src/runtime.rs
+      - apps/hepta-ui-shared/**
+      - .github/workflows/hepta-diagnostic-source-export.yml
   workflow_dispatch:
+    inputs:
+      native_chat_only:
+        description: Run only Linux native chat fixtures and rendered screenshots
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -12,6 +28,7 @@ concurrency:
 
 jobs:
   export-exact-source:
+    if: ${{ github.event_name == 'workflow_dispatch' && !inputs.native_chat_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -45,6 +62,7 @@ jobs:
           retention-days: 1
 
   rust-policy-diagnostics:
+    if: ${{ github.event_name == 'workflow_dispatch' && !inputs.native_chat_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -97,6 +115,7 @@ jobs:
           retention-days: 1
 
   bazel-lock-diagnostics:
+    if: ${{ github.event_name == 'workflow_dispatch' && !inputs.native_chat_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -140,6 +159,7 @@ jobs:
           retention-days: 1
 
   python-sdk-diagnostics:
+    if: ${{ github.event_name == 'workflow_dispatch' && !inputs.native_chat_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -184,6 +204,7 @@ jobs:
           retention-days: 1
 
   python-format-candidate:
+    if: ${{ github.event_name == 'workflow_dispatch' && !inputs.native_chat_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -228,3 +249,66 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
+
+  native-chat-render-diagnostics:
+    if: ${{ github.event_name == 'pull_request' || inputs.native_chat_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - name: Configure fixture paths
+        run: |
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/native-chat-target" >> "$GITHUB_ENV"
+          echo "HEPTA_NATIVE_SCREENSHOT_DIR=$RUNNER_TEMP/native-chat-evidence" >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.58.0,cargo-nextest@0.9.146
+      - name: Install fixture-only Linux rendering prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev xvfb xauth python3-pil
+      - name: Verify exact source and bounded chat/runtime fixtures
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$HEPTA_NATIVE_SCREENSHOT_DIR"
+          git show --no-patch --format='commit=%H%ntree=%T%nsubject=%s' HEAD > "$HEPTA_NATIVE_SCREENSHOT_DIR/source.txt"
+          just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --lib --bin hepta-native -E 'test(ui::) | test(chat_runtime::) | test(main_bootstrap)' 2>&1 | tee "$HEPTA_NATIVE_SCREENSHOT_DIR/tests.log"
+          just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --test runtime 2>&1 | tee -a "$HEPTA_NATIVE_SCREENSHOT_DIR/tests.log"
+      - name: Render disconnected and local-fixture chat layouts
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 1400x1000x24' just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --lib --run-ignored ignored-only -E 'test(capture_chat_first_screens)' 2>&1 | tee "$HEPTA_NATIVE_SCREENSHOT_DIR/render.log"
+          python3 - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          from PIL import Image
+          root = Path(os.environ["HEPTA_NATIVE_SCREENSHOT_DIR"])
+          captures = []
+          for path in sorted(root.glob("*.ppm")):
+              image = Image.open(path)
+              image.save(path.with_suffix(".png"))
+              captures.append({"file": path.with_suffix(".png").name, "size": image.size})
+          assert len(captures) == 9, "Expected nine exact-size native screenshots"
+          (root / "manifest.json").write_text(json.dumps({"fixture": True, "liveAccounts": False, "nativeSecurityQualification": False, "installedAcceptance": False, "captures": captures}, indent=2))
+          PYCODE
+          git diff --exit-code
+      - name: Retain native chat render evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-chat-render-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/native-chat-evidence
+          if-no-files-found: error
+          retention-days: 7

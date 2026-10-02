@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.native-chat-redesign.candidate.v1",
+  "status": "implementation-candidate-unqualified",
+  "publishedSource": {
+    "commit": "b0399b8afa11a1c2c503dddb884ac864e7b04a20",
+    "tree": "46dcd882e8fb7898800bf4a22954de52fbd7c60e"
+  },
+  "localSourceProvenance": {
+    "commit": "f0dc834761de2a376c3e053112f38c609d809330",
+    "tree": "46dcd882e8fb7898800bf4a22954de52fbd7c60e",
+    "publishedTreeEqualityVerified": true
+  },
+  "stackBase": {
+    "pullRequest": 1321,
+    "commit": "711859f23b73ad89af4d23e75fe0ed4a461e7979"
+  },
+  "historicalQualificationPredecessor": {
+    "commit": "6e76bb778b58abe557dca516fe66da020da84ae6",
+    "tree": "5f3b98aecf7c3fa688f8093a275fe8fba855ffef",
+    "evidenceTransferAllowed": false
+  },
+  "sharedPresentationOwner": "ui.control",
+  "sharedSourceBlobs": {
+    "apps/hepta-ui-shared/chat.rs": "55ab3845bbf572f7e2a80fda24254ba15802b010",
+    "apps/hepta-ui-shared/chat_transport.rs": "9843115bd0abdd929efa45c2e287b6ed99a35171"
+  },
+  "chatOwnerDependency": {
+    "executable": "hepta-agent-chat-host",
+    "authority": "Agentd SessionIngress and app-server queue owner",
+    "separatelyBuilt": true,
+    "configuredExecutableDigestRequired": true,
+    "packagedCompositionQualified": false
+  },
+  "localValidation": {
+    "platform": "Linux",
+    "scopedTestsPassed": 83,
+    "unrelatedOrIgnoredTestsSkipped": 115,
+    "scope": [
+      "native UI fixtures",
+      "bounded stdio response validation",
+      "startup configuration matrix",
+      "fatal-error fallback classification",
+      "atomic history paging and duplicate/stale rejection",
+      "retained uncertain operation identity",
+      "exact backend-only startup failure provenance",
+      "eight short-height normal/history and multiline-draft cases retain a 120-logical-pixel timeline"
+    ],
+    "strictAllTargetClippy": true,
+    "formatterCompleted": true,
+    "unrelatedBaselineFormatterChangesRetained": false,
+    "renderedScreenshots": "pending exact-source hosted rerun after short-height readability repair",
+    "runtimeIntegrationTestsPassed": 15
+  },
+  "hostedDiagnosticWorkflow": ".github/workflows/hepta-diagnostic-source-export.yml",
+  "hostedDiagnosticJob": "native-chat-render-diagnostics",
+  "canonicalQualificationPending": true,
+  "pausedWorkUntouched": [
+    "Windows registrar safe-save/hardlink repair",
+    "AuthBus"
+  ],
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "claimBoundary": "UI and source diagnostics do not qualify native security, installed packaging, live chat accounts or the historical frozen candidate.",
+  "previousChatSource": {
+    "commit": "325c7b6fc48b8d30346c8ee4a1c817a9c65b6a16",
+    "tree": "653dc2e6620078350c2bf55ab20ce8d9c4f91f47"
+  },
+  "independentReview": "Two P1 source findings closed after recheck of d43bb9ba; no independent execution qualification claimed",
+  "priorHostedEvidence": {
+    "head": "49fa0bddda7e11fc78ac8b9132ece9d5ba7975e9",
+    "run": 37000947453,
+    "uiTestsPassed": 75,
+    "raster": "failed exact-size assertion because prior window state leaked into narrow fixture; failure preserved, assertions retained",
+    "artifact": 11223812903,
+    "evidenceTransferAllowed": false
+  },
+  "sourceHistory": [
+    {
+      "commit": "325c7b6fc48b8d30346c8ee4a1c817a9c65b6a16",
+      "tree": "653dc2e6620078350c2bf55ab20ce8d9c4f91f47"
+    }
+  ],
+  "hostedEvidenceHistory": [
+    {
+      "head": "49fa0bddda7e11fc78ac8b9132ece9d5ba7975e9",
+      "run": 37000947453,
+      "uiTestsPassed": 75,
+      "raster": "failed exact-size assertion because prior window state leaked into narrow fixture; failure preserved, assertions retained",
+      "artifact": 11223812903,
+      "evidenceTransferAllowed": false
+    },
+    {
+      "head": "3157c11df0d28872a6a116cb2c6c3e781363164a",
+      "run": 37004723299,
+      "uiTestsPassed": 82,
+      "runtimeIntegrationTestsPassed": 15,
+      "exactSizeRasterCaptures": 9,
+      "artifact": 11225507364,
+      "artifactSha256": "ba30d79d8bdf0be52eb4b8bdeb5984c8d78cab115a55624fb4f00bcf54fb4ebf",
+      "review": "Nine captures inspected; short-height reading area was cramped, motivating the current repair",
+      "evidenceTransferAllowed": false
+    }
+  ]
+}

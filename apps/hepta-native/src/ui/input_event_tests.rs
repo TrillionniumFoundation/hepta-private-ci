@@ -46,6 +46,13 @@ pub(super) fn app_fixture(root: &std::path::Path) -> HeptaNativeApp {
             protocol_version: 2,
         },
         screen: Screen::Operations,
+        chat_shell: chat_app::ChatShell {
+            chat: chat_model::ChatState {
+                tab: chat_model::AppTab::Console,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
         locale: Locale::English,
         connected: false,
         status_rendered: None,

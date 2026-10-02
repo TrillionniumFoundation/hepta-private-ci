@@ -18,6 +18,8 @@ struct LaunchConfig {
     #[serde(default)]
     font_file: Option<PathBuf>,
     #[serde(default)]
+    chat_config: Option<PathBuf>,
+    #[serde(default)]
     allowed_roots: Vec<PathBuf>,
     #[serde(default)]
     allow_clipboard: bool,
@@ -67,6 +69,9 @@ pub fn expand_launch_arguments(raw: &[String]) -> Result<Vec<String>, ShellError
     if let Some(path) = config.updater_helper {
         push("--updater-helper", path)?;
     }
+    if let Some(path) = config.chat_config {
+        push("--chat-config", path)?;
+    }
     if let Some(path) = config.font_file {
         push("--font-file", path)?;
     }
@@ -101,4 +106,57 @@ fn default_config_path() -> Result<PathBuf, ShellError> {
     path.ok_or_else(|| {
         ShellError::InvalidInput("no user config directory; pass --config ABSOLUTE_PATH".into())
     })
+}
+
+/// Discover only the explicitly configured chat owner. This does not parse,
+/// approve, or synthesize any console endpoint or trust configuration.
+pub fn chat_config_path(raw: &[String]) -> Result<Option<PathBuf>, ShellError> {
+    let inline: Vec<_> = raw
+        .iter()
+        .enumerate()
+        .filter(|(_, arg)| arg.as_str() == "--chat-config")
+        .collect();
+    if inline.len() > 1 {
+        return Err(ShellError::InvalidInput("duplicate --chat-config".into()));
+    }
+    if let Some((index, _)) = inline.first() {
+        let path = raw
+            .get(index + 1)
+            .map(PathBuf::from)
+            .ok_or_else(|| ShellError::InvalidInput("--chat-config requires a path".into()))?;
+        if !path.is_absolute() {
+            return Err(ShellError::InvalidInput(
+                "--chat-config must be absolute".into(),
+            ));
+        }
+        return Ok(Some(path));
+    }
+    let path = if raw.is_empty() {
+        Some(default_config_path()?)
+    } else if raw.first().is_some_and(|arg| arg == "--config") {
+        raw.get(1).map(PathBuf::from)
+    } else {
+        None
+    };
+    let Some(path) = path else {
+        return Ok(None);
+    };
+    if !path.exists() {
+        return Ok(None);
+    }
+    #[derive(Deserialize)]
+    struct ChatSelection {
+        chat_config: Option<PathBuf>,
+    }
+    let selection: ChatSelection = crate::file_input::read_json_file(&path, 64 * 1024)?;
+    if selection
+        .chat_config
+        .as_ref()
+        .is_some_and(|path| !path.is_absolute())
+    {
+        return Err(ShellError::InvalidInput(
+            "chat_config must be absolute".into(),
+        ));
+    }
+    Ok(selection.chat_config)
 }

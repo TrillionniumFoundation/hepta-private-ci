@@ -1,4 +1,12 @@
 mod binding_prepare;
+// This canonical API also contains geometry and labels used by the web host.
+mod chat_app;
+mod chat_bridge;
+pub use chat_app::show_chat_setup_shell;
+#[allow(dead_code)]
+#[path = "../../hepta-ui-shared/chat.rs"]
+mod chat_model;
+mod chat_view;
 mod history_page;
 mod native_picker;
 mod operations_view;
@@ -220,10 +228,20 @@ fn poll_task_slot(slot: &mut Option<PendingUiTask>) -> Option<(UiTaskKind, Joine
     Some((kind, outcome))
 }
 
+/// Distinguishes the exact console connect boundary from later state/update work.
+#[derive(Debug, thiserror::Error)]
+pub enum NativeAppStartupError {
+    #[error("console connection failed: {0}")]
+    Connection(ShellError),
+    #[error("native initialization failed: {0}")]
+    Initialization(#[from] ShellError),
+}
+
 pub struct HeptaNativeApp {
     runtime: Arc<Mutex<NativeShellRuntime>>,
     manifest: EndpointManifest,
     screen: Screen,
+    chat_shell: chat_app::ChatShell,
     locale: Locale,
     connected: bool,
     status_rendered: Option<String>,
@@ -269,14 +287,36 @@ pub struct HeptaNativeApp {
 }
 
 impl HeptaNativeApp {
+    pub fn configure_chat(
+        &mut self,
+        config: crate::chat_runtime::ChatConfig,
+    ) -> Result<(), String> {
+        self.chat_shell.configure_chat(config)
+    }
+
+    pub fn set_chat_configuration_error(&mut self, error: String) {
+        self.chat_shell.chat.availability = chat_model::ChatAvailability::Failed;
+        self.chat_shell.chat_bridge.error = Some(error);
+    }
+
     pub fn new(
         mut runtime: NativeShellRuntime,
         manifest: EndpointManifest,
         updater: UpdateManager,
         activate_update_on_exit: Arc<AtomicBool>,
-    ) -> Result<Self, ShellError> {
+    ) -> Result<Self, NativeAppStartupError> {
         activate_update_on_exit.store(false, Ordering::Release);
-        let session = runtime.connect_runtime(&manifest)?;
+        let session =
+            runtime
+                .connect_runtime_classified(&manifest)
+                .map_err(|failure| match failure {
+                    crate::runtime::RuntimeConnectionFailure::Backend(error) => {
+                        NativeAppStartupError::Connection(error)
+                    }
+                    crate::runtime::RuntimeConnectionFailure::State(error) => {
+                        NativeAppStartupError::Initialization(error)
+                    }
+                })?;
         SessionReferenceStore::default().save(&session, &manifest.manifest_digest)?;
         let history = runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?;
         let pending_update = updater.load_pending()?;
@@ -284,6 +324,7 @@ impl HeptaNativeApp {
             runtime: Arc::new(Mutex::new(runtime)),
             manifest,
             screen: Screen::Runtime,
+            chat_shell: chat_app::ChatShell::default(),
             locale: Locale::detect(),
             connected: false,
             status_rendered: None,

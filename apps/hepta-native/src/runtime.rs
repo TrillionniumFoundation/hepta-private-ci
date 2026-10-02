@@ -49,6 +49,18 @@ pub struct NativeShellRuntime {
     manifest: Option<EndpointManifest>,
 }
 
+/// Crate-local provenance of a connect failure, keeping state recovery distinct
+/// from the backend's connection attempt without changing the public API.
+pub(crate) enum RuntimeConnectionFailure {
+    Backend(ShellError),
+    State(ShellError),
+}
+impl From<ShellError> for RuntimeConnectionFailure {
+    fn from(error: ShellError) -> Self {
+        Self::State(error)
+    }
+}
+
 impl NativeShellRuntime {
     pub fn new(
         backend: Box<dyn BackendAdapter>,
@@ -74,12 +86,26 @@ impl NativeShellRuntime {
         &mut self,
         manifest: &EndpointManifest,
     ) -> Result<SessionIncarnation, ShellError> {
+        self.connect_runtime_classified(manifest)
+            .map_err(|failure| match failure {
+                RuntimeConnectionFailure::Backend(error)
+                | RuntimeConnectionFailure::State(error) => error,
+            })
+    }
+
+    pub(crate) fn connect_runtime_classified(
+        &mut self,
+        manifest: &EndpointManifest,
+    ) -> Result<SessionIncarnation, RuntimeConnectionFailure> {
         self.journal.ensure_healthy()?;
         manifest.validate()?;
         // Close the previous owner before acquiring another. Failure retains
         // its identity and leaves presentation invalid, so retry cannot skip it.
         self.close()?;
-        let session = self.backend.connect(manifest)?;
+        let session = self
+            .backend
+            .connect(manifest)
+            .map_err(RuntimeConnectionFailure::Backend)?;
         let validation = session.validate().and_then(|()| {
             if session.endpoint_id != manifest.endpoint_id {
                 return Err(ShellError::Backend(
@@ -93,9 +119,10 @@ impl NativeShellRuntime {
             if let Err(close_error) = self.close() {
                 return Err(ShellError::Backend(format!(
                     "{error}; rejected session cleanup failed: {close_error}"
-                )));
+                ))
+                .into());
             }
-            return Err(error);
+            return Err(error.into());
         }
         self.session = Some(session.clone());
         self.manifest = Some(manifest.clone());
@@ -103,9 +130,10 @@ impl NativeShellRuntime {
             if let Err(close_error) = self.close() {
                 return Err(ShellError::Backend(format!(
                     "{error}; failed recovery session cleanup failed: {close_error}"
-                )));
+                ))
+                .into());
             }
-            return Err(error);
+            return Err(error.into());
         }
         Ok(session)
     }
