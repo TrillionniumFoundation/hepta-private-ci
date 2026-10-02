@@ -240,6 +240,7 @@ def command_specs() -> list[dict[str, Any]]:
                 "bazel",
                 "test",
                 "//codex-rs/hepta-context-compiler:all",
+                "--lockfile_mode=error",
                 "--test_output=errors",
             ],
         },
@@ -282,13 +283,14 @@ def run_command(spec: dict[str, Any], log_path: Path) -> dict[str, Any]:
                 env=os.environ.copy(),
             )
             assert process.stdout is not None
-            for block in iter(lambda: process.stdout.read(64 * 1024), b""):
-                if not block:
-                    break
-                log.write(block)
-                log.flush()
-                sys.stdout.buffer.write(block)
-                sys.stdout.buffer.flush()
+            with process.stdout:
+                for block in iter(lambda: process.stdout.read(64 * 1024), b""):
+                    if not block:
+                        break
+                    log.write(block)
+                    log.flush()
+                    sys.stdout.buffer.write(block)
+                    sys.stdout.buffer.flush()
             exit_code = process.wait()
         except OSError as error:
             launch_error = f"{type(error).__name__}: {error}"

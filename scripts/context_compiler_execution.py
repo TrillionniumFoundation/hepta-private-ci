@@ -359,6 +359,22 @@ def specs(legacy):
                 "-v",
             ],
         },
+        {
+            "name": "qualification-recorder-regressions",
+            "cwd": legacy.ROOT,
+            "argv": [
+                "python3",
+                "-B",
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "scripts",
+                "-p",
+                "test_context_compiler_execution*.py",
+                "-v",
+            ],
+        },
     ]
     for spec in commands:
         if spec.get("minimumTests") is not None:
@@ -487,14 +503,22 @@ def main() -> int:
     }
     receipt_path = output / "context-compiler-qualification-receipt.json"
     failure = None
+    failure_context = None
+    phase = "verify_initial_candidate"
+    active_command = None
     command_specs = specs(legacy)
     try:
         candidate.verify(root, record_document)
+        phase = "write_initial_receipt"
         legacy.write_receipt(receipt_path, receipt)
         for index, spec in enumerate(command_specs, start=1):
+            active_command = spec["name"]
+            phase = "verify_before_command"
             candidate.verify(root, record_document)
             log = output / "logs" / f"{index:02d}-{spec['name']}.log"
+            phase = "execute_command"
             result = legacy.run_command(spec, log)
+            phase = "bind_command_evidence"
             minimum = spec.get("minimumTests")
             if minimum is not None:
                 # Stream the whole bounded-line log so an earlier summary cannot
@@ -519,15 +543,35 @@ def main() -> int:
                     result["namedEvidenceFailure"] = type(error).__name__
                     result["succeeded"] = False
             receipt["commands"].append(result)
+            phase = "verify_after_command"
             candidate.verify(root, record_document)
+            phase = "write_partial_receipt"
             receipt.pop("receiptSha256", None)
             legacy.write_receipt(receipt_path, receipt)
+        active_command = None
+        phase = "verify_final_candidate"
         candidate.verify(root, record_document)
     except (Exception, KeyboardInterrupt) as error:
         failure = type(error).__name__
+        # Only stable source-defined reasons are exported. Exception text may
+        # contain subprocess output or paths and is not receipt-safe evidence.
+        reason = "qualification_interrupted"
+        if phase.startswith("verify_"):
+            reason = {
+                "candidate worktree is not clean": "candidate_worktree_dirty",
+                "tested commit changed": "candidate_commit_changed",
+                "tested tree changed": "candidate_tree_changed",
+                "candidate parent identity changed": "candidate_parents_changed",
+            }.get(str(error), "candidate_verification_rejected")
+        failure_context = {
+            "phase": phase,
+            "command": active_command,
+            "reasonCode": reason,
+        }
 
     receipt.pop("receiptSha256", None)
     receipt["failureClass"] = failure
+    receipt["failureContext"] = failure_context
     receipt["status"] = (
         "passed"
         if (
