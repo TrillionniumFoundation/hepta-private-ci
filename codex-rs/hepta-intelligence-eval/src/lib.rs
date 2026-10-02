@@ -68,6 +68,8 @@ pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 #[cfg(test)]
 pub(crate) use test_tempfile::NamedTempFile;
 mod ope;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_observer_transport;
 mod paired_supervised_estimate;
 mod paired_supervised_facade;
 mod paired_supervised_host_clock;
@@ -77,6 +79,8 @@ mod paired_supervised_registration;
 mod paired_supervised_runner;
 mod paired_supervised_scope;
 mod paired_supervised_values;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_observer_transport::encode_signed_paired_observation_transport_v1;
 mod product_evidence_file;
 mod product_registration;
 pub use paired_supervised_estimate::PairedClassObservationV1;
