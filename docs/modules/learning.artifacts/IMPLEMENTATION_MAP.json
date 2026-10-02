@@ -159,13 +159,14 @@
       "state": "source_implemented",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-learning-artifacts/src/publication.rs::art_07_publication_requires_ordered_durable_phases_before_ack"
+        "codex-rs/hepta-learning-artifacts/src/publication.rs::art_07_publication_requires_ordered_durable_phases_before_ack",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_publication_rejects_unbound_projection_and_receipt"
       ],
       "sourcePathExists": true,
       "designOperation": "publication_begin",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "sourceBlob": "836a18098a1e558c4450b90704223dfa4307835e"
     },
     {
       "operation": "publication_checkpoint",
@@ -176,13 +177,15 @@
       "tests": [
         "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_checkpoint_recovery_requires_exact_snapshot",
         "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_process_kill_reopen_matrix",
-        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::startup_recovery_rejects_missing_prior_checkpoint_and_alias_paths"
+        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::startup_recovery_rejects_missing_prior_checkpoint_and_alias_paths",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_resume_rejects_missing_durable_payload",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_terminal_receipt_rejects_forged_witness_byte_identity"
       ],
       "sourcePathExists": true,
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f063088c5385c690824c54018341f5d6c553f271"
+      "sourceBlob": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "operation": "authenticated_current_head",
@@ -198,7 +201,7 @@
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f063088c5385c690824c54018341f5d6c553f271"
+      "sourceBlob": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "operation": "authenticated_current_registry_view",
@@ -228,7 +231,7 @@
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f063088c5385c690824c54018341f5d6c553f271"
+      "sourceBlob": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "operation": "lifecycle_journal_append",
@@ -317,7 +320,11 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head",
-        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::signed_wrong_head_cannot_publish_a_current_head_side_effect"
+        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::signed_wrong_head_cannot_publish_a_current_head_side_effect",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_host_rejects_second_unfinished_publication",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_host_concurrent_begin_has_one_winner",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_host_rejects_stale_predecessor_before_checkpoint",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_admission_reserves_payload_capacity_before_prepared"
       ],
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
@@ -338,7 +345,7 @@
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f063088c5385c690824c54018341f5d6c553f271"
+      "sourceBlob": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "operation": "recover_registry_by_head",
@@ -353,7 +360,7 @@
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f063088c5385c690824c54018341f5d6c553f271"
+      "sourceBlob": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "operation": "current_head_restart_anchor",
@@ -368,7 +375,7 @@
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f063088c5385c690824c54018341f5d6c553f271"
+      "sourceBlob": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "operation": "independent_selection_verify",
@@ -602,7 +609,11 @@
     }
   ],
   "currentNativeState": "Immutable V1 compatibility storage plus full canonical V3 admission sidecars, all-source/all-parent/expiry CURRENT joins, fenced authenticated publish and withdrawal/revoke/quarantine recovery, exact backfill and independent restart floors are implemented. Agentd plasticity checks independent CURRENT before each admission; cognitive and shared-terminal V2 readers reject trust substitution, forks, expiry, withdrawal and compatibility downgrade. Target-host execution, independent selection and release remain external evidence gates.",
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "The built-in PlasticityCurrentArtifactFilesV1 adapter does not supply complete admission sidecars or an independently authenticated live withdrawal frontier; a strict product provider remains required.",
+    "This candidate has no artifact-owner executable/bootstrap or injected capability-backed owner storage port. Alternative unmerged candidates must be reconciled explicitly without introducing another authoritative writer.",
+    "Early publication recovery requires an externally retained exact request; partial final-file repair, expired CURRENT renewal and independently qualified retention remain unsupported in this source profile."
+  ],
   "hostIntegrationRequirements": [
     "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
     "Authenticate withdrawal actors and registry-head signatures before constructing typed source evidence.",
@@ -734,7 +745,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_artifact_current.rs",
-      "object": "b2246935196c24b12ef43877a44757ad9d9ce517"
+      "object": "372251d79b5734919fe3f1d52e970aad8717b01a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
@@ -754,7 +765,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "53caf538c8d9fa8198b4f31689f23f1f8508a8d0"
+      "object": "451d68b3be56313e0d5bb8450ebf9c17f26b66d4"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_closure_tests.rs",
@@ -810,7 +821,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "f063088c5385c690824c54018341f5d6c553f271"
+      "object": "0b1f824416531c2588e795686121a32dec5fa22e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs",
@@ -842,7 +853,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-      "object": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "object": "836a18098a1e558c4450b90704223dfa4307835e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/registry.rs",
@@ -878,7 +889,7 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "a858bb87a9a1411679eadaa6ce06a17ecbc28534"
+      "object": "2a5c756bdfe48da91040286b76db26c9f46b76d5"
     }
   ],
   "compatibilitySnapshotConsumers": [
@@ -920,7 +931,7 @@
     "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
   },
   "observedAtHead": {
-    "commit": "deb514e9e92d1b52fae87594adce2accd1f6294e",
-    "tree": "ef8e503363ccd11beacdecc3ce89d5fa239fecea"
+    "commit": "7ad1da8a58b88b2881d721ca81011fe6e40d0c79",
+    "tree": "41db3b2d7068f5df0c48ddfb97d86ad787f57315"
   }
 }
