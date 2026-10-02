@@ -21,10 +21,14 @@ use codex_hepta_memory_retrieval::EngramNodeV1;
 use codex_hepta_memory_retrieval::EngramPopulationV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::EngramSupportV1;
+use codex_hepta_memory_retrieval::RecallAbstentionReasonV1;
+use codex_hepta_memory_retrieval::RecallDispositionV1;
 use codex_hepta_memory_retrieval::RecallWorkControlV1;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 use tempfile::TempDir;
 
 fn revision(text: &str) -> MemoryRevisionDraft {
@@ -56,7 +60,7 @@ fn facts() -> KgFactSetDraft {
         }],
     }
 }
-async fn execute(store: &CognitiveStore, access: &CognitiveAccess) -> OwnerRetrievalExecutionV1 {
+async fn execute(store: &CognitiveStore, access: &CognitiveAccess) -> OwnerRetrievalExecutionV2 {
     let cut = store
         .lane_c_snapshot(access, &CognitiveScope::AgentPrivate, 200)
         .await
@@ -120,7 +124,24 @@ async fn execute(store: &CognitiveStore, access: &CognitiveAccess) -> OwnerRetri
         std::time::Instant::now() + std::time::Duration::from_secs(30),
         1_000_000,
     );
-    execute_owner_observation_controlled(
+    if !observation.proposition_evidence_digests().is_empty() {
+        assert!(
+            matches!(
+                execute_owner_observation_controlled(
+                    &observation,
+                    &cut,
+                    &context,
+                    Digest32::of_bytes(b"Beacon"),
+                    200_000,
+                    205_000,
+                    &work
+                ),
+                Err(CognitiveStoreError::Unavailable(_))
+            ),
+            "legacy V1 must refuse, rather than erase or mislabel explicit assertions"
+        );
+    }
+    execute_owner_observation_v2_controlled(
         &observation,
         &cut,
         &context,
@@ -165,10 +186,15 @@ async fn sqlite_opposite_assertions_abstain_and_correction_removes_old_polarity(
     }
     let before = execute(&store, &access).await;
     assert_eq!(
-        before.recall.packet.disposition,
+        before.semantic.disposition(),
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence)
     );
-    assert!(before.assignment.selected_candidates.is_empty());
+    assert!(before.semantic.selected_candidates().is_empty());
+    before.recall.validate().expect("original V1 packet intact");
+    before
+        .assignment
+        .validate()
+        .expect("original HNMF action intact");
     let observed = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new("Beacon", 200))
         .await
@@ -198,10 +224,7 @@ async fn sqlite_opposite_assertions_abstain_and_correction_removes_old_polarity(
         .await
         .expect("correct exact old revision");
     let after = execute(&store, &access).await;
-    assert_eq!(
-        after.recall.packet.disposition,
-        RecallDispositionV1::Recalled
-    );
+    assert_eq!(after.semantic.disposition(), RecallDispositionV1::Recalled);
     assert_eq!(after.assignment.selected_candidates.len(), 2);
 }
 
@@ -279,7 +302,7 @@ async fn every_assertion_of_a_multi_claim_revision_is_considered() {
         .expect("denial");
     let result = execute(&store, &access).await;
     assert_eq!(
-        result.recall.packet.disposition,
+        result.semantic.disposition(),
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence)
     );
 }

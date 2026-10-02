@@ -6,13 +6,20 @@ use std::time::Instant;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
+use codex_hepta_memory_retrieval::EngramNodeV1;
+use codex_hepta_memory_retrieval::EngramPopulationV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
+use codex_hepta_memory_retrieval::EngramSupportV1;
+use codex_hepta_memory_retrieval::RecallAbstentionReasonV1;
+use codex_hepta_memory_retrieval::RecallDispositionV1;
 use codex_hepta_memory_retrieval::RecallWorkControlV1;
 use codex_hepta_memory_retrieval::RetrievalGeneratorOwnerV1;
 use codex_hepta_memory_retrieval::compile_cue;
 use codex_hepta_memory_retrieval::recall_generated_with_engram_controlled;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use tempfile::TempDir;
@@ -181,8 +188,43 @@ async fn owner_adapter_exposes_pre_top_four_bounded_candidates() {
         Vec::new(),
     )
     .expect("engram");
-    let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
     let work = RecallWorkControlV1::bounded(Instant::now() + Duration::from_secs(30), 100_000);
+    let empty = recall_generated_with_engram_controlled(
+        &cue, &policy, &generated, &engram, &dynamics, &work,
+    )
+    .expect("empty supported graph");
+    assert_eq!(
+        empty.packet.disposition,
+        RecallDispositionV1::Abstained(RecallAbstentionReasonV1::NoCandidate)
+    );
+    let nodes = observation
+        .candidates()
+        .iter()
+        .enumerate()
+        .map(|(index, candidate)| EngramNodeV1 {
+            node_id: StableId::new(format!("node:{index}")).expect("node"),
+            population: EngramPopulationV1::SemanticConcept,
+            support: vec![EngramSupportV1 {
+                record_id: StableId::new(candidate.revalidation.memory.memory_id.as_str())
+                    .expect("record"),
+                record_revision: Revision::new(candidate.revalidation.memory.revision)
+                    .expect("revision"),
+            }],
+            threshold: FixedQ32::ZERO,
+            confidence: ProbabilityQ32::ONE,
+            generation_vector_digest,
+        })
+        .collect();
+    let engram = EngramSnapshotV1::new(
+        generation_vector_digest,
+        Digest32::of_bytes(b"owner-adapter-controlled-engram"),
+        nodes,
+        Vec::new(),
+    )
+    .expect("supported graph");
+    dynamics.minimum_activation = FixedQ32::ZERO;
+    dynamics.lateral_inhibition = FixedQ32::ZERO;
     let recalled = recall_generated_with_engram_controlled(
         &cue, &policy, &generated, &engram, &dynamics, &work,
     )

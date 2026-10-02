@@ -91,6 +91,68 @@ impl RetrievalObservation {
             .collect()
     }
 
+    /// Validate every owner assertion before projecting applicable evidence.
+    /// The exact record digest comes from this observation's same bound cut.
+    pub(crate) fn project_propositions_v2(
+        &self,
+        input: &codex_hepta_memory_retrieval::GeneratedCandidateInputV1,
+        generation: codex_hepta_types::Digest32,
+    ) -> Result<Vec<codex_hepta_memory_retrieval::OwnerPropositionEvidenceV2>, CognitiveStoreError>
+    {
+        self.admitted_proposition_conflicts(&BTreeSet::new())?;
+        let records = input
+            .flattened_candidates()
+            .map_err(|e| CognitiveStoreError::Corrupt(e.to_string()))?
+            .into_iter()
+            .map(|c| {
+                (
+                    (c.record.record_id.clone(), c.record.revision),
+                    c.record.record_digest(),
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
+        let mut output = Vec::new();
+        for claim in &self.proposition_claims {
+            let record_digest = records
+                .get(&(claim.record_id.clone(), claim.revision))
+                .ok_or_else(|| {
+                    CognitiveStoreError::Corrupt(
+                        "assertion is absent from the same owner cut".into(),
+                    )
+                })?;
+            if self.observed_at < claim.valid_from
+                || claim.valid_to.is_some_and(|end| self.observed_at >= end)
+            {
+                continue;
+            }
+            let polarity = match claim.polarity {
+                proposition::OwnerPolarity::Affirmed => {
+                    codex_hepta_memory_retrieval::PropositionPolarityV2::Affirmed
+                }
+                proposition::OwnerPolarity::Denied => {
+                    codex_hepta_memory_retrieval::PropositionPolarityV2::Denied
+                }
+            };
+            let evidence = codex_hepta_memory_retrieval::ContradictionEvidenceV2::new(
+                claim.proposition_digest(),
+                generation,
+                polarity,
+            )
+            .map_err(|e| CognitiveStoreError::Corrupt(e.to_string()))?;
+            output.push(
+                codex_hepta_memory_retrieval::OwnerPropositionEvidenceV2::new(
+                    claim.record_id.clone(),
+                    claim.revision,
+                    *record_digest,
+                    evidence,
+                    claim.evidence_digest(),
+                )
+                .map_err(|e| CognitiveStoreError::Corrupt(e.to_string()))?,
+            );
+        }
+        Ok(output)
+    }
+
     pub(crate) fn admitted_proposition_conflicts(
         &self,
         admitted: &BTreeSet<(codex_hepta_types::StableId, codex_hepta_types::Revision)>,

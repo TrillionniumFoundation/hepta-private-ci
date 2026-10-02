@@ -14,6 +14,7 @@ use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::GeneratedCandidateInputV1;
 use codex_hepta_memory_retrieval::GeneratedRecallV1;
+use codex_hepta_memory_retrieval::OwnerPropositionDecisionV2;
 use codex_hepta_memory_retrieval::PropositionPolarityV2;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalChannelCandidateV1;
@@ -25,13 +26,12 @@ use codex_hepta_memory_retrieval::RetrievalGeneratorReceiptV1;
 use codex_hepta_memory_retrieval::RetrievalPolicyV1;
 use codex_hepta_memory_retrieval::RetrievalSourceCompletenessV1;
 use codex_hepta_memory_retrieval::compile_cue;
-use codex_hepta_memory_retrieval::observe_retrieval_assignment;
 use codex_hepta_memory_retrieval::product::IncompleteSourceActionV1;
 use codex_hepta_memory_retrieval::product::RetrievalCompletenessDecisionV1;
 use codex_hepta_memory_retrieval::product::RetrievalCompletenessPolicyRowV1;
 use codex_hepta_memory_retrieval::product::RetrievalCompletenessPolicyV1;
 use codex_hepta_memory_retrieval::product::ValidatedCandidateSetV1;
-use codex_hepta_memory_retrieval::product::recall_product_with_engram_v1;
+use codex_hepta_memory_retrieval::recall_product_with_owner_propositions_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
@@ -67,6 +67,15 @@ pub struct OwnerRetrievalExecutionV1 {
     pub recall: GeneratedRecallV1,
     pub assignment: RetrievalAssignmentObservationV1,
     pub completeness: RetrievalCompletenessDecisionV1,
+}
+
+/// Additive semantic admission; the predecessor recall/assignment remain V1.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OwnerRetrievalExecutionV2 {
+    pub recall: GeneratedRecallV1,
+    pub assignment: RetrievalAssignmentObservationV1,
+    pub completeness: RetrievalCompletenessDecisionV1,
+    pub semantic: OwnerPropositionDecisionV2,
 }
 
 impl RetrievalExecutionContextV1 {
@@ -133,6 +142,39 @@ pub fn execute_owner_observation_controlled(
     lease_expires_unix_ms: u64,
     work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
+    // V1 has one proposition slot per channel; do not silently discard a
+    // multi-assertion source or pass a V2 semantic decision off as a V1 action.
+    if !observation.proposition_evidence_digests().is_empty() {
+        return Err(CognitiveStoreError::Unavailable(
+            "explicit assertions require owner retrieval V2".into(),
+        ));
+    }
+    let result = execute_owner_observation_v2_controlled(
+        observation,
+        cut,
+        context,
+        request_digest,
+        acquired_at_unix_ms,
+        lease_expires_unix_ms,
+        work,
+    )?;
+    Ok(OwnerRetrievalExecutionV1 {
+        recall: result.recall,
+        assignment: result.assignment,
+        completeness: result.completeness,
+    })
+}
+
+/// Execute original HNMF plus complete explicit semantic admission at one cut.
+pub fn execute_owner_observation_v2_controlled(
+    observation: &RetrievalObservation,
+    cut: &DurableCognitiveSnapshot,
+    context: &RetrievalExecutionContextV1,
+    request_digest: Digest32,
+    acquired_at_unix_ms: u64,
+    lease_expires_unix_ms: u64,
+    work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
+) -> Result<OwnerRetrievalExecutionV2, CognitiveStoreError> {
     work.checkpoint()
         .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     context.validate()?;
@@ -170,30 +212,37 @@ pub fn execute_owner_observation_controlled(
         context.cue_profile_digest,
     )
     .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let product = recall_product_with_engram_v1(
+    let propositions =
+        observation.project_propositions_v2(candidates.input(), cue.snapshot_key.vector_digest)?;
+    let result = recall_product_with_owner_propositions_v2(
         &cue,
         &context.retrieval_policy,
         &candidates,
+        &propositions,
         &context.engram_snapshot,
         &context.dynamics_policy,
         work,
     )
     .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    let recall = product.recall.ok_or_else(|| {
+    let recall = result.product.recall.ok_or_else(|| {
         CognitiveStoreError::Unavailable(
             "retrieval product abstained because required owner evidence was incomplete"
                 .to_string(),
         )
     })?;
-    let assignment =
-        observe_retrieval_assignment(&cue, &context.retrieval_policy, candidates.input(), &recall)
-            .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    let assignment = result.assignment.ok_or_else(|| {
+        CognitiveStoreError::Unavailable("missing original retrieval assignment".into())
+    })?;
+    let semantic = result
+        .semantic
+        .ok_or_else(|| CognitiveStoreError::Unavailable("missing semantic admission".into()))?;
     work.checkpoint()
         .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    Ok(OwnerRetrievalExecutionV1 {
+    Ok(OwnerRetrievalExecutionV2 {
         recall,
         assignment,
-        completeness: product.completeness,
+        completeness: result.product.completeness,
+        semantic,
     })
 }
 
