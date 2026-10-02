@@ -191,6 +191,8 @@ pub use review_host::admit_fixed_custody_program;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::initialize_native_generator_key;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::original_numeric_input_causes_v1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::run_fixed_custody_evaluator;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::run_native_generator;

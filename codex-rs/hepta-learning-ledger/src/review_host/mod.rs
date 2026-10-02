@@ -19,6 +19,7 @@ mod independent_unlearning;
 pub use independent_unlearning::sign_root_learning_unlearning_v1;
 mod native_generator;
 mod observations;
+pub use observations::original_numeric_input_causes_v1;
 mod transfer;
 mod trust;
 pub use generator_wire::PrincipalWire;

@@ -36,6 +36,96 @@ pub(super) struct NativeObservation {
     authority_grants_any: bool,
 }
 
+/// Project the stable Q24 input from an exact original numeric support line.
+/// This grants no authority: the caller must obtain `expected_support` from
+/// an independently authenticated original ledger record before using it.
+/// Request IDs, observation times and model IDs never define this input ID.
+fn original_numeric_input_digest_v1(
+    line: &[u8],
+    expected_support: Digest32,
+    expected_weights: Digest32,
+) -> ReviewResult<Digest32> {
+    if line.len() > 16 * 1024
+        || !line.ends_with(b"\n")
+        || expected_support.is_zero()
+        || Digest32::of_bytes(line) != expected_support
+    {
+        return Err("exact original numeric support line required".into());
+    }
+    let value: NativeObservation = serde_json::from_slice(line)?;
+    if value.schema != "hepta.cpu-neuron.offline-observation.v1"
+        || value.request_id.is_empty()
+        || value.request_id.len() > 256
+        || !value.terminal_observed
+        || !value.succeeded
+        || value.qualified
+        || value.authority_grants_any
+        || value.executed_at_ms == 0
+        || value.drive_q24.len() != 10
+        || value.prediction_q24.len() != 10
+        || value.resident_bytes == 0
+        || expected_weights.is_zero()
+        || value.weights_digest.parse::<Digest32>()? != expected_weights
+    {
+        return Err("original numeric input lacks a complete non-authorizing observation".into());
+    }
+    let input: Digest32 = value.input_digest.parse()?;
+    if input.is_zero() || input.to_string() != value.input_digest {
+        return Err("canonical original Q24 input digest required".into());
+    }
+    Ok(input)
+}
+
+/// Join already authenticated ledger supports to their original numeric
+/// archive. The existing G batch codec and O's complete JSONL are carriers,
+/// not fresh signer admission. Unmatched supports are never invented.
+pub fn original_numeric_input_causes_v1(
+    archive: &[u8],
+    expected_supports: &BTreeMap<Digest32, Digest32>,
+) -> ReviewResult<BTreeMap<Digest32, Digest32>> {
+    if archive.len() > 4 * 1024 * 1024 || !archive.ends_with(b"\n") {
+        return Err("complete bounded original numeric archive required".into());
+    }
+    let lines = if let Ok(batch) =
+        serde_json::from_slice::<super::generator_wire::GeneratorBatch>(archive)
+    {
+        if batch.schema != "hepta.native-generator-decisions.v1"
+            || batch.rows.is_empty()
+            || batch.rows.len() > 4096
+        {
+            return Err("original G observation carrier required".into());
+        }
+        batch
+            .rows
+            .into_iter()
+            .map(|row| row.observation_line.into_bytes())
+            .collect::<Vec<_>>()
+    } else {
+        let lines = archive
+            .split_inclusive(|byte| *byte == b'\n')
+            .map(<[u8]>::to_vec)
+            .collect::<Vec<_>>();
+        if lines.is_empty() || lines.len() > 2048 {
+            return Err("original O observation carrier count".into());
+        }
+        lines
+    };
+    let mut inputs = BTreeMap::new();
+    for line in lines {
+        if line.len() > 16 * 1024 {
+            return Err("original numeric row budget".into());
+        }
+        let support = Digest32::of_bytes(&line);
+        if let Some(weights) = expected_supports.get(&support) {
+            inputs.insert(
+                support,
+                original_numeric_input_digest_v1(&line, support, *weights)?,
+            );
+        }
+    }
+    Ok(inputs)
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct NativeInput {
@@ -297,3 +387,7 @@ pub(super) fn validate_observation(
     }
     Ok(selected)
 }
+
+#[cfg(test)]
+#[path = "numeric_input_causality_tests.rs"]
+mod numeric_input_causality_tests;
