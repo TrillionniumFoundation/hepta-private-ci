@@ -17,6 +17,8 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Digest32;
 
@@ -135,8 +137,9 @@ pub struct NduProjectionStoreV1 {
     directory: File,
     filesystem_profile: &'static str,
     journal: NduProjectionJournalV1,
+    expected_image: (u64, Digest32),
     persistence: Arc<dyn ProjectionPersistenceV1>,
-    indeterminate: bool,
+    indeterminate: AtomicBool,
 }
 
 impl NduProjectionStoreV1 {
@@ -252,14 +255,16 @@ impl NduProjectionStoreV1 {
             Err(error) => return Err(error.into()),
         };
 
+        let expected_image = journal_image_identity(&journal);
         Ok(Self {
             root,
             lock,
             directory,
             filesystem_profile,
             journal,
+            expected_image,
             persistence,
-            indeterminate: false,
+            indeterminate: AtomicBool::new(false),
         })
     }
 
@@ -275,8 +280,8 @@ impl NduProjectionStoreV1 {
     }
 
     #[must_use]
-    pub const fn is_indeterminate(&self) -> bool {
-        self.indeterminate
+    pub fn is_indeterminate(&self) -> bool {
+        self.indeterminate.load(Ordering::Acquire)
     }
 
     pub fn entries(&self) -> Result<&[NduProjectionEntryV1], NduProjectionStoreError> {
@@ -406,11 +411,12 @@ impl NduProjectionStoreV1 {
         self.ensure_authoritative()?;
         match persist_image(&self.root, &restored, self.persistence.as_ref()) {
             Ok(()) => {
+                self.expected_image = journal_image_identity(&restored);
                 self.journal = restored;
-                Ok(())
+                self.ensure_authoritative()
             }
             Err(NduProjectionStoreError::Indeterminate) => {
-                self.indeterminate = true;
+                self.indeterminate.store(true, Ordering::Release);
                 Err(NduProjectionStoreError::Indeterminate)
             }
             Err(error) => Err(error),
@@ -418,11 +424,30 @@ impl NduProjectionStoreV1 {
     }
 
     fn ensure_authoritative(&self) -> Result<(), NduProjectionStoreError> {
-        if self.indeterminate {
-            Err(NduProjectionStoreError::Indeterminate)
-        } else {
-            verify_owner_identity(&self.root, &self.directory, &self.lock)
+        if self.indeterminate.load(Ordering::Acquire) {
+            return Err(NduProjectionStoreError::Indeterminate);
         }
+        verify_owner_identity(&self.root, &self.directory, &self.lock)?;
+        let verified = (|| {
+            // The cached journal is an expected image, not a durability receipt.
+            // Authenticate the live path even for reads and identical retries;
+            // a valid replacement hash chain is not the history we admitted.
+            let (expected_length, expected_digest) = self.expected_image;
+            let mut current = open_regular(&self.root.join(JOURNAL_FILE), false, false)?;
+            if current.metadata()?.len() != expected_length {
+                return Err(NduProjectionStoreError::Indeterminate);
+            }
+            let actual = Digest32::of_reader(&mut current, expected_length)?;
+            if actual != expected_digest || current.metadata()?.len() != expected_length {
+                return Err(NduProjectionStoreError::Indeterminate);
+            }
+            Ok(())
+        })();
+        if verified.is_err() {
+            self.indeterminate.store(true, Ordering::Release);
+            crate::operational_metrics::process_metrics().record_store_indeterminate();
+        }
+        verified
     }
 
     fn commit<F>(&mut self, mutation: F) -> Result<NduProjectionEntryV1, NduProjectionStoreError>
@@ -442,16 +467,25 @@ impl NduProjectionStoreV1 {
         self.ensure_authoritative()?;
         match persist_image(&self.root, &candidate, self.persistence.as_ref()) {
             Ok(()) => {
+                self.expected_image = journal_image_identity(&candidate);
                 self.journal = candidate;
+                self.ensure_authoritative()?;
                 Ok(entry)
             }
             Err(NduProjectionStoreError::Indeterminate) => {
-                self.indeterminate = true;
+                self.indeterminate.store(true, Ordering::Release);
                 Err(NduProjectionStoreError::Indeterminate)
             }
             Err(error) => Err(error),
         }
     }
+}
+
+// Retain only the bounded expected identity; each read streams the live image
+// without repeatedly serializing/hash-allocating the cached journal.
+fn journal_image_identity(journal: &NduProjectionJournalV1) -> (u64, Digest32) {
+    let bytes = journal.export_bytes();
+    (bytes.len() as u64, Digest32::of_bytes(&bytes))
 }
 
 impl Drop for NduProjectionStoreV1 {

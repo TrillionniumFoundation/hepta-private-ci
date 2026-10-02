@@ -49,6 +49,8 @@ The implementation is divided into:
 - stochastic current/withdrawn/revoked lifecycle plus signed selection and independent evaluator evidence;
 - `NduOperationalMetricsV1`, backup policy and restore-drill receipt validation.
 
+The open projection store also authenticates the complete bounded current image before positive reads, retries, restore or mutation and latches image failures until reopen. The [2026-10-02 audit](../../../codex-rs/hepta-ndu/AUDIT_2026-10-02.md) records the live-image and quantized FBSDE metric fixes and their executed evidence.
+
 Production-policy validation completes before owner store open, lock acquisition or durable I/O. Configuration is frozen for one owner generation. Semantic changes require a new policy, hierarchy, authority or host revision rather than hidden mutable state.
 
 ## 5. Contracts, ports and compatibility

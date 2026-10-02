@@ -41,9 +41,7 @@ fn fixture_snapshot() -> Result<NduFbsdeDatasetSnapshotV1, NduFbsdeTrainingError
             conditioning_digest: digest(&format!("conditioning-{sequence}")),
             feature_provenance_digest: digest(&format!("feature-{index}-{sequence}")),
             increment_provenance_digest: digest(&format!("increment-{index}-{sequence}")),
-            running_utility_provenance_digest: digest(&format!(
-                "running-{index}-{sequence}"
-            )),
+            running_utility_provenance_digest: digest(&format!("running-{index}-{sequence}")),
             features_q24: vec![q24(feature_value)],
             increment_q24: vec![q24(increment)],
             running_utility_q24: vec![q24(0.25 * feature_value)],
@@ -54,7 +52,9 @@ fn fixture_snapshot() -> Result<NduFbsdeDatasetSnapshotV1, NduFbsdeTrainingError
             principal_scope_digest: digest("principal"),
             fold,
             steps: vec![step(1, 0, feature), step(2, 2_000, feature + 0.25)],
-            terminal_utility_q24: vec![q24(1.5 * feature + 0.25 * increment)],
+            // Positive replay fixture has a realizable conditional value target.
+            // Future-increment noise is tested separately as a rejected dataset.
+            terminal_utility_q24: vec![q24(1.5 * feature)],
             terminal_outcome_digest: digest(&format!("outcome-{index}")),
             terminal_provenance_digest: digest(&format!("terminal-{index}")),
             terminal_observed_unix_ms: base + 4_000,
@@ -141,8 +141,8 @@ fn profiles(
 }
 
 #[test]
-fn immutable_dataset_rejects_future_features_and_cross_fold_reuse()
--> Result<(), Box<dyn StdError>> {
+fn immutable_dataset_rejects_future_features_and_cross_fold_reuse() -> Result<(), Box<dyn StdError>>
+{
     let snapshot = fixture_snapshot()?;
     let mut leaked = snapshot.clone();
     leaked.dataset_digest = Digest32::ZERO;
@@ -153,7 +153,7 @@ fn immutable_dataset_rejects_future_features_and_cross_fold_reuse()
         Err(NduFbsdeTrainingError::FutureFeature)
     );
 
-    let mut duplicate = snapshot.clone();
+    let mut duplicate = snapshot;
     duplicate.dataset_digest = Digest32::ZERO;
     duplicate.trajectories[8].episode_digest = duplicate.trajectories[0].episode_digest;
     duplicate.trajectories[8].fold = NduFbsdeFoldV1::Holdout;
@@ -251,8 +251,8 @@ fn publication_binds_registered_bytes_and_existing_stochastic_projection()
 }
 
 #[test]
-fn shadow_gate_never_activates_and_requires_independent_evidence()
--> Result<(), Box<dyn StdError>> {
+fn shadow_gate_never_activates_and_requires_independent_evidence() -> Result<(), Box<dyn StdError>>
+{
     let policy = NduFbsdeShadowPolicyV1 {
         policy_digest: digest("shadow-policy"),
         minimum_advisory_episodes: 100,
@@ -284,10 +284,7 @@ fn shadow_gate_never_activates_and_requires_independent_evidence()
     evidence.utility_improvement_acceptance_digest = digest("utility");
     evidence.regression_acceptance_digest = digest("regression");
     let advisory = evaluate_ndu_fbsde_shadow_gate_v1(&policy, &evidence)?;
-    assert_eq!(
-        advisory.stage(),
-        NduFbsdeShadowStageV1::AdvisoryEligible
-    );
+    assert_eq!(advisory.stage(), NduFbsdeShadowStageV1::AdvisoryEligible);
 
     evidence.target_host_receipt_digest = digest("host");
     let restricted = evaluate_ndu_fbsde_shadow_gate_v1(&policy, &evidence)?;
@@ -297,5 +294,56 @@ fn shadow_gate_never_activates_and_requires_independent_evidence()
     );
     assert!(!restricted.authority().grants_any());
     assert!(!restricted.production_activation());
+    Ok(())
+}
+
+#[test]
+fn unpredictable_terminal_noise_does_not_bypass_holdout_thresholds() -> Result<(), Box<dyn StdError>>
+{
+    let mut snapshot = fixture_snapshot()?;
+    for trajectory in &mut snapshot.trajectories {
+        trajectory.terminal_utility_q24[0] += trajectory.steps[0].increment_q24[0] / 4;
+    }
+    snapshot.dataset_digest = Digest32::ZERO;
+    let snapshot = seal_ndu_fbsde_dataset_v1(snapshot)?;
+    let (policy, covariance, _) = profiles(&snapshot)?;
+    assert!(matches!(
+        train_discrete_ndu_fbsde_v1(&snapshot, &policy, &covariance),
+        Err(NduFbsdeTrainingError::HoldoutRmse)
+    ));
+    Ok(())
+}
+
+#[test]
+fn quantized_metric_replay_uses_the_same_bounded_value_semantics() -> Result<(), Box<dyn StdError>>
+{
+    let snapshot = fixture_snapshot()?;
+    let (policy, covariance, _) = profiles(&snapshot)?;
+    let mut candidate = train_discrete_ndu_fbsde_v1(&snapshot, &policy, &covariance)?;
+    for slice in &mut candidate.time_slices {
+        slice.value_weights_q24[0][0] = q24(100.0);
+    }
+    let ordered = ordered_trajectory_indices(&snapshot)?;
+    let train = ordered
+        .iter()
+        .copied()
+        .filter(|i| snapshot.trajectories[*i].fold == NduFbsdeFoldV1::Train)
+        .collect::<Vec<_>>();
+    let holdout = ordered
+        .iter()
+        .copied()
+        .filter(|i| snapshot.trajectories[*i].fold == NduFbsdeFoldV1::Holdout)
+        .collect::<Vec<_>>();
+    let actual = evaluate_candidate_metrics(
+        &snapshot,
+        &policy,
+        &candidate,
+        &train,
+        &holdout,
+        q24_to_f64(candidate.metrics.maximum_update_q24),
+        candidate.metrics.epochs,
+    )?;
+    let reference = reference_metrics(&snapshot, &policy, &candidate, &train, &holdout)?;
+    assert_eq!(actual, reference);
     Ok(())
 }

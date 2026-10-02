@@ -145,10 +145,7 @@ pub(super) fn dot(left: &[f64], right: &[f64]) -> Result<f64, NduFbsdeTrainingEr
     finite(left.iter().zip(right).map(|(a, b)| a * b).sum())
 }
 
-pub(super) fn dot_q24(
-    left: &[f64],
-    right_q24: &[i64],
-) -> Result<f64, NduFbsdeTrainingError> {
+pub(super) fn dot_q24(left: &[f64], right_q24: &[i64]) -> Result<f64, NduFbsdeTrainingError> {
     if left.len() != right_q24.len() {
         return Err(NduFbsdeTrainingError::InvalidDimension);
     }
@@ -170,9 +167,7 @@ pub(super) fn predict_q24(
     }
     let value = weights_q24.iter().zip(features_q24).fold(
         q24_to_f64(intercept_q24),
-        |accumulator, (weight, feature)| {
-            accumulator + q24_to_f64(*weight) * q24_to_f64(*feature)
-        },
+        |accumulator, (weight, feature)| accumulator + q24_to_f64(*weight) * q24_to_f64(*feature),
     );
     finite(value)
 }
@@ -305,7 +300,7 @@ pub(super) fn evaluate_fold(
     candidate: &NduFbsdeTrainingCandidateV1,
     indices: &[usize],
 ) -> Result<MetricAccumulator, NduFbsdeTrainingError> {
-    let predictions = predict_all(snapshot, candidate, indices)?;
+    let predictions = predict_all(snapshot, policy, candidate, indices)?;
     let mut accumulator = MetricAccumulator::default();
     for (position, index) in indices.iter().enumerate() {
         let trajectory = &snapshot.trajectories[*index];
@@ -378,9 +373,8 @@ pub(super) fn reference_fold(
                 let target = clamp_finite(
                     q24_to_f64(step.running_utility_q24[utility])
                         + values[time_index + 1][utility]
-                        + dt
-                            * (policy.specification.generator_y[utility] * predicted
-                                + z_generator),
+                        + dt * (policy.specification.generator_y[utility] * predicted
+                            + z_generator),
                     policy.specification.maximum_absolute_value,
                 )?;
                 let baseline = q24_to_f64(slice.baseline_intercepts_q24[utility]);
@@ -393,6 +387,7 @@ pub(super) fn reference_fold(
 
 pub(super) fn predict_all(
     snapshot: &NduFbsdeDatasetSnapshotV1,
+    policy: &AdmittedNduFbsdeTrainingPolicyV1,
     candidate: &NduFbsdeTrainingCandidateV1,
     indices: &[usize],
 ) -> Result<Vec<Vec<Vec<f64>>>, NduFbsdeTrainingError> {
@@ -408,10 +403,13 @@ pub(super) fn predict_all(
         for time_index in (0..snapshot.horizon).rev() {
             let slice = &candidate.time_slices[time_index];
             for utility in 0..snapshot.utility_dimension {
-                values[time_index][utility] = predict_q24(
-                    slice.value_intercepts_q24[utility],
-                    &slice.value_weights_q24[utility],
-                    &trajectory.steps[time_index].features_q24,
+                values[time_index][utility] = clamp_finite(
+                    predict_q24(
+                        slice.value_intercepts_q24[utility],
+                        &slice.value_weights_q24[utility],
+                        &trajectory.steps[time_index].features_q24,
+                    )?,
+                    policy.specification.maximum_absolute_value,
                 )?;
             }
         }
@@ -454,8 +452,7 @@ pub(super) fn enforce_candidate_thresholds(
     if q24_to_f64(metrics.holdout_rmse_q24) > policy.specification.maximum_holdout_rmse {
         return Err(NduFbsdeTrainingError::HoldoutRmse);
     }
-    if q24_to_f64(metrics.holdout_calibration_q24)
-        > policy.specification.maximum_calibration_error
+    if q24_to_f64(metrics.holdout_calibration_q24) > policy.specification.maximum_calibration_error
     {
         return Err(NduFbsdeTrainingError::Calibration);
     }
