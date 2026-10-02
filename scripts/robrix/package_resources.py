@@ -31,7 +31,34 @@ def patch_packager(source):
                     }'''
     if source.count(old) != 1:
         raise ValueError('Pinned cargo-makepad marker lookup shape drift')
+    parser = 'pub fn extract_dependency_paths(line: &str) -> Option<(String, Option<PathBuf>)> {'
+    if source.count(parser) != 1:
+        raise ValueError('Pinned cargo-makepad dependency parser shape drift')
+    source = source.replace(parser, parser + '\n    if hepta_dependency_heading(line) { return None; }')
     return source.replace(old, new) + '\n' + Path(__file__).with_name('makepad_marker.rs').read_text()
+
+
+def parser_regression_source(patched):
+    """Exercise the real pinned parser together with actual Cargo tree row syntax."""
+    start = patched.index('pub fn extract_dependency_paths(')
+    end = patched.index('pub fn get_crate_dir(', start)
+    helper = Path(__file__).with_name('makepad_marker.rs').read_text()
+    regression = r'''
+#[test] fn actual_pinned_parser_resolves_marker_basename_and_ignores_only_headings() {
+    for line in ["│   │       [build-dependencies]", "[dev-dependencies]"] {
+        assert_eq!(extract_dependency_paths(line), None);
+    }
+    let f = Fixture::new();
+    f.write(true, "source/platform");
+    let (name, path) = extract_dependency_paths("│       │   ├── makepad-platform v2.0.0 (https://github.com/makepad/makepad?rev=493d23a7630f487d29912dd73f2cbb5b639b74ca#493d23a7)").unwrap();
+    assert_eq!(name, "makepad-platform");
+    assert_eq!(path, None);
+    assert_eq!(hepta_dependency_dir(&f.build(), &name, &f.source()).unwrap(), Some(f.source().join("platform")));
+    assert!(!hepta_dependency_heading("[build-dependencies]/../"));
+}
+'''
+    prefix, closing = helper.rsplit('}', 1)
+    return 'use std::path::{Path, PathBuf};\n' + patched[start:end] + prefix + regression + '}' + closing
 
 
 def package_inventory(package):

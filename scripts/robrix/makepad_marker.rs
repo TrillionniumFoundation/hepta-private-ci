@@ -1,11 +1,17 @@
+// Cargo tree headings are structural rows, never dependency marker names.
+fn hepta_dependency_heading(line: &str) -> bool {
+    matches!(line.trim_start_matches(|c: char| c.is_whitespace() || matches!(c, '│' | '├' | '└' | '─')),
+        "[build-dependencies]" | "[dev-dependencies]")
+}
+
 // Tool-only compatibility helper injected into the exact pinned cargo-makepad.
 fn hepta_dependency_dir(
     build_dir: &std::path::Path,
     name: &str,
     resource_root: &std::path::Path,
 ) -> Result<Option<std::path::PathBuf>, String> {
-    if name.is_empty() || !name.bytes().all(|c| c.is_ascii_alphanumeric() || c == b'-' || c == b'_') {
-        return Err("invalid dependency marker name".into());
+    if name.is_empty() || name.len() > 128 || !name.bytes().all(|c| c.is_ascii_alphanumeric() || c == b'-' || c == b'_') {
+        return Err(format!("invalid dependency marker name (first 128 chars): {:?}", name.chars().take(128).collect::<String>()));
     }
     let build_root = build_dir.canonicalize().map_err(|e| e.to_string())?;
     let allowed = resource_root.canonicalize().map_err(|e| e.to_string())?;
@@ -53,6 +59,21 @@ mod hepta_marker_tests {
         fn resolve(&self) -> Result<Option<PathBuf>, String> { hepta_dependency_dir(&self.build(), "makepad-platform", &self.source()) }
     }
     impl Drop for Fixture { fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); } }
+    #[test] fn actual_cargo_tree_headings_are_not_marker_names() {
+        for line in ["│   │       [build-dependencies]", "[build-dependencies]", "[dev-dependencies]"] {
+            assert!(hepta_dependency_heading(line));
+        }
+        for line in ["├── makepad-platform v1.0.0", "[build-dependencies]/../", "[unknown]"] {
+            assert!(!hepta_dependency_heading(line));
+        }
+    }
+    #[test] fn malformed_marker_names_still_fail_with_bounded_diagnostics() {
+        let f = Fixture::new();
+        for name in ["build-dependencies]", "../makepad-platform", "makepad-platform.path", ""] {
+            assert!(hepta_dependency_dir(&f.build(), name, &f.source()).unwrap_err().contains("invalid dependency marker name"));
+        }
+        assert!(hepta_dependency_dir(&f.build(), &"x".repeat(1000), &f.source()).unwrap_err().len() < 200);
+    }
     #[test] fn absent_marker_is_not_a_resolved_resource() { let f = Fixture::new(); assert_eq!(f.resolve().unwrap(), None); }
     #[test] fn legacy_and_current_layouts_resolve_same_source() {
         let f = Fixture::new(); f.write(false, "source/platform"); assert_eq!(f.resolve().unwrap(), Some(f.source().join("platform")));

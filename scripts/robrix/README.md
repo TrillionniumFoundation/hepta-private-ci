@@ -146,3 +146,13 @@ Native run37046992519 succeeded. Pixel inspection of its800×560 login before/af
 wheel captures confirms all six SSO icons and the signup button become visible.
 The keyboard capture is visually unchanged; keyboard-focus reachability is not
 claimed. No account or message action was taken and no layout/theme change made.
+
+Run 37054634861 again executed all 13 browser regressions and finished release
+compilation, then failed packaging. The pinned Makepad parser treats Cargo tree
+section headings as dependency names (`build-dependencies]`). The exact-source
+patch now excludes only the actual `[build-dependencies]` / `[dev-dependencies]`
+structural rows before that parser. Strict marker names and all existing resource
+checks remain. Before the heavy build, a standalone integration test compiles the
+actual patched parser with the marker helper and tests the real Makepad v2.0.0
+Git dependency row, `makepad-platform.path`, both marker layouts, and rejection
+cases. Rejected names receive bounded escaped diagnostics.
