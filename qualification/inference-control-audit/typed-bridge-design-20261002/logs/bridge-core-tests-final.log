@@ -1,0 +1,111 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-core)
+    Finished `test` profile [unoptimized] target(s) in 4.15s
+────────────
+ Nextest run ID d2514cde-95eb-471a-88a9-6235a973abda with nextest profile: local
+    Starting 103 tests across 1 binary (1 test skipped)
+        PASS [   0.006s] (  1/103) codex-hepta-infer-core control_contracts::tests::confidential_output_requires_external_encryption_metadata
+        PASS [   0.006s] (  2/103) codex-hepta-infer-core control_contracts::tests::deserialized_protected_metadata_is_checked_before_marker_hashing
+        PASS [   0.030s] (  3/103) codex-hepta-infer-core control_contracts::tests::four_authority_aliases_cannot_reuse_one_execution_signing_key
+        PASS [   0.060s] (  4/103) codex-hepta-infer-core control_contracts::tests::distinct_operator_aliases_cannot_reuse_one_retirement_key
+        PASS [   0.059s] (  5/103) codex-hepta-infer-core control_contracts::tests::four_independent_authorities_bind_one_exact_execution
+        PASS [   0.062s] (  6/103) codex-hepta-infer-core control_contracts::tests::key_rotation_window_and_revocation_are_enforced
+        PASS [   0.074s] (  7/103) codex-hepta-infer-core control_contracts::tests::retirement_requires_two_distinct_operators
+        PASS [   0.006s] (  8/103) codex-hepta-infer-core durable_control::native::bound_source::admission_tests::bound_capacity_counts_other_held_records_before_staging
+        PASS [   0.008s] (  9/103) codex-hepta-infer-core durable_control::native::bound_source::admission_tests::bound_metadata_survives_reopen_and_compaction_without_plaintext
+        PASS [   0.006s] ( 10/103) codex-hepta-infer-core durable_control::native::bound_source::admission_tests::cached_bound_ack_cannot_survive_retained_journal_tampering
+        PASS [   0.005s] ( 11/103) codex-hepta-infer-core durable_control::native::bound_source::admission_tests::idempotent_bound_admission_and_legacy_collision_do_not_append
+        PASS [   0.072s] ( 12/103) codex-hepta-infer-core control_contracts::tests::signed_reconciliation_is_exact_and_rotation_bound
+        PASS [   0.006s] ( 13/103) codex-hepta-infer-core durable_control::native::bound_source::admission_tests::legacy_dispatch_cannot_bypass_bound_profile_in_owner_or_replay
+        PASS [   0.006s] ( 14/103) codex-hepta-infer-core durable_control::native::bound_source::admission_tests::ordinary_checkpoint_stays_v2_and_bound_data_cannot_hide_in_v2
+        PASS [   0.004s] ( 15/103) codex-hepta-infer-core durable_control::native::bound_source::tests::exact_v2_source_proof_retains_only_binding_metadata
+        PASS [   0.005s] ( 16/103) codex-hepta-infer-core durable_control::native::bound_source::tests::original_binding_rejects_prompt_query_socket_or_timeout_drift
+        PASS [   0.004s] ( 17/103) codex-hepta-infer-core durable_control::native::bound_source::tests::unchanged_signed_payload_cannot_be_relabelled_to_another_run_or_context
+        PASS [   0.006s] ( 18/103) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_cannot_release_unknown_execution_without_terminal_evidence
+        PASS [   0.006s] ( 19/103) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_observation_assignment_identity
+        PASS [   0.005s] ( 20/103) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_signed_audit_shape_and_terminal_sequence
+        PASS [   0.005s] ( 21/103) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::dispatched_request_survives_reopen_compaction_and_second_reopen
+        PASS [   0.033s] ( 22/103) codex-hepta-infer-core durable_control::native::bound_source::tests::source_preimage_is_bounded_before_encoding
+        PASS [   0.006s] ( 23/103) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::valid_checkpoint_reopens_and_retains_unknown_execution_capacity
+        PASS [   0.050s] ( 24/103) codex-hepta-infer-core durable_control::native::economic_tests::host_observed_overrun_releases_slot_and_preserves_denial_reason
+        PASS [   0.196s] ( 25/103) codex-hepta-infer-core durable_control::native::economic_tests::signed_quota_overrun_preserves_terminal_usage_and_denies_success
+        PASS [   0.007s] ( 26/103) codex-hepta-infer-core durable_control::native::record_staging_tests::actual_append_failure_discards_target_and_first_admission_candidates
+        PASS [   0.005s] ( 27/103) codex-hepta-infer-core durable_control::native::record_staging_tests::late_reducer_failure_does_not_install_mutated_target_or_append
+        PASS [   0.004s] ( 28/103) codex-hepta-infer-core durable_control::native::record_staging_tests::mismatched_event_identity_and_checkpoint_are_rejected_before_append
+        PASS [   0.004s] ( 29/103) codex-hepta-infer-core durable_control::native::record_staging_tests::staged_admission_counts_all_held_records_and_preserves_compacted_history
+        PASS [   0.006s] ( 30/103) codex-hepta-infer-core durable_control::native::storage_sync_tests::identical_content_addressed_reuse_preserves_the_existing_object
+        PASS [   0.004s] ( 31/103) codex-hepta-infer-core durable_control::native::storage_sync_tests::identical_reuse_requires_a_successful_real_file_flush
+        PASS [   0.005s] ( 32/103) codex-hepta-infer-core durable_control::native::storage_sync_tests::maintenance_retry_reuses_the_synced_archive_and_commits_one_generation
+        PASS [   0.005s] ( 33/103) codex-hepta-infer-core durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage
+        PASS [   0.004s] ( 34/103) codex-hepta-infer-core durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness
+        PASS [   0.004s] ( 35/103) codex-hepta-infer-core durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success
+        PASS [   0.004s] ( 36/103) codex-hepta-infer-core durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once
+        PASS [   0.007s] ( 37/103) codex-hepta-infer-core durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal
+        PASS [   0.004s] ( 38/103) codex-hepta-infer-core durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven
+        PASS [   0.005s] ( 39/103) codex-hepta-infer-core durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success
+        PASS [   0.224s] ( 40/103) codex-hepta-infer-core durable_control::native::economic_tests::signed_terminal_preserves_prior_owner_authority_without_inventing_readiness
+        PASS [   0.004s] ( 41/103) codex-hepta-infer-core durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss
+        PASS [   0.004s] ( 42/103) codex-hepta-infer-core durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success
+        PASS [   0.004s] ( 43/103) codex-hepta-infer-core durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen
+        PASS [   0.005s] ( 44/103) codex-hepta-infer-core durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome
+        PASS [   0.004s] ( 45/103) codex-hepta-infer-core durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead
+        PASS [   0.015s] ( 46/103) codex-hepta-infer-core durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation
+        PASS [   0.005s] ( 47/103) codex-hepta-infer-core durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
+        PASS [   0.004s] ( 48/103) codex-hepta-infer-core durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal
+        PASS [   0.006s] ( 49/103) codex-hepta-infer-core durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage
+        PASS [   0.049s] ( 50/103) codex-hepta-infer-core durable_control::native::v2_tests::ambiguous_native_append_fences_idempotent_mutations
+        PASS [   0.050s] ( 51/103) codex-hepta-infer-core durable_control::native::v2_tests::authorized_settlement_never_persists_raw_output
+        PASS [   0.066s] ( 52/103) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::current_schema_two_checkpoint_preserves_independently_observed_readiness
+        PASS [   0.164s] ( 53/103) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::legacy_retirement_without_key_fingerprints_stays_held_in_both_checkpoint_versions
+        PASS [   0.005s] ( 54/103) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_pre_effect_abort_checkpoint_remains_released
+        PASS [   0.103s] ( 55/103) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_reconciliation_checkpoint_denies_unsupported_readiness
+        PASS [   0.007s] ( 56/103) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_tampering_is_rejected_on_reopen
+        PASS [   0.007s] ( 57/103) codex-hepta-infer-core durable_control::native::v2_tests::compaction_preserves_indeterminate_capacity_and_exact_state
+        PASS [   0.011s] ( 58/103) codex-hepta-infer-core durable_control::native::v2_tests::every_compaction_failpoint_reopens_a_complete_generation
+        PASS [   0.075s] ( 59/103) codex-hepta-infer-core durable_control::native::v2_tests::indeterminate_retirement_is_revision_bound_and_dual_controlled
+        PASS [   0.096s] ( 60/103) codex-hepta-infer-core durable_control::native::v2_tests::legacy_retirement_holds_capacity_until_fresh_independent_approval
+        PASS [   0.006s] ( 61/103) codex-hepta-infer-core durable_control::native::v2_tests::locally_aborted_dispatch_cannot_be_resurrected_by_observation
+        PASS [   0.005s] ( 62/103) codex-hepta-infer-core durable_control::native::v2_tests::pre_effect_abort_token_cannot_release_another_journal
+        PASS [   0.056s] ( 63/103) codex-hepta-infer-core durable_control::native::v2_tests::protected_replay_tests::journal_replay_rejects_malformed_metadata_and_unbound_output_marker
+        PASS [   0.067s] ( 64/103) codex-hepta-infer-core durable_control::native::v2_tests::protected_replay_tests::reconciled_checkpoint_revalidates_retained_partial_output_metadata
+        PASS [   0.005s] ( 65/103) codex-hepta-infer-core durable_control::native::v2_tests::retained_pre_effect_abort_token_cannot_release_reopened_owner
+        PASS [   0.064s] ( 66/103) codex-hepta-infer-core durable_control::native::v2_tests::signed_reconciliation_releases_indeterminate_without_blind_replay
+        PASS [   0.005s] ( 67/103) codex-hepta-infer-core durable_control::native::v2_tests::terminal_usage_refinement_cannot_clear_success_denial
+        PASS [   0.005s] ( 68/103) codex-hepta-infer-core durable_control::retained_journal_tests::byte_identical_path_replacement_fences_the_original_open_writer
+        PASS [   0.008s] ( 69/103) codex-hepta-infer-core durable_control::retained_journal_tests::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison
+        PASS [   0.005s] ( 70/103) codex-hepta-infer-core durable_control::retained_journal_tests::compaction_and_reopen_adopt_only_the_verified_new_prefix
+        PASS [   0.004s] ( 71/103) codex-hepta-infer-core durable_control::retained_journal_tests::compaction_does_not_publish_damaged_replacement_after_directory_sync
+        PASS [   0.005s] ( 72/103) codex-hepta-infer-core durable_control::retained_journal_tests::compaction_rechecks_predecessor_after_generation_sync_before_rename
+        PASS [   0.005s] ( 73/103) codex-hepta-infer-core durable_control::retained_journal_tests::damaged_new_checkpoint_cannot_be_adopted_after_directory_sync
+        PASS [   0.004s] ( 74/103) codex-hepta-infer-core durable_control::retained_journal_tests::lost_journal_access_denies_ack_and_write_until_explicit_reopen
+        PASS [   0.004s] ( 75/103) codex-hepta-infer-core durable_control::retained_journal_tests::malformed_admission_is_rejected_without_an_expensive_retention_scan
+        PASS [   5.378s] ( 76/103) codex-hepta-infer-core durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes
+        PASS [   0.006s] ( 77/103) codex-hepta-infer-core durable_control::retained_journal_tests::same_length_valid_history_substitution_denies_new_write_without_repair
+        PASS [   0.006s] ( 78/103) codex-hepta-infer-core durable_control::retained_journal_tests::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison
+        PASS [   0.005s] ( 79/103) codex-hepta-infer-core durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage
+        PASS [   0.004s] ( 80/103) codex-hepta-infer-core durable_control::tests::failed_append_fences_legacy_idempotent_commands_until_reopen
+        PASS [   0.005s] ( 81/103) codex-hepta-infer-core durable_control::tests::invalid_event_is_rejected_before_append
+        PASS [   0.004s] ( 82/103) codex-hepta-infer-core durable_control::tests::missing_terminal_observation_becomes_indeterminate
+        PASS [   0.004s] ( 83/103) codex-hepta-infer-core durable_control::tests::one_writer_is_held_until_owner_drop
+        PASS [   0.004s] ( 84/103) codex-hepta-infer-core durable_control::tests::reopens_exact_committed_state
+        PASS [   0.006s] ( 85/103) codex-hepta-infer-core durable_control::tests::replay_revalidates_event_semantics_and_terminal_bindings
+        PASS [   0.004s] ( 86/103) codex-hepta-infer-core durable_control::tests::reservation_rejects_request_that_expired_after_submission
+        PASS [   0.005s] ( 87/103) codex-hepta-infer-core durable_control::tests::same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay
+        PASS [   0.004s] ( 88/103) codex-hepta-infer-core durable_control::tests::settlement_enforces_request_token_limit_before_append_and_on_replay
+        PASS [   0.004s] ( 89/103) codex-hepta-infer-core durable_control::tests::settlement_rejects_quota_overrun_and_same_digest_usage_drift
+        PASS [   0.004s] ( 90/103) codex-hepta-infer-core durable_control::writer_lock::tests::a_dangling_journal_symlink_cannot_split_the_compaction_owner
+        PASS [   0.004s] ( 91/103) codex-hepta-infer-core durable_control::writer_lock::tests::compaction_rejects_journal_growth_and_fences_the_stale_owner
+        PASS [   0.004s] ( 92/103) codex-hepta-infer-core durable_control::writer_lock::tests::detached_generation_lock_does_not_replace_the_lifecycle_lock
+        PASS [   0.004s] ( 93/103) codex-hepta-infer-core durable_control::writer_lock::tests::long_journal_names_and_existing_symlink_aliases_share_a_short_lock
+        PASS [   0.004s] ( 94/103) codex-hepta-infer-core durable_control::writer_lock::tests::renamed_generation_failure_retains_ownership_until_the_owner_exits
+        PASS [   0.004s] ( 95/103) codex-hepta-infer-core neuron_feature::tests::non_success_observations_preserve_exact_encoder_and_head_binding
+        PASS [   0.004s] ( 96/103) codex-hepta-infer-core neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output
+        PASS [   0.004s] ( 97/103) codex-hepta-infer-core neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected
+        PASS [   0.004s] ( 98/103) codex-hepta-infer-core neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority
+        PASS [   0.005s] ( 99/103) codex-hepta-infer-core tests::completion_requires_reservation
+        PASS [   0.004s] (100/103) codex-hepta-infer-core tests::conflicting_identity_is_rejected
+        PASS [   0.004s] (101/103) codex-hepta-infer-core tests::request_lifecycle_is_fenced_and_authority_free
+        PASS [   0.004s] (102/103) codex-hepta-infer-core tests::stale_digest_cannot_reserve
+        PASS [   7.094s] (103/103) codex-hepta-infer-core durable_control::retained_journal_tests::retained_prefix_cost_is_bounded_at_small_and_near_capacity_sizes
+────────────
+     Summary [   8.546s] 103 tests run: 103 passed, 1 skipped
