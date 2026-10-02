@@ -913,7 +913,7 @@ forbidden = ["SigningKey", "SignedArtifactSelectionV1", "DurableInferenceControl
 
 [[protected_file]]
 path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_current_v2.rs"
-required = ["current-installed-model-use-pointer.v2", "inspect_cpu_model_use_v2", "revalidate_current", "verify_first_installation", "declared.workload_uid", "before.storage_binding()", "frontier_extends", "fresh.verified.binding() != self.active.verified.binding()", "NeuronAdmissionError::BindingMismatch", "NeuronAdmissionError::Unavailable", "after >= self.active.verified.expires_at()"]
+required = ["current-installed-model-use-pointer.v2", "inspect_cpu_model_use_v2", "revalidate_current", "verify_first_installation", "declared.workload_uid", "before.storage_binding()", "frontier_extends", "fresh.verified.binding() != &self.binding", "NeuronAdmissionError::BindingMismatch", "NeuronAdmissionError::Unavailable", "after >= state.active.verified.expires_at()"]
 forbidden = ["SigningKey", "SignedArtifactSelectionV1", "submit_current_selections", "AuthorityPosture::ALLOW_ALL", "unwrap_or_default"]
 
 [[protected_file]]
