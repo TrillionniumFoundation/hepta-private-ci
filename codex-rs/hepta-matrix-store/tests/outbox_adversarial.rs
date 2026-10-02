@@ -29,7 +29,14 @@ async fn fixture() -> TestResult<(TempDir, HeptaAgentLayout, MatrixDurableStore,
     let layout = HeptaFleetRoot::parse(root.canonicalize()?)?
         .layout()
         .agent(&agent);
-    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let store = MatrixDurableStore::open(
+        &layout,
+        MatrixDurableConfig {
+            max_delta_batch_bytes: 64 * 1024,
+            ..MatrixDurableConfig::default()
+        },
+    )
+    .await?;
     let room = MatrixRoomId::parse("!adversarial-outbox:example.test")?;
     store
         .bind_room(&RoomBindingDraft {
@@ -119,7 +126,14 @@ async fn coalescing_checks_the_full_prefix_and_rolls_back_an_oversize_fragment()
         .snapshot(/*now_ms*/ 17_001, /*queue_limit*/ 20)
         .await?;
     store.close().await;
-    let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let reopened = MatrixDurableStore::open(
+        &layout,
+        MatrixDurableConfig {
+            max_delta_batch_bytes: 64 * 1024,
+            ..MatrixDurableConfig::default()
+        },
+    )
+    .await?;
     assert_eq!(
         reopened
             .snapshot(/*now_ms*/ 17_001, /*queue_limit*/ 20)

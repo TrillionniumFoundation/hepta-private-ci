@@ -16,7 +16,6 @@ use codex_hepta_matrix_store::InboxAdmissionDraft;
 use codex_hepta_matrix_store::InboxDispatchState;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::InboxQueuedDraft;
-use codex_hepta_matrix_store::InboxState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;

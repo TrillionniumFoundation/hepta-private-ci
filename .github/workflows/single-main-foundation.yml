@@ -67,9 +67,9 @@ jobs:
           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
-          toolchain: 1.95.0
+          toolchain: 1.96.0
           components: rustfmt
       - name: Execute source regressions and check Rust formatting without weakening either gate
         shell: bash
@@ -129,9 +129,9 @@ jobs:
           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
-          toolchain: 1.95.0
+          toolchain: 1.96.0
           components: clippy
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:

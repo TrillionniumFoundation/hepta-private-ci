@@ -691,7 +691,7 @@ mod tests {
         assert_eq!(
             [
                 direct,
-                classify_sdk_send_error(&MatrixSdkTransportError::Http(cached))
+                classify_sdk_send_error(&MatrixSdkTransportError::Http(Box::new(cached)))
             ],
             [
                 MatrixTransportError::Retryable,

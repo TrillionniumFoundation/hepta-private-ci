@@ -1,0 +1,48 @@
+name: Matrix SDK compatibility
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-matrix*/**'
+      - 'codex-rs/third_party/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'qualification/matrix-sdk-019/**'
+      - '.github/workflows/matrix-sdk-upgrade.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sdk-protocol:
+    name: Matrix SDK (${{ matrix.qualification }})
+    strategy:
+      fail-fast: false
+      matrix:
+        qualification: [crypto-migration, synapse-protocol]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_INCREMENTAL: '0'
+      HEPTA_SDK_ARTIFACTS: ${{ github.workspace }}/sdk-qualification-artifacts
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Install official test runners
+        run: cargo install --locked just cargo-nextest
+      - name: Real SDK 0.18 data-bearing crypto migration
+        if: matrix.qualification == 'crypto-migration'
+        run: qualification/matrix-sdk-019/run-crypto-migration.sh
+      - name: Real isolated encrypted send, sync and store reopen
+        if: matrix.qualification == 'synapse-protocol'
+        run: codex-rs/hepta-matrix-sdk/tests/support/run-synapse-sdk.sh
+      - name: Preserve protocol evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sdk-${{ matrix.qualification }}-evidence
+          path: sdk-qualification-artifacts
