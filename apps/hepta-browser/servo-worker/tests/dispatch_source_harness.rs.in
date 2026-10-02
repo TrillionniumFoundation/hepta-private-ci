@@ -1,0 +1,182 @@
+//! Template populated by scripts/build-dispatch-source-harness.py. Dispatch,
+//! reconciliation, receipts and admission helpers come directly from main.rs.
+//! Only the renderer is stubbed. Any effect execution is an immediate failure.
+#![allow(dead_code)]
+use std::cell::RefCell;
+use std::collections::{HashMap, HashSet};
+use std::io::Read;
+use std::rc::Rc;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+use serde_json::{Map, Value, json};
+use sha2::{Digest, Sha256};
+use url::Url;
+
+// DOCUMENT_AUTHORITY
+use document_authority::{DocumentAuthority, LoadPhase, NavigationAttempt};
+// WORKER_CONSTANTS
+const SOURCE: &str = "https://example.com/";
+const TARGET: &str = "https://other.example";
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum LoadStatus {
+    Started,
+    HeadParsed,
+    Complete,
+}
+struct Frame {
+    payload: Value,
+    payload_digest: String,
+}
+struct FakeWebView {
+    url: Url,
+}
+impl FakeWebView {
+    fn url(&self) -> Option<Url> {
+        Some(self.url.clone())
+    }
+    fn load_status(&self) -> LoadStatus {
+        LoadStatus::Complete
+    }
+}
+// WORKER_TYPES
+struct Browser {
+    webview: FakeWebView,
+    allowed_origins: HashSet<String>,
+    document_authority: Rc<RefCell<DocumentAuthority>>,
+    operations: HashMap<String, StoredOperation>,
+}
+impl Browser {
+    fn pump(&mut self) {}
+    fn current_url(&self) -> Result<Url, String> {
+        Ok(self.webview.url.clone())
+    }
+    fn navigate(&mut self, _: Url, _: &NavigationAttempt, _: u64) -> Result<Value, String> {
+        panic!("renderer must not execute")
+    }
+    fn fixed_script(&mut self, _: String, _: &str, _: u64, _: u64) -> Result<Value, String> {
+        panic!("renderer must not execute")
+    }
+    fn wait(&mut self, _: Duration, _: u64, _: u64) -> Result<Value, String> {
+        panic!("renderer must not execute")
+    }
+    // WORKER_METHODS
+}
+// WORKER_HELPERS
+
+fn browser() -> Browser {
+    let mut authority = DocumentAuthority::default();
+    authority
+        .observe(SOURCE, "https://example.com", |_, _| "1".repeat(64))
+        .unwrap();
+    Browser {
+        webview: FakeWebView {
+            url: Url::parse(SOURCE).unwrap(),
+        },
+        allowed_origins: HashSet::from(["https://example.com".into(), TARGET.into()]),
+        document_authority: Rc::new(RefCell::new(authority)),
+        operations: HashMap::new(),
+    }
+}
+
+fn frame(payload: Value) -> Frame {
+    let payload_digest = sha256_hex(serde_json::to_string(&payload).unwrap().as_bytes());
+    Frame {
+        payload,
+        payload_digest,
+    }
+}
+
+fn download(url: &str, destination: &str) -> Frame {
+    frame(json!({
+        "operationId": "operation.1", "typedAction": {"kind": "download", "url": url, "maxBytes": 1024},
+        "destinationOrigin": destination, "pageGeneration": 1, "documentDigest": "1".repeat(64),
+        "deadlineMs": MAX_SAFE_INTEGER,
+    }))
+}
+
+fn main() {
+    let mut input = String::new();
+    std::io::stdin()
+        .take(1_048_577)
+        .read_to_string(&mut input)
+        .unwrap();
+    assert!(input.len() <= 1_048_576);
+    let request = frame(serde_json::from_str(&input).unwrap());
+    let mut browser = browser();
+    let dispatch = browser.dispatch(&request).unwrap();
+    let reconcile = browser.reconcile(&request).unwrap();
+    println!(
+        "{}",
+        json!({"dispatch": dispatch, "reconcile": reconcile, "reserved": browser.operations.len()})
+    );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn same_and_cross_origin_downloads_reserve_terminal_disconnected_failure() {
+        for destination in ["https://example.com", TARGET] {
+            let mut browser = browser();
+            let request = download(&format!("{destination}/file"), destination);
+            let expected = failed("download", "capability_not_connected");
+            assert_eq!(browser.dispatch(&request), Ok(expected.clone()));
+            assert_eq!(browser.operations.len(), 1);
+            let expected = json!({"terminalObserved": true, "status": "failed", "outcomeDigest": expected["outcomeDigest"]});
+            assert_eq!(browser.reconcile(&request), Ok(expected.clone()));
+            assert_eq!(browser.dispatch(&request), Ok(expected));
+            assert_eq!(browser.operations.len(), 1);
+        }
+    }
+
+    #[test]
+    fn download_target_is_normalized_but_must_match_its_admitted_origin() {
+        let mut browser = browser();
+        assert_eq!(
+            browser.dispatch(&download("https://OTHER.example:443/file", TARGET)),
+            Ok(failed("download", "capability_not_connected"))
+        );
+        for (url, destination) in [
+            ("https://other.example/file", "https://example.com"),
+            ("https://denied.example/file", "https://denied.example"),
+            ("file:///private/data", "https://example.com"),
+        ] {
+            let mut browser = super::browser();
+            assert!(browser.dispatch(&download(url, destination)).is_err());
+            assert!(browser.operations.is_empty());
+        }
+    }
+
+    #[test]
+    fn disconnected_download_still_requires_current_observation_and_deadline() {
+        for field in ["pageGeneration", "documentDigest", "deadlineMs"] {
+            let mut browser = browser();
+            let mut request = download("https://other.example/file", TARGET);
+            request.payload[field] = match field {
+                "pageGeneration" => json!(0),
+                "documentDigest" => json!("stale"),
+                "deadlineMs" => json!(1),
+                _ => unreachable!(),
+            };
+            assert!(browser.dispatch(&request).is_err());
+            assert!(browser.operations.is_empty());
+        }
+    }
+
+    #[test]
+    fn malformed_or_oversized_download_urls_cannot_reach_reservation() {
+        for url in [
+            "not a URL".to_string(),
+            format!(
+                "https://other.example/{}",
+                "a".repeat(MAX_NAVIGATION_URL_BYTES)
+            ),
+        ] {
+            let mut browser = browser();
+            assert!(browser.dispatch(&download(&url, TARGET)).is_err());
+            assert!(browser.operations.is_empty());
+        }
+    }
+}

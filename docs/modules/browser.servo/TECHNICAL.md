@@ -180,6 +180,8 @@ Driver exceptions and deadlines after durable dispatch become `indeterminate`. R
 
 A page observation outside the allowed-origin set is quarantined by removing it from actionable document state rather than merely reporting an informational flag.
 
+The owner also records the canonical origin of each admitted page observation. Document-scoped actions (`click`, `type`, `focus`, `scroll`, `wait`, `credential`, `upload`) must match that origin before final-use authority consumption or durable dispatch intent. Profile membership alone is insufficient when several origins are allowed. Navigation/download continue to bind their explicit destination URL, which may legitimately differ from the source page. A refresh retires the previous actionable document digest/origin before awaiting the worker, including when refresh fails or its response is lost. Recovery reconstructs historical admission from the immutable durable operation rather than the current page. These owner checks do not replace final worker validation or prove atomic renderer-pipeline admission.
+
 ## 8. Failure semantics, recovery and rollback
 
 The runtime distinguishes pre-effect rejection from post-boundary uncertainty. Before durable dispatch, validation or authority denial rejects without claiming an external effect. After durable dispatch, timeout, transport loss or driver error retains the operation and requires reconciliation.

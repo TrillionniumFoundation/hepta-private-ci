@@ -178,6 +178,8 @@ That receipt deliberately leaves `operatorAcceptance=false`, `promotion=false` a
 
 ## 12. Remaining gates
 
+The disconnected `download` preparation retains its parsed explicit target URL. Its expected origin is that target's HTTP(S) origin, even when the current document has another admitted origin. After current-document/deadline checks, the operation is reserved and recorded as terminal `capability_not_connected`, so reconciliation and replay can settle it without executing network or file effects. Treating every disconnected capability as document-scoped would instead reject an admitted cross-origin download before worker reservation and strand its durable host intent.
+
 Still required before production/release claims:
 
 - terminal-success exact-SHA reproducible worker build and reviewed committed `Cargo.lock`;
