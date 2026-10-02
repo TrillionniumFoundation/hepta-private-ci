@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "81f93743410cf76362186697c017ca9cfd6006ed",
-    "tree": "4ad5477507873f68b189a7cfb2437db7c4f939bb"
+    "commit": "da786ba4a02b60be99cf791579476fe09fbf44c8",
+    "tree": "d02fa8cd2151ababbbe807a1a2d332ba0baf784c"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -172,7 +172,8 @@
       "state": "source_implemented_registered_json_projection_not_activation",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/protocol_tests.rs"
+        "codex-rs/hepta-neuron/src/protocol_tests.rs",
+        "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
@@ -274,7 +275,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "cef7d9a2d59400ffbcb858cebd16b05813fd94db"
+      "object": "7d89013c8a8f737512a286e22824282480fb4cb6"
     },
     {
       "path": "codex-rs/hepta-neuron/src/deletion.rs",
@@ -322,7 +323,11 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol.rs",
-      "object": "e7c8fe5178de837bec57aac151eaa560bbefd384"
+      "object": "703e3d54239f10d3af1e1f0eb5036646fd47b0a9"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs",
+      "object": "470c83ee36357c39f818a665aa4789f33b6c81a5"
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_receipt_validation.rs",
@@ -330,7 +335,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
-      "object": "fdb53108e0d838526d6f2542cfd6c595d99794ae"
+      "object": "3f8dbab383a36c1b77b20f4ff23e24e11d9b7829"
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_timestamp.rs",
