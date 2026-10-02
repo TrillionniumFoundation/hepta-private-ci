@@ -1,5 +1,14 @@
 # Rust control UI migration candidate
 
+## Current product direction
+
+The primary interface is a conversation workspace, following the room-list / timeline /
+composer hierarchy of Robrix. Runtime control is a secondary Console tab. The normative
+cross-host contract is [`apps/hepta-ui-shared/DEVELOPMENT.md`](../../hepta-ui-shared/DEVELOPMENT.md).
+Both hosts consume shared Rust state, tokens and validated transport DTOs. Historical
+console migration evidence below does not qualify the new messaging experience.
+
+
 This additive candidate starts from ui.control PR #1069 head
 `5c0bbe30e4a5d408c430e8ab1fcc25638042d82a`. The default browser build now selects the Rust/WASM semantic-DOM host after
 three-engine head and merge parity. The legacy Node package API remains as a

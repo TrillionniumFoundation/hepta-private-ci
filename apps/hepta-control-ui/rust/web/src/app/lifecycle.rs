@@ -49,6 +49,7 @@ pub(super) async fn start_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Contr
         }
     }
     arm_session_timer(&app)?;
+    spawn_local(chat::load(app.clone()));
     Ok(())
 }
 
@@ -125,6 +126,7 @@ fn schedule_poll(app: &Rc<RefCell<BrowserApp>>) -> Result<(), ControlError> {
                 return;
             }
             spawn_local(async move {
+                chat::poll(app.clone()).await;
                 let _ = effects::refresh(app).await;
             });
         }
@@ -281,6 +283,8 @@ pub(super) async fn close_session(app: Rc<RefCell<BrowserApp>>) -> Result<(), Co
         let mut state = app.borrow_mut();
         state.active(state.epoch)?;
         state.epoch = state.epoch.saturating_add(1);
+        state.chat.reset_session();
+        state.chat_host = chat::ChatHost::default();
         state.lifecycle.abort();
         state.lifecycle = AbortController::new().map_err(dom_error)?;
         if let Some(timer) = state.timer.take() {
@@ -326,6 +330,8 @@ pub(super) async fn destroy_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Con
         }
         state.destroyed = true;
         state.epoch = state.epoch.saturating_add(1);
+        state.chat.reset_session();
+        state.chat_host = chat::ChatHost::default();
         state.lifecycle.abort();
         if let Some(timer) = state.timer.take() {
             state.window.clear_interval_with_handle(timer);

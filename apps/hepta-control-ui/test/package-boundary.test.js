@@ -52,7 +52,7 @@ test("browser sources avoid unsafe HTML injection sinks", async () => {
 });
 
 test("browser shell exposes separate session, identity, pending, and terminal evidence regions", async () => {
-  const html = await readFile(new URL("../web/index.html", import.meta.url), "utf8");
+  const html = await readFile(new URL("../rust/web/src/shell.rs", import.meta.url), "utf8");
   for (const id of ["session-state", "identity-state", "pending-list", "completed-list"]) {
     assert.equal(html.includes(`id=\"${id}\"`), true, `browser shell is missing ${id}`);
   }

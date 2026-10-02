@@ -21,6 +21,7 @@ use wasm_bindgen::{JsCast, JsValue, closure::Closure, prelude::wasm_bindgen};
 use wasm_bindgen_futures::{future_to_promise, spawn_local};
 use web_sys::{AbortController, Document, Event, EventTarget, HtmlElement, Window};
 
+mod chat;
 mod effects;
 mod lifecycle;
 mod maintenance;
@@ -35,6 +36,8 @@ struct BrowserApp {
     window: Window,
     core: Controller,
     chat: ChatState,
+    chat_host: chat::ChatHost,
+    chat_rendered: Option<ChatState>,
     dom: Dom,
     transport: Rc<SameOriginHttpTransport>,
     recovery: Option<Rc<ScopedRecoveryStore>>,
@@ -67,8 +70,20 @@ impl BrowserApp {
         if self.destroyed {
             return;
         }
-        let _ = crate::shell::render(&self.dom.document, &self.chat);
         let view = self.core.view(now());
+        if !view.connected {
+            self.chat.reset_session();
+            self.chat_host = chat::ChatHost::default();
+        }
+        let _ = crate::shell::render(
+            &self.dom.document,
+            &self.chat,
+            self.chat_rendered.as_ref(),
+            &self.chat_host.note,
+            self.chat_host.show_list,
+        );
+        self.chat_rendered = Some(self.chat.clone());
+        chat::render_actions(&self.dom.document, &self.chat_host);
         let _ = self.dom.render(
             &view,
             &RenderState {
@@ -236,6 +251,8 @@ fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
         window,
         core: Controller::new(1024)?,
         chat: ChatState::default(),
+        chat_host: chat::ChatHost::default(),
+        chat_rendered: None,
         dom,
         transport,
         recovery: None,
@@ -367,6 +384,7 @@ fn attach_events(app: &Rc<RefCell<BrowserApp>>, document: &Document) -> Result<(
             }
         },
     )?;
+    chat::attach(app, document)?;
     let window = app.borrow().window.clone();
     listen(app, window.as_ref(), "pagehide", move |_| {
         let _ = destroy();

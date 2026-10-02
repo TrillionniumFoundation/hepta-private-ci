@@ -5,6 +5,8 @@
 pub mod canonical;
 #[path = "../../../../hepta-ui-shared/chat.rs"]
 pub mod chat;
+#[path = "../../../../hepta-ui-shared/chat_transport.rs"]
+pub mod chat_transport;
 pub mod confirmation;
 pub mod controller;
 pub mod error;

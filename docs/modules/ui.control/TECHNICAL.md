@@ -1,5 +1,19 @@
 # ui.control technical development guide
 
+## Chat-first product correction (2026-10-02)
+
+This module's runtime console is a secondary tab of the shared Rust conversation
+application, not the product landing screen. The normative development contract is
+`apps/hepta-ui-shared/DEVELOPMENT.md`; shared navigation/drafts/tokens are in `chat.rs`,
+and session/generation-bound messaging DTOs in `chat_transport.rs`. Browser views and
+interactions are Rust WASM; native uses the same design contract through its Rust host.
+
+Earlier console screenshots and source-bound receipts remain historical evidence only.
+The new chat surfaces need their own exact-source browser/native visual and backend
+qualification. The browser HTTP deployment must compose the authenticated Agentd chat
+adapter; a fixture response is not evidence of deployed messaging capability.
+
+
 > Generated from `qualification/ui-control/UI_CONTROL_MANIFEST.json`. Edit the manifest or generator, not this file.
 
 ## 1. Scope and current truth

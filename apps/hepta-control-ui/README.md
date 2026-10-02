@@ -1,6 +1,15 @@
 # `@hepta/control-ui`
 
-Authority-free runtime-control client core and framework-free browser console shell.
+Rust conversation application with an authority-free runtime console as a secondary tab.
+
+The normative cross-host design is [the shared Rust messaging contract](../hepta-ui-shared/DEVELOPMENT.md).
+Web and native use `apps/hepta-ui-shared/chat.rs` for conversation state, navigation and tokens.
+The Rust browser owns all application views and behavior; the JavaScript package below remains
+an unchanged compatibility/reference API. The static HTML is only a fail-closed loader.
+
+Messaging uses the shared authenticated `chat/request` contract and actual observed timelines.
+The production HTTP host must compose the Agentd-backed adapter; repository fixtures are not
+production backend evidence. No message is fabricated when this capability is absent.
 
 The package may project coherent runtime state and submit authenticated requests. It does not own runtime state, grant authority, or infer terminal success from a local acknowledgement. The durable server operation ledger and runtime owner remain authoritative.
 

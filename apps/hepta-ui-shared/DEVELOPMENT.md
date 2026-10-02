@@ -64,3 +64,22 @@ Local Chromium currently cannot launch due to the platform's Unix socket
 restriction; browser assertions in those attempts did not execute. Use the existing
 head/merge hosted browser qualification lane and inspect its exact-source images.
 All unrun/platform-blocked/real-backend-unavailable coverage must remain explicit.
+
+## Messaging backend integration
+
+`chat_transport.rs` is the versioned shared request/response boundary. Both hosts
+validate exact response/session/generation/command/thread/operation identities
+before applying data. Browser uses cookie-authenticated same-origin POST
+`/api/ui-control/v1/chat/request`, CSRF, bounded JSON and existing abort deadlines.
+The native adapter uses the Rust chat owner process backed by the exact-generation
+Agentd SessionIngress and existing App Server conversation APIs. These are ordinary
+agent conversations, not Matrix homeserver room discovery or a bypass around a
+Hepta execution plan. Server approval requests are declined and surfaced explicitly.
+
+Queued, persisted, cancelled and unknown outcomes remain distinct. A queued
+acknowledgement never fabricates a timeline message. Actual timeline reads determine
+visible content and active turns. Polling only reads while the current document is
+visible, connected and in the Chat tab. Pending text/operation IDs are memory-only;
+closing or replacing the session loses local reconciliation context. A production
+host must compose and qualify the authenticated browser route; this repository's
+Node fixture is test-only and is not a deployed chat service.

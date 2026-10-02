@@ -62,6 +62,15 @@ impl SameOriginHttpTransport {
         })
     }
 
+    pub async fn chat(
+        &self,
+        input: &Value,
+        signal: Option<AbortSignal>,
+    ) -> Result<Value, ControlError> {
+        self.fetch_json("chat/request", Some(input), Kind::Mutation, None, signal)
+            .await
+    }
+
     pub fn endpoint(&self) -> &str {
         &self.base
     }

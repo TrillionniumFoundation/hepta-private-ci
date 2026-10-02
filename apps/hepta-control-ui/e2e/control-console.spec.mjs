@@ -118,6 +118,7 @@ test("unexpected storage errors remain private and preserve read-only diagnostic
     Storage.prototype.getItem = function sensitiveStorageFailure() { throw new Error("session-cookie=must-not-appear"); };
   });
   await page.goto("/", { waitUntil: "commit" });
+  await page.locator("#tab-console").click();
   await expect(page.getByRole("cell", { name: "runtime.agentd" })).toBeVisible();
   await expect(page.getByRole("alert")).toContainText("UI_CONTROL_STORAGE");
   await expect(page.getByRole("alert")).not.toContainText("session-cookie=must-not-appear");
@@ -167,6 +168,7 @@ test("a malformed backend field name is never reflected in the console", async (
   });
   await page.goto("/");
   await expect(page.locator("#error-status")).toContainText("UI_CONTROL_INVALID_INPUT");
+  await page.locator("#tab-console").click();
   await expect(page.locator("body")).not.toContainText(secret);
   await expect.poll(() => logs.some(message => message.startsWith("ui.control console failed to start"))).toBe(true);
   expect(logs.join("\n")).not.toContain(secret);

@@ -149,6 +149,7 @@ test("one live client isolates recovery when the console changes principal", asy
     };
     await globalThis.openPrincipalConsole();
   }, process.env.UI_CONTROL_CANDIDATE !== "javascript");
+  if (process.env.UI_CONTROL_CANDIDATE !== "javascript") await page.locator("#tab-console").click();
   await submit(page, "Preserve this operation under its original principal.");
   await expect(page.locator("#pending-list")).toContainText("pending");
   const original = await (await request.get("/__test__/state")).json();
