@@ -19,7 +19,7 @@ async function run() {
   if (!sha.test(source) || !sha.test(base) || !output) throw new Error("expected source SHA, base SHA, head|merge and evidence path");
   const root = fileURLToPath(new URL("../../..", import.meta.url));
   const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
-  const sourcePaths = ["apps/hepta-control-ui", ".github/workflows/ui-control-rust-parity.yml"];
+  const sourcePaths = ["apps/hepta-control-ui", "apps/hepta-ui-shared", ".github/workflows/ui-control-rust-parity.yml"];
   git("diff", "--exit-code", "HEAD", "--", ...sourcePaths);
   if (git("ls-files", "--others", "--exclude-standard", "--", ...sourcePaths)) throw new Error("uncommitted source cannot receive an immutable candidate identity");
   const evaluated = git("rev-parse", "HEAD");
@@ -30,7 +30,7 @@ async function run() {
   const identity = validateSubject({ source, base, evaluated, tree, sourceTree, mergeTree, parents, subject });
   const baselineFiles = ["canonical.js", "control.js", "runtime-contract.js", "snapshot.js", "confirmation.js"].map(name => `apps/hepta-control-ui/src/${name}`);
   git("diff", "--exit-code", JAVASCRIPT_BASELINE, "--", ...baselineFiles);
-  const paths = [...baselineFiles, "apps/hepta-control-ui/rust/Cargo.lock", "apps/hepta-control-ui/package-lock.json", "apps/hepta-control-ui/rust/core/tests/fixtures/javascript-reference.json"];
+  const paths = [...baselineFiles, "apps/hepta-ui-shared/chat.rs", "apps/hepta-control-ui/rust/Cargo.lock", "apps/hepta-control-ui/package-lock.json", "apps/hepta-control-ui/rust/core/tests/fixtures/javascript-reference.json"];
   const hashes = {};
   for (const path of paths) hashes[path] = createHash("sha256").update(await readFile(resolve(root,path))).digest("hex");
   const receipt = { schema: "hepta.ui-control.rust-parity-subject.v1", ...identity,

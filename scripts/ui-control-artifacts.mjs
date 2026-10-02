@@ -28,7 +28,7 @@ const technical = `# ui.control technical development guide
 
 ## 1. Scope and current truth
 
-${q("ui.control")} is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
+${q("ui.control")} is a Rust conversation workspace with an authority-free runtime console as a secondary tab. The normative cross-host design is ${q("apps/hepta-ui-shared/DEVELOPMENT.md")}; both hosts consume the same Rust navigation, draft state, tokens and transport contract. Historical console screenshots do not qualify this chat redesign. The authenticated HTTP host composition must be independently bound and qualified; test fixtures are not deployed messaging capability. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
 
 The active convergence branch is ${q(manifest.authoritativeDevelopmentBranch)}. The repository baseline used to start this convergence is ${q(manifest.baseline.commit)} / tree ${q(manifest.baseline.tree)}. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in ${q(manifest.receiptSchemas.repositoryReceipts)}.
 
@@ -38,6 +38,7 @@ ${statusRows}
 
 ## 2. Repository layout
 
+- ${q("apps/hepta-ui-shared/")}: canonical cross-host conversation state, tokens, transport DTOs and development contract.
 - ${q("apps/hepta-control-ui/rust/")}: canonical Rust controller, same-origin HTTP/recovery adapters and semantic DOM browser host.
 - ${q("apps/hepta-control-ui/src/")}: legacy Node compatibility and differential-reference APIs, excluded from the browser artifact.
 - ${q("apps/hepta-control-ui/web/")}: semantic HTML/CSS browser shell.
@@ -173,7 +174,7 @@ const map = {
   sourceObjects: manifest.sourceObjects,
   laneId: manifest.laneId,
   module: manifest.module,
-  sourceMaturity: "browser_console_candidate",
+  sourceMaturity: manifest.sourceMaturity ?? "browser_console_candidate",
   declaredRoots: manifest.sourceRoots,
   resolvedRoots: manifest.sourceRoots,
   statusManifest: "qualification/ui-control/UI_CONTROL_MANIFEST.json",

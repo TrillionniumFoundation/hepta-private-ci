@@ -1,3 +1,4 @@
+import { resetChat, enableChat, seedChatHistory, chatState, chatReply } from "./chat.mjs";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
@@ -60,6 +61,7 @@ const state = {
 };
 
 function reset() {
+  resetChat();
   releaseHeldResponses();
   state.snapshotRevision = 11;
   state.snapshotGeneration = 7;
@@ -146,6 +148,11 @@ function conflicts(prior, binding) {
 
 async function api(request, response, url) {
   const path = url.pathname.slice("/api/ui-control/v1/".length);
+  if (path === "chat/request" && request.method === "POST") {
+    if (request.headers["x-hepta-csrf-token"] !== csrfToken) return json(response, 403, {errorCode:"CSRF"});
+    const result = chatReply(await bodyJson(request));
+    return result ? json(response, 200, result) : json(response, 404, {errorCode:"NOT_FOUND"});
+  }
   if (path === "session/connect" && request.method === "POST") {
     await bodyJson(request);
     return json(response, 200, session());
@@ -237,6 +244,9 @@ async function api(request, response, url) {
 }
 
 async function testApi(request, response, url) {
+  if (url.pathname === "/__test__/chat-history") { seedChatHistory(); return json(response, 200, {enabled:true}); }
+  if (url.pathname === "/__test__/chat-enable") { enableChat(); return json(response, 200, {enabled:true}); }
+  if (url.pathname === "/__test__/chat-state") return json(response, 200, chatState());
   if (url.pathname === "/__test__/reset") {
     reset();
     return json(response, 200, { reset: true });

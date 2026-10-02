@@ -7,6 +7,8 @@ mod app;
 mod dom;
 #[cfg(any(test, target_arch = "wasm32"))]
 pub mod recovery;
+#[cfg(target_arch = "wasm32")]
+mod shell;
 #[cfg(any(test, target_arch = "wasm32"))]
 pub mod transport;
 

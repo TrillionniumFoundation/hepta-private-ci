@@ -165,8 +165,12 @@ impl Dom {
             .set_disabled(disabled || !has("hepta://ui.control/runtime.request"));
         self.stop
             .set_disabled(disabled || !has("hepta://ui.control/runtime.stop"));
-        self.refresh
-            .set_disabled(state.destroyed || state.refreshing || !view.connected);
+        self.refresh.set_disabled(
+            state.destroyed
+                || state.refreshing
+                || !view.connected
+                || !has("hepta://ui.control/runtime.read"),
+        );
         if let Some(metrics) = self.document.get_element_by_id("recovery-metrics") {
             set_text(
                 &metrics,

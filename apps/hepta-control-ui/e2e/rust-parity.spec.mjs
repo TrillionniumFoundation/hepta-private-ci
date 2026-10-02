@@ -31,6 +31,7 @@ test("a malformed rejection cannot retire its unresolved durable identity", asyn
 test("unavailable Web Locks disables mutations and keeps diagnostics usable", async ({ page, request }) => {
   await page.addInitScript(() => Object.defineProperty(Navigator.prototype, "locks", { configurable: true, get: () => undefined }));
   await page.goto("/");
+  await page.locator("#tab-console").click();
   await expect(page.getByRole("cell", { name: "runtime.agentd", exact: true })).toBeVisible();
   await expect(page.locator("#error-status")).toContainText("UI_CONTROL_STORAGE");
   await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeDisabled();
@@ -62,6 +63,7 @@ test("fatal startup recovery cannot announce an authenticated ready console", as
   await page.route("**/api/ui-control/v1/operations/*", route => route.fulfill({ status: 401, json: { errorCode: "SESSION_EXPIRED" } }));
   await page.reload();
   await expect.poll(() => page.evaluate(() => globalThis.__heptaUiControlReadiness?.phase)).toBe("failed");
+  await page.locator("#tab-console").click();
   await expect(page.locator("#connection-state")).toHaveText("Disconnected");
   await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeDisabled();
   expect(await recoveryKeys(page)).toHaveLength(1);
@@ -109,8 +111,8 @@ test("failed WASM loading exposes fixed diagnostics without starting a session",
   await page.route("**/pkg/hepta_control_web_bg.wasm", route => route.abort());
   await page.goto("/");
   await expect(page.locator("#error-status")).toContainText("UI_CONTROL_STARTUP");
-  await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Refresh runtime view", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Request start", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Refresh runtime view", exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => globalThis.__heptaUiControlReadiness.phase)).toBe("failed");
   expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(0);
 });

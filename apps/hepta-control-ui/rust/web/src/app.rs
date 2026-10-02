@@ -5,6 +5,7 @@ use crate::{
     transport::SameOriginHttpTransport,
 };
 use hepta_control_core::{
+    chat::{AppTab, ChatState},
     controller::{Controller, SubmissionInput},
     error::{ControlError, ErrorCode},
     projection::Action,
@@ -20,6 +21,7 @@ use wasm_bindgen::{JsCast, JsValue, closure::Closure, prelude::wasm_bindgen};
 use wasm_bindgen_futures::{future_to_promise, spawn_local};
 use web_sys::{AbortController, Document, Event, EventTarget, HtmlElement, Window};
 
+mod chat;
 mod effects;
 mod lifecycle;
 mod maintenance;
@@ -33,6 +35,9 @@ thread_local! {
 struct BrowserApp {
     window: Window,
     core: Controller,
+    chat: ChatState,
+    chat_host: chat::ChatHost,
+    chat_rendered: Option<ChatState>,
     dom: Dom,
     transport: Rc<SameOriginHttpTransport>,
     recovery: Option<Rc<ScopedRecoveryStore>>,
@@ -66,6 +71,19 @@ impl BrowserApp {
             return;
         }
         let view = self.core.view(now());
+        if !view.connected {
+            self.chat.reset_session();
+            self.chat_host = chat::ChatHost::default();
+        }
+        let _ = crate::shell::render(
+            &self.dom.document,
+            &self.chat,
+            self.chat_rendered.as_ref(),
+            &self.chat_host.note,
+            self.chat_host.show_list,
+        );
+        self.chat_rendered = Some(self.chat.clone());
+        chat::render_actions(&self.dom.document, &self.chat_host, &self.chat);
         let _ = self.dom.render(
             &view,
             &RenderState {
@@ -138,6 +156,13 @@ pub fn start() -> Promise {
             }
             Err(error) => {
                 app.borrow().show_error(&error);
+                let authenticated = app.borrow_mut().core.view(now()).connected;
+                if !authenticated
+                    && let Ok(node) = element(&app.borrow().dom.document, "startup-error")
+                {
+                    node.set_text_content(Some("An authenticated workspace session is required. Messaging and console actions are unavailable."));
+                    let _ = node.remove_attribute("hidden");
+                }
                 lifecycle::publish_readiness(&app, "failed", Some(error.code));
                 web_sys::console::error_2(
                     &JsValue::from_str("ui.control console failed to start"),
@@ -212,6 +237,7 @@ pub fn read_view() -> Result<JsValue, JsValue> {
 fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
     let window = web_sys::window().ok_or_else(ControlError::invalid)?;
     let document = window.document().ok_or_else(ControlError::invalid)?;
+    crate::shell::mount(&document)?;
     let dom = Dom::new(document.clone())?;
     dom.reset_interaction();
     let csrf_document = document.clone();
@@ -231,6 +257,9 @@ fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
     let app = Rc::new(RefCell::new(BrowserApp {
         window,
         core: Controller::new(1024)?,
+        chat: ChatState::default(),
+        chat_host: chat::ChatHost::default(),
+        chat_rendered: None,
         dom,
         transport,
         recovery: None,
@@ -263,6 +292,20 @@ fn create_app() -> Result<Rc<RefCell<BrowserApp>>, ControlError> {
 }
 
 fn attach_events(app: &Rc<RefCell<BrowserApp>>, document: &Document) -> Result<(), ControlError> {
+    for (id, tab) in [("tab-chat", AppTab::Chat), ("tab-console", AppTab::Console)] {
+        let weak = Rc::downgrade(app);
+        listen(app, element(document, id)?.as_ref(), "click", move |_| {
+            if let Some(app) = weak.upgrade() {
+                let mut state = app.borrow_mut();
+                if state.destroyed || state.dom.dialog.open() {
+                    return;
+                }
+                state.chat.tab = tab;
+                state.render();
+            }
+        })?;
+    }
+
     for (id, action) in [
         ("request-start", Action::RequestStart),
         ("request-reconcile", Action::RequestReconcile),
@@ -348,6 +391,7 @@ fn attach_events(app: &Rc<RefCell<BrowserApp>>, document: &Document) -> Result<(
             }
         },
     )?;
+    chat::attach(app, document)?;
     let window = app.borrow().window.clone();
     listen(app, window.as_ref(), "pagehide", move |_| {
         let _ = destroy();

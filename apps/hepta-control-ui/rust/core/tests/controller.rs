@@ -390,3 +390,28 @@ fn recovery_backoff_and_metrics_follow_principal_not_session_reconnect() {
     assert_eq!(c.view(1002).recovery_metrics.failures, 0);
     assert_eq!(c.view(1002).pending_count, 0);
 }
+
+#[test]
+fn authentication_refresh_does_not_require_or_grant_console_read_permission() {
+    let mut controller = Controller::new(1024).unwrap();
+    let mut raw = session("chat-user", "chat-session", 1);
+    raw["permissions"] = json!(["hepta://ui.control/runtime.request"]);
+    let connect = controller.begin_connect().unwrap();
+    controller.connected(&connect, &raw, 1000).unwrap();
+    assert_eq!(
+        controller.session_ticket(1000).unwrap_err().code,
+        ErrorCode::PermissionDenied
+    );
+    let auth = controller.authentication_ticket(1000).unwrap();
+    assert_eq!(
+        controller
+            .snapshot_received(&auth, &snapshot("chat-session", 1, 11), 1000)
+            .unwrap_err()
+            .code,
+        ErrorCode::PermissionDenied
+    );
+    controller.session_refreshed(&auth, &raw, 1000).unwrap();
+    assert!(controller.view(1000).connected);
+    assert!(controller.authentication_ticket(100_001).is_err());
+    assert!(!controller.view(100_001).connected);
+}

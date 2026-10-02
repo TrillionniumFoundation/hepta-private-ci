@@ -194,3 +194,17 @@ fn mutation_definite_rejection_and_dispatch_uncertainty_are_distinct() {
         assert!(!error.definitely_not_accepted());
     }
 }
+
+#[test]
+fn chat_encoding_preserves_multiline_and_unicode_without_control_canonicalization() {
+    let text = "Line one\nLine two\tCafe\u{301}";
+    let body = serde_json::json!({"sessionId":"s","connectionGeneration":1,"command":{"type":"send","threadId":"t","operationId":"o","text":text}});
+    let encoded = encode_chat_body(&body).unwrap();
+    let decoded: serde_json::Value = serde_json::from_str(&encoded).unwrap();
+    assert_eq!(decoded["command"]["text"], text);
+    let invalid = serde_json::json!({"sessionId":"s","connectionGeneration":1,"command":{"type":"send","threadId":"t","operationId":"o","text":"a".repeat(16_385)}});
+    assert_eq!(
+        encode_chat_body(&invalid).unwrap_err().request_dispatched,
+        Some(false)
+    );
+}

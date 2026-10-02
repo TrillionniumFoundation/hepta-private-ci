@@ -133,6 +133,16 @@ pub(super) async fn submit(app: Rc<RefCell<BrowserApp>>) {
 }
 
 pub(super) async fn refresh(app: Rc<RefCell<BrowserApp>>) -> Result<(), ControlError> {
+    if !app
+        .borrow_mut()
+        .core
+        .view(now())
+        .permissions
+        .iter()
+        .any(|p| p == "hepta://ui.control/runtime.read")
+    {
+        return Err(ControlError::unsent(ErrorCode::PermissionDenied));
+    }
     let owner_epoch = app.borrow().epoch;
     let prepared = {
         let mut state = app.borrow_mut();

@@ -79,9 +79,18 @@ impl Controller {
 
     pub fn session_ticket(&mut self, now: u64) -> Result<SessionTicket, ControlError> {
         self.require_permission(READ, now)?;
+        self.authentication_ticket(now)
+    }
+
+    /// Bind authentication refresh without granting runtime observation permission.
+    pub fn authentication_ticket(&mut self, now: u64) -> Result<SessionTicket, ControlError> {
+        self.expire(now);
         Ok(SessionTicket {
             epoch: self.epoch,
-            session: self.session.clone().ok_or_else(ControlError::invalid)?,
+            session: self
+                .session
+                .clone()
+                .ok_or_else(|| ControlError::new(ErrorCode::NotConnected))?,
         })
     }
 

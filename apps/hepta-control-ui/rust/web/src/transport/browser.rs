@@ -62,6 +62,15 @@ impl SameOriginHttpTransport {
         })
     }
 
+    pub async fn chat(
+        &self,
+        input: &Value,
+        signal: Option<AbortSignal>,
+    ) -> Result<Value, ControlError> {
+        self.fetch_json("chat/request", Some(input), Kind::Mutation, None, signal)
+            .await
+    }
+
     pub fn endpoint(&self) -> &str {
         &self.base
     }
@@ -193,7 +202,15 @@ impl SameOriginHttpTransport {
         if signal.as_ref().is_some_and(AbortSignal::aborted) {
             return Err(ControlError::unsent(ErrorCode::Aborted).retryable(true));
         }
-        let body = body.map(encode_body).transpose()?;
+        let body = body
+            .map(|body| {
+                if path == "chat/request" {
+                    encode_chat_body(body)
+                } else {
+                    encode_body(body)
+                }
+            })
+            .transpose()?;
         let request_id = match request_id {
             Some(id) => id.to_owned(),
             None => self

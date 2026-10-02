@@ -29,9 +29,13 @@ pub(super) async fn start_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Contr
         let _ = transport.close(&raw, None).await;
         return Err(error);
     }
+    spawn_local(chat::load(app.clone()));
     restore_recovery(&app, epoch).await;
     app.borrow().active(epoch)?;
-    effects::refresh(app.clone()).await?;
+    let console_result = effects::refresh(app.clone()).await;
+    let console_unavailable = console_result.as_ref().is_err_and(|error| {
+        error.code == ErrorCode::PermissionDenied && error.request_dispatched == Some(false)
+    });
     app.borrow().active(epoch)?;
     schedule_poll(&app)?;
     {
@@ -49,7 +53,14 @@ pub(super) async fn start_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Contr
         }
     }
     arm_session_timer(&app)?;
-    Ok(())
+    if console_unavailable {
+        app.borrow()
+            .dom
+            .show_error(&ControlError::unsent(ErrorCode::PermissionDenied));
+        Ok(())
+    } else {
+        console_result
+    }
 }
 
 async fn restore_recovery(app: &Rc<RefCell<BrowserApp>>, epoch: u64) {
@@ -125,6 +136,7 @@ fn schedule_poll(app: &Rc<RefCell<BrowserApp>>) -> Result<(), ControlError> {
                 return;
             }
             spawn_local(async move {
+                chat::poll(app.clone()).await;
                 let _ = effects::refresh(app).await;
             });
         }
@@ -203,7 +215,7 @@ async fn refresh_session(app: Rc<RefCell<BrowserApp>>) {
             return;
         }
         state.session_refreshing = true;
-        state.core.session_ticket(now()).map(|ticket| {
+        state.core.authentication_ticket(now()).map(|ticket| {
             (
                 ticket,
                 state.transport.clone(),
@@ -281,6 +293,8 @@ pub(super) async fn close_session(app: Rc<RefCell<BrowserApp>>) -> Result<(), Co
         let mut state = app.borrow_mut();
         state.active(state.epoch)?;
         state.epoch = state.epoch.saturating_add(1);
+        state.chat.reset_session();
+        state.chat_host = chat::ChatHost::default();
         state.lifecycle.abort();
         state.lifecycle = AbortController::new().map_err(dom_error)?;
         if let Some(timer) = state.timer.take() {
@@ -326,6 +340,8 @@ pub(super) async fn destroy_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Con
         }
         state.destroyed = true;
         state.epoch = state.epoch.saturating_add(1);
+        state.chat.reset_session();
+        state.chat_host = chat::ChatHost::default();
         state.lifecycle.abort();
         if let Some(timer) = state.timer.take() {
             state.window.clear_interval_with_handle(timer);
