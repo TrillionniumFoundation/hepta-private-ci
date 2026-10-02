@@ -24,6 +24,52 @@ pub fn read_signed_current_artifact_head_v1(
 }
 
 impl LearningArtifactOwnerHost {
+    /// Reject unauthenticated or mismatched new input before durable intent.
+    /// Recovery of an existing operation follows its separately bound history.
+    pub(crate) fn validate_new_publication_head(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        registry_head: Digest32,
+        predecessor: Digest32,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        if signed.witness.head_digest != registry_head {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        let current = self.discover_current_head(now)?;
+        let (head, generation, epoch) = match current {
+            Some(current) => (
+                current.signed.witness.head_digest,
+                current
+                    .signed
+                    .witness
+                    .generation
+                    .next()
+                    .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
+                current.signed.witness.authority_epoch,
+            ),
+            None => (
+                self.verifier.trust.genesis_predecessor_head_digest,
+                self.verifier.trust.minimum_registry_generation,
+                self.verifier.trust.minimum_authority_epoch,
+            ),
+        };
+        if head != predecessor {
+            return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
+        }
+        self.verifier.verify_current_head(
+            signed,
+            &RegistryHeadRequirementV1 {
+                registry_id: self.verifier.trust.registry_id.clone(),
+                minimum_generation: generation,
+                expected_predecessor_head_digest: predecessor,
+                minimum_authority_epoch: epoch,
+                now,
+            },
+        )?;
+        Ok(())
+    }
+
     pub(super) fn validate_candidate_lineage(
         &self,
         registry: &ArtifactRegistry,

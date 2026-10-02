@@ -236,6 +236,31 @@ impl LearningArtifactOwnerService {
         let predecessor = self
             .host
             .recover_registry_by_head(request.expected_registry_predecessor_head)?;
+        if checkpoint.is_none() {
+            let manifest = &request.admission.validated_manifest.manifest;
+            if request.payload.len() as u64 != manifest.encoded_size_bytes
+                || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+            {
+                return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            }
+            let preview = ArtifactPublicationTransactionV1::begin(
+                request.operation_id.clone(),
+                request.admission.clone(),
+                &self.withdrawal_registry,
+                &predecessor,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?;
+            let mut projected = predecessor.clone();
+            self.host
+                .stage_compatibility_registration(&preview, &mut projected, request.now)?;
+            self.host.validate_new_publication_head(
+                &request.signed_current_head,
+                projected.snapshot().head_digest,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?;
+        }
         let mut staged = predecessor.clone();
         let mut transaction = self.host.begin_publication(
             request.operation_id.clone(),
@@ -731,3 +756,7 @@ mod tests {
 #[cfg(test)]
 #[path = "owner_state_tests.rs"]
 mod state_tests;
+
+#[cfg(test)]
+#[path = "owner_service_input_tests.rs"]
+mod input_tests;
