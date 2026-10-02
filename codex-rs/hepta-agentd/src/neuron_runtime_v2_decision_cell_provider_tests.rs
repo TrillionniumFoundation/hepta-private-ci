@@ -249,3 +249,6 @@ mod cases;
 
 #[path = "neuron_runtime_v2_iteration_tests.rs"]
 mod iteration_tests;
+
+#[path = "neuron_goal_scope_v3_tests.rs"]
+mod goal_scope_tests;

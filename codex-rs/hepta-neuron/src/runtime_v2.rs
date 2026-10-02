@@ -418,6 +418,11 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         self.body_bundle_digest
     }
 
+    /// Exact scope already validated against the durable store and index headers.
+    pub fn journal_scope(&self) -> JournalScope {
+        self.store_context.scope
+    }
+
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, NeuronRuntimeV2Error> {
         Ok(self.store.current_anchor()?)
     }

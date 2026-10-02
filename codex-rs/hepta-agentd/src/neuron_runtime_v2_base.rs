@@ -412,6 +412,13 @@ trait ProductNeuronOwnerV2: Send + Sync {
         })
     }
 
+    fn journal_scope_control(
+        &self,
+    ) -> Result<codex_hepta_agent_components::neuron::JournalScope, AgentdNeuronControlErrorV2>
+    {
+        Err(AgentdNeuronControlErrorV2::GenerationConflict)
+    }
+
     fn generation(&self) -> Option<u64> {
         None
     }

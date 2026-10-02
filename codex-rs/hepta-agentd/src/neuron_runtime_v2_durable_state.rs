@@ -143,9 +143,16 @@ pub fn write_agentd_neuron_generation_state_v2(
     state: &AgentdNeuronGenerationStateV2,
 ) -> Result<(), AgentdNeuronControlStateErrorV2> {
     state.validate()?;
-    let parent_before = validate_generation_state_path(path, false)?;
     let encoded =
         serde_json::to_vec_pretty(state).map_err(|_| AgentdNeuronControlStateErrorV2::Corrupt)?;
+    write_generation_state_encoded(path, &encoded)
+}
+
+fn write_generation_state_encoded(
+    path: &Path,
+    encoded: &[u8],
+) -> Result<(), AgentdNeuronControlStateErrorV2> {
+    let parent_before = validate_generation_state_path(path, false)?;
     let encoded_bytes =
         u64::try_from(encoded.len()).map_err(|_| AgentdNeuronControlStateErrorV2::Invalid)?;
     if encoded.is_empty() || encoded_bytes > MAX_AGENTD_NEURON_GENERATION_STATE_BYTES {
@@ -175,7 +182,7 @@ pub fn write_agentd_neuron_generation_state_v2(
             options.mode(0o600);
         }
         let mut file = options.open(&temporary)?;
-        file.write_all(&encoded)?;
+        file.write_all(encoded)?;
         file.sync_all()?;
         let opened = file.metadata()?;
         validate_generation_state_metadata(&opened)?;

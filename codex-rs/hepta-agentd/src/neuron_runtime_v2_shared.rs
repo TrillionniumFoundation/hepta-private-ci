@@ -419,6 +419,14 @@ where
         self.observe_locked(&mut locked)
     }
 
+    fn journal_scope_control(
+        &self,
+    ) -> Result<codex_hepta_agent_components::neuron::JournalScope, AgentdNeuronControlErrorV2>
+    {
+        let locked = self.lock_control()?;
+        Ok(locked.owner.runtime.journal_scope())
+    }
+
     fn generation(&self) -> Option<u64> {
         Some(self.generation)
     }
