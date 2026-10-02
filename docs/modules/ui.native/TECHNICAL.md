@@ -18,8 +18,8 @@ The audit records source status separately from pending execution qualification.
 **Exact qualification parent:** `978c1923eda66373e9dce4fe0efa890bc60ac404`
 **Historical frozen implementation source:** `0a129b41c2a2d42ca907ea8257bf780108bc664f`
 **Historical implementation tree:** `f90313f067446c629b8da50058ee1bd2101e76e7`
-**Continuation implementation:** `bdedf9e7cd3ddb0bb6457704940910cadb4cef1a`
-**Continuation tree:** `645f0284b37f58f5efff49f4edb459f6876a486e`
+**Continuation implementation:** `6e76bb778b58abe557dca516fe66da020da84ae6`
+**Continuation tree:** `5f3b98aecf7c3fa688f8093a275fe8fba855ffef`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The historical source was frozen at the
@@ -404,7 +404,19 @@ The deterministic unsigned Windows v3 package declares
 `hepta-native.exe --register-notification-identity`. This explicit Rust command
 registers only the current executable, commits the fixed
 `Trillionnium.Hepta.Native` AUMID through native `IPropertyStore`, then reopens
-the shortcut and verifies target/AUMID before atomic marker publication. No
+the shortcut and verifies target/AUMID before atomic marker publication. The
+expected executable handle is retained through save/readback, sharing only reads.
+The reopened target also uses a non-following final-component handle and rejects
+non-regular or reparse files. Equality requires the complete volume serial and
+128-bit file identifier from `FILE_ID_INFO`; case folding or text normalization
+alone never establishes identity. Both paths must be ordinary absolute disk/UNC
+paths, including their verbatim forms, with no alternate-stream colon syntax.
+Device namespaces and arbitrary verbatim/GLOBALROOT prefixes reject before any
+filesystem call. Parent directories are not sandboxed. This admission is necessary
+because [named streams](https://learn.microsoft.com/en-us/windows/win32/fileio/file-streams)
+have separate bytes within one base-file identity. The
+[Windows file-ID contract](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info)
+defines the complete identifier comparison. No
 PowerShell registrar is installed, and no startup or notification auto-registers.
 
 The WinRT toast adapter requires that marker and uses the exact registered AUMID.
@@ -415,8 +427,15 @@ directories. The registrar uses SDK-owned `PROPERTYKEY` and `PROPVARIANT` with
 native conversion and cleanup, rather than maintaining a handwritten union ABI.
 Native workspace tests cover the SDK variant, Unicode/NUL path conversion and
 production COM commit/persist/readback in an owned temporary shortcut, including
-wrong-target and wrong-AUMID negative controls. They do not create an installed
-Start Menu identity; target-OS execution remains required. The
+wrong-target and wrong-AUMID negative controls. New cases cover same-file
+case/hard-link aliases, reparse targets, retained-handle write/delete/rename denial,
+actual alternate streams, namespace admission and hard-linked shortcut destinations.
+The destination audit does not yet establish whether native Save safely replaces a
+hard link or rejects it; no production write-policy change is inferred. Distinct
+8.3 names are exercised only when the filesystem provides them; otherwise the log
+explicitly marks that coverage unexercised. The separate early Windows probe retains
+nocapture output but never substitutes for the full matrix or aggregate. Tests do
+not create an installed Start Menu identity; target-OS execution remains required. The
 [SDK union definition](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant)
 is the ABI reference. Cross-compilation does not execute those Windows tests or establish
 physical Windows registration or toast delivery.

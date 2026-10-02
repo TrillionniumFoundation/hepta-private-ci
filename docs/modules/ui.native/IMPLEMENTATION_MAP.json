@@ -4,8 +4,8 @@
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "implementationSourceSha": "bdedf9e7cd3ddb0bb6457704940910cadb4cef1a",
-  "implementationSourceTree": "645f0284b37f58f5efff49f4edb459f6876a486e",
+  "implementationSourceSha": "6e76bb778b58abe557dca516fe66da020da84ae6",
+  "implementationSourceTree": "5f3b98aecf7c3fa688f8093a275fe8fba855ffef",
   "sourceMaturity": "implementation-candidate-incomplete-qualification-blocked",
   "declaredRoots": [
     "apps/hepta-native",
@@ -80,7 +80,7 @@
     "windowsPicker": "same-executable bounded typed helper; Rust native Windows file-dialog SDK adapter",
     "macosNotification": "same-executable unprivileged Rust UserNotifications facade with installed bundle identity gate; no delivery success receipt",
     "windowsNotification": "same-executable unprivileged Rust WinRT facade with registered AUMID gate; no delivery success receipt",
-    "windowsIdentityRegistrar": "explicit hepta-native.exe --register-notification-identity; current executable only; COM target/AUMID readback before atomic marker; unsigned package v3",
+    "windowsIdentityRegistrar": "explicit hepta-native.exe --register-notification-identity; current executable retained across save/readback; exact AUMID and complete volume/128-bit file-ID comparison; default-stream ordinary paths only; final reparse targets rejected; unsigned package v3",
     "helperBoundary": "parent-owned nonblocking pipe polling; 8/130-second active protocol limits exclude hashing and OS kill/reap/scheduling; nonce/digest does not replace parent final-use authority",
     "portalMemoryBoundary": "64 KiB application response checked after zbus decoding; 128 MiB raw-frame limit remains separate"
   },
@@ -201,6 +201,8 @@
     "linuxTestTransport": "private Unix session bus with EXTERNAL authentication and normal host mediation",
     "applicationFormatCheck": "scripts/hepta_ui_native_format.py preserves the full cargo fmt --all target/edition set in bounded Windows-safe batches",
     "runtimeVerification": "pending exact-source hosted Linux/Windows execution; no assertion or required CI subject removed",
-    "windowsRegistrarDiagnostics": "bounded COM operation labels preserve HRESULT without source path or identity details; no registrar acceptance semantics changed; native execution remains pending"
+    "windowsRegistrarDiagnostics": "bounded COM operation labels and preserved HRESULT without source path or identity values",
+    "windowsRegistrarTargetVerification": "retained read-only file handles; full FILE_ID_INFO comparison; ADS/device namespace rejection before filesystem calls; mandatory alias, wrong-target, reparse and hard-linked destination regressions; native runtime pending",
+    "earlyWindowsPlatformTests": "supplemental same-source adapter tests before full application build; separate retained evidence; failures propagate; original full matrix and aggregate remain mandatory"
   }
 }

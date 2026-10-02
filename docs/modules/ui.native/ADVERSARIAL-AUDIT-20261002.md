@@ -6,20 +6,21 @@ application. It does not declare production readiness, independent acceptance,
 deployment qualification or release authorization. Findings below describe the
 immutable baseline unless an explicitly identified later result says otherwise.
 
-The current published registrar-diagnostic source is
-`bdedf9e7cd3ddb0bb6457704940910cadb4cef1a`, tree
-`645f0284b37f58f5efff49f4edb459f6876a486e`, on
+The current published registrar file-identity source is
+`6e76bb778b58abe557dca516fe66da020da84ae6`, tree
+`5f3b98aecf7c3fa688f8093a275fe8fba855ffef`, on
 `work/ui-rust-scifi-audit-20261002`, with exact qualification parent `978c1923...`.
-The previous source `d07b6de08d6f3bcab1b7367f695be8b439ddb732` retains its historical hosted results.
-Run 36979217316 passed Linux head/merge, macOS head/merge and storage, while the
-Windows fixtures failed with unqualified E_FAIL errors after formatting and lint
-passed. The [registrar diagnostic record](history/20261002-registrar-diagnostics/README.md)
-retains the Windows artifact and local compile-only limits. Current source adds
-bounded COM operation labels before any semantic repair; identity, target,
-Unicode and reparse-point checks are unchanged. New Windows execution is needed
-to identify the failing operation. No old platform or storage pass transfers.
-The [earlier CI repairs](history/20261002-native-ci-repair/README.md) and
-[original local diagnostics](history/20261002-2b59-local/README.md) remain historical.
+[Run 36983477130](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36983477130)
+for candidate `931f096be...` failed both Windows subjects at the persisted target
+path comparison. The earlier bounded-error regression passed. macOS merge also
+failed during disposable Git fixture cleanup; its exact concurrent cause is not
+proven. The [repair record](history/20261002-registrar-file-identity/README.md)
+retains both artifacts and every historical job result. Current source compares
+retained complete file identities, rejects stream/device aliases, isolates fixture
+Git maintenance and adds an early Windows probe without replacing any full gate.
+New tests are cross-compiled only. In particular, hard-linked shortcut destination
+behavior and distinct 8.3 alias coverage await the native run. No old platform or
+storage pass transfers, and production/deployment/release flags remain false.
 
 ## 1. Exact candidate, evidence and integration boundary
 

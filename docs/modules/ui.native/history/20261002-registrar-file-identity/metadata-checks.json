@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.ui-native-metadata-local-checks.v1",
+  "implementationSourceSha": "6e76bb778b58abe557dca516fe66da020da84ae6",
+  "implementationSourceTree": "5f3b98aecf7c3fa688f8093a275fe8fba855ffef",
+  "executionScope": "Local uncommitted metadata continuation on published file-identity source; no native Windows or final hosted-candidate execution.",
+  "pythonTests": {
+    "total": 269,
+    "passed": 268,
+    "skipped": 1,
+    "seconds": 12.83,
+    "skip": "Windows-only NTFS junction fixture on Linux"
+  },
+  "projections": {
+    "passed": 7,
+    "failed": 0,
+    "reproducibilityVerified": true,
+    "generatedFilesChanged": false
+  },
+  "moduleRegistry": {
+    "passed": 4,
+    "failed": 0
+  },
+  "nativeMapAdapter": {
+    "status": "passed",
+    "globalMapVerificationClaim": false
+  },
+  "sourceIdentity": "structural-pass",
+  "historicalRecordsPreservedExactly": true,
+  "storageBudgetSemanticsUnchanged": true,
+  "logs": {
+    "hepta-file-identity-map-adapter.log": {
+      "archiveEntry": "metadata/hepta-file-identity-map-adapter.log",
+      "bytes": 6127,
+      "sha256": "1c855c1cb006c942a348dc21c40b1cdd5ba3a3e08ae465490f4007637cfb8138"
+    },
+    "hepta-file-identity-projection-verify.log": {
+      "archiveEntry": "metadata/hepta-file-identity-projection-verify.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hepta-file-identity-projections.log": {
+      "archiveEntry": "metadata/hepta-file-identity-projections.log",
+      "bytes": 732,
+      "sha256": "3679acf546a352987391b1647b73daaf585456b2fb35ff3822f98f59e095af46"
+    },
+    "hepta-file-identity-python.log": {
+      "archiveEntry": "metadata/hepta-file-identity-python.log",
+      "bytes": 45236,
+      "sha256": "24bedecfeb5b57e52f9299aeb51fd50002ea969d37f9386f85972afeb0edecbf"
+    },
+    "hepta-file-identity-registry.log": {
+      "archiveEntry": "metadata/hepta-file-identity-registry.log",
+      "bytes": 102,
+      "sha256": "b891b3d13a03328283fb957c6a880ae0f4585aa52723fcbf61638dcaf67d2c47"
+    },
+    "hepta-file-identity-source.json": {
+      "archiveEntry": "metadata/hepta-file-identity-source.json",
+      "bytes": 1543,
+      "sha256": "a32783b5e574aedd25e5f15927b415ea10bef74ee105a31465c489b33d9f5edb"
+    }
+  },
+  "acceptedQualification": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}
