@@ -957,3 +957,23 @@ recovery observation、完整 replacement lineage 和 per-Agent selective projec
 私有 admission 模块为 148 行，Matrix 编排从 781 行缩至 769 行；新测试文件
 545 行，按完整 fixtures／第一叶与余下两叶分阶段审查，不改变最终编译源码。
 fix/fmt 后没有执行本地测试；这些检查不能代替新发布 head 的实际测试或资格收据。
+
+22beb 自身的六个 native 和两个 deep lane 已全部实际 SUCCESS。Linux 三 lane
+Supervisor default／production 为 420 PASS、qualification 为 425 PASS；macOS
+三 lane 为 419／419／424 PASS，Fleet 六 lane 均 44 PASS。91 个 Supervisor
+mandatory 在三库逐名通过，Fleet 五个逐名通过；每 native lane 的 15 records、
+其原 log、官方完整 raw、ZIP 和 assembly 均核实，90 records 完整保存。
+每份 assembly 的 7,643 个源码绑定与该 head 精确一致；六条 HOL 秒数均引用
+具名 PASS 而非 Summary。两 deep lane 为 420／425 PASS，91 个 mandatory
+在两库通过，原 crash/SIGKILL/authority/writer/HOL 范围保留。全部 retry0。
+这一历史实际成功不覆盖本节三处后来确认的 Matrix 切点，也不转给新修复 head。
+
+同 head 增强 lock 观察的 21 项检查、9 个 exit 和 23 个 ZIP members 均核实；
+6 个 selected inputs 与 fresh API 字节相符，lock 候选与 committed 完整字节相同。
+该诊断不是 Bazel Fleet 编译证明。全仓 30 分钟窗口于 03:13:57.454Z 关闭，
+114 checks 为 42 success／35 failure／13 skipped／24 in progress，未宣称全仓绿。
+803 项 docs 测试通过，但 gate 仍拒绝七个历史非祖先 sourceBase；Lane B 仍有
+旧 delegated-owner closure，Cargo-shear 的六个 foreign-unused gate 仍失败，
+其外部包与固定 base 整包 tree 相同；cargo-deny 终态失败根因仍 UNKNOWN。
+Supervisor 空 doctest 和三个 orphan 警告已在完整 raw 中消失。311 份窗口材料的
+bytes／SHA 独立复核通过，窗口不延长，也不把 pending／skipped 计为执行。
