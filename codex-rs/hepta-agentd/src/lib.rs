@@ -154,6 +154,7 @@ pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 #[cfg(feature = "server")]
 pub use canonical_abstain_provider::AgentdDurableAbstainInvocationProviderV1;
+#[cfg(feature = "server")]
 pub use canonical_abstain_provider::AgentdDurableCpuAbstainInvocationProviderV2;
 #[cfg(feature = "server")]
 pub use canonical_abstain_provider::CanonicalIntelligenceProviderProfileV1;
@@ -382,11 +383,15 @@ pub use neuron_runtime_v2::AgentdNeuronGenerationControllerSnapshotV2;
 pub use neuron_runtime_v2::AgentdNeuronGenerationControllerV2;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGenerationStateV2;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeArchiveFrontierV3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeFactoryV3;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeStateV3;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeTopologyV3;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeV3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronHandleV2;
@@ -406,6 +411,7 @@ pub use neuron_runtime_v2::AgentdNeuronRecoveryReportV2;
 pub use neuron_runtime_v2::AgentdNeuronRuntimeV2Config;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronRuntimeV2Host;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronScopeIdentityV3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronTickProviderV2;
@@ -413,12 +419,15 @@ pub use neuron_runtime_v2::AgentdNeuronTickProviderV2;
 pub use neuron_runtime_v2::MAX_RETAINED_NEURON_GENERATION_OWNERS_V2;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::read_agentd_neuron_generation_state_v2;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::read_agentd_neuron_goal_scope_state_v3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::read_agentd_neuron_live_generation_state_v2;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::read_agentd_neuron_live_goal_scope_state_v3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::write_agentd_neuron_generation_state_v2;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::write_agentd_neuron_goal_scope_state_v3;
 #[cfg(feature = "server")]
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
