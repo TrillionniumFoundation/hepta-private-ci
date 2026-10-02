@@ -1,6 +1,7 @@
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:hepta_product_binary.bzl", "hepta_product_binary")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 
 _UNIT_TEST_DEPENDENCIES = {
@@ -17,12 +18,21 @@ codex_rust_crate(
         "production-cognitive-write",
     ],
     crate_name = "codex_hepta_agentd",
+    integration_binary_overrides = {"codex-hepta-agentd": ":hepta-agentd-product"},
     integration_compile_data_extra = [
         "//codex-rs/hepta-automation:migration_test_inputs",
         "//codex-rs/hepta-control-plane:src/organ_runtime_test_support.rs",
     ],
     integration_test_timeout = "long",
+    product_integration_tests = ["module_selection_product"],
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+)
+
+# Ordinary production features and the complete optimized dependency closure.
+hepta_product_binary(
+    name = "hepta-agentd-product",
+    binary = ":codex-hepta-agentd",
+    visibility = ["//visibility:public"],
 )
 
 # Compile the local writer qualification separately from the default product

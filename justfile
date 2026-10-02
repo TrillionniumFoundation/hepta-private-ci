@@ -36,6 +36,11 @@ file-search *args:
 code-mode-host *args:
     cargo run --bin codex-code-mode-host -- {args}
 
+# Build ordinary product programs with the same profile used by process acceptance.
+# Library development keeps the default fast profile.
+product-build *args:
+    cargo build --profile hepta-product {args}
+
 # Assemble a local Codex package.
 [no-cd]
 assemble-codex-package *args:

@@ -605,6 +605,17 @@ opt-level = 0
 debug = "none"
 strip = "symbols"
 
+# Ordinary product executables retain all runtime assertions and overflow
+# checks. Optimize their actual dependency closure without a whole-program LTO
+# cost on every product change; ordinary --lib development keeps dev-small.
+[profile.hepta-product]
+inherits = "dev-small"
+opt-level = 2
+debug-assertions = true
+overflow-checks = true
+lto = "off"
+codegen-units = 4
+
 [profile.release]
 lto = "thin"
 debug = "line-tables-only"

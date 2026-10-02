@@ -2,5 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "foreign_platform_binary.bzl",
+    "hepta_product_binary.bzl",
     "rust_test_dependencies.bzl",
 ])

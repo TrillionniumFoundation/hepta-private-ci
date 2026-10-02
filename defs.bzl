@@ -3,6 +3,7 @@ load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_proc_macro", "rust_test")
 load("//bazel/rules/testing:foreign_platform_binary.bzl", "foreign_platform_binary")
+load("//bazel/rules/testing:hepta_product_binary.bzl", "hepta_product_test_binary")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 load("//bazel/rules/testing/wine:wine_runtime.bzl", "WINE_TEST_TARGET_COMPATIBLE_WITH", "wine_test_runtime")
 
@@ -199,6 +200,8 @@ def codex_rust_crate(
         rustc_env_files = [],
         deps_extra = [],
         integration_compile_data_extra = [],
+        integration_binary_overrides = {},
+        product_integration_tests = [],
         integration_test_args = [],
         unit_test_args = [],
         unit_test_dependency_replacements = {},
@@ -250,6 +253,10 @@ def codex_rust_crate(
         deps_extra: Extra normal deps beyond @crates resolution.
             Typically only needed when features add additional deps.
         integration_compile_data_extra: Extra compile_data for integration tests.
+        integration_binary_overrides: Ordinary product labels for generated binary names
+            in integration-test data and CARGO_BIN_EXE variables only.
+        product_integration_tests: tests/*.rs stems whose process harness must use
+            the product profile for its complete dependency closure.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
@@ -424,9 +431,10 @@ def codex_rust_crate(
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
         #binary = binary.replace("-", "_")
-        sanitized_binaries.append(binary)
-        cargo_env_runfiles[":" + binary] = "CARGO_BIN_EXE_" + binary
-        cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary
+        integration_binary = integration_binary_overrides.get(binary, ":" + binary)
+        sanitized_binaries.append(integration_binary)
+        cargo_env_runfiles[integration_binary] = "CARGO_BIN_EXE_" + binary
+        cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath %s)" % integration_binary
         rust_binary(
             name = binary,
             crate_name = binary.replace("-", "_"),
@@ -559,6 +567,7 @@ def codex_rust_crate(
             test_kwargs["flaky"] = True
 
         integration_test_binary = test_name + "-bin"
+        product_test = test_file_stem in product_integration_tests
 
         # There are four generated integration-test shapes:
         #
@@ -577,7 +586,7 @@ def codex_rust_crate(
         #    owns cleanup. The outer workspace_root_test resolves the runner,
         #    test, and server from runfiles, sets a Cargo-like cwd, and applies
         #    the native test's shard count.
-        if test_shard_count:
+        if test_shard_count or product_test:
             # This target is intentionally a binary-like helper, not the public
             # test target. The wrapper below owns cwd setup, runfile env
             # materialization, sharding, and flaky retry behavior.
@@ -603,6 +612,18 @@ def codex_rust_crate(
                 tags = test_tags + ["manual"],
             )
 
+            integration_test_executable = ":" + integration_test_binary
+            if product_test:
+                product_test_binary = integration_test_binary + "-product"
+                hepta_product_test_binary(
+                    name = product_test_binary,
+                    binary = integration_test_executable,
+                    tags = ["manual"],
+                    testonly = True,
+                    visibility = ["//visibility:private"],
+                )
+                integration_test_executable = ":" + product_test_binary
+
             workspace_root_test(
                 name = test_name,
                 env = test_env,
@@ -611,8 +632,8 @@ def codex_rust_crate(
                 # time so tests keep working after chdir_workspace_root and on
                 # manifest-only platforms.
                 runfile_env = integration_test_cargo_env_runfiles,
-                test_bin = ":" + integration_test_binary,
-                test_threads = test_threads,
+                test_bin = integration_test_executable,
+                test_threads = test_threads or (1 if product_test else 0),
                 workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
                 target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
                 tags = test_tags,
@@ -649,7 +670,7 @@ def codex_rust_crate(
 
         if run_tests_with_wine_exec:
             wine_test_name = test_name.removesuffix("-test") + "-wine-exec-test"
-            native_test_binary = ":" + (integration_test_binary if test_shard_count else test_name)
+            native_test_binary = integration_test_executable if test_shard_count or product_test else ":" + test_name
             wine_test_binaries = dict(wine_host_binaries)
 
             wine_exec_server = wine_test_name + "-windows-exec-server"
