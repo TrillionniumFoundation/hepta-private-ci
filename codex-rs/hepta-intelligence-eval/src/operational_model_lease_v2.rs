@@ -7,7 +7,7 @@ use std::fmt;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[cfg_attr(
-    feature = "fixed-eval-host",
+    all(target_os = "linux", feature = "fixed-eval-host"),
     derive(serde::Deserialize, serde::Serialize)
 )]
 pub enum OperationalModelUseV2 {
@@ -18,10 +18,13 @@ pub enum OperationalModelUseV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(
-    feature = "fixed-eval-host",
+    all(target_os = "linux", feature = "fixed-eval-host"),
     derive(serde::Deserialize, serde::Serialize)
 )]
-#[cfg_attr(feature = "fixed-eval-host", serde(deny_unknown_fields))]
+#[cfg_attr(
+    all(target_os = "linux", feature = "fixed-eval-host"),
+    serde(deny_unknown_fields)
+)]
 pub struct OperationalCalibrationGatesV2 {
     pub zero_confidence_error_q24: u64,
     pub maximum_in_domain_error_q24: u64,
@@ -88,10 +91,13 @@ impl OperationalCalibrationGatesV2 {
 /// consumer. Their inclusion here does not claim they were independently measured.
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(
-    feature = "fixed-eval-host",
+    all(target_os = "linux", feature = "fixed-eval-host"),
     derive(serde::Deserialize, serde::Serialize)
 )]
-#[cfg_attr(feature = "fixed-eval-host", serde(deny_unknown_fields))]
+#[cfg_attr(
+    all(target_os = "linux", feature = "fixed-eval-host"),
+    serde(deny_unknown_fields)
+)]
 pub struct ConservativeCpuRuntimeProfileV2 {
     pub input_feature_dimension: u32,
     pub state_width: u32,
