@@ -528,6 +528,8 @@ mod paired_custody_generator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_custody_numeric;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_observations;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_custody_retention;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_custody_withdrawal;
