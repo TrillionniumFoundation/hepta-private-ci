@@ -57,6 +57,8 @@ pub struct AgentdClient {
     spawn_generation: u64,
     next_request_id: AtomicU64,
     timeout: Duration,
+    #[cfg(unix)]
+    expected_peer: Option<(u32, u32)>,
 }
 
 impl AgentdClient {
@@ -77,7 +79,22 @@ impl AgentdClient {
             spawn_generation,
             next_request_id: AtomicU64::new(1),
             timeout: Duration::from_secs(2),
+            #[cfg(unix)]
+            expected_peer: None,
         })
+    }
+
+    /// Explicit trusted installation binding; peer identity is checked before
+    /// every control request, independently of JSON identity fields.
+    #[cfg(unix)]
+    pub fn with_peer_process(mut self, uid: u32, pid: u32) -> Result<Self, AgentdError> {
+        if uid == 0 || pid == 0 {
+            return Err(AgentdError::Invalid(
+                "Agent peer requires a non-root UID and live PID".into(),
+            ));
+        }
+        self.expected_peer = Some((uid, pid));
+        Ok(self)
     }
 
     pub async fn capabilities(&self) -> Result<AgentdCapabilitySet, AgentdError> {
@@ -795,6 +812,10 @@ impl AgentdClient {
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
+        #[cfg(unix)]
+        if let Some((uid, pid)) = self.expected_peer {
+            stream.ensure_peer_process(uid, pid)?;
+        }
         let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');
@@ -864,3 +885,7 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
 #[cfg(test)]
 #[path = "client_transport_tests.rs"]
 mod transport_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "client_peer_tests.rs"]
+mod peer_process_tests;

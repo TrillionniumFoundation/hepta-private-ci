@@ -78,6 +78,14 @@ impl UnixStream {
     pub fn ensure_peer_user(&self, expected_uid: u32) -> IoResult<()> {
         platform::ensure_expected_user_peer(&self.inner, expected_uid)
     }
+
+    /// Bind an async connection to the trusted owner's actual UID and PID before
+    /// writing protocol bytes. Unsupported kernel identity fails closed.
+    #[cfg(unix)]
+    pub fn ensure_peer_process(&self, expected_uid: u32, expected_pid: u32) -> IoResult<()> {
+        use std::os::fd::AsRawFd;
+        platform::ensure_peer_process(self.inner.as_raw_fd(), expected_uid, expected_pid)
+    }
 }
 
 /// Verify a synchronous Unix connection's trusted UID and exact child PID.
@@ -545,3 +553,7 @@ mod platform {
 
 #[cfg(test)]
 mod lib_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "peer_process_tests.rs"]
+mod peer_process_tests;
