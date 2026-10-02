@@ -294,3 +294,147 @@ fn audit_publication_rejects_unbound_projection_and_receipt() {
         );
     }
 }
+
+#[test]
+fn acknowledged_resume_remains_historical_after_successor_and_retention() {
+    use ed25519_dalek::Signer;
+    let directory = TestDir::new();
+    let key = signer();
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(withdrawal_scope());
+    let scope = withdrawals.scope_digest().fixture("scope");
+    let owner =
+        LearningArtifactOwnerHost::open(&directory.0, trust(&key, scope), lease(&key, scope), 20)
+            .fixture("owner");
+    let (mut registry, mut first) = deterministic_publication(&owner, &withdrawals, 20);
+    let first_path = owner
+        .ensure_payload_durable(&mut first, &registry, b"payload", 20)
+        .fixture("payload A");
+    owner
+        .ensure_registry_durable(&mut first, &registry, &withdrawals, digest("binding"), 20)
+        .fixture("registry A");
+    let first_head = signed_head(&key, scope, registry.snapshot().head_digest);
+    owner
+        .ensure_witness_durable(&mut first, &first_head, &withdrawals, 20)
+        .fixture("head A");
+    owner
+        .acknowledge(&mut first, &withdrawals, 20)
+        .fixture("ack A");
+    let historical = first.snapshot();
+    let predecessor = registry.snapshot().head_digest;
+    let mut next_manifest = manifest();
+    next_manifest.artifact_id = id("candidate-b");
+    next_manifest.generation = Generation::new(2).fixture("generation");
+    let admission = crate::admit_manifest_at_withdrawal_head_v3(
+        &withdrawals,
+        withdrawals.head_digest(),
+        next_manifest,
+        21,
+    )
+    .fixture("admission B");
+    let mut second = owner
+        .begin_publication(
+            id("operation-b"),
+            admission,
+            &withdrawals,
+            &registry,
+            predecessor,
+            21,
+        )
+        .fixture("begin B");
+    owner
+        .stage_compatibility_registration(&second, &mut registry, 21)
+        .fixture("stage B");
+    owner
+        .ensure_payload_durable(&mut second, &registry, b"payload", 21)
+        .fixture("payload B");
+    owner
+        .ensure_registry_durable(&mut second, &registry, &withdrawals, digest("binding"), 21)
+        .fixture("registry B");
+    let mut second_head = signed_head(&key, scope, registry.snapshot().head_digest);
+    second_head.witness.generation = Generation::new(2).fixture("head generation");
+    second_head.witness.predecessor_head_digest = predecessor;
+    second_head.signature = key.sign(&second_head.signing_bytes()).to_bytes();
+    owner
+        .ensure_witness_durable(&mut second, &second_head, &withdrawals, 21)
+        .fixture("head B");
+    owner
+        .acknowledge(&mut second, &withdrawals, 21)
+        .fixture("ack B");
+    assert_eq!(
+        owner
+            .resume_publication(historical.clone(), 22)
+            .fixture("historical resume A")
+            .snapshot(),
+        historical
+    );
+    fs::remove_file(directory.0.join(first_path)).fixture("retention removed A bytes");
+    assert_eq!(
+        owner
+            .resume_publication(historical.clone(), 22)
+            .fixture("historical receipt is not availability")
+            .snapshot(),
+        historical
+    );
+}
+
+#[test]
+fn current_trust_floors_do_not_invalidate_authentic_predecessor_history() {
+    use ed25519_dalek::Signer;
+    let directory = TestDir::new();
+    let key = signer();
+    let scope = withdrawal_scope().digest();
+    let owner =
+        LearningArtifactOwnerHost::open(&directory.0, trust(&key, scope), lease(&key, scope), 20)
+            .fixture("owner");
+    let first = signed_head(&key, scope, digest("first-head"));
+    owner
+        .persist_signed_head_record(&first)
+        .fixture("historical head");
+    let mut second = signed_head(&key, scope, digest("second-head"));
+    second.witness.predecessor_head_digest = first.witness.head_digest;
+    second.witness.generation = Generation::new(2).fixture("generation");
+    second.witness.authority_epoch = 2;
+    second.signature = key.sign(&second.signing_bytes()).to_bytes();
+    owner
+        .persist_signed_head_record(&second)
+        .fixture("current head");
+    drop(owner);
+    let mut current_trust = trust(&key, scope);
+    current_trust.minimum_registry_generation = Generation::new(2).fixture("floor");
+    current_trust.minimum_authority_epoch = 2;
+    let mut current_lease = lease(&key, scope);
+    current_lease.authority_epoch = 2;
+    current_lease.signature = key.sign(&current_lease.signing_bytes()).to_bytes();
+    let owner = LearningArtifactOwnerHost::open_with_required_current_head(
+        &directory.0,
+        current_trust,
+        current_lease,
+        second.clone(),
+        21,
+    )
+    .fixture("current floor must not erase independently signed ancestry");
+    assert_eq!(
+        owner
+            .discover_current_head(21)
+            .fixture("discover")
+            .fixture("head")
+            .signed,
+        second
+    );
+    assert!(
+        owner
+            .verifier
+            .verify_current_head(
+                &first,
+                &RegistryHeadRequirementV1 {
+                    registry_id: id("learning-artifacts"),
+                    minimum_generation: Generation::new(1).fixture("generation"),
+                    expected_predecessor_head_digest: Digest32::ZERO,
+                    minimum_authority_epoch: 1,
+                    now: 21,
+                }
+            )
+            .is_err(),
+        "historical verification must not lower CURRENT trust floors"
+    );
+}

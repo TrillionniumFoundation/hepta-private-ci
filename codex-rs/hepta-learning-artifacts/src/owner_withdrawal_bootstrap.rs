@@ -80,7 +80,8 @@ impl LearningArtifactOwnerHost {
             || request.binding.is_zero()
             || request.next_withdrawal_registry.scope_digest()
                 != Some(self.verifier.trust.withdrawal_scope_digest)
-            || request.authority_epoch < self.verifier.trust.minimum_authority_epoch
+            || (require_current
+                && request.authority_epoch < self.verifier.trust.minimum_authority_epoch)
             || request.issued_at > now
             || request.issued_at > request.expires_at
             || require_current && now > request.expires_at

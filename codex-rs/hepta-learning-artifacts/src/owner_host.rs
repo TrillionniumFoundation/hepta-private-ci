@@ -337,8 +337,9 @@ impl ArtifactOwnerVerifierV1 {
         if signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || signed.binding.is_zero()
             || signed.witness.registry_id != self.trust.registry_id
-            || signed.witness.generation < self.trust.minimum_registry_generation
-            || signed.witness.authority_epoch < self.trust.minimum_authority_epoch
+            || (require_current_signer
+                && (signed.witness.generation < self.trust.minimum_registry_generation
+                    || signed.witness.authority_epoch < self.trust.minimum_authority_epoch))
         {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
@@ -1120,9 +1121,9 @@ impl LearningArtifactOwnerHost {
     ) -> Result<(), ArtifactOwnerHostError> {
         let requirement = RegistryHeadRequirementV1 {
             registry_id: self.verifier.trust.registry_id.clone(),
-            minimum_generation: self.verifier.trust.minimum_registry_generation,
+            minimum_generation: signed.witness.generation,
             expected_predecessor_head_digest: checkpoint.expected_registry_predecessor_head,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            minimum_authority_epoch: signed.witness.authority_epoch,
             now: signed.witness.issued_at,
         };
         let verified = self
@@ -1189,8 +1190,11 @@ impl LearningArtifactOwnerHost {
                 .push(record);
         }
         let mut predecessor = self.verifier.trust.genesis_predecessor_head_digest;
-        let mut minimum_generation = self.verifier.trust.minimum_registry_generation;
-        let mut minimum_epoch = self.verifier.trust.minimum_authority_epoch;
+        // Current floors apply to the terminal head, not authentic retained
+        // predecessors. Per-signer epoch/time bounds remain mandatory below.
+        let mut minimum_generation =
+            Generation::new(1).map_err(|_| ArtifactOwnerHostError::InternalInvariant)?;
+        let mut minimum_epoch = 1;
         let mut consumed = 0usize;
         let mut latest = None;
         while let Some(candidates) = by_predecessor.remove(&predecessor) {
@@ -1230,22 +1234,19 @@ impl LearningArtifactOwnerHost {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
         let latest = latest.ok_or(ArtifactOwnerHostError::InternalInvariant)?;
-        let signer = self
-            .verifier
-            .head_signers
-            .get(&latest.signed.witness.signer_id)
-            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
-        verify_signer_context(
-            signer,
-            latest.signed.witness.signing_key_digest,
-            latest.signed.witness.authority_epoch,
-            latest.signed.witness.issued_at,
-            now,
-            true,
-        )?;
         if now > latest.signed.witness.expires_at {
             return Err(ArtifactOwnerHostError::CurrentHeadExpired);
         }
+        self.verifier.verify_current_head(
+            &latest.signed,
+            &RegistryHeadRequirementV1 {
+                registry_id: self.verifier.trust.registry_id.clone(),
+                minimum_generation: self.verifier.trust.minimum_registry_generation,
+                expected_predecessor_head_digest: latest.signed.witness.predecessor_head_digest,
+                minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                now,
+            },
+        )?;
         Ok(Some(latest))
     }
 
@@ -1309,7 +1310,7 @@ impl LearningArtifactOwnerHost {
             registry_id: self.verifier.trust.registry_id.clone(),
             minimum_generation: anchor.witness.generation,
             expected_predecessor_head_digest: anchor.witness.predecessor_head_digest,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            minimum_authority_epoch: anchor.witness.authority_epoch,
             now: anchor.witness.issued_at,
         };
         self.verifier

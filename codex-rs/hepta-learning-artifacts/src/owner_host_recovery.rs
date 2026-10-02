@@ -149,7 +149,14 @@ pub(super) fn verify_transaction_effects(
     now: u64,
 ) -> Result<(), ArtifactOwnerHostError> {
     let snapshot = transaction.snapshot();
-    if snapshot.phase == ArtifactPublicationPhaseV1::Prepared {
+    // An acknowledged transaction is an immutable historical receipt, not a
+    // claim about current selection or retained payload availability. Its exact
+    // checkpoint was matched before this call; only unfinished work may emit
+    // further effects and therefore needs current-byte revalidation.
+    if matches!(
+        snapshot.phase,
+        ArtifactPublicationPhaseV1::Prepared | ArtifactPublicationPhaseV1::Acknowledged
+    ) {
         return Ok(());
     }
     let manifest = &snapshot.intent.admission.validated_manifest.manifest;

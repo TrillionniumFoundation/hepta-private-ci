@@ -40,9 +40,9 @@ impl LearningArtifactOwnerHost {
         let signed = &checkpoint.signed_head;
         let requirement = RegistryHeadRequirementV1 {
             registry_id: self.verifier.trust.registry_id.clone(),
-            minimum_generation: self.verifier.trust.minimum_registry_generation,
+            minimum_generation: signed.witness.generation,
             expected_predecessor_head_digest: signed.witness.predecessor_head_digest,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            minimum_authority_epoch: signed.witness.authority_epoch,
             now: signed.witness.issued_at,
         };
         let witness_path = self.root.join("witnesses").join(format!(
@@ -202,9 +202,9 @@ impl LearningArtifactOwnerHost {
         let signed = &request.signed_current_head;
         let requirement = RegistryHeadRequirementV1 {
             registry_id: self.verifier.trust.registry_id.clone(),
-            minimum_generation: self.verifier.trust.minimum_registry_generation,
+            minimum_generation: signed.witness.generation,
             expected_predecessor_head_digest: signed.witness.predecessor_head_digest,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            minimum_authority_epoch: signed.witness.authority_epoch,
             now: signed.witness.issued_at,
         };
         let verified = self
