@@ -808,3 +808,93 @@ source-derived 91／5 identities 保留原 d1 88／5 的全部名字，仅增加
 三条精确 RPC identity。原两项诊断失败测试整个文件字节未改。
 遵守 AGENTS.md，fix／fmt 后未执行本地测试；最终候选还需要自己的
 六 native／两 deep 收据，源码复核与 Clippy 均不能代替执行。
+
+
+### d1 完整历史执行与继续修复的边界
+
+历史候选为 `d1ed2a18120d8b8af7136ae9cd14208f0f9ad37a`，tree 为
+`2b8fc2c0342afaae4e06472d2b6b5fc79881b290`，唯一父提交为完整源
+`2a26991bdd15d81c5ec9cbd9bae483634ae59aa7`。PR 的固定 base 仍为
+`e8f8f2d0ca399b0a68abba4da90a3be5114d0735`；没有据此声明当前 main 合并资格。
+
+`REMOTE_CI_OBSERVATION_20261002_D1ED2A18.json` 实际记录六个 native lane
+和两个 Linux deep lane 全部成功。六个 native 官方 ZIP、90 份 record 原始字节摘要
+及日志原序与 official raw 已核对；每 lane 都有完整、干净的前后身份和九条
+`retries=0` 测试命令，Supervisor/Fleet 库未过滤。
+
+| 历史 native 平台 | default / production 实际执行并通过 | qualification-lib 实际执行并通过 | Fleet 实际执行并通过 |
+| --- | --- | --- | --- |
+| Linux，三 lane | 417 / 417 | 422 | 44 |
+| macOS，三 lane | 416 / 416 | 421 | 44 |
+
+每个 native 的三个 Supervisor 库组均观察并通过全部 88 个强制身份；Fleet 的五个
+强制身份也全部通过，库组没有跳过。两个 deep lane 的六组实际计数分别为
+417、422、4、5、1、1，全部执行的用例通过；两个库组的 88 个强制身份完整通过。
+native 的具名 product/SIGKILL helper 保留原跳过记录；deep 的 SIGKILL
+日志仅有 helper skip count=1，不能冒称另有具名 SKIP 行。它们不计为库用例执行。
+deep 的范围较窄，不补充它没有运行的独立 Fleet/product 组。
+
+上述成功只证明 d1 的既定测试计划。随后对真实 daemon mutation admission 的源码
+对抗审阅发现 emergency Kill 与 Stop 共用 serving-generation preflight，使已拥有的
+fenced main 或 Matrix-only 句柄可能无法经 RPC 重试终止；stored main exit 的普通
+控制也需要在效果前拒绝。下一轮修复及三条新 RPC 回归源均没有在 d1 执行：
+
+- `emergency_kill_rpc_reaches_fenced_main_after_signed_constructor_generation_drift`
+- `emergency_kill_rpc_reaches_matrix_only_owner_and_preserves_terminal_cleanup`
+- `emergency_kill_rpc_preserves_observed_main_exit_without_resignal_or_new_journal`
+
+新源码的强制身份为原 88 个完整保留加这三个实际叶子，共 91 个，Fleet 仍为五个。
+三个新叶子的存在、编译或旧测试成功均不授予新的 runtime PASS；最终候选须获得
+自己的 exact-head/platform 执行记录。第三个叶子还明确覆盖 plain/signed stored-exit
+下 Stop/Drain daemon 和 library 拒绝的无效果边界；这不扩展成其它 Stop deadline
+或 Drain acknowledgement 场景的覆盖声明。
+
+增强 Bazel 历史记录 `BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261002_D1ED2A18.json`
+实际捕获九个成功 exit、六个选定输入、21 个检查及 23 份 artifact 文件摘要。
+before/after 身份、parent、tracked clean/non-lock drift 检查均通过，生成候选与已提交
+`MODULE.bazel.lock` 字节完全相同：1,657,200 B，SHA-256
+`c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4`。
+这不是完整 Cargo 输入闭包或 Fleet Bazel target 编译证明，也不转移到后来源码。
+
+d1 的全仓观察在有界窗口关闭时仍为 FAILURE_AND_PENDING：最终 extra API 保存
+上界为 **2026-10-02 02:17:43.504934Z**，窗口于 02:18:04.999Z 关闭。
+114 个 checks 当时为 43 success、36 failure、13 skipped、22 in_progress。
+该快照不是这些剩余 job 的未来终态；pending/skipped 没有执行通过信用。
+
+全仓实际失败保留分类：docs 的 803 个测试全部通过，但七个原历史 map 的
+`merge-base --is-ancestor` 返回 1，base/head 对应 map blob 相同；它们是历史
+nonancestor，不是缺失对象。Lane B 的 runtime.agentd delegated-owner 故障也有
+base/head 相同 blob 证据。没有观察到新增 Cargo.lock map drift。
+Cargo-deny job 已终态失败，但 raw 获取返回 `Transport closed`，根因仍为 **UNKNOWN**；
+不能改写为 pending，也不能推断继承自 base。其它外国模块的失败只能按其已有
+直接证据归因；macOS Bazel 的 hepta-intuition clone lint 的 base inheritance 同为
+UNKNOWN，Fleet target 没有完成信用。
+
+Cargo-shear 在 d1 已不再发现本模块的三份未接线原型，但仍指出本模块
+`[lib] doctest=true` 的空目标。源码静态检查覆盖 147 个 `.rs`、563 行 Rustdoc：
+没有 fenced/indented 代码示例、doc attribute/include 文档、block Rustdoc 或 build.rs。
+本轮只将 lib.doctest 改为 false，features、依赖及整个 manifest 其它字段保持相等；
+已有 Supervisor crate tree 来源对象覆盖此 manifest，显式对象库存不因此扩大。
+这是移除空包装目标，没有删除已有可执行测试或修改 gate。
+Cargo-shear 的另外六个 unused 项已有 app-server/codex-adapter 同 base/head manifest
+及零 changed-package-files 的静态归属证据；仍保留整个原 gate 的失败，新的 flag
+不能被当成该 gate 已通过。
+
+模块能力状态继续为 12 implemented / 2 partial / 2 not implemented；独立 acceptance、
+deployment、activation 和 release 没有因此获得资格。源文档及历史记录完整保存原
+作用；新完整源冻结与最终候选身份由后续映射及独立执行呈现。
+
+冻结的 d1 CI 文件为 22,080 B／143 行，SHA-256
+`ed637fcf5a367c214e4808a528234ef1dc59b80f6d4d82e7cdfee14331268bbf`。
+独审纠正了四个 HOL 字段从 stage Summary 到具名 PASS 的小数秒差异；
+它们分别为 428.187、366.693、311.990、410.421 秒，成功、预算及身份不变。
+旧候选摘要另存，最终 receipt 不再修改。全仓快照为 22,959 B，SHA-256
+`31ab59afdcede4a7377a21d3ab4758c7e987d137ca1dfa55ecfd40915877209a`。
+
+仅 manifest 的再次检查实际通过：default/qualification scoped fix 分别
+43.16／18.45 秒；完整 fmt；default/qualification strict all-target Clippy
+分别 37.39／11.48 秒。46 个此前 clean 的无关 Python 格式改动精确恢复。
+manifest parsed fields 全等（仅 lib.doctest 不同），源码 guard 91／5 未改变；
+检查 receipt SHA-256 为
+`721b2000bf0ab062a6ef6433b6ba9201ca4e3aa974291a89e1f05949f4d483ea`。
+fix/fmt 后没有本地测试，仍不代替新 head 的原生或深度执行。
