@@ -8,8 +8,8 @@
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "mappingSourceIdentityMode": "exact_blob",
   "observedAtHead": {
-    "commit": "4eec1ebbdf7563056a919958fa92552eb8b0bb8e",
-    "tree": "5697a2882cbe80eb47db6d7c5bf1ec6df8ed73ec"
+    "commit": "ad27196a4c7c172e3bc2ed0db0e1e56a5529d33d",
+    "tree": "651d9f22774ebf7fd4688e24d9c005844f052391"
   },
   "observedSourcePaths": [
     "apps/hepta-control-ui",
@@ -18,31 +18,35 @@
   "sourceObjects": [
     {
       "path": "apps/hepta-control-ui",
-      "object": "648794a8eb0bbd3d4e9fa695a0bf0e1b48827406"
+      "object": "abbf4cf9995354a51c5705c3ae7af4e337914b07"
     },
     {
       "path": "apps/hepta-control-ui/rust/core/src/controller.rs",
-      "object": "69ff435e62ac9e331c0d5a08e56e92f4a78ed64b"
+      "object": "2c6b12bec20a35d25e294cac353913399de143e2"
     },
     {
       "path": "apps/hepta-control-ui/rust/core/tests/controller.rs",
-      "object": "46c29e287e148b65c4970dfb9b2f061f96232591"
+      "object": "2c561c85443616c6ace41c9582f00f699db85442"
     },
     {
       "path": "apps/hepta-control-ui/rust/web/src/app.rs",
-      "object": "0c348b7634372424857e4bb08e3f0f400dce345d"
+      "object": "69536d572f524b5bb5cbdd737f4b2c8626a0ef44"
     },
     {
       "path": "apps/hepta-control-ui/rust/web/src/app/effects.rs",
-      "object": "8f50710fec2f4dcb6c399aeeaf9441faf4d1b4c9"
+      "object": "24e329c846572c6dfefefb7144b5ce3fb0d4bb4c"
     },
     {
       "path": "apps/hepta-control-ui/web/main.js",
       "object": "be6c715c45f56c056d9c31c399379a4b1a6d045a"
     },
     {
+      "path": "apps/hepta-ui-shared",
+      "object": "42edb38a6d4059afa86fc025d2817a99064fd5b7"
+    },
+    {
       "path": "docs/modules/ui.control/TECHNICAL.md",
-      "object": "07681234d4a842a4c20b11c75ec259047f2093fa"
+      "object": "aeee7da222f937bd0372fc13d5b197292d0aeb84"
     }
   ],
   "laneId": "LANE-B-RUNTIME",
@@ -159,7 +163,7 @@
       "operation": "read_view",
       "nativeSymbol": "pub fn read_view(",
       "sourcePath": "apps/hepta-control-ui/rust/web/src/app.rs",
-      "sourceBlob": "0c348b7634372424857e4bb08e3f0f400dce345d",
+      "sourceBlob": "69536d572f524b5bb5cbdd737f4b2c8626a0ef44",
       "sourcePathExists": true
     },
     {
@@ -183,7 +187,7 @@
       "operation": "submit_request",
       "nativeSymbol": "async fn submit(",
       "sourcePath": "apps/hepta-control-ui/rust/web/src/app/effects.rs",
-      "sourceBlob": "8f50710fec2f4dcb6c399aeeaf9441faf4d1b4c9",
+      "sourceBlob": "24e329c846572c6dfefefb7144b5ce3fb0d4bb4c",
       "sourcePathExists": true
     },
     {
@@ -207,7 +211,7 @@
       "operation": "request_stop",
       "nativeSymbol": "Action::RequestStop",
       "sourcePath": "apps/hepta-control-ui/rust/web/src/app.rs",
-      "sourceBlob": "0c348b7634372424857e4bb08e3f0f400dce345d",
+      "sourceBlob": "69536d572f524b5bb5cbdd737f4b2c8626a0ef44",
       "sourcePathExists": true
     }
   ],
