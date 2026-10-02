@@ -6,8 +6,10 @@ use std::os::windows::ffi::OsStringExt as _;
 use std::os::windows::fs::MetadataExt as _;
 use std::os::windows::fs::OpenOptionsExt as _;
 use std::os::windows::io::AsRawHandle as _;
+use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
+use std::path::Prefix;
 
 use windows::Win32::Foundation::HANDLE;
 use windows::Win32::Foundation::PROPERTYKEY;
@@ -69,11 +71,33 @@ fn registration_error(stage: &'static str, error: windows::core::Error) -> windo
 }
 
 fn open_registration_target(path: &Path) -> windows::core::Result<File> {
+    // File IDs identify the base file, not individual alternate data streams.
+    // Admit only ordinary absolute disk/UNC paths and the unnamed stream before
+    // any filesystem call; device/pipe/GLOBALROOT namespaces are not executables.
+    let contains_colon =
+        |value: &std::ffi::OsStr| value.encode_wide().any(|unit| unit == u16::from(b':'));
+    let ordinary_prefix = if let Some(Component::Prefix(prefix)) = path.components().next() {
+        match prefix.kind() {
+            Prefix::Disk(_) | Prefix::VerbatimDisk(_) => true,
+            Prefix::UNC(server, share) | Prefix::VerbatimUNC(server, share) => {
+                !contains_colon(server) && !contains_colon(share)
+            }
+            Prefix::DeviceNS(_) | Prefix::Verbatim(_) => false,
+        }
+    } else {
+        false
+    };
+    let stream_component = path
+        .components()
+        .any(|component| matches!(component, Component::Normal(value) if contains_colon(value)));
+    if !path.is_absolute() || !ordinary_prefix || stream_component {
+        return Err(windows::core::Error::new(
+            windows::Win32::Foundation::E_FAIL,
+            "registrar target requires an ordinary absolute default-stream file path",
+        ));
+    }
     let metadata = std::fs::symlink_metadata(path)?;
-    if !path.is_absolute()
-        || !metadata.is_file()
-        || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT.0 != 0
-    {
+    if !metadata.is_file() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT.0 != 0 {
         return Err(windows::core::Error::new(
             windows::Win32::Foundation::E_FAIL,
             "registrar target requires an absolute regular non-reparse file",

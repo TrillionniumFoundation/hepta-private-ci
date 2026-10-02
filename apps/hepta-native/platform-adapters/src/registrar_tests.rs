@@ -273,6 +273,71 @@ fn rust_registrar_rejects_reparse_targets_before_and_after_save() {
 }
 
 #[test]
+fn rust_registrar_rejects_stream_and_device_syntax_before_filesystem_lookup() {
+    for path in [
+        r"relative.exe",
+        r"C:relative.exe",
+        r"\rooted-without-drive.exe",
+        r"C:\file.exe:payload",
+        r"C:\file.exe::$DATA",
+        r"C:\directory:payload\file.exe",
+        r"\\?\C:\file.exe:payload",
+        r"\\server\share:payload\file.exe",
+        r"\\?\UNC\server\share\file.exe:payload",
+        r"\\.\pipe\hepta-registrar-never-open",
+        r"\\.\C:\file.exe",
+        r"\\?\GLOBALROOT\Device\HarddiskVolume1\file.exe",
+        r"\\?\Volume{00000000-0000-0000-0000-000000000000}\file.exe",
+    ] {
+        let error = open_registration_target(Path::new(path)).unwrap_err();
+        assert_eq!(
+            (error.code(), error.message()),
+            (
+                windows::Win32::Foundation::E_FAIL,
+                "registrar target requires an ordinary absolute default-stream file path"
+                    .to_owned(),
+            ),
+            "path admission must reject before attempting lookup: {path}"
+        );
+    }
+}
+
+#[test]
+fn rust_registrar_rejects_actual_alternate_stream_despite_equal_file_ids() {
+    let directory = tempfile::tempdir().unwrap();
+    let executable = directory.path().join("stream-fixture.exe");
+    std::fs::write(&executable, b"default executable bytes").unwrap();
+    let mut stream = executable.as_os_str().to_os_string();
+    stream.push(":different-bytes");
+    let stream = PathBuf::from(stream);
+    std::fs::write(&stream, b"different stream bytes").unwrap();
+    let base_file = File::open(&executable).unwrap();
+    let stream_file = File::open(&stream).unwrap();
+    assert_eq!(
+        file_identity(&base_file).unwrap(),
+        file_identity(&stream_file).unwrap()
+    );
+    assert_ne!(
+        std::fs::read(&executable).unwrap(),
+        std::fs::read(&stream).unwrap()
+    );
+    assert!(open_registration_target(&stream).is_err());
+    assert!(
+        register_in(&stream, || {
+            panic!("alternate stream must fail before destination lookup")
+        })
+        .is_err()
+    );
+    // Both ordinary and verbatim disk spellings still admit the default stream.
+    let ordinary = open_registration_target(&executable).unwrap();
+    let verbatim = open_registration_target(&std::fs::canonicalize(&executable).unwrap()).unwrap();
+    assert_eq!(
+        file_identity(&ordinary).unwrap(),
+        file_identity(&verbatim).unwrap()
+    );
+}
+
+#[test]
 fn rust_registrar_rejects_directory_target_and_shortcut_without_overwriting() {
     let directory = tempfile::tempdir().unwrap();
     assert!(
