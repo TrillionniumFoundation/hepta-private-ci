@@ -256,6 +256,16 @@ jobs:
           check python_tests python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
           python3 scripts/hepta_ui_native_qualification_evidence.py inventory \
             --out "$NATIVE_OUTPUT_ROOT/native-evidence/inventory.json"
+      - name: Early Windows platform-adapter tests
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ui_native_qualification_evidence.py run \
+            --out "$NATIVE_OUTPUT_ROOT/native-evidence/early-windows-platform" \
+            --label app_tests --timeout 3600 -- \
+            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked -p hepta-native-platform --all-targets -- --nocapture
       - name: Strict application and owner formatting and Clippy
         shell: bash
         run: |

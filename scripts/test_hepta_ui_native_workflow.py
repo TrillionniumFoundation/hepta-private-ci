@@ -86,6 +86,57 @@ class ShellSelectionTests(unittest.TestCase):
                 bash_executable()
 
 
+class EarlyWindowsPlatformTests(unittest.TestCase):
+    def test_scoped_execution_retains_failure_and_separate_evidence(self):
+        with tempfile.TemporaryDirectory(
+            prefix="ui native early Windows "
+        ) as temporary:
+            output = Path(temporary).resolve()
+            invocation = output / "invocation.txt"
+            result = subprocess.run(
+                [
+                    bash_executable(),
+                    "-c",
+                    'python3() { printf "%s\\n" "$@" > "$INVOCATION"; return 23; };\n'
+                    + shell_step("Early Windows platform-adapter tests"),
+                ],
+                env={
+                    **os.environ,
+                    "NATIVE_OUTPUT_ROOT": output.as_posix(),
+                    "INVOCATION": invocation.as_posix(),
+                },
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 23, result.stderr)
+            self.assertEqual(
+                invocation.read_text().splitlines(),
+                [
+                    "scripts/hepta_ui_native_qualification_evidence.py",
+                    "run",
+                    "--out",
+                    f"{output.as_posix()}/native-evidence/early-windows-platform",
+                    "--label",
+                    "app_tests",
+                    "--timeout",
+                    "3600",
+                    "--",
+                    "cargo",
+                    "+1.95.0",
+                    "test",
+                    "--manifest-path",
+                    "apps/hepta-native/Cargo.toml",
+                    "--locked",
+                    "-p",
+                    "hepta-native-platform",
+                    "--all-targets",
+                    "--",
+                    "--nocapture",
+                ],
+            )
+
+
 class PlatformConstructionTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="ui native workflow ")

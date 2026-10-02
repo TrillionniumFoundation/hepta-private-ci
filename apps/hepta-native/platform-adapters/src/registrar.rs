@@ -1,12 +1,22 @@
 //! Explicit per-user shortcut registration. Never invoked by notification send.
 use std::ffi::OsString;
+use std::fs::File;
 use std::os::windows::ffi::OsStrExt as _;
 use std::os::windows::ffi::OsStringExt as _;
 use std::os::windows::fs::MetadataExt as _;
+use std::os::windows::fs::OpenOptionsExt as _;
+use std::os::windows::io::AsRawHandle as _;
 use std::path::Path;
 use std::path::PathBuf;
 
+use windows::Win32::Foundation::HANDLE;
 use windows::Win32::Foundation::PROPERTYKEY;
+use windows::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+use windows::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+use windows::Win32::Storage::FileSystem::FILE_ID_INFO;
+use windows::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows::Win32::Storage::FileSystem::FileIdInfo;
+use windows::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
 use windows::Win32::System::Com::CLSCTX_INPROC_SERVER;
 use windows::Win32::System::Com::COINIT_APARTMENTTHREADED;
 use windows::Win32::System::Com::CoCreateInstance;
@@ -58,6 +68,50 @@ fn registration_error(stage: &'static str, error: windows::core::Error) -> windo
     windows::core::Error::new(error.code(), stage)
 }
 
+fn open_registration_target(path: &Path) -> windows::core::Result<File> {
+    let metadata = std::fs::symlink_metadata(path)?;
+    if !path.is_absolute()
+        || !metadata.is_file()
+        || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT.0 != 0
+    {
+        return Err(windows::core::Error::new(
+            windows::Win32::Foundation::E_FAIL,
+            "registrar target requires an absolute regular non-reparse file",
+        ));
+    }
+    // Retain a read-only handle that denies write/delete sharing. The final
+    // component is opened without following a reparse point, then checked on
+    // that same handle so a replacement after the path check is not admitted.
+    let file = std::fs::OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ.0)
+        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT.0)
+        .open(path)?;
+    let metadata = file.metadata()?;
+    if !metadata.is_file() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT.0 != 0 {
+        return Err(windows::core::Error::new(
+            windows::Win32::Foundation::E_FAIL,
+            "registrar opened target is not a regular non-reparse file",
+        ));
+    }
+    Ok(file)
+}
+
+fn file_identity(file: &File) -> windows::core::Result<FILE_ID_INFO> {
+    let mut identity = FILE_ID_INFO::default();
+    // SAFETY: The borrowed File keeps the handle live. The SDK structure and
+    // exact size match FileIdInfo. Compare its volume and all 128 identifier bits.
+    unsafe {
+        GetFileInformationByHandleEx(
+            HANDLE(file.as_raw_handle()),
+            FileIdInfo,
+            (&raw mut identity).cast(),
+            std::mem::size_of::<FILE_ID_INFO>() as u32,
+        )?;
+    }
+    Ok(identity)
+}
+
 fn app_id_value() -> windows::core::Result<PROPVARIANT> {
     let text: Vec<u16> = APP_USER_MODEL_ID.encode_utf16().chain([0]).collect();
     // SAFETY: Input is a live NUL-terminated string. SDK functions allocate the
@@ -90,13 +144,9 @@ fn register_in(
     executable: &Path,
     programs: impl FnOnce() -> Result<PathBuf, String>,
 ) -> Result<PathBuf, String> {
-    let metadata = std::fs::symlink_metadata(executable).map_err(|error| error.to_string())?;
-    if !executable.is_absolute() || !metadata.is_file() || metadata.file_attributes() & 0x400 != 0 {
-        return Err(
-            "identity registration requires an absolute regular executable, not a reparse point"
-                .into(),
-        );
-    }
+    // Keep the admitted executable pinned across shortcut creation and readback.
+    let executable_file = open_registration_target(executable)
+        .map_err(|error| registration_error("registrar expected target open", error).to_string())?;
     let directory = executable.parent().ok_or("executable has no parent")?;
     let executable_text = wide(executable.as_os_str())?;
     let directory_text = wide(directory.as_os_str())?;
@@ -160,7 +210,7 @@ fn register_in(
         })()
     };
     result.map_err(|error| format!("native notification identity registration: {error}"))?;
-    verify_saved_shortcut(executable, &shortcut)?;
+    verify_saved_shortcut(&executable_file, &shortcut)?;
     std::fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -170,7 +220,7 @@ fn register_in(
     Ok(shortcut)
 }
 
-fn verify_saved_shortcut(executable: &Path, shortcut: &Path) -> Result<(), String> {
+fn verify_saved_shortcut(executable: &File, shortcut: &Path) -> Result<(), String> {
     let shortcut_text = wide(shortcut.as_os_str())?;
     // SAFETY: The caller holds the apartment and each interface remains on this
     // thread. Reopen persisted bytes; all strings and output buffers stay live.
@@ -204,14 +254,25 @@ fn verify_saved_shortcut(executable: &Path, shortcut: &Path) -> Result<(), Strin
             observed
                 .GetPath(&mut target, std::ptr::null_mut(), /*fflags*/ 0)
                 .map_err(|error| registration_error("registrar GetPath", error))?;
-            let length = target
-                .iter()
-                .position(|value| *value == 0)
-                .unwrap_or(target.len());
-            if OsString::from_wide(&target[..length]) != executable.as_os_str() {
+            let length = target.iter().position(|value| *value == 0).ok_or_else(|| {
+                windows::core::Error::new(
+                    windows::Win32::Foundation::E_FAIL,
+                    "registrar persisted target path is unterminated",
+                )
+            })?;
+            let target = PathBuf::from(OsString::from_wide(&target[..length]));
+            let target_file = open_registration_target(&target)
+                .map_err(|error| registration_error("registrar observed target open", error))?;
+            let expected = file_identity(executable)
+                .map_err(|error| registration_error("registrar expected file identity", error))?;
+            let observed = file_identity(&target_file)
+                .map_err(|error| registration_error("registrar observed file identity", error))?;
+            // Shell links may normalize case or expand 8.3 names. Only matching
+            // retained file identities, never equivalent-looking strings, pass.
+            if observed != expected {
                 return Err(windows::core::Error::new(
                     windows::Win32::Foundation::E_FAIL,
-                    "registrar persisted target path mismatch",
+                    "registrar persisted target file identity mismatch",
                 ));
             }
             Ok(())

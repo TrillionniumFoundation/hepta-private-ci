@@ -79,12 +79,18 @@ fn rust_registrar_round_trips_owned_shortcut_with_native_property_store() {
     }
     .unwrap();
     let length = target.iter().position(|value| *value == 0).unwrap();
+    let target = PathBuf::from(OsString::from_wide(&target[..length]));
+    let executable_file = open_registration_target(&executable).unwrap();
+    let target_file = open_registration_target(&target).unwrap();
     assert_eq!(
         (
             BSTR::try_from(&identity).unwrap().to_string(),
-            OsString::from_wide(&target[..length]),
+            file_identity(&target_file).unwrap(),
         ),
-        (APP_USER_MODEL_ID.to_owned(), executable.into_os_string())
+        (
+            APP_USER_MODEL_ID.to_owned(),
+            file_identity(&executable_file).unwrap()
+        )
     );
 }
 
@@ -92,7 +98,8 @@ fn rust_registrar_round_trips_owned_shortcut_with_native_property_store() {
 fn rust_registrar_rejects_persisted_identity_mismatch() {
     let (_directory, executable, shortcut) = fixture();
     let _apartment = apartment();
-    verify_saved_shortcut(&executable, &shortcut).unwrap();
+    let executable_file = open_registration_target(&executable).unwrap();
+    verify_saved_shortcut(&executable_file, &shortcut).unwrap();
     let link = load(&shortcut);
     let store: IPropertyStore = link.cast().unwrap();
     let text = wide(std::ffi::OsStr::new("Hepta.Fixture.WrongIdentity")).unwrap();
@@ -104,7 +111,10 @@ fn rust_registrar_rejects_persisted_identity_mismatch() {
         store.Commit().unwrap();
     }
     save(&link, &shortcut);
-    assert!(verify_saved_shortcut(&executable, &shortcut).is_err());
+    assert_eq!(
+        verify_saved_shortcut(&executable_file, &shortcut).unwrap_err(),
+        "native notification identity registration: registrar persisted identity mismatch (0x80004005)"
+    );
     // A positive control makes the failure specific to the persisted identity.
     unsafe {
         store
@@ -113,7 +123,7 @@ fn rust_registrar_rejects_persisted_identity_mismatch() {
         store.Commit().unwrap();
     }
     save(&link, &shortcut);
-    verify_saved_shortcut(&executable, &shortcut).unwrap();
+    verify_saved_shortcut(&executable_file, &shortcut).unwrap();
 }
 
 #[test]
@@ -122,14 +132,144 @@ fn rust_registrar_rejects_persisted_target_mismatch() {
     let _apartment = apartment();
     let other = directory.path().join("other.exe");
     std::fs::write(&other, b"other owned target; never executed").unwrap();
+    let executable_file = open_registration_target(&executable).unwrap();
+    let other_file = open_registration_target(&other).unwrap();
     let other_text = wide(other.as_os_str()).unwrap();
     let link = load(&shortcut);
     // SAFETY: The apartment and bounded target string remain live.
     unsafe { link.SetPath(PCWSTR(other_text.as_ptr())) }.unwrap();
     save(&link, &shortcut);
-    assert!(verify_saved_shortcut(&executable, &shortcut).is_err());
+    assert_eq!(
+        verify_saved_shortcut(&executable_file, &shortcut).unwrap_err(),
+        "native notification identity registration: registrar persisted target file identity mismatch (0x80004005)"
+    );
     // The same stored shortcut is valid for its actual target and identity.
-    verify_saved_shortcut(&other, &shortcut).unwrap();
+    verify_saved_shortcut(&other_file, &shortcut).unwrap();
+}
+
+#[test]
+fn rust_registrar_accepts_case_and_hard_link_aliases_of_the_same_file() {
+    let (directory, executable, shortcut) = fixture();
+    let _apartment = apartment();
+    let hard_link = directory.path().join("same-file-alias.exe");
+    std::fs::hard_link(&executable, &hard_link).unwrap();
+    let executable_file = open_registration_target(&executable).unwrap();
+    let link = load(&shortcut);
+    for alias in [directory.path().join("hEPTA 用户.EXE"), hard_link] {
+        assert_ne!(alias, executable);
+        let alias_file = open_registration_target(&alias).unwrap();
+        assert_eq!(
+            file_identity(&executable_file).unwrap(),
+            file_identity(&alias_file).unwrap()
+        );
+        let path = wide(alias.as_os_str()).unwrap();
+        // SAFETY: This apartment owns the link and the bounded alias is live.
+        unsafe { link.SetPath(PCWSTR(path.as_ptr())) }.unwrap();
+        save(&link, &shortcut);
+        verify_saved_shortcut(&executable_file, &shortcut).unwrap();
+    }
+}
+
+#[test]
+fn rust_registrar_accepts_short_names_when_the_filesystem_provides_them() {
+    let (_directory, executable, shortcut) = fixture();
+    let _apartment = apartment();
+    let path = wide(executable.as_os_str()).unwrap();
+    let mut long = [0_u16; 32_768];
+    // SAFETY: The source is NUL-terminated and the projection bounds the output.
+    let long_length = unsafe {
+        windows::Win32::Storage::FileSystem::GetLongPathNameW(
+            PCWSTR(path.as_ptr()),
+            Some(&mut long),
+        )
+    } as usize;
+    assert!(long_length > 0 && long_length < long.len());
+    let long_path = PathBuf::from(OsString::from_wide(&long[..long_length]));
+    let mut short = [0_u16; 32_768];
+    // SAFETY: The source is NUL-terminated and the projection bounds the output.
+    let length = unsafe {
+        windows::Win32::Storage::FileSystem::GetShortPathNameW(
+            PCWSTR(long.as_ptr()),
+            Some(&mut short),
+        )
+    } as usize;
+    assert!(length > 0 && length < short.len());
+    let alias = PathBuf::from(OsString::from_wide(&short[..length]));
+    if alias == long_path {
+        // Windows explicitly allows volumes without 8.3 names. Report the
+        // missing subcase; mandatory case/hard-link alias tests still execute.
+        eprintln!("UNEXERCISED: filesystem provides no distinct 8.3 alias for registrar fixture");
+        return;
+    }
+    let executable_file = open_registration_target(&executable).unwrap();
+    let alias_file = open_registration_target(&alias).unwrap();
+    assert_eq!(
+        file_identity(&executable_file).unwrap(),
+        file_identity(&alias_file).unwrap()
+    );
+    let link = load(&shortcut);
+    // SAFETY: The apartment owns the link and the short-name buffer is live.
+    unsafe { link.SetPath(PCWSTR(short.as_ptr())) }.unwrap();
+    save(&link, &shortcut);
+    verify_saved_shortcut(&executable_file, &shortcut).unwrap();
+    eprintln!("EXERCISED: distinct 8.3 alias passed registrar file-identity verification");
+}
+
+#[test]
+fn rust_registrar_retains_expected_file_against_write_delete_and_rename() {
+    let directory = tempfile::tempdir().unwrap();
+    let executable = directory.path().join("retained.exe");
+    std::fs::write(&executable, b"original").unwrap();
+    let replacement = directory.path().join("moved.exe");
+    register_in(&executable, || {
+        assert!(
+            std::fs::OpenOptions::new()
+                .write(true)
+                .open(&executable)
+                .is_err()
+        );
+        assert!(std::fs::remove_file(&executable).is_err());
+        assert!(std::fs::rename(&executable, &replacement).is_err());
+        assert_eq!(std::fs::read(&executable).unwrap(), b"original");
+        Ok(directory.path().to_path_buf())
+    })
+    .unwrap();
+    // Registration releases its handle only after save, readback and sync.
+    std::fs::write(&executable, b"released").unwrap();
+    std::fs::rename(&executable, &replacement).unwrap();
+    std::fs::remove_file(&replacement).unwrap();
+}
+
+#[test]
+fn rust_registrar_rejects_reparse_targets_before_and_after_save() {
+    let (directory, executable, shortcut) = fixture();
+    let _apartment = apartment();
+    let executable_file = open_registration_target(&executable).unwrap();
+    let redirected = directory.path().join("redirected.exe");
+    std::fs::write(&redirected, b"different file").unwrap();
+    let path = wide(redirected.as_os_str()).unwrap();
+    let link = load(&shortcut);
+    // SAFETY: The apartment owns the link and the bounded path remains live.
+    unsafe { link.SetPath(PCWSTR(path.as_ptr())) }.unwrap();
+    save(&link, &shortcut);
+    drop(link);
+    std::fs::remove_file(&redirected).unwrap();
+    std::os::windows::fs::symlink_file(&executable, &redirected).unwrap();
+    assert!(
+        register_in(&redirected, || {
+            panic!("reparse target must fail before destination lookup")
+        })
+        .is_err()
+    );
+    assert!(open_registration_target(&redirected).is_err());
+    assert_eq!(
+        verify_saved_shortcut(&executable_file, &shortcut).unwrap_err(),
+        "native notification identity registration: registrar observed target open (0x80004005)"
+    );
+    assert_eq!(
+        std::fs::read(&executable).unwrap(),
+        b"owned target; never executed"
+    );
 }
 
 #[test]
