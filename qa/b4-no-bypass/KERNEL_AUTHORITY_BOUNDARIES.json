@@ -587,6 +587,17 @@
       "allowedCallers": [
         "codex-rs/hepta-bao-adapter/src/consumer_port.rs"
       ]
+    },
+    {
+      "id": "fleet_verified_execution_prepare",
+      "typeMarker": "DurableFleetStore",
+      "definitionPath": "codex-rs/hepta-fleet/src/durable_execution.rs",
+      "callPatterns": [
+        "\\.\\s*prepare_local_verified_execution\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-supervisor/src/local_fleet_host.rs"
+      ]
     }
   ]
 }

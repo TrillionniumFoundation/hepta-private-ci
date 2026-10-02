@@ -7,6 +7,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "fleet_verified_execution_prepare",
   "bao_operation_consumer_registration",
   "public_development_source_custody_prepare",
   "original_paired_custody_execution",
@@ -1083,3 +1084,12 @@ caller_markers = ["--prepare-public-development", "codex_hepta_intelligence_eval
 path = "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"
 required = ["deny_unknown_fields", "row.feature.digest()", "label.component_sha256", "partitions", ".get(&member.component_digest)", "p != &member.partition", "complete_features", "unscored_component_feature_rows", "Repeated public HealthVer train task subset"]
 forbidden = ["SigningKey", "holdout.consume", "signing.sign", "source.freeze", "FinalHoldoutCasStoreV1::create"]
+
+[[boundary]]
+id = "fleet_verified_execution_prepare"
+symbol = "DurableFleetStore::prepare_local_verified_execution"
+call_pattern = '\.\s*prepare_local_verified_execution\s*\('
+definition_path = "codex-rs/hepta-fleet/src/durable_execution.rs"
+definition_markers = ["pub async fn prepare_local_verified_execution", "program.digest()", "Some(program.program_sha256())", "program.verify_current()", "fleet_execution_program_facts"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
+caller_markers = ["prepare_local_verified_execution", "program: &codex_hepta_fleet::VerifiedLaunchProgram"]

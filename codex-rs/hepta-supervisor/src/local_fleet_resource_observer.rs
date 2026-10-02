@@ -43,6 +43,42 @@ pub async fn observe_local_fleet_resources(
     agent: &AgentId,
     process_id: u32,
 ) -> anyhow::Result<LocalFleetResourceObservationV1> {
+    observe_bounded(
+        fleet_root,
+        policy_path,
+        agent,
+        process_id,
+        /*program_sha256*/ None,
+    )
+    .await
+}
+
+/// Additionally require the program held by the same original prepared execution.
+/// The supplied digest is a selector, never a substitute for the durable proof.
+pub async fn observe_local_fleet_resources_for_program(
+    fleet_root: &HeptaFleetRoot,
+    policy_path: &Path,
+    agent: &AgentId,
+    process_id: u32,
+    program_sha256: &str,
+) -> anyhow::Result<LocalFleetResourceObservationV1> {
+    observe_bounded(
+        fleet_root,
+        policy_path,
+        agent,
+        process_id,
+        Some(program_sha256),
+    )
+    .await
+}
+
+async fn observe_bounded(
+    fleet_root: &HeptaFleetRoot,
+    policy_path: &Path,
+    agent: &AgentId,
+    process_id: u32,
+    program_sha256: Option<&str>,
+) -> anyhow::Result<LocalFleetResourceObservationV1> {
     anyhow::ensure!(
         unsafe { libc::geteuid() } == 0,
         "resource observation requires root"
@@ -50,7 +86,7 @@ pub async fn observe_local_fleet_resources(
     anyhow::ensure!(process_id != 0, "resource process identity must be nonzero");
     tokio::time::timeout(
         Duration::from_secs(2),
-        observe(fleet_root, policy_path, agent, process_id),
+        observe(fleet_root, policy_path, agent, process_id, program_sha256),
     )
     .await
     .context("resource observation exceeded its deadline")?
@@ -61,6 +97,7 @@ async fn observe(
     policy_path: &Path,
     agent: &AgentId,
     process_id: u32,
+    program_sha256: Option<&str>,
 ) -> anyhow::Result<LocalFleetResourceObservationV1> {
     let clock = trust::HostClock::new()?;
     let policy_bytes = trust::read_root_file(policy_path, 64 * 1024)?;
@@ -93,9 +130,23 @@ async fn observe(
     verifier
         .verify_owner_clock_floor(clock.now_unix_ms()?)
         .await?;
-    let observation = verifier
-        .observe_bound_root_local_resources(agent.as_str(), process_id, expected_uid)
-        .await?;
+    let observation = match program_sha256 {
+        Some(pin) => {
+            verifier
+                .observe_bound_root_local_resources_for_program(
+                    agent.as_str(),
+                    process_id,
+                    expected_uid,
+                    pin,
+                )
+                .await?
+        }
+        None => {
+            verifier
+                .observe_bound_root_local_resources(agent.as_str(), process_id, expected_uid)
+                .await?
+        }
+    };
     let now = clock.now_unix_ms()?;
     verifier.verify_owner_clock_floor(now).await?;
     validate(

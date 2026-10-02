@@ -136,6 +136,8 @@ pub use local_fleet_host::LocalFleetHost;
 pub use local_fleet_host::LocalFleetResourceObservationV1;
 #[cfg(all(target_os = "linux", feature = "local-host"))]
 pub use local_fleet_host::observe_local_fleet_resources;
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub use local_fleet_host::observe_local_fleet_resources_for_program;
 pub use model::AgentCommand;
 pub use model::AgentFault;
 pub use model::AgentRelease;

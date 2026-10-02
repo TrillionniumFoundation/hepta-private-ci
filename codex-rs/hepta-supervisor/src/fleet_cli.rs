@@ -31,7 +31,7 @@ const USAGE: &str = "hepta-fleetctl --fleet-root ABSOLUTE_PATH COMMAND [ARGS]
   allow-release|revoke-release|allow-release-live AGENT_ID RELEASE_ID
   retire|retirement-status AGENT_ID
   health | roster | snapshot|diagnostics AGENT_ID
-  resource-observe --local-host-policy ROOT_POLICY AGENT_ID REAL_PID
+  resource-observe --local-host-policy ROOT_POLICY [--require-program-sha256 SHA] AGENT_ID REAL_PID
   start|upgrade AGENT_ID RELEASE_ID REQUEST_ID
   drain|stop|kill|restart|rollback AGENT_ID REQUEST_ID
   mutation-status|reconcile-mutation AGENT_ID REQUEST_ID
@@ -99,15 +99,30 @@ pub(super) async fn run(args: impl Iterator<Item = OsString>) -> anyhow::Result<
                     "{USAGE}"
                 );
                 let policy = PathBuf::from(args.next("ROOT_POLICY")?);
-                let agent = args.agent()?;
+                let next = args.text("AGENT_ID or --require-program-sha256")?;
+                let (agent, program) = if next == "--require-program-sha256" {
+                    let pin = args.text("PROGRAM_SHA256")?;
+                    (args.agent()?, Some(pin))
+                } else {
+                    (AgentId::parse(next)?, None)
+                };
                 let pid = args.text("REAL_PID")?.parse::<u32>()?;
                 args.finished()?;
-                serde_json::to_value(
-                    codex_hepta_supervisor::observe_local_fleet_resources(
-                        &root, &policy, &agent, pid,
-                    )
-                    .await?,
-                )?
+                let observation = match program {
+                    Some(pin) => {
+                        codex_hepta_supervisor::observe_local_fleet_resources_for_program(
+                            &root, &policy, &agent, pid, &pin,
+                        )
+                        .await?
+                    }
+                    None => {
+                        codex_hepta_supervisor::observe_local_fleet_resources(
+                            &root, &policy, &agent, pid,
+                        )
+                        .await?
+                    }
+                };
+                serde_json::to_value(observation)?
             }
             #[cfg(not(all(target_os = "linux", feature = "local-host")))]
             anyhow::bail!("resource-observe requires the Linux local-host build")

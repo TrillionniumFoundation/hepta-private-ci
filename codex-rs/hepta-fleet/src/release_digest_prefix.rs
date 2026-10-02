@@ -110,6 +110,11 @@ impl VerifiedLaunchProgram {
         self.digest
     }
 
+    /// Original bytes of the held, verified program, independent of launch context.
+    pub fn program_sha256(&self) -> &str {
+        &self.entry.sha256
+    }
+
     pub fn verify_current(&self) -> Result<(), FleetRegistryError> {
         if Snapshot::capture(&self.program, &self.file)? != self.entry.snapshot {
             return Err(changed("program changed after launch digest was computed"));

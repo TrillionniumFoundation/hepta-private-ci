@@ -41,3 +41,8 @@ CREATE INDEX IF NOT EXISTS fleet_execution_history_principal_idx
 CREATE INDEX IF NOT EXISTS fleet_execution_invalid_principal_idx
     ON fleet_execution_holds(execution_id)
     WHERE json_type(context_json, '$.principal_id') IS NOT 'text';
+CREATE TABLE IF NOT EXISTS fleet_execution_program_facts (
+    execution_id TEXT PRIMARY KEY REFERENCES fleet_execution_holds(execution_id) ON DELETE CASCADE,
+    launch_manifest_digest TEXT NOT NULL,
+    program_sha256 TEXT NOT NULL CHECK(length(program_sha256) = 64)
+) STRICT;

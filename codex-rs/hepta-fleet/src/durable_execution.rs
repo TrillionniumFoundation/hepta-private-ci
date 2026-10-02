@@ -175,6 +175,44 @@ impl DurableFleetStore {
         &self,
         context: &FleetExecutionContextV1,
     ) -> Result<FleetExecutionHoldV1, DurableFleetError> {
+        self.prepare_execution(context, /*program_sha256*/ None, || Ok(()))
+            .await
+    }
+
+    /// Persist an immutable program fact in the original preparation transaction.
+    /// Only the catalog's held FD can supply this proof; it grants no resources.
+    #[cfg(unix)]
+    pub async fn prepare_local_verified_execution(
+        &self,
+        context: &FleetExecutionContextV1,
+        program: &crate::VerifiedLaunchProgram,
+    ) -> Result<FleetExecutionHoldV1, DurableFleetError> {
+        let launch: String = program
+            .digest()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        if context.manifest_digest != launch {
+            return Err(DurableFleetError::Invalid(
+                "verified program launch differs from execution".into(),
+            ));
+        }
+        self.prepare_execution(context, Some(program.program_sha256()), || {
+            program.verify_current()
+        })
+        .await
+    }
+
+    async fn prepare_execution(
+        &self,
+        context: &FleetExecutionContextV1,
+        program_sha256: Option<&str>,
+        verify_program: impl Fn() -> Result<(), crate::FleetRegistryError>,
+    ) -> Result<FleetExecutionHoldV1, DurableFleetError> {
+        verify_program().map_err(|error| DurableFleetError::Invalid(error.to_string()))?;
+        if let Some(pin) = program_sha256 {
+            validate_digest(pin)?;
+        }
         for (value, label) in [
             (context.execution_id.as_str(), "execution"),
             (context.allocation_id.as_str(), "allocation"),
@@ -260,6 +298,14 @@ impl DurableFleetStore {
         .execute(&mut *tx)
         .await
         .map_err(sqlx_error)?;
+        if let Some(pin) = program_sha256 {
+            sqlx::query("INSERT INTO fleet_execution_program_facts(execution_id, launch_manifest_digest, program_sha256) VALUES(?, ?, ?)")
+                .bind(&context.execution_id)
+                .bind(&context.manifest_digest)
+                .bind(pin)
+                .execute(&mut *tx).await.map_err(sqlx_error)?;
+        }
+        verify_program().map_err(|error| DurableFleetError::Invalid(error.to_string()))?;
         tx.commit().await.map_err(|_| {
             self.indeterminate(context.execution_id.clone(), context.allocation_id.clone())
         })?;

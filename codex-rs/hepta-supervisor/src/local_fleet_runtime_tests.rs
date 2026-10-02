@@ -164,6 +164,11 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
                 held.context.manifest_digest,
                 super::super::hex_digest(original.finalize())
             );
+            let program = execution.verified_program.as_ref().ok_or("held verified program")?;
+            let program_sha256 = program.program_sha256().to_owned();
+            let mut wrong_context = held.context.clone();
+            wrong_context.manifest_digest = "e".repeat(64);
+            assert!(owner.store.prepare_local_verified_execution(&wrong_context, program).await.is_err());
             assert!(owner.validate_retirement(&spec.agent_id).is_err());
 
             let mut command = Command::new(&spec.command.program);
@@ -249,6 +254,30 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
                 .observe_bound_root_local_resources(&spec.agent_id.to_string(), child.id(), 1000)
                 .await?;
             assert_eq!(root_observed, observed);
+            assert_eq!(reader.observe_bound_root_local_resources_for_program(
+                spec.agent_id.as_str(), child.id(), 1000, &program_sha256
+            ).await?, observed);
+            assert!(reader.observe_bound_root_local_resources_for_program(
+                spec.agent_id.as_str(), child.id(), 1000, &"e".repeat(64)
+            ).await.is_err());
+            assert!(super::super::observe_local_fleet_resources_for_program(
+                owner.registry.layout().fleet_root(), &policy, &spec.agent_id, child.id(), &program_sha256
+            ).await.is_ok());
+            // Fault injection is confined to this isolated fixture database.
+            // A legacy or lost program fact cannot be recreated by a reader;
+            // the original V1 process/resource observation remains compatible.
+            let path = owner.registry.layout().state_root().join("fleet-resources.sqlite3");
+            let removed = Command::new("/usr/bin/python3")
+                .args(["-I", "-B", "-S", "-c", "import sqlite3,sys; db=sqlite3.connect(sys.argv[1]); db.execute('DELETE FROM fleet_execution_program_facts WHERE execution_id = ?', (sys.argv[2],)); db.commit(); db.close()"])
+                .arg(&path)
+                .arg(&execution.id)
+                .status()?;
+            assert!(removed.success());
+            let reopened = codex_hepta_fleet::FleetExecutionVerifier::open(&path).await?;
+            assert!(reopened.observe_bound_root_local_resources_for_program(
+                spec.agent_id.as_str(), child.id(), 1000, &program_sha256
+            ).await.is_err());
+            assert_eq!(reopened.observe_bound_root_local_resources(spec.agent_id.as_str(), child.id(), 1000).await?, observed);
             for denied_uid in [0, 1001] {
                 assert!(
                     reader

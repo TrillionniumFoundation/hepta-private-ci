@@ -42,6 +42,7 @@ mod trust;
 pub(crate) use containment::PreparedExecution;
 pub use resource_observer::LocalFleetResourceObservationV1;
 pub use resource_observer::observe_local_fleet_resources;
+pub use resource_observer::observe_local_fleet_resources_for_program;
 
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -216,12 +217,7 @@ impl LocalFleetHost {
             }
             let verified_program = digest.commit().map_err(host_error)?;
             let mut prepared = self
-                .prepare(
-                    &spec.agent_id,
-                    "main",
-                    resources,
-                    hex_digest(verified_program.digest()),
-                )
+                .prepare(&spec.agent_id, "main", resources, &verified_program)
                 .await?;
             prepared.launch = Some(launch);
             prepared.verified_program = Some(verified_program);
@@ -266,7 +262,7 @@ impl LocalFleetHost {
                     &spec.agent_id,
                     "matrix",
                     self.policy.matrix_resources,
-                    hex_digest(verified_program.digest()),
+                    &verified_program,
                 )
                 .await?;
             prepared.launch = Some(launch);
@@ -280,8 +276,9 @@ impl LocalFleetHost {
         agent: &AgentId,
         kind: &str,
         resources: ResourceVectorV1,
-        manifest_digest: String,
+        program: &codex_hepta_fleet::VerifiedLaunchProgram,
     ) -> Result<containment::PreparedExecution, ProcessDriverError> {
+        let manifest_digest = hex_digest(program.digest());
         self.roll_resource_epoch_if_needed()?;
         let principal = if kind == "main" {
             agent.to_string()
@@ -347,7 +344,7 @@ impl LocalFleetHost {
             containment: prepared.relative.clone(),
         };
         self.store
-            .prepare_local_execution(&context)
+            .prepare_local_verified_execution(&context, program)
             .await
             .map_err(host_error)?;
         Ok(prepared)

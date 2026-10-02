@@ -90,7 +90,13 @@ impl FleetExecutionVerifier {
         principal_id: &str,
         peer_pid: u32,
     ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
-        self.observe_resources(principal_id, peer_pid, None).await
+        self.observe_resources(
+            principal_id,
+            peer_pid,
+            /*root_workload_uid*/ None,
+            /*program_sha256*/ None,
+        )
+        .await
     }
 
     /// Root-local observation of an already bound main task. The Root-owned,
@@ -103,8 +109,32 @@ impl FleetExecutionVerifier {
         peer_pid: u32,
         workload_uid: u32,
     ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
-        self.observe_resources(principal_id, peer_pid, Some(workload_uid))
-            .await
+        self.observe_resources(
+            principal_id,
+            peer_pid,
+            Some(workload_uid),
+            /*program_sha256*/ None,
+        )
+        .await
+    }
+
+    /// Require the original prepared FD's program bytes for this Root-only read.
+    /// Legacy holds have no such proof and cannot acquire one from this reader.
+    pub async fn observe_bound_root_local_resources_for_program(
+        &self,
+        principal_id: &str,
+        peer_pid: u32,
+        workload_uid: u32,
+        program_sha256: &str,
+    ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
+        crate::durable_rows::validate_digest(program_sha256)?;
+        self.observe_resources(
+            principal_id,
+            peer_pid,
+            Some(workload_uid),
+            Some(program_sha256),
+        )
+        .await
     }
 
     async fn observe_resources(
@@ -112,6 +142,7 @@ impl FleetExecutionVerifier {
         principal_id: &str,
         peer_pid: u32,
         root_workload_uid: Option<u32>,
+        program_sha256: Option<&str>,
     ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
         validate_identity(principal_id, "principal")?;
         let mut tx = self.pool.begin().await.map_err(sqlx_error)?;
@@ -137,6 +168,16 @@ impl FleetExecutionVerifier {
         let state: String = row.try_get("state").map_err(sqlx_error)?;
         if context.principal_id != principal_id || state != "running" {
             return Err(DurableFleetError::Stale);
+        }
+        if let Some(expected) = program_sha256 {
+            let fact = sqlx::query("SELECT launch_manifest_digest, program_sha256 FROM fleet_execution_program_facts WHERE execution_id = ?")
+                .bind(execution_id).fetch_optional(&mut *tx).await.map_err(sqlx_error)?
+                .ok_or(DurableFleetError::Stale)?;
+            let launch: String = fact.try_get("launch_manifest_digest").map_err(sqlx_error)?;
+            let actual: String = fact.try_get("program_sha256").map_err(sqlx_error)?;
+            if launch != context.manifest_digest || actual != expected {
+                return Err(DurableFleetError::Stale);
+            }
         }
         let allocation =
             crate::durable_grant_tx::select_grant_tx(&mut tx, &context.allocation_id).await?;
