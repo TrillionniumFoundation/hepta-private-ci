@@ -49,7 +49,7 @@ struct Config {
     candidate: Model,
     baseline: Model,
     retention: crate::paired_custody_retention::Config,
-    withdrawal: crate::paired_custody_withdrawal::Config,
+    withdrawal: crate::paired_custody_observations::Config,
     absolute_budget_ms: u64,
     operation_expires_at_ms: u64,
 }
@@ -95,7 +95,11 @@ pub fn run_fixed_paired_custody(path: &Path) -> HostResult<()> {
         &std::env::current_exe()?,
         128 * 1024 * 1024,
     )?);
-    if config.schema != "hepta.fixed-paired-custody-execution-config.v1"
+    if config.schema
+        != format!(
+            "hepta.fixed-paired-custody-execution-config.v{}",
+            config.withdrawal.version()
+        )
         || config.program_digest.parse::<Digest32>()? != program
         || !(1..=120_000).contains(&config.absolute_budget_ms)
     {
@@ -260,20 +264,13 @@ pub fn run_fixed_paired_custody(path: &Path) -> HostResult<()> {
         &trust,
         crate::fixed_calibration_host::now_ms()?,
     )?;
-    let withdrawal_binding = crate::paired_custody_withdrawal::bind(
-        &config.withdrawal,
-        &config.retention.assignment_contract,
-        &inputs.source,
-    )?;
+    let withdrawal_binding = config
+        .withdrawal
+        .bind(&config.retention.assignment_contract, &inputs.source)?;
     let preflight_dir = config.work_directory.join("withdrawal-preflight");
     create_operation_directory(&preflight_dir)?;
-    let (withdrawal_before, withdrawal_preflight_receipt) =
-        crate::paired_custody_withdrawal::inspect(
-            &config.withdrawal,
-            &withdrawal_binding,
-            &preflight_dir,
-            deadline,
-        )?;
+    let withdrawal_before = withdrawal_binding.inspect(&preflight_dir, deadline)?;
+    let withdrawal_preflight_receipt = withdrawal_before.receipt;
     if let Err(error) = crate::paired_custody_withdrawal::require_independent_clusters(&inputs.plan)
     {
         println!(
@@ -358,8 +355,8 @@ struct Producer<'a> {
     trust: &'a ActivatedLearningTrustV1,
     signing: &'a SigningKey,
     deadline: Instant,
-    withdrawal_binding: crate::paired_custody_withdrawal::ProbeBinding,
-    withdrawal_before: crate::paired_custody_withdrawal::Inspection,
+    withdrawal_binding: crate::paired_custody_observations::Bound,
+    withdrawal_before: crate::paired_custody_observations::Batch,
 }
 
 fn create_operation_directory(path: &Path) -> HostResult<()> {
@@ -474,16 +471,14 @@ impl Producer<'_> {
         )?;
         let withdrawal_dir = self.config.work_directory.join("withdrawal-final");
         create_operation_directory(&withdrawal_dir)?;
-        let (withdrawal, withdrawal_receipt) = crate::paired_custody_withdrawal::inspect(
-            &self.config.withdrawal,
-            &self.withdrawal_binding,
-            &withdrawal_dir,
-            self.deadline,
-        )?;
+        let withdrawal = self
+            .withdrawal_binding
+            .inspect(&withdrawal_dir, self.deadline)?;
+        let withdrawal_receipt = withdrawal.receipt;
         if !withdrawal.same_original_facts(&self.withdrawal_before) {
             return Err("original withdrawal history or current delivery frontier changed during paired measurement".into());
         }
-        let denied = withdrawal.delivery_denial_fraction()?;
+        let denied = self.withdrawal_binding.values(&withdrawal)?;
         for (index, id) in self.inputs.rows.keys().enumerate() {
             let mut observations = Vec::new();
             for execution in &actual {
@@ -528,10 +523,10 @@ impl Producer<'_> {
                     } else if metric.contract.metric_id
                         == self.inputs.plan.policy.required_evidence_metrics.unlearning
                     {
-                        // Both comparators observe this same structural delivery
-                        // gate. The shared causal dependency was frozen before
-                        // CAS, so this does not invent independent task samples.
-                        [Some(denied), Some(denied)]
+                        // Each task uses its preregistered actual observation.
+                        // The native source graph merges shared causal events;
+                        // this remains structural denial, not weight forgetting.
+                        [Some(denied[id]), Some(denied[id])]
                     } else {
                         [None, None]
                     };

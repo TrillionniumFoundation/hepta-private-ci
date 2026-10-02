@@ -32,7 +32,7 @@ struct Contract {
     unlearning_semantics: String,
     retention_public_gold_digest: String,
     pairs: Vec<Assignment>,
-    withdrawal: crate::paired_custody_withdrawal::Config,
+    withdrawal: crate::paired_custody_observations::Config,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -177,7 +177,11 @@ fn prepare(
     }
     let contract_bytes = config.assignment_contract.read(128 * 1024)?;
     let contract: Contract = serde_json::from_slice(&contract_bytes)?;
-    if contract.schema != "hepta.paired-public-measurement-contract.v1"
+    if contract.schema
+        != format!(
+            "hepta.paired-public-measurement-contract.v{}",
+            contract.withdrawal.version()
+        )
         || contract.cost_semantics != "original-scorer-monotonic-micros-derived-q32-milliseconds"
         || contract.unlearning_semantics
             != "original-ledger-withdrawal-and-current-delivery-denial-only"
@@ -186,11 +190,9 @@ fn prepare(
     {
         return Err("retention assignment/cost/withdrawal definitions were not signed in original G contract".into());
     }
-    crate::paired_custody_withdrawal::bind(
-        &contract.withdrawal,
-        &config.assignment_contract,
-        &main.source,
-    )?;
+    contract
+        .withdrawal
+        .bind(&config.assignment_contract, &main.source)?;
     let gold_bytes = config.declared_public_gold.read(4 * 1024 * 1024)?;
     let gold: Gold = serde_json::from_slice(&gold_bytes)?;
     if gold.schema != "hepta.public-seen-retention-gold.v1"

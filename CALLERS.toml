@@ -15,6 +15,7 @@ required_boundary_ids = [
   "original_consumed_custody_effect",
   "original_paired_numeric_process",
   "original_paired_readonly_withdrawal",
+  "paired_withdrawal_provider_assignment",
   "first_public_development_physical_measurement",
   "paired_custody_program_admission",
   "public_paired_generator_preregistration",
@@ -1058,8 +1059,8 @@ symbol = "paired_custody_withdrawal::inspect"
 call_pattern = '\bpaired_custody_withdrawal::inspect\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_withdrawal.rs"
 definition_markers = ["fn inspect(", "inspect-learning-withdrawal", "config.probe.read", "JoinedChild", "parse(&bytes", "create_private(&directory.join"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"]
-caller_markers = ["withdrawal-preflight", "withdrawal-final", "same_original_facts", "delivery_denial_fraction"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_custody_observations.rs"]
+caller_markers = ["paired_custody_withdrawal::inspect(", "inspection.causal_dependencies()", "same_current_authority"]
 
 [[protected_file]]
 path = "codex-rs/hepta-intelligence-eval/src/paired_custody_withdrawal.rs"
@@ -1093,3 +1094,22 @@ definition_path = "codex-rs/hepta-fleet/src/durable_execution.rs"
 definition_markers = ["pub async fn prepare_local_verified_execution", "let launch: String = program", "context.manifest_digest != launch", "Some(program.program_sha256())", "program.verify_current()", "fleet_execution_program_facts"]
 product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
 caller_markers = ["prepare_local_verified_execution", "program: &codex_hepta_fleet::VerifiedLaunchProgram"]
+
+[[boundary]]
+id = "paired_withdrawal_provider_assignment"
+symbol = "paired_custody_observations::Config::bind"
+call_pattern = '\bwithdrawal\s*\.bind\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_observations.rs"
+definition_markers = ["fn bind(", "config.assignment_map(source)", "withdrawal::descriptor", "Some(observation.dependencies()?)"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/paired_custody_retention.rs"]
+caller_markers = ["assignment_contract", "withdrawal", "bind("]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_custody_observations.rs"
+required = ["deny_unknown_fields", "withdrawal.v2.", "original causal graph edges", "same_current_authority", "inspection.causal_dependencies()", "same_original_facts", "delivery_denial_fraction", "observations.len() > 64"]
+forbidden = ["SigningKey", "append_unlearning", "LockedFileFinalHoldoutCasStore", "AuthorityPosture::ALLOW_ALL", "minimum_independent_clusters ="]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_inspection_dependencies.rs"
+required = ["historical.snapshot()", "current_snapshot", "get(..historical_snapshot", "predecessor_id", "record.event_digest", "ids.len() > 126"]
+forbidden = ["SigningKey", "append_unlearning", "LedgerWriter", "AuthorityPosture::ALLOW_ALL"]
