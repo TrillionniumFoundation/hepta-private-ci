@@ -414,24 +414,31 @@ fn canonicalize_generation(
     validate_generation_limits(&nodes, &edges)?;
 
     let mut canonical_nodes = BTreeMap::<StableId, KnowledgeNodeV2>::new();
+    let mut seen_node_ids = BTreeSet::new();
     for mut node in nodes {
+        // All ingress identities participate, including supports that will be
+        // pruned. A tombstone cannot hide conflicting live/dead inputs.
+        if !seen_node_ids.insert(node.node_id.clone()) {
+            return Err(KnowledgeGenerationErrorV2::DuplicateNode(
+                node.node_id.to_string(),
+            ));
+        }
         ensure_digest("node_payload", node.payload_digest)?;
         canonicalize_supports(&mut node.supports)?;
         node.supports.retain(|support| !support.tombstoned);
         if node.supports.is_empty() {
             continue;
         }
-        let node_id = node.node_id.clone();
-        if canonical_nodes.insert(node_id.clone(), node).is_some() {
-            return Err(KnowledgeGenerationErrorV2::DuplicateNode(
-                node_id.to_string(),
-            ));
-        }
+        canonical_nodes.insert(node.node_id.clone(), node);
     }
 
     let node_ids = canonical_nodes.keys().cloned().collect::<BTreeSet<_>>();
     let mut canonical_edges = BTreeMap::<KnowledgeEdgeIdentityV2, KnowledgeEdgeV2>::new();
+    let mut seen_edge_ids = BTreeSet::new();
     for mut edge in edges {
+        if !seen_edge_ids.insert(edge.identity.clone()) {
+            return Err(KnowledgeGenerationErrorV2::DuplicateEdge(edge.identity));
+        }
         ensure_digest("edge_validity", edge.validity_digest)?;
         canonicalize_supports(&mut edge.supports)?;
         edge.supports.retain(|support| !support.tombstoned);
@@ -443,10 +450,7 @@ fn canonicalize_generation(
         {
             return Err(KnowledgeGenerationErrorV2::UnknownEdgeNode);
         }
-        let identity = edge.identity.clone();
-        if canonical_edges.insert(identity.clone(), edge).is_some() {
-            return Err(KnowledgeGenerationErrorV2::DuplicateEdge(identity));
-        }
+        canonical_edges.insert(edge.identity.clone(), edge);
     }
 
     let mut result = KnowledgeGenerationV2 {
