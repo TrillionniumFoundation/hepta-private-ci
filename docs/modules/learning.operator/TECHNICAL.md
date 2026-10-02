@@ -276,6 +276,30 @@ selection and Artifact CURRENT path, including measured resource admission.
 The qualified generation-1 abstention-only operational lease cannot authorize
 that candidate or turn development accuracy into scientific acceptance.
 
+The separate
+[`hepta_prepare_public_healthver_supply.py`](../../../codex-rs/hepta-infer-worker-host/tools/hepta_prepare_public_healthver_supply.py)
+prepares the existing approved public TRAIN698 feature supply. Its closed
+`hepta.healthver-public-train-supply-config.v1` contains `sources`
+(`approved_public_train`, `complete_feature_graph`, `original_membership`,
+`original_training_cut`, `original_observations`) and `output_directory`.
+It verifies the complete claim/evidence component graph, including unmeasured
+neutral and official-dev bridges. The original diagnosed development components
+remain development; one new component is assigned development by the fixed
+feature hash extension cut. Annotation values do not enter the masked bytes,
+split or batch identities. All partitions remain public development inputs.
+
+Its ordinary Root/cap0/NNP entry is
+`python3 -I -B -S hepta_prepare_public_healthver_supply.py ROOT_CONFIG SHA256`.
+It only creates exclusive fsynced feature files and pending pair lists using
+the existing G codec. It preserves the original 147 physical observations and
+splits 551 pending rows into four batches of at most 147 rows. Actual G uses
+fresh Root registration and trust with the original 120-second, 1 CPU/256 MiB
+budget per batch; the old public window grants no new work. The 147-row trainer
+does not yet accept this larger supply. A larger adapter must consume the actual
+completed measurement sources and preserve the fixed split and original
+degenerate baseline before running the unchanged bounded optimizer. This
+preparer does not issue DatasetV3, sign learning evidence or touch holdout.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md).
