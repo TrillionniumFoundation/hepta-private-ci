@@ -385,3 +385,161 @@ fn matrix_exit_policy_denial_preserves_budget_and_readmission_charges_once()
     assert_eq!(budget(&mut supervisor, &fleet.first)?.attempt, 0);
     Ok(())
 }
+
+#[test]
+fn charged_matrix_retry_policy_denial_preserves_claim_and_resumes_without_recharge()
+-> Result<(), SupervisorError> {
+    for denial in [Denial::Revoked, Denial::NotAllowed] {
+        let release_id = ReleaseId::parse("matrix-charged-admission")?;
+        let (fleet, control, mut supervisor, now) = ready_paired_supervisor(release_id.as_str())?;
+        let owners = RetainedOwners::capture(&fleet, &supervisor)?;
+        let cleanup = exit_matrix(&fleet, &control, &mut supervisor, now)?;
+        let charged = budget(&mut supervisor, &fleet.first)?;
+        assert_eq!(charged.attempt, 1);
+        assert_eq!(charged.retry_at, Some(cleanup + RESTART_BACKOFF_MIN));
+        let charged_bytes = journal_bytes(&fleet)?;
+        assert!(charged_bytes.is_some());
+        deny(&fleet, &release_id, denial)?;
+        let due = cleanup + RESTART_BACKOFF_MIN;
+        assert_eq!(supervisor.tick(due), TickReport::default());
+        assert_eq!(
+            supervisor.tick(due + Duration::from_millis(500)),
+            TickReport::default()
+        );
+        assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
+        assert_eq!(budget(&mut supervisor, &fleet.first)?, charged);
+        assert_eq!(journal_bytes(&fleet)?, charged_bytes);
+        supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+            assert!(slot.matrix.retry_admission.is_none());
+            assert!(
+                slot.matrix
+                    .last_error
+                    .as_ref()
+                    .expect("admission diagnostic")
+                    .contains("admission rejected")
+            );
+            Ok(())
+        })?;
+        owners.assert_unchanged(&fleet, &control, &supervisor)?;
+        if matches!(denial, Denial::NotAllowed) {
+            fleet.registry.allow_release(&fleet.first, &release_id)?;
+            assert_eq!(
+                supervisor.tick(due + Duration::from_millis(500)),
+                TickReport::default()
+            );
+            assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
+            assert_eq!(budget(&mut supervisor, &fleet.first)?.attempt, 1);
+            assert_eq!(journal_bytes(&fleet)?, charged_bytes);
+            owners.assert_unchanged(&fleet, &control, &supervisor)?;
+        }
+    }
+    let release_id = ReleaseId::parse("matrix-charged-main-fence")?;
+    let (fleet, control, mut supervisor, now) = ready_paired_supervisor(release_id.as_str())?;
+    let cleanup = exit_matrix(&fleet, &control, &mut supervisor, now)?;
+    assert_stale_main_cannot_admit_matrix(
+        &fleet,
+        &control,
+        &mut supervisor,
+        cleanup + RESTART_BACKOFF_MIN,
+    )?;
+    assert_eq!(budget(&mut supervisor, &fleet.first)?.attempt, 1);
+    Ok(())
+}
+
+#[test]
+fn matrix_replacement_revalidates_catalog_provenance_and_canonical_commands()
+-> Result<(), SupervisorError> {
+    for changed in ["removed", "tampered"] {
+        let release_id = ReleaseId::parse("matrix-catalog-readmission")?;
+        let (fleet, control, mut supervisor, now) = ready_paired_supervisor(release_id.as_str())?;
+        let owners = RetainedOwners::capture(&fleet, &supervisor)?;
+        let before_bytes = journal_bytes(&fleet)?;
+        let before_budget = budget(&mut supervisor, &fleet.first)?;
+        let entry = fleet
+            .registry
+            .layout()
+            .releases_root()
+            .join(release_id.as_str());
+        if changed == "removed" {
+            let sealed = std::fs::metadata(&entry)?.permissions();
+            let mut writable = sealed.clone();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                writable.set_mode(0o700);
+            }
+            #[cfg(not(unix))]
+            writable.set_readonly(false);
+            std::fs::set_permissions(&entry, writable)?;
+            let removed = entry.with_file_name(".removed-matrix-catalog-entry");
+            std::fs::rename(&entry, &removed)?;
+            std::fs::set_permissions(&removed, sealed)?;
+            deny(&fleet, &release_id, Denial::NotAllowed)?;
+        } else {
+            let manifest = entry.join("release.json");
+            let sealed = std::fs::metadata(&manifest)?.permissions();
+            let mut writable = sealed.clone();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                writable.set_mode(0o600);
+            }
+            #[cfg(not(unix))]
+            writable.set_readonly(false);
+            std::fs::set_permissions(&manifest, writable)?;
+            std::fs::write(&manifest, b"{}")?;
+            std::fs::set_permissions(&manifest, sealed)?;
+        }
+        let cleanup = exit_matrix(&fleet, &control, &mut supervisor, now)?;
+        assert_eq!(budget(&mut supervisor, &fleet.first)?, before_budget);
+        assert_eq!(journal_bytes(&fleet)?, before_bytes);
+        assert_eq!(
+            supervisor.tick(cleanup + Duration::from_secs(1)),
+            TickReport::default()
+        );
+        assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
+        assert_eq!(journal_bytes(&fleet)?, before_bytes);
+        owners.assert_unchanged(&fleet, &control, &supervisor)?;
+    }
+    for catalog_created in [true, false] {
+        let fleet = TestFleet::new()?;
+        let control = FakeControl::default();
+        let now = Instant::now();
+        let (mut supervisor, report) =
+            Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+        assert_eq!(report, TickReport::default());
+        write_matrix_binding(&fleet.registry, &fleet.first, 1)?;
+        let release_id = ReleaseId::parse("matrix-explicit-plant")?;
+        let matrix_command = AgentCommand::new(fake_program("explicit-matrix-plant"), Vec::new())?;
+        let plant =
+            AgentRelease::with_matrixd(release_id.as_str(), command()?, matrix_command.clone())?;
+        supervisor.start_release(&fleet.first, plant.clone(), now)?;
+        if catalog_created {
+            // Catalog appears after main acquisition. Matrix's final-use gate
+            // must dispatch the newly canonical command without rebinding main.
+            let source = fleet.write_release_source()?;
+            fleet.registry.install_release_bundle(
+                release_id.clone(),
+                &source,
+                Vec::new(),
+                Some(&source),
+                Vec::new(),
+            )?;
+            fleet.registry.allow_release(&fleet.first, &release_id)?;
+            control.reject_spawn_program(matrix_command.program);
+        }
+        control.set_healthy(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        assert_eq!(control.spawn_count(&fleet.first), 1);
+        assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
+        assert_eq!(budget(&mut supervisor, &fleet.first)?.attempt, 0);
+        assert_eq!(journal_bytes(&fleet)?, None);
+        supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+            assert_eq!(slot.active_release.as_ref(), Some(&plant));
+            assert_eq!(slot.last_command.as_ref(), Some(plant.command()));
+            assert!(slot.matrix.retry_admission.is_none());
+            Ok(())
+        })?;
+    }
+    Ok(())
+}
