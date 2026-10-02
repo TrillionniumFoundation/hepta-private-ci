@@ -28,7 +28,7 @@ impl LearningArtifactOwnerHost {
         }
         let existing = self.recover_state_publication(operation)?;
         if existing.is_none() {
-            capacity::reserve_state(self)?;
+            capacity::reserve_state(self, &request.signed_current_head)?;
         }
         let request_digest = Self::state_request_digest(request);
         if let Some(checkpoint) = &existing {

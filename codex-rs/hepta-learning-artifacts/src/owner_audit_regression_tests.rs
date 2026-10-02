@@ -243,3 +243,54 @@ fn audit_terminal_receipt_rejects_forged_witness_byte_identity() {
         "signature must authenticate the complete witness receipt, not only its semantic digest"
     );
 }
+
+#[test]
+fn audit_publication_rejects_unbound_projection_and_receipt() {
+    let directory = TestDir::new();
+    let key = signer();
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(withdrawal_scope());
+    let scope = withdrawals.scope_digest().fixture("scope");
+    let owner =
+        LearningArtifactOwnerHost::open(&directory.0, trust(&key, scope), lease(&key, scope), 20)
+            .fixture("owner");
+    let (registry, transaction) = deterministic_publication(&owner, &withdrawals, 20);
+    for case in 0..4 {
+        let mut event = registry.records()[0].event.clone();
+        let ArtifactEvent::Register { event_id, manifest } = &mut event else {
+            panic!("register")
+        };
+        match case {
+            0 => manifest.objective_digest = digest("other-objective"),
+            1 => manifest.support_digest = digest("other-provenance"),
+            2 => *event_id = id("unbound-operation"),
+            3 => {}
+            _ => unreachable!(),
+        }
+        let mut drifted = ArtifactRegistry::new();
+        drifted
+            .append(event)
+            .fixture("valid but unrelated projection");
+        let bytes = encode_snapshot(&drifted, digest("binding")).fixture("encode");
+        let receipt = RegistrySnapshotReceipt {
+            binding: digest("binding"),
+            head_digest: drifted.snapshot().head_digest,
+            file_digest: if case == 3 {
+                digest("wrong-file")
+            } else {
+                Digest32::of_bytes(&bytes)
+            },
+            records: drifted.records().len(),
+            encoded_bytes: bytes.len(),
+        };
+        let mut transaction = transaction.clone();
+        transaction
+            .record_payload_durable(digest("payload"), 7)
+            .fixture("payload claim");
+        assert!(
+            transaction
+                .record_registry_durable(&drifted, receipt, &withdrawals, 20)
+                .is_err(),
+            "case {case}: durable protocol must bind the complete intent and canonical bytes"
+        );
+    }
+}

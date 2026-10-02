@@ -40,13 +40,18 @@ pub(super) fn reserve_artifact(
 
 pub(super) fn reserve_state(
     host: &LearningArtifactOwnerHost,
+    signed: &SignedCurrentArtifactHeadV1,
 ) -> Result<(), ArtifactOwnerHostError> {
     for (name, maximum, additional) in [
         ("state-transactions", MAX_HEAD_RECORDS * 4, 4),
         ("registries", MAX_HEAD_RECORDS * 2, 1),
         ("withdrawals", MAX_HEAD_RECORDS * 3, 2),
         ("witnesses", MAX_HEAD_RECORDS * 2, 1),
-        ("heads", MAX_HEAD_RECORDS, 1),
+        (
+            "heads",
+            MAX_HEAD_RECORDS,
+            usize::from(!host.signed_head_record_path(signed).try_exists()?),
+        ),
     ] {
         reserve(host, name, maximum, additional)?;
     }
