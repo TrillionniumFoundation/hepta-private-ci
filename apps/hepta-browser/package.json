@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test",
+    "test": "node --test --test-timeout=30000",
     "build:service": "node scripts/build-service.mjs"
   },
   "devDependencies": {

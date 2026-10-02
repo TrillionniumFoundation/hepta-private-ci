@@ -85,8 +85,10 @@ jobs:
           node-version: 24
       - name: Install locked Browser service build dependencies
         run: npm ci --prefix apps/hepta-browser --ignore-scripts
+      - name: Verify Browser test deadline failure semantics
+        run: python3 -m unittest -v scripts.test_hepta_browser_test_deadlines
       - name: Run Browser state, journal, IPC and Agentd boundary regressions
-        run: node --test apps/hepta-browser/test/*.test.js
+        run: timeout --signal=TERM --kill-after=10s 300s node --test --test-timeout=30000 apps/hepta-browser/test/*.test.js
 
   hepta-contract-gate:
     name: Hepta contract gate
