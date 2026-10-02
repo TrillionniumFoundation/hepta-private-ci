@@ -13,9 +13,8 @@ struct Factory {
     descriptor_bytes: Vec<u8>,
     identity: AgentdIdentity,
     plan: crate::CpuNeuronGenerationPlanV1,
-    pointer: PathBuf,
+    admission: model_use_current::Admission,
     physical: crate::SharedCpuNeuronInferenceControlV3,
-    clock: Arc<dyn AuthorityClock>,
 }
 #[derive(Clone, Copy)]
 enum StoreRequirement {
@@ -37,12 +36,7 @@ impl Factory {
     ) -> HostResult<AgentdNeuronHandleV2> {
         self.verify_descriptor()?;
         let plan = scope_plan(&self.plan, &self.identity, scope)?;
-        let admission = model_use_current::Admission::open(
-            self.pointer.clone(),
-            &plan,
-            &self.identity,
-            self.clock.clone(),
-        )?;
+        let admission = self.admission.for_scope(&plan, &self.identity)?;
         let mode = mode(
             [&plan.generation_store, &plan.runtime_index, &plan.witness],
             requirement,
@@ -229,14 +223,14 @@ pub(super) fn prepare(
         plan.model_manifest_digest,
         worker,
     )?;
+    let admission = model_use_current::Admission::open(pointer, &plan, identity, clock.clone())?;
     let factory = Arc::new(Factory {
         descriptor,
         descriptor_bytes,
         identity: identity.clone(),
         plan,
-        pointer,
+        admission,
         physical: crate::SharedCpuNeuronInferenceControlV3::new(physical),
-        clock,
     });
     let active = factory.open(&active_scope, requirement)?;
     let mut runtime =

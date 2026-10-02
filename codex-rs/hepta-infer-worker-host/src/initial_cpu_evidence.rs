@@ -6,6 +6,7 @@ use codex_hepta_agent_components::intelligence_eval::VerifiedOperationalModelLea
 use codex_hepta_agent_components::intelligence_eval::inspect_initial_neuron_operational_history;
 use codex_hepta_agent_components::intelligence_eval::inspect_operational_model_lease_v2;
 use codex_hepta_agent_components::learning_ledger::VerifiedLearningEvidenceV1;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -20,7 +21,9 @@ pub(super) enum InitialEvidence {
     Initial(VerifiedInitialOperationalEvidenceV1),
     Continued {
         history: VerifiedInitialOperationalHistoryV1,
-        lease: Box<VerifiedOperationalModelLeaseV2>,
+        lease: Arc<VerifiedOperationalModelLeaseV2>,
+        evaluation_config: Source,
+        independent_report: Source,
         installed_profile: Source,
         body_implementation: Source,
     },
@@ -88,7 +91,9 @@ impl InitialEvidence {
                 current.body_implementation.read(1024 * 1024)?;
                 let result = Self::Continued {
                     history,
-                    lease: Box::new(lease),
+                    lease: Arc::new(lease),
+                    evaluation_config: current.evaluation_config,
+                    independent_report: current.independent_report,
                     installed_profile: current.installed_profile,
                     body_implementation: current.body_implementation,
                 };
@@ -195,6 +200,7 @@ impl InitialEvidence {
                 lease,
                 installed_profile,
                 body_implementation,
+                ..
             } => {
                 history.revalidate_integrity()?;
                 installed_profile.read(64 * 1024)?;

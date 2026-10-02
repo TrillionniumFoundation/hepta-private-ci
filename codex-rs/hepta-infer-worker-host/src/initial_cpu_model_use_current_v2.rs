@@ -10,6 +10,7 @@ use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronTickInputV1;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -67,19 +68,25 @@ pub(super) fn read_installed_inputs(
     Ok(current.verified.into_installed_inputs())
 }
 
+struct CurrentState {
+    active: CurrentUse,
+    last_now: u64,
+}
+
+#[derive(Clone)]
 pub(super) struct Admission {
     pointer: PathBuf,
-    active: CurrentUse,
+    current: Arc<Mutex<CurrentState>>,
+    binding: codex_hepta_agent_components::intelligence_eval::OperationalModelLeaseBindingV2,
     runtime: NeuronRuntimeConfigV1,
     scope: JournalScope,
     clock: Arc<dyn AuthorityClock>,
-    last_now: u64,
 }
 impl Admission {
     pub(super) fn binding(
         &self,
     ) -> &codex_hepta_agent_components::intelligence_eval::OperationalModelLeaseBindingV2 {
-        self.active.verified.binding()
+        &self.binding
     }
 
     pub(super) fn open(
@@ -90,25 +97,7 @@ impl Admission {
     ) -> HostResult<Self> {
         let before = clock.now_unix_ms()?;
         let active = CurrentUse::read(&pointer)?;
-        let inputs = active.verified.installed_inputs();
-        let declared = renewal::verify_first_installation(&inputs.profile)?;
-        if active.verified.runtime_configuration() != &plan.runtime
-            || active.verified.native_configuration() != &plan.native
-            || active.verified.runtime_body_digest() != plan.body.semantic_digest()?
-            || inputs.profile.model.path != plan.model_manifest
-            || active.verified.binding().model_manifest_digest != plan.model_manifest_digest
-            || declared.agent_id != identity.agent_id.as_str()
-            || declared.workload_uid != rustix::process::geteuid().as_raw()
-            || declared.workload_gid != rustix::process::getegid().as_raw()
-            || NeuronTickInputV1::journal_scope_for_subject(
-                &id(identity.agent_id.as_str())?,
-                plan.scope.objective_digest,
-            )? != plan.scope
-        {
-            return Err(
-                "current model use differs from the physical owner and compiled scope".into(),
-            );
-        }
+        verify_plan(&active, plan, identity)?;
         let after = clock.now_unix_ms()?;
         if after < before
             || after < active.verified.issued_at()
@@ -118,54 +107,107 @@ impl Admission {
         }
         Ok(Self {
             pointer,
-            active,
+            binding: active.verified.binding().clone(),
+            current: Arc::new(Mutex::new(CurrentState {
+                active,
+                last_now: after,
+            })),
             runtime: plan.runtime.clone(),
             scope: plan.scope,
-            last_now: after,
             clock,
         })
     }
 
+    pub(super) fn for_scope(
+        &self,
+        plan: &crate::CpuNeuronGenerationPlanV1,
+        identity: &codex_hepta_agentd::AgentdIdentity,
+    ) -> HostResult<Self> {
+        // Share only the sealed physical material and its monotonic current-use
+        // state. Each Goal retains its own exact scope and dispatch admission.
+        let mut next = self.clone();
+        next.scope = plan.scope;
+        next.refresh()?;
+        verify_plan(
+            &next
+                .current
+                .lock()
+                .map_err(|_| "model-use state poisoned")?
+                .active,
+            plan,
+            identity,
+        )?;
+        Ok(next)
+    }
+
     fn refresh(&mut self) -> HostResult<()> {
+        let mut state = self
+            .current
+            .lock()
+            .map_err(|_| "model-use state poisoned")?;
         let now = self.clock.now_unix_ms()?;
-        if now < self.last_now {
+        if now < state.last_now {
             return Err("owned model-use clock rolled back".into());
         }
         let bytes = read_root_review_input(&self.pointer, 32 * 1024)?;
-        if bytes != self.active.bytes {
+        if bytes != state.active.bytes {
             let fresh = CurrentUse::read(&self.pointer)?;
-            let before = self.active.verified.installed_inputs();
+            let before = state.active.verified.installed_inputs();
             let after = fresh.verified.installed_inputs();
-            if fresh.verified.binding() != self.active.verified.binding()
+            if fresh.verified.binding() != &self.binding
                 || fresh.verified.runtime_configuration() != &self.runtime
                 || fresh.verified.runtime_body_digest()
-                    != self.active.verified.runtime_body_digest()
+                    != state.active.verified.runtime_body_digest()
                 || after.storage_binding() != before.storage_binding()
                 || after.profile.owner_root != before.profile.owner_root
                 || after.profile.model.path != before.profile.model.path
-                || fresh.verified.issued_at() < self.active.verified.issued_at()
-                || fresh.verified.expires_at() < self.active.verified.expires_at()
-                || !frontier_extends(self.active.frontier, fresh.frontier)
+                || fresh.verified.issued_at() < state.active.verified.issued_at()
+                || fresh.verified.expires_at() < state.active.verified.expires_at()
+                || !frontier_extends(state.active.frontier, fresh.frontier)
             {
                 return Err(
                     "fresh model use changed the physical identity or rolled back its frontier"
                         .into(),
                 );
             }
-            self.active = fresh;
+            state.active = fresh;
         }
-        self.active.verified.revalidate_current()?;
+        state.active.verified.revalidate_current()?;
         let after = self.clock.now_unix_ms()?;
         if after < now
-            || after < self.active.verified.issued_at()
-            || after >= self.active.verified.expires_at()
-            || read_root_review_input(&self.pointer, 32 * 1024)? != self.active.bytes
+            || after < state.active.verified.issued_at()
+            || after >= state.active.verified.expires_at()
+            || read_root_review_input(&self.pointer, 32 * 1024)? != state.active.bytes
         {
             return Err("model-use clock or pointer changed at use".into());
         }
-        self.last_now = after;
+        state.last_now = after;
         Ok(())
     }
+}
+fn verify_plan(
+    active: &CurrentUse,
+    plan: &crate::CpuNeuronGenerationPlanV1,
+    identity: &codex_hepta_agentd::AgentdIdentity,
+) -> HostResult<()> {
+    let inputs = active.verified.installed_inputs();
+    let declared = renewal::verify_first_installation(&inputs.profile)?;
+    if active.verified.runtime_configuration() != &plan.runtime
+        || active.verified.native_configuration() != &plan.native
+        || active.verified.runtime_body_digest() != plan.body.semantic_digest()?
+        || inputs.profile.model.path != plan.model_manifest
+        || active.verified.binding().model_manifest_digest != plan.model_manifest_digest
+        || declared.agent_id != identity.agent_id.as_str()
+        || declared.workload_uid != rustix::process::geteuid().as_raw()
+        || declared.workload_gid != rustix::process::getegid().as_raw()
+        || NeuronTickInputV1::journal_scope_for_subject(
+            &id(identity.agent_id.as_str())?,
+            plan.scope.objective_digest,
+        )? != plan.scope
+    {
+        return Err("current model use differs from the physical owner and compiled scope".into());
+    }
+    Ok(())
 }
 fn frontier_extends(before: (usize, Digest32, u64), after: (usize, Digest32, u64)) -> bool {
     after.0 >= before.0 && after.2 >= before.2 && (after.0 != before.0 || after.1 == before.1)

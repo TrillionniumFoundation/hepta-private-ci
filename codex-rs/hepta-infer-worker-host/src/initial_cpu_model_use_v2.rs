@@ -7,6 +7,7 @@ use codex_hepta_agent_components::intelligence_eval::inspect_operational_model_l
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer;
 use serde::Serialize;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -66,7 +67,7 @@ struct UseInputs {
     bytes: Vec<u8>,
     configuration: Configuration,
     installed: Inputs,
-    lease: VerifiedOperationalModelLeaseV2,
+    lease: Arc<VerifiedOperationalModelLeaseV2>,
     body_digest: Digest32,
     selector_program: super::model_use_program::Program,
 }
@@ -83,12 +84,30 @@ impl UseInputs {
             &configuration.installed_deployment.path,
             digest(&configuration.installed_deployment.digest)?,
         )?;
-        let lease = inspect_operational_model_lease_v2(
-            &configuration.evaluation_config.path,
-            digest(&configuration.evaluation_config.digest)?,
-            &configuration.independent_report.path,
-            digest(&configuration.independent_report.digest)?,
-        )?;
+        let lease = match &installed.evidence {
+            evidence::InitialEvidence::Initial(_) => Arc::new(inspect_operational_model_lease_v2(
+                &configuration.evaluation_config.path,
+                digest(&configuration.evaluation_config.digest)?,
+                &configuration.independent_report.path,
+                digest(&configuration.independent_report.digest)?,
+            )?),
+            evidence::InitialEvidence::Continued {
+                lease,
+                evaluation_config,
+                independent_report,
+                ..
+            } => {
+                if evaluation_config != &configuration.evaluation_config
+                    || independent_report != &configuration.independent_report
+                {
+                    return Err(
+                        "S E2 source differs from original Root continuation evidence".into(),
+                    );
+                }
+                lease.revalidate_current()?;
+                Arc::clone(lease)
+            }
+        };
         super::model_use_binding::verify(&installed, &lease, &configuration.body_implementation)?;
         if let Some(original) = installed.evidence.operational_lease()
             && (original.authentication_digest() != lease.authentication_digest()
