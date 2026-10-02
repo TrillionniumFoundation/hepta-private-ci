@@ -15,6 +15,8 @@ mod files;
 mod generator_wire;
 mod independent;
 mod independent_trust;
+mod independent_unlearning;
+pub use independent_unlearning::sign_root_learning_unlearning_v1;
 mod native_generator;
 mod observations;
 mod transfer;

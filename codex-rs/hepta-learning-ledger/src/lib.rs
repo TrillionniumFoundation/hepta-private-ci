@@ -193,6 +193,8 @@ pub use review_host::initialize_native_generator_key;
 pub use review_host::run_fixed_custody_evaluator;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::run_native_generator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::sign_root_learning_unlearning_v1;
 
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::FixedCalibrationCutV1;

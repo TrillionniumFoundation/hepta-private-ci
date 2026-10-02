@@ -69,6 +69,7 @@ fn role_name(value: LearningEvidenceRoleV1) -> &'static str {
         LearningEvidenceRoleV1::Generator => "generator",
         LearningEvidenceRoleV1::Observer => "observer",
         LearningEvidenceRoleV1::Evaluator => "evaluator",
+        LearningEvidenceRoleV1::UnlearningAuthority => "unlearning_authority",
         _ => "unsupported",
     }
 }
@@ -77,9 +78,14 @@ fn role(value: &str) -> ReviewResult<LearningEvidenceRoleV1> {
         "generator" => Ok(LearningEvidenceRoleV1::Generator),
         "observer" => Ok(LearningEvidenceRoleV1::Observer),
         "evaluator" => Ok(LearningEvidenceRoleV1::Evaluator),
+        "unlearning_authority" => Ok(LearningEvidenceRoleV1::UnlearningAuthority),
         _ => Err("review transfer role unsupported".into()),
     }
 }
+
+#[cfg(test)]
+#[path = "transfer_unlearning_tests.rs"]
+mod unlearning_tests;
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ReviewSignerWireV1 {
@@ -140,8 +146,19 @@ impl ReviewTrustWireV1 {
         }
     }
     pub fn native(&self) -> ReviewResult<(LearningTrustRootV1, SignedLearningTrustDistributionV1)> {
-        if self.signers.len() != 4 {
-            return Err("fixed review requires four admitted signers".into());
+        let role_count = |role: &str| {
+            self.signers
+                .iter()
+                .filter(|signer| signer.role == role)
+                .count()
+        };
+        if role_count("generator") != 1
+            || role_count("observer") != 1
+            || role_count("evaluator") != 2
+            || role_count("unlearning_authority") > 1
+            || self.signers.len() != 4 + role_count("unlearning_authority")
+        {
+            return Err("fixed review requires the original four signers and at most one dedicated unlearning authority".into());
         }
         let scope: Digest32 = self.scope_digest.parse()?;
         let root = LearningTrustRootV1 {

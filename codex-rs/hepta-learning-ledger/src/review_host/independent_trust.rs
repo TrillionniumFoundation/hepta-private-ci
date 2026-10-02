@@ -5,6 +5,8 @@ use super::files::Access;
 use super::files::ReviewResult;
 use super::files::read_root;
 use super::generator_wire::program_digest;
+use super::independent_unlearning::FixedUnlearningAuthorityConfig;
+use super::independent_unlearning::admitted_unlearning_signer;
 use crate::ActivatedLearningTrustV1;
 use crate::AuthenticatedPrincipalV1;
 use crate::LearningEvidenceRoleV1;
@@ -43,6 +45,8 @@ pub(super) struct IndependentTrustConfig {
     pub expires_at: u64,
     #[serde(default)]
     pub independent_reviewer: Option<IndependentReviewerConfig>,
+    #[serde(default)]
+    pub unlearning_authority: Option<FixedUnlearningAuthorityConfig>,
 }
 
 #[derive(Deserialize)]
@@ -248,6 +252,19 @@ impl IndependentTrust {
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
                 revoked_at: None,
             });
+        }
+        if let Some(authority) = &config.unlearning_authority {
+            let signer = admitted_unlearning_signer(
+                authority,
+                &config,
+                root_key.verifying_key().to_bytes(),
+                authenticated_at,
+                credential_expires,
+                &signers,
+                generator_program,
+                evaluator_program,
+            )?;
+            signers.push(signer);
         }
         let root = LearningTrustRootV1 {
             root_id: StableId::new("fixed-custody-learning-root")?,
