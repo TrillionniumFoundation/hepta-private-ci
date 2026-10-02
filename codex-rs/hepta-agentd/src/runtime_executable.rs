@@ -1,8 +1,9 @@
-//! Process-local executable observation used by built-in module registration.
+//! Process-local executable observation for explicit composition callers.
 //!
 //! A manifest hash is NOT an implementation identity. Hash the executable once,
 //! with bounded memory, and bind that observation to each module's manifest.
 //! This neither authenticates build provenance nor grants selection/activation.
+//! Exporting this utility does not install it in Agentd startup or registration.
 //! Linux observes the kernel's loaded-image handle, including an unlinked image.
 //! Other targets report the weaker executable-path observation explicitly.
 
