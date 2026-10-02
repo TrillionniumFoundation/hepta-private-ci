@@ -53,6 +53,46 @@ class LaneBTruthTests(unittest.TestCase):
             with self.assertRaisesRegex(MODULE.Invalid, "dirty or promoted claim"):
                 MODULE.verify_module_source_base(row, "fixture")
 
+    def test_canonical_source_profiles_reject_unknown_shape_and_kind(self) -> None:
+        for policy, source in [
+            (
+                "candidate_or_exact_observation_v1",
+                {"commit": "a" * 40, "tree": "b" * 40, "extra": True},
+            ),
+            (
+                "candidate_or_exact_observation_v1",
+                {
+                    "commit": "a" * 40,
+                    "tree": "b" * 40,
+                    "kind": "integration_provenance_anchor",
+                },
+            ),
+            (
+                "exact_ci_receipt_v1",
+                {
+                    "commit": "a" * 40,
+                    "tree": "b" * 40,
+                    "kind": "integration_provenance_anchor",
+                    "extra": True,
+                },
+            ),
+            (
+                "exact_ci_receipt_v1",
+                {"commit": "a" * 40, "tree": "b" * 40, "kind": "unverified"},
+            ),
+            ("exact_ci_receipt_v1", {"commit": "a" * 40, "tree": "b" * 40}),
+        ]:
+            with self.subTest(policy=policy, source=source):
+                with self.assertRaises(MODULE.Invalid):
+                    MODULE.verify_module_source_base(
+                        {
+                            "sourceIdentityPolicy": policy,
+                            "sourceBase": source,
+                            "resolvedRoots": ["owned"],
+                        },
+                        "fixture",
+                    )
+
     def test_duplicate_json_keys_fail(self) -> None:
         with self.assertRaises(MODULE.Invalid):
             json.loads('{"a":1,"a":2}', object_pairs_hook=MODULE.pairs)

@@ -100,6 +100,19 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
 def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_literal")
     if policy in {"candidate_or_exact_observation_v1", "exact_ci_receipt_v1"}:
+        source_base = row.get("sourceBase")
+        expected_keys = {"commit", "tree"}
+        if policy == "exact_ci_receipt_v1":
+            expected_keys.add("kind")
+        need(
+            isinstance(source_base, dict) and set(source_base) == expected_keys,
+            f"{label}: bounded source base shape",
+        )
+        if policy == "exact_ci_receipt_v1":
+            need(
+                source_base["kind"] == "integration_provenance_anchor",
+                f"{label}: source provenance kind",
+            )
         # Do not duplicate or weaken the shared verifier's mapped-source,
         # workspace-input, clean-checkout and historical-anchor requirements.
         spec = importlib.util.spec_from_file_location(
