@@ -60,7 +60,7 @@ struct Inputs {
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
-fn sample(
+pub(super) fn sample(
     trust: &codex_hepta_learning_ledger::ActivatedLearningTrustV1,
     last: &mut Option<u64>,
 ) -> Result<u64> {
@@ -71,7 +71,7 @@ fn sample(
     *last = Some(now);
     Ok(now)
 }
-fn actual_generator(
+pub(super) fn actual_generator(
     signer: &codex_hepta_learning_ledger::TrustedLearningSignerV1,
     program: Digest32,
     uid: u32,
@@ -107,7 +107,7 @@ fn actual_generator(
     }
     Ok(())
 }
-fn actual_limits(cgroup: &str) -> Result<()> {
+pub(super) fn actual_limits(cgroup: &str) -> Result<()> {
     let group = cgroup
         .strip_prefix("0::/system.slice/")
         .and_then(|value| value.strip_suffix('\n'))

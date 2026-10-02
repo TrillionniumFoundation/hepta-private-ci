@@ -7,6 +7,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "first_public_development_physical_measurement",
   "paired_custody_program_admission",
   "public_paired_generator_preregistration",
   "independent_paired_review_evaluator",
@@ -978,3 +979,17 @@ forbidden = ["SigningKey", "FinalHoldoutCas", "AuthorityPosture::ALLOW_ALL"]
 path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_generator_host.rs"
 required = ["hepta.fixed-paired-generator-config.v1", "structural.freeze()", "source.freeze()", "config.source.read", "actual_generator", "native-unprivileged-generator", "inputs.trust.expires_at", "signing.sign", "original_source_digest"]
 forbidden = ["holdout.consume", "release_after_consumption", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "first_public_development_physical_measurement"
+symbol = "run_fixed_public_development_measurement"
+call_pattern = '\brun_fixed_public_development_measurement\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_public_development_host.rs"
+definition_markers = ["pub fn run_fixed_public_development_measurement", "actual_limits", "actual_generator", "inputs.validate()", "activate_learning_trust", "sample(&trust", "config.source.read", "checked_sub(measured_at_ms)", "measure(", "holdout_consumed"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-product-evaluation.rs"]
+caller_markers = ["--public-development-measure", "codex_hepta_intelligence_eval::run_fixed_public_development_measurement"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fixed_public_development_host.rs"
+required = ["hepta.fixed-public-development-measurement-config.v1", "PURPOSE", "deny_unknown_fields", "boundary_in_service", "PermissionDenied", "actual_generator", "expires_at()", "Vec<Response>", "learning_evidence_signed", "production_activation"]
+forbidden = ["SigningKey", "private_key_path", "FinalHoldoutCasStore", "holdout.consume", "signing.sign", "source.freeze()"]

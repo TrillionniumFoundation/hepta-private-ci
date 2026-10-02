@@ -3,6 +3,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "linux")]
     {
         let args = std::env::args_os().skip(1).collect::<Vec<_>>();
+        if args.len() == 2 && args[0] == "--public-development-measure" {
+            return codex_hepta_intelligence_eval::run_fixed_public_development_measurement(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 2 && args[0] == "--paired-preregister" {
             return codex_hepta_intelligence_eval::run_fixed_paired_generator(
                 std::path::Path::new(&args[1]),
@@ -34,5 +39,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
         }
     }
-    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --paired-preregister ROOT_G_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG | --inspect-rejected-cycle ROOT_CONFIG CONFIG_DIGEST COMPLETION_DIGEST".into())
+    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --paired-preregister ROOT_G_CONFIG | --public-development-measure ROOT_PUBLIC_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG | --inspect-rejected-cycle ROOT_CONFIG CONFIG_DIGEST COMPLETION_DIGEST".into())
 }
