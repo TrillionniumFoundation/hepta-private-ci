@@ -11,7 +11,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if args[0] == "--inspect" {
                 return codex_hepta_intelligence_eval::inspect_fixed_source_holdout(config);
             }
+            if args[0] == "--prepare-climate" {
+                return codex_hepta_intelligence_eval::prepare_climate_source_holdout(config);
+            }
+            if args[0] == "--inspect-climate" {
+                return codex_hepta_intelligence_eval::inspect_climate_source_holdout(config);
+            }
         }
     }
-    Err("usage: hepta-fixed-holdout-custody --prepare ROOT_CONFIG | --inspect ROOT_CONFIG".into())
+    Err("usage: hepta-fixed-holdout-custody --prepare ROOT_CONFIG | --inspect ROOT_CONFIG | --prepare-climate ROOT_CONFIG | --inspect-climate ROOT_CONFIG".into())
 }

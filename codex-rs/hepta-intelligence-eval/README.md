@@ -74,3 +74,30 @@ qualification does not assert installation: a fresh same-source closure, newly
 measured G/O cuts, actual E role execution and the normal CPU consumer remain
 required before an installed V2 lease can be claimed. Old V1 domains and reports
 are unchanged.
+
+Generation one is the currently qualified conservative bootstrap purpose, not
+an architectural limit on future candidate generations. A new candidate still
+enters through the existing independent paired E result, Selector and Artifact
+CURRENT owner; this lease cannot replace that qualification or widen its claim.
+
+The custody binary additionally accepts `--prepare-climate ROOT_CONFIG` and
+`--inspect-climate ROOT_CONFIG` for the pinned official Climate-FEVER bank.
+`tools/hepta_prepare_climate_holdout_features.py` first freezes a complete
+feature-only component manifest under Root custody. It reuses the previously
+frozen public and historical feature comparisons, excludes the entire public
+example component and never uses annotations to select a component. Its output
+does not initialize or consume a cohort. The Rust importer pins that manifest
+and its actual adapter program, then maps each eligible evidence's `SUPPORTS`
+or `REFUTES` label; aggregate `DISPUTED` never becomes a binary gold label.
+Neutral evidence remains in the complete masked feature/component graph and
+is excluded from binary scoring. No human-facing output contains gold.
+
+Preparation reuses the original fenced holdout CAS, binding domain, private
+files and independently retained witness. Existing source namespaces and old
+Consumed/Unknown records cannot be overwritten or retried. Source-native
+qualification of this adapter is not actual final-holdout qualification: new
+cohort initialization remains pending a runnable original paired provider with
+genuine reference/candidate outputs, monotonic costs, retention observations
+and exact registered unlearning evidence, followed by independent O/E and S.
+Source invalidation and CURRENT delivery denial can establish structural
+withdrawal; they do not establish removal of information from model weights.

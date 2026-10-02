@@ -24,12 +24,12 @@ use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
 
-type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
+pub(super) type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Source {
-    path: PathBuf,
-    digest: String,
+pub(super) struct Source {
+    pub(super) path: PathBuf,
+    pub(super) digest: String,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -60,10 +60,10 @@ struct Witness {
     excluded_shared_claims: usize,
     unjudged_pairs_not_scored: usize,
 }
-fn digest(text: &str) -> HostResult<Digest32> {
+pub(super) fn digest(text: &str) -> HostResult<Digest32> {
     Ok(text.parse()?)
 }
-fn boundary() -> HostResult<()> {
+pub(super) fn boundary() -> HostResult<()> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     for name in ["Uid:", "Gid:"] {
         let values = status
@@ -95,7 +95,7 @@ fn boundary() -> HostResult<()> {
     }
     Ok(())
 }
-fn private_directory(path: &Path) -> HostResult<File> {
+pub(super) fn private_directory(path: &Path) -> HostResult<File> {
     if !path.is_absolute()
         || path
             .components()
@@ -114,7 +114,7 @@ fn private_directory(path: &Path) -> HostResult<File> {
     }
     Ok(File::open(path)?)
 }
-fn create_private(path: &Path, bytes: &[u8]) -> HostResult<File> {
+pub(super) fn create_private(path: &Path, bytes: &[u8]) -> HostResult<File> {
     let parent = private_directory(path.parent().ok_or("custody parent")?)?;
     let mut file = OpenOptions::new()
         .read(true)
@@ -127,7 +127,7 @@ fn create_private(path: &Path, bytes: &[u8]) -> HostResult<File> {
     parent.sync_all()?;
     Ok(file)
 }
-fn source(source: &Source, maximum: u64) -> HostResult<Vec<u8>> {
+pub(super) fn source(source: &Source, maximum: u64) -> HostResult<Vec<u8>> {
     let bytes = read_root_review_input(&source.path, maximum)?;
     if Digest32::of_bytes(&bytes) != digest(&source.digest)? {
         return Err("pinned source bytes changed".into());
@@ -292,16 +292,45 @@ pub fn prepare_fixed_source_holdout(path: &Path) -> HostResult<()> {
         "scope":"public SciFact held-out claim and cited abstract classification; no cross-subject or longitudinal claim",
     }))?;
     let masked = serde_json::to_vec(&features)?;
-    let gold_digest = Digest32::of_bytes(&private_gold);
+    initialize_private_holdout(
+        &config.private_directory,
+        &config.witness_path,
+        config_digest,
+        &private_gold,
+        &masked,
+        PreparedHoldoutCounts {
+            eligible_claims,
+            eligible_components: components.len(),
+            labeled_pairs: private_tasks.len(),
+            excluded_shared_claims: heldout.len() - eligible_claims,
+            unjudged_pairs_not_scored: unjudged,
+        },
+    )
+}
+
+pub(super) struct PreparedHoldoutCounts {
+    pub(super) eligible_claims: usize,
+    pub(super) eligible_components: usize,
+    pub(super) labeled_pairs: usize,
+    pub(super) excluded_shared_claims: usize,
+    pub(super) unjudged_pairs_not_scored: usize,
+}
+
+pub(super) fn initialize_private_holdout(
+    private_directory: &Path,
+    witness_path: &Path,
+    config_digest: Digest32,
+    private_gold: &[u8],
+    masked: &[u8],
+    summary: PreparedHoldoutCounts,
+) -> HostResult<()> {
+    let gold_digest = Digest32::of_bytes(private_gold);
     let binding = Digest32::of_bytes(&serde_json::to_vec(
         &serde_json::json!({"domain":"hepta.fixed-source-holdout.binding.v1","config":config_digest.to_string(),"gold":gold_digest.to_string()}),
     )?);
-    create_private(&config.private_directory.join("gold.json"), &private_gold)?;
-    create_private(
-        &config.private_directory.join("masked-features.json"),
-        &masked,
-    )?;
-    let journal = create_private(&config.private_directory.join("holdout-cas.bin"), &[])?;
+    create_private(&private_directory.join("gold.json"), private_gold)?;
+    create_private(&private_directory.join("masked-features.json"), masked)?;
+    let journal = create_private(&private_directory.join("holdout-cas.bin"), &[])?;
     let store = LockedFileFinalHoldoutCasStoreV1::create(journal, binding)?;
     let fence = HoldoutFenceIssuerV1::resume(
         StableId::new("fixed-root-gold-custody")?,
@@ -315,24 +344,36 @@ pub fn prepare_fixed_source_holdout(path: &Path) -> HostResult<()> {
         schema: "hepta.fixed-source-holdout.witness.v1".into(),
         config_digest: config_digest.to_string(),
         private_gold_digest: gold_digest.to_string(),
-        masked_features_digest: Digest32::of_bytes(&masked).to_string(),
+        masked_features_digest: Digest32::of_bytes(masked).to_string(),
         binding: binding.to_string(),
         fence_generation: anchor.fence_generation,
         record_count: anchor.record_count,
         state_digest: anchor.state_digest.to_string(),
-        eligible_claims,
-        eligible_components: components.len(),
-        labeled_pairs: private_tasks.len(),
-        excluded_shared_claims: heldout.len() - eligible_claims,
-        unjudged_pairs_not_scored: unjudged,
+        eligible_claims: summary.eligible_claims,
+        eligible_components: summary.eligible_components,
+        labeled_pairs: summary.labeled_pairs,
+        excluded_shared_claims: summary.excluded_shared_claims,
+        unjudged_pairs_not_scored: summary.unjudged_pairs_not_scored,
     };
-    create_private(&config.witness_path, &serde_json::to_vec(&witness)?)?;
+    create_private(witness_path, &serde_json::to_vec(&witness)?)?;
     publication(&witness)
 }
 pub fn inspect_fixed_source_holdout(path: &Path) -> HostResult<()> {
     let (config, config_digest) = config(path)?;
+    inspect_private_holdout(
+        &config.private_directory,
+        &config.witness_path,
+        config_digest,
+    )
+}
+
+pub(super) fn inspect_private_holdout(
+    private_directory: &Path,
+    witness_path: &Path,
+    config_digest: Digest32,
+) -> HostResult<()> {
     let witness: Witness =
-        serde_json::from_slice(&read_root_review_input(&config.witness_path, 16 * 1024)?)?;
+        serde_json::from_slice(&read_root_review_input(witness_path, 16 * 1024)?)?;
     if witness.schema != "hepta.fixed-source-holdout.witness.v1"
         || digest(&witness.config_digest)? != config_digest
     {
@@ -343,14 +384,14 @@ pub fn inspect_fixed_source_holdout(path: &Path) -> HostResult<()> {
         ("masked-features.json", &witness.masked_features_digest),
     ] {
         if Digest32::of_bytes(&read_root_review_input(
-            &config.private_directory.join(name),
+            &private_directory.join(name),
             32 * 1024 * 1024,
         )?) != digest(expected)?
         {
             return Err("private held-out data changed".into());
         }
     }
-    let path = config.private_directory.join("holdout-cas.bin");
+    let path = private_directory.join("holdout-cas.bin");
     let before = read_root_review_input(&path, 32 * 1024 * 1024)?;
     let file = OpenOptions::new().read(true).write(true).open(&path)?;
     if file.metadata()?.uid() != 0 || file.metadata()?.mode() & 0o077 != 0 {

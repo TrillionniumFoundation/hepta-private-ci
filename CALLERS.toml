@@ -7,6 +7,8 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "climate_source_custody_prepare",
+  "fixed_source_custody_initialize",
   "supervisor_authorized_boot",
   "ordinary_model_issuer_boot",
   "ordinary_model_issuer_publication",
@@ -823,3 +825,26 @@ forbidden = ["SigningKey", "pub fn permit_all", "pub fn from_unverified", "pub c
 path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs"
 required = ["hepta.intelligence-eval.operational-model-lease.v2", "verify_actual_reviewer", "verify_signed_actor_separation", "reinspect_inputs", "cpu_answer_acceptance_permitted", "execution_ceilings_independently_measured"]
 forbidden = ["calibration_preflight_signing_payload_v1", "holdout.consume", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "climate_source_custody_prepare"
+symbol = "prepare_climate_source_holdout"
+call_pattern = '\bprepare_climate_source_holdout\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"
+definition_markers = ["pub fn prepare_climate_source_holdout", "boundary()?", "cut.validate", "initialize_private_holdout", "NOT_ENOUGH_INFO"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--prepare-climate", "codex_hepta_intelligence_eval::prepare_climate_source_holdout"]
+
+[[boundary]]
+id = "fixed_source_custody_initialize"
+symbol = "initialize_private_holdout"
+call_pattern = '\binitialize_private_holdout\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_holdout_custody.rs"
+definition_markers = ["pub(super) fn initialize_private_holdout", "LockedFileFinalHoldoutCasStoreV1::create", "FencedFinalHoldoutOwnerV1::initialize", "create_private(witness_path"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"]
+caller_markers = ["initialize_private_holdout(", "config_digest"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"
+required = ["hepta.fixed-climate-holdout.config.v1", "hepta.climate-fever.feature-cut.v1", "annotation_values_used", "old_gold_keys_cas_opened", "original_source_pins", "SUPPORTS", "REFUTES", "NOT_ENOUGH_INFO", "source_component_claim_ids", "inspect_private_holdout"]
+forbidden = ["SigningKey", "holdout.consume", "AuthorityPosture::ALLOW_ALL", "IdempotentReplay"]
