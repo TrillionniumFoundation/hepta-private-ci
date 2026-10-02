@@ -20,7 +20,10 @@ preparation. It never returns a publication or consumer-acceptance claim.
 
 `InspectedLegacyEventV1` retains original bytes and their original digest.
 `inspect_legacy_container_v1` checks one bounded complete journal/segment and
-reports its original digest, sequence and seal facts. Incomplete tails reject
+reports its original digest, sequence and seal facts. The inspector bounds each
+input to 8 MiB and 8192 records; it does not promise to accept every historical
+store or a concatenated multi-segment history. A complete unsealed frame tail is
+structurally valid, while a partial frame/footer rejects. Incomplete tails reject
 without repair. A valid empty/prefix container can inspect successfully, but
 cannot satisfy an independently retained later witness by itself. Cross-segment
 inventory completeness, causal replay and authentic provenance are owner duties.

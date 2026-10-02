@@ -69,6 +69,15 @@ fn real_journals_and_sealed_segments_inspect_without_history_conversion() {
         assert_eq!(s.records, 1);
         assert!(!j.sealed);
         assert!(s.sealed);
+        let unsealed =
+            inspect_legacy_container_v1(&segment[..segment.len() - 80], Some(profile), binding)
+                .expect("complete unsealed frames");
+        assert!(!unsealed.sealed);
+        assert_eq!(unsealed.last, s.last);
+        assert!(
+            inspect_legacy_container_v1(&segment[..segment.len() - 1], Some(profile), binding)
+                .is_err()
+        );
         assert_eq!(s.segment_index, Some(0));
         assert_eq!(j.original_bytes_digest, Digest32::of_bytes(journal));
         assert_eq!(s.original_bytes_digest, Digest32::of_bytes(segment));
