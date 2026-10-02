@@ -53,6 +53,11 @@ fn wide(value: &std::ffi::OsStr) -> Result<Vec<u16>, String> {
     Ok(value)
 }
 
+fn registration_error(stage: &'static str, error: windows::core::Error) -> windows::core::Error {
+    // Retain the HRESULT and a bounded operation label, never input paths or IDs.
+    windows::core::Error::new(error.code(), stage)
+}
+
 fn app_id_value() -> windows::core::Result<PROPVARIANT> {
     let text: Vec<u16> = APP_USER_MODEL_ID.encode_utf16().chain([0]).collect();
     // SAFETY: Input is a live NUL-terminated string. SDK functions allocate the
@@ -122,16 +127,35 @@ fn register_in(
     let result: windows::core::Result<()> = unsafe {
         (|| {
             let link: IShellLinkW =
-                CoCreateInstance(&ShellLink, /*punkouter*/ None, CLSCTX_INPROC_SERVER)?;
-            link.SetPath(PCWSTR(executable_text.as_ptr()))?;
-            link.SetWorkingDirectory(PCWSTR(directory_text.as_ptr()))?;
-            link.SetDescription(PCWSTR(description.as_ptr()))?;
-            link.SetIconLocation(PCWSTR(executable_text.as_ptr()), /*iicon*/ 0)?;
-            let store: IPropertyStore = link.cast()?;
-            store.SetValue(&APP_USER_MODEL_ID_KEY, &app_id_value()?)?;
-            store.Commit()?;
-            let persist: IPersistFile = link.cast()?;
-            persist.Save(PCWSTR(shortcut_text.as_ptr()), /*fremember*/ true)?;
+                CoCreateInstance(&ShellLink, /*punkouter*/ None, CLSCTX_INPROC_SERVER)
+                    .map_err(|error| registration_error("registrar CoCreateInstance", error))?;
+            link.SetPath(PCWSTR(executable_text.as_ptr()))
+                .map_err(|error| registration_error("registrar SetPath", error))?;
+            link.SetWorkingDirectory(PCWSTR(directory_text.as_ptr()))
+                .map_err(|error| registration_error("registrar SetWorkingDirectory", error))?;
+            link.SetDescription(PCWSTR(description.as_ptr()))
+                .map_err(|error| registration_error("registrar SetDescription", error))?;
+            link.SetIconLocation(PCWSTR(executable_text.as_ptr()), /*iicon*/ 0)
+                .map_err(|error| registration_error("registrar SetIconLocation", error))?;
+            let store: IPropertyStore = link
+                .cast()
+                .map_err(|error| registration_error("registrar IPropertyStore", error))?;
+            store
+                .SetValue(
+                    &APP_USER_MODEL_ID_KEY,
+                    &app_id_value()
+                        .map_err(|error| registration_error("registrar identity value", error))?,
+                )
+                .map_err(|error| registration_error("registrar SetValue", error))?;
+            store
+                .Commit()
+                .map_err(|error| registration_error("registrar Commit", error))?;
+            let persist: IPersistFile = link
+                .cast()
+                .map_err(|error| registration_error("registrar IPersistFile", error))?;
+            persist
+                .Save(PCWSTR(shortcut_text.as_ptr()), /*fremember*/ true)
+                .map_err(|error| registration_error("registrar Save", error))?;
             Ok(())
         })()
     };
@@ -153,25 +177,41 @@ fn verify_saved_shortcut(executable: &Path, shortcut: &Path) -> Result<(), Strin
     let result: windows::core::Result<()> = unsafe {
         (|| {
             let observed: IShellLinkW =
-                CoCreateInstance(&ShellLink, /*punkouter*/ None, CLSCTX_INPROC_SERVER)?;
-            let persist: IPersistFile = observed.cast()?;
-            persist.Load(PCWSTR(shortcut_text.as_ptr()), STGM_READ)?;
-            let store: IPropertyStore = observed.cast()?;
-            let identity = store.GetValue(&APP_USER_MODEL_ID_KEY)?;
-            if BSTR::try_from(&identity)? != APP_USER_MODEL_ID {
-                return Err(windows::core::Error::from_hresult(
+                CoCreateInstance(&ShellLink, /*punkouter*/ None, CLSCTX_INPROC_SERVER)
+                    .map_err(|error| registration_error("registrar CoCreateInstance", error))?;
+            let persist: IPersistFile = observed
+                .cast()
+                .map_err(|error| registration_error("registrar reopened IPersistFile", error))?;
+            persist
+                .Load(PCWSTR(shortcut_text.as_ptr()), STGM_READ)
+                .map_err(|error| registration_error("registrar Load", error))?;
+            let store: IPropertyStore = observed
+                .cast()
+                .map_err(|error| registration_error("registrar reopened IPropertyStore", error))?;
+            let identity = store
+                .GetValue(&APP_USER_MODEL_ID_KEY)
+                .map_err(|error| registration_error("registrar GetValue", error))?;
+            if BSTR::try_from(&identity)
+                .map_err(|error| registration_error("registrar identity conversion", error))?
+                != APP_USER_MODEL_ID
+            {
+                return Err(windows::core::Error::new(
                     windows::Win32::Foundation::E_FAIL,
+                    "registrar persisted identity mismatch",
                 ));
             }
             let mut target = [0_u16; 32_768];
-            observed.GetPath(&mut target, std::ptr::null_mut(), /*fflags*/ 0)?;
+            observed
+                .GetPath(&mut target, std::ptr::null_mut(), /*fflags*/ 0)
+                .map_err(|error| registration_error("registrar GetPath", error))?;
             let length = target
                 .iter()
                 .position(|value| *value == 0)
                 .unwrap_or(target.len());
             if OsString::from_wide(&target[..length]) != executable.as_os_str() {
-                return Err(windows::core::Error::from_hresult(
+                return Err(windows::core::Error::new(
                     windows::Win32::Foundation::E_FAIL,
+                    "registrar persisted target path mismatch",
                 ));
             }
             Ok(())

@@ -43,6 +43,27 @@ fn save(link: &IShellLinkW, shortcut: &Path) {
 }
 
 #[test]
+fn registrar_diagnostic_preserves_hresult_without_source_details() {
+    let _apartment = apartment();
+    let source_details = "C:\\用户\\private.exe; identity=private-value; ".repeat(1_024);
+    for code in [
+        windows::Win32::Foundation::E_FAIL,
+        windows::Win32::Foundation::E_ACCESSDENIED,
+    ] {
+        let source = windows::core::Error::new(code, &source_details);
+        let error = registration_error("registrar SetPath", source);
+        assert_eq!(
+            (error.code(), error.message(), error.to_string()),
+            (
+                code,
+                "registrar SetPath".to_owned(),
+                format!("registrar SetPath ({code})"),
+            )
+        );
+    }
+}
+
+#[test]
 fn rust_registrar_round_trips_owned_shortcut_with_native_property_store() {
     let (_directory, executable, shortcut) = fixture();
     let _apartment = apartment();
