@@ -484,6 +484,25 @@ def authorize_current(connection, config, request):
     raise ValueError("actual peer/body/goal/current allocation denied")
 
 
+def send_response(connection, response, config, remaining):
+    connection.sendall(response)
+    if remaining:
+        return
+    # The client verifies the original socket inode after reading this frame.
+    # Keep the final connection and socket until that client drops its stream,
+    # bounded by the original request timeout and configured expiry. No further
+    # frame is decoded, authorized or encoded after the quota is exhausted.
+    remaining_ms = min(config["timeout_ms"], config["expires_at_ms"] - now_ms())
+    if remaining_ms <= 0:
+        return
+    connection.settimeout(remaining_ms / 1000)
+    try:
+        if connection.recv(1):
+            raise ValueError("no request after exhausted encoder quota")
+    except (TimeoutError, ConnectionResetError):
+        pass
+
+
 def serve(config, preprocessor, numpy, pairs, pin):
     development = None
     if config["schema"] == "hepta.fixed-nomic-encoder.v3":
@@ -539,7 +558,7 @@ def serve(config, preprocessor, numpy, pairs, pin):
                         )
                         if len(response) > MAX_RESPONSE_BYTES:
                             raise ValueError("closed public response budget")
-                        connection.sendall(response)
+                        send_response(connection, response, config, remaining)
                         continue
                     pid, before = authorize(connection, config, request)
                     pair = pairs[request["pair_id"]]
@@ -553,11 +572,19 @@ def serve(config, preprocessor, numpy, pairs, pin):
                         for key in request
                         if key not in ("pair_id", "source_row_sha256")
                     }
-                    connection.sendall(
-                        json.dumps(result, separators=(",", ":")).encode() + b"\n"
+                    send_response(
+                        connection,
+                        json.dumps(result, separators=(",", ":")).encode() + b"\n",
+                        config,
+                        remaining,
                     )
                 except (ValueError, KeyError, OSError, TypeError):
-                    connection.sendall(b'{"error":"fixed physical encoder denied"}\n')
+                    send_response(
+                        connection,
+                        b'{"error":"fixed physical encoder denied"}\n',
+                        config,
+                        remaining,
+                    )
     finally:
         listener.close()
         if path.exists() and stat.S_ISSOCK(path.lstat().st_mode):
