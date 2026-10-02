@@ -173,6 +173,12 @@ harness must both use that profile; the suite retains the normal two-second
 control deadline and reads the complete installed executable. An unoptimized
 full-process run is not the product performance acceptance entry point.
 
+`just test` automatically selects that product profile when its Cargo target
+selection includes this process suite, including a full workspace run. Scoped
+`--lib`, other packages and other integration-test targets keep the fast
+configuration. An explicitly supplied Cargo profile or artifact metadata remains
+under caller control.
+
 Bazel provides the same ordinary program as
 `//codex-rs/hepta-agentd:hepta-agentd-product` and the process acceptance as
 `//codex-rs/hepta-agentd:hepta-agentd-module_selection_product-test`. The product
