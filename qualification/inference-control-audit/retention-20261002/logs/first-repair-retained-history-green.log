@@ -1,0 +1,11 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-core)
+   Compiling runtime-inference-adversarial-repro v0.0.0 (/tmp/runtime-inference-audit/repro)
+    Finished `test` profile [unoptimized] target(s) in 2.00s
+────────────
+ Nextest run ID 5fe68f02-2f30-4eec-8850-f546839736b3 with nextest profile: default
+    Starting 2 tests across 1 binary
+        PASS [   0.004s] (1/2) runtime-inference-adversarial-repro tests::truncated_retained_journal_must_not_acknowledge_cached_retry
+        PASS [   0.005s] (2/2) runtime-inference-adversarial-repro tests::same_length_replaced_history_must_not_accept_new_mutation
+────────────
+     Summary [   0.005s] 2 tests run: 2 passed, 0 skipped

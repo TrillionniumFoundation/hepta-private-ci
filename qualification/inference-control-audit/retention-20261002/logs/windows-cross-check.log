@@ -1,0 +1,20 @@
+    Checking sha2 v0.10.9
+    Checking ed25519-dalek v2.2.0
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-types)
+    Checking codex-hepta-infer-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-core)
+warning: unused variable: `path`
+   --> hepta-infer-core/src/native_control_v2_helpers.rs:404:29
+    |
+404 | fn set_owner_only_directory(path: &Path) -> Result<(), Error> {
+    |                             ^^^^ help: if this is intentional, prefix it with an underscore: `_path`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `path`
+   --> hepta-infer-core/src/native_control_v2_helpers.rs:413:19
+    |
+413 | fn sync_directory(path: &Path) -> Result<(), Error> {
+    |                   ^^^^ help: if this is intentional, prefix it with an underscore: `_path`
+
+warning: `codex-hepta-infer-core` (lib) generated 2 warnings (run `cargo fix --lib -p codex-hepta-infer-core` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized] target(s) in 2.16s

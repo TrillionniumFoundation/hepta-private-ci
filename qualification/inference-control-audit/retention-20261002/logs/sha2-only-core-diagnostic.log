@@ -1,0 +1,902 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-core)
+    Finished `test` profile [unoptimized] target(s) in 4.17s
+────────────
+ Nextest run ID 45fdec92-6868-4f4c-98c9-15b654ce12e3 with nextest profile: local
+    Starting 99 tests across 6 binaries (1 test skipped)
+        PASS [   0.004s] ( 1/99) codex-hepta-infer-core control_contracts::tests::deserialized_protected_metadata_is_checked_before_marker_hashing
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::deserialized_protected_metadata_is_checked_before_marker_hashing ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] ( 2/99) codex-hepta-infer-core control_contracts::tests::confidential_output_requires_external_encryption_metadata
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::confidential_output_requires_external_encryption_metadata ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.016s] ( 3/99) codex-hepta-infer-core control_contracts::tests::four_authority_aliases_cannot_reuse_one_execution_signing_key
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::four_authority_aliases_cannot_reuse_one_execution_signing_key ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.01s
+
+
+        PASS [   0.048s] ( 4/99) codex-hepta-infer-core control_contracts::tests::distinct_operator_aliases_cannot_reuse_one_retirement_key
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::distinct_operator_aliases_cannot_reuse_one_retirement_key ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.04s
+
+
+        PASS [   0.050s] ( 5/99) codex-hepta-infer-core control_contracts::tests::four_independent_authorities_bind_one_exact_execution
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::four_independent_authorities_bind_one_exact_execution ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.05s
+
+
+        PASS [   0.058s] ( 6/99) codex-hepta-infer-core control_contracts::tests::key_rotation_window_and_revocation_are_enforced
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::key_rotation_window_and_revocation_are_enforced ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.05s
+
+
+        PASS [   0.070s] ( 7/99) codex-hepta-infer-core control_contracts::tests::retirement_requires_two_distinct_operators
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::retirement_requires_two_distinct_operators ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.06s
+
+
+        PASS [   0.006s] ( 8/99) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_cannot_release_unknown_execution_without_terminal_evidence
+  stdout ───
+
+    running 1 test
+    test durable_control::native::checkpoint_validation_tests::checkpoint_cannot_release_unknown_execution_without_terminal_evidence ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] ( 9/99) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_observation_assignment_identity
+  stdout ───
+
+    running 1 test
+    test durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_observation_assignment_identity ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (10/99) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_signed_audit_shape_and_terminal_sequence
+  stdout ───
+
+    running 1 test
+    test durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_signed_audit_shape_and_terminal_sequence ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (11/99) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::dispatched_request_survives_reopen_compaction_and_second_reopen
+  stdout ───
+
+    running 1 test
+    test durable_control::native::checkpoint_validation_tests::dispatched_request_survives_reopen_compaction_and_second_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (12/99) codex-hepta-infer-core durable_control::native::checkpoint_validation_tests::valid_checkpoint_reopens_and_retains_unknown_execution_capacity
+  stdout ───
+
+    running 1 test
+    test durable_control::native::checkpoint_validation_tests::valid_checkpoint_reopens_and_retains_unknown_execution_capacity ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.069s] (13/99) codex-hepta-infer-core control_contracts::tests::signed_reconciliation_is_exact_and_rotation_bound
+  stdout ───
+
+    running 1 test
+    test control_contracts::tests::signed_reconciliation_is_exact_and_rotation_bound ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.07s
+
+
+        PASS [   0.049s] (14/99) codex-hepta-infer-core durable_control::native::economic_tests::host_observed_overrun_releases_slot_and_preserves_denial_reason
+  stdout ───
+
+    running 1 test
+    test durable_control::native::economic_tests::host_observed_overrun_releases_slot_and_preserves_denial_reason ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.05s
+
+
+        PASS [   0.192s] (15/99) codex-hepta-infer-core durable_control::native::economic_tests::signed_quota_overrun_preserves_terminal_usage_and_denies_success
+  stdout ───
+
+    running 1 test
+    test durable_control::native::economic_tests::signed_quota_overrun_preserves_terminal_usage_and_denies_success ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.19s
+
+
+        PASS [   0.006s] (16/99) codex-hepta-infer-core durable_control::native::record_staging_tests::actual_append_failure_discards_target_and_first_admission_candidates
+  stdout ───
+
+    running 1 test
+    test durable_control::native::record_staging_tests::actual_append_failure_discards_target_and_first_admission_candidates ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (17/99) codex-hepta-infer-core durable_control::native::record_staging_tests::late_reducer_failure_does_not_install_mutated_target_or_append
+  stdout ───
+
+    running 1 test
+    test durable_control::native::record_staging_tests::late_reducer_failure_does_not_install_mutated_target_or_append ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (18/99) codex-hepta-infer-core durable_control::native::record_staging_tests::mismatched_event_identity_and_checkpoint_are_rejected_before_append
+  stdout ───
+
+    running 1 test
+    test durable_control::native::record_staging_tests::mismatched_event_identity_and_checkpoint_are_rejected_before_append ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (19/99) codex-hepta-infer-core durable_control::native::record_staging_tests::staged_admission_counts_all_held_records_and_preserves_compacted_history
+  stdout ───
+
+    running 1 test
+    test durable_control::native::record_staging_tests::staged_admission_counts_all_held_records_and_preserves_compacted_history ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (20/99) codex-hepta-infer-core durable_control::native::storage_sync_tests::identical_content_addressed_reuse_preserves_the_existing_object
+  stdout ───
+
+    running 1 test
+    test durable_control::native::storage_sync_tests::identical_content_addressed_reuse_preserves_the_existing_object ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (21/99) codex-hepta-infer-core durable_control::native::storage_sync_tests::identical_reuse_requires_a_successful_real_file_flush
+  stdout ───
+
+    running 1 test
+    test durable_control::native::storage_sync_tests::identical_reuse_requires_a_successful_real_file_flush ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (22/99) codex-hepta-infer-core durable_control::native::storage_sync_tests::maintenance_retry_reuses_the_synced_archive_and_commits_one_generation
+  stdout ───
+
+    running 1 test
+    test durable_control::native::storage_sync_tests::maintenance_retry_reuses_the_synced_archive_and_commits_one_generation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (23/99) codex-hepta-infer-core durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (24/99) codex-hepta-infer-core durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (25/99) codex-hepta-infer-core durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (26/99) codex-hepta-infer-core durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (27/99) codex-hepta-infer-core durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (28/99) codex-hepta-infer-core durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (29/99) codex-hepta-infer-core durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.226s] (30/99) codex-hepta-infer-core durable_control::native::economic_tests::signed_terminal_preserves_prior_owner_authority_without_inventing_readiness
+  stdout ───
+
+    running 1 test
+    test durable_control::native::economic_tests::signed_terminal_preserves_prior_owner_authority_without_inventing_readiness ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.22s
+
+
+        PASS [   0.005s] (31/99) codex-hepta-infer-core durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (32/99) codex-hepta-infer-core durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (33/99) codex-hepta-infer-core durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (34/99) codex-hepta-infer-core durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (35/99) codex-hepta-infer-core durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.016s] (36/99) codex-hepta-infer-core durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.01s
+
+
+        PASS [   0.005s] (37/99) codex-hepta-infer-core durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (38/99) codex-hepta-infer-core durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (39/99) codex-hepta-infer-core durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.050s] (40/99) codex-hepta-infer-core durable_control::native::v2_tests::ambiguous_native_append_fences_idempotent_mutations
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::ambiguous_native_append_fences_idempotent_mutations ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.05s
+
+
+        PASS [   0.051s] (41/99) codex-hepta-infer-core durable_control::native::v2_tests::authorized_settlement_never_persists_raw_output
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::authorized_settlement_never_persists_raw_output ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.05s
+
+
+        PASS [   0.060s] (42/99) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::current_schema_two_checkpoint_preserves_independently_observed_readiness
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::checkpoint_migration_tests::current_schema_two_checkpoint_preserves_independently_observed_readiness ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.06s
+
+
+        PASS [   0.139s] (43/99) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::legacy_retirement_without_key_fingerprints_stays_held_in_both_checkpoint_versions
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::checkpoint_migration_tests::legacy_retirement_without_key_fingerprints_stays_held_in_both_checkpoint_versions ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.13s
+
+
+        PASS [   0.008s] (44/99) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_pre_effect_abort_checkpoint_remains_released
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_pre_effect_abort_checkpoint_remains_released ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.061s] (45/99) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_reconciliation_checkpoint_denies_unsupported_readiness
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_reconciliation_checkpoint_denies_unsupported_readiness ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.06s
+
+
+        PASS [   0.005s] (46/99) codex-hepta-infer-core durable_control::native::v2_tests::checkpoint_tampering_is_rejected_on_reopen
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::checkpoint_tampering_is_rejected_on_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (47/99) codex-hepta-infer-core durable_control::native::v2_tests::compaction_preserves_indeterminate_capacity_and_exact_state
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::compaction_preserves_indeterminate_capacity_and_exact_state ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] (48/99) codex-hepta-infer-core durable_control::native::v2_tests::every_compaction_failpoint_reopens_a_complete_generation
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::every_compaction_failpoint_reopens_a_complete_generation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.071s] (49/99) codex-hepta-infer-core durable_control::native::v2_tests::indeterminate_retirement_is_revision_bound_and_dual_controlled
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::indeterminate_retirement_is_revision_bound_and_dual_controlled ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.07s
+
+
+        PASS [   0.094s] (50/99) codex-hepta-infer-core durable_control::native::v2_tests::legacy_retirement_holds_capacity_until_fresh_independent_approval
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::legacy_retirement_holds_capacity_until_fresh_independent_approval ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.09s
+
+
+        PASS [   0.006s] (51/99) codex-hepta-infer-core durable_control::native::v2_tests::locally_aborted_dispatch_cannot_be_resurrected_by_observation
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::locally_aborted_dispatch_cannot_be_resurrected_by_observation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (52/99) codex-hepta-infer-core durable_control::native::v2_tests::pre_effect_abort_token_cannot_release_another_journal
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::pre_effect_abort_token_cannot_release_another_journal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.052s] (53/99) codex-hepta-infer-core durable_control::native::v2_tests::protected_replay_tests::journal_replay_rejects_malformed_metadata_and_unbound_output_marker
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::protected_replay_tests::journal_replay_rejects_malformed_metadata_and_unbound_output_marker ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.05s
+
+
+        PASS [   0.064s] (54/99) codex-hepta-infer-core durable_control::native::v2_tests::protected_replay_tests::reconciled_checkpoint_revalidates_retained_partial_output_metadata
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::protected_replay_tests::reconciled_checkpoint_revalidates_retained_partial_output_metadata ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.06s
+
+
+        PASS [   0.006s] (55/99) codex-hepta-infer-core durable_control::native::v2_tests::retained_pre_effect_abort_token_cannot_release_reopened_owner
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::retained_pre_effect_abort_token_cannot_release_reopened_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.064s] (56/99) codex-hepta-infer-core durable_control::native::v2_tests::signed_reconciliation_releases_indeterminate_without_blind_replay
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::signed_reconciliation_releases_indeterminate_without_blind_replay ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.06s
+
+
+        PASS [   0.007s] (57/99) codex-hepta-infer-core durable_control::native::v2_tests::terminal_usage_refinement_cannot_clear_success_denial
+  stdout ───
+
+    running 1 test
+    test durable_control::native::v2_tests::terminal_usage_refinement_cannot_clear_success_denial ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (58/99) codex-hepta-infer-core durable_control::retained_journal_tests::byte_identical_path_replacement_fences_the_original_open_writer
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::byte_identical_path_replacement_fences_the_original_open_writer ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] (59/99) codex-hepta-infer-core durable_control::retained_journal_tests::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (60/99) codex-hepta-infer-core durable_control::retained_journal_tests::compaction_and_reopen_adopt_only_the_verified_new_prefix
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::compaction_and_reopen_adopt_only_the_verified_new_prefix ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (61/99) codex-hepta-infer-core durable_control::retained_journal_tests::compaction_does_not_publish_damaged_replacement_after_directory_sync
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::compaction_does_not_publish_damaged_replacement_after_directory_sync ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (62/99) codex-hepta-infer-core durable_control::retained_journal_tests::compaction_rechecks_predecessor_after_generation_sync_before_rename
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::compaction_rechecks_predecessor_after_generation_sync_before_rename ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (63/99) codex-hepta-infer-core durable_control::retained_journal_tests::damaged_new_checkpoint_cannot_be_adopted_after_directory_sync
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::damaged_new_checkpoint_cannot_be_adopted_after_directory_sync ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (64/99) codex-hepta-infer-core durable_control::retained_journal_tests::lost_journal_access_denies_ack_and_write_until_explicit_reopen
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::lost_journal_access_denies_ack_and_write_until_explicit_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (65/99) codex-hepta-infer-core durable_control::retained_journal_tests::malformed_admission_is_rejected_without_an_expensive_retention_scan
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::malformed_admission_is_rejected_without_an_expensive_retention_scan ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   5.496s] (66/99) codex-hepta-infer-core durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes
+  stdout ───
+
+    running 1 test
+    test durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 5.49s
+
+
+        PASS [   0.010s] (67/99) codex-hepta-infer-core durable_control::retained_journal_tests::same_length_valid_history_substitution_denies_new_write_without_repair
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::same_length_valid_history_substitution_denies_new_write_without_repair ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] (68/99) codex-hepta-infer-core durable_control::retained_journal_tests::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (69/99) codex-hepta-infer-core durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (70/99) codex-hepta-infer-core durable_control::tests::failed_append_fences_legacy_idempotent_commands_until_reopen
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::failed_append_fences_legacy_idempotent_commands_until_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (71/99) codex-hepta-infer-core durable_control::tests::invalid_event_is_rejected_before_append
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::invalid_event_is_rejected_before_append ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (72/99) codex-hepta-infer-core durable_control::tests::missing_terminal_observation_becomes_indeterminate
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::missing_terminal_observation_becomes_indeterminate ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (73/99) codex-hepta-infer-core durable_control::tests::one_writer_is_held_until_owner_drop
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::one_writer_is_held_until_owner_drop ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (74/99) codex-hepta-infer-core durable_control::tests::reopens_exact_committed_state
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::reopens_exact_committed_state ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (75/99) codex-hepta-infer-core durable_control::tests::replay_revalidates_event_semantics_and_terminal_bindings
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::replay_revalidates_event_semantics_and_terminal_bindings ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (76/99) codex-hepta-infer-core durable_control::tests::reservation_rejects_request_that_expired_after_submission
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::reservation_rejects_request_that_expired_after_submission ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (77/99) codex-hepta-infer-core durable_control::tests::same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (78/99) codex-hepta-infer-core durable_control::tests::settlement_enforces_request_token_limit_before_append_and_on_replay
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::settlement_enforces_request_token_limit_before_append_and_on_replay ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (79/99) codex-hepta-infer-core durable_control::tests::settlement_rejects_quota_overrun_and_same_digest_usage_drift
+  stdout ───
+
+    running 1 test
+    test durable_control::tests::settlement_rejects_quota_overrun_and_same_digest_usage_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (80/99) codex-hepta-infer-core durable_control::writer_lock::tests::a_dangling_journal_symlink_cannot_split_the_compaction_owner
+  stdout ───
+
+    running 1 test
+    test durable_control::writer_lock::tests::a_dangling_journal_symlink_cannot_split_the_compaction_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (81/99) codex-hepta-infer-core durable_control::writer_lock::tests::compaction_rejects_journal_growth_and_fences_the_stale_owner
+  stdout ───
+
+    running 1 test
+    test durable_control::writer_lock::tests::compaction_rejects_journal_growth_and_fences_the_stale_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (82/99) codex-hepta-infer-core durable_control::writer_lock::tests::detached_generation_lock_does_not_replace_the_lifecycle_lock
+  stdout ───
+
+    running 1 test
+    test durable_control::writer_lock::tests::detached_generation_lock_does_not_replace_the_lifecycle_lock ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (83/99) codex-hepta-infer-core durable_control::writer_lock::tests::long_journal_names_and_existing_symlink_aliases_share_a_short_lock
+  stdout ───
+
+    running 1 test
+    test durable_control::writer_lock::tests::long_journal_names_and_existing_symlink_aliases_share_a_short_lock ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (84/99) codex-hepta-infer-core durable_control::writer_lock::tests::renamed_generation_failure_retains_ownership_until_the_owner_exits
+  stdout ───
+
+    running 1 test
+    test durable_control::writer_lock::tests::renamed_generation_failure_retains_ownership_until_the_owner_exits ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (85/99) codex-hepta-infer-core neuron_feature::tests::non_success_observations_preserve_exact_encoder_and_head_binding
+  stdout ───
+
+    running 1 test
+    test neuron_feature::tests::non_success_observations_preserve_exact_encoder_and_head_binding ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (86/99) codex-hepta-infer-core neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output
+  stdout ───
+
+    running 1 test
+    test neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (87/99) codex-hepta-infer-core neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected
+  stdout ───
+
+    running 1 test
+    test neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (88/99) codex-hepta-infer-core neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority
+  stdout ───
+
+    running 1 test
+    test neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (89/99) codex-hepta-infer-core tests::completion_requires_reservation
+  stdout ───
+
+    running 1 test
+    test tests::completion_requires_reservation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (90/99) codex-hepta-infer-core tests::conflicting_identity_is_rejected
+  stdout ───
+
+    running 1 test
+    test tests::conflicting_identity_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (91/99) codex-hepta-infer-core tests::request_lifecycle_is_fenced_and_authority_free
+  stdout ───
+
+    running 1 test
+    test tests::request_lifecycle_is_fenced_and_authority_free ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] (92/99) codex-hepta-infer-core tests::stale_digest_cannot_reserve
+  stdout ───
+
+    running 1 test
+    test tests::stale_digest_cannot_reserve ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 0.00s
+
+
+        PASS [   0.069s] (93/99) codex-hepta-infer-core::output_retention compaction_reports_expiry_without_manufacturing_vault_deletion
+  stdout ───
+
+    running 1 test
+    test compaction_reports_expiry_without_manufacturing_vault_deletion ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+        PASS [   0.027s] (94/99) codex-hepta-infer-core::process_crash_recovery an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated
+  stdout ───
+
+    running 1 test
+    test an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+        PASS [   0.100s] (95/99) codex-hepta-infer-core::process_crash_recovery sigkill_at_every_maintenance_boundary_recovers_one_complete_generation
+  stdout ───
+
+    running 1 test
+    test sigkill_at_every_maintenance_boundary_recovers_one_complete_generation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.10s
+
+
+        PASS [   0.126s] (96/99) codex-hepta-infer-core::recovery_after_expiry fresh_rotated_dual_control_retirement_releases_after_lease_expiry
+  stdout ───
+
+    running 1 test
+    test fresh_rotated_dual_control_retirement_releases_after_lease_expiry ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.12s
+
+
+        PASS [   0.110s] (97/99) codex-hepta-infer-core::recovery_after_expiry fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry
+  stdout ───
+
+    running 1 test
+    test fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.11s
+
+
+        PASS [   0.061s] (98/99) codex-hepta-infer-core::recovery_after_expiry historical_four_authority_aliases_cannot_reuse_one_execution_signing_key
+  stdout ───
+
+    running 1 test
+    test historical_four_authority_aliases_cannot_reuse_one_execution_signing_key ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.05s
+
+
+        PASS [   7.091s] (99/99) codex-hepta-infer-core durable_control::retained_journal_tests::retained_prefix_cost_is_bounded_at_small_and_near_capacity_sizes
+  stdout ───
+
+    running 1 test
+    test durable_control::retained_journal_tests::retained_prefix_cost_is_bounded_at_small_and_near_capacity_sizes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 93 filtered out; finished in 7.09s
+
+  stderr ───
+    retained-prefix bytes=1024 admission=43.206µs release=25.368µs
+    retained-prefix bytes=66060288 admission=94.895274ms release=95.817813ms
+
+────────────
+     Summary [   8.402s] 99 tests run: 99 passed, 1 skipped
