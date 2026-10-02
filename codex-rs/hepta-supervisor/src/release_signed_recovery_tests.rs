@@ -4,6 +4,9 @@ use super::*;
 
 use pretty_assertions::assert_eq;
 
+#[path = "signed_constructor_replay_tests.rs"]
+mod constructor_replay;
+
 fn recovery_signing_fixture() -> (
     crate::signed_authority::H7H89ProductionGrantSigner,
     codex_hepta_memory::H7SignedArtifactEnvelope,

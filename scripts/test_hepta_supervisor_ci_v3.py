@@ -150,6 +150,14 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "signed_effect_boundary_tests.rs",
                 "daemon::authority_tests::effect_boundary_tests",
             ),
+            (
+                "signed_constructor_replay_tests.rs",
+                "supervisor::tests::release_retry_tests::signed_recovery::constructor_replay",
+            ),
+            (
+                "signed_constructor_containment_tests.rs",
+                "supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment",
+            ),
             ("daemon_read_projection_tests.rs", "daemon::read_view::projection_tests"),
             (
                 "automatic_restart_event_tests.rs",
