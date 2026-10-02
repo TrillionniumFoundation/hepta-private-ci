@@ -16,6 +16,30 @@ fn profile_json() -> serde_json::Value {
             "evidenceSource": "objective.resource.profile"
         })
     };
+    // Bound each macro expansion without relaxing the crate recursion limit.
+    let risk = serde_json::json!({
+            "evidenceSource": "objective.risk.profile",
+            "class": "principal",
+            "riskConstraintId": "risk.class",
+            "riskAxis": "risk.class.value",
+            "lowValueQ32": 0,
+            "mediumValueQ32": 1,
+            "highValueQ32": 2,
+            "criticalValueQ32": 3,
+            "rollbackConstraintId": "risk.rollback",
+            "rollbackAxis": "risk.rollback.value",
+            "rollbackNoneValueQ32": 0,
+            "rollbackReversibleValueQ32": 1,
+            "rollbackCompensatableValueQ32": 2,
+            "rollbackIrreversibleValueQ32": 3,
+            "compensationConstraintId": "risk.compensation",
+            "compensationAxis": "risk.compensation.value",
+            "compensationFalseValueQ32": 0,
+            "compensationTrueValueQ32": 1,
+            "abstentionConstraintId": "risk.abstention",
+            "abstentionAxis": "risk.abstention.value",
+            "abstentionRules": [{ "sourceRule": "ask", "valueQ32": 1 }]
+    });
     serde_json::json!({
         "profileId": "objective.profile.agentd.v1",
         "profileRevision": 1,
@@ -47,29 +71,7 @@ fn profile_json() -> serde_json::Value {
             "networkBytes": resource("network", "principal"),
             "externalEffectCount": resource("effects", "principal")
         },
-        "risk": {
-            "evidenceSource": "objective.risk.profile",
-            "class": "principal",
-            "riskConstraintId": "risk.class",
-            "riskAxis": "risk.class.value",
-            "lowValueQ32": 0,
-            "mediumValueQ32": 1,
-            "highValueQ32": 2,
-            "criticalValueQ32": 3,
-            "rollbackConstraintId": "risk.rollback",
-            "rollbackAxis": "risk.rollback.value",
-            "rollbackNoneValueQ32": 0,
-            "rollbackReversibleValueQ32": 1,
-            "rollbackCompensatableValueQ32": 2,
-            "rollbackIrreversibleValueQ32": 3,
-            "compensationConstraintId": "risk.compensation",
-            "compensationAxis": "risk.compensation.value",
-            "compensationFalseValueQ32": 0,
-            "compensationTrueValueQ32": 1,
-            "abstentionConstraintId": "risk.abstention",
-            "abstentionAxis": "risk.abstention.value",
-            "abstentionRules": [{ "sourceRule": "ask", "valueQ32": 1 }]
-        }
+        "risk": risk
     })
 }
 

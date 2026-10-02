@@ -59,6 +59,12 @@
 
 继续复审确认 evaluation 的独立认证入口已经绑定 bundle.objective_digest 与两份 envelope，未复制政策缺陷；final-use、生命周期与 Compiled 重放隔离仍沿既有 owner。下述 durable handoff、真实 crash 恢复及外部接受缺口保持开放，四个 completion 谓词没有提升。
 
+### 后续精确候选 CI：旧回归夹具的编译阻塞
+
+候选 `0f20ae69d0fccd9a18726cc6daffa78afa9d26a4` 的 [source preflight 36977011568](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36977011568) 失败：Windows immutable lock／native policy／source-state 检查通过，Linux ARM 在执行政策测试前编译 Agentd lib tests 时，`intelligence_objective_host_replay_tests.rs` 的 `profile_json` 超过默认宏递归深度。该夹具与审计前 `9f18f67e4d` 完全一致；这不是新认证断言失败，也不能计为 Agentd 执行通过。
+
+修正仅将原有嵌套 risk JSON 提取为同一函数的局部值，不提高 crate 递归限制、不删测试、不改变政策或 profile 字段。提取的原函数在 Rust 1.95 默认限制下复现相同错误；修正后原函数及相邻 `source_json` 均可编译，真实 strict profile decoder 和 validator 通过，序列化 JSON 与旧夹具逐字节一致。用于旧值比较的临时独立程序提高了递归限制；仓库源码及修正后的验证程序没有提高限制。这是有限的编译／数据等价验证；完整 Agentd 测试及下一发布候选的 hosted 资格仍须重新执行。
+
 ## 验证与证据限制
 
 | 累计本地观察（不替代当前候选结果） | 可证明范围 |
