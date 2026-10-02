@@ -61,6 +61,23 @@ fn physical_loader_checks_encoder_heads_dimensions_and_complete_runtime_tuple() 
         },
     };
     assert_eq!(physical.validate_runtime(&runtime), Ok(()));
+    let canonical = |authentication: Digest32| {
+        let mut value = runtime.clone();
+        value.calibration.calibration_artifact_digest = authentication;
+        value.calibration.ood_artifact_digest = authentication;
+        value.calibration.calibration_artifact_digest = Digest32::of_bytes(
+            &value
+                .calibration_evidence_payload_v1()
+                .expect("canonical calibration"),
+        );
+        value.calibration.ood_artifact_digest =
+            Digest32::of_bytes(&value.ood_evidence_payload_v1().expect("canonical OOD"));
+        value
+    };
+    let original = canonical(Digest32::of_bytes(b"original independent E1"));
+    let continued = canonical(Digest32::of_bytes(b"fresh independent E2"));
+    assert_eq!(original, continued);
+    assert_eq!(physical.validate_runtime(&continued), Ok(()));
     for changed in 0..12 {
         let mut other = runtime.clone();
         match changed {
