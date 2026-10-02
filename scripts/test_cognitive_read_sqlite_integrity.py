@@ -18,13 +18,13 @@ INSERT INTO source_ledger (
 """
 
 
-def migrate(db: sqlite3.Connection, first: int = 1, last: int = 20) -> None:
+def migrate(db: sqlite3.Connection, first: int = 1, last: int = 21) -> None:
     for path in sorted(MIGRATIONS.glob("*.sql")):
         if first <= int(path.name.split("_", 1)[0]) <= last:
             db.executescript(path.read_text())
 
 
-def connection(last: int = 20) -> sqlite3.Connection:
+def connection(last: int = 21) -> sqlite3.Connection:
     db = sqlite3.connect(":memory:")
     db.execute("PRAGMA foreign_keys = ON")
     db.execute("PRAGMA recursive_triggers = OFF")

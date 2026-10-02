@@ -117,6 +117,11 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match the default, zero-production-effect runtime startup sequence.
+        // This derives store readiness from the real owner and records only
+        // that composition's zero-authority revocation baseline. The native
+        // worker still obtains its independent final-use authorization.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 

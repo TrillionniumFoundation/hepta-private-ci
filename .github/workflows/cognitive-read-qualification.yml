@@ -124,6 +124,9 @@ jobs:
           test -z "$(git status --porcelain)"
       - name: Prepare CI tools
         uses: ./.github/actions/setup-ci
+      - name: Install candidate Rust qualification components
+        shell: bash
+        run: bash scripts/setup-cognitive-read-toolchain.sh
       - name: Install pinned repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -205,6 +208,9 @@ jobs:
           message: Cognitive read synthetic merge
       - name: Prepare CI tools
         uses: ./.github/actions/setup-ci
+      - name: Install candidate Rust qualification components
+        shell: bash
+        run: bash scripts/setup-cognitive-read-toolchain.sh
       - name: Install pinned repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
