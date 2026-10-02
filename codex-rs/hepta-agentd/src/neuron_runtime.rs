@@ -2,9 +2,10 @@
 //!
 //! This is the named product-host ownership boundary for neuron.runtime source
 //! composition.  It owns the long-lived runtime and the inference.control port
-//! together so callers cannot bypass the exact feature-receipt adapter by
-//! supplying drive/prediction vectors directly.  Constructing this owner does
-//! not itself activate it in the daemon startup path.
+//! together so its `tick` method always uses the exact feature-receipt adapter.
+//! Mutable accessors are privileged host composition seams: their caller must
+//! preserve the authenticated model port and lifecycle invariants. Constructing
+//! this owner does not itself activate it in the daemon startup path.
 
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;

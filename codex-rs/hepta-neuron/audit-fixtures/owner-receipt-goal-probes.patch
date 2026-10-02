@@ -1,0 +1,73 @@
+diff --git a/codex-rs/hepta-neuron/src/runtime_tests.rs b/codex-rs/hepta-neuron/src/runtime_tests.rs
+index 33072343d..09af3e186 100644
+--- a/codex-rs/hepta-neuron/src/runtime_tests.rs
++++ b/codex-rs/hepta-neuron/src/runtime_tests.rs
+@@ -1166,3 +1166,68 @@ fn zero_body_generation_cannot_alias_an_absent_body_binding() {
+     assert_eq!(checked(runtime.current_anchor()), anchor);
+     assert_eq!(checked(witness.current()), anchor);
+ }
++
++// Temporary target-contract probes; remove after the bounded audit reproduction.
++#[test]
++fn execution_target_duplicate_acknowledged_tick_returns_committed_receipt() {
++    let fixture = Fixture::new();
++    let native = native_config();
++    let config = runtime_config(&native);
++    let mut runtime = checked(NeuronRuntime::bootstrap(
++        fixture.file(), native, scope(), /*max_records*/ 4,
++        config.clone(), MemoryWitness::for_config(&config),
++    ));
++    let mut model = FakeModel::new();
++    let request = input(1, Digest32::ZERO);
++    let first = checked(runtime.tick(&mut model, request.clone()));
++    let replay = checked(runtime.tick(&mut model, request));
++    assert_eq!(replay, first);
++    assert_eq!(model.calls, 1);
++}
++
++#[test]
++fn execution_target_restart_replays_same_committed_receipt() {
++    let fixture = Fixture::new();
++    let native = native_config();
++    let config = runtime_config(&native);
++    let witness = MemoryWitness::for_config(&config);
++    let mut runtime = checked(NeuronRuntime::bootstrap(
++        fixture.file(), native.clone(), scope(), /*max_records*/ 4,
++        config.clone(), witness.clone(),
++    ));
++    let mut model = FakeModel::new();
++    let request = input(1, Digest32::ZERO);
++    let first = checked(runtime.tick(&mut model, request.clone()));
++    let anchor = match checked(runtime.current_anchor()) {
++        Some(anchor) => anchor,
++        None => panic!("successful tick has no anchor"),
++    };
++    drop(runtime);
++    let mut recovered = checked(NeuronRuntime::recover(
++        fixture.file(), native, scope(), /*max_records*/ 4,
++        config, anchor, witness,
++    ));
++    let replay = checked(recovered.tick(&mut model, request));
++    assert_eq!(replay, first);
++    assert_eq!(model.calls, 1);
++}
++
++#[test]
++fn execution_target_reused_tick_id_with_changed_semantics_conflicts() {
++    let fixture = Fixture::new();
++    let native = native_config();
++    let config = runtime_config(&native);
++    let mut runtime = checked(NeuronRuntime::bootstrap(
++        fixture.file(), native, scope(), /*max_records*/ 4,
++        config.clone(), MemoryWitness::for_config(&config),
++    ));
++    let mut model = FakeModel::new();
++    let request = input(1, Digest32::ZERO);
++    let tick_id = request.tick_id.clone();
++    let first = checked(runtime.tick(&mut model, request));
++    let mut changed = input(2, first.tick.checkpoint_after);
++    changed.tick_id = tick_id;
++    let result = runtime.tick(&mut model, changed);
++    assert!(result.is_err(), "a reused tick ID with changed semantics was accepted");
++    assert_eq!(model.calls, 1);
++}

@@ -12,6 +12,7 @@ use codex_hepta_types::Generation;
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
 const ELIGIBILITY_L1: i64 = 4 * Q;
+const CHECKPOINT_DOMAIN: &[u8] = b"hepta.neuron.sparse-checkpoint.q24.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct InhibitoryEdge {
@@ -68,6 +69,9 @@ pub struct SparseCheckpoint {
     activity: Vec<i64>,
     threshold: Vec<i64>,
     eligibility: Vec<i64>,
+    // Replay-derived receipt metadata. It is not part of the V1 checkpoint
+    // preimage or journal encoding; replay recomputes it from the stored tick.
+    projection_count: u32,
     digest: Digest32,
 }
 
@@ -177,6 +181,26 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    pub(crate) fn predecessor_digest(&self) -> Digest32 {
+        self.predecessor
+    }
+
+    pub(crate) fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
+    pub(crate) fn matches_config_digest(&self, config_digest: Digest32) -> bool {
+        self.config == config_digest
+    }
+
+    pub(crate) fn matches_body_digest(&self, body_digest: Digest32) -> bool {
+        self.body == body_digest
+    }
+
+    pub(crate) fn projection_count(&self) -> u32 {
+        self.projection_count
+    }
+
     /// Canonical digest of the recurrent temporal-state vector only.
     ///
     /// This is intentionally distinct from the full checkpoint digest so the
@@ -202,9 +226,16 @@ impl SparseCheckpoint {
         &self.activation
     }
 
-    /// Upper bound for a canonical checkpoint encoding of the current state.
+    /// Conservative binary payload bound for all retained mechanism fields.
+    ///
+    /// Includes the domain tag, replay metadata and vector length frames. This
+    /// is not the JSON protocol size, allocator footprint or actual disk I/O;
+    /// the V1 journal persists ticks and receipts rather than this payload.
     pub fn bounded_encoded_bytes(&self) -> usize {
-        let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();
+        let fixed = CHECKPOINT_DOMAIN.len()
+            + 7 * std::mem::size_of::<Digest32>()
+            + 2 * std::mem::size_of::<u64>()
+            + std::mem::size_of::<u32>();
         let vector_headers = 5 * std::mem::size_of::<u64>();
         let vector_values = [
             self.temporal.len(),
@@ -241,7 +272,7 @@ impl SparseCheckpoint {
     }
 
     fn calculate_digest(&self) -> Digest32 {
-        let mut bytes = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
+        let mut bytes = CHECKPOINT_DOMAIN.to_vec();
         for value in [
             self.config,
             self.scope,
@@ -348,6 +379,7 @@ pub fn sparse_tick(
         activity: vec![0; config.width],
         threshold: vec![0; config.width],
         eligibility: vec![0; config.width],
+        projection_count: 0,
         digest: Digest32::ZERO,
     };
     let mut inhibition = vec![0_i64; config.width];
@@ -403,6 +435,7 @@ pub fn sparse_tick(
         }
         projections += 1;
     }
+    next.projection_count = projections;
     next.digest = next.calculate_digest();
     let active_count = next.activation.iter().filter(|&&v| v > 0).count();
     let receipt = SparseSignalReceipt {

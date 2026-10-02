@@ -23,10 +23,13 @@ struct PendingWitness {
     expected: Option<JournalAnchor>,
     next: JournalAnchor,
     output: NeuronRuntimeOutputV1,
+    started: Instant,
 }
 
 pub struct NeuronRuntime<W: AnchorWitnessStore> {
     config: NeuronRuntimeConfigV1,
+    native: SparseConfig,
+    scope: JournalScope,
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
@@ -42,15 +45,18 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
+        Self::require_witness_config(&config, scope, &witness)?;
         if file.metadata().map_err(JournalError::from)?.len() != 0 {
             return Err(NeuronRuntimeError::BootstrapRequiresEmptyJournal);
         }
         if witness.current()?.is_some() {
             return Err(NeuronRuntimeError::BootstrapWitnessPresent);
         }
-        let journal = SparseJournal::open(file, native, scope, max_records)?;
+        let journal = SparseJournal::open_fresh(file, native.clone(), scope, max_records)?;
         Ok(Self {
             config,
+            native,
+            scope,
             journal,
             witness,
             pending: None,
@@ -100,10 +106,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         mut witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
+        Self::require_witness_config(&config, scope, &witness)?;
         if witness.current()? != Some(anchor) {
             return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
         }
-        let journal = SparseJournal::open_anchored(file, native, scope, max_records, anchor)?;
+        let journal =
+            SparseJournal::open_anchored(file, native.clone(), scope, max_records, anchor)?;
         let recovered = journal
             .current()?
             .map(|checkpoint| JournalAnchor {
@@ -119,6 +127,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         }
         Ok(Self {
             config,
+            native,
+            scope,
             journal,
             witness,
             pending: None,
@@ -147,92 +157,20 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
-    /// Recover the first segment of a multi-segment chain. If the independent
-    /// witness is beyond this segment, the segment must be complete; the next
-    /// segment header will bind its exact final checkpoint before composition.
-    pub fn recover_chain_root(
-        file: File,
-        native: SparseConfig,
-        scope: JournalScope,
-        max_records: usize,
-        config: NeuronRuntimeConfigV1,
-        witness: W,
-    ) -> Result<Self, NeuronRuntimeError> {
-        config.validate_native(&native)?;
-        let latest = witness
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if latest.sequence <= max_records as u64 {
-            return Self::recover(file, native, scope, max_records, config, latest, witness);
-        }
-        let journal = SparseJournal::open(file, native, scope, max_records)?;
-        let current = journal
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if current.sequence() != max_records as u64 {
-            return Err(NeuronRuntimeError::Journal(
-                JournalError::AcknowledgedHistoryMissing,
-            ));
-        }
-        Ok(Self {
-            config,
-            journal,
-            witness,
-            pending: None,
-        })
-    }
-
-    /// Rotate to a fresh successor segment while preserving the exact current
-    /// checkpoint as the new segment's immutable seed.
+    /// Rotate a full, independently acknowledged segment while preserving its
+    /// exact current checkpoint as the new segment's immutable seed. Early
+    /// rotation would make the configured segment boundary ambiguous on recovery.
+    /// The successor file must be empty; previously created segments use
+    /// `recover_next_segment` so their complete tail is independently acknowledged.
     pub fn rollover(&mut self, file: File, max_records: usize) -> Result<(), NeuronRuntimeError> {
-        if self.pending.is_some() {
-            return Err(NeuronRuntimeError::PendingReconciliation);
+        self.require_acknowledged_frontier()?;
+        if self.journal.remaining_capacity()? != 0 {
+            return Err(NeuronRuntimeError::SegmentNotFull);
         }
-        self.journal = self.journal.start_successor(file, max_records)?;
-        Ok(())
-    }
-
-    /// Recover the next segment in a chain. Intermediate segments must be full
-    /// when the external witness lies beyond them. The segment containing the
-    /// external witness is opened anchored before any tail repair.
-    pub fn recover_next_segment(
-        &mut self,
-        file: File,
-        max_records: usize,
-    ) -> Result<(), NeuronRuntimeError> {
-        if self.pending.is_some() {
-            return Err(NeuronRuntimeError::PendingReconciliation);
+        if file.metadata().map_err(JournalError::from)?.len() != 0 {
+            return Err(NeuronRuntimeError::RolloverRequiresEmptyJournal);
         }
-        let latest = self
-            .witness
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        let seed = self
-            .journal
-            .current()?
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        let segment_end = seed.sequence().saturating_add(max_records as u64);
-        let length = file.metadata().map_err(JournalError::from)?.len();
-        let next = if latest.sequence <= segment_end {
-            self.journal.recover_successor(file, max_records, latest)?
-        } else {
-            if length == 0 {
-                return Err(NeuronRuntimeError::Journal(
-                    JournalError::AcknowledgedHistoryMissing,
-                ));
-            }
-            let recovered = self.journal.start_successor(file, max_records)?;
-            let current = recovered
-                .current()?
-                .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-            if current.sequence() != segment_end {
-                return Err(NeuronRuntimeError::Journal(
-                    JournalError::AcknowledgedHistoryMissing,
-                ));
-            }
-            recovered
-        };
-        self.journal = next;
+        self.journal = self.journal.start_fresh_successor(file, max_records)?;
         Ok(())
     }
 
@@ -244,16 +182,24 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let model_request = self.model_request(&input)?;
         let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
+            Self::require_witness_config(&self.config, self.scope, &self.witness)?;
             if pending.input_digest != input_digest {
                 return Err(NeuronRuntimeError::PendingReconciliation);
             }
-            match self
-                .witness
-                .compare_and_swap(pending.expected, pending.next)
-            {
+            let reconciled = match self.witness.current() {
+                Ok(current) if current == Some(pending.next) => Ok(()),
+                Ok(current) if current == pending.expected => self
+                    .witness
+                    .compare_and_swap(pending.expected, pending.next),
+                Ok(_) => Err(WitnessStoreError::Conflict),
+                Err(error) => Err(error),
+            };
+            match reconciled {
                 Ok(()) => {
                     self.pending = None;
-                    return Ok(pending.output);
+                    let mut output = pending.output;
+                    self.finalize_acknowledged_latency(&mut output, pending.started);
+                    return Ok(output);
                 }
                 Err(error) => {
                     return Err(NeuronRuntimeError::WitnessAfterCommit {
@@ -264,7 +210,32 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             }
         }
 
+        self.require_acknowledged_frontier()?;
+        if subject_scope_digest(&input.subject_id)? != self.scope.scope_digest
+            || input.objective_digest != self.scope.objective_digest
+        {
+            return Err(NeuronRuntimeError::Journal(JournalError::ContextMismatch));
+        }
         let current = self.journal.current()?;
+        let expected_sequence =
+            current.map_or(Some(1), |checkpoint| checkpoint.sequence().checked_add(1));
+        if Some(input.logical_sequence) != expected_sequence {
+            return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                crate::SparseError::Sequence,
+            )));
+        }
+        if let Some(checkpoint) = current {
+            if input.monotonic_time_micros <= checkpoint.monotonic_micros() {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Clock,
+                )));
+            }
+            if !checkpoint.matches_body_digest(body_digest(&self.config, &input)) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::ScopeDrift,
+                )));
+            }
+        }
         let expected_checkpoint = current.map_or(Digest32::ZERO, crate::SparseCheckpoint::digest);
         if input.checkpoint_digest != expected_checkpoint {
             return Err(NeuronRuntimeError::CheckpointMismatch);
@@ -274,6 +245,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         });
 
+        self.journal.check_capacity()?;
+        self.witness.check_capacity()?;
         let started = Instant::now();
         let model_output = model.execute(&model_request)?;
         validate_model_output(&self.config, &model_output)?;
@@ -367,7 +340,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             abstain,
             authority: AuthorityPosture::DENY_ALL,
         };
-        let output = NeuronRuntimeOutputV1 {
+        let mut output = NeuronRuntimeOutputV1 {
             tick: tick_receipt,
             signal,
             model_runtime: model_output.runtime_receipt,
@@ -382,12 +355,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 expected: expected_anchor,
                 next: next_anchor,
                 output,
+                started,
             });
             return Err(NeuronRuntimeError::WitnessAfterCommit {
                 anchor: next_anchor,
                 error,
             });
         }
+        self.finalize_acknowledged_latency(&mut output, started);
         Ok(output)
     }
 
@@ -396,14 +371,24 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         tick: &NeuronTickReceiptV1,
         expires_unix_ms: u64,
     ) -> Result<crate::NeuronCheckpointV1, crate::NeuronProtocolError> {
+        self.require_acknowledged_frontier()
+            .map_err(|_| crate::NeuronProtocolError::BindingMismatch("acknowledgement witness"))?;
         let checkpoint = self
             .journal
             .current()
             .map_err(|_| crate::NeuronProtocolError::BindingMismatch("journal"))?
             .ok_or(crate::NeuronProtocolError::BindingMismatch("checkpoint"))?;
-        crate::canonical_checkpoint_v1(&self.config, checkpoint, tick, expires_unix_ms)
+        crate::canonical_checkpoint_v1(
+            &self.config,
+            &self.native,
+            checkpoint,
+            tick,
+            expires_unix_ms,
+        )
     }
 
+    /// Observe the durable journal frontier, which may await witness reconciliation.
+    /// Publication and state advancement require an independently acknowledged frontier.
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, NeuronRuntimeError> {
         Ok(self.journal.current()?.map(|checkpoint| JournalAnchor {
             sequence: checkpoint.sequence(),
@@ -414,12 +399,19 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     pub fn current_eligibility_sample(
         &self,
     ) -> Result<Option<crate::EligibilityTraceSampleV1>, NeuronRuntimeError> {
+        self.require_acknowledged_frontier()?;
         Ok(self
             .journal
             .current()?
             .map(crate::EligibilityTraceSampleV1::from_checkpoint))
     }
 }
+
+#[path = "runtime_admission.rs"]
+mod admission;
+
+#[path = "runtime_recovery.rs"]
+mod recovery;
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]

@@ -132,6 +132,7 @@ pub enum Error {
     DeadlineExpired,
     ActiveRequests,
     DriverFailure(String),
+    DriverStateUncertain,
     MissingTerminalOutput,
     ArithmeticOverflow,
     FeatureLimit,
@@ -148,12 +149,21 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub trait ModelDriver {
+    /// A failed load does not establish that the driver allocated no resources.
+    /// The worker quarantines the driver after an error; the host must establish
+    /// cleanup independently or restart the driver before further model work.
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
+    /// Only an observed terminal result establishes that the invocation stopped.
+    /// Errors and nonterminal observations quarantine the worker and retain the
+    /// request registration until the host independently resolves execution.
     fn run(
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error>;
+    /// Success confirms release of the handle's resources. An error leaves the
+    /// outcome unknown, so the worker quarantines the driver instead of assuming
+    /// release or retrying an unload that might not be idempotent.
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
 }
 
@@ -170,6 +180,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     generation: u64,
     grant: ResourceGrant,
     driver: D,
+    driver_state_uncertain: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -192,6 +203,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             generation,
             grant,
             driver,
+            driver_state_uncertain: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -215,11 +227,26 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(error) => {
+                self.driver_state_uncertain = true;
+                return Err(error);
+            }
+        };
+        let rejection = match validate_identity(&handle.opaque_id, "model handle") {
+            Err(error) => Some(error),
+            Ok(()) if handle.observed_memory_bytes > self.grant.maximum_memory_bytes => {
+                Some(Error::ModelCapacity)
+            }
+            Ok(()) => None,
+        };
+        if let Some(error) = rejection {
+            if let Err(cleanup_error) = self.driver.unload(handle) {
+                self.driver_state_uncertain = true;
+                return Err(cleanup_error);
+            }
+            return Err(error);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -290,10 +317,19 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
-        let observed = self.driver.run(&loaded.handle, &request);
-        self.active_requests.remove(&request.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match self.driver.run(&loaded.handle, &request) {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.driver_state_uncertain = true;
+                return Err(error);
+            }
+        };
+        if observed.terminal_observed {
+            self.active_requests.remove(&request.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        } else {
+            self.driver_state_uncertain = true;
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
@@ -342,8 +378,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if let Err(error) = self.driver.unload(loaded.handle.clone()) {
+            self.driver_state_uncertain = true;
+            return Err(error);
+        }
+        self.models.remove(model_id);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,6 +391,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.driver_state_uncertain {
+            return Err(Error::DriverStateUncertain);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -485,7 +527,8 @@ pub struct NeuronFeatureExecutionObservation {
 
 /// Executes the frozen encoder/head feature path for an already loaded model.
 /// The driver must report the actual encoder/head identities and resource
-/// measurements observed for this invocation.
+/// measurements observed for this invocation. As with `ModelDriver::run`, errors
+/// and nonterminal results do not establish that execution stopped.
 pub trait NeuronFeatureDriver: ModelDriver {
     fn run_neuron_features(
         &mut self,
@@ -556,11 +599,20 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests
-            .remove(&request.authorization.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match self.driver.run_neuron_features(&loaded.handle, &request) {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.driver_state_uncertain = true;
+                return Err(error);
+            }
+        };
+        if observed.terminal_observed {
+            self.active_requests
+                .remove(&request.authorization.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        } else {
+            self.driver_state_uncertain = true;
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
@@ -601,25 +653,28 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+        // Validate borrowed ingress in the same order as execution before
+        // retaining the bounded fields needed to bind the typed receipt.
+        self.validate_current_grant(now_ms)?;
+        validate_identity(model_id, "model")?;
+        validate_request(now_ms, &request.authorization)?;
+        validate_neuron_feature_request(&request)?;
         let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
+            request_id: StableId::new(request.authorization.request_id.as_str())
                 .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
+            generation: Generation::new(self.generation).map_err(|_| Error::FeatureContract)?,
+            model_id: StableId::new(model_id).map_err(|_| Error::FeatureContract)?,
+            encoder_digest: parse_digest32(&request.encoder_digest)?,
+            head_digest: parse_digest32(&request.head_digest)?,
+            weights_digest: parse_digest32(&request.weights_digest)?,
+            input_digest: parse_digest32(&request.input_digest)?,
+            feature_vector_q24: request.feature_vector_q24.clone(),
+            expected_output_width: request.expected_output_width,
         };
+        let observed = self.run_neuron_features(now_ms, model_id, request)?;
         let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
+            model_id: StableId::new(observed.manifest.model_id.as_str())
+                .map_err(|_| Error::FeatureContract)?,
             model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
             weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
             tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
@@ -634,14 +689,22 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
             ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
         };
+        let (drive_q24, prediction_q24) = match status {
+            NeuronFeatureTerminalStatusV1::Succeeded => {
+                (observed.drive_q24, observed.prediction_q24)
+            }
+            NeuronFeatureTerminalStatusV1::Failed
+            | NeuronFeatureTerminalStatusV1::Cancelled
+            | NeuronFeatureTerminalStatusV1::Indeterminate => (Vec::new(), Vec::new()),
+        };
         build_neuron_feature_receipt_v1(
             &control_request,
             runtime_tuple,
             NeuronFeatureObservationV1 {
                 encoder_digest: parse_digest32(&observed.encoder_digest)?,
                 head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
+                drive_q24,
+                prediction_q24,
                 observed_memory_bytes: observed.observed_memory_bytes,
                 transient_allocation_bytes: observed.transient_allocation_bytes,
                 queue_age_micros: observed.queue_age_micros,
