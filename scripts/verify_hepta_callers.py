@@ -294,7 +294,9 @@ def _strip_cfg_test_items(code: str) -> str:
 
         item_end = _rust_item_end(code, cursor)
         if item_end is None:
-            item_end = len(code) - 1
+            raise VerificationFailure(
+                f"cannot delimit test-only Rust item at offset {start}"
+            )
         for offset in range(start, item_end + 1):
             if output[offset] != "\n":
                 output[offset] = " "
@@ -453,6 +455,15 @@ def _skip_space(source: str, index: int) -> int:
 def _rust_item_end(source: str, start: int) -> int | None:
     """Find the end of one already-lexed Rust item conservatively."""
 
+    if re.match(
+        r"(?:pub(?:\([^)]*\))?\s+)?(?:r#)?[A-Za-z_]\w*\s*(?::(?!:)|(?=[,}]))",
+        source[start:],
+    ):
+        return _rust_field_end(source, start)
+    header = _enclosing_rust_header(source, start)
+    if header is not None and re.search(r"(?<![#\w])match\b", header):
+        return _rust_field_end(source, start)
+
     paren = 0
     bracket = 0
     index = start
@@ -466,11 +477,71 @@ def _rust_item_end(source: str, start: int) -> int | None:
             bracket += 1
         elif char == "]" and bracket:
             bracket -= 1
+        elif paren == 0 and bracket == 0 and source.startswith("=>", index):
+            return _rust_field_end(source, index + 2)
+        elif paren == 0 and bracket == 0 and char == "}":
+            return None
         elif paren == 0 and bracket == 0 and char == ";":
             return index
         elif paren == 0 and bracket == 0 and char == "{":
             return _matching_delimiter(source, index, "{", "}")
         index += 1
+    return None
+
+
+def _enclosing_rust_header(source: str, start: int) -> str | None:
+    depth = 0
+    for index in range(start - 1, -1, -1):
+        if source[index] == "}":
+            depth += 1
+        elif source[index] == "{":
+            if depth == 0:
+                header_start = max(source.rfind(char, 0, index) for char in ";{}") + 1
+                return source[header_start:index]
+            depth -= 1
+    return None
+
+
+def _rust_field_end(source: str, start: int) -> int | None:
+    """Stop at a field/arm delimiter without consuming its enclosing item or siblings."""
+    header = _enclosing_rust_header(source, start)
+    if header is None:
+        return None
+    type_field = bool(re.search(r"\bstruct\s+(?:r#)?\w+", header))
+    paren = bracket = brace = angle = 0
+    for index in range(start, len(source)):
+        char = source[index]
+        if char == "}":
+            if brace == 0:
+                if paren or bracket or angle:
+                    return None
+                # A final field may omit its comma. Keep the enclosing brace.
+                return index - 1
+            brace -= 1
+        elif char == "{":
+            brace += 1
+        elif char == "(":
+            paren += 1
+        elif char == ")":
+            if paren == 0:
+                return None
+            paren -= 1
+        elif char == "[":
+            bracket += 1
+        elif char == "]":
+            if bracket == 0:
+                return None
+            bracket -= 1
+        elif (
+            char == "<"
+            and brace == 0
+            and (type_field or angle or source[:index].rstrip().endswith("::"))
+        ):
+            angle += 1
+        elif char == ">" and angle and source[index - 1] != "-":
+            angle -= 1
+        elif char == "," and paren == bracket == brace == angle == 0:
+            return index
     return None
 
 
