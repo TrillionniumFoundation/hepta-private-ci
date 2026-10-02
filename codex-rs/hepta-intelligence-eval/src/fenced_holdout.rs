@@ -185,6 +185,31 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     poisoned: bool,
 }
 
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+impl FencedFinalHoldoutOwnerV1<crate::LockedFileFinalHoldoutCasStoreV1> {
+    pub(crate) fn protected_observer_provider(
+        &self,
+        original_cas_path: &std::path::Path,
+        original_witness_path: &std::path::Path,
+        original_cut_path: &std::path::Path,
+        registration: &crate::AuthenticatedPairedRegistrationV1,
+    ) -> Result<
+        crate::protected_paired_provider::ProtectedPairedObservationProviderV1,
+        crate::ProductProviderErrorV1,
+    > {
+        if self.poisoned {
+            return Err(crate::ProductProviderErrorV1::Indeterminate);
+        }
+        crate::protected_paired_provider::ProtectedPairedObservationProviderV1::open(
+            &self.store,
+            original_cas_path,
+            original_witness_path,
+            original_cut_path,
+            registration,
+        )
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     /// Initialize a previously absent authoritative record.
     pub fn initialize(

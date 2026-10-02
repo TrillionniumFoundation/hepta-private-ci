@@ -306,7 +306,7 @@ pub enum ProductTimingEvidenceV1<'a> {
 }
 
 pub struct ProductEvaluationRunnerV1<S> {
-    holdout: FencedFinalHoldoutOwnerV1<S>,
+    pub(super) holdout: FencedFinalHoldoutOwnerV1<S>,
 }
 
 impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {

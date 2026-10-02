@@ -26,6 +26,37 @@ pub struct RegisteredPairedEvaluationRunnerV1<S> {
     runner: ProductEvaluationRunnerV1<S>,
 }
 
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+impl RegisteredPairedEvaluationRunnerV1<crate::LockedFileFinalHoldoutCasStoreV1> {
+    /// Read an original immutable O transport through the existing custody
+    /// owner. A receipt DTO alone cannot authorize its release. The same held
+    /// CAS descriptor is canonically replayed before opening the observation.
+    pub fn evaluate_protected_observer_transport(
+        &mut self,
+        registration: &AuthenticatedPairedRegistrationV1,
+        original_cas_path: &std::path::Path,
+        original_witness_path: &std::path::Path,
+        original_cut_path: &std::path::Path,
+        trust: &ActivatedLearningTrustV1,
+    ) -> Result<ProductPairedEvaluationReceiptV1, PairedSupervisedErrorV1> {
+        // Authentication must precede even protected CAS metadata access.
+        let mut clock = crate::paired_supervised_host_clock::PairedHostClockV1::system();
+        clock.sample_registered(trust, registration)?;
+        let mut provider = self
+            .runner
+            .holdout
+            .protected_observer_provider(
+                original_cas_path,
+                original_witness_path,
+                original_cut_path,
+                registration,
+            )
+            .map_err(crate::ProductEvaluationError::from)?;
+        self.runner
+            .evaluate_paired_with_clock(registration, &mut provider, trust, &mut clock)
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> RegisteredPairedEvaluationRunnerV1<S> {
     #[must_use]
     pub fn new(holdout: FencedFinalHoldoutOwnerV1<S>) -> Self {

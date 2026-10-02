@@ -112,6 +112,12 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
     poisoned: bool,
 }
 
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+#[path = "paired_holdout_consumption.rs"]
+mod paired_consumption;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub(crate) use paired_consumption::HeldPairedConsumptionV1;
+
 impl LockedFileFinalHoldoutCasStoreV1 {
     pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
         acquire(&file, binding)?;

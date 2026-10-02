@@ -45,15 +45,15 @@ struct Config {
 }
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Witness {
-    schema: String,
-    config_digest: String,
-    private_gold_digest: String,
+pub(super) struct Witness {
+    pub(super) schema: String,
+    pub(super) config_digest: String,
+    pub(super) private_gold_digest: String,
     masked_features_digest: String,
-    binding: String,
-    fence_generation: u64,
-    record_count: u64,
-    state_digest: String,
+    pub(super) binding: String,
+    pub(super) fence_generation: u64,
+    pub(super) record_count: u64,
+    pub(super) state_digest: String,
     eligible_claims: usize,
     eligible_components: usize,
     labeled_pairs: usize,

@@ -80,6 +80,8 @@ mod paired_supervised_runner;
 mod paired_supervised_scope;
 mod paired_supervised_values;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod protected_paired_provider;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_observer_transport::encode_signed_paired_observation_transport_v1;
 mod product_evidence_file;
 mod product_registration;
