@@ -85,6 +85,12 @@
       "command": "python scripts/hepta-inference-control-current-state.py check",
       "result": "passed",
       "log": "logs/current-state-check.log"
+    },
+    {
+      "command": "python scripts/hepta-implementation-maps.py verify",
+      "result": "failed_outside_scoped_modules",
+      "log": "logs/global-maps-final.log",
+      "note": "No reported failure for runtime.codex, inference.control, or inference.worker after refreshing their exact source bindings. Global verification remains failed on other modules due inherited source/evidence drift and unavailable referenced Git objects."
     }
   ],
   "review": {
