@@ -38,7 +38,8 @@ ${statusRows}
 
 ## 2. Repository layout
 
-- ${q("apps/hepta-control-ui/src/")}: framework-free ESM client core, HTTP transport, session provider, and browser controller.
+- ${q("apps/hepta-control-ui/rust/")}: canonical Rust controller, same-origin HTTP/recovery adapters and semantic DOM browser host.
+- ${q("apps/hepta-control-ui/src/")}: legacy Node compatibility and differential-reference APIs, excluded from the browser artifact.
 - ${q("apps/hepta-control-ui/web/")}: semantic HTML/CSS browser shell.
 - ${q("apps/hepta-control-ui/test/")}: unit, hostile-input, concurrency, recovery, package, and transport tests.
 - ${q("apps/hepta-control-ui/e2e/")}: Chromium, Firefox, and WebKit product-path tests with axe-core.
@@ -50,7 +51,7 @@ ${statusRows}
 
 ${manifest.publicApi.map(value => `- ${q(value)}`).join("\n")}
 
-The package exposes explicit ${q("exports")} for the root/core, browser controller, and HTTP transport. Imports under ${q("@hepta/control-ui/src/*")} are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
+The package exposes explicit ${q("exports")} for the root/core, browser controller, and HTTP transport. Imports under ${q("@hepta/control-ui/src/*")} are deliberately blocked. The default browser build contains Rust/WASM with only generated ABI and minimal loader diagnostics in JavaScript. Legacy Node API exports remain compatibility/reference boundaries and are excluded from the six-asset browser artifact. No second frontend framework or unsafe HTML injection is used.
 
 ## 4. State model
 
@@ -189,24 +190,24 @@ const map = {
     mappingClass: "owner_boundary",
     ownerEntrypoint: {
       role: "owner_entrypoint",
-      path: "apps/hepta-control-ui/src/runtime-client.js",
+      path: operation.sourcePath,
       symbol: operation.symbol,
-      buildTarget: "hepta-control-ui",
+      buildTarget: "hepta-control-web",
     },
     delegatedCallees: [],
     tests: [
       {
-        path: "apps/hepta-control-ui/test/runtime-client.test.js",
-        kind: "node_product_boundary",
-        command: "node --test apps/hepta-control-ui/test/runtime-client.test.js",
+        path: "apps/hepta-control-ui/rust/core/tests/controller.rs",
+        kind: "rust_controller_boundary",
+        command: "just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml --locked",
       },
     ],
     sourceSemantics: operation.semantics,
     operation: operation.id,
     nativeSymbol: operation.symbol,
-    sourcePath: "apps/hepta-control-ui/src/runtime-client.js",
+    sourcePath: operation.sourcePath,
     sourceBlob: manifest.sourceObjects.find(item =>
-      item.path === "apps/hepta-control-ui/src/runtime-client.js").object,
+      item.path === operation.sourcePath).object,
     sourcePathExists: true,
   })),
   repositoryControlledGaps: [],

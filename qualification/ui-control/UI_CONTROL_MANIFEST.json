@@ -5,7 +5,7 @@
   "laneId": "LANE-B-RUNTIME",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "authoritativeDevelopmentBranch": "work/ui-control-authoritative-closure-20260927",
+  "authoritativeDevelopmentBranch": "work/ui-control-rust-20261002",
   "baseline": {
     "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
@@ -18,10 +18,10 @@
     "apps/hepta-control-ui"
   ],
   "status": {
-    "clientCore": "substantially_implemented",
-    "browserComposition": "repository_shell_implemented",
+    "clientCore": "rust_controller_with_legacy_node_reference_api",
+    "browserComposition": "rust_wasm_semantic_dom_default_browser",
     "browserCorrelationPrivacy": "identifiers_redacted_in_dom_exact_in_client_state",
-    "dependencyLock": "exact_npm_lock_committed_qualification_pending",
+    "dependencyLock": "locked_cargo_and_npm_inputs_exact_bindgen_version",
     "sessionLifecycle": "identity_permission_revision_and_shutdown_fenced",
     "terminalEvidence": "authenticated_backend_observation_projection_implemented",
     "localRecovery": "crash_consistent_scoped_directory_fail_closed_without_authority_claim",
@@ -93,32 +93,31 @@
     }
   },
   "publicApi": [
-    "RuntimeClient",
-    "SameOriginHttpTransport",
-    "SessionProvider",
-    "createControlConsole",
-    "projectRuntime",
-    "buildOperationIntent",
-    "digestOperationIntent",
-    "normalizeSnapshot",
-    "validateSnapshotTransition",
-    "UiControlError"
+    "hepta_control_web::start",
+    "hepta_control_web::close_session",
+    "hepta_control_web::reconnect",
+    "hepta_control_web::destroy",
+    "hepta_control_web::read_view",
+    "hepta_control_core::controller::Controller"
   ],
   "operations": [
     {
       "id": "read_view",
-      "symbol": "readView()",
-      "semantics": "Projects a coherent generation/revision snapshot, authenticated operator identity, pending operations, and backend-observed terminal evidence while explicitly marking absent snapshots stale."
+      "symbol": "pub fn read_view(",
+      "semantics": "Projects a coherent generation/revision snapshot, authenticated operator identity, pending operations, and backend-observed terminal evidence while explicitly marking absent snapshots stale.",
+      "sourcePath": "apps/hepta-control-ui/rust/web/src/app.rs"
     },
     {
       "id": "submit_request",
-      "symbol": "async submitRequest(",
-      "semantics": "Atomically reserves a bounded operation identity before network dispatch and submits an authenticated, revision-bound request."
+      "symbol": "async fn submit(",
+      "semantics": "Atomically reserves a bounded operation identity before network dispatch and submits an authenticated, revision-bound request.",
+      "sourcePath": "apps/hepta-control-ui/rust/web/src/app/effects.rs"
     },
     {
       "id": "request_stop",
-      "symbol": "async requestStop(",
-      "semantics": "Uses the authenticated identity/revision path for stop while preserving server-side authority and terminality."
+      "symbol": "Action::RequestStop",
+      "semantics": "Uses the authenticated identity/revision path for stop while preserving server-side authority and terminality.",
+      "sourcePath": "apps/hepta-control-ui/rust/web/src/app.rs"
     }
   ],
   "invariants": [
@@ -177,43 +176,45 @@
     "five-principal review/approval separation and evidence-before-approval chronology"
   ],
   "sourceObservation": {
-    "commit": "fd741044007eee6443116fcf2de4f0dcfec3d24f",
-    "tree": "a5add7894c5891e75a529896f9ca6507829965a3"
+    "commit": "510264f13a3ca25f50da35b32544f23410d9a4f4",
+    "tree": "5b156fb62cdf76b157b83fa91def7bd4d3699f16"
   },
   "productCallers": [
     {
-      "sourcePath": "apps/hepta-control-ui/src/browser-app.js",
-      "nativeSymbol": "createControlConsole"
+      "sourcePath": "apps/hepta-control-ui/web/main.js",
+      "nativeSymbol": "await start()"
     },
     {
-      "sourcePath": "apps/hepta-control-ui/web/main.js",
-      "nativeSymbol": "createControlConsole"
+      "sourcePath": "apps/hepta-control-ui/rust/web/src/app.rs",
+      "nativeSymbol": "pub fn start("
     }
   ],
   "sourceObjects": [
     {
-      "path": "apps/hepta-control-ui",
-      "object": "4f0037176a373692db1a296a21f04c4d3333e7de"
+      "path": "apps/hepta-control-ui/rust/web/src/app.rs",
+      "object": "0c348b7634372424857e4bb08e3f0f400dce345d"
     },
     {
-      "path": "apps/hepta-control-ui/src/browser-app.js",
-      "object": "f777e8feb1e20fab36ed8ad918c45e0085fb4745"
+      "path": "apps/hepta-control-ui/rust/web/src/app/effects.rs",
+      "object": "8f50710fec2f4dcb6c399aeeaf9441faf4d1b4c9"
     },
     {
-      "path": "apps/hepta-control-ui/src/runtime-client.js",
-      "object": "deb7d778eca3a34edacfbdf9185632de75642bfa"
+      "path": "apps/hepta-control-ui/rust/core/src/controller.rs",
+      "object": "69ff435e62ac9e331c0d5a08e56e92f4a78ed64b"
     },
     {
-      "path": "apps/hepta-control-ui/test/runtime-client.test.js",
-      "object": "0faa5200bc4a37516a2f19e4f515584fa888406f"
+      "path": "apps/hepta-control-ui/rust/core/tests/controller.rs",
+      "object": "46c29e287e148b65c4970dfb9b2f061f96232591"
     },
     {
       "path": "apps/hepta-control-ui/web/main.js",
-      "object": "96ed3264519ba18e9b94d6cc4d584aafca4878e6"
-    },
-    {
-      "path": "docs/modules/ui.control/TECHNICAL.md",
-      "object": "b6205a76e93f0246a2507a07dcded316a2dba5d8"
+      "object": "be6c715c45f56c056d9c31c399379a4b1a6d045a"
     }
+  ],
+  "legacyCompatibilityApi": [
+    "RuntimeClient",
+    "SameOriginHttpTransport",
+    "SessionProvider",
+    "createControlConsole"
   ]
 }
