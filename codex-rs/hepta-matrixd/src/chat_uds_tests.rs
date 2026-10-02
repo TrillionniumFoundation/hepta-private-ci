@@ -1,5 +1,11 @@
-//! Real local Agentd UDS + initialized WebSocket transport. Provider replies are
-//! fixtures; these tests never contact a model, account, homeserver or network.
+//! Production adapter/clients over real local UDS + initialized WebSocket.
+//! Agentd and App Server peers are scripted protocol fixtures, not real Core.
+//! The hosted workflow separately exercises real queue/Core with local HTTP
+//! response fixtures. Neither layer contacts a live model/account/homeserver.
+#![expect(
+    clippy::unwrap_used,
+    reason = "Scripted fixture setup must fail immediately on malformed test data or local I/O"
+)]
 use super::*;
 use codex_hepta_agentd::{
     AGENTD_CONTROL_SCHEMA_VERSION, AgentdPayload, AgentdResponse, HealthSnapshot, SessionIngress,
@@ -132,6 +138,11 @@ impl Fixture {
                             "thread/read" => json!({"thread":thread(state.wrong_scope)}),
                             "thread/start" | "thread/resume" => resumed(),
                             "thread/items/list" => {
+                                assert_eq!(params["threadId"], "thread-1");
+                                if !params["turnId"].is_null() {
+                                    assert_eq!(params["turnId"], "turn-1");
+                                }
+                                assert!(params["limit"].as_u64().unwrap() <= 50);
                                 json!({"data":[],"nextCursor":null,"backwardsCursor":null})
                             }
                             "thread/turns/list" => {

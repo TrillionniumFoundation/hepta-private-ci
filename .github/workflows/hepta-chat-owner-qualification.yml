@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   owner-uds-fixtures:
-    name: Exact source / real local UDS / fixture provider
+    name: Exact source / UDS adapter fixtures / real Core queue
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -50,7 +50,7 @@ jobs:
             printf 'source_tree=%s\n' "$(git rev-parse HEAD^{tree})"
             printf 'stacked_base=%s\n' "$BASE_SHA"
             printf 'schema_blob=%s\n' "$(git rev-parse HEAD:apps/hepta-ui-shared/chat_transport.rs)"
-            printf 'scope=ordinary Agentd App Server chat; fake provider; no production admission\n'
+            printf 'scope=ordinary chat; scripted Agentd/App Server peers; separate real Core queue fixtures; no production admission\n'
           } > .hepta-chat-evidence/identity.txt
 
       - name: Install pinned Rust toolchain
@@ -70,11 +70,19 @@ jobs:
           set -euo pipefail
           cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib --bin hepta-agent-chat-host 2>&1 | tee .hepta-chat-evidence/owner-check.log
 
-      - name: Exercise actual UDS and initialized WebSocket owner without live services
+      - name: Exercise real UDS and WebSocket adapter against protocol fixtures
         shell: bash
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-matrixd --lib --test-threads=2 2>&1 | tee .hepta-chat-evidence/owner-tests.log
+
+      - name: Verify real queue owner and Core admission against local response fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-queue-extension --test queue_service --test-threads=2 \
+            -E 'test(=exact_reconcile_is_one_idempotent_queue_admission) | test(=two_queue_services_across_state_runtimes_submit_one_exact_binding) | test(=caller_abort_after_core_started_keeps_exact_authority_until_persistence) | test(=core_error_after_started_never_releases_ambiguous_dispatch) | test(=rollout_flush_before_dispatch_db_completion_recovers_without_resubmit) | test(=exact_reconcile_rejects_expected_digest_drift_without_a_row) | test(=raw_queue_store_enqueue_cannot_bypass_reconcile_reservation) | test(=exact_reconcile_conflicting_payload_fails_before_second_admission) | test(=persisted_admission_reconciles_compressed_rollout)' \
+            2>&1 | tee .hepta-chat-evidence/real-queue-core-tests.log
 
       - name: Validate shared wire contract
         shell: bash

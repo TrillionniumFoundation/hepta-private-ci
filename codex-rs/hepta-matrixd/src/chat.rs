@@ -232,61 +232,7 @@ impl AgentChatSession {
                 thread_id,
                 cursor,
                 limit,
-            } => {
-                self.scoped_thread(&thread_id).await?;
-                let latest_page = cursor.is_none();
-                let response: ThreadItemsListResponse = self
-                    .transport
-                    .request(ClientRequest::ThreadItemsList {
-                        request_id: self.transport.request_id(),
-                        params: ThreadItemsListParams {
-                            thread_id: thread_id.clone(),
-                            turn_id: None,
-                            cursor,
-                            limit: Some(limit),
-                            sort_direction: Some(SortDirection::Desc),
-                        },
-                    })
-                    .await?;
-                let latest: ThreadTurnsListResponse = self
-                    .transport
-                    .request(ClientRequest::ThreadTurnsList {
-                        request_id: self.transport.request_id(),
-                        params: ThreadTurnsListParams {
-                            thread_id: thread_id.clone(),
-                            cursor: None,
-                            limit: Some(1),
-                            sort_direction: Some(SortDirection::Desc),
-                            items_view: Some(TurnItemsView::NotLoaded),
-                        },
-                    })
-                    .await?;
-                let mut active_turn_id = latest
-                    .data
-                    .into_iter()
-                    .next()
-                    .filter(|turn| turn.status == TurnStatus::InProgress)
-                    .map(|turn| turn.id);
-                let mut data: Vec<_> = response
-                    .data
-                    .into_iter()
-                    .take(MAX_CHAT_PAGE as usize)
-                    .filter_map(message)
-                    .collect();
-                data.reverse();
-                if latest_page {
-                    self.live
-                        .lock()
-                        .map_err(|_| invalid("chat observations unavailable"))?
-                        .merge(&thread_id, &mut data, limit, &mut active_turn_id);
-                }
-                Ok(ChatResult::Timeline {
-                    thread_id,
-                    data,
-                    next_cursor: response.next_cursor,
-                    active_turn_id,
-                })
-            }
+            } => self.timeline(thread_id, cursor, limit).await,
             ChatCommand::Send {
                 thread_id,
                 operation_id,
@@ -469,3 +415,6 @@ pub use http::ChatHttpSession;
 #[cfg(all(test, unix))]
 #[path = "chat_uds_tests.rs"]
 mod uds_tests;
+
+#[path = "chat_timeline.rs"]
+mod timeline;

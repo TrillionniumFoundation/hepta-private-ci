@@ -3,13 +3,12 @@ use super::{
     message,
     wire::{ChatMessage, MAX_CHAT_PAGE},
 };
-use codex_app_server_protocol::{ServerNotification, ThreadItemEntry};
-use std::collections::VecDeque;
+use codex_app_server_protocol::{ServerNotification, ThreadItemEntry, ThreadItemsListResponse};
+use std::collections::{BTreeSet, VecDeque};
 
 #[derive(Default)]
 pub(super) struct LiveTimeline {
     messages: VecDeque<(String, ChatMessage)>,
-    turns: VecDeque<(String, Option<String>)>,
 }
 impl LiveTimeline {
     pub fn observe(&mut self, notification: ServerNotification) {
@@ -58,17 +57,6 @@ impl LiveTimeline {
                     self.upsert(value.thread_id, item);
                 }
             }
-            ServerNotification::TurnStarted(value) => {
-                self.turn(value.thread_id, Some(value.turn.id))
-            }
-            ServerNotification::TurnCompleted(value)
-                if !self.turns.iter().any(|(thread, turn)| {
-                    thread == &value.thread_id
-                        && turn.as_ref().is_some_and(|id| id != &value.turn.id)
-                }) =>
-            {
-                self.turn(value.thread_id, None);
-            }
             _ => {}
         }
     }
@@ -89,38 +77,73 @@ impl LiveTimeline {
         }
         self.messages.push_back((thread, item));
     }
-    fn turn(&mut self, thread: String, turn: Option<String>) {
-        if !valid_id(&thread) || turn.as_ref().is_some_and(|id| !valid_id(id)) {
-            return;
-        }
-        self.turns.retain(|(id, _)| id != &thread);
-        if self.turns.len() == MAX_CHAT_PAGE as usize {
-            self.turns.pop_front();
-        }
-        self.turns.push_back((thread, turn));
-    }
     pub fn merge(
         &self,
         thread: &str,
         data: &mut Vec<ChatMessage>,
         limit: u32,
-        active: &mut Option<String>,
+        active: &str,
+        window: &ActiveItemWindow,
     ) {
-        if let Some((_, turn)) = self.turns.iter().find(|(id, _)| id == thread) {
-            *active = turn.clone();
+        let ActiveItemWindow::Complete { turn_id, ids } = window else {
+            return;
+        };
+        if turn_id != active {
+            return;
         }
-        for (_, item) in self.messages.iter().filter(|(id, _)| id == thread) {
-            if let Some(existing) = data.iter_mut().find(|row| row.id == item.id) {
-                *existing = item.clone();
-            } else if active.as_deref() == Some(item.turn_id.as_str()) {
-                data.push(item.clone());
-            }
+        let capacity = (limit as usize).saturating_sub(data.len());
+        let candidates: Vec<_> = self
+            .messages
+            .iter()
+            .filter(|(id, item)| {
+                id == thread
+                    && item.turn_id == active
+                    && !ids.contains(&item.id)
+                    && !data.iter().any(|row| row.id == item.id)
+            })
+            .map(|(_, item)| item)
+            .collect();
+        // Never drain or replace authoritative rows, even at a full page.
+        let skip = candidates.len().saturating_sub(capacity);
+        data.extend(candidates.into_iter().skip(skip).cloned());
+    }
+}
+/// Membership proof is scoped to one complete, bounded persisted active turn.
+pub(super) enum ActiveItemWindow {
+    Complete {
+        turn_id: String,
+        ids: BTreeSet<String>,
+    },
+    Incomplete,
+}
+impl ActiveItemWindow {
+    pub fn from_response(response: ThreadItemsListResponse, expected_turn: &str) -> Self {
+        if response.next_cursor.is_some()
+            || response.data.len() > MAX_CHAT_PAGE as usize
+            || !valid_id(expected_turn)
+            || response
+                .data
+                .iter()
+                .any(|row| row.turn_id != expected_turn || !valid_id(row.item.id()))
+        {
+            return Self::Incomplete;
         }
-        if data.len() > limit as usize {
-            data.drain(..data.len() - limit as usize);
+        let count = response.data.len();
+        let ids: BTreeSet<_> = response
+            .data
+            .into_iter()
+            .map(|row| row.item.id().to_owned())
+            .collect();
+        if ids.len() != count {
+            return Self::Incomplete;
+        }
+        Self::Complete {
+            turn_id: expected_turn.into(),
+            ids,
         }
     }
 }
+
 fn valid_id(value: &str) -> bool {
     !value.is_empty() && value.len() <= 256 && !value.chars().any(char::is_control)
 }
