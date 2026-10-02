@@ -91,6 +91,7 @@ fn rehashed_expiry_and_utility_cannot_mint_exercise_provenance() {
         |value| value.objective_digest = digest("other-objective"),
         |value| value.state_digest = digest("other-state"),
         |value| value.generation_vector_digest = digest("other-generation"),
+        |value| value.receipt.candidate_set_digest = digest("former-candidate-list"),
     ] {
         let mut changed = original.clone();
         mutate(&mut changed);
@@ -112,6 +113,35 @@ fn rehashed_expiry_and_utility_cannot_mint_exercise_provenance() {
             Err(CanonicalPromptError::PortfolioIntegrity)
         );
     }
+}
+
+#[test]
+fn legacy_list_only_portfolio_receipt_is_not_reinterpreted_as_source_bound() {
+    let mut historical = portfolio();
+    historical.receipt.candidate_set_digest = digest_candidates(&historical.selected);
+    let receipt = &historical.receipt;
+    let mut bytes = b"hepta.prompt-optimizer.portfolio-receipt.v1".to_vec();
+    push_id(&mut bytes, &receipt.portfolio_id);
+    for digest in [
+        receipt.candidate_set_digest,
+        receipt.interaction_digest,
+        historical.pricing_set_digest,
+        historical.graph_generation_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    push_ids(&mut bytes, &receipt.factor_ids);
+    bytes.extend_from_slice(&receipt.expected_utility_q32.raw().to_be_bytes());
+    bytes.extend_from_slice(&receipt.total_token_upper_bound.to_be_bytes());
+    bytes.extend_from_slice(&receipt.valid_until_unix_ms.to_be_bytes());
+    bytes.extend_from_slice(&[0, 0]);
+    historical.receipt.receipt_digest = Digest32::of_bytes(&bytes);
+    // Even test-only resealing cannot convert the legacy digest domain into V2.
+    historical.verified_portfolio_digest = integrity::portfolio_digest(&historical);
+    assert_eq!(
+        historical.validate(),
+        Err(CanonicalPromptError::PortfolioIntegrity)
+    );
 }
 
 #[test]

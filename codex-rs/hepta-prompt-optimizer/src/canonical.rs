@@ -573,6 +573,8 @@ pub struct SelectedPromptPortfolioV1 {
     // Content hashes alone cannot prove that the canonical selector ran.
     verified_portfolio_digest: Digest32,
     selected_at_unix_ms: u64,
+    // Preserve the exact source cut through selection, including no-intervention.
+    registry_snapshot_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -851,7 +853,7 @@ pub fn select_portfolio_v1(
     );
     let receipt_digest = digest_portfolio_receipt(
         &request.portfolio_id,
-        priced.candidates.candidates_digest,
+        priced.candidates.receipt.receipt_digest,
         &selected_ids,
         interaction_digest,
         expected_utility,
@@ -863,7 +865,7 @@ pub fn select_portfolio_v1(
     let mut portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: request.portfolio_id,
-            candidate_set_digest: priced.candidates.candidates_digest,
+            candidate_set_digest: priced.candidates.receipt.receipt_digest,
             factor_ids: selected_ids,
             interaction_digest,
             expected_utility_q32: expected_utility,
@@ -884,6 +886,7 @@ pub fn select_portfolio_v1(
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
         verified_portfolio_digest: Digest32::ZERO,
         selected_at_unix_ms: now_unix_ms,
+        registry_snapshot_digest: priced.candidates.registry_snapshot.snapshot_digest,
     };
     portfolio.verified_portfolio_digest = integrity::portfolio_digest(&portfolio);
     portfolio.validate()?;
@@ -961,47 +964,51 @@ pub fn exercise_v1(
         || request.model_tuple.digest() != portfolio.model_tuple_digest
     {
         PromptExerciseActionV1::RejectStale
-    } else if portfolio.selected.is_empty() {
-        PromptExerciseActionV1::NoIntervention
     } else {
         let current_snapshot = registry
             .snapshot_v2(request.generation_vector_digest, &request.model_tuple)
             .map_err(|e| CanonicalPromptError::Registry(format!("{e:?}")))?;
-        let selected_factor_ids = portfolio
-            .selected
-            .iter()
-            .map(|binding| binding.factor_id.clone())
-            .collect::<Vec<_>>();
-        let current = registry.read_compatible_v2(
-            &current_snapshot,
-            request.generation_vector_digest,
-            &request.model_tuple,
-            request.now_unix_ms,
-            selected_factor_ids,
-            MAX_CANONICAL_PROMPT_FACTORS as u32,
-        );
-        match current {
-            Err(_) => PromptExerciseActionV1::RejectStale,
-            Ok(set) => {
-                let current_by_realization = set
-                    .bindings
-                    .into_iter()
-                    .map(|binding| (binding.realization_id.clone(), binding))
-                    .collect::<BTreeMap<_, _>>();
-                let exact = portfolio.selected.iter().all(|selected| {
-                    current_by_realization
-                        .get(&selected.realization.realization_id)
-                        .is_some_and(|current| {
-                            current.realization_id == selected.realization.realization_id
-                                && current.digest() == selected.binding_digest
-                        })
-                });
-                if !exact {
-                    PromptExerciseActionV1::RejectStale
-                } else if portfolio.receipt.expected_utility_q32 > request.wait_value_q32 {
-                    PromptExerciseActionV1::Exercise
-                } else {
-                    PromptExerciseActionV1::Wait
+        if current_snapshot.snapshot_digest != portfolio.registry_snapshot_digest {
+            PromptExerciseActionV1::RejectStale
+        } else if portfolio.selected.is_empty() {
+            PromptExerciseActionV1::NoIntervention
+        } else {
+            let selected_factor_ids = portfolio
+                .selected
+                .iter()
+                .map(|binding| binding.factor_id.clone())
+                .collect::<Vec<_>>();
+            let current = registry.read_compatible_v2(
+                &current_snapshot,
+                request.generation_vector_digest,
+                &request.model_tuple,
+                request.now_unix_ms,
+                selected_factor_ids,
+                MAX_CANONICAL_PROMPT_FACTORS as u32,
+            );
+            match current {
+                Err(_) => PromptExerciseActionV1::RejectStale,
+                Ok(set) => {
+                    let current_by_realization = set
+                        .bindings
+                        .into_iter()
+                        .map(|binding| (binding.realization_id.clone(), binding))
+                        .collect::<BTreeMap<_, _>>();
+                    let exact = portfolio.selected.iter().all(|selected| {
+                        current_by_realization
+                            .get(&selected.realization.realization_id)
+                            .is_some_and(|current| {
+                                current.realization_id == selected.realization.realization_id
+                                    && current.digest() == selected.binding_digest
+                            })
+                    });
+                    if !exact {
+                        PromptExerciseActionV1::RejectStale
+                    } else if portfolio.receipt.expected_utility_q32 > request.wait_value_q32 {
+                        PromptExerciseActionV1::Exercise
+                    } else {
+                        PromptExerciseActionV1::Wait
+                    }
                 }
             }
         }
@@ -1318,7 +1325,9 @@ fn digest_portfolio_receipt(
     pricing_set_digest: Digest32,
     graph_generation_digest: Digest32,
 ) -> Digest32 {
-    let mut bytes = b"hepta.prompt-optimizer.portfolio-receipt.v1".to_vec();
+    // V2 binds the complete enumeration receipt, not the former bare binding list.
+    // Existing V1 receipts remain historical identities and are not upgraded here.
+    let mut bytes = b"hepta.prompt-optimizer.portfolio-receipt.v2".to_vec();
     push_id(&mut bytes, portfolio_id);
     for digest in [
         candidate_set_digest,

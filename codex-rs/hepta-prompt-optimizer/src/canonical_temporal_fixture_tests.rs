@@ -12,7 +12,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 pub(super) struct Fixture {
-    _temporary: tempfile::TempDir,
+    pub(super) temporary: tempfile::TempDir,
     pub(super) registry: DurablePromptRegistry,
     pub(super) priced: PricedPromptCandidatesV1,
     pub(super) verifier: LearningEvidenceVerifierV1,
@@ -241,7 +241,7 @@ pub(super) fn fixture() -> Fixture {
     )
     .unwrap_or_else(|error| panic!("actual signed pricing: {error:?}"));
     Fixture {
-        _temporary: temporary,
+        temporary,
         registry,
         priced,
         verifier,

@@ -408,3 +408,166 @@ fn empty_portfolio_obeys_the_same_time_and_scope_currentness_checks() {
         );
     }
 }
+
+#[test]
+fn empty_portfolio_rejects_registry_snapshot_drift() {
+    assert_registry_snapshot_drift_rejected(0);
+}
+
+#[test]
+fn selected_portfolio_rejects_registry_snapshot_drift() {
+    assert_registry_snapshot_drift_rejected(8);
+}
+
+fn assert_registry_snapshot_drift_rejected(token_budget: u64) {
+    let mut fixture = fixture::fixture();
+    let portfolio = select_portfolio_v1(
+        &fixture.priced,
+        &tests::graph(&["factor:a", "factor:b"], Vec::new()),
+        Vec::new(),
+        &fixture.verifier,
+        PromptPortfolioRequestV1 {
+            portfolio_id: id("portfolio:registry-drift"),
+            graph_query_id: id("query:registry-drift"),
+            token_budget,
+            maximum_selected_factors: 2,
+            requested_valid_until_unix_ms: 8_000,
+        },
+        /*now_unix_ms*/ 1_000,
+    )
+    .unwrap_or_else(|error| panic!("real signed selection: {error:?}"));
+    let expected = if token_budget == 0 {
+        PromptExerciseActionV1::NoIntervention
+    } else {
+        PromptExerciseActionV1::Exercise
+    };
+    let initial = exercise(&fixture, &portfolio, 1_000);
+    assert_eq!(initial.decision, expected);
+    let directory = fixture.temporary.path().join("registry");
+    let unchanged_anchor = fixture.registry.recovery_anchor().expect("source anchor");
+    drop(fixture.registry);
+    fixture.registry =
+        codex_hepta_prompt_registry::DurablePromptRegistry::open_state_dir_with_recovery_anchor(
+            &directory,
+            64,
+            &unchanged_anchor,
+        )
+        .expect("reopen unchanged source cut");
+    assert_eq!(exercise(&fixture, &portfolio, 1_000), initial);
+
+    let mut factor = fixture
+        .registry
+        .registry()
+        .unwrap_or_else(|error| panic!("registry: {error:?}"))
+        .factor(&id("factor:a"))
+        .unwrap_or_else(|| panic!("factor a"))
+        .clone();
+    factor.factor_id = id("factor:new-after-enumeration");
+    factor.lifecycle = codex_hepta_prompt_registry::Lifecycle::Draft;
+    fixture
+        .registry
+        .register_factor(factor)
+        .unwrap_or_else(|error| panic!("advance registry: {error:?}"));
+
+    assert_eq!(
+        exercise(&fixture, &portfolio, 1_000).decision,
+        PromptExerciseActionV1::RejectStale
+    );
+    let changed_anchor = fixture.registry.recovery_anchor().expect("changed anchor");
+    drop(fixture.registry);
+    fixture.registry =
+        codex_hepta_prompt_registry::DurablePromptRegistry::open_state_dir_with_recovery_anchor(
+            &directory,
+            64,
+            &changed_anchor,
+        )
+        .expect("reopen changed source cut");
+    assert_eq!(
+        exercise(&fixture, &portfolio, 1_000).decision,
+        PromptExerciseActionV1::RejectStale
+    );
+}
+
+#[test]
+fn portfolio_receipt_binds_enumeration_source_even_when_candidate_bytes_are_unchanged() {
+    let fixture = fixture::fixture();
+    let graph = tests::graph(&["factor:a", "factor:b"], Vec::new());
+    let original = select(&fixture, &graph, Vec::new(), 1_000);
+    let mut changed = fixture.priced.clone();
+    changed.candidates.registry_snapshot.registry_digest = digest("other-registry-cut");
+    changed.candidates.registry_snapshot.snapshot_digest = changed
+        .candidates
+        .registry_snapshot
+        .compute_snapshot_digest();
+    changed.candidates.receipt.registry_digest =
+        changed.candidates.registry_snapshot.registry_digest;
+    // Algorithm fixtures can issue test-only provenance; production callers cannot.
+    tests::seal_priced_fixture(&mut changed);
+    assert_eq!(
+        changed.candidates.candidates_digest,
+        fixture.priced.candidates.candidates_digest
+    );
+    assert_eq!(
+        changed.pricing_set_digest,
+        fixture.priced.pricing_set_digest
+    );
+    let changed_portfolio = select_portfolio_v1(
+        &changed,
+        &graph,
+        Vec::new(),
+        &fixture.verifier,
+        PromptPortfolioRequestV1 {
+            portfolio_id: original.receipt.portfolio_id.clone(),
+            graph_query_id: id("query:temporal"),
+            token_budget: 8,
+            maximum_selected_factors: 2,
+            requested_valid_until_unix_ms: 8_000,
+        },
+        1_000,
+    )
+    .expect("distinct source selection");
+    assert_eq!(original.selected, changed_portfolio.selected);
+    assert_ne!(
+        original.receipt.receipt_digest,
+        changed_portfolio.receipt.receipt_digest
+    );
+}
+
+#[test]
+fn portfolios_reject_other_registry_cuts_with_unchanged_selected_bindings() {
+    for token_budget in [0, 1] {
+        let mut fixture = fixture::fixture();
+        let portfolio = select_portfolio_v1(
+            &fixture.priced,
+            &tests::graph(&["factor:a", "factor:b"], Vec::new()),
+            Vec::new(),
+            &fixture.verifier,
+            PromptPortfolioRequestV1 {
+                portfolio_id: id("portfolio:other-owner"),
+                graph_query_id: id("query:other-owner"),
+                token_budget,
+                maximum_selected_factors: 1,
+                requested_valid_until_unix_ms: 8_000,
+            },
+            1_000,
+        )
+        .expect("source selection");
+        let other = tempfile::tempdir().expect("other directory");
+        let (other_registry, _, _authority, _key, _now) =
+            tests::registry_fixture(&other.path().join("registry"), &[1]);
+        for selected in &portfolio.selected {
+            assert_eq!(
+                other_registry
+                    .registry()
+                    .expect("other view")
+                    .realization_binding(&selected.realization.realization_id,),
+                Some(&selected.realization),
+            );
+        }
+        fixture.registry = other_registry;
+        assert_eq!(
+            exercise(&fixture, &portfolio, 1_000).decision,
+            PromptExerciseActionV1::RejectStale
+        );
+    }
+}

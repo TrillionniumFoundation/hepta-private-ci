@@ -203,3 +203,52 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
         )
     );
 }
+
+#[test]
+fn unrelated_registry_mutation_blocks_recompilation_and_prepared_delivery() {
+    let (_temporary, mut registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile original source cut");
+    let mut addition = registry
+        .registry()
+        .expect("registry")
+        .factor(&portfolio.selected[0].factor_id)
+        .expect("selected factor")
+        .clone();
+    addition.factor_id = id("factor:unrelated-new-draft");
+    addition.lifecycle = codex_hepta_prompt_registry::Lifecycle::Draft;
+    registry
+        .register_factor(addition)
+        .expect("advance source cut");
+    let stale = PromptPipelineErrorV1::ExerciseRejected(
+        codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1::RejectStale,
+    );
+    assert_eq!(
+        compile_exercised_prompt_context_v1(
+            &registry,
+            &portfolio,
+            compile_request(exercise.clone()),
+        )
+        .expect_err("old portfolio cannot compile against changed source"),
+        stale,
+    );
+    assert_eq!(
+        prepare_prompt_delivery_v1(
+            &registry,
+            &portfolio,
+            &prepared,
+            PromptDeliveryPrepareRequestV1 {
+                exercise,
+                serialization_id: id("serialization:changed-source"),
+                serialized_payload: b"payload:a".to_vec(),
+                attachment_id: id("attachment:changed-source"),
+            },
+        )
+        .expect_err("prepared context cannot bypass source-cut revalidation"),
+        stale,
+    );
+}
