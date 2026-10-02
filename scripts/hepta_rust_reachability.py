@@ -18,11 +18,16 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.verify_hepta_callers import _strip_rust_non_code
+
 MODULE_RE = re.compile(
     r"(?ms)(?P<attrs>(?:#\s*\[[^\]]*\]\s*)*)"
     r"(?:pub(?:\([^)]*\))?\s+)?mod\s+"
-    r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*;"
+    r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*(?P<ending>[;{])"
 )
+ITEM_RE = re.compile(MODULE_RE.pattern + r"|(?P<brace>[{}])")
 PATH_RE = re.compile(r'#\s*\[\s*path\s*=\s*"([^"]+)"\s*\]')
 INCLUDE_RE = re.compile(r'\binclude!\s*\(\s*"([^"]+\.rs)"\s*\)')
 SOURCE_DIRS = ("src", "tests", "examples", "benches")
@@ -86,20 +91,38 @@ def direct_children(source: Path, crate_roots: set[Path]) -> list[Path]:
         text = source.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return []
+    code = _strip_rust_non_code(text)
     children: list[Path] = []
     for match in INCLUDE_RE.finditer(text):
+        if not code[match.start() :].startswith("include!"):
+            continue
         candidate = (source.parent / match.group(1)).resolve()
         if candidate.is_file():
             children.append(candidate)
-    base = _module_base(source, crate_roots)
-    for match in MODULE_RE.finditer(text):
-        path_match = PATH_RE.search(match.group("attrs") or "")
+    # Rust resolves #[path] inside an inline module from that module's
+    # directory, including the stem of a non-mod.rs containing file.
+    scopes = [(_module_base(source, crate_roots), source.parent)]
+    for match in ITEM_RE.finditer(code):
+        if match.group("brace") == "{":
+            scopes.append(scopes[-1])
+            continue
+        if match.group("brace") == "}":
+            if len(scopes) > 1:
+                scopes.pop()
+            continue
+        base, path_base = scopes[-1]
+        attrs = text[match.start("attrs") : match.end("attrs")]
+        path_match = PATH_RE.search(attrs)
+        name = match.group("name")
+        if match.group("ending") == "{":
+            directory = path_base / path_match.group(1) if path_match else base / name
+            scopes.append((directory, directory))
+            continue
         if path_match:
-            candidate = (source.parent / path_match.group(1)).resolve()
+            candidate = (path_base / path_match.group(1)).resolve()
             if candidate.is_file():
                 children.append(candidate)
             continue
-        name = match.group("name")
         flat = (base / f"{name}.rs").resolve()
         nested = (base / name / "mod.rs").resolve()
         if flat.is_file():
@@ -142,7 +165,9 @@ def tracked_candidates(root: Path, packages: list[tuple[str, Path]]) -> dict[Pat
             for source in source_root.rglob("*.rs"):
                 resolved = source.resolve()
                 relative = source.relative_to(package_root)
-                if resolved not in tracked or EXCLUDED_PARTS.intersection(relative.parts):
+                if resolved not in tracked or EXCLUDED_PARTS.intersection(
+                    relative.parts
+                ):
                     continue
                 result[resolved] = name
     return result
@@ -175,7 +200,9 @@ def scan(root: Path, metadata: dict[str, Any]) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument(
+        "--root", type=Path, default=Path(__file__).resolve().parents[1]
+    )
     parser.add_argument("--manifest", type=Path, default=Path("codex-rs/Cargo.toml"))
     parser.add_argument("--metadata-json", type=Path)
     parser.add_argument("--strict", action="store_true")
@@ -188,7 +215,12 @@ def main(argv: list[str] | None = None) -> int:
             else cargo_metadata(args.root, args.manifest)
         )
         report = scan(args.root, metadata)
-    except (OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
+    except (
+        OSError,
+        ValueError,
+        subprocess.CalledProcessError,
+        json.JSONDecodeError,
+    ) as error:
         print(f"FAIL_HEPTA_RUST_REACHABILITY: {error}", file=sys.stderr)
         return 2
     print(json.dumps(report, indent=2 if args.pretty else None, sort_keys=True))

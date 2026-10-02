@@ -58,9 +58,13 @@ class RustReachabilityTests(unittest.TestCase):
             '#[path = "shared.rs"]\nmod shared;\n', encoding="utf-8"
         )
         (package / "src/shared.rs").write_text("pub fn shared() {}\n", encoding="utf-8")
-        (package / "src/generated.rs").write_text("pub fn generated() {}\n", encoding="utf-8")
+        (package / "src/generated.rs").write_text(
+            "pub fn generated() {}\n", encoding="utf-8"
+        )
         (package / "tests/product.rs").write_text("mod support;\n", encoding="utf-8")
-        (package / "tests/support/mod.rs").write_text("pub fn fixture() {}\n", encoding="utf-8")
+        (package / "tests/support/mod.rs").write_text(
+            "pub fn fixture() {}\n", encoding="utf-8"
+        )
         self.track(root)
         report = reachability.scan(root, self.metadata(root))
         self.assertEqual(report["status"], "aligned", json.dumps(report, indent=2))
@@ -71,16 +75,71 @@ class RustReachabilityTests(unittest.TestCase):
         package = root / "codex-rs/hepta-example"
         (package / "src/lib.rs").write_text("pub fn live() {}\n", encoding="utf-8")
         (package / "src/orphan.rs").write_text("pub fn orphan() {}\n", encoding="utf-8")
-        (package / "tests/product.rs").write_text("#[test]\nfn product() {}\n", encoding="utf-8")
+        (package / "tests/product.rs").write_text(
+            "#[test]\nfn product() {}\n", encoding="utf-8"
+        )
         self.track(root)
         report = reachability.scan(root, self.metadata(root))
         self.assertEqual(report["status"], "orphan_source")
         self.assertEqual(
             report["unreachableSources"],
-            [{"package": "codex-hepta-example", "path": "codex-rs/hepta-example/src/orphan.rs"}],
+            [
+                {
+                    "package": "codex-hepta-example",
+                    "path": "codex-rs/hepta-example/src/orphan.rs",
+                }
+            ],
         )
 
-    def test_repeated_attributes_retain_path_without_exponential_backtracking(self) -> None:
+    def test_inline_module_paths_follow_rust_directories_and_ignore_literal_braces(
+        self,
+    ) -> None:
+        temporary, root = self.repository()
+        self.addCleanup(temporary.cleanup)
+        source = root / "codex-rs/hepta-example/src/owner.rs"
+        source.write_text(
+            'fn before() { let s = r##"} mod fake {"##; }\n'
+            "mod tests {\n"
+            "  /* { nested /* } */ comment */\n"
+            '  #[path = "gate.rs"] mod gate;\n'
+            "  mod nested { mod child; }\n"
+            "}\n"
+            '#[path = "after.rs"] mod after;\n',
+            encoding="utf-8",
+        )
+        tests = source.parent / "owner/tests"
+        (tests / "nested").mkdir(parents=True)
+        gate = tests / "gate.rs"
+        child = tests / "nested/child.rs"
+        after = source.with_name("after.rs")
+        for path in (gate, child, after):
+            path.write_text("", encoding="utf-8")
+        self.assertEqual(
+            reachability.direct_children(source, set()), [gate, child, after]
+        )
+
+    def test_inline_root_path_override_is_not_an_external_module(self) -> None:
+        temporary, root = self.repository()
+        self.addCleanup(temporary.cleanup)
+        source = root / "codex-rs/hepta-example/src/lib.rs"
+        source.write_text(
+            '#[path = "custom"] mod inline {\n'
+            '  #[path = "gate.rs"] mod gate;\n'
+            "}\n"
+            "// mod orphan;\n"
+            'const S: &str = "mod orphan; include!(\\"orphan.rs\\");";\n',
+            encoding="utf-8",
+        )
+        directory = source.parent / "custom"
+        directory.mkdir()
+        gate = directory / "gate.rs"
+        gate.write_text("", encoding="utf-8")
+        source.with_name("orphan.rs").write_text("", encoding="utf-8")
+        self.assertEqual(reachability.direct_children(source, {source}), [gate])
+
+    def test_repeated_attributes_retain_path_without_exponential_backtracking(
+        self,
+    ) -> None:
         temporary, root = self.repository()
         self.addCleanup(temporary.cleanup)
         source = root / "codex-rs/hepta-example/src/lib.rs"
@@ -89,7 +148,9 @@ class RustReachabilityTests(unittest.TestCase):
             + '#[path = "shared.rs"]  \n  pub(crate) mod shared;\n',
             encoding="utf-8",
         )
-        source.with_name("shared.rs").write_text("pub fn shared() {}\n", encoding="utf-8")
+        source.with_name("shared.rs").write_text(
+            "pub fn shared() {}\n", encoding="utf-8"
+        )
         result = subprocess.run(
             [
                 sys.executable,
