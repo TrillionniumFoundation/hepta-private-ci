@@ -124,8 +124,8 @@ class RepositorySurfaceTests(unittest.TestCase):
 
     def test_reviewed_module_local_machine_name_uses_policy_not_source_constant(self):
         policy_text = self.policy_text.replace(
-            'canonicalModuleLocalMachineFiles = ["module.toml"]',
-            'canonicalModuleLocalMachineFiles = ["module.toml", "owner.toml"]',
+            'canonicalModuleLocalMachineFiles = ["module.toml", "IMPLEMENTATION_MAP.json"]',
+            'canonicalModuleLocalMachineFiles = ["module.toml", "IMPLEMENTATION_MAP.json", "owner.toml"]',
         )
         self.write(POLICY_PATH, policy_text)
         relative = "docs/modules/example.readonly/owner.toml"
@@ -133,6 +133,18 @@ class RepositorySurfaceTests(unittest.TestCase):
         policy = load_policy(self.root)
         self.assertIn("owner.toml", policy["canonicalModuleLocalMachineFiles"])
         self.assertEqual(self.forbidden([relative]), [])
+
+    def test_existing_module_implementation_view_is_allowed_without_another_registry(
+        self,
+    ):
+        relative = "docs/modules/runtime.gateway/IMPLEMENTATION_MAP.json"
+        self.write(relative, (ROOT / relative).read_text())
+        parallel = "docs/modules/runtime.gateway/STATUS_REGISTRY.json"
+        self.write(parallel, json.dumps({"schema": "parallel-registry", "modules": []}))
+        self.assertEqual(self.forbidden([relative, parallel]), [parallel])
+        misplaced = "docs/modules/IMPLEMENTATION_MAP.json"
+        self.write(misplaced, (ROOT / relative).read_text())
+        self.assertEqual(self.forbidden([misplaced]), [misplaced])
 
     def test_explanation_and_single_module_manifest_are_allowed(self):
         self.assertEqual(

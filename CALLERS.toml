@@ -94,7 +94,7 @@ id = "paired_custody_program_admission"
 symbol = "admit_fixed_custody_program"
 call_pattern = '\badmit_fixed_custody_program\s*\('
 definition_path = "codex-rs/hepta-learning-ledger/src/review_host/mod.rs"
-definition_markers = ["pub fn admit_fixed_custody_program", "IndependentTrust::open_for_cycle", "ReviewTrustWireV1::from_native(&trust.root, &trust.distribution)"]
+definition_markers = ["pub fn admit_fixed_custody_program", "IndependentTrust::open_for_cycle", "ReviewTrustWireV1::from_native(", "&trust.root", "&trust.distribution"]
 product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_holdout_custody.rs"]
 caller_markers = ["pub fn admit_fixed_paired_custody", "boundary()?", "wire.native()?", "codex_hepta_learning_ledger::admit_fixed_custody_program"]
 
