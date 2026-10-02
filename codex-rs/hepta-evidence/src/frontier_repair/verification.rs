@@ -1,7 +1,18 @@
-pub(crate) async fn verify_frontier_repair_storage(
-    pool: &SqlitePool,
-) -> Result<(), EvidenceError> {
-    verify_repair_schema(pool).await?;
+pub(crate) async fn verify_frontier_repair_storage(pool: &SqlitePool) -> Result<(), EvidenceError> {
+    // Pin capacity accounting, schema and every row/event to one read snapshot.
+    let mut transaction = pool.begin().await.map_err(classify_sqlx_error)?;
+    verify_repair_schema(&mut transaction).await?;
+    let orphan: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM evidence_frontier_repair_events AS event
+         LEFT JOIN evidence_frontier_repairs AS repair USING (repair_id)
+         WHERE repair.repair_id IS NULL)",
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    if orphan {
+        return Err(corrupt("frontier repair ledger contains an orphan event"));
+    }
     let capacity = sqlx::query(
         "SELECT COUNT(*) AS row_count,
                 COALESCE(SUM(
@@ -12,7 +23,7 @@ pub(crate) async fn verify_frontier_repair_storage(
                 ), 0) AS canonical_bytes
          FROM evidence_frontier_repairs",
     )
-    .fetch_one(pool)
+    .fetch_one(&mut *transaction)
     .await
     .map_err(classify_sqlx_error)?;
     let row_count: i64 = capacity.try_get("row_count").map_err(classify_sqlx_error)?;
@@ -30,115 +41,63 @@ pub(crate) async fn verify_frontier_repair_storage(
         ));
     }
 
-    let repair_rows = sqlx::query(
-        "SELECT * FROM evidence_frontier_repairs ORDER BY created_at_ms, repair_id",
+    let event_capacity = sqlx::query(
+        "SELECT COUNT(*) AS event_count,
+                COALESCE(SUM(length(CAST(event_json AS BLOB))), 0) AS event_bytes,
+                COALESCE(MAX(length(CAST(event_json AS BLOB))), 0) AS maximum_event_bytes
+         FROM evidence_frontier_repair_events",
     )
-    .fetch_all(pool)
+    .fetch_one(&mut *transaction)
     .await
     .map_err(classify_sqlx_error)?;
+    let event_count: i64 = event_capacity
+        .try_get("event_count")
+        .map_err(classify_sqlx_error)?;
+    let event_bytes: i64 = event_capacity
+        .try_get("event_bytes")
+        .map_err(classify_sqlx_error)?;
+    let maximum_event_bytes: i64 = event_capacity
+        .try_get("maximum_event_bytes")
+        .map_err(classify_sqlx_error)?;
+    if event_count > row_count * 4 || maximum_event_bytes > 65_536 {
+        return Err(corrupt(
+            "frontier repair event inventory exceeds its per-operation bounds",
+        ));
+    }
+    if canonical_bytes + event_bytes > EVIDENCE_FRONTIER_REPAIR_MAX_CANONICAL_BYTES {
+        return Err(EvidenceError::Unavailable(
+            "frontier repair rows and events exceed the startup byte budget".to_string(),
+        ));
+    }
+
+    let repair_rows =
+        sqlx::query("SELECT * FROM evidence_frontier_repairs ORDER BY created_at_ms, repair_id")
+            .fetch_all(&mut *transaction)
+            .await
+            .map_err(classify_sqlx_error)?;
     for row in &repair_rows {
         let operation = decode_repair_row(row)?;
-        verify_repair_events(pool, &operation).await?;
+        verify_repair_events(&mut transaction, &operation).await?;
     }
     Ok(())
 }
 
-async fn verify_repair_schema(pool: &SqlitePool) -> Result<(), EvidenceError> {
-    const OBJECTS: &[(&str, &str, &str, &[&str])] = &[
-        (
-            "evidence_frontier_repairs",
-            "table",
-            "evidence_frontier_repairs",
-            &[
-                "create table",
-                "unique(authority_key_id, authority_key_epoch, nonce_hex)",
-                "'prepared', 'dispatching', 'indeterminate', 'acknowledged', 'conflicted'",
-                "authorization_json text not null",
-                "authority_json text not null",
-            ],
-        ),
-        (
-            "evidence_frontier_repairs_one_open_per_store",
-            "index",
-            "evidence_frontier_repairs",
-            &[
-                "create unique index",
-                "where state in ('prepared', 'dispatching', 'indeterminate')",
-            ],
-        ),
-        (
-            "evidence_frontier_repairs_transition",
-            "trigger",
-            "evidence_frontier_repairs",
-            &[
-                "before update",
-                "invalid evidence frontier repair transition",
-            ],
-        ),
-        (
-            "evidence_frontier_repairs_no_delete",
-            "trigger",
-            "evidence_frontier_repairs",
-            &[
-                "before delete",
-                "evidence frontier repairs cannot be deleted",
-            ],
-        ),
-        (
-            "evidence_frontier_repair_events",
-            "table",
-            "evidence_frontier_repair_events",
-            &[
-                "create table",
-                "unique(repair_id, event_index)",
-                "event_sha256 text not null unique",
-            ],
-        ),
-        (
-            "evidence_frontier_repair_events_no_update",
-            "trigger",
-            "evidence_frontier_repair_events",
-            &[
-                "before update",
-                "evidence frontier repair events are immutable",
-            ],
-        ),
-        (
-            "evidence_frontier_repair_events_no_delete",
-            "trigger",
-            "evidence_frontier_repair_events",
-            &[
-                "before delete",
-                "evidence frontier repair events cannot be deleted",
-            ],
-        ),
-    ];
-    for (name, kind, table, fragments) in OBJECTS {
-        let row = sqlx::query("SELECT type, tbl_name, sql FROM sqlite_schema WHERE name = ?")
-            .bind(name)
-            .fetch_optional(pool)
-            .await
-            .map_err(classify_sqlx_error)?
-            .ok_or_else(|| {
-                corrupt(&format!(
-                    "required frontier repair schema object {name} is missing"
-                ))
-            })?;
-        let actual_kind: String = row.try_get("type").map_err(classify_sqlx_error)?;
-        let actual_table: String = row.try_get("tbl_name").map_err(classify_sqlx_error)?;
-        let sql: String = row
-            .try_get::<Option<String>, _>("sql")
-            .map_err(classify_sqlx_error)?
-            .ok_or(corrupt("frontier repair schema object has no SQL"))?;
-        let normalized = sql
-            .to_ascii_lowercase()
-            .split_whitespace()
-            .collect::<Vec<_>>()
-            .join(" ");
-        if actual_kind != *kind
-            || actual_table != *table
-            || fragments.iter().any(|fragment| !normalized.contains(fragment))
-        {
+async fn verify_repair_schema(
+    connection: &mut sqlx::SqliteConnection,
+) -> Result<(), EvidenceError> {
+    // Match the full governed definition, not substrings that can survive a
+    // WHEN 0 guard or a commented-out constraint. Migrations are compile data.
+    const MIGRATION: &str = include_str!("../../migrations/0017_frontier_repair_publication.sql");
+    for (name, definition) in repair_schema_definitions(MIGRATION)? {
+        let actual: Option<String> =
+            sqlx::query_scalar("SELECT sql FROM sqlite_schema WHERE name = ?")
+                .bind(&name)
+                .fetch_optional(&mut *connection)
+                .await
+                .map_err(classify_sqlx_error)?;
+        let expected = definition.split_whitespace().collect::<Vec<_>>().join(" ");
+        let actual = actual.map(|sql| sql.split_whitespace().collect::<Vec<_>>().join(" "));
+        if actual.as_deref() != Some(expected.as_str()) {
             return Err(corrupt(&format!(
                 "frontier repair schema object {name} has an invalid definition"
             )));
@@ -147,18 +106,57 @@ async fn verify_repair_schema(pool: &SqlitePool) -> Result<(), EvidenceError> {
     Ok(())
 }
 
+fn repair_schema_definitions(
+    migration: &str,
+) -> Result<std::collections::BTreeMap<String, String>, EvidenceError> {
+    const NAMES: [&str; 9] = [
+        "evidence_frontier_repairs",
+        "evidence_frontier_repairs_one_open_per_store",
+        "evidence_frontier_repairs_store_created",
+        "evidence_frontier_repairs_transition",
+        "evidence_frontier_repairs_no_delete",
+        "evidence_frontier_repair_events",
+        "evidence_frontier_repair_events_repair_seq",
+        "evidence_frontier_repair_events_no_update",
+        "evidence_frontier_repair_events_no_delete",
+    ];
+    let mut definitions = std::collections::BTreeMap::new();
+    for statement in migration.split("\nCREATE ").skip(1) {
+        let definition = format!("CREATE {}", statement.trim().trim_end_matches(';'));
+        let tokens: Vec<_> = definition.split_whitespace().collect();
+        let name_index = if tokens.get(1) == Some(&"UNIQUE") {
+            3
+        } else {
+            2
+        };
+        let name = tokens
+            .get(name_index)
+            .ok_or_else(|| corrupt("invalid repair schema manifest"))?
+            .to_string();
+        if !NAMES.contains(&name.as_str()) || definitions.insert(name, definition).is_some() {
+            return Err(corrupt(
+                "repair schema manifest has an unknown or repeated object",
+            ));
+        }
+    }
+    if definitions.len() != NAMES.len() {
+        return Err(corrupt("repair schema manifest omits a required object"));
+    }
+    Ok(definitions)
+}
+
 async fn verify_repair_events(
-    pool: &SqlitePool,
+    connection: &mut sqlx::SqliteConnection,
     operation: &EvidenceFrontierRepairOperationV1,
 ) -> Result<(), EvidenceError> {
     let rows = sqlx::query(
         "SELECT event_index, event_kind, event_json, event_sha256,
                 previous_event_sha256, observed_at_ms
          FROM evidence_frontier_repair_events
-         WHERE repair_id = ? ORDER BY event_index",
+         WHERE repair_id = ? ORDER BY event_index LIMIT 5",
     )
     .bind(&operation.repair_id)
-    .fetch_all(pool)
+    .fetch_all(&mut *connection)
     .await
     .map_err(classify_sqlx_error)?;
     if rows.is_empty() || rows.len() > 4 {
@@ -191,7 +189,8 @@ async fn verify_repair_events(
             row.try_get("observed_at_ms").map_err(classify_sqlx_error)?,
             "frontier repair event timestamp",
         )?;
-        if event_json != canonical
+        if event.schema_version != EVIDENCE_FRONTIER_REPAIR_EVENT_SCHEMA_VERSION
+            || event_json != canonical
             || digest != projected_digest
             || event.previous_event_sha256 != previous
             || projected_previous != previous
@@ -202,10 +201,8 @@ async fn verify_repair_events(
             || event.repair_id != operation.repair_id
             || event.store_id != operation.store_id
             || event.nonce_hex != operation.nonce_hex
-            || event.current_frontier_sha256
-                != operation.authorization.current_frontier_sha256
-            || event.target_frontier_sha256
-                != operation.authorization.target_frontier_sha256
+            || event.current_frontier_sha256 != operation.authorization.current_frontier_sha256
+            || event.target_frontier_sha256 != operation.authorization.target_frontier_sha256
             || event.observed_at_unix_ms < previous_time
             || event.observed_at_unix_ms > operation.updated_at_unix_ms
         {
@@ -310,9 +307,9 @@ async fn verify_repair_events(
             "frontier repair terminal state is inconsistent with its event history",
         ));
     }
-    let last_row = rows
-        .last()
-        .ok_or(corrupt("frontier repair event history is unexpectedly empty"))?;
+    let last_row = rows.last().ok_or(corrupt(
+        "frontier repair event history is unexpectedly empty",
+    ))?;
     let last: EvidenceFrontierRepairEventV1 = serde_json::from_str(
         &last_row
             .try_get::<String, _>("event_json")
@@ -325,6 +322,7 @@ async fn verify_repair_events(
         || last.conflict_generation != operation.conflict_generation
         || last.conflict_frontier_sha256 != operation.conflict_frontier_sha256
         || last.event_kind != operation.state
+        || last.observed_at_unix_ms != operation.updated_at_unix_ms
     {
         return Err(corrupt(
             "frontier repair latest event differs from the operation projection",

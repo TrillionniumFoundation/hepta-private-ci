@@ -3,11 +3,13 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shlex
 from pathlib import Path
 import tempfile
 import unittest
 
 from scripts import kernel_evidence_receipt_audit as audit
+from scripts import kernel_evidence_crash_matrix as crash
 
 
 IDENTITY = {
@@ -44,7 +46,9 @@ class ReceiptAuditTests(unittest.TestCase):
         self.temp.cleanup()
 
     def _qualification_receipt(self, kind: str, log: Path) -> dict:
-        merge = IDENTITY["deterministicMergeSha"] if kind == "deterministic_merge" else None
+        merge = (
+            IDENTITY["deterministicMergeSha"] if kind == "deterministic_merge" else None
+        )
         tested = merge if kind == "deterministic_merge" else IDENTITY["sourceHeadSha"]
         return {
             "schemaVersion": 2,
@@ -61,7 +65,7 @@ class ReceiptAuditTests(unittest.TestCase):
             "workflowRunAttempt": IDENTITY["workflowRunAttempt"],
             "runnerImage": IDENTITY["runnerImage"],
             "targetTriple": IDENTITY["targetTriple"],
-            "command": f"run {kind}",
+            "command": audit.COMMANDS[kind],
             "startedAtUnixMs": 10,
             "finishedAtUnixMs": 20,
             "exitCode": 0,
@@ -81,32 +85,39 @@ class ReceiptAuditTests(unittest.TestCase):
             log = self.root / relative
             log.parent.mkdir(parents=True, exist_ok=True)
             log.write_text(f"{kind} passed\n", encoding="utf-8")
-            write_json(self.root / f"{kind}.json", self._qualification_receipt(kind, log))
+            write_json(
+                self.root / f"{kind}.json", self._qualification_receipt(kind, log)
+            )
 
         scenarios: dict[str, dict] = {}
         for scenario in audit.REQUIRED_CRASH_SCENARIOS:
-            log = self.root / "crash" / scenario / "01-test.log"
-            log.parent.mkdir(parents=True, exist_ok=True)
-            marker = f"test {scenario} ... ok"
-            log.write_text(marker + "\n", encoding="utf-8")
-            command = {
-                "package": "codex-hepta-evidence",
-                "targetArgs": ["--lib"],
-                "testName": scenario,
-                "argv": ["cargo", "test", scenario],
-                "command": f"cargo test {scenario}",
-                "startedAtUnixMs": 30,
-                "finishedAtUnixMs": 40,
-                "exitCode": 0,
-                "timedOut": False,
-                "status": "passed",
-                "logPath": str(log),
-                "logSha256": digest(log),
-                "logBytes": log.stat().st_size,
-                "requiredMarkers": [marker],
-                "missingMarkers": [],
-                "skippedDetected": False,
-            }
+            commands = []
+            for index, spec in enumerate(crash.SCENARIOS[scenario]):
+                log = self.root / "crash" / scenario / f"{index + 1:02}-test.log"
+                log.parent.mkdir(parents=True, exist_ok=True)
+                # A completion marker is mandatory even for nested harnesses.
+                markers = list(spec.expected_markers) or ["nested process completed"]
+                log.write_text("\n".join(markers) + "\n", encoding="utf-8")
+                commands.append(
+                    {
+                        "package": spec.package,
+                        "targetArgs": list(spec.target_args),
+                        "testName": spec.test_name,
+                        "argv": spec.argv(),
+                        "command": shlex.join(spec.argv()),
+                        "startedAtUnixMs": 30,
+                        "finishedAtUnixMs": 40,
+                        "exitCode": 0,
+                        "timedOut": False,
+                        "status": "passed",
+                        "logPath": str(log),
+                        "logSha256": digest(log),
+                        "logBytes": log.stat().st_size,
+                        "requiredMarkers": markers,
+                        "missingMarkers": [],
+                        "skippedDetected": False,
+                    }
+                )
             receipt = {
                 "schemaVersion": 2,
                 "module": "kernel.evidence",
@@ -124,7 +135,7 @@ class ReceiptAuditTests(unittest.TestCase):
                 "status": "passed",
                 "startedAtUnixMs": 20,
                 "finishedAtUnixMs": 50,
-                "commands": [command],
+                "commands": commands,
                 "qualificationGranted": False,
                 "targetHostAcceptanceGranted": False,
                 "productionActivationGranted": False,
@@ -163,6 +174,58 @@ class ReceiptAuditTests(unittest.TestCase):
         result = audit.build_audit(self.root, dict(IDENTITY))
         self.assertTrue(result["passed"], result["errors"])
 
+    def test_self_consistent_substitute_command_is_rejected(self) -> None:
+        scenario = audit.REQUIRED_CRASH_SCENARIOS[0]
+        path = self.root / "crash" / f"{scenario}.json"
+        value = json.loads(path.read_text())
+        value["commands"][0]["argv"] = ["echo", "passed"]
+        value["commands"][0]["command"] = "echo passed"
+        write_json(path, value)
+        summary_path = self.root / "crash" / "SUMMARY.json"
+        summary = json.loads(summary_path.read_text())
+        summary["scenarios"][scenario]["sha256"] = digest(path)
+        write_json(summary_path, summary)
+        result = audit.build_audit(self.root, dict(IDENTITY))
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("governed" in error for error in result["errors"]))
+
+    def test_omitted_scenario_command_is_rejected(self) -> None:
+        scenario = audit.REQUIRED_CRASH_SCENARIOS[0]
+        path = self.root / "crash" / f"{scenario}.json"
+        value = json.loads(path.read_text())
+        value["commands"].pop()
+        write_json(path, value)
+        summary_path = self.root / "crash" / "SUMMARY.json"
+        summary = json.loads(summary_path.read_text())
+        summary["scenarios"][scenario]["sha256"] = digest(path)
+        write_json(summary_path, summary)
+        result = audit.build_audit(self.root, dict(IDENTITY))
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("governed" in error for error in result["errors"]))
+
+    def test_substitute_qualification_command_is_rejected(self) -> None:
+        path = self.root / "exact_source.json"
+        value = json.loads(path.read_text())
+        value["command"] = "echo passed"
+        write_json(path, value)
+        result = audit.build_audit(self.root, dict(IDENTITY))
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("governed" in error for error in result["errors"]))
+
+    def test_duplicate_json_field_cannot_override_failure(self) -> None:
+        path = self.root / "exact_source.json"
+        path.write_text('{"exitCode": 23,' + path.read_text()[1:])
+        result = audit.build_audit(self.root, dict(IDENTITY))
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("duplicate" in error for error in result["errors"]))
+
+    def test_nonfinite_json_is_rejected(self) -> None:
+        path = self.root / "exact_source.json"
+        path.write_text('{"unrecognized": NaN,' + path.read_text()[1:])
+        result = audit.build_audit(self.root, dict(IDENTITY))
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("non-finite" in error for error in result["errors"]))
+
     def test_boolean_exit_code_is_rejected(self) -> None:
         path = self.root / "exact_source.json"
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -194,7 +257,9 @@ class ReceiptAuditTests(unittest.TestCase):
         write_json(path, value)
         result = audit.build_audit(self.root, dict(IDENTITY))
         self.assertFalse(result["passed"])
-        self.assertTrue(any("workflowRunAttempt" in error for error in result["errors"]))
+        self.assertTrue(
+            any("workflowRunAttempt" in error for error in result["errors"])
+        )
 
     def test_summary_digest_substitution_is_rejected(self) -> None:
         path = self.root / "crash" / "SUMMARY.json"

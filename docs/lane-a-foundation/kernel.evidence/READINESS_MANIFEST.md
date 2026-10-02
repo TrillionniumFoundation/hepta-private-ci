@@ -43,8 +43,12 @@ Receipt JSON is not trusted on declaration alone. Before finalization,
 
 The 12 crash-consistency scenario receipts receive the same byte-level audit.
 For every command, the audit checks the canonical argv rendering, retained log,
-required success markers, absence of skip markers, digest, size and strict
-terminal exit status. `SUMMARY.json` must contain the exact closed-world
+the exact governed scenario command inventory (including order, count, package,
+target, argv and required markers), absence of skip markers, digest, size and strict
+terminal exit status. Candidate command strings are shared by the execution
+scripts and receipt auditor through `kernel_evidence_commands.py`; a different
+nonempty command is not accepted. Nested-process tests emit their own terminal
+proof markers instead of relying on joined harness lines. `SUMMARY.json` must contain the exact closed-world
 scenario inventory and must bind each scenario receipt's actual bytes.
 
 ## Two-stage fail-closed construction

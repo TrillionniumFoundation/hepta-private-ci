@@ -195,6 +195,13 @@ impl HeptaEvidenceStore {
         }
         match current.state {
             EvidenceFrontierRepairStateV1::Prepared => {
+                verify_frontier_repair_authorization(
+                    &current.authorization,
+                    &current.authority,
+                    &current.current_frontier,
+                    &current.target_frontier,
+                    now_unix_ms,
+                )?;
                 sqlx::query(
                     "UPDATE evidence_frontier_repairs
                      SET state = 'dispatching', dispatch_token = ?,

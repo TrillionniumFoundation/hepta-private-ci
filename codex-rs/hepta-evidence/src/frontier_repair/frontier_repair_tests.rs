@@ -1,4 +1,7 @@
-#![expect(clippy::expect_used, reason = "test fixtures use explicit failure messages")]
+#![expect(
+    clippy::expect_used,
+    reason = "test fixtures use explicit failure messages"
+)]
 
 use std::fmt::Write as _;
 
@@ -18,8 +21,8 @@ use crate::EvidenceFrontierDurableAckV1;
 use crate::EvidenceRecoveryFrontierSignatureV2;
 use crate::EvidenceRecoveryFrontierV2;
 use crate::EvidenceRecoverySnapshotV1;
-use crate::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
 use crate::FRONTIER_REPAIR_AUTHORITY_SCHEMA_VERSION;
+use crate::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
 use crate::FrontierRepairAlgorithmV1;
 use crate::FrontierRepairAuthorityV1;
 use crate::FrontierRepairAuthorizationV1;
@@ -124,8 +127,8 @@ fn repair_fixture(
         trust_root_generation: authority.trust_root_generation,
         authority_signature_hex: String::new(),
     };
-    let bytes = frontier_repair_authorization_signing_bytes(&authorization)
-        .expect("repair signing bytes");
+    let bytes =
+        frontier_repair_authorization_signing_bytes(&authorization).expect("repair signing bytes");
     authorization.authority_signature_hex = encode_hex(&signing_key.sign(&bytes).to_bytes());
     (current, target, authorization, authority)
 }
@@ -194,8 +197,7 @@ async fn reused_nonce_with_semantic_drift_conflicts() {
     let signing_key = SigningKey::from_bytes(&[7_u8; 32]);
     let bytes = frontier_repair_authorization_signing_bytes(&other_authorization)
         .expect("repair signing bytes");
-    other_authorization.authority_signature_hex =
-        encode_hex(&signing_key.sign(&bytes).to_bytes());
+    other_authorization.authority_signature_hex = encode_hex(&signing_key.sign(&bytes).to_bytes());
     let error = store
         .prepare_frontier_repair(
             &other_authorization,
@@ -234,20 +236,12 @@ async fn dispatch_indeterminate_and_acknowledgement_are_exactly_fenced() {
         EvidenceFrontierRepairActionV1::ObserveExactOperation
     );
     let stale = store
-        .mark_frontier_repair_indeterminate(
-            &prepared.repair_id,
-            "dispatch:repair:stale",
-            now + 2,
-        )
+        .mark_frontier_repair_indeterminate(&prepared.repair_id, "dispatch:repair:stale", now + 2)
         .await
         .expect_err("stale dispatch token must fail");
     assert!(matches!(stale, EvidenceError::InvalidRecord(_)));
     let indeterminate = store
-        .mark_frontier_repair_indeterminate(
-            &prepared.repair_id,
-            "dispatch:repair:one",
-            now + 2,
-        )
+        .mark_frontier_repair_indeterminate(&prepared.repair_id, "dispatch:repair:one", now + 2)
         .await
         .expect("mark indeterminate");
     assert_eq!(
@@ -311,12 +305,7 @@ async fn wrong_target_acknowledgement_cannot_complete_repair() {
         audit_sequence: 41,
     };
     let error = store
-        .acknowledge_frontier_repair(
-            &prepared.repair_id,
-            "dispatch:repair:one",
-            &wrong,
-            now + 2,
-        )
+        .acknowledge_frontier_repair(&prepared.repair_id, "dispatch:repair:one", &wrong, now + 2)
         .await
         .expect_err("wrong target acknowledgement must fail");
     assert!(matches!(error, EvidenceError::InvalidRecord(_)));
@@ -390,8 +379,8 @@ async fn ordinary_automatic_successor_is_rejected_by_repair_ledger() {
     authorization.target_frontier_sha256 =
         evidence_recovery_frontier_v2_sha256(&target).expect("target digest");
     let signing_key = SigningKey::from_bytes(&[7_u8; 32]);
-    let bytes = frontier_repair_authorization_signing_bytes(&authorization)
-        .expect("repair signing bytes");
+    let bytes =
+        frontier_repair_authorization_signing_bytes(&authorization).expect("repair signing bytes");
     authorization.authority_signature_hex = encode_hex(&signing_key.sign(&bytes).to_bytes());
     let error = store
         .prepare_frontier_repair(&authorization, &authority, &current, &target, now)
@@ -426,3 +415,6 @@ fn encode_hex(bytes: &[u8]) -> String {
     }
     encoded
 }
+
+#[path = "verification_tests.rs"]
+mod verification_tests;

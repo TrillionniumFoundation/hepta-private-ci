@@ -8,11 +8,12 @@ store. `codex-rs/hepta-agentd` is the named product host and
 runtime does not accept arbitrary role lists or raw trust bindings: verification
 uses an owner-controlled profile and sealed verified trust snapshot.
 
-Source capability is anchored at commit
+Historical implementation provenance was anchored at commit
 `001e557716e884fbd47d5ab2f0ca9f47175f958e`, tree
-`6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`. Later documentation and
-qualification-trigger commits carry no inherited execution or deployment
-authority.
+`6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`. Current source inventory is in the
+[canonical status projection](generated/CURRENT_STATUS.md); exact execution is
+bound only by the runtime readiness artifact. Historical anchors carry no
+inherited execution or deployment authority.
 
 ## Core correctness
 
@@ -121,14 +122,20 @@ these records before host publication.
 ## Database lineage
 
 The physical file is `hepta_evidence_2.sqlite`; the checksum-bound migration set
-is `0001` through `0016`.
+is `0001` through `0017`.
 
 - `0011`: immutable qualification evidence and store identity;
 - `0012`: AuthBus recovery state;
 - `0013`: immutable accepted frontiers;
 - `0014`: publication owner, batch and intent state machine;
 - `0015`: accepted monotonic trust generations;
-- `0016`: qualification signature/trust provenance.
+- `0016`: qualification signature/trust provenance;
+- `0017`: exact signed repair authorization, one-time nonce and fenced event ledger.
+
+The repair ledger has a separate explicit full-verification attachment gate.
+It does not activate an external repair backend or add an Agentd repair caller.
+See [FRONTIER_REPAIR_V1.md](FRONTIER_REPAIR_V1.md) for current bounded verification,
+expiry, dispatch, reconciliation and the remaining external-service boundary.
 
 Production first performs a read-only migration/schema/integrity preflight and
 then reopens through the restricted SQLite runtime authorizer. Runtime denies
@@ -157,61 +164,7 @@ domain, signer/trust ceremonies, target-platform capacity and power-loss tests,
 real operator backup/restore and rollback rejection, canary, promotion and
 release.
 
-<!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
-## Canonical kernel.evidence status
+## Current status
 
-This block is generated from
-`qualification/kernel-evidence/STATUS_SOURCE.json` by
-`python3 scripts/kernel_evidence_status.py sync`. Hand-written prose cannot
-override these facts. Workflow receipts may prove the current candidate, but
-cannot self-issue independent acceptance, deployment, canary or release.
-
-- Source anchor commit: `001e557716e884fbd47d5ab2f0ca9f47175f958e`
-- Source anchor tree: `6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`
-- Canonical status SHA-256: `efe917d985790cbb41f3bdc2083e7596abc211d4bfee63ace066e84dadd8f99e`
-- Workflow run ID: `none`
-- Retained artifact digest: `none`
-
-### Repository implementation capabilities
-
-| Capability | Implemented |
-| --- | --- |
-| Recovery-frontier v2 signing domain | `true` |
-| External monotonic CAS backend adapter | `true` |
-| Fail-closed Agentd production mode | `true` |
-| Immutable local frontier acceptance history | `true` |
-| Distinct-principal threshold and key-epoch rotation | `true` |
-| Read-only production migration preflight | `true` |
-| Stable append-sequence cursor pagination | `true` |
-| Database update/delete denial triggers | `true` |
-| SQLite authorizer callback | `true` |
-| Disk-full fault injection | `true` |
-| Multi-process contention benchmark | `true` |
-| Owner-controlled non-degradable verification profiles | `true` |
-| Sealed monotonic verified trust snapshots | `true` |
-| Single-transaction authenticated recovery snapshot V2 | `true` |
-| Complete authenticated-admission commitment | `true` |
-| Durable fenced publication and CAS reconciliation | `true` |
-| Bounded product verification summaries | `true` |
-| Real backup-object byte verification | `true` |
-| Governed source-to-executable build provenance | `true` |
-| Backup restore-witness binding | `true` |
-| Immutable segmented frontier history | `true` |
-| Self-authenticating atomic latest-frontier index | `true` |
-| Frontier rollover and capacity observability | `true` |
-
-### Qualification, deployment and governance gates
-
-| Gate | State | Persistent authority receipt |
-| --- | --- | --- |
-| Exact-source qualification | `false` | none |
-| Deterministic-merge qualification | `false` | none |
-| Independent acceptance | `false` | none |
-| External frontier active | `false` | none |
-| Backup/restore drill | `false` | none |
-| Canary accepted | `false` | none |
-| Release approved | `false` | none |
-
-> Repository implementation is not deployment evidence. A CI workflow receipt
-> is not independent acceptance or release authority.
-<!-- END GENERATED KERNEL EVIDENCE STATUS -->
+See [the sole generated current-status projection](generated/CURRENT_STATUS.md).
+This specification does not duplicate it or grant execution/deployment authority.

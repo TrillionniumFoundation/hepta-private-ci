@@ -540,6 +540,7 @@ async fn actual_process_crash_after_send_before_ack_redelivers_same_id() {
         )
         .await
         .unwrap();
+    println!("kernel_evidence_process_crash_redelivery=verified");
 }
 
 #[tokio::test]

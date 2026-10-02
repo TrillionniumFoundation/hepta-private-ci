@@ -39,15 +39,19 @@ class CrashMatrixTests(unittest.TestCase):
         self.assertFalse(passed)
         self.assertIn("kernel_evidence_multiprocess_contention=", missing)
 
-    def test_nested_process_harness_uses_exact_exit_without_brittle_line_join(self) -> None:
+    def test_nested_process_harness_uses_exact_exit_without_brittle_line_join(
+        self,
+    ) -> None:
         spec = crash.evidence_lib(
             "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+            "kernel_evidence_process_crash_redelivery=verified",
             require_harness_marker=False,
         )
         nested_output = (
             b"test authbus_outbox_tests::actual_process_crash_after_send_before_ack_"
             b"redelivers_same_id ... \nrunning 1 test\nok\n"
             b"test result: ok. 1 passed; 0 failed; 0 ignored\n"
+            b"kernel_evidence_process_crash_redelivery=verified\n"
         )
         passed, missing, skipped = crash.assess_command(
             spec, exit_code=0, output=nested_output, timed_out=False

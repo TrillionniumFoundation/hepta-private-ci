@@ -100,6 +100,7 @@ SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
     "sqlite_process_kill": (
         evidence_lib(
             "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+            "kernel_evidence_process_crash_redelivery=verified",
             require_harness_marker=False,
         ),
         evidence_lib(
@@ -232,6 +233,7 @@ SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
             "frontier_backend_multiprocess",
             "eight_process_first_generation_contention_has_one_durable_winner",
             "kernel_evidence_multiprocess_contention=",
+            require_harness_marker=False,
         ),
         evidence_lib(
             "authbus_store::tests::independent_database_handles_cannot_both_admit_one_sequence"
@@ -298,7 +300,13 @@ def assess_command(
     markers = spec.expected_markers
     missing = [marker for marker in markers if marker not in text]
     skipped = "skipping:" in text.lower()
-    passed = exit_code == 0 and not timed_out and not missing and not skipped
+    passed = (
+        bool(markers)
+        and exit_code == 0
+        and not timed_out
+        and not missing
+        and not skipped
+    )
     return passed, missing, skipped
 
 

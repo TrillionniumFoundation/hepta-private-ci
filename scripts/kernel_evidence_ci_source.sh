@@ -70,7 +70,7 @@ run_and_receipt() {
   receipt "$kind" "$SOURCE_SHA" "$command" "$started" "$finished" "$code" "$log" "$output"
 }
 
-source_command='set -euo pipefail; test "$(git rev-parse HEAD)" = "$SOURCE_SHA"; test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"; cd codex-rs; cargo test --locked -p codex-hepta-evidence; cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli'
+source_command="$(python3 scripts/kernel_evidence_commands.py exact_source)"
 run_and_receipt exact_source \
   "$READINESS_RECORDS/source/tests.log" \
   "$source_command" \
@@ -134,21 +134,14 @@ PY
   fi
 fi
 
-metadata_command='set -euo pipefail; bash scripts/kernel_evidence_validate_metadata.sh'
+metadata_command="$(python3 scripts/kernel_evidence_commands.py metadata)"
 run_and_receipt metadata \
   "$READINESS_RECORDS/metadata/metadata.log" \
   "$metadata_command" \
   "$READINESS_RECORDS/metadata.json" \
   1200
 
-publication_command='set -euo pipefail; cd codex-rs; cargo test --locked -p codex-hepta-evidence --lib publication_tests:: -- --nocapture --test-threads=1; cargo test --locked -p codex-hepta-agentd --lib evidence_publication_driver_tests:: -- --nocapture --test-threads=1; cd "$GITHUB_WORKSPACE"; python3 - "$READINESS_RECORDS/crash/SUMMARY.json" <<"PY"
-import json, pathlib, sys
-value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
-if value.get("schemaVersion") != 2 or value.get("passed") is not True:
-    raise SystemExit("crash matrix is not terminal success")
-if value.get("scenarioCount") != value.get("requiredScenarioCount"):
-    raise SystemExit("crash matrix inventory is incomplete")
-PY'
+publication_command="$(python3 scripts/kernel_evidence_commands.py publication_diagnostics)"
 run_and_receipt publication_diagnostics \
   "$READINESS_RECORDS/publication/publication.log" \
   "$publication_command" \

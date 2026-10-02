@@ -51,15 +51,17 @@ fn operation_matches_canonical(
         &operation.current_frontier,
         &operation.target_frontier,
     )?;
-    Ok(repair_id(&canonical.authorization_sha256) == operation.repair_id
-        && existing.current_json == canonical.current_json
-        && existing.target_json == canonical.target_json
-        && existing.authorization_json == canonical.authorization_json
-        && existing.authority_json == canonical.authority_json
-        && existing.current_json_sha256 == canonical.current_json_sha256
-        && existing.target_json_sha256 == canonical.target_json_sha256
-        && existing.authorization_sha256 == canonical.authorization_sha256
-        && existing.authority_sha256 == canonical.authority_sha256)
+    Ok(
+        repair_id(&canonical.authorization_sha256) == operation.repair_id
+            && existing.current_json == canonical.current_json
+            && existing.target_json == canonical.target_json
+            && existing.authorization_json == canonical.authorization_json
+            && existing.authority_json == canonical.authority_json
+            && existing.current_json_sha256 == canonical.current_json_sha256
+            && existing.target_json_sha256 == canonical.target_json_sha256
+            && existing.authorization_sha256 == canonical.authorization_sha256
+            && existing.authority_sha256 == canonical.authority_sha256,
+    )
 }
 
 async fn enrolled_store_id(
@@ -90,9 +92,15 @@ async fn load_repair_in_transaction(
 fn decode_repair_row(
     row: &sqlx::sqlite::SqliteRow,
 ) -> Result<EvidenceFrontierRepairOperationV1, EvidenceError> {
-    let current_json: String = row.try_get("current_frontier_json").map_err(classify_sqlx_error)?;
-    let target_json: String = row.try_get("target_frontier_json").map_err(classify_sqlx_error)?;
-    let authorization_json: String = row.try_get("authorization_json").map_err(classify_sqlx_error)?;
+    let current_json: String = row
+        .try_get("current_frontier_json")
+        .map_err(classify_sqlx_error)?;
+    let target_json: String = row
+        .try_get("target_frontier_json")
+        .map_err(classify_sqlx_error)?;
+    let authorization_json: String = row
+        .try_get("authorization_json")
+        .map_err(classify_sqlx_error)?;
     let authority_json: String = row.try_get("authority_json").map_err(classify_sqlx_error)?;
     let current_frontier: EvidenceRecoveryFrontierV2 =
         serde_json::from_str(&current_json).map_err(|error| corrupt(&error.to_string()))?;
@@ -106,7 +114,8 @@ fn decode_repair_row(
         repair_id: row.try_get("repair_id").map_err(classify_sqlx_error)?,
         store_id: row.try_get("store_id").map_err(classify_sqlx_error)?,
         state: EvidenceFrontierRepairStateV1::parse(
-            &row.try_get::<String, _>("state").map_err(classify_sqlx_error)?,
+            &row.try_get::<String, _>("state")
+                .map_err(classify_sqlx_error)?,
         )?,
         nonce_hex: row.try_get("nonce_hex").map_err(classify_sqlx_error)?,
         operator_principal_id: row
@@ -116,13 +125,17 @@ fn decode_repair_row(
             &row.try_get::<String, _>("reason_code")
                 .map_err(classify_sqlx_error)?,
         )?,
-        authority_key_id: row.try_get("authority_key_id").map_err(classify_sqlx_error)?,
+        authority_key_id: row
+            .try_get("authority_key_id")
+            .map_err(classify_sqlx_error)?,
         authority_key_epoch: positive_u64(
-            row.try_get("authority_key_epoch").map_err(classify_sqlx_error)?,
+            row.try_get("authority_key_epoch")
+                .map_err(classify_sqlx_error)?,
             "frontier repair authority key epoch",
         )?,
         trust_root_generation: positive_u64(
-            row.try_get("trust_root_generation").map_err(classify_sqlx_error)?,
+            row.try_get("trust_root_generation")
+                .map_err(classify_sqlx_error)?,
             "frontier repair trust-root generation",
         )?,
         current_frontier,
@@ -238,6 +251,23 @@ fn verify_decoded_projection(
             "frontier repair row does not reconstruct its exact canonical authorization",
         ));
     }
+    if operation.updated_at_unix_ms < operation.created_at_unix_ms {
+        return Err(corrupt("frontier repair timestamps regress"));
+    }
+    if operation.state != EvidenceFrontierRepairStateV1::Prepared {
+        let token = operation
+            .dispatch_token
+            .as_ref()
+            .ok_or_else(|| corrupt("frontier repair dispatch token is missing"))?;
+        StableId::new(token.clone()).map_err(|error| corrupt(&error.to_string()))?;
+        if operation.backend_identity_sha256.as_ref()
+            != Some(&operation.target_frontier.backend_identity_sha256)
+        {
+            return Err(corrupt(
+                "frontier repair fence differs from the authorized target backend",
+            ));
+        }
+    }
     verify_frontier_repair_authorization(
         &operation.authorization,
         &operation.authority,
@@ -329,7 +359,12 @@ async fn append_event(
     .bind(event.event_kind.as_str())
     .bind(json)
     .bind(digest.as_str())
-    .bind(event.previous_event_sha256.as_ref().map(Sha256Digest::as_str))
+    .bind(
+        event
+            .previous_event_sha256
+            .as_ref()
+            .map(Sha256Digest::as_str),
+    )
     .bind(to_i64(
         event.observed_at_unix_ms,
         "frontier repair event timestamp",
@@ -345,7 +380,9 @@ fn require_dispatch_fence(
     dispatch_token: &str,
 ) -> Result<(), EvidenceError> {
     if operation.dispatch_token.as_deref() != Some(dispatch_token) {
-        return Err(invalid("frontier repair dispatch token is stale or mismatched"));
+        return Err(invalid(
+            "frontier repair dispatch token is stale or mismatched",
+        ));
     }
     Ok(())
 }
@@ -356,8 +393,7 @@ fn validate_repair_acknowledgement(
 ) -> Result<(), EvidenceError> {
     if acknowledgement.store_id != operation.store_id
         || acknowledgement.frontier_generation != operation.target_frontier.frontier_generation
-        || acknowledgement.frontier_sha256
-            != operation.authorization.target_frontier_sha256
+        || acknowledgement.frontier_sha256 != operation.authorization.target_frontier_sha256
         || operation.backend_identity_sha256.as_ref()
             != Some(&acknowledgement.backend_identity_sha256)
         || acknowledgement.backend_identity_sha256
@@ -381,8 +417,9 @@ fn validate_transition_input(
     StableId::new(dispatch_token.to_string())
         .map_err(|error| invalid(&format!("invalid frontier repair dispatch token: {error}")))?;
     if now_unix_ms == 0 {
-        return Err(invalid("frontier repair transition timestamp must be positive"));
+        return Err(invalid(
+            "frontier repair transition timestamp must be positive",
+        ));
     }
     Ok(())
 }
-

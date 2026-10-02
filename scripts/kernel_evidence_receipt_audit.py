@@ -21,6 +21,13 @@ import stat
 import tempfile
 from typing import Any
 
+try:
+    from .kernel_evidence_crash_matrix import SCENARIOS
+    from .kernel_evidence_commands import COMMANDS
+except ImportError:
+    from kernel_evidence_crash_matrix import SCENARIOS
+    from kernel_evidence_commands import COMMANDS
+
 OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
@@ -72,8 +79,25 @@ def atomic_json(path: Path, value: dict[str, Any]) -> None:
         temporary.unlink(missing_ok=True)
 
 
+def unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON field: {key}")
+        result[key] = value
+    return result
+
+
+def reject_nonfinite(value: str) -> None:
+    raise ValueError(f"non-finite JSON value: {value}")
+
+
 def load_json(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
+    value = json.loads(
+        path.read_text(encoding="utf-8"),
+        object_pairs_hook=unique_json_object,
+        parse_constant=reject_nonfinite,
+    )
     if not isinstance(value, dict):
         raise ValueError(f"{path} must contain one JSON object")
     return value
@@ -83,14 +107,18 @@ def is_exact_int(value: object, *, minimum: int = 0) -> bool:
     return type(value) is int and value >= minimum
 
 
-def require_oid(value: str | None, label: str, errors: list[str], *, optional: bool = False) -> None:
+def require_oid(
+    value: str | None, label: str, errors: list[str], *, optional: bool = False
+) -> None:
     if optional and not value:
         return
     if not isinstance(value, str) or OID.fullmatch(value) is None:
         errors.append(f"{label} must be a full lowercase Git object id")
 
 
-def validate_timestamp_range(value: dict[str, Any], prefix: str, errors: list[str]) -> None:
+def validate_timestamp_range(
+    value: dict[str, Any], prefix: str, errors: list[str]
+) -> None:
     started = value.get("startedAtUnixMs")
     finished = value.get("finishedAtUnixMs")
     if not is_exact_int(started, minimum=1):
@@ -119,7 +147,9 @@ def strict_regular_file(
     try:
         boundary_relative = boundary_path.relative_to(root)
     except ValueError as error:
-        raise ValueError(f"{label} boundary escapes the retained-artifact root") from error
+        raise ValueError(
+            f"{label} boundary escapes the retained-artifact root"
+        ) from error
     current = root
     for component in boundary_relative.parts:
         current = current / component
@@ -167,12 +197,16 @@ def strict_regular_file(
     return resolved
 
 
-def expect(value: dict[str, Any], key: str, expected: object, prefix: str, errors: list[str]) -> None:
+def expect(
+    value: dict[str, Any], key: str, expected: object, prefix: str, errors: list[str]
+) -> None:
     if value.get(key) != expected:
         errors.append(f"{prefix}.{key} does not match the immutable candidate")
 
 
-def validate_authority_false(value: dict[str, Any], keys: tuple[str, ...], prefix: str, errors: list[str]) -> None:
+def validate_authority_false(
+    value: dict[str, Any], keys: tuple[str, ...], prefix: str, errors: list[str]
+) -> None:
     for key in keys:
         if value.get(key) is not False:
             errors.append(f"{prefix}.{key} must be exactly false")
@@ -199,7 +233,12 @@ def validate_identity(identity: dict[str, Any], errors: list[str]) -> None:
     require_oid(identity.get("sourceHeadTree"), "source tree", errors)
     require_oid(identity.get("baseSha"), "base", errors)
     require_oid(identity.get("deterministicMergeSha"), "deterministic merge", errors)
-    require_oid(identity.get("githubSyntheticMergeSha"), "GitHub synthetic merge", errors, optional=True)
+    require_oid(
+        identity.get("githubSyntheticMergeSha"),
+        "GitHub synthetic merge",
+        errors,
+        optional=True,
+    )
     require_oid(identity.get("workflowSha"), "workflow", errors)
     require_oid(identity.get("finalMergeSha"), "final merge", errors, optional=True)
     for key in ("workflowRunId", "workflowRunAttempt", "runnerImage", "targetTriple"):
@@ -222,15 +261,21 @@ def audit_qualification_receipt(
         "passed": False,
     }
     try:
-        receipt_file = strict_regular_file(records_root, receipt_path, label=f"{prefix} receipt")
+        receipt_file = strict_regular_file(
+            records_root, receipt_path, label=f"{prefix} receipt"
+        )
         receipt = load_json(receipt_file)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         errors.append(str(error))
         entry["errors"] = errors
         return entry, errors
 
-    expected_merge = identity["deterministicMergeSha"] if kind == "deterministic_merge" else None
-    expected_tested = expected_merge if kind == "deterministic_merge" else identity["sourceHeadSha"]
+    expected_merge = (
+        identity["deterministicMergeSha"] if kind == "deterministic_merge" else None
+    )
+    expected_tested = (
+        expected_merge if kind == "deterministic_merge" else identity["sourceHeadSha"]
+    )
     expected_values = {
         "schemaVersion": 2,
         "module": "kernel.evidence",
@@ -251,10 +296,13 @@ def audit_qualification_receipt(
     }
     for key, expected in expected_values.items():
         expect(receipt, key, expected, prefix, errors)
-    if not is_exact_int(receipt.get("exitCode"), minimum=0) or receipt.get("exitCode") != 0:
+    if (
+        not is_exact_int(receipt.get("exitCode"), minimum=0)
+        or receipt.get("exitCode") != 0
+    ):
         errors.append(f"{prefix}.exitCode must be integer zero, not bool")
-    if not isinstance(receipt.get("command"), str) or not receipt["command"]:
-        errors.append(f"{prefix}.command must be non-empty")
+    if receipt.get("command") != COMMANDS[kind]:
+        errors.append(f"{prefix}.command differs from the governed command")
     validate_timestamp_range(receipt, prefix, errors)
     validate_authority_false(
         receipt,
@@ -318,7 +366,10 @@ def audit_crash_command(
 
     if command.get("status") != "passed":
         errors.append(f"{prefix}.status must be passed")
-    if not is_exact_int(command.get("exitCode"), minimum=0) or command.get("exitCode") != 0:
+    if (
+        not is_exact_int(command.get("exitCode"), minimum=0)
+        or command.get("exitCode") != 0
+    ):
         errors.append(f"{prefix}.exitCode must be integer zero, not bool")
     if command.get("timedOut") is not False:
         errors.append(f"{prefix}.timedOut must be exactly false")
@@ -328,8 +379,28 @@ def audit_crash_command(
         errors.append(f"{prefix}.missingMarkers must be empty")
     validate_timestamp_range(command, prefix, errors)
 
+    plan = SCENARIOS[scenario]
+    if index >= len(plan):
+        errors.append(f"{prefix} is outside the governed command inventory")
+    else:
+        spec = plan[index]
+        expected_command = {
+            "package": spec.package,
+            "targetArgs": list(spec.target_args),
+            "testName": spec.test_name,
+            "argv": spec.argv(),
+            "requiredMarkers": list(spec.expected_markers),
+        }
+        for key, expected in expected_command.items():
+            if command.get(key) != expected:
+                errors.append(f"{prefix}.{key} differs from the governed command")
+
     argv = command.get("argv")
-    if not isinstance(argv, list) or not argv or not all(isinstance(item, str) and item for item in argv):
+    if (
+        not isinstance(argv, list)
+        or not argv
+        or not all(isinstance(item, str) and item for item in argv)
+    ):
         errors.append(f"{prefix}.argv must be a non-empty string array")
     elif command.get("command") != shlex.join(argv):
         errors.append(f"{prefix}.command is not the canonical argv rendering")
@@ -337,7 +408,9 @@ def audit_crash_command(
         if not isinstance(command.get(key), str) or not command[key]:
             errors.append(f"{prefix}.{key} must be non-empty")
     target_args = command.get("targetArgs")
-    if not isinstance(target_args, list) or not all(isinstance(item, str) for item in target_args):
+    if not isinstance(target_args, list) or not all(
+        isinstance(item, str) for item in target_args
+    ):
         errors.append(f"{prefix}.targetArgs must be a string array")
     required_markers = command.get("requiredMarkers")
     if (
@@ -374,7 +447,9 @@ def audit_crash_command(
                     errors.append(f"{prefix} retained log is missing marker {marker!r}")
         if "skipping:" in text.lower():
             errors.append(f"{prefix} retained log contains a skip marker")
-        result.update({"logPath": str(log), "logSha256": actual_sha, "logBytes": len(actual)})
+        result.update(
+            {"logPath": str(log), "logSha256": actual_sha, "logBytes": len(actual)}
+        )
     except (OSError, ValueError) as error:
         errors.append(str(error))
 
@@ -444,6 +519,8 @@ def audit_crash_matrix(
         if not isinstance(commands, list) or not commands:
             errors.append(f"{prefix}.commands must be non-empty")
         else:
+            if len(commands) != len(SCENARIOS[scenario]):
+                errors.append(f"{prefix}.commands differs from the governed inventory")
             for index, command in enumerate(commands):
                 result, command_errors = audit_crash_command(
                     records_root,
@@ -491,27 +568,41 @@ def audit_crash_matrix(
         for key, expected in expected_values.items():
             expect(summary, key, expected, "crash.summary", summary_errors)
         if not is_exact_int(summary.get("scenarioCount"), minimum=0):
-            summary_errors.append("crash.summary.scenarioCount must be an integer, not bool")
+            summary_errors.append(
+                "crash.summary.scenarioCount must be an integer, not bool"
+            )
         if not is_exact_int(summary.get("requiredScenarioCount"), minimum=0):
-            summary_errors.append("crash.summary.requiredScenarioCount must be an integer, not bool")
+            summary_errors.append(
+                "crash.summary.requiredScenarioCount must be an integer, not bool"
+            )
         if summary.get("scenarioCount") != len(REQUIRED_CRASH_SCENARIOS):
             summary_errors.append("crash.summary scenario count is incomplete")
         if summary.get("requiredScenarioCount") != len(REQUIRED_CRASH_SCENARIOS):
             summary_errors.append("crash.summary required scenario count is incorrect")
         validate_authority_false(
             summary,
-            ("targetHostAcceptanceGranted", "productionActivationGranted", "releaseGranted"),
+            (
+                "targetHostAcceptanceGranted",
+                "productionActivationGranted",
+                "releaseGranted",
+            ),
             "crash.summary",
             summary_errors,
         )
         summary_scenarios = summary.get("scenarios")
-        if not isinstance(summary_scenarios, dict) or set(summary_scenarios) != set(REQUIRED_CRASH_SCENARIOS):
-            summary_errors.append("crash.summary.scenarios must be the exact closed-world inventory")
+        if not isinstance(summary_scenarios, dict) or set(summary_scenarios) != set(
+            REQUIRED_CRASH_SCENARIOS
+        ):
+            summary_errors.append(
+                "crash.summary.scenarios must be the exact closed-world inventory"
+            )
         else:
             for scenario in REQUIRED_CRASH_SCENARIOS:
                 item = summary_scenarios.get(scenario)
                 if not isinstance(item, dict):
-                    summary_errors.append(f"crash.summary.scenarios.{scenario} must be an object")
+                    summary_errors.append(
+                        f"crash.summary.scenarios.{scenario} must be an object"
+                    )
                     continue
                 expected_receipt = crash_root / f"{scenario}.json"
                 try:
@@ -545,7 +636,8 @@ def audit_crash_matrix(
     all_errors.extend(summary_errors)
 
     return {
-        "passed": not all_errors and all(entry["passed"] for entry in scenarios.values()),
+        "passed": not all_errors
+        and all(entry["passed"] for entry in scenarios.values()),
         "summary": summary_entry,
         "scenarios": scenarios,
     }, all_errors
@@ -565,7 +657,9 @@ def build_audit(records_root: Path, identity: dict[str, Any]) -> dict[str, Any]:
     qualifications: dict[str, Any] = {}
     if not errors or Path(root).is_dir():
         for kind in QUALIFICATION_LOGS:
-            entry, entry_errors = audit_qualification_receipt(Path(root), kind, identity)
+            entry, entry_errors = audit_qualification_receipt(
+                Path(root), kind, identity
+            )
             qualifications[kind] = entry
             errors.extend(entry_errors)
         crash, crash_errors = audit_crash_matrix(Path(root), identity)

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a2bf84025de685fcadd943dc2813a32071f488e2",
-    "tree": "1e30c9aedd5ebb3fc976104a3c57ab4e2a4aaa8f"
+    "commit": "89dee64a5c80b49e8c1338d7c7149402aa4d29b1",
+    "tree": "dec88a7119146b00df50e075b06b9bfa9c275cd5"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -53,7 +53,7 @@
       "mustContain": "compare_and_swap"
     },
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production_checks.rs",
       "mustContain": "kernel.evidence recovery_required"
     }
   ],
@@ -457,7 +457,7 @@
     },
     {
       "path": "codex-rs/hepta-evidence",
-      "object": "626cbf5a6ee41115540a06b1f61c89df3376ecc7"
+      "object": "5126cbb679d2a64ae69fd79750dcb002d8d1f395"
     },
     {
       "path": "codex-rs/hepta-evidence/src/frontier_atomic_acceptance_tests.rs",
@@ -469,15 +469,15 @@
     },
     {
       "path": "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/inherent_4.rs",
-      "object": "c3db2740781796851056ae6a61af4091bb509bcd"
+      "object": "23c87399bb22bcc28dcce15e0307fa67894c5287"
     },
     {
       "path": "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/tests.rs",
-      "object": "bc8990e4efd63389cfcf72b3ffa4312b41452013"
+      "object": "0e5a63e7f848ac51c90fb1660b724f673c953629"
     },
     {
       "path": "codex-rs/hepta-evidence/src/frontier_backend_file_tests.rs",
-      "object": "ab79312378f1666ee3bf429dee6c6286bc01fa44"
+      "object": "92b8cd5cecfa6f84626fa62d70e979c2b48175ab"
     },
     {
       "path": "codex-rs/hepta-evidence/src/frontier_backend_tests.rs",
@@ -537,7 +537,7 @@
     },
     {
       "path": "codex-rs/hepta-evidence/tests/frontier_backend_multiprocess.rs",
-      "object": "142b1c7f5edb45dd435c8dc54493c2c13c727a76"
+      "object": "aaf4b536ac8f9d2a0c836e341efdfba01579a72e"
     },
     {
       "path": "codex-rs/hepta-evidence/tests/verified_trust_boundary.rs",
@@ -545,7 +545,7 @@
     },
     {
       "path": "docs/modules/kernel.evidence/TECHNICAL.md",
-      "object": "2f3196fab0a792e3dd9b64ef9dd58e47828f707f"
+      "object": "5745201957fc37aa2257c94a8ee5a465ba14129f"
     }
   ]
 }

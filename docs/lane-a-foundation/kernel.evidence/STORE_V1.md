@@ -25,6 +25,7 @@ The database filename is `hepta_evidence_2.sqlite`. The ordered migration set is
 14. `0014_evidence_publication.sql`
 15. `0015_evidence_trust_acceptance.sql`
 16. `0016_qualification_auth_provenance.sql`
+17. `0017_frontier_repair_publication.sql`
 
 Unknown, missing, failed, reordered or checksum-mismatched migrations cause open
 to fail closed. Production never treats an unknown lineage as empty or
@@ -115,6 +116,18 @@ Recovery reads authenticated external latest state:
 
 Local acknowledgement verifies the durable backend acknowledgement and commits
 frontier acceptance, batch completion and intent completion atomically.
+
+## Separate repair ledger
+
+Migration `0017` retains exact signed repair authorization, authority nonce,
+current/target frontiers, dispatch fence and immutable event chain. It is a
+library capability; Agentd does not attach an external repair publisher.
+`verify_frontier_repair_ledger()` must succeed before such attachment. It reads
+schema, capacity, operations and events in one transaction, compares complete
+schema definitions with the compiled migration, rejects orphan events, bounds
+combined canonical bytes and event count before decoding, and checks event
+version, hash chain, terminal timestamp and the signed target backend fence.
+Ordinary store open does not replace this explicit repair attachment gate.
 
 ## Runtime authority
 

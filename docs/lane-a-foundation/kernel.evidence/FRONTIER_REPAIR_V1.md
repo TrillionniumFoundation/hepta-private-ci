@@ -40,13 +40,23 @@ prepared
        -> conflicted
 ```
 
-Semantic fields are immutable. `prepared -> dispatching` binds one stable dispatch token and the exact target backend identity. Later transitions must retain both. No terminal state can reopen.
+Semantic fields are immutable. `prepared -> dispatching` binds one stable dispatch token and the exact target backend identity. Later transitions must retain both. Before the first dispatch, the stored
+signature and authorization/authority validity windows are checked again at
+dispatch time. An expired prepared operation remains fenced; this protocol does
+not provide an implicit cancellation, nonce reset or replacement authorization.
+A separately governed recovery procedure is required. No terminal state can reopen.
 
 An acknowledgement is accepted only when its store, backend identity, target generation, target digest and durable audit sequence match the authorized target. A conflict records the actually observed generation and frontier digest. Unknown external outcomes become `indeterminate`; they are reconciled by observing the same repair ID and dispatch token, never by dispatching a new operation.
 
 ## 5. Audit and reopen verification
 
-Every state transition appends a canonical event whose digest commits the previous event digest. Event rows cannot be updated or deleted. Verification reconstructs canonical current/target/authorization/authority objects, checks their stored digests and projections, revalidates the original signature at preparation time, confirms the transition still classifies `RepairRequired`, and verifies the complete bounded event sequence.
+Every state transition appends a canonical event whose digest commits the previous event digest. Event rows cannot be updated or deleted. Verification reconstructs canonical current/target/authorization/authority objects, checks their stored digests and projections, revalidates the original signature at preparation time, confirms the transition still classifies `RepairRequired`, and verifies the complete bounded event sequence. Verification pins one SQLite
+read snapshot, compares complete migration-defined schema objects, rejects
+orphan events and unknown event versions, and checks the final timestamp and
+backend fence against the canonical operation and authorized target. Combined
+operation/event JSON is limited to 512 MiB, at most 100,000 operations and at
+most four events per operation. Event retrieval has a five-row sentinel limit
+so an overlong history is rejected before unbounded materialization.
 
 `HeptaEvidenceStore::verify_frontier_repair_ledger` is the product attachment gate for a repair publisher. A caller must invoke it before exposing external repair operations. Store migration and ordinary frontier APIs alone do not activate repair.
 
