@@ -48,6 +48,8 @@ pub use release_digest_cache::ReleaseReadPin;
 pub use release_digest_cache::VerifiedLaunchDigest;
 #[cfg(unix)]
 pub use release_digest_cache::VerifiedLaunchProgram;
+#[cfg(test)]
+pub(crate) use release_digest_cache::take_program_read_bytes;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRecord {

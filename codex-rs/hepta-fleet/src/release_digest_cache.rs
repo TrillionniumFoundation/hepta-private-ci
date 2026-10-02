@@ -12,6 +12,10 @@ use sha2::Sha256;
 
 use crate::FleetRegistryError;
 
+#[path = "release_program_hash.rs"]
+mod program_hash;
+use program_hash::ProgramSha256;
+
 #[cfg(unix)]
 use std::collections::BTreeMap;
 #[cfg(unix)]
@@ -163,6 +167,24 @@ impl ReleaseDigestCache {
         file: &mut File,
         defer_cold_read: bool,
     ) -> Result<Arc<Entry>, FleetRegistryError> {
+        self.opened_hashes_for(
+            path,
+            manifest,
+            file,
+            defer_cold_read,
+            LaunchDigestDomain::Agent,
+        )
+    }
+
+    #[cfg(unix)]
+    fn opened_hashes_for(
+        &self,
+        path: &Path,
+        manifest: &ManifestRead,
+        file: &mut File,
+        defer_cold_read: bool,
+        domain: LaunchDigestDomain,
+    ) -> Result<Arc<Entry>, FleetRegistryError> {
         manifest.verify_current()?;
         let before = Snapshot::capture(path, file)?;
         let cacheable = before.root_custody.is_some() && manifest.snapshot.root_custody.is_some();
@@ -191,7 +213,12 @@ impl ReleaseDigestCache {
         }
         // The file descriptor and visible path must still name the exact file
         // that supplied all bytes. Never hold the cache mutex through disk I/O.
-        let hashes = read_hashes(file, before.file.length)?;
+        let domains = if cacheable || matches!(domain, LaunchDigestDomain::Matrix) {
+            ProgramHashDomains::AgentAndMatrix
+        } else {
+            ProgramHashDomains::Agent
+        };
+        let hashes = read_hashes(file, before.file.length, domains)?;
         if Snapshot::capture(path, file)? != before {
             return Err(changed("immutable program changed during hashing"));
         }
@@ -242,17 +269,41 @@ impl ReleaseDigestCache {
 struct ProgramHashes {
     sha256: String,
     #[cfg(unix)]
-    agent_prefix: Sha256,
+    agent_prefix: ProgramSha256,
     #[cfg(unix)]
-    matrix_prefix: Sha256,
+    matrix_prefix: Option<ProgramSha256>,
 }
 
-fn read_hashes(file: &mut File, length: u64) -> Result<ProgramHashes, FleetRegistryError> {
-    let mut agent_prefix = Sha256::new();
+#[cfg(test)]
+thread_local! { static PROGRAM_READ_BYTES: std::cell::Cell<u64> = const { std::cell::Cell::new(0) }; }
+#[cfg(test)]
+pub(crate) fn take_program_read_bytes() -> u64 {
+    PROGRAM_READ_BYTES.with(|bytes| bytes.replace(0))
+}
+
+enum ProgramHashDomains {
+    Agent,
     #[cfg(unix)]
-    let mut matrix_prefix = Sha256::new();
+    AgentAndMatrix,
+}
+
+fn read_hashes(
+    file: &mut File,
+    length: u64,
+    domains: ProgramHashDomains,
+) -> Result<ProgramHashes, FleetRegistryError> {
+    let mut agent_prefix = ProgramSha256::new();
     #[cfg(unix)]
-    matrix_prefix.update(b"hepta.local-host.matrix.v1\0");
+    let mut matrix_prefix = match domains {
+        ProgramHashDomains::Agent => None,
+        ProgramHashDomains::AgentAndMatrix => {
+            let mut prefix = ProgramSha256::new();
+            prefix.update(b"hepta.local-host.matrix.v1\0");
+            Some(prefix)
+        }
+    };
+    #[cfg(not(unix))]
+    let _ = domains;
     let mut buffer = [0_u8; 64 * 1024];
     let mut read_bytes = 0_u64;
     loop {
@@ -268,13 +319,22 @@ fn read_hashes(file: &mut File, length: u64) -> Result<ProgramHashes, FleetRegis
         }
         agent_prefix.update(&buffer[..count]);
         #[cfg(unix)]
-        matrix_prefix.update(&buffer[..count]);
+        if let Some(prefix) = matrix_prefix.as_mut() {
+            prefix.update(&buffer[..count]);
+        }
     }
     if read_bytes != length {
         return Err(changed("immutable program length changed during hashing"));
     }
+    #[cfg(test)]
+    PROGRAM_READ_BYTES.with(|bytes| bytes.set(bytes.get().saturating_add(read_bytes)));
     Ok(ProgramHashes {
-        sha256: format!("{:x}", agent_prefix.clone().finalize()),
+        sha256: agent_prefix
+            .clone()
+            .finalize()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect(),
         #[cfg(unix)]
         agent_prefix,
         #[cfg(unix)]
@@ -284,7 +344,7 @@ fn read_hashes(file: &mut File, length: u64) -> Result<ProgramHashes, FleetRegis
 
 #[cfg(not(unix))]
 fn hash_file(file: &mut File, length: u64) -> Result<String, FleetRegistryError> {
-    read_hashes(file, length).map(|hashes| hashes.sha256)
+    read_hashes(file, length, ProgramHashDomains::Agent).map(|hashes| hashes.sha256)
 }
 
 fn changed(message: &str) -> FleetRegistryError {
@@ -395,8 +455,8 @@ struct Entry {
     manifest_sha256: String,
     manifest_snapshot: Snapshot,
     sha256: String,
-    agent_prefix: Sha256,
-    matrix_prefix: Sha256,
+    agent_prefix: ProgramSha256,
+    matrix_prefix: Option<ProgramSha256>,
 }
 
 #[cfg(all(test, unix))]

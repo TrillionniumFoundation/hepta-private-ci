@@ -8,6 +8,70 @@ use std::path::PathBuf;
 pub struct ReleaseReadPin {
     #[cfg(unix)]
     _programs: Vec<Arc<Entry>>,
+    #[cfg(unix)]
+    catalog_programs: Vec<CatalogProgramRead>,
+}
+
+// Only the catalog's own complete read can construct these facts. They retain
+// actual FDs, not an allowance, grant or a reusable mutable-file digest cache.
+#[cfg(unix)]
+pub(crate) struct CatalogProgramRead {
+    program: PathBuf,
+    file: File,
+    entry: Arc<Entry>,
+    namespace: Vec<DirectoryIdentity>,
+}
+
+#[cfg(unix)]
+impl ReleaseReadPin {
+    pub(crate) fn from_catalog_programs(programs: Vec<CatalogProgramRead>) -> Self {
+        Self {
+            _programs: Vec::new(),
+            catalog_programs: programs,
+        }
+    }
+
+    pub(crate) fn verify_catalog_program(
+        &self,
+        program: &Path,
+        manifest: &ManifestRead,
+        expected_sha256: &str,
+    ) -> Result<(), FleetRegistryError> {
+        let fact = self
+            .catalog_programs
+            .iter()
+            .find(|fact| fact.program == program)
+            .ok_or_else(|| changed("catalog descriptor is outside the pinned read"))?;
+        if fact.entry.sha256 != expected_sha256
+            || fact.entry.manifest_sha256 != manifest.sha256
+            || fact.entry.manifest_snapshot != manifest.snapshot
+            || Snapshot::capture(program, &fact.file)? != fact.entry.snapshot
+            || program_namespace(program)? != fact.namespace
+        {
+            return Err(changed("catalog read changed before descriptor resolution"));
+        }
+        manifest.verify_current()
+    }
+}
+
+#[cfg(unix)]
+fn program_namespace(program: &Path) -> Result<Vec<DirectoryIdentity>, FleetRegistryError> {
+    program
+        .parent()
+        .into_iter()
+        .flat_map(Path::ancestors)
+        .map(|path| {
+            let metadata = std::fs::symlink_metadata(path)?;
+            Ok(DirectoryIdentity {
+                path: path.to_path_buf(),
+                device: metadata.dev(),
+                inode: metadata.ino(),
+                uid: metadata.uid(),
+                gid: metadata.gid(),
+                mode: metadata.mode(),
+            })
+        })
+        .collect()
 }
 
 /// Fixed original program-byte domains used by the installed local host.
@@ -25,7 +89,7 @@ pub struct VerifiedLaunchDigest {
     file: File,
     manifest: ManifestRead,
     entry: Arc<Entry>,
-    hasher: Sha256,
+    hasher: ProgramSha256,
 }
 
 /// Retains the actual program FD through resource preparation and child spawn.
@@ -73,7 +137,7 @@ impl VerifiedLaunchDigest {
             file: self.file,
             manifest: self.manifest,
             entry: self.entry,
-            digest: self.hasher.finalize().into(),
+            digest: self.hasher.finalize(),
         };
         program.verify_current()?;
         Ok(program)
@@ -81,6 +145,7 @@ impl VerifiedLaunchDigest {
 }
 
 impl ReleaseDigestCache {
+    #[cfg(any(not(unix), test))]
     pub(crate) fn pin_programs(
         &self,
         paths: &[PathBuf],
@@ -108,6 +173,7 @@ impl ReleaseDigestCache {
             }
             Ok(ReleaseReadPin {
                 _programs: programs,
+                catalog_programs: Vec::new(),
             })
         }
         #[cfg(not(unix))]
@@ -115,6 +181,31 @@ impl ReleaseDigestCache {
             let _ = (paths, manifest);
             Ok(ReleaseReadPin {})
         }
+    }
+
+    #[cfg(unix)]
+    pub(crate) fn read_catalog_program(
+        &self,
+        program: &Path,
+        manifest: &ManifestRead,
+        expected_sha256: &str,
+    ) -> Result<CatalogProgramRead, FleetRegistryError> {
+        let namespace = program_namespace(program)?;
+        let mut file = File::options()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
+            .open(program)?;
+        let entry =
+            self.opened_hashes(program, manifest, &mut file, /*defer_cold_read*/ false)?;
+        if entry.sha256 != expected_sha256 || program_namespace(program)? != namespace {
+            return Err(changed("catalog program differs from its full pinned read"));
+        }
+        Ok(CatalogProgramRead {
+            program: program.to_path_buf(),
+            file,
+            entry,
+            namespace,
+        })
     }
 
     #[cfg(unix)]
@@ -131,15 +222,18 @@ impl ReleaseDigestCache {
             .open(program)?;
         // Admitted timers/recovery retain full validation on cache miss. A
         // new Start is pinned by its read worker before lifecycle admission.
-        let entry = self.opened_hashes(
-            program, &manifest, &mut file, /*defer_cold_read*/ false,
+        let entry = self.opened_hashes_for(
+            program, &manifest, &mut file, /*defer_cold_read*/ false, domain,
         )?;
         if entry.sha256 != expected_sha256 {
             return Err(changed("launch program differs from immutable manifest"));
         }
         let hasher = match domain {
             LaunchDigestDomain::Agent => entry.agent_prefix.clone(),
-            LaunchDigestDomain::Matrix => entry.matrix_prefix.clone(),
+            LaunchDigestDomain::Matrix => entry
+                .matrix_prefix
+                .clone()
+                .ok_or_else(|| changed("matrix launch prefix was not read"))?,
         };
         Ok(VerifiedLaunchDigest {
             program: program.to_path_buf(),

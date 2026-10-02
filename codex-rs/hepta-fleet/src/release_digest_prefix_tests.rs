@@ -218,3 +218,35 @@ fn admitted_prefix_after_eviction_reads_original_bytes_instead_of_failing()
     assert_eq!(prefix.finalize()?, expected);
     Ok(())
 }
+
+#[test]
+fn ordinary_prefix_commit_rejects_file_manifest_and_permission_mutations()
+-> Result<(), Box<dyn std::error::Error>> {
+    for change in ["program", "manifest", "writable"] {
+        let directory = tempfile::tempdir()?;
+        let program = write_readonly(directory.path(), "program", b"ordinary full program bytes")?;
+        let manifest_path =
+            write_readonly(directory.path(), "manifest", b"ordinary manifest bytes")?;
+        let cache = ReleaseDigestCache::default();
+        let manifest = cache.manifest(&manifest_path, 32 * 1024)?;
+        let digest = cache.sha256(&program, &manifest)?;
+        let prefix = cache.launch_prefix(&program, manifest, &digest, LaunchDigestDomain::Agent)?;
+        match change {
+            "program" => {
+                let next =
+                    write_readonly(directory.path(), "next", b"ordinary full program bytes")?;
+                std::fs::rename(next, &program)?;
+            }
+            "manifest" => {
+                let next = write_readonly(directory.path(), "next", b"ordinary manifest bytes")?;
+                std::fs::rename(next, &manifest_path)?;
+            }
+            "writable" => {
+                std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o755))?
+            }
+            _ => unreachable!(),
+        }
+        assert!(prefix.commit().is_err(), "changed {change}");
+    }
+    Ok(())
+}

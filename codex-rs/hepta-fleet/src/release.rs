@@ -451,6 +451,18 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<RegisteredRelease, FleetRegistryError> {
+        self.resolve_release_with_catalog(agent_id, release_id, resolve_catalog_release)
+    }
+
+    fn resolve_release_with_catalog(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+        resolve_catalog: impl FnOnce(
+            &FleetRegistry,
+            &ReleaseId,
+        ) -> Result<RegisteredRelease, FleetRegistryError>,
+    ) -> Result<RegisteredRelease, FleetRegistryError> {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
@@ -489,7 +501,7 @@ impl FleetRegistry {
                 "allowed release manifest changed for agent {agent_id} release {release_id}"
             )));
         }
-        resolve_catalog_release(self, release_id)
+        resolve_catalog(self, release_id)
     }
 
     pub fn allowed_releases(
@@ -633,6 +645,32 @@ fn resolve_catalog_release_with_manifest(
     release_id: &ReleaseId,
     defer_cold_read: bool,
 ) -> Result<(RegisteredRelease, String), FleetRegistryError> {
+    resolve_catalog_release_with_programs(registry, release_id, |program, metadata, manifest| {
+        let digest = if defer_cold_read {
+            registry
+                .release_digests
+                .sha256_prevalidated(program, manifest)?
+        } else {
+            registry.release_digests.sha256(program, manifest)?
+        };
+        if digest != metadata.program_sha256 {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "release {release_id} program differs from immutable metadata"
+            )));
+        }
+        Ok(())
+    })
+}
+
+fn resolve_catalog_release_with_programs(
+    registry: &FleetRegistry,
+    release_id: &ReleaseId,
+    mut verify_program: impl FnMut(
+        &Path,
+        &ReleaseProgramMetadata,
+        &crate::registry::ManifestRead,
+    ) -> Result<(), FleetRegistryError>,
+) -> Result<(RegisteredRelease, String), FleetRegistryError> {
     let catalog_root = registry.layout().releases_root();
     validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
@@ -682,22 +720,20 @@ fn resolve_catalog_release_with_manifest(
         )));
     }
     let program = resolve_program(
-        registry,
         &release_root,
         &agentd,
         release_id,
         &manifest,
-        defer_cold_read,
+        &mut verify_program,
     )?;
     let matrixd = match matrixd {
         Some(metadata) => Some(RegisteredProgram {
             program: resolve_program(
-                registry,
                 &release_root,
                 &metadata,
                 release_id,
                 &manifest,
-                defer_cold_read,
+                &mut verify_program,
             )?,
             args: metadata.args,
         }),
@@ -717,32 +753,24 @@ fn resolve_catalog_release_with_manifest(
 }
 
 fn resolve_program(
-    registry: &FleetRegistry,
     release_root: &Path,
     metadata: &ReleaseProgramMetadata,
     release_id: &ReleaseId,
     manifest: &crate::registry::ManifestRead,
-    defer_cold_read: bool,
+    verify_program: &mut impl FnMut(
+        &Path,
+        &ReleaseProgramMetadata,
+        &crate::registry::ManifestRead,
+    ) -> Result<(), FleetRegistryError>,
 ) -> Result<PathBuf, FleetRegistryError> {
     let program = release_root.join(&metadata.program_relative_path);
     validate_immutable_regular_file(&program, /*executable*/ true)?;
-    let correct_size = std::fs::metadata(&program)?.len() == metadata.program_size_bytes;
-    let digest = if correct_size && defer_cold_read {
-        Some(
-            registry
-                .release_digests
-                .sha256_prevalidated(&program, manifest)?,
-        )
-    } else if correct_size {
-        Some(registry.release_digests.sha256(&program, manifest)?)
-    } else {
-        None
-    };
-    if digest.as_ref() != Some(&metadata.program_sha256) {
+    if std::fs::metadata(&program)?.len() != metadata.program_size_bytes {
         return Err(FleetRegistryError::Corrupt(format!(
             "release {release_id} program differs from immutable metadata"
         )));
     }
+    verify_program(&program, metadata, manifest)?;
     Ok(program)
 }
 
