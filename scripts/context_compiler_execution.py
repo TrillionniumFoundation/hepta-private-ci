@@ -10,6 +10,7 @@ receipt. The source checkout is revalidated before and after every command.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable
 import hashlib
 import json
 import os
@@ -25,17 +26,73 @@ import context_compiler_named_evidence as named_evidence
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 
-def observed_tests(log: str) -> int:
+def observed_tests(log: str | Iterable[str], *, runner: str) -> int:
+    """Count expected-runner summaries, excluding nested libtest output in nextest."""
+    lines = (
+        ANSI.sub("", line).rstrip("\r\n")
+        for line in (log.splitlines() if isinstance(log, str) else log)
+    )
+    if runner == "nextest":
+        summaries = []
+        for line in lines:
+            if re.match(r"^\s*Summary\b", line):
+                summaries.append(line)
+                if len(summaries) > 1:
+                    raise ValueError("ambiguous nextest summary")
+        if len(summaries) != 1:
+            raise ValueError("expected exactly one nextest summary")
+        match = re.fullmatch(
+            r"\s*Summary\s+\[[^\]\r\n]+\]\s+(?P<run>\d+) tests? run: "
+            r"(?P<passed>\d+) passed"
+            r"(?: \(\d+ (?:flaky|slow|leaky)(?:, \d+ (?:flaky|slow|leaky))*\))?"
+            r"(?:, (?P<failed>\d+) failed(?: \(\d+ (?:slow|due to being leaky)(?:, \d+ (?:slow|due to being leaky))*\))?)?"
+            r"(?:, (?P<timed_out>\d+) timed out)?"
+            r"(?:, \d+ skipped)?\s*",
+            summaries[0],
+        )
+        if match is None:
+            raise ValueError("malformed nextest summary")
+        if sum(
+            int(match.group(key) or 0) for key in ("passed", "failed", "timed_out")
+        ) != int(match.group("run")):
+            raise ValueError("inconsistent nextest totals")
+        return int(match.group("passed"))
+    if runner != "libtest":
+        raise ValueError("unknown test runner")
     total = 0
-    for line in ANSI.sub("", log).splitlines():
-        if "test result:" not in line and "Summary" not in line:
+    found = False
+    for line in lines:
+        if not line.startswith("test result:"):
             continue
-        matched = re.search(r"\b(\d+) passed\b", line)
-        if matched is None:
-            matched = re.search(r"\b(\d+) tests run\b", line)
-        if matched:
-            total += int(matched.group(1))
+        found = True
+        match = re.fullmatch(
+            r"test result: (?:ok|FAILED)\. (?P<passed>\d+) passed; "
+            r"\d+ failed; \d+ ignored; \d+ measured; \d+ filtered out; "
+            r"finished in \d+(?:\.\d+)?s\s*",
+            line,
+        )
+        if match is None:
+            raise ValueError("malformed libtest summary")
+        total += int(match.group("passed"))
+    if not found:
+        raise ValueError("missing libtest summary")
     return total
+
+
+def bind_test_count(log: str | Iterable[str], spec: dict, result: dict) -> None:
+    """Fail closed on absent/ambiguous runner evidence and preserve command failure."""
+    result.update(
+        {"minimumTests": spec["minimumTests"], "testRunner": spec["testRunner"]}
+    )
+    try:
+        count = observed_tests(log, runner=spec["testRunner"])
+    except (OSError, ValueError, UnicodeError):
+        result.update(
+            {"testsObserved": 0, "testCountEvidenceFailure": True, "succeeded": False}
+        )
+        return
+    result["testsObserved"] = count
+    result["succeeded"] = result["succeeded"] and count >= spec["minimumTests"]
 
 
 def specs(legacy):
@@ -303,6 +360,13 @@ def specs(legacy):
             ],
         },
     ]
+    for spec in commands:
+        if spec.get("minimumTests") is not None:
+            # The repository's `just test` recipe invokes cargo nextest run.
+            # Bind this from the command, not from possibly truncated stdout.
+            if spec["argv"][:2] != ["just", "test"]:
+                raise ValueError("test count requires an explicit runner contract")
+            spec["testRunner"] = "nextest"
     return commands
 
 
@@ -433,14 +497,9 @@ def main() -> int:
             result = legacy.run_command(spec, log)
             minimum = spec.get("minimumTests")
             if minimum is not None:
-                # Native summaries are at the tail; do not load an unbounded log.
-                with log.open("rb") as stream:
-                    stream.seek(max(0, log.stat().st_size - 1024 * 1024))
-                    count = observed_tests(
-                        stream.read().decode("utf-8", errors="replace")
-                    )
-                result.update({"minimumTests": minimum, "testsObserved": count})
-                result["succeeded"] = result["succeeded"] and count >= minimum
+                # Stream the whole bounded-line log so an earlier summary cannot
+                # disappear outside a tail window and make ambiguity look valid.
+                bind_test_count(named_evidence.bounded_lines(log), spec, result)
             if spec.get("requiredNativeTests"):
                 try:
                     named = named_evidence.bind_named_tests(
