@@ -191,6 +191,15 @@ class WorkflowDependencyTests(unittest.TestCase):
         )
         self.assertNotIn("continue-on-error", process)
 
+    def test_physical_worker_binary_is_built_before_owner_library_tests(self):
+        process = self.jobs["process-qualification"]
+        build = process.index("cargo build --locked -p codex-cli --bin codex")
+        owner_tests = process.index("just test --locked --lib -p codex-hepta-agentd")
+        self.assertLess(build, owner_tests)
+        setup = process[process.rfind("      - name:", 0, build) : build]
+        self.assertIn("steps.execution.outputs.run_native == 'true'", setup)
+        self.assertIn("working-directory: codex-rs", setup)
+
     def test_catalog_and_formatter_use_the_repository_toolchain_directory(self):
         for name in ("owner-formatting", "catalog-admission"):
             with self.subTest(name=name):

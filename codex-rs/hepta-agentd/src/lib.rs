@@ -27,6 +27,8 @@ mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
 mod intelligence_ingress;
+#[cfg(feature = "qualification-legacy-learning-write")]
+mod intelligence_learning_candidates;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;

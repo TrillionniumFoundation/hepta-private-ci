@@ -152,6 +152,10 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Build the Codex executable required by physical worker library tests
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: cargo build --locked -p codex-cli --bin codex
       - name: Exercise owner and lifecycle libraries
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
