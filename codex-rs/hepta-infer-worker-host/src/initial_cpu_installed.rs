@@ -41,14 +41,25 @@ impl Composition {
             .map_err(|error| error.to_string())?,
         );
         let goal_mode = installed.model_use_pointer.is_some();
+        let tick_mode = if let Some(pointer) = installed.model_use_pointer.as_ref() {
+            let admission = model_use_current::Admission::open(
+                pointer.clone(),
+                &plan,
+                identity,
+                clock.clone(),
+            )?;
+            let binding = admission.binding();
+            tick::GoalMode::ActualCompiledGoal {
+                encoder_manifest_digest: binding.encoder_manifest_digest,
+                tokenizer_digest: binding.tokenizer_digest,
+            }
+        } else {
+            tick::GoalMode::FixedObjective
+        };
         let tick = Arc::new(tick::TickProvider::open_mode(
             installed.tick_provider.clone(),
             &plan,
-            if goal_mode {
-                tick::GoalMode::ActualCompiledGoal
-            } else {
-                tick::GoalMode::FixedObjective
-            },
+            tick_mode,
         )?);
         let runtime_digest = plan.runtime.semantic_digest()?;
         let body_digest = plan.body.semantic_digest()?;

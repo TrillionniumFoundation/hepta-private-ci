@@ -58,6 +58,12 @@ pub(super) struct Admission {
     last_now: u64,
 }
 impl Admission {
+    pub(super) fn binding(
+        &self,
+    ) -> &codex_hepta_agent_components::intelligence_eval::OperationalModelLeaseBindingV2 {
+        self.active.verified.binding()
+    }
+
     pub(super) fn open(
         pointer: PathBuf,
         plan: &crate::CpuNeuronGenerationPlanV1,

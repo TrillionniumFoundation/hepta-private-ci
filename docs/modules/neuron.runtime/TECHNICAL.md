@@ -549,3 +549,10 @@ public pair, model, body and preprocessing while binding the actual stage's
 objective and predecessor in the original seven-field encoder request. Existing
 V2 requests remain bound to their initial objective. The encoder supplies
 features only; all seven canonical owners and final-use checks remain required.
+
+The V3 tick provider retains the CPU descriptor's original tokenizer digest in
+its runtime tuple. Separately, it obtains the actual GGUF encoder-manifest and
+tokenizer digests from the inspected opaque S2 model-use binding, and checks
+those physical domains in the encoder response. The shared normalization still
+matches the admitted runtime. A CPU alias cannot substitute for the actual
+tokenizer, and an actual tokenizer cannot rewrite the legacy CPU preimage.

@@ -40,7 +40,10 @@ pub(super) struct TickProvider {
 #[derive(Clone, Copy, PartialEq)]
 pub(super) enum GoalMode {
     FixedObjective,
-    ActualCompiledGoal,
+    ActualCompiledGoal {
+        encoder_manifest_digest: Digest32,
+        tokenizer_digest: Digest32,
+    },
 }
 
 impl TickProvider {
@@ -52,7 +55,7 @@ impl TickProvider {
         let configuration: Configuration = serde_json::from_slice(&source.read(16 * 1024)?)?;
         let schema = match goal_mode {
             GoalMode::FixedObjective => "hepta.cpu-neuron.fixed-pair-tick-provider.v2",
-            GoalMode::ActualCompiledGoal => "hepta.cpu-neuron.fixed-pair-tick-provider.v3",
+            GoalMode::ActualCompiledGoal { .. } => "hepta.cpu-neuron.fixed-pair-tick-provider.v3",
         };
         if configuration.schema != schema
             || configuration.pair_id.is_empty()
@@ -73,6 +76,27 @@ impl TickProvider {
             configuration,
             goal_mode,
         })
+    }
+
+    fn validate_encoder_domains(&self, response: &Value) -> HostResult<()> {
+        let tokenizer = match self.goal_mode {
+            GoalMode::FixedObjective => digest(&self.configuration.tokenizer_digest)?,
+            GoalMode::ActualCompiledGoal {
+                encoder_manifest_digest,
+                tokenizer_digest,
+            } => {
+                if response["encoder_manifest_sha256"] != encoder_manifest_digest.to_string() {
+                    return Err("physical encoder differs from independent model use".into());
+                }
+                tokenizer_digest
+            }
+        };
+        if response["tokenizer_sha256"] != tokenizer.to_string()
+            || response["normalization_sha256"] != self.configuration.normalization_digest
+        {
+            return Err("physical encoding domains differ from the admitted preprocessor".into());
+        }
+        Ok(())
     }
 
     fn exchange(&self, request: &Value) -> HostResult<Value> {
@@ -203,6 +227,7 @@ impl AgentdNeuronTickProviderV2 for TickProvider {
                 "ndu_digest":stage.predecessor_digest.to_string(),
             });
             let response = self.exchange(&request)?;
+            self.validate_encoder_domains(&response)?;
             let expected_tuple = request
                 .as_object()
                 .ok_or("request tuple")?
@@ -214,8 +239,6 @@ impl AgentdNeuronTickProviderV2 for TickProvider {
                 || response["encoder_config_sha256"] != cfg.encoder_configuration.digest
                 || response["pair_id"] != cfg.pair_id
                 || response["source_row_sha256"] != cfg.source_row_sha256
-                || response["normalization_sha256"] != cfg.normalization_digest
-                || response["tokenizer_sha256"] != cfg.tokenizer_digest
                 || response["run_tuple"] != Value::Object(expected_tuple)
                 || response["physical_elapsed_micros"].as_u64().unwrap_or(0) == 0
             {

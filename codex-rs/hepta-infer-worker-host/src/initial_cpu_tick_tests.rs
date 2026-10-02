@@ -2,6 +2,50 @@ use super::*;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixListener;
 
+#[test]
+fn encoding_domains_keep_cpu_alias_separate_from_independently_pinned_gguf() -> HostResult<()> {
+    let alias = Digest32::of_bytes(b"original CPU runtime tokenizer alias");
+    let physical = Digest32::of_bytes(b"actual GGUF tokenizer metadata");
+    let encoder = Digest32::of_bytes(b"actual encoder manifest");
+    let normalization = Digest32::of_bytes(b"same registered normalization");
+    let mut provider = TickProvider {
+        source: Source {
+            path: PathBuf::from("/unused-domain-fixture"),
+            digest: alias.to_string(),
+        },
+        goal_mode: GoalMode::FixedObjective,
+        configuration: serde_json::from_value(serde_json::json!({
+            "schema":"hepta.cpu-neuron.fixed-pair-tick-provider.v2",
+            "encoder_socket":"/unused-domain-fixture.sock",
+            "encoder_configuration":{"path":"/unused-domain-fixture","digest":alias.to_string()},
+            "pair_id":"domain.fixture", "source_row_sha256":alias.to_string(),
+            "objective_digest":alias.to_string(), "runtime_body_digest":alias.to_string(),
+            "model_generation":1, "normalization_digest":normalization.to_string(),
+            "tokenizer_digest":alias.to_string(), "timeout_ms":200
+        }))?,
+    };
+    let mut response = serde_json::json!({
+        "normalization_sha256":normalization.to_string(), "tokenizer_sha256":alias.to_string()
+    });
+    provider.validate_encoder_domains(&response)?;
+    provider.goal_mode = GoalMode::ActualCompiledGoal {
+        encoder_manifest_digest: encoder,
+        tokenizer_digest: physical,
+    };
+    assert!(provider.validate_encoder_domains(&response).is_err());
+    response["encoder_manifest_sha256"] = encoder.to_string().into();
+    assert!(provider.validate_encoder_domains(&response).is_err());
+    response["tokenizer_sha256"] = physical.to_string().into();
+    provider.validate_encoder_domains(&response)?;
+    response["encoder_manifest_sha256"] = alias.to_string().into();
+    assert!(provider.validate_encoder_domains(&response).is_err());
+    response["encoder_manifest_sha256"] = encoder.to_string().into();
+    response["normalization_sha256"] = alias.to_string().into();
+    assert!(provider.validate_encoder_domains(&response).is_err());
+    assert_eq!(provider.configuration.tokenizer_digest, alias.to_string());
+    Ok(())
+}
+
 fn protected_transport() -> HostResult<(tempfile::TempDir, TickProvider, UnixListener)> {
     if rustix::process::geteuid().as_raw() != 0 {
         return Err("this physical transport fixture requires true Root".into());
