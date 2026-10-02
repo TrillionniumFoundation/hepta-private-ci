@@ -702,6 +702,13 @@ pub struct ConnectedMatrixAppServer {
 pub async fn connect_via_agentd(
     args: MatrixAgentdConnectArgs,
 ) -> Result<ConnectedMatrixAppServer, MatrixBridgeError> {
+    connect_agent_session(args, "hepta-matrixd").await
+}
+
+async fn connect_agent_session(
+    args: MatrixAgentdConnectArgs,
+    client_name: &str,
+) -> Result<ConnectedMatrixAppServer, MatrixBridgeError> {
     if args.client_version.is_empty()
         || args.command_channel_capacity == 0
         || args.event_channel_capacity == 0
@@ -732,7 +739,7 @@ pub async fn connect_via_agentd(
     let client = RemoteAppServerClient::connect_with_bounded_events(
         RemoteAppServerConnectArgs {
             endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
-            client_name: "hepta-matrixd".to_string(),
+            client_name: client_name.to_string(),
             client_version: args.client_version,
             experimental_api: true,
             mcp_server_openai_form_elicitation: false,
@@ -1132,3 +1139,6 @@ pub enum MatrixBridgeError {
 
 #[cfg(test)]
 mod tests;
+
+/// Generic UI conversations, separate from Matrix message ingress and Hepta execution plans.
+pub mod chat;
