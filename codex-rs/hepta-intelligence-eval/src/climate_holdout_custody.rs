@@ -196,10 +196,17 @@ fn prepare(raw: &[u8], cut_bytes: &[u8], cut: &FeatureCut) -> HostResult<Prepare
             }
         }
         let identity = row.claim_id.clone();
-        if claims
-            .insert(identity, (row, Digest32::of_bytes(line.as_bytes())))
-            .is_some()
-        {
+        // The complete original file is pinned by Root policy. A masked input
+        // must not carry a hash preimage influenced by any gold annotation.
+        let feature_digest = Digest32::of_bytes(&serde_json::to_vec(&serde_json::json!({
+            "domain":"hepta.climate-fever.claim-features.v1",
+            "claim_id":row.claim_id,"claim_text":row.claim,
+            "evidences":row.evidences.iter().map(|evidence| serde_json::json!({
+                "evidence_id":evidence.evidence_id,"article":evidence.article,
+                "evidence":evidence.evidence,
+            })).collect::<Vec<_>>()
+        }))?);
+        if claims.insert(identity, (row, feature_digest)).is_some() {
             return Err("duplicate original Climate claim".into());
         }
         if claims.len() > cut.source_claims {
@@ -214,7 +221,7 @@ fn prepare(raw: &[u8], cut_bytes: &[u8], cut: &FeatureCut) -> HostResult<Prepare
     let mut neutral = 0;
     for component in &cut.components {
         for id in component {
-            let (claim, claim_digest) = claims
+            let (claim, feature_digest) = claims
                 .get(id)
                 .ok_or("feature cut contains unknown source claim")?;
             for evidence in &claim.evidences {
@@ -222,7 +229,7 @@ fn prepare(raw: &[u8], cut_bytes: &[u8], cut: &FeatureCut) -> HostResult<Prepare
                     "source_schema":"climate-fever.official-evidence.v1", "claim_id":claim.claim_id,
                     "evidence_id":evidence.evidence_id, "claim_text":claim.claim,
                     "title":evidence.article, "abstract_sentences":[evidence.evidence],
-                    "claim_source_record_digest":claim_digest.to_string(),
+                    "claim_feature_record_digest":feature_digest.to_string(),
                     "source_component_claim_ids":component,
                 });
                 features.push(feature.clone());

@@ -113,20 +113,23 @@ fn neutral_features_survive_and_gold_changes_do_not_select_a_feature_subset() ->
     );
     let masked: Vec<Value> = serde_json::from_slice(&before.masked)?;
     assert_eq!(masked.len(), 10);
-    // Changing only aggregate labels cannot change either private gold or mask.
-    for claim in &mut rows {
+    // Change every annotation, including the per-evidence scoring membership.
+    // The complete masked bytes must remain identical, including every digest.
+    for (index, claim) in rows.iter_mut().enumerate() {
         claim["claim_label"] = serde_json::json!({"ignored":"opaque"});
+        for evidence in claim["evidences"].as_array_mut().ok_or("evidence")? {
+            evidence["evidence_label"] = serde_json::json!(if index == 1 {
+                "NOT_ENOUGH_INFO"
+            } else {
+                "REFUTES"
+            });
+            evidence["entropy"] = serde_json::json!(123);
+            evidence["votes"] = serde_json::json!(["changed annotation"]);
+        }
     }
     let after = prepare(&bytes(&rows), b"cut", &cut)?;
-    let mut before_mask: Vec<Value> = serde_json::from_slice(&before.masked)?;
-    let mut after_mask: Vec<Value> = serde_json::from_slice(&after.masked)?;
-    for feature in before_mask.iter_mut().chain(after_mask.iter_mut()) {
-        feature
-            .as_object_mut()
-            .ok_or("feature")?
-            .remove("claim_source_record_digest");
-    }
-    assert_eq!(before_mask, after_mask);
+    assert_eq!(before.masked, after.masked);
+    assert_ne!(before.gold, after.gold);
     assert_eq!(
         (
             after.counts.labeled_pairs,
