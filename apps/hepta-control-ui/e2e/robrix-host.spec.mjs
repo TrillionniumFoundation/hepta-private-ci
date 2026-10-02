@@ -1,17 +1,26 @@
 // Real browser/Makepad host acceptance. Canvas screenshots are evidence for
 // visual review; this suite does not claim a DOM axe pass or live-chat authority.
 import {test,expect} from '@playwright/test';
+import {writeFile} from 'node:fs/promises';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page},testInfo)=>{
   const errors=[];const violations=[];const uploads=[];
+  const fonts=[];const pendingFonts=new Set();
+  const isFont=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
+  page.on("request",request=>{if(isFont(request)){pendingFonts.add(request);fonts.push({event:"request",url:request.url()});}});
+  page.on("response",response=>{if(isFont(response.request())) fonts.push({event:"response",url:response.url(),status:response.status()});});
+  page.on("requestfinished",request=>{if(isFont(request)){pendingFonts.delete(request);fonts.push({event:"finished",url:request.url()});}});
+  page.on("requestfailed",request=>{if(isFont(request)){pendingFonts.delete(request);fonts.push({event:"failed",url:request.url(),error:request.failure()?.errorText});}});
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error') errors.push(message.text());});
   page.on('request',request=>{if(/\/(?:api\/crash|\$report_error)/.test(request.url())) uploads.push(request.url());});
   await page.addInitScript(()=>{window.__cspViolations=[];document.addEventListener('securitypolicyviolation',event=>window.__cspViolations.push(`${event.violatedDirective}: ${event.blockedURI}`));});
+  try {
   await page.setViewportSize(viewport);
   await page.goto('/');
   await expect(page.locator('canvas')).toBeVisible();
   await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
+  await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
   await page.waitForTimeout(1000);
   expect(await page.locator('canvas').evaluate(canvas=>canvas.width>0&&canvas.height>0)).toBe(true);
   expect(await page.locator('meta[name=viewport]').getAttribute('content')).not.toContain('user-scalable=no');
@@ -26,5 +35,10 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
   expect(errors).toEqual([]);
   expect(await page.evaluate(()=>window.__cspViolations)).toEqual([]);
   expect(uploads).toEqual([]);
+  } finally {
+   const diagnostics=testInfo.outputPath("host-diagnostics.json");
+   await writeFile(diagnostics,JSON.stringify({errors,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),violations:await page.evaluate(()=>window.__cspViolations??[]).catch(()=>violations)},null,2));
+   await testInfo.attach("host-diagnostics", {path:diagnostics,contentType:"application/json"});
+  }
  });
 }

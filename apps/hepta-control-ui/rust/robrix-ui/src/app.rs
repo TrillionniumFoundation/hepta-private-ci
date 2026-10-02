@@ -4,7 +4,7 @@
 // Hepta owns the nonvisual state; this UI does not create a runtime or credentials.
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::*;
-app_main!(App, font_set: International);
+app_main!(App, font_set: International, font_assets: [MATH_VIEW_FONT_ASSET]);
 script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*

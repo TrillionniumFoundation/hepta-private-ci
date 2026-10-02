@@ -31,10 +31,29 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  }).join('\n');
  manifest+='\n[workspace]\n';
  await writeFile(join(platform,'Cargo.toml'),manifest);
+ // The no-thread font patch is isolated in the draw crate. Its native and
+ // atomics-enabled worker path remains the upstream implementation.
+ const draw=join(generated,'makepad-draw');
+ await rm(draw,{recursive:true,force:true});
+ await cp(join(makepadRoot,'draw'),draw,{recursive:true});
+ const drawIdentity=JSON.parse(await readFile(join(patchRoot,'makepad-wasm-fonts.json'),'utf8'));
+ const drawPatch=join(patchRoot,'makepad-wasm-fonts.patch');
+ if(drawIdentity.upstream!==revision||sha(await readFile(drawPatch))!==drawIdentity.patchSha256) throw new Error('Unexpected draw patch identity');
+ for(const file of drawIdentity.files) if(sha(await readFile(join(draw,file.path)))!==file.beforeSha256) throw new Error('Unexpected draw patch input: '+file.path);
+ execFileSync('patch',['--batch','--forward','--fuzz=0','-p1','-d',draw,'-i',drawPatch],{stdio:'inherit'});
+ for(const file of drawIdentity.files) if(sha(await readFile(join(draw,file.path)))!==file.afterSha256) throw new Error('Unexpected draw patch output: '+file.path);
+ let drawManifest=await readFile(join(draw,'Cargo.toml'),'utf8');
+ let drawSection='';
+ drawManifest=drawManifest.split('\n').map(line=>{
+  if(line.trim().startsWith('[')) drawSection=line.trim();
+  if(!drawSection.includes('dependencies')) return line;
+  return line.replace(/path\s*=\s*"[^"]+"/,`git = "https://github.com/kevinaboos/makepad", rev = "${revision}"`);
+ }).join('\n')+'\n[workspace]\n';
+ await writeFile(join(draw,'Cargo.toml'),drawManifest);
  await mkdir(app,{recursive:true});
  for(const name of ['core','web','robrix-ui']) {await rm(join(app,name),{recursive:true,force:true});await cp(join(workspace,name),join(app,name),{recursive:true});}
  await cp(join(workspace,'Cargo.lock'),join(app,'Cargo.lock'));
  const sourceManifest=await readFile(join(workspace,'Cargo.toml'),'utf8');
- await writeFile(join(app,'Cargo.toml'),sourceManifest+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\n');
- return {workspace:app,identity,platformManifestSha256:sha(manifest)};
+ await writeFile(join(app,'Cargo.toml'),sourceManifest+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\nmakepad-draw = { path = "../makepad-draw" }\n');
+ return {workspace:app,identity,drawIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
 }

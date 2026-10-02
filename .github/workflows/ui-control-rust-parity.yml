@@ -163,6 +163,8 @@ jobs:
         with:
           node-version: 22
       - name: Install and verify official build inputs
+        env:
+          CARGO_BUILD_JOBS: 2
         shell: bash
         run: |
           set -euo pipefail
@@ -184,6 +186,7 @@ jobs:
         run: |
           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
           npm run build --prefix apps/hepta-control-ui
+          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs
           cd apps/hepta-control-ui
           npx playwright install --with-deps chromium firefox webkit
       - name: Run actual browser renderer and capture layouts
@@ -208,6 +211,7 @@ jobs:
           name: robrix-host-${{ needs.identity.outputs.source_sha }}
           path: |
             apps/hepta-control-ui/test-results/**/*.png
+            apps/hepta-control-ui/test-results/**/host-diagnostics.json
             apps/hepta-control-ui/test-results/robrix-browser-results.json
             apps/hepta-control-ui/dist/build-manifest.json
             apps/hepta-control-ui/dist-robrix-fixtures/build-manifest.json

@@ -4,6 +4,9 @@
 use makepad_widgets::*;
 script_mod! {
  use mod.prelude.widgets.*
+ use mod.widgets.*
+ // Upstream shared/styles.rs:246, required by the adapted PortalList.
+ mod.widgets.ListScrollBar = ScrollBar { bar_size: 9 }
  mod.widgets.COLOR_PRIMARY = #151e2b
  mod.widgets.COLOR_PRIMARY_DARKER = #101722
  mod.widgets.COLOR_SECONDARY = #202d3b

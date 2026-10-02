@@ -23,7 +23,8 @@ are not transcript messages. Core observer fixtures must remain visibly fixtures
 From `apps/hepta-control-ui`, `npm run build` produces the Makepad Web package,
 `npm run dev` builds and serves it locally, and `npm start` serves that artifact.
 The build resolves the pinned Makepad checkout from Cargo metadata, verifies its
-tracked bytes and compiles that checkout's packaging tool. It rejects an
+tracked bytes and compiles its packaging tool from an isolated Git archive with
+a committed exact tool lock. Cargo cache contents are never patched. It rejects an
 unqualified nightly instead of silently claiming reproducible output. Current
 recorded compile input is nightly `1.101.0-nightly (c36f14571 2026-10-01)`;
 this is a build input record, not host qualification.
@@ -36,7 +37,13 @@ package installation was not permitted by its filesystem/root environment.
 Pure presentation tests use repository `just test`, package `hepta-robrix-ui`,
 `--no-default-features --lib`. Disabling graphics for these tests does not qualify
 the renderer. Standard `wasm32-unknown-unknown` check and no-threads release
-packaging have succeeded locally. Actual browser/native pixels, keyboard/IME,
+packaging have succeeded locally. The first actual hosted browser run exposed
+a missing ListScrollBar definition, asynchronous font-loading diagnostics and
+an unsupported no-thread MSDF worker. The narrow hash-checked draw overlay uses
+the existing synchronous SDF path only on non-atomic WASM, defers only registered
+Loading font errors and retains native/atomic behavior. Browser requalification
+must demonstrate readable glyphs after real font transfers, not just no console
+errors. Actual browser/native visual acceptance, keyboard/IME,
 assistive technology, light-theme parity and mobile Web input remain unqualified.
 The pinned framework disables mobile Safari/Android keyboard binding; this is a
 real implementation gap, not a supported mobile-chat claim.

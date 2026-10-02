@@ -50,11 +50,16 @@ delete packageEnv.CARGO_BUILD_TARGET;
 execFileSync(packager,['wasm','--no-threads','build','-p','hepta-robrix-ui','--bin','hepta-robrix','--release',...(fixtures?['--features','hepta-robrix-ui/ui-fixtures']:[])],{cwd:overlay.workspace,stdio:'inherit',env:packageEnv});
 const canonicalLock=await readFile(join(workspace,'Cargo.lock'),'utf8');
 const generatedLock=await readFile(join(overlay.workspace,'Cargo.lock'),'utf8');
-const platformLock=`[[package]]\nname = "makepad-platform"\nversion = "2.0.0"\n`;
-const platformStart=canonicalLock.indexOf(platformLock)+platformLock.length;
-const platformEnd=canonicalLock.indexOf('\n',platformStart)+1;
+let expectedLock=canonicalLock;
 const expectedSource=`source = "git+https://github.com/kevinaboos/makepad?rev=${provenance.makepad.revision}#${provenance.makepad.revision}"\n`;
-if(platformStart<platformLock.length||canonicalLock.slice(platformStart,platformEnd)!==expectedSource||canonicalLock.slice(0,platformStart)+canonicalLock.slice(platformEnd)!==generatedLock) throw new Error('Generated lock changed beyond the exact local platform overlay');
+for(const name of ['makepad-platform','makepad-draw']){
+ const header=`[[package]]\nname = "${name}"\nversion = "2.0.0"\n`;
+ const start=expectedLock.indexOf(header)+header.length;
+ const end=expectedLock.indexOf('\n',start)+1;
+ if(start<header.length||expectedLock.slice(start,end)!==expectedSource) throw new Error('Unexpected locked overlay source: '+name);
+ expectedLock=expectedLock.slice(0,start)+expectedLock.slice(end);
+}
+if(expectedLock!==generatedLock) throw new Error('Generated lock changed beyond the exact platform/draw overlays');
 if((await robrixSourceIdentity(root)).sha256!==sourceIdentity.sha256) throw new Error('UI source changed during build; rebuild before qualification');
 const rawHtml = await readFile(join(source, 'index.html'), 'utf8');
 const wasmName = rawHtml.match(/['"]\.\/(hepta-robrix\.[a-f0-9]+\.wasm)['"]/)?.[1];
@@ -102,5 +107,5 @@ async function inventory(dir) {
  }
 }
 await inventory(output);
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,nightly,platformPatch:overlay.identity,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,nightly,platformPatch:overlay.identity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
