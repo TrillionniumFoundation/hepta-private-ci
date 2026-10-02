@@ -526,6 +526,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         })
     }
 
+    /// Only the daemon's same-request final-use byte proof can reach this path.
+    /// The public Start route retains its independent complete catalog read.
+    #[cfg(unix)]
+    pub(crate) fn start_release_from_read(
+        &mut self,
+        agent_id: &AgentId,
+        release: AgentRelease,
+        read: &codex_hepta_fleet::ReleaseReadPin,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
+        self.with_slot(agent_id, |supervisor, slot| {
+            supervisor.start_release_slot_with_read(agent_id, slot, release, now, Some(read))
+        })
+    }
+
     pub fn drain(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {

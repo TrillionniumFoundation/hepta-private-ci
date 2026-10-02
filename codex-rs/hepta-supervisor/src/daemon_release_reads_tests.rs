@@ -17,9 +17,11 @@ fn reader() -> (Arc<ReleaseReads>, mpsc::Receiver<ReadJob>) {
 fn take_reply(
     receiver: &mpsc::Receiver<ReadJob>,
     expected: &str,
-) -> oneshot::Sender<Result<ReleaseReadPin, FleetRegistryError>> {
+) -> oneshot::Sender<Result<ReadFact, FleetRegistryError>> {
     match receiver.try_recv().expect("one physical read") {
-        ReadJob::Validate { release_id, reply } => {
+        ReadJob::Validate {
+            release_id, reply, ..
+        } => {
             assert_eq!(release_id.as_str(), expected);
             reply
         }
@@ -33,14 +35,22 @@ async fn timeout_retains_one_read_and_same_release_observes_its_late_result() {
     let cancellation = CancellationToken::new();
     assert!(matches!(
         reader
-            .prevalidate("first".parse().unwrap(), &cancellation)
+            .prevalidate(
+                "first".parse().unwrap(),
+                ReadPurpose::Validate,
+                &cancellation
+            )
             .await,
         ReadResult::Busy
     ));
     let reply = take_reply(&receiver, "first");
     assert!(matches!(
         reader
-            .prevalidate("different".parse().unwrap(), &cancellation)
+            .prevalidate(
+                "different".parse().unwrap(),
+                ReadPurpose::Validate,
+                &cancellation
+            )
             .await,
         ReadResult::Busy
     ));
@@ -56,7 +66,7 @@ async fn timeout_retains_one_read_and_same_release_observes_its_late_result() {
             .is_ok()
     );
     assert!(
-        matches!(reader.prevalidate("first".parse().unwrap(), &cancellation).await,
+        matches!(reader.prevalidate("first".parse().unwrap(), ReadPurpose::Validate, &cancellation).await,
         ReadResult::Rejected(FleetRegistryError::Invalid(message)) if message == "late read rejection")
     );
     assert!(
@@ -70,7 +80,11 @@ async fn timeout_retains_one_read_and_same_release_observes_its_late_result() {
 async fn abandoned_request_retains_progress_without_admitting_any_operation() {
     let (reader, receiver) = reader();
     let cancellation = CancellationToken::new();
-    let mut request = Box::pin(reader.prevalidate("first".parse().unwrap(), &cancellation));
+    let mut request = Box::pin(reader.prevalidate(
+        "first".parse().unwrap(),
+        ReadPurpose::Validate,
+        &cancellation,
+    ));
     std::future::poll_fn(|cx| {
         assert!(request.as_mut().poll(cx).is_pending());
         Poll::Ready(())
@@ -85,7 +99,11 @@ async fn abandoned_request_retains_progress_without_admitting_any_operation() {
     );
     assert!(matches!(
         reader
-            .prevalidate("first".parse().unwrap(), &cancellation)
+            .prevalidate(
+                "first".parse().unwrap(),
+                ReadPurpose::Validate,
+                &cancellation
+            )
             .await,
         ReadResult::Busy
     ));
@@ -100,7 +118,11 @@ async fn cancelled_daemon_never_submits_a_read() {
     cancellation.cancel();
     assert!(matches!(
         reader
-            .prevalidate("first".parse().unwrap(), &cancellation)
+            .prevalidate(
+                "first".parse().unwrap(),
+                ReadPurpose::Validate,
+                &cancellation
+            )
             .await,
         ReadResult::Stopped
     ));
@@ -114,7 +136,11 @@ async fn lock_contention_consumes_the_original_wait_budget() {
     let cancellation = CancellationToken::new();
     let result = tokio::time::timeout(
         Duration::from_millis(500),
-        reader.prevalidate("first".parse().unwrap(), &cancellation),
+        reader.prevalidate(
+            "first".parse().unwrap(),
+            ReadPurpose::Validate,
+            &cancellation,
+        ),
     )
     .await
     .unwrap();
@@ -127,7 +153,11 @@ async fn lock_contention_consumes_the_original_wait_budget() {
 async fn completed_other_release_is_discarded_before_a_new_physical_read() {
     let (reader, receiver) = reader();
     let cancellation = CancellationToken::new();
-    let mut first = Box::pin(reader.prevalidate("first".parse().unwrap(), &cancellation));
+    let mut first = Box::pin(reader.prevalidate(
+        "first".parse().unwrap(),
+        ReadPurpose::Validate,
+        &cancellation,
+    ));
     std::future::poll_fn(|cx| {
         assert!(first.as_mut().poll(cx).is_pending());
         Poll::Ready(())
@@ -140,7 +170,11 @@ async fn completed_other_release_is_discarded_before_a_new_physical_read() {
             .send(Err(FleetRegistryError::Invalid("old release".into())))
             .is_ok()
     );
-    let mut second = Box::pin(reader.prevalidate("second".parse().unwrap(), &cancellation));
+    let mut second = Box::pin(reader.prevalidate(
+        "second".parse().unwrap(),
+        ReadPurpose::Validate,
+        &cancellation,
+    ));
     std::future::poll_fn(|cx| {
         assert!(second.as_mut().poll(cx).is_pending());
         Poll::Ready(())
@@ -155,5 +189,62 @@ async fn completed_other_release_is_discarded_before_a_new_physical_read() {
     assert!(
         matches!(second.await, ReadResult::Rejected(FleetRegistryError::Invalid(message))
         if message == "new release")
+    );
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn prepared_and_verified_reads_never_share_pending_authority() {
+    let (reader, receiver) = reader();
+    let cancellation = CancellationToken::new();
+    let mut prepared =
+        Box::pin(reader.prevalidate("same".parse().unwrap(), ReadPurpose::Prepare, &cancellation));
+    std::future::poll_fn(|cx| {
+        assert!(prepared.as_mut().poll(cx).is_pending());
+        Poll::Ready(())
+    })
+    .await;
+    let reply = take_reply(&receiver, "same");
+    drop(prepared);
+    assert!(matches!(
+        reader
+            .prevalidate(
+                "same".parse().unwrap(),
+                ReadPurpose::Validate,
+                &cancellation
+            )
+            .await,
+        ReadResult::Busy
+    ));
+    assert!(receiver.try_recv().is_err());
+    assert!(
+        reply
+            .send(Err(FleetRegistryError::Invalid(
+                "unverified preparation".into()
+            )))
+            .is_ok()
+    );
+    let mut verified = Box::pin(reader.prevalidate(
+        "same".parse().unwrap(),
+        ReadPurpose::Validate,
+        &cancellation,
+    ));
+    std::future::poll_fn(|cx| {
+        assert!(verified.as_mut().poll(cx).is_pending());
+        Poll::Ready(())
+    })
+    .await;
+    match receiver.try_recv().expect("new verification read") {
+        ReadJob::Validate { purpose, reply, .. } => {
+            assert!(matches!(purpose, ReadPurpose::Validate));
+            assert!(
+                reply
+                    .send(Err(FleetRegistryError::Invalid("full verification".into())))
+                    .is_ok()
+            );
+        }
+        _ => panic!("expected verification read"),
+    }
+    assert!(
+        matches!(verified.await, ReadResult::Rejected(FleetRegistryError::Invalid(message)) if message == "full verification")
     );
 }

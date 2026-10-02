@@ -267,6 +267,24 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.start_release_slot_with_read(
+            agent_id,
+            slot,
+            release,
+            now,
+            #[cfg(unix)]
+            None,
+        )
+    }
+
+    pub(crate) fn start_release_slot_with_read(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        release: AgentRelease,
+        now: Instant,
+        #[cfg(unix)] read: Option<&codex_hepta_fleet::ReleaseReadPin>,
+    ) -> Result<(), SupervisorError> {
         // Enforce the same fence at the actual spawn entry, including direct
         // in-process callers that do not pass through the daemon RPC preflight.
         if let Some(reason) = &slot.recovery_blocker {
@@ -279,6 +297,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id.clone(),
             ));
         }
+        #[cfg(unix)]
+        let release = match read {
+            Some(pin) => {
+                AgentRelease::try_from(self.registry.resolve_release_descriptor_from_read_pin(
+                    agent_id,
+                    release.release_id(),
+                    pin,
+                )?)?
+            }
+            None => self.refresh_release_for_transition(agent_id, &release)?,
+        };
+        #[cfg(not(unix))]
         let release = self.refresh_release_for_transition(agent_id, &release)?;
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {

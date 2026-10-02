@@ -162,9 +162,10 @@ pub(super) async fn handle_with_request_id(
         return reply;
     }
     // The reader carries no Agent allowance or durable operation authority.
-    // Cold catalog bytes are read before admission. The owner still checks the
-    // original fence, allowance and actual identity at the effect boundary.
-    let release_read_pin = if let SupervisordMethod::AllowInstalledRelease { release_id, .. }
+    // Allow reads verified bytes; Start only prepares bounded metadata/FDs.
+    // The owner verifies Start's complete bytes before journal admission and
+    // retains the original fence, allowance and identity at physical use.
+    let release_read_fact = if let SupervisordMethod::AllowInstalledRelease { release_id, .. }
     | SupervisordMethod::Start { release_id, .. } = &method
     {
         let reader = state.execution.release_reads.get_or_init(|| {
@@ -178,11 +179,16 @@ pub(super) async fn handle_with_request_id(
             Ok(reader) => reader,
             Err(_) => return unavailable(),
         };
+        let purpose = if matches!(&method, SupervisordMethod::Start { .. }) {
+            super::release_reads::ReadPurpose::Prepare
+        } else {
+            super::release_reads::ReadPurpose::Validate
+        };
         match reader
-            .prevalidate(release_id.clone(), &state.execution.cancellation)
+            .prevalidate(release_id.clone(), purpose, &state.execution.cancellation)
             .await
         {
-            super::release_reads::ReadResult::Validated(pin) => Some(pin),
+            super::release_reads::ReadResult::Ready(fact) => Some(fact),
             super::release_reads::ReadResult::Busy => {
                 state.execution.rejected.fetch_add(1, Ordering::Relaxed);
                 return error_payload(
@@ -227,7 +233,13 @@ pub(super) async fn handle_with_request_id(
     match spawn_owned(state, permit, move |state| {
         // A private read fact pin survives the owner wait and execution. It
         // contains no fence, allowance, receipt or grant authorization.
-        let release_read_pin = release_read_pin.map(Arc::new);
+        let (release_read_pin, _validated_allow_pin) = match release_read_fact {
+            Some(super::release_reads::ReadFact::Prepared(prepared)) => {
+                (Some(Arc::new(prepared)), None)
+            }
+            Some(super::release_reads::ReadFact::Validated(pin)) => (None, Some(pin)),
+            None => (None, None),
+        };
         let reply = runtime.block_on(super::handle_request(
             Arc::clone(state),
             request_id,

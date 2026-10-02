@@ -34,6 +34,8 @@ pub enum SupervisorError {
     NotAdmittedBusy,
     #[error("supervisord rejected stale_control_fence; this request was not admitted")]
     StaleControlFence,
+    #[error("installed release validation failed before admission")]
+    ReleaseValidationRejected,
     #[error("configuration was not admitted: {0}")]
     ConfigurationNotReady(String),
     #[error("invalid supervisor value: {0}")]

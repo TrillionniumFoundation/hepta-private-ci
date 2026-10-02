@@ -724,7 +724,7 @@ async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     request_id: u64,
     method: SupervisordMethod,
-    read_pin: Option<Arc<codex_hepta_fleet::ReleaseReadPin>>,
+    read_pin: Option<Arc<codex_hepta_fleet::PreparedReleaseRead>>,
 ) -> SupervisordPayload {
     match method {
         SupervisordMethod::AgentDiagnostics { agent_id } => {
@@ -891,12 +891,13 @@ async fn handle_request<D: ProcessDriver>(
                     return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
-            handle_mutation(
+            mutation::handle_mutation_with_prepared_read(
                 state,
                 request_id,
                 SupervisordMutation::Start,
                 fence,
                 Some(target),
+                read_pin,
             )
             .await
         }
@@ -1225,12 +1226,12 @@ async fn resolve_release_outside_lock<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     agent_id: AgentId,
     release_id: ReleaseId,
-    read_pin: Option<Arc<codex_hepta_fleet::ReleaseReadPin>>,
+    read_pin: Option<Arc<codex_hepta_fleet::PreparedReleaseRead>>,
 ) -> Result<AgentRelease, SupervisorError> {
     let registry = state.registry.clone();
     let release = tokio::task::spawn_blocking(move || match read_pin {
         Some(pin) => {
-            registry.resolve_release_descriptor_from_read_pin(&agent_id, &release_id, &pin)
+            registry.resolve_release_descriptor_from_prepared_read(&agent_id, &release_id, &pin)
         }
         None => registry.resolve_release(&agent_id, &release_id),
     })
@@ -1463,6 +1464,11 @@ fn safe_rejection(
         );
     }
     match error {
+        SupervisorError::ReleaseValidationRejected => error_payload(
+            "release_validation_rejected",
+            "installed program validation failed; no operation was admitted",
+            actual,
+        ),
         SupervisorError::NotAdmittedBusy => error_payload(
             "not_admitted_busy",
             "lifecycle owner is busy; no operation was admitted; refresh before retry",

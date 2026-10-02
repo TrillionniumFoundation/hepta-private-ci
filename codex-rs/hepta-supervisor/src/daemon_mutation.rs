@@ -29,6 +29,17 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
     fence: SupervisordControlFence,
     target: Option<AgentRelease>,
 ) -> SupervisordPayload {
+    handle_mutation_with_prepared_read(state, request_id, operation, fence, target, None).await
+}
+
+pub(super) async fn handle_mutation_with_prepared_read<D: ProcessDriver>(
+    state: Arc<DaemonState<D>>,
+    request_id: u64,
+    operation: SupervisordMutation,
+    fence: SupervisordControlFence,
+    target: Option<AgentRelease>,
+    read: Option<Arc<codex_hepta_fleet::PreparedReleaseRead>>,
+) -> SupervisordPayload {
     let agent_id = fence.agent_id.clone();
     let accepted_state_digest = fence.state_digest.clone();
     let mut supervisor = state.supervisor.lock().await;
@@ -129,6 +140,49 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
         );
     }
 
+    // The sole owner holds its lock throughout this full read, journal
+    // publication and spawn. Unverified preparation cannot cross EffectStarted.
+    // A bad program therefore remains a no-effect rejection with no journal.
+    let verified_start = match (&prepared, read) {
+        (PreparedMutation::Start(target), Some(read)) => {
+            let read = match Arc::try_unwrap(read) {
+                Ok(read) => read,
+                Err(_) => {
+                    return safe_rejection(
+                        SupervisorError::Invalid(
+                            "prepared Start read is not uniquely owned".into(),
+                        ),
+                        Some(actual),
+                        false,
+                    );
+                }
+            };
+            match state.registry.verify_prepared_release_for_launch(
+                &agent_id,
+                target.release_id(),
+                read,
+            ) {
+                Ok((_, pin)) => Some(pin),
+                Err(codex_hepta_fleet::FleetRegistryError::Corrupt(_)) => {
+                    return safe_rejection(
+                        SupervisorError::ReleaseValidationRejected,
+                        Some(actual),
+                        false,
+                    );
+                }
+                Err(error) => return safe_rejection(error.into(), Some(actual), false),
+            }
+        }
+        (_, None) => None,
+        (_, Some(_)) => {
+            return safe_rejection(
+                SupervisorError::Invalid("prepared read is only valid for Start".into()),
+                Some(actual),
+                false,
+            );
+        }
+    };
+
     let next_revision = match supervisor.next_control_revision(&agent_id) {
         Ok(revision) => revision,
         Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
@@ -224,9 +278,10 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
     }
 
     let mutation = match prepared {
-        PreparedMutation::Start(target) => {
-            supervisor.start_release(&agent_id, target, Instant::now())
-        }
+        PreparedMutation::Start(target) => match verified_start.as_ref() {
+            Some(pin) => supervisor.start_release_from_read(&agent_id, target, pin, Instant::now()),
+            None => supervisor.start_release(&agent_id, target, Instant::now()),
+        },
         PreparedMutation::Drain => supervisor.drain(&agent_id, Instant::now()),
         PreparedMutation::Stop => supervisor.stop(&agent_id, Instant::now()),
         PreparedMutation::Kill => supervisor.kill(&agent_id),

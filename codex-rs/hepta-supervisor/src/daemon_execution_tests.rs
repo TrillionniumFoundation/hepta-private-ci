@@ -11,6 +11,9 @@ use super::super::owner::SingleInstanceLock;
 use super::super::shutdown_tests::Fixture;
 use super::*;
 
+#[path = "daemon_start_read_tests.rs"]
+mod start_read_tests;
+
 #[tokio::test(flavor = "current_thread")]
 async fn cancelled_waiter_retains_writer_and_capacity_until_blocking_work_finishes() -> Result<()> {
     let Fixture {

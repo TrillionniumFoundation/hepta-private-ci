@@ -490,6 +490,9 @@ impl SupervisordClient {
             SupervisordPayload::Error { code, .. } if code == "not_admitted_busy" => {
                 Err(SupervisorError::NotAdmittedBusy)
             }
+            SupervisordPayload::Error { code, .. } if code == "release_validation_rejected" => {
+                Err(SupervisorError::ReleaseValidationRejected)
+            }
             SupervisordPayload::Error { code, message, .. }
                 if configuration
                     && matches!(

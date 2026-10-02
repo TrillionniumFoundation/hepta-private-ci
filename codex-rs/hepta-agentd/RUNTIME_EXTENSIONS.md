@@ -179,6 +179,13 @@ selection includes this process suite, including a full workspace run. Scoped
 configuration. An explicitly supplied Cargo profile or artifact metadata remains
 under caller control.
 
+Start prepares catalog metadata and actual file descriptors without trusting
+program content. The sole lifecycle owner verifies the complete mutable program
+before any durable effect marker, then rechecks the same descriptors, manifest,
+allowance and namespace before spawn. Failure of this complete-read check leaves
+no ambiguous operation. Public verified reads and direct Start calls retain full
+validation.
+
 Bazel provides the same ordinary program as
 `//codex-rs/hepta-agentd:hepta-agentd-product` and the process acceptance as
 `//codex-rs/hepta-agentd:hepta-agentd-module_selection_product-test`. The product
