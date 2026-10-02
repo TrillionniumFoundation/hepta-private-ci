@@ -11,6 +11,9 @@ use pretty_assertions::assert_eq;
 #[path = "signed_constructor_containment_tests.rs"]
 mod containment;
 
+#[path = "signed_constructor_preparation_tests.rs"]
+mod preparation;
+
 #[derive(Clone, Copy)]
 enum Plant {
     Main,

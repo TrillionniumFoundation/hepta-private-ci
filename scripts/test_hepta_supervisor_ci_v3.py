@@ -145,6 +145,12 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
             ),
         )
         critical.append("supervisor::tests::release_retry_tests::admission::" + cached)
+        process_fault = "process_recovery_fault_does_not_hide_signed_recovery_required"
+        self.assertIn(
+            process_fault,
+            self.source_test_names("codex-rs/hepta-supervisor/src/supervisor_tests.rs"),
+        )
+        critical.append("supervisor::tests::" + process_fault)
         for file, namespace in (
             (
                 "signed_effect_boundary_tests.rs",
@@ -157,6 +163,10 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
             (
                 "signed_constructor_containment_tests.rs",
                 "supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment",
+            ),
+            (
+                "signed_constructor_preparation_tests.rs",
+                "supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation",
             ),
             ("daemon_read_projection_tests.rs", "daemon::read_view::projection_tests"),
             (
